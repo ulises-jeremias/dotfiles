@@ -171,10 +171,10 @@ bindsym $Mod+Shift+Left  move left  10px
 bindsym $Mod+Shift+Right move right 10px
 
 # Size
-bindsym Mod1+Up    resize shrink height 10 px or 1 ppt
-bindsym Mod1+Down  resize grow   height 10 px or 1 ppt
-bindsym Mod1+Left  resize shrink width  10 px or 1 ppt
-bindsym Mod1+Right resize grow   width  10 px or 1 ppt
+bindsym Ctrl+Shift+Up    resize shrink height 10 px or 1 ppt
+bindsym Ctrl+Shift+Down  resize grow   height 10 px or 1 ppt
+bindsym Ctrl+Shift+Left  resize shrink width  10 px or 1 ppt
+bindsym Ctrl+Shift+Right resize grow   width  10 px or 1 ppt
 
 # layout toggle, keycode 23 is Tab
 bindcode Mod1+23 layout toggle tabbed split
