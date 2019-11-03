@@ -1,6 +1,6 @@
-# dotfiles
+# Dotfiles
 
-My personal dotfiles for i3, polybar, ...
+My personal dotfiles for i3, polybar, fgmenu, compton, ...
 
 ## Screenshots
 
