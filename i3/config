@@ -34,8 +34,9 @@ set $WS8 "8: "
 
 # run with reload
 # exec_always --no-startup-id al-polybar-session
-exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+exec_always --no-startup-id $HOME/.config/polybar/launch
 exec_always --no-startup-id xrdb -load ~/.Xresources
+exec_always --no-startup-id compton --config ~/.config/compton.conf
 
 # run once
 exec --no-startup-id xfsettingsd
@@ -78,6 +79,9 @@ bindsym XF86AudioLowerVolume exec --no-startup-id pamixer -d 2
 # backlight
 bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 10
 bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
+
+# toggle
+bindsym $Mod+Control+p exec --no-startup-id toggle -p &
 
 ###########          Workspace Bindings          ###############
 
