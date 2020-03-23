@@ -35,10 +35,28 @@ fi
 #==========================================
 # Install dependencies according to os
 #==========================================
+pkgs=(
+    termite
+    polybar
+    rofi
+    dbus-python
+    picom
+    zsh
+    zsh-syntax-highlighting-git
+    networkmanager-dmenu-git
+    jgmenu
+    numix-circle-icon-theme-git
+    skippy-xd-git
+    yarn
+    nvm
+)
+pkgs=$(printf ",%s" "${pkgs[@]}")
+pkgs=${pkgs:1}
+
 if ! has_param '--no-deps' "$@"; then
     $ROOT/install-pkgs \
         -l $log_file ${upgrade_flag} --os ${os} \
-        --pkgs termite,polybar,rofi,dbus-python,picom,zsh,zsh-syntax-highlighting-git,networkmanager-dmenu-git,jgmenu,numix-circle-icon-theme-git,skippy-xd-git
+        --pkgs $pkgs
 fi
 
 echo
