@@ -10,6 +10,7 @@ $ cd /tmp/dotfiles
 $ ./scripts/install [--os <os>] [-l <file_path>] [--dotfiles-dir <dir_path>]
 ```
 
+where,
 ```sh
 <os> = arch-linux | ...
 <file_path> is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt as default
