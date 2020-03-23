@@ -37,7 +37,7 @@ fi
 #==========================================
 $ROOT/install-pkgs \
     -l $log_file ${upgrade_flag} --os ${os} \
-    --pkgs 
+    --pkgs polybar,rofi,dbus-python,picom,zsh,networkmanager-dmenu-git,jgmenu,numix-circle-icon-theme-git,skippy-xd-git
 
 #==========================================
 # Install dotfiles according to os
