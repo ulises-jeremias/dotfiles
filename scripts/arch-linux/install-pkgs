@@ -9,7 +9,7 @@ pkg_install() {
 }
 
 pkg_exists() {
-    if [ $(git ls-remote https://aur.archlinux.org/$pkg.git | wc -l) -eq 0 ]; then
+    if [ $(git ls-remote https://aur.archlinux.org/$1.git | wc -l) -eq 0 ]; then
         return 0
     fi
 
