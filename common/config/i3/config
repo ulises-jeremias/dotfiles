@@ -6,7 +6,7 @@ gaps inner 10
 gaps outer 10
 
 # font
-font pango:monospace 11
+font pango:monospace 12
 
 # mod key used for most binds
 # Mod1 = Alt

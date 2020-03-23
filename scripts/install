@@ -35,9 +35,11 @@ fi
 #==========================================
 # Install dependencies according to os
 #==========================================
-$ROOT/install-pkgs \
-    -l $log_file ${upgrade_flag} --os ${os} \
-    --pkgs polybar,rofi,dbus-python,picom,zsh,networkmanager-dmenu-git,jgmenu,numix-circle-icon-theme-git,skippy-xd-git
+if ! has_param '--no-deps' "$@"; then
+    $ROOT/install-pkgs \
+        -l $log_file ${upgrade_flag} --os ${os} \
+        --pkgs polybar,rofi,dbus-python,picom,zsh,networkmanager-dmenu-git,jgmenu,numix-circle-icon-theme-git,skippy-xd-git
+fi
 
 echo
 
