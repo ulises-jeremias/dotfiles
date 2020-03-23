@@ -23,7 +23,7 @@ variables["--pkgs"]="packages";
 
 os=${os:-"arch-linux"}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
-log_file=${log_file:-"$HOME/install_progress_log_$time_str.txt"}
+log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 packages=${packages:-""}
 
 [ ! -f "$log_file" ] && touch $log_file
@@ -49,19 +49,20 @@ for pkg in $(echo $packages | tr ',' '\n'); do
         log_success "Already installed" $pkg $log_file
         ((success+=1))
     else
-        if pkg_exists $pkg; then
+        if ! pkg_exists $pkg; then
             log_failed "Package not found" $pkg $log_file
             ((failed+=1))
             continue
         fi
-        echo
-        pkg_install $pkg
-        describe "Installing $pkg"
-        if type -p $pkg > /dev/null; then
-            log_success "Installed" $pkg $log_file
+
+        log_failed "Package not installed" $pkg $log_file
+
+        describe "Installing $pkg\n" 0
+        if pkg_install $pkg; then
+            log_success "Installed successfully" $pkg $log_file
             ((success+=1))
         else
-            log_failed "Fialed" $pkg $log_file
+            log_failed "Installation fialed" $pkg $log_file
             ((failed+=1))
         fi   
     fi   

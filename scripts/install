@@ -13,6 +13,7 @@ ROOT=$(dirname $0)
 variables["--os"]="os"
 variables["-l"]="log_file";
 variables["--log-file"]="log_file";
+variables["--dotfiles-dir"]="dotfiles_dir";
 
 . $ROOT/../lib/flags/arguments.sh
 
@@ -22,7 +23,8 @@ variables["--log-file"]="log_file";
 
 os=${os:-"arch-linux"}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
-log_file=${log_file:-"$HOME/install_progress_log_$time_str.txt"}
+log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
+dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
 
 [ ! -f "$log_file" ] && touch $log_file
 
@@ -30,4 +32,14 @@ if has_param '-u' "$@" || has_param '--upgrade' "$@"; then
     upgrade_flag="-u"
 fi
 
-$ROOT/install-pkgs -l $log_file ${upgrade_flag} --os ${os}
+#==========================================
+# Install dependencies according to os
+#==========================================
+$ROOT/install-pkgs \
+    -l $log_file ${upgrade_flag} --os ${os} \
+    --pkgs 
+
+#==========================================
+# Install dotfiles according to os
+#==========================================
+$ROOT/install-dotfiles -l $log_file --os ${os} --dotfiles-dir ${dotfiles_dir}

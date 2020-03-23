@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+ROOT=$(dirname $0)
+
+. $ROOT/../lib/log.sh
+
+#==========================================
+# Args declaration
+#==========================================
+
+. $ROOT/../lib/flags/declares.sh
+
+variables["--os"]="os"
+variables["-l"]="log_file";
+variables["--log-file"]="log_file";
+variables["--dotfiles-dir"]="dotfiles_dir";
+
+. $ROOT/../lib/flags/arguments.sh
+
+#==========================================
+# Default argument values and preprocessing
+#==========================================
+
+os=${os:-"arch-linux"}
+time_str=$(date +'%m-%d-%y_%H:%M:%S')
+log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
+dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
+
+[ ! -f "$log_file" ] && touch $log_file
+
+#==========================================
+# Delete existing dotfiles and folders
+#==========================================
+sudo rm -rf ~/dotfiles > /dev/null 2>&1
+
+#==========================================
+# Create dotfiles folder
+#==========================================
+mkdir $dotfiles_dir
+git init $dotfiles_dir
+mkdir $dotfiles_dir/config
+
+#==========================================
+# Copy bin files and create symlinks
+#==========================================
+cp -rf $ROOT/../common/bin $dotfiles_dir
+
+if [ -d "$ROOT/../$os/bin" ]; then
+    cp -rf $ROOT/../common/bin $dotfiles_dir
+fi
+
+for bin_path in $(find $dotfiles_dir/bin -maxdepth 1 -mindepth 1 -type f); do
+    bin=$(basename $bin_path)
+
+    chmod +x $bin_path
+    sudo rm -rf $HOME/bin/$bin > /dev/null 2>&1
+    ln -sf $bin_path $HOME/bin/$bin
+done
+
+#==========================================
+# Copy dotfiles and execute dotfiles
+# install strategy
+#==========================================
+for config_path in $(find $ROOT/../common/config/ -maxdepth 1 -mindepth 1 -type d); do
+    config=$(basename $config_path)
+    os_config_path=$config_path
+
+    if [ -x "$ROOT/../$os/config/$config/install" ]; then
+        os_config_path="$ROOT/../$os/config/$config"
+    fi
+
+    cp -rf $os_config_path $dotfiles_dir/config
+    bash $dotfiles_dir/config/$config/install
+done
