@@ -17,17 +17,13 @@ log_file=${log_file:-"$HOME/install_progress_log_$time_str.txt"}
 packages=${packages:-""}
 packages=$(echo $packages | tr ',' '\n')
 
-if [ ! -f "$log_file" ]; then
-    touch $log_file
-fi
+[ ! -f "$log_file" ] && touch $log_file
 
 if has_param '-u' "$@" || has_param '--upgrade' "$@"; then
     upgrade=true
 fi
 
-describe "Starting process" 0
-echo
-echo
+describe "Starting process\n\n" 0
 
 for pkg in $packages; do
     describe "Fetching $pkg"
