@@ -107,10 +107,6 @@ export LANG=en_US.UTF-8
 export LC_ALL=$LANG
 export LC_COLLATE=C
 # >>2
-# Set grepoptions <<2
-#-------------------------------------------------------------------------------
-export GREP_OPTIONS='--color=auto'
-# >>2
 # Use the correct ctags <<2
 #-------------------------------------------------------------------------------
 PATH="~/.pyenv/shims:/usr/local/bin:$PATH"
@@ -159,7 +155,7 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # >>1
 
 # Source Default Configurations <<1
-for fname in $(find ~/dotfiles/custom_config -name "*.sh*"); do
+for fname in $(find ~/dotfiles/default_config -name "*.sh*"); do
     source $fname
 done
 # >>1

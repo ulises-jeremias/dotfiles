@@ -72,3 +72,6 @@ for config_path in $(find $ROOT/../common/config/ -maxdepth 1 -mindepth 1 -type 
     cp -rf $os_config_path $dotfiles_dir/config
     bash $dotfiles_dir/config/$config/install
 done
+
+mkdir $dotfiles_dir/default_config
+mkdir $dotfiles_dir/custom_config
