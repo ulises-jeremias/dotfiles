@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+ROOT=$(dirname $0)
+
+. $ROOT/../lib/log.sh
+
+#==========================================
+# Args declaration
+#==========================================
+
+. $ROOT/../lib/flags/declares.sh
+
+variables["--os"]="os"
+variables["-l"]="log_file";
+variables["--log-file"]="log_file";
+variables["--pkgs"]="packages";
+
+. $ROOT/../lib/flags/arguments.sh
+
+#==========================================
+# Default argument values and preprocessing
+#==========================================
+
+os=${os:-"arch-linux"}
+time_str=$(date +'%m-%d-%y_%H:%M:%S')
+log_file=${log_file:-"$HOME/install_progress_log_$time_str.txt"}
+packages=${packages:-""}
+packages=$(echo $packages | tr ',' '\n')
+
+[ ! -f "$log_file" ] && touch $log_file
+
+if has_param '-u' "$@" || has_param '--upgrade' "$@"; then
+    upgrade=true
+fi
+
+. $ROOT/$os/install-pkgs
+
+#==========================================
+# Installing process
+#==========================================
+
+describe "Starting process\n\n" 0 
+
+success=0
+failed=0
+
+for pkg in $packages; do
+    describe "Fetching $pkg"
+    if type -p $pkg > /dev/null && [ "$upgrade" != "true" ]; then
+        log_success "Already installed" $log_file
+        ((success+=1))
+    else
+        if pkg_exists $pkg; then
+            log_failed "Package not found" $log_file
+            ((failed+=1))
+            continue
+        fi
+        echo
+        pkg_install $pkg
+        describe "Installing $pkg"
+        if type -p $pkg > /dev/null; then
+            log_success "Installed" $log_file
+            ((success+=1))
+        else
+            log_failed "Fialed" $log_file
+            ((failed+=1))
+        fi   
+    fi   
+done
+
+all=$(expr $success + $failed)
+
+echo
+echo "${green}Success: ${success} ${red}Failed: ${failed}${reset} Total: $all"

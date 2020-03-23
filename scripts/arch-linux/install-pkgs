@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+pkg_install() {
+    rm -rf /tmp/$1
+    git clone https://aur.archlinux.org/$1.git /tmp/$1 > /dev/null
+    pushd /tmp/$1
+    makepkg -si
+    popd
+}
+
+pkg_exists() {
+    if [ $(git ls-remote https://aur.archlinux.org/$pkg.git | wc -l) -eq 0 ]; then
+        return 0
+    fi
+
+    return 1
+}
