@@ -151,7 +151,7 @@ fi
 # >>1
 
 # Source Syntaxhighlighting <<1
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # >>1
 
 # Source Default Configurations <<1

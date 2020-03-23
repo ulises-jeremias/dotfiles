@@ -38,7 +38,7 @@ fi
 if ! has_param '--no-deps' "$@"; then
     $ROOT/install-pkgs \
         -l $log_file ${upgrade_flag} --os ${os} \
-        --pkgs polybar,rofi,dbus-python,picom,zsh,networkmanager-dmenu-git,jgmenu,numix-circle-icon-theme-git,skippy-xd-git
+        --pkgs termite,polybar,rofi,dbus-python,picom,zsh,zsh-syntax-highlighting-git,networkmanager-dmenu-git,jgmenu,numix-circle-icon-theme-git,skippy-xd-git
 fi
 
 echo
