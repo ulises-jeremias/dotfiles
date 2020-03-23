@@ -7,8 +7,8 @@ cross="✗"
 describe() {
     printf "$1"
     dots=${2:-3}
-    for i in $(seq 1 $dots); do sleep 1; printf "."; done
-    sleep 1
+    for i in $(seq 1 $dots); do sleep 0.035; printf "."; done
+    sleep 0.035
 }
 
 log_failed() {

@@ -37,12 +37,13 @@ sudo rm -rf ~/dotfiles > /dev/null 2>&1
 # Create dotfiles folder
 #==========================================
 mkdir $dotfiles_dir
-git init $dotfiles_dir
+git init $dotfiles_dir > /dev/null 2>&1
 mkdir $dotfiles_dir/config
 
 #==========================================
 # Copy bin files and create symlinks
 #==========================================
+describe "Installing binaries\n" 0
 cp -rf $ROOT/../common/bin $dotfiles_dir
 
 if [ -d "$ROOT/../$os/bin" ]; then
@@ -57,12 +58,21 @@ for bin_path in $(find $dotfiles_dir/bin -maxdepth 1 -mindepth 1 -type f); do
     ln -sf $bin_path $HOME/bin/$bin
 done
 
+echo
+
 #==========================================
 # Copy dotfiles and execute dotfiles
 # install strategy
 #==========================================
+success=0
+failed=0
+
+describe "Installing dotfiles\n" 0
 for config_path in $(find $ROOT/../common/config/ -maxdepth 1 -mindepth 1 -type d); do
     config=$(basename $config_path)
+
+    describe "Installing $config dotfiles"
+
     os_config_path=$config_path
 
     if [ -x "$ROOT/../$os/config/$config/install" ]; then
@@ -70,8 +80,21 @@ for config_path in $(find $ROOT/../common/config/ -maxdepth 1 -mindepth 1 -type 
     fi
 
     cp -rf $os_config_path $dotfiles_dir/config
-    bash $dotfiles_dir/config/$config/install
+    if bash $dotfiles_dir/config/$config/install; then
+        log_success "Installed successfully" $config $log_file
+        ((success+=1))
+    else
+        log_failed "Installation failed" $config $log_file
+        ((failed+=1))
+    fi
 done
+
+all=$(expr $success + $failed)
+
+echo
+echo "${green}Success: ${success} ${red}Failed: ${failed}${reset} Total: $all"
 
 mkdir $dotfiles_dir/default_config
 mkdir $dotfiles_dir/custom_config
+echo > $dotfiles_dir/default_config/.gitkeep
+echo > $dotfiles_dir/custom_config/.gitkeep
