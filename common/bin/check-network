@@ -8,7 +8,7 @@ econnected=""
 id="$(ip link | awk '/state UP/ {print $2}')"
 
 while true; do
-    if ping -c 1 archlabslinux.com >/dev/null 2>&1 || ping -c 1 archlinux.org >/dev/null 2>&1; then
+    if ping -c 1 google.com >/dev/null 2>&1; then
         [[ $id == e* ]] && echo "$econnected" || echo "$wconnected"
         sleep 25
     else

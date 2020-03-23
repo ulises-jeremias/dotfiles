@@ -3,8 +3,7 @@
 NAME=$(basename "$0")
 VER="0.5"
 
-usage()
-{
+usage() {
     cat <<- EOF
 
  USAGE:  $NAME [OPTIONS]
@@ -45,17 +44,16 @@ for arg in "$@"; do
             ;;
         -r|--run)
             rofi -modi run,drun -show drun -line-padding 4 \
-                -columns 2 -padding 50 -hide-scrollbar \
-                -show-icons -drun-icon-theme "ArchLabs-Light"
+                -columns 1 -padding 35 -show-icons
             ;;
         -w|--window)
-            rofi -modi window -show window -hide-scrollbar -padding 50 -line-padding 4
+            rofi -modi window -show window -hide-scrollbar -padding 35 -line-padding 4
             ;;
         -q|--qalculate)
             hash qalc &>/dev/null ||
                 { echo "Requires 'libqalculate' installed"; exit 1; }
 
-            rofi -modi "calc:qalc +u8 -nocurrencies" -padding 50 \
+            rofi -modi "calc:qalc +u8 -nocurrencies" -padding 35 \
                 -show "calc:qalc +u8 -nocurrencies" -line-padding 4 \
                 -hide-scrollbar
             ;;
@@ -63,7 +61,7 @@ for arg in "$@"; do
             hash greenclip &>/dev/null ||
                 { echo "Requires 'greenclip' installed"; exit 1; }
 
-            rofi -modi "clipboard:greenclip print" -padding 50 \
+            rofi -modi "clipboard:greenclip print" -padding 35 \
                 -line-padding 4 -show "clipboard:greenclip print" \
                 -hide-scrollbar
             ;;
@@ -76,7 +74,7 @@ for arg in "$@"; do
                 rofi -hide-scrollbar -kb-row-select 'Tab' \
                 -kb-row-tab 'Control+space' -dmenu \
                 -mesg 'Tab for Autocomplete' -i -p 'Web Search' \
-                -padding 50 -line-padding 4)"
+                -padding 35 -line-padding 4)"
             ;;
         -l|--logout)
             if grep -q 'exec startx' $HOME/.*profile; then

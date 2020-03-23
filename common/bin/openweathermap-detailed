@@ -25,13 +25,11 @@ get_icon() {
 }
 
 KEY="0867dd59b3bfcbdf3f98937d4df8c340"
-CITY="La Plata"
 UNITS="metric"
 SYMBOL="°C"
 
 if [ ! -z "$CITY" ]; then
     weather=$(curl -sf "http://api.openweathermap.org/data/2.5/weather?APPID=$KEY&q=$CITY&units=$UNITS")
-    # weather=$(curl -sf "http://api.openweathermap.org/data/2.5/forecast?APPID=$KEY&id=$CITY&units=$UNITS&cnt=1")
 else
     location=$(curl -sf https://location.services.mozilla.com/v1/geolocate?key=geoclue)
 

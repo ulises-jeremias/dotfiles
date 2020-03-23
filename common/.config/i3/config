@@ -1,5 +1,3 @@
-# ArchLabs i3 config
-
 # border & title
 for_window [class="^.*"] border pixel 1, title_format "<b> %class >> %title </b>"
 
@@ -59,13 +57,13 @@ bindsym $Mod+w          exec --no-startup-id exo-open --launch WebBrowser
 bindsym $Mod+f          exec --no-startup-id exo-open --launch FileManager
 bindsym $Mod+t          exec --no-startup-id exo-open --launch TerminalEmulator
 bindsym $Mod+Return     exec --no-startup-id exo-open --launch TerminalEmulator
-bindsym Control+Shift+t exec --no-startup-id exo-open --launch TerminalEmulator
 
 # logout script
 bindsym $Mod+x exec --no-startup-id rofi_run -l
 
 # Screenshot
-bindsym Print exec --no-startup-id "scrot '%S.png' -e 'mv $f $$(xdg-user-dir PICTURES)/ArchLabs-%S-$wx$h.png ; feh $$(xdg-user-dir PICTURES)/ArchLabs-%S-$wx$h.png'"
+bindsym Print exec --no-startup-id "scrot '%S.png' -e 'mv $f $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png ; feh $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png'"
+bindsym Shift+Print exec --no-startup-id "scrot -s '%S.png' -e 'mv $f $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png ; feh $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png'"
 
 # audio
 bindsym XF86AudioPlay        exec --no-startup-id playerctl play-pause

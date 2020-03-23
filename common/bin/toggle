@@ -3,8 +3,7 @@
 NAME=$(basename "$0")
 VER="0.4"
 
-usage()
-{
+usage() {
     cat <<- EOF
 
  USAGE:  $NAME [OPTIONS [ADDITIONAL]]
@@ -30,8 +29,7 @@ usage()
 EOF
 }
 
-toggle_polybar()
-{
+toggle_polybar() {
     if [[ $(pidof polybar) ]]; then
         pkill polybar
     else
@@ -39,8 +37,7 @@ toggle_polybar()
     fi
 }
 
-toggle_compton()
-{
+toggle_compton() {
     if (( opt == 1 )); then
         if [[ $(pidof compton) ]]; then
             al-compositor --stop
@@ -61,8 +58,7 @@ toggle_compton()
     done
 }
 
-toggle_redshift()
-{
+toggle_redshift() {
     if (( opt == 1 )); then
         if [[ $(pidof redshift) ]]; then
             pkill redshift
@@ -89,8 +85,7 @@ toggle_redshift()
     done
 }
 
-toggle_caffeine()
-{
+toggle_caffeine() {
     if (( opt == 1 )); then
         if [[ $(pidof caffeine) ]]; then
             killall caffeine

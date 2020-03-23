@@ -2,10 +2,9 @@
 
 BAR_ICON=""
 NOTIFIED=0
-NOTIFY_ICON=/usr/share/icons/gnome/32x32/apps/system-software-update.png
+NOTIFY_ICON=/usr/share/icons/Numix-Circle/32x32/apps/system-software-update.png
 
-get_total_updates()
-{
+get_total_updates() {
     UPDATES=$(checkupdates 2>/dev/null | wc -l)
 }
 
