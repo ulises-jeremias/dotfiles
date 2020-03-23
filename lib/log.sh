@@ -13,14 +13,14 @@ describe() {
 
 log_failed() {
     message=${1:-"Failed"}
-    log="${red}${cross} $message${reset}\n"
+    log="$red$cross $message$reset\n"
     printf " $log"
-    [ -f "$2" ] && printf $log > $2
+    [ -f "$3" ] && printf "$2 $log" >> $3
 }
 
 log_success() {
     message=${1:-"Success"}
-    log="${green}${check} $message${reset}\n"
+    log="$green$check $message$reset\n"
     printf " $log"
-    [ -f "$2" ] && printf $log > $2
+    [ -f "$3" ] && printf "$2 $log" >> $3
 }
