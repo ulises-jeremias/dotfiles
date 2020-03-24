@@ -4,6 +4,8 @@ ROOT=$(dirname $0)
 
 sudo rm -rf ~/.zshrc > /dev/null 2>&1
 sudo rm -rf ~/.zsh_prompt > /dev/null 2>&1
+sudo rm -rf ~/.zsh_aliases > /dev/null 2>&1
 
 ln -sf $ROOT/zshrc ~/.zshrc
 ln -sf $ROOT/zsh_prompt ~/.zsh_prompt
+ln -sf $ROOT/zsh_aliases ~/.zsh_aliases

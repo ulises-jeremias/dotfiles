@@ -15,10 +15,11 @@
 #===================================================================================
 #
 
-# Source the prompt <<1
+# Source the prompt and aliases <<1
 #-------------------------------------------------------------------------------
 if [[ ! -n "$ZSHRUN" ]]; then
     source $HOME/.zsh_prompt
+    source $HOME/.zsh_aliases
 fi
 # Precmd functions local array variable <<2
 #-------------------------------------------------------------------------------
@@ -165,9 +166,6 @@ for fname in $(find ~/dotfiles/custom_config -name "*.sh*"); do
     source $fname
 done
 # >>1
-
-alias please="sudo"
-alias pliz="sudo"
 
 export LD_LIBRARY_PATH=/usr/local/lib
 export PATH="$(yarn global bin):$HOME/bin:$HOME/.local/bin:$PATH"
