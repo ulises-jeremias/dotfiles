@@ -47,7 +47,7 @@ describe "Installing binaries\n" 0
 cp -rf $ROOT/../common/bin $dotfiles_dir
 
 if [ -d "$ROOT/../$os/bin" ]; then
-    cp -rf $ROOT/../common/bin $dotfiles_dir
+    cp -rf $ROOT/../$os/bin $dotfiles_dir
 fi
 
 for bin_path in $(find $dotfiles_dir/bin -maxdepth 1 -mindepth 1 -type f); do
