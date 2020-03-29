@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+type -p yay > /dev/null && yay -Syyu || sudo pacman -Syyu

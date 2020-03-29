@@ -5,6 +5,9 @@ ROOT=$(dirname $0)
 sudo rm -rf ~/.config/jgmenu/jgmenurc > /dev/null 2>&1
 sudo rm -rf ~/.config/jgmenu/append.csv > /dev/null 2>&1
 sudo rm -rf ~/.config/jgmenu/prepend.csv > /dev/null 2>&1
+
+mkdir ~/.config/jgmenu > /dev/null 2>&1
+
 ln -sf $ROOT/jgmenurc ~/.config/jgmenu/jgmenurc
 ln -sf $ROOT/append.csv ~/.config/jgmenu/append.csv
 ln -sf $ROOT/prepend.csv ~/.config/jgmenu/prepend.csv

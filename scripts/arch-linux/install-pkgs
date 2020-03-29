@@ -1,19 +1,35 @@
 #!/usr/bin/env bash
 
+fetch_pkg() {
+    if [ $(git ls-remote https://aur.archlinux.org/$1.git | wc -l) -eq 0 ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 pkg_install() {
     rm -rf /tmp/$1
-    git clone https://aur.archlinux.org/$1.git /tmp/$1 > /dev/null
-    pushd /tmp/$1
-    makepkg -si
+    repo=$1
+    if ! fetch_pkg $repo; then
+        repo="$1-git"
+    fi
+    remote=https://aur.archlinux.org/$repo.git
+    git clone $remote /tmp/$repo > /dev/null
+    pushd /tmp/$repo
+    yes | makepkg -si
     res=$?
     popd
     return $res
 }
 
 pkg_exists() {
-    if [ $(git ls-remote https://aur.archlinux.org/$1.git | wc -l) -eq 0 ]; then
-        return 1
-    else
+    repo=$1
+    git_repo="$1-git"
+
+    if fetch_pkg $repo || fetch_pkg $git_repo; then
         return 0
+    else
+        return 1
     fi
 }

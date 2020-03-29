@@ -3,4 +3,7 @@
 ROOT=$(dirname $0)
 
 sudo rm -rf ~/.config/fontconfig/fonts.conf > /dev/null 2>&1
+
+mkdir ~/.config/fontconfig > /dev/null 2>&1
+
 ln -sf $ROOT/fonts.conf ~/.config/fontconfig/fonts.conf

@@ -9,6 +9,8 @@ sudo rm -rf ~/.config/polybar/launch > /dev/null 2>&1
 sudo rm -rf ~/.config/polybar/master.conf > /dev/null 2>&1
 sudo rm -rf ~/.config/polybar/modules.conf > /dev/null 2>&1
 
+mkdir ~/.config/polybar > /dev/null 2>&1
+
 ln -sf $ROOT/modules ~/.config/polybar/modules
 ln -sf $ROOT/polybars ~/.config/polybar/polybars
 ln -sf $ROOT/config ~/.config/polybar/config

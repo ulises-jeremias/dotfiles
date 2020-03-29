@@ -21,7 +21,7 @@ variables["--dotfiles-dir"]="dotfiles_dir";
 # Default argument values and preprocessing
 #==========================================
 
-os=${os:-"arch-linux"}
+os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
@@ -40,20 +40,22 @@ pkgs=(
     polybar
     rofi
     dbus-python
+    pulseaudio
+    mintlocale
     picom
     zsh
-    zsh-syntax-highlighting-git
-    networkmanager-dmenu-git
+    zsh-syntax-highlighting
+    networkmanager-dmenu
     jgmenu
-    numix-circle-icon-theme-git
-    skippy-xd-git
+    numix-circle-icon-theme
+    skippy-xd
     yarn
     nvm
 )
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}
 
-if ! has_param '--no-deps' "$@"; then
+if ! has_param '--no-deps' "$@" && [ "$os" != "" ]; then
     $ROOT/install-pkgs \
         -l $log_file ${upgrade_flag} --os ${os} \
         --pkgs $pkgs

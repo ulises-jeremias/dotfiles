@@ -21,7 +21,7 @@ variables["--pkgs"]="packages";
 # Default argument values and preprocessing
 #==========================================
 
-os=${os:-"arch-linux"}
+os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 packages=${packages:-""}
@@ -55,7 +55,7 @@ for pkg in $(echo $packages | tr ',' '\n'); do
             continue
         fi
 
-        log_failed "Package not installed" $pkg $log_file
+        log_warn "Package not installed" $pkg $log_file
 
         describe "Installing $pkg\n" 0
         if pkg_install $pkg; then
