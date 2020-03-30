@@ -13,6 +13,7 @@ variables["--os"]="os"
 variables["-l"]="log_file";
 variables["--log-file"]="log_file";
 variables["--dotfiles-dir"]="dotfiles_dir";
+variables["--pkgs"]="pkgs";
 
 . $ROOT/../lib/flags/arguments.sh
 
@@ -37,27 +38,6 @@ fi
 #==========================================
 # Install dependencies according to os
 #==========================================
-pkgs=(
-    termite
-    polybar
-    rofi
-    dbus-python
-    pulseaudio
-    mintlocale
-    picom
-    zsh
-    zsh-syntax-highlighting
-    networkmanager-dmenu
-    jgmenu
-    numix-circle-icon-theme
-    skippy-xd
-    wmctrl
-    graphicsmagick
-    feh
-)
-pkgs=$(printf ",%s" "${pkgs[@]}")
-pkgs=${pkgs:1}
-
 if ! has_param '--no-deps' "$@" && [ "$os" != "" ]; then
     $ROOT/install-pkgs \
         -l $log_file $upgrade_flag --os $os \
@@ -70,3 +50,19 @@ echo
 # Install dotfiles according to os
 #==========================================
 $ROOT/install-dotfiles -l $log_file --os $os --dotfiles-dir $dotfiles_dir $clean_flag
+
+#==========================================
+# Set zsh as the default shell
+#==========================================
+echo
+sudo chsh -s /bin/zsh
+
+#==========================================
+# Give the user a summary of what has
+# been installed
+#==========================================
+echo -e "\n====== Summary ======\n"
+cat $log_file
+echo
+echo "Enjoy dotfiles :D"
+rm $log_file

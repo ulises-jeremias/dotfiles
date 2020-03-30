@@ -26,7 +26,7 @@ dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
 
 [ ! -f "$log_file" ] && touch $log_file
 
-if has_param '-c' "$@" || has_param '--clean' "$@"; then
+if [ ! -d "$dotfiles_dir" ] || has_param '-c' "$@" || has_param '--clean' "$@"; then
     describe "Removing existing dotfiles"
 
     # Delete existing dotfiles and folders
@@ -37,13 +37,16 @@ if has_param '-c' "$@" || has_param '--clean' "$@"; then
     git init $dotfiles_dir > /dev/null 2>&1
     mkdir $dotfiles_dir/config
 
-    mkdir $dotfiles_dir/default_config
-    mkdir $dotfiles_dir/custom_config
-    echo > $dotfiles_dir/default_config/.gitkeep
-    echo > $dotfiles_dir/custom_config/.gitkeep
+    mkdir $dotfiles_dir/custom-config
+    echo > $dotfiles_dir/custom-config/.gitkeep
 
     log_success "Success" $config $log_file
 fi
+
+sudo rm -rf $dotfiles_dir/default-config > /dev/null 2>&1
+cp -rf $ROOT/../default-config $dotfiles_dir/default-config
+chmod +x $dotfiles_dir/default-config/install
+$dotfiles_dir/default-config/install
 
 #==========================================
 # Copy bin files and create symlinks

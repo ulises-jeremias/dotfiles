@@ -4,22 +4,16 @@ My personal dotfiles for i3, polybar, fgmenu, compton, ...
 
 ## How it looks
 
-<details><summary>Home screen</summary>
+<img src="./images/screen.png" alt="JarrodCTaylor" title="JarrodCTaylor" align="left" width="45%" style="margin-left: 2.5%; margin-right: 5%" />
 
-![preview-home](./images/screen.png)
-</details>
+<img src="./images/nvim&termite.png" alt="JarrodCTaylor" title="JarrodCTaylor" width="45%" />
 
-<details><summary>Terminals</summary>
-
-![preview-terminals](./images/nvim&termite.png)
-</details>
-
-## Install
+## Installation
 
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 $ cd /tmp/dotfiles
-$ ./scripts/install [--os <os>] [-l <file_path>] [--dotfiles-dir <dir_path>] [--no-deps]
+$ ./install [--os <os>] [-l <file_path>] [--dotfiles-dir <dir_path>] [--no-deps]
 ```
 
 The installation script will install all the necessary dependencies that allow your dotfiles config work correctly.
@@ -27,9 +21,7 @@ The installation script will install all the necessary dependencies that allow y
 <details><summary>Installation args</summary>
 
 - `<os> = common | arch-linux | debian | ...` where common is supposed to work correctly with any linux distro. `common` is set as default value for this flag.
-
 - `<file_path>` is `/tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt` as default.
-
 - `<dir_path>` is `~/dotfiles` as default.
 
 </details>
