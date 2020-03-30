@@ -61,3 +61,13 @@ This file will be automatically sourced.
 ### NeoVim
 
 Not yet
+
+## Misc Customization
+
+You can use your own configuration file in place of any of the following
+
+- gitconfig
+
+To do so you just need to include a file of the same name in your version controlled directory that you save into `custom-configs` the create symlinks scripts will link the files properly.
+
+To add configuration files after the installation process you should only run the command `<dotfiles_dir>/default-config/install` after having modified the contents of the directory `<dotfiles_dir>/custom-config`.
