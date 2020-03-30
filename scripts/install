@@ -7,7 +7,6 @@ ROOT=$(dirname $0)
 #==========================================
 # Args declaration
 #==========================================
-
 . $ROOT/../lib/flags/declares.sh
 
 variables["--os"]="os"
@@ -20,7 +19,6 @@ variables["--dotfiles-dir"]="dotfiles_dir";
 #==========================================
 # Default argument values and preprocessing
 #==========================================
-
 os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
@@ -30,6 +28,10 @@ dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
 
 if has_param '-u' "$@" || has_param '--upgrade' "$@"; then
     upgrade_flag="-u"
+fi
+
+if has_param '-c' "$@" || has_param '--clean' "$@"; then
+    clean_flag="-c"
 fi
 
 #==========================================
@@ -49,8 +51,6 @@ pkgs=(
     jgmenu
     numix-circle-icon-theme
     skippy-xd
-    yarn
-    nvm
     wmctrl
     graphicsmagick
     feh
@@ -60,7 +60,7 @@ pkgs=${pkgs:1}
 
 if ! has_param '--no-deps' "$@" && [ "$os" != "" ]; then
     $ROOT/install-pkgs \
-        -l $log_file ${upgrade_flag} --os ${os} \
+        -l $log_file $upgrade_flag --os $os \
         --pkgs $pkgs
 fi
 
@@ -69,4 +69,4 @@ echo
 #==========================================
 # Install dotfiles according to os
 #==========================================
-$ROOT/install-dotfiles -l $log_file --os ${os} --dotfiles-dir ${dotfiles_dir}
+$ROOT/install-dotfiles -l $log_file --os $os --dotfiles-dir $dotfiles_dir $clean_flag

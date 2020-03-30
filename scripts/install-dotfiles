@@ -7,7 +7,6 @@ ROOT=$(dirname $0)
 #==========================================
 # Args declaration
 #==========================================
-
 . $ROOT/../lib/flags/declares.sh
 
 variables["--os"]="os"
@@ -20,7 +19,6 @@ variables["--dotfiles-dir"]="dotfiles_dir";
 #==========================================
 # Default argument values and preprocessing
 #==========================================
-
 os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
@@ -28,17 +26,24 @@ dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
 
 [ ! -f "$log_file" ] && touch $log_file
 
-#==========================================
-# Delete existing dotfiles and folders
-#==========================================
-sudo rm -rf ~/dotfiles > /dev/null 2>&1
+if has_param '-c' "$@" || has_param '--clean' "$@"; then
+    describe "Removing existing dotfiles"
 
-#==========================================
-# Create dotfiles folder
-#==========================================
-mkdir $dotfiles_dir
-git init $dotfiles_dir > /dev/null 2>&1
-mkdir $dotfiles_dir/config
+    # Delete existing dotfiles and folders
+    sudo rm -rf ~/dotfiles > /dev/null 2>&1
+
+    # Create dotfiles folder
+    mkdir $dotfiles_dir
+    git init $dotfiles_dir > /dev/null 2>&1
+    mkdir $dotfiles_dir/config
+
+    mkdir $dotfiles_dir/default_config
+    mkdir $dotfiles_dir/custom_config
+    echo > $dotfiles_dir/default_config/.gitkeep
+    echo > $dotfiles_dir/custom_config/.gitkeep
+
+    log_success "Success" $config $log_file
+fi
 
 #==========================================
 # Copy bin files and create symlinks
@@ -93,8 +98,3 @@ all=$(expr $success + $failed)
 
 echo
 echo "${green}Success: ${success} ${red}Failed: ${failed}${reset} Total: $all"
-
-mkdir $dotfiles_dir/default_config
-mkdir $dotfiles_dir/custom_config
-echo > $dotfiles_dir/default_config/.gitkeep
-echo > $dotfiles_dir/custom_config/.gitkeep
