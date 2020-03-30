@@ -28,22 +28,22 @@ The installation script will install all the necessary dependencies that allow y
 
 ## Customization
 
-There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the `custom-configs` directory. You are encouraged to maintain a separate github repository of configurations for your own dotfiles.
+There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the `custom-config` directory. You are encouraged to maintain a separate github repository of configurations for your own dotfiles.
 
-The custom-configs directory is intended to be the central location for all of your customizations. It is recommended that you maintain a github repository of your configurations. You may add the contents to the `custom-configs` like so;
+The custom-config directory is intended to be the central location for all of your customizations. It is recommended that you maintain a github repository of your configurations. You may add the contents to the `custom-config` like so;
 
 ```sh
-$ cd <dotfiles_dir>/custom-configs
+$ cd <dotfiles_dir>/custom-config
 $ git init
-$ git remote add origin git@github.com:your-username/your-custom-configs-repo.git
+$ git remote add origin git@github.com:your-username/your-custom-config-repo.git
 $ git pull origin master
 ```
 
 ### Zsh
 
-Any file in your `<dotfiles_dir>/custom-configs` directory ending with `.sh` will automatically be sourced when you open a shell. You can use this to add additional alias, functions, etc.
+Any file in your `<dotfiles_dir>/custom-config` directory ending with `.sh` will automatically be sourced when you open a shell. You can use this to add additional alias, functions, etc.
 
-For example, you can create the file `<dotfiles_dir>/custom-configs/paths.sh` with the following content.
+For example, you can create the file `<dotfiles_dir>/custom-config/paths.sh` with the following content.
 
 ```sh
 # custom exports
@@ -68,6 +68,6 @@ You can use your own configuration file in place of any of the following
 
 - gitconfig
 
-To do so you just need to include a file of the same name in your version controlled directory that you save into `custom-configs` the create symlinks scripts will link the files properly.
+To do so you just need to include a file of the same name in your version controlled directory that you save into `custom-config` the create symlinks scripts will link the files properly.
 
 To add configuration files after the installation process you should only run the command `<dotfiles_dir>/default-config/install` after having modified the contents of the directory `<dotfiles_dir>/custom-config`.

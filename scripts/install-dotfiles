@@ -42,11 +42,6 @@ if [ ! -d "$dotfiles_dir" ] || has_param '-c' "$@" || has_param '--clean' "$@"; 
     log_success "Success" $config $log_file
 fi
 
-sudo rm -rf $dotfiles_dir/default-config > /dev/null 2>&1
-cp -rf $ROOT/../default-config $dotfiles_dir/default-config
-chmod +x $dotfiles_dir/default-config/install
-$dotfiles_dir/default-config/install
-
 #==========================================
 # Copy bin files and create symlinks
 #==========================================
@@ -100,3 +95,10 @@ all=$(expr $success + $failed)
 
 echo
 echo "${green}Success: ${success} ${red}Failed: ${failed}${reset} Total: $all"
+
+describe "Setting up default and custom configs\n\n"
+
+sudo rm -rf $dotfiles_dir/default-config > /dev/null 2>&1
+cp -rf $ROOT/../default-config $dotfiles_dir/default-config
+chmod +x $dotfiles_dir/default-config/install
+$dotfiles_dir/default-config/install
