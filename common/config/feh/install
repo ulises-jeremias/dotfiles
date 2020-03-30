@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+ROOT=$(dirname $0)
+
+sudo rm -rf ~/.config/feh/.fehbg > /dev/null 2>&1
+sudo rm -rf ~/.config/feh/wallpaper.jpg > /dev/null 2>&1
+
+mkdir ~/.config/feh > /dev/null 2>&1
+
+chmox +x $ROOT/fehbg
+ln -sf $ROOT/fehbg ~/.config/feh/.fehbg
+ln -sf $ROOT/wallpaper.jpg ~/.config/feh/wallpaper.jpg

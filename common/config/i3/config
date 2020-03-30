@@ -31,7 +31,7 @@ set $WS8 "8: "
 ###############     Autostart      ##################
 
 # run with reload
-# exec_always --no-startup-id al-polybar-session
+exec_always --no-startup-id $HOME/.config/feh/.fehbg
 exec_always --no-startup-id $HOME/.config/polybar/launch
 exec_always --no-startup-id xrdb -load ~/.Xresources
 exec_always --no-startup-id compton --config ~/.config/compton.conf
@@ -106,7 +106,6 @@ bindsym $mod+Mod2+KP_8 workspace $WS8
 # switch to next or previous workspace
 bindsym $mod+Mod1+Left workspace prev
 bindsym $mod+Mod1+Right workspace next
-
 
 # move focused container to workspace
 bindsym $Mod+Shift+1 move container to workspace $WS1; workspace $WS1

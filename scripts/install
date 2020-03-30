@@ -51,6 +51,9 @@ pkgs=(
     skippy-xd
     yarn
     nvm
+    wmctrl
+    graphicsmagick
+    feh
 )
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}
