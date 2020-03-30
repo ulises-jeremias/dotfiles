@@ -34,7 +34,6 @@ if [ ! -d "$dotfiles_dir" ] || has_param '-c' "$@" || has_param '--clean' "$@"; 
 
     # Create dotfiles folder
     mkdir $dotfiles_dir
-    git init $dotfiles_dir > /dev/null 2>&1
     mkdir $dotfiles_dir/config
 
     mkdir $dotfiles_dir/custom-config

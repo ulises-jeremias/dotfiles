@@ -12,8 +12,10 @@ sudo rm -rf ~/.gitconfig > /dev/null 2>&1
 # Create symlinks in the home folder
 # Allow overriding with files of matching names in the custom-configs dir
 #==========================================
+touch ~/.gitconfig
+
 if [ -n "$(find $dotfiles_dir/custom-config -name gitconfig)" ]; then
-    ln -sf $dotfiles_dir/custom-config/**/gitconfig ~/.gitconfig
+    ln -sf $dotfiles_dir/custom-config/gitconfig ~/.gitconfig
 else
     ln -sf $ROOT/gitconfig ~/.gitconfig
 fi
