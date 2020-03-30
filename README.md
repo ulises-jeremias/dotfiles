@@ -49,9 +49,9 @@ $ git pull origin master
 
 ### Zsh
 
-Any file in your `<dotfiles_dir>/custom-configs/zsh` directory ending with `.sh` will automatically be sourced when you open a shell. You can use this to add additional alias, functions, etc.
+Any file in your `<dotfiles_dir>/custom-configs` directory ending with `.sh` will automatically be sourced when you open a shell. You can use this to add additional alias, functions, etc.
 
-For example, you can create the file `<dotfiles_dir>/custom-configs/zsh/paths.sh` with the following content.
+For example, you can create the file `<dotfiles_dir>/custom-configs/paths.sh` with the following content.
 
 ```sh
 # custom exports
