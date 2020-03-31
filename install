@@ -19,6 +19,7 @@ pkgs=(
     wmctrl
     graphicsmagick
     feh
+    dunst
 )
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}
