@@ -1,14 +1,26 @@
 #!/usr/bin/env sh
 
+has_param() {
+    local term="$1"
+    shift
+    for arg; do
+        if [[ $arg == "$term" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # Terminate already running bar instances
 killall -q polybar
+export POLYBAR_SESSION=""
 
 # Wait until the processes have been shut down
-while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
+while pgrep -u $UID -x polybar > /dev/null; do sleep 1; done
 
-# Launch bar1 and bar2
-polybar polybar-top -r &
-polybar polybar-bottom -r
-
-# Launch bar1 only
-# polybar polybar-top-only -r
+if has_param "--top-bar-only" "$@"; then
+    polybar polybar-top-only -r &
+else
+    polybar polybar-top -r &
+    polybar polybar-bottom -r &
+fi

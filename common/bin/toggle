@@ -30,10 +30,22 @@ EOF
 }
 
 toggle_polybar() {
+    source ~/.config/polybar/.polybar-session
     if [[ $(pidof polybar) ]]; then
         pkill polybar
     else
-        $HOME/.config/polybar/launch
+        if [ "$NEXT_POLYBAR_SESSION" = "top-bar-only" ]; then
+            $HOME/.config/polybar/launch --top-bar-only
+            export POLYBAR_SESSION="top-bar-only"
+            export NEXT_POLYBAR_SESSION="two-bars-layout"
+        else
+            $HOME/.config/polybar/launch --two-bars-layout
+            export POLYBAR_SESSION="two-bars-layout"
+            export NEXT_POLYBAR_SESSION="top-bar-only"
+        fi
+        echo > .config/polybar/.polybar-session
+        echo "export POLYBAR_SESSION=\"${POLYBAR_SESSION}\"" >> .config/polybar/.polybar-session
+        echo "export NEXT_POLYBAR_SESSION=\"${NEXT_POLYBAR_SESSION}\"" >> .config/polybar/.polybar-session
     fi
 }
 
