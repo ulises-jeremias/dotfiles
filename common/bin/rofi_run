@@ -32,6 +32,13 @@ usage() {
 EOF
 }
 
+toggle_polybar() {
+    source ~/.config/polybar/.polybar-session
+    $HOME/.config/polybar/launch --$1
+    echo > ~/.config/polybar/.polybar-session
+    echo "export POLYBAR_SESSION=\"$1\"" >> ~/.config/polybar/.polybar-session
+}
+
 for arg in "$@"; do
     case $arg in
         -h|--help)
@@ -92,6 +99,18 @@ for arg in "$@"; do
                 *Reboot) systemctl reboot ;;
                 *Shutdown) systemctl -i poweroff ;;
                 *Logout) session-logout || pkill -15 -t tty"$XDG_VTNR" Xorg ;;
+            esac
+            ;;
+        -p|--polybar)
+            ANS="$(rofi -sep "|" -dmenu -i -p 'Polybar session theme' -width 20 \
+                -hide-scrollbar -line-padding 4 -padding 20 \
+                -lines 4 <<< "Two bars layout|Two bars small layout|Top bar only|Small top bar only")"
+
+            case "$ANS" in
+                "Two bars layout") toggle_polybar two-bars-layout ;;
+                "Top bar only") toggle_polybar top-bar-only ;;
+                "Two bars small layout") toggle_polybar two-bars-small-layout ;;
+                "Small top bar only") toggle_polybar small-top-bar-only ;;
             esac
             ;;
         *)

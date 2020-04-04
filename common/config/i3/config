@@ -32,7 +32,7 @@ set $WS8 "8: "
 
 # run with reload
 exec_always --no-startup-id $HOME/.config/feh/.fehbg
-exec_always --no-startup-id $HOME/.config/polybar/launch
+exec_always --no-startup-id $HOME/bin/toggle -p
 exec_always --no-startup-id xrdb -load ~/.Xresources
 exec_always --no-startup-id compton --config ~/.config/compton.conf
 

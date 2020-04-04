@@ -19,8 +19,13 @@ export POLYBAR_SESSION=""
 while pgrep -u $UID -x polybar > /dev/null; do sleep 1; done
 
 if has_param "--top-bar-only" "$@"; then
-    polybar polybar-top-only -r &
+    polybar polybar-top-only -r
+elif has_param "--small-top-bar-only" "$@"; then
+    polybar small-polybar-top-only -r
+elif has_param "--two-bars-small-layout" "$@"; then
+    polybar small-polybar-top -r &
+    polybar small-polybar-bottom -r
 else
     polybar polybar-top -r &
-    polybar polybar-bottom -r &
+    polybar polybar-bottom -r
 fi

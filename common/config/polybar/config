@@ -5,3 +5,7 @@ include-file = $HOME/.config/polybar/master.conf
 include-file = $HOME/.config/polybar/polybars/top.conf
 include-file = $HOME/.config/polybar/polybars/top-only.conf
 include-file = $HOME/.config/polybar/polybars/bottom.conf
+
+include-file = $HOME/.config/polybar/polybars/small-top.conf
+include-file = $HOME/.config/polybar/polybars/small-top-only.conf
+include-file = $HOME/.config/polybar/polybars/small-bottom.conf
