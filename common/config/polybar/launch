@@ -13,8 +13,12 @@ themes=(
     "two-bars-layout"
 )
 
-source ~/.config/polybar/.polybar-session
-SESSION="$POLYBAR_SESSION"
+SESSION="two-bars-layout"
+
+if [ -f ~/.config/polybar/.polybar-session ]; then
+    source ~/.config/polybar/.polybar-session
+    SESSION="$POLYBAR_SESSION"
+fi
 
 echo $SESSION
 if [[ " ${themes[@]} " =~ " $1 " ]]; then
