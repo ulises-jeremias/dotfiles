@@ -8,7 +8,7 @@ My personal dotfiles for i3, polybar, fgmenu, compton, ...
 
 <img src="./static/nvim&termite.png" width="45%" />
 
-<img src="./static/demo.gif" width="80%" style="margin-left: 10%; margin-top: 15px" />
+<img src="./static/demo.gif" width="65%" style="margin-left: 19.5%; margin-top: 15px" />
 
 ## Installation
 
