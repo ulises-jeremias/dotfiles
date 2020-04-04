@@ -26,6 +26,8 @@ usage() {
 
      -c,--clipboard     Select previous clipboard entries (requires greenclip)
 
+     -p,--polybar       Select polybar theme
+
 
   Without any options the run dialog will be opened.
 
@@ -101,7 +103,7 @@ for arg in "$@"; do
             esac
             ;;
         -p|--polybar)
-            ANS="$(rofi -sep "|" -dmenu -i -p 'Polybar session theme' -width 20 \
+            ANS="$(rofi -sep "|" -dmenu -i -p 'Polybar session theme' -width 55 \
                 -hide-scrollbar -line-padding 4 -padding 20 \
                 -lines 4 <<< "Two bars layout|Two bars small layout|Top bar only|Small top bar only")"
 
