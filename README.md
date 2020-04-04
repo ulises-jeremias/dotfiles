@@ -4,11 +4,15 @@ My personal dotfiles for i3, polybar, fgmenu, compton, ...
 
 ## How it looks
 
+<center>
+
 <img src="./static/screen.png" align="left" width="45%" style="margin-left: 2.5%; margin-right: 5%" />
 
 <img src="./static/nvim&termite.png" width="45%" />
 
-<img src="./static/demo.gif" width="65%" style="margin-left: 19.5%; margin-top: 15px" />
+<img src="./static/demo.gif" style="margin-top: 15px" />
+
+</center>
 
 ## Installation
 
