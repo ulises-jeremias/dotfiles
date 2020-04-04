@@ -33,10 +33,9 @@ EOF
 }
 
 toggle_polybar() {
-    source ~/.config/polybar/.polybar-session
-    $HOME/.config/polybar/launch --$1
     echo > ~/.config/polybar/.polybar-session
     echo "export POLYBAR_SESSION=\"$1\"" >> ~/.config/polybar/.polybar-session
+    $HOME/.config/polybar/launch
 }
 
 for arg in "$@"; do

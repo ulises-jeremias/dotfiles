@@ -31,10 +31,9 @@ EOF
 
 toggle_polybar() {
     if [[ $(pidof polybar) ]]; then
-        pkill polybar
+        pkill -9 polybar
     else
-        source ~/.config/polybar/.polybar-session
-        $HOME/.config/polybar/launch --$POLYBAR_SESSION
+        $HOME/.config/polybar/launch
     fi
 }
 

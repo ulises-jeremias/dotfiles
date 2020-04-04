@@ -1,28 +1,32 @@
 #!/usr/bin/env sh
 
-has_param() {
-    local term="$1"
-    shift
-    for arg; do
-        if [[ $arg == "$term" ]]; then
-            return 0
-        fi
-    done
-    return 1
-}
-
 # Terminate already running bar instances
-killall -q polybar
-export POLYBAR_SESSION=""
+pkill -9 polybar
 
 # Wait until the processes have been shut down
 while pgrep -u $UID -x polybar > /dev/null; do sleep 1; done
 
-if has_param "--top-bar-only" "$@"; then
+themes=(
+    "top-bar-only"
+    "small-top-bar-only"
+    "two-bars-small-layout"
+    "two-bars-layout"
+)
+
+source ~/.config/polybar/.polybar-session
+SESSION="$POLYBAR_SESSION"
+
+echo $SESSION
+if [[ " ${themes[@]} " =~ " $1 " ]]; then
+    SESSION="$1"
+fi
+
+
+if [ "$SESSION" = "top-bar-only" ]; then
     polybar polybar-top-only -r
-elif has_param "--small-top-bar-only" "$@"; then
+elif [ "$SESSION" = "small-top-bar-only" ]; then
     polybar small-polybar-top-only -r
-elif has_param "--two-bars-small-layout" "$@"; then
+elif [ "$SESSION" = "two-bars-small-layout" ]; then
     polybar small-polybar-top -r &
     polybar small-polybar-bottom -r
 else
