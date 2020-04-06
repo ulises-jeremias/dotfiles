@@ -6,11 +6,11 @@ My personal dotfiles for i3, polybar, fgmenu, compton, ...
 
 <center>
 
-<img src="./static/screen.png" align="left" width="45%" style="margin-left: 2.5%; margin-right: 5%" />
+<img src="./static/screen.png" align="left" width="48.75%" style="margin-left: 2.5%; margin-right: 5%" />
 
-<img src="./static/nvim&termite.png" width="45%" />
+<img src="./static/nvim&termite.png" width="48.75%" />
 
-<img src="./static/demo.gif" style="margin-top: 15px" />
+<img src="./static/demo.gif" width="100%" style="margin-top: 15px;" />
 
 </center>
 
