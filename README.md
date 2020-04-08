@@ -55,7 +55,7 @@ For example, you can create the file `<dotfiles_dir>/custom-config/paths.sh` wit
 # custom exports
 
 export LD_LIBRARY_PATH=/usr/local/lib
-export PATH="$(yarn global bin):$HOME/bin:$HOME/.local/bin:$PATH"
+export PATH="$(yarn global bin):~/bin:~/.local/bin:$PATH"
 
 export NVM_DIR="$HOME/.config"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -73,6 +73,8 @@ Not yet
 You can use your own configuration file in place of any of the following
 
 - gitconfig
+- xprofile
+- Xresources
 
 To do so you just need to include a file of the same name in your version controlled directory that you save into `custom-config` the create symlinks scripts will link the files properly.
 

@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+create_symlink() {
+    if [ -n "$(find $dotfiles_dir/custom-config -name $1)" ]; then
+        ln -sf $dotfiles_dir/custom-config/$1 ~/.$1
+    else
+        cp -f $ROOT/$1 $dotfiles_dir/custom-config/$1
+        ln -sf $dotfiles_dir/custom-config/$1 ~/.$1
+    fi
+}
+
 ROOT=$(dirname $0)
 dotfiles_dir="$ROOT/.."
 
@@ -7,19 +16,22 @@ dotfiles_dir="$ROOT/.."
 # Delete existing dot files and folders
 #==========================================
 sudo rm -rf ~/.gitconfig > /dev/null 2>&1
+sudo rm -rf ~/.xprofile > /dev/null 2>&1
+sudo rm -rf ~/.Xresources > /dev/null 2>&1
 
 #==========================================
 # Create symlinks in the home folder
 # Allow overriding with files of matching names in the custom-config dir
 #==========================================
 touch ~/.gitconfig
+touch ~/.xprofile
+touch ~/.Xresources
 
-if [ -n "$(find $dotfiles_dir/custom-config -name gitconfig)" ]; then
-    ln -sf $dotfiles_dir/custom-config/gitconfig ~/.gitconfig
-else
-    cp -f $ROOT/gitconfig $dotfiles_dir/custom-config/gitconfig
-    ln -sf $dotfiles_dir/custom-config/gitconfig ~/.gitconfig
-fi
+create_symlink gitconfig
+create_symlink xprofile
+create_symlink Xresources
+
+sudo chmod +x ~/.xprofile
 
 printf "Setting up git...\\n"
 

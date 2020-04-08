@@ -56,8 +56,8 @@ for bin_path in $(find $dotfiles_dir/bin -maxdepth 1 -mindepth 1 -type f); do
     bin=$(basename $bin_path)
 
     chmod +x $bin_path
-    sudo rm -rf $HOME/bin/$bin > /dev/null 2>&1
-    ln -sf $bin_path $HOME/bin/$bin
+    sudo rm -rf ~/bin/$bin > /dev/null 2>&1
+    ln -sf $bin_path ~/bin/$bin
 done
 
 echo

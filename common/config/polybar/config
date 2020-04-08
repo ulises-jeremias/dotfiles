@@ -1,11 +1,11 @@
 [section/base]
-include-file = $HOME/.config/polybar/modules.conf
-include-file = $HOME/.config/polybar/master.conf
+include-file = ~/.config/polybar/modules.conf
+include-file = ~/.config/polybar/master.conf
 
-include-file = $HOME/.config/polybar/polybars/top.conf
-include-file = $HOME/.config/polybar/polybars/top-only.conf
-include-file = $HOME/.config/polybar/polybars/bottom.conf
+include-file = ~/.config/polybar/polybars/top.conf
+include-file = ~/.config/polybar/polybars/top-only.conf
+include-file = ~/.config/polybar/polybars/bottom.conf
 
-include-file = $HOME/.config/polybar/polybars/small-top.conf
-include-file = $HOME/.config/polybar/polybars/small-top-only.conf
-include-file = $HOME/.config/polybar/polybars/small-bottom.conf
+include-file = ~/.config/polybar/polybars/small-top.conf
+include-file = ~/.config/polybar/polybars/small-top-only.conf
+include-file = ~/.config/polybar/polybars/small-bottom.conf

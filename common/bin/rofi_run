@@ -37,7 +37,7 @@ EOF
 toggle_polybar() {
     echo > ~/.config/polybar/.polybar-session
     echo "export POLYBAR_SESSION=\"$1\"" >> ~/.config/polybar/.polybar-session
-    $HOME/.config/polybar/launch
+    ~/.config/polybar/launch
 }
 
 for arg in "$@"; do
@@ -85,7 +85,7 @@ for arg in "$@"; do
                 -padding 35 -line-padding 4)"
             ;;
         -l|--logout)
-            if grep -q 'exec startx' $HOME/.*profile; then
+            if grep -q 'exec startx' ~/.*profile; then
                 ANS="$(rofi -sep "|" -dmenu -i -p 'System' -width 20 \
                     -hide-scrollbar -line-padding 4 -padding 20 \
                     -lines 3 <<< " Lock| Reboot| Shutdown")"

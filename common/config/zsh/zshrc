@@ -18,8 +18,8 @@
 # Source the prompt and aliases <<1
 #-------------------------------------------------------------------------------
 if [[ ! -n "$ZSHRUN" ]]; then
-    source $HOME/.zsh_prompt
-    source $HOME/.zsh_aliases
+    source ~/.zsh_prompt
+    source ~/.zsh_aliases
 fi
 # Precmd functions local array variable <<2
 #-------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ setopt  prompt_subst
 # >>2
 # History settings <<2
 #-------------------------------------------------------------------------------
-HISTFILE=$HOME/.zsh_history
+HISTFILE=~/.zsh_history
 HISTFILESIZE=65536  # search this with `grep | sort -u`
 HISTSIZE=4096
 SAVEHIST=4096
@@ -110,7 +110,7 @@ export LC_COLLATE=C
 # >>2
 # Use the correct ctags <<2
 #-------------------------------------------------------------------------------
-PATH="~/.pyenv/shims:/usr/local/bin:$PATH"
+PATH="$HOME/.pyenv/shims:/usr/local/bin:$PATH"
 # >>2
 # Editor and display configurations <<2
 #-------------------------------------------------------------------------------

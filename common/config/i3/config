@@ -31,10 +31,10 @@ set $WS8 "8: "
 ###############     Autostart      ##################
 
 # run with reload
-exec_always --no-startup-id $HOME/.config/feh/.fehbg
-exec_always --no-startup-id $HOME/.config/polybar/launch
 exec_always --no-startup-id xrdb -load ~/.Xresources
 exec_always --no-startup-id compton --config ~/.config/compton.conf
+exec_always --no-startup-id ~/.config/feh/.fehbg
+exec_always --no-startup-id ~/.config/polybar/launch
 
 # run once
 exec --no-startup-id xfsettingsd
