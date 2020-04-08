@@ -55,7 +55,7 @@ For example, you can create the file `<dotfiles_dir>/custom-config/paths.sh` wit
 # custom exports
 
 export LD_LIBRARY_PATH=/usr/local/lib
-export PATH="$(yarn global bin):~/bin:~/.local/bin:$PATH"
+export PATH="$(yarn global bin):$HOME/bin:$HOME/.local/bin:$PATH"
 
 export NVM_DIR="$HOME/.config"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
