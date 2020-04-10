@@ -36,22 +36,20 @@ pkgs=(
     network-manager-applet
     picom
     # utils
+    mousepad
     xfce4-about
-    xfce4-display
-    xfce4-mime
+    xfce4-diskperf-plugin
+    xfce4-datetime-plugin
     xfce4-popup-applicationsmenu
     xfce4-power-manager
     xfce4-accessibility
-    xfce4-find-cursor
-    xfce4-mouse
     xfce4-popup-directorymenu
-    xfce4-editor
     xfce4-appearance
-    xfce4-keyboard
+    xfce4-xkb-plugin
+    xfce4-eyes-plugin
     xfce4-panel
     xfce4-popup-windowmenu
     xfce4-manager
-    xfce4-color
     xfce4-kiosk-query
     xfce4-pm-helper
     xfce4-power-manager
