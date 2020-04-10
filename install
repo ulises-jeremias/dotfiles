@@ -28,7 +28,7 @@ pkgs=(
     zsh-syntax-highlighting
     numix-circle-icon-theme
     wmctrl
-    #fonts
+    # fonts
     noto-fonts
     noto-fonts-extra
     ttf-anonymous-pro
