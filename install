@@ -9,7 +9,6 @@ pkgs=(
     i3lock-fancy
     jgmenu
     jq
-    mintlocale
     networkmanager-dmenu
     polybar
     pulseaudio
