@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
 fetch_pkg() {
-    if [ $(git ls-remote https://aur.archlinux.org/$1.git | wc -l) -eq 0 ]; then
-        return 1
-    else
+    if [ $(pacman -Ss $1 | wc -l) -ne 0 ]; then
         return 0
+    elif [ $(git ls-remote https://aur.archlinux.org/$1.git | wc -l) -ne 0 ]; then
+        return 0
+    else
+        return 1
     fi
 }
 
-pkg_install() {
+aur_install() {
     rm -rf /tmp/$1
     repo=$1
     if ! fetch_pkg $repo; then
@@ -21,6 +23,10 @@ pkg_install() {
     res=$?
     popd
     return $res
+}
+
+pkg_install() {
+    sudo pacman --noconfirm -S $1 || aur_install $1
 }
 
 pkg_exists() {

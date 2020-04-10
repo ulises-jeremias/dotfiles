@@ -3,25 +3,37 @@
 ROOT=$(dirname $0)
 
 pkgs=(
-    termite
-    polybar
-    rofi
+    # tools
     dbus-python
-    pulseaudio
-    mintlocale
-    picom
-    zsh
-    zsh-syntax-highlighting
-    networkmanager-dmenu
-    jgmenu
-    numix-circle-icon-theme
-    skippy-xd
-    wmctrl
     graphicsmagick
-    feh
+    network-manager-applet
+    picom
+    # apps
     dunst
-    jq
+    feh
     i3lock-fancy
+    jgmenu
+    jq
+    mintlocale
+    networkmanager-dmenu
+    polybar
+    pulseaudio
+    rofi
+    skippy-xd
+    termite
+    xfce4-goodies
+    zsh
+    # config
+    zsh-syntax-highlighting
+    numix-circle-icon-theme
+    wmctrl
+    #fonts
+    noto-fonts
+    noto-fonts-extra
+    ttf-anonymous-pro
+    ttf-dejavu
+    ttf-linux-libertine
+    ttf-liberation
 )
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}
