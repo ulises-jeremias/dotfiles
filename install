@@ -3,24 +3,28 @@
 ROOT=$(dirname $0)
 
 pkgs=(
-    # apps
+    # Needed apps
+    dbus-python
     dunst
+    drun
     feh
+    graphicsmagick
     i3lock-fancy
     jgmenu
     jq
     networkmanager-dmenu
+    network-manager-applet
+    numix-circle-icon-theme
     polybar
     pulseaudio
     rofi
     skippy-xd
     termite
-    zsh
-    # config
-    zsh-syntax-highlighting
-    numix-circle-icon-theme
     wmctrl
-    # fonts
+    zsh
+    zsh-syntax-highlighting
+
+    # Needed fonts
     noto-fonts
     noto-fonts-extra
     terminus-font
@@ -30,30 +34,57 @@ pkgs=(
     ttf-font-awesome
     ttf-liberation
     ttf-linux-libertine
-    # tools
-    dbus-python
-    drun
-    graphicsmagick
-    network-manager-applet
-    picom
-    # utils
+
+    # xfce4 utils
+    exo
+    garcon
+    libxfce4ui
+    libxfce4util
     mousepad
-    xfce4-about
-    xfce4-diskperf-plugin
+    orage
+    ristretto
+    thunar
+    thunar-archive-plugin
+    thunar-media-tags-plugin
+    tumbler
+    xfburn
+    xfce4-artwork
+    xfce4-battery-plugin
+    xfce4-clipman-plugin
+    xfce4-cpufreq-plugin
+    xfce4-cpugraph-plugin
     xfce4-datetime-plugin
-    xfce4-popup-applicationsmenu
-    xfce4-power-manager
-    xfce4-accessibility
-    xfce4-popup-directorymenu
-    xfce4-appearance
-    xfce4-xkb-plugin
+    xfce4-dev-tools
+    xfce4-dict
+    xfce4-diskperf-plugin
     xfce4-eyes-plugin
+    xfce4-fsguard-plugin
+    xfce4-genmon-plugin
+    xfce4-mailwatch-plugin
+    xfce4-mount-plugin
+    xfce4-mpc-plugin
+    xfce4-netload-plugin
+    xfce4-notes-plugin
+    xfce4-notifyd
     xfce4-panel
-    xfce4-popup-windowmenu
-    xfce4-manager
-    xfce4-kiosk-query
-    xfce4-pm-helper
     xfce4-power-manager
+    xfce4-pulseaudio-plugin
+    xfce4-screensaver
+    xfce4-screenshooter
+    xfce4-sensors-plugin
+    xfce4-settings
+    xfce4-smartbookmark-plugin
+    xfce4-systemload-plugin
+    xfce4-taskmanager
+    xfce4-time-out-plugin
+    xfce4-timer-plugin
+    xfce4-verve-plugin
+    xfce4-wavelan-plugin
+    xfce4-weather-plugin
+    xfce4-xkb-plugin
+    xfconf
+    parole
+    xfce4-whiskermenu-plugin
 )
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}

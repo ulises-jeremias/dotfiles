@@ -26,7 +26,7 @@ aur_install() {
 }
 
 pkg_install() {
-    sudo pacman --noconfirm -S $1 || aur_install $1
+    sudo pacman --noconfirm --needed -S $1 || aur_install $1
 }
 
 pkg_exists() {
