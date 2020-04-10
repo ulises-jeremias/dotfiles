@@ -52,6 +52,10 @@ if [ -d "$ROOT/../$os/bin" ]; then
     cp -rf $ROOT/../$os/bin $dotfiles_dir
 fi
 
+if [ -d "$HOME/bin" ]; then
+    mkdir ~/bin
+fi
+
 for bin_path in $(find $dotfiles_dir/bin -maxdepth 1 -mindepth 1 -type f); do
     bin=$(basename $bin_path)
 
