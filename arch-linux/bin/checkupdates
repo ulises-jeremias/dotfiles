@@ -59,15 +59,19 @@ unset OPT_SHORT OPT_LONG OPTRET
 while :; do
 	case $1 in
 		-d|--download)
-			DOWNLOAD_CACHE=1 ;;
+			DOWNLOAD_CACHE=1
+			;;
 		-h|--help)
 			usage
-			exit 0 ;;
+			exit 0
+			;;
 		--nocolor)
-			USE_COLOR='n';;
+			USE_COLOR='n'
+			;;
 		--)
 			shift
-			break ;;
+			break
+			;;
 	esac
 	shift
 done
@@ -79,7 +83,7 @@ else
 	unset ALL_OFF BOLD BLUE GREEN RED YELLOW
 fi
 
-if ! type -P fakeroot >/dev/null; then
+if ! type -P fakeroot > /dev/null; then
 	error 'Cannot find the fakeroot binary.'
 	exit 1
 fi
@@ -101,6 +105,7 @@ if ! fakeroot -- pacman -Sy --dbpath "$CHECKUPDATES_DB" --logfile /dev/null &> /
 	error 'Cannot fetch updates'
 	exit 1
 fi
+
 mapfile -t updates < <(pacman -Qu --dbpath "$CHECKUPDATES_DB" 2> /dev/null | grep -v '\[.*\]')
 
 if (( ${#updates[@]} )); then

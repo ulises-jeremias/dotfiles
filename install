@@ -21,6 +21,7 @@ pkgs=(
     feh
     dunst
     jq
+    i3lock-fancy
 )
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}
