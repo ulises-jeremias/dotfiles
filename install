@@ -3,12 +3,6 @@
 ROOT=$(dirname $0)
 
 pkgs=(
-    # tools
-    dbus-python
-    drun
-    graphicsmagick
-    network-manager-applet
-    picom
     # apps
     dunst
     feh
@@ -22,7 +16,6 @@ pkgs=(
     rofi
     skippy-xd
     termite
-    xfce4-goodies
     zsh
     # config
     zsh-syntax-highlighting
@@ -37,6 +30,32 @@ pkgs=(
     ttf-fira-code
     ttf-liberation
     ttf-linux-libertine
+    # tools
+    dbus-python
+    drun
+    graphicsmagick
+    network-manager-applet
+    picom
+    # utils
+    xfce4-about
+    xfce4-display-settings
+    xfce4-mime-settings
+    xfce4-popup-applicationsmenu
+    xfce4-power-manager-settings
+    xfce4-accessibility-settings
+    xfce4-find-cursor
+    xfce4-mouse-settings
+    xfce4-popup-directorymenu
+    xfce4-settings-editor
+    xfce4-appearance-settings
+    xfce4-keyboard-settings
+    xfce4-panel
+    xfce4-popup-windowmenu
+    xfce4-settings-manager
+    xfce4-color-settings
+    xfce4-kiosk-query
+    xfce4-pm-helper
+    xfce4-power-manager
 )
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}
