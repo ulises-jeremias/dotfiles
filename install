@@ -5,6 +5,7 @@ ROOT=$(dirname $0)
 pkgs=(
     # tools
     dbus-python
+    drun
     graphicsmagick
     network-manager-applet
     picom
