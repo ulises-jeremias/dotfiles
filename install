@@ -27,6 +27,7 @@ pkgs=(
     ttf-anonymous-pro
     ttf-dejavu
     ttf-fira-code
+    ttf-font-awesome
     ttf-liberation
     ttf-linux-libertine
     # tools
