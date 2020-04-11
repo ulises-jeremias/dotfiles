@@ -27,6 +27,7 @@ pkgs=(
     zsh-syntax-highlighting
 
     # Needed fonts
+    nerd-fonts-ubuntu-mono
     noto-fonts
     noto-fonts-cjk
     noto-fonts-emoji
