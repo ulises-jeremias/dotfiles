@@ -3,7 +3,8 @@
 ROOT=$(dirname $0)
 
 pkgs=(
-    # Needed apps
+    # Needed apps, themes and icons
+    arc-gtk-theme
     dbus-python
     dunst
     drun
