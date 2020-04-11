@@ -1,0 +1,82 @@
+favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,exo-mail-reader.desktop,exo-web-browser.desktop
+recent=exo-web-browser.desktop,exo-mail-reader.desktop,exo-file-manager.desktop,exo-terminal-emulator.desktop
+
+button-title=
+button-icon=/usr/share/icons/ArchLabs-Dark/64x64/places/distributor-logo-archlabs.png
+button-single-row=false
+show-button-title=false
+show-button-icon=true
+
+launcher-show-name=true
+launcher-show-description=true
+launcher-show-tooltip=true
+item-icon-size=2
+hover-switch-category=true
+category-show-name=false
+category-icon-size=1
+load-hierarchy=false
+recent-items-max=10
+favorites-in-recent=true
+display-recent-default=false
+position-search-alternate=true
+position-commands-alternate=true
+position-categories-alternate=true
+
+menu-width=450
+menu-height=600
+menu-opacity=100
+
+command-settings=xfce4-settings-manager
+show-command-settings=true
+
+command-lockscreen=
+show-command-lockscreen=false
+
+command-switchuser=
+show-command-switchuser=false
+
+command-logout=xfce4-session-logout --logout --fast
+show-command-logout=true
+
+command-restart=xfce4-session-logout --reboot --fast
+show-command-restart=true
+
+command-shutdown=xfce4-session-logout --halt --fast
+show-command-shutdown=true
+
+command-menueditor=
+show-command-menueditor=false
+
+command-profile=
+show-command-profile=false
+search-actions=5
+
+[action0]
+name=Man Pages
+pattern=#
+command=exo-open --launch TerminalEmulator man %s
+regex=false
+
+[action1]
+name=Web Search
+pattern=?
+command=exo-open --launch WebBrowser https://duckduckgo.com/?q=%u
+regex=false
+
+[action2]
+name=Wikipedia
+pattern=!w
+command=exo-open --launch WebBrowser https://en.wikipedia.org/wiki/%u
+regex=false
+
+[action3]
+name=Run in Terminal
+pattern=!
+command=exo-open --launch TerminalEmulator %s
+regex=false
+
+[action4]
+name=Open URI
+pattern=^(file|http|https):\\/\\/(.*)$
+command=exo-open \\0
+regex=true
