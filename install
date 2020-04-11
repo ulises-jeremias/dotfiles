@@ -27,6 +27,7 @@ pkgs=(
     # Needed fonts
     noto-fonts
     noto-fonts-cjk
+    noto-fonts-emoji
     noto-fonts-extra
     terminus-font
     ttf-anonymous-pro
