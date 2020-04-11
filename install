@@ -15,6 +15,7 @@ pkgs=(
     jq
     networkmanager-dmenu
     network-manager-applet
+    numix-icon-theme
     numix-circle-icon-theme
     polybar
     pulseaudio

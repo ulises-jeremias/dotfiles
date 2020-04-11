@@ -1,21 +1,57 @@
 #!/usr/bin/env bash
 
-fetch_pkg() {
-    if [ $(pacman -Ss $1 | wc -l) -ne 0 ]; then
-        return 0
-    elif [ $(git ls-remote https://aur.archlinux.org/$1.git | wc -l) -ne 0 ]; then
-        return 0
-    else
-        return 1
-    fi
+aur_helpers=( yay aurman pakku pacaur trizen aura pikaur )
+
+pacman_fetch_pkg() {
+    [ $(pacman -Ss $1 | wc -l) -ne 0 ]
+    return $?
 }
 
-aur_install() {
+aur_helper_fetch_pkg() {
+    aur_helper=""
+
+    for helper in "$aur_helpers"; do
+        if type -p "$helper" > /dev/null; then
+            aur_helper=$helper
+            break
+        fi
+    done
+
+    if [ "$aur_helper" = "" ]; then
+        return 1
+    fi
+
+    [ $($aur_helper -Ss $1 | wc -l) -ne 0 ]
+    return $?
+}
+
+aur_fetch_pkg() {
+    [ $(git ls-remote https://aur.archlinux.org/$1.git | wc -l) -ne 0 ]
+    return $?
+}
+
+aur_helper_install() {
+    aur_helper=""
+
+    for helper in "$aur_helpers"; do
+        if type -p $helper > /dev/null; then
+            aur_helper=$helper
+            break
+        fi
+    done
+
+    if [ "$aur_helper" = "" ]; then
+        return 1
+    fi
+
+    $aur_helper --noconfirm -S $1
+    return $?
+}
+
+aur_repos_install() {
     rm -rf /tmp/$1
     repo=$1
-    if ! fetch_pkg $repo; then
-        repo="$1-git"
-    fi
+    ! fetch_pkg $repo && repo="$1-git"
     remote=https://aur.archlinux.org/$repo.git
     git clone $remote /tmp/$repo > /dev/null
     pushd /tmp/$repo
@@ -25,17 +61,21 @@ aur_install() {
     return $res
 }
 
+aur_install() {
+    aur_helper_install $1 || aur_repos_install $1
+    return $?
+}
+
+fetch_pkg() {
+    pacman_fetch_pkg $1 || aur_helper_fetch_pkg $1 || aur_fetch_pkg $1
+    return $?
+}
+
 pkg_install() {
-    sudo pacman --noconfirm --needed -S $1 || aur_install $1
+    ! pacman_fetch_pkg $1 && aur_install $1 || sudo pacman --noconfirm --needed -S $1
 }
 
 pkg_exists() {
-    repo=$1
-    git_repo="$1-git"
-
-    if fetch_pkg $repo || fetch_pkg $git_repo; then
-        return 0
-    else
-        return 1
-    fi
+    fetch_pkg $1 || fetch_pkg "$1-git"
+    return $?
 }
