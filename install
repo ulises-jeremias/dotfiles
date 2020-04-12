@@ -17,9 +17,12 @@ pkgs=(
     network-manager-applet
     numix-icon-theme
     numix-circle-icon-theme
+    pamixer
+    playerctl
     polybar
     pulseaudio
     rofi
+    scrot
     skippy-xd
     termite
     wmctrl
