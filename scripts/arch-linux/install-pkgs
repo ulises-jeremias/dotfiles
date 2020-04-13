@@ -10,7 +10,7 @@ get_aur_helper() {
         return 0
     fi
 
-    for helper in "$aur_helpers"; do
+    for helper in "${aur_helpers[@]}"; do
         if type -p $helper > /dev/null; then
             export AUR_HELPER=$helper
             break
