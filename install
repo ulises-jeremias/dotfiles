@@ -23,7 +23,6 @@ fonts=(
     terminus-font
     ttf-anonymous-pro
     ttf-dejavu
-    ttf-fira-code
     ttf-font-awesome
     ttf-liberation
     ttf-linux-libertine
@@ -113,8 +112,9 @@ if has_param '--nodunst' "$@"; then
     xfce4_pkgs+=( xfce4-notifyd )
 fi 
 
-pkgs="${needed_pkgs[@]} ${xfce4_pkgs[@]}"
-pkgs=$(printf ",%s" "${fonts[@]} ${pkgs[@]}")
+pkgs=("${needed_pkgs[@]}" "${xfce4_pkgs[@]}")
+pkgs=("${fonts[@]}" "${pkgs[@]}")
+pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}
 
 $ROOT/scripts/install "$@" --pkgs $pkgs
