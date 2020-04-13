@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BAR_ICON=""
+BAR_ICON=""
 NOTIFIED=0
 NOTIFY_ICON=/usr/share/icons/Numix-Circle/32x32/apps/system-software-update.png
 

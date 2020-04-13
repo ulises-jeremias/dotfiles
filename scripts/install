@@ -38,7 +38,7 @@ fi
 #==========================================
 # Install dependencies according to os
 #==========================================
-if ! has_param '--no-deps' "$@" && [ "$os" != "" ]; then
+if ! has_param '--nodeps' "$@" && [ "$os" != "" ]; then
     $ROOT/install-pkgs \
         -l $log_file $upgrade_flag --os $os \
         --pkgs $pkgs

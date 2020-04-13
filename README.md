@@ -19,7 +19,7 @@ My personal dotfiles for i3, polybar, fgmenu, compton, ...
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 $ cd /tmp/dotfiles
-$ ./install [--os <os>] [-l <file_path>] [--dotfiles-dir <dir_path>] [--no-deps]
+$ ./install [--os <os>] [-l <file_path>] [--dotfiles-dir <dir_path>] [--nodeps]
 ```
 
 The installation script will install all the necessary dependencies that allow your dotfiles config work correctly.

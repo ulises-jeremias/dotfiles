@@ -2,8 +2,35 @@
 
 ROOT=$(dirname $0)
 
-pkgs=(
-    # Needed apps, themes and icons
+has_param() {
+    local term="$1"
+    shift
+    for arg; do
+        if [[ $arg == "$term" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Needed fonts
+fonts=(
+    nerd-fonts-ubuntu-mono
+    noto-fonts
+    noto-fonts-cjk
+    noto-fonts-emoji
+    noto-fonts-extra
+    terminus-font
+    ttf-anonymous-pro
+    ttf-dejavu
+    ttf-fira-code
+    ttf-font-awesome
+    ttf-liberation
+    ttf-linux-libertine
+)
+
+# Needed apps, themes and icons
+needed_pkgs=(
     arc-gtk-theme
     dbus-python
     dunst
@@ -28,22 +55,10 @@ pkgs=(
     wmctrl
     zsh
     zsh-syntax-highlighting
+)
 
-    # Needed fonts
-    nerd-fonts-ubuntu-mono
-    noto-fonts
-    noto-fonts-cjk
-    noto-fonts-emoji
-    noto-fonts-extra
-    terminus-font
-    ttf-anonymous-pro
-    ttf-dejavu
-    ttf-fira-code
-    ttf-font-awesome
-    ttf-liberation
-    ttf-linux-libertine
-
-    # xfce4 utils
+# xfce4 utils
+xfce4_pkgs=(
     exo
     garcon
     libxfce4ui
@@ -73,7 +88,6 @@ pkgs=(
     xfce4-mpc-plugin
     xfce4-netload-plugin
     xfce4-notes-plugin
-    xfce4-notifyd
     xfce4-panel
     xfce4-power-manager
     xfce4-pulseaudio-plugin
@@ -94,7 +108,13 @@ pkgs=(
     parole
     xfce4-whiskermenu-plugin
 )
-pkgs=$(printf ",%s" "${pkgs[@]}")
+
+if has_param '--nodunst' "$@"; then
+    xfce4_pkgs+=( xfce4-notifyd )
+fi 
+
+pkgs="${needed_pkgs[@]} ${xfce4_pkgs[@]}"
+pkgs=$(printf ",%s" "${fonts[@]} ${pkgs[@]}")
 pkgs=${pkgs:1}
 
 $ROOT/scripts/install "$@" --pkgs $pkgs
