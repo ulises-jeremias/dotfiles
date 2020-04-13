@@ -9,8 +9,10 @@
     changed = red
     deleted = red
     untracked = yellow
+[push]
+    default = matching
 [user]
     name =
     email =
-[push]
-    default = matching
+[github]
+	user =
