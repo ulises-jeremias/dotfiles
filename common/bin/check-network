@@ -2,8 +2,8 @@
 
 disconnect1="/"
 disconnect2="\\"
-wconnected=""
-econnected=""
+wconnected=""
+econnected=""
 
 id="$(ip link | awk '/state UP/ {print $2}')"
 

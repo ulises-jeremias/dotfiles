@@ -2,20 +2,31 @@
 
 aur_helpers=( yay aurman pakku pacaur trizen aura pikaur )
 
+export AUR_HELPER=""
+
+get_aur_helper() {
+    if [ "$AUR_HELPER" != "" ]; then
+        echo $AUR_HELPER
+        return 0
+    fi
+
+    for helper in "$aur_helpers"; do
+        if type -p $helper > /dev/null; then
+            export AUR_HELPER=$helper
+            break
+        fi
+    done
+
+    echo $AUR_HELPER
+}
+
 pacman_fetch_pkg() {
     [ $(pacman -Ss $1 | wc -l) -ne 0 ]
     return $?
 }
 
 aur_helper_fetch_pkg() {
-    aur_helper=""
-
-    for helper in "$aur_helpers"; do
-        if type -p "$helper" > /dev/null; then
-            aur_helper=$helper
-            break
-        fi
-    done
+    aur_helper=$(get_aur_helper)
 
     if [ "$aur_helper" = "" ]; then
         return 1
@@ -31,14 +42,7 @@ aur_fetch_pkg() {
 }
 
 aur_helper_install() {
-    aur_helper=""
-
-    for helper in "$aur_helpers"; do
-        if type -p $helper > /dev/null; then
-            aur_helper=$helper
-            break
-        fi
-    done
+    aur_helper=$(get_aur_helper)
 
     if [ "$aur_helper" = "" ]; then
         return 1
