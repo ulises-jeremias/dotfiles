@@ -19,14 +19,14 @@ set $down k
 set $left j
 set $right semicolon
 
-set $WS1 "1: "
-set $WS2 "2: "
-set $WS3 "3: "
-set $WS4 "4: "
-set $WS5 "5: "
-set $WS6 "6: "
-set $WS7 "7: "
-set $WS8 "8: "
+set $WS1 "1: "
+set $WS2 "2: "
+set $WS3 "3: "
+set $WS4 "4: "
+set $WS5 "5: "
+set $WS6 "6: "
+set $WS7 "7: "
+set $WS8 "8: "
 
 ###############     Autostart      ##################
 
@@ -79,7 +79,7 @@ bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 10
 bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
 
 # toggle
-bindsym $Mod+Control+p exec --no-startup-id toggle -p &
+bindsym $Mod+Control+p exec --no-startup-id ~/bin/toggle -p &
 
 ###########          Workspace Bindings          ###############
 
@@ -221,9 +221,14 @@ bindsym $Mod+Control+Shift+minus gaps outer all     minus 5
 ############    application settings   ############
 
 # assign applications to specific workspace
-#assign [class="(?i)(?:chromium)"] → 2
-#assign [class="(?i)(?:code)"]   → 3
-#assign [class="(?i)(?:thunar)"]  → 5
+assign [class="(?i)(?:termite)"]    → $WS2
+assign [class="(?i)(?:alacrity)"]   → $WS2
+assign [class="(?i)(?:xterm)"]      → $WS2
+assign [class="(?i)(?:chromium)"]   → $WS3
+assign [class="(?i)(?:firefox)"]    → $WS3
+assign [class="(?i)(?:code)"]       → $WS4
+assign [class="(?i)(?:thunar)"]     → $WS5
+assign [class="(?i)(?:steam)"]      → $WS7
 
 # focus, floating, & sticky
 for_window [class="(?i)(?:qt5ct|pinentry)"]          floating enable, focus
@@ -231,4 +236,3 @@ for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
 for_window [window_role="(?i)(?:pop-up|setup)"]      floating enable
 
 popup_during_fullscreen smart
-

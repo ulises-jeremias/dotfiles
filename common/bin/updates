@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BAR_ICON=""
+BAR_ICON=""
 NOTIFIED=0
 NOTIFY_ICON=/usr/share/icons/Numix-Circle/32x32/apps/system-software-update.png
 
@@ -29,7 +29,7 @@ while true; do
     # when there are updates available
     # every 10 seconds another check for updates is done
     while (( UPDATES > 0 )); do
-        (( UPDATES == 1 )) && echo "$UPDATES Update" || { (( UPDATES > 1 )) && echo "$UPDATES Updates"; }
+        (( UPDATES == 1 )) && echo "$UPDATES " || { (( UPDATES > 1 )) && echo "$UPDATES "; }
         sleep 10
         get_total_updates
     done
