@@ -53,7 +53,7 @@ for arg in "$@"; do
         -r|--run)
             rofi -modi run,drun -show drun -line-padding 4 \
                 -columns 1 -padding 35 -show-icons \
-                -drun-icon-theme "Numix-Circle-Light"
+                -drun-icon-theme "Numix-Circle"
             ;;
         -w|--window)
             rofi -modi window -show window -hide-scrollbar -padding 35 -line-padding 4
