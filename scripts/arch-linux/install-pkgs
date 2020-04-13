@@ -4,7 +4,7 @@ aur_helpers=( yay aurman pakku pacaur trizen aura pikaur )
 
 export AUR_HELPER=""
 
-aur_helper() {
+get_aur_helper() {
     if [ "$AUR_HELPER" != "" ]; then
         echo $AUR_HELPER
         return 0
