@@ -1,24 +1,24 @@
 ! Base colors
-*.foreground:  !E1E1E1
-*.background:  !1c2023
-*.cursorColor: !778899
+*.foreground:  #E1E1E1
+*.background:  #1c2023
+*.cursorColor: #778899
 
-*.color0:  !1c2023
-*.color1:  !bf616a
-*.color2:  !a3be8c
-*.color3:  !ebcb8b
-*.color4:  !8fa1b3
-*.color5:  !b48ead
-*.color6:  !96b5b4
-*.color7:  !E1E1E1
-*.color8:  !919ba0
-*.color9:  !bf616a
-*.color10: !a3be8c
-*.color11: !ebcb8b
-*.color12: !8fa1b3
-*.color13: !b48ead
-*.color14: !96b5b4
-*.color15: !c0c5ce
+*.color0:  #1c2023
+*.color1:  #bf616a
+*.color2:  #a3be8c
+*.color3:  #ebcb8b
+*.color4:  #8fa1b3
+*.color5:  #b48ead
+*.color6:  #96b5b4
+*.color7:  #E1E1E1
+*.color8:  #919ba0
+*.color9:  #bf616a
+*.color10: #a3be8c
+*.color11: #ebcb8b
+*.color12: #8fa1b3
+*.color13: #b48ead
+*.color14: #96b5b4
+*.color15: #c0c5ce
 
 #include ".Xresources.d/polybar"
 #include ".Xresources.d/rofi"
