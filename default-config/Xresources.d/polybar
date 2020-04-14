@@ -25,7 +25,7 @@
 
 ! Dimesions
 ! polybar.top.width:                  ! e.g. 100%
-! polybar.top.height:                 ! 15
+! polybar.top.height:                 ! e.g. 15
 ! polybar.top.offset-y:               ! e.g. 0
 ! polybar.top.offset-x:               ! e.g. 0
 
@@ -45,7 +45,7 @@
 
 ! Dimensions
 ! polybar.bottom.width:               ! e.g. 100%
-! polybar.bottom.height:              ! 15
+! polybar.bottom.height:              ! e.g. 15
 ! polybar.bottom.offset-y:            ! e.g. 0
 ! polybar.bottom.offset-x:            ! e.g. 0
 
