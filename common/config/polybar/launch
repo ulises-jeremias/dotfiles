@@ -6,8 +6,6 @@ pkill -9 polybar
 # Wait until the processes have been shut down
 while pgrep -u $UID -x polybar > /dev/null; do sleep 1; done
 
-source ~/.dotfiles.config.env
-
 themes=(
     top-bar-only
     small-top-bar-only

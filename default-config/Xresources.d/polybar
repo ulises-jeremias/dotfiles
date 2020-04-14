@@ -1,0 +1,55 @@
+!==========================================
+! POLYBAR SETTINGS
+!==========================================
+
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+! Polybar Modules
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+! Battery ~> Use $ ls -1 /sys/class/power_supply/
+! polybar.modules.laptop-battery: BAT1
+! polybar.modules.laptop-adapter: ACAD
+
+! Networking
+! polybar.modules.wifi-iface: 
+! polybar.modules.eth-iface: 
+
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+! Polybar Top Bar attributes
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+! Modules
+! polybar.top.left: 
+! polybar.top.center: 
+! polybar.top.right: 
+
+! Dimesions
+! polybar.top.width:                  ! e.g. 100%
+! polybar.top.height:                 ! 15
+! polybar.top.offset-y:               ! e.g. 0
+! polybar.top.offset-x:               ! e.g. 0
+
+! polybar.top.border-top-size:        ! e.g. 15
+! polybar.top.border-bottom-size:     ! e.g. 0
+! polybar.top.border-right-size:      ! e.g. 0
+! polybar.top.border-left-size:       ! e.g. 0
+
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+! Polybar Top Bar attributes
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+! Modules
+! polybar.bottom.left: 
+! polybar.bottom.center: 
+! polybar.bottom.right: 
+
+! Dimensions
+! polybar.bottom.width:               ! e.g. 100%
+! polybar.bottom.height:              ! 15
+! polybar.bottom.offset-y:            ! e.g. 0
+! polybar.bottom.offset-x:            ! e.g. 0
+
+! polybar.bottom.border-top-size:     ! e.g. 15
+! polybar.bottom.border-bottom-size:  ! e.g. 0
+! polybar.bottom.border-right-size:   ! e.g. 0
+! polybar.bottom.border-left-size:    ! e.g. 0
