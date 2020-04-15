@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 create_symlink() {
-    if [ -n "$(find $dotfiles_dir/custom-config -name $1)" ]; then
-        ln -sf $dotfiles_dir/custom-config/$1 ~/.$1
+    to=${2:-"$HOME/.$1"}
+
+    if [ -e $dotfiles_dir/custom-config/$1 ]; then
+        ln -sf $dotfiles_dir/custom-config/$1 $to
     else
         cp -rf $ROOT/$1 $dotfiles_dir/custom-config/$1
-        ln -sf $dotfiles_dir/custom-config/$1 ~/.$1
+        ln -sf $dotfiles_dir/custom-config/$1 $to
     fi
 }
 
@@ -19,19 +21,24 @@ sudo rm -rf ~/.gitconfig > /dev/null 2>&1
 sudo rm -rf ~/.xprofile > /dev/null 2>&1
 sudo rm -rf ~/.Xresources > /dev/null 2>&1
 sudo rm -rf ~/.Xresources.d > /dev/null 2>&1
+sudo rm -rf ~/.config/polybar/modules/custom.conf > /dev/null 2>&1
 
 #==========================================
 # Create symlinks in the home folder
 # Allow overriding with files of matching names in the custom-config dir
 #==========================================
-touch ~/.gitconfig
-touch ~/.xprofile
-touch ~/.Xresources
+touch ~/.gitconfig > /dev/null 2>&1
+touch ~/.xprofile > /dev/null 2>&1
+touch ~/.Xresources > /dev/null 2>&1
+touch ~/.config/polybar/modules/custom.conf > /dev/null 2>&1
+
+[ ! -d $dotfiles_dir/custom-config/polybar/modules ] && mkdir -p $dotfiles_dir/custom-config/polybar/modules
 
 create_symlink gitconfig
 create_symlink xprofile
 create_symlink Xresources
 create_symlink Xresources.d
+create_symlink "polybar/modules/custom.conf" "$HOME/.config/polybar/modules/custom.conf"
 
 sudo chmod +x ~/.xprofile
 
