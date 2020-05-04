@@ -121,7 +121,7 @@ export LESS='-imJMWR'
 export PAGER="less $LESS"
 export MANPAGER=$PAGER
 export GIT_PAGER=$PAGER
-export BROWSER='chromium-browser'
+export BROWSER='chromium'
 # >>2
 #
 # Eliminate lag between transition from normal/insert mode <<2

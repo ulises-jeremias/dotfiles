@@ -2,7 +2,7 @@
 font             = Monospace 12
 scrollback_lines = 10000
 clickable_url    = true
-browser          = chromium-browser
+browser          = chromium
 allow_bold       = true
 allow_italic     = true
 visible_bell     = false
