@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # https://github.com/rstacruz/feh-blur
 
-if [[ "$1" != "--worker" ]]; then
+if [ "$1" != "--worker" ]; then
   # Where to write stuff
   export CACHE_DIR="/tmp/feh-blur.$$"
 
@@ -55,13 +55,13 @@ wall_original="$CACHE_DIR/original.$EXT"
 
 # Echo some info. Only if verbose=1
 info () {
-  if [[ "$VERBOSE" -gt 0 ]]; then
+  if [ "$VERBOSE" -gt 0 ]; then
     echo "    $1"
   fi
 }
 
 head () {
-  if [[ "$VERBOSE" -gt 0 ]]; then
+  if [ "$VERBOSE" -gt 0 ]; then
     echo ""
     echo -e " \033[31m>>\033[32m $1\033[0m"
   fi
@@ -69,7 +69,7 @@ head () {
 
 # Log some debug info
 debug () {
-  if [[ "$VERBOSE" -gt 1 ]]; then
+  if [ "$VERBOSE" -gt 1 ]; then
     echo "  - $1"
   fi
 }
@@ -90,19 +90,19 @@ generate_blurred_images () {
   local fx2=""
   local fx3=""
 
-  if [[ "$BLUR_STRENGTH" != "0" ]]; then 
+  if [ "$BLUR_STRENGTH" != "0" ]; then 
     fx1="$fx1 -scale 25% -blur 0x$(( "$BLUR_STRENGTH" / 4 )) -scale 400%"
     fx2="$fx2 -scale 25% -blur 0x$(( "$BLUR_STRENGTH" / 2 )) -scale 400%"
     fx3="$fx3 -scale 25% -blur 0x$(( "$BLUR_STRENGTH" / 1 )) -scale 400%"
   fi
 
-  if [[ "$REDUCE_CONTRAST" = "1" ]]; then
+  if [ "$REDUCE_CONTRAST" = "1" ]; then
     fx1="+contrast $fx1"
     fx2="+contrast +contrast $fx2"
     fx3="+contrast +contrast +contrast $fx3"
   fi
 
-  if [[ "$DIM_STRENGTH" != "0" ]]; then
+  if [ "$DIM_STRENGTH" != "0" ]; then
     fx1="$fx1 -fill $DIM_COLOR -colorize $(( "$DIM_STRENGTH" / 4 ))%"
     fx2="$fx2 -fill $DIM_COLOR -colorize $(( "$DIM_STRENGTH" / 2 ))%"
     fx3="$fx3 -fill $DIM_COLOR -colorize $(( "$DIM_STRENGTH" / 1 ))%"
@@ -118,7 +118,7 @@ generate_blurred_images () {
     $fx3 \
     "$CACHE_DIR/blur-final.$EXT"
 
-  if [[ -n "$BLUR_IMAGE_SAVE_LOCATION" ]]; then
+  if [ -n "$BLUR_IMAGE_SAVE_LOCATION" ]; then
     gm convert \
       "$CACHE_DIR/blur-final.$EXT" \
       "$BLUR_IMAGE_SAVE_LOCATION"
@@ -158,7 +158,7 @@ set_blurred_wallpaper() {
   debug "Setting blurred wallpaper"
   local mode="$1" # --bg-tile
 
-  if [[ "$ANIMATE_FADE" == 1 ]]; then
+  if [ "$ANIMATE_FADE" == 1 ]; then
     # We're going to redirect output to /dev/null to supress feh warnings
     feh --no-fehbg "$mode" "$CACHE_DIR/blur-0.$EXT" &> /dev/null
     sleep $ANIMATION_INTERVAL
@@ -173,7 +173,7 @@ set_original_wallpaper() {
   debug "Setting original wallpaper"
   local mode="$1" # --bg-tile
 
-  if [[ "$ANIMATE_FADE" == 1 ]]; then
+  if [ "$ANIMATE_FADE" == 1 ]; then
     feh --no-fehbg "$mode" "$CACHE_DIR/blur-1.$EXT" &> /dev/null
     sleep $ANIMATION_INTERVAL
     feh --no-fehbg "$mode" "$CACHE_DIR/blur-0.$EXT" &> /dev/null
@@ -184,16 +184,16 @@ set_original_wallpaper() {
 }
 
 kill_other_instances() {
-  if [[ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]]; then
+  if [ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]; then
     head "Stopping other instances of $BIN..."
 
     local count=1
-    while [[ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]]; do
+    while [[ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]; do
       count=$(( count + 1 ))
       old_pid="$(pgrep -fo "$PROC_EXPR")"
 
       # Kill it; if it refuses after some time, force-stop it
-      if [[ "$count" -gt 10 ]]; then
+      if [ "$count" -gt 10 ]; then
         kill -9 "$old_pid"
       else
         kill "$old_pid"
@@ -212,11 +212,11 @@ run_loop () {
     wallpaper="$(get_feh_wallpaper)"
 
     # Check if wallpaper has changed.
-    if [[ "$prev_wallpaper" != "$wallpaper" ]]; then
+    if [ "$prev_wallpaper" != "$wallpaper" ]; then
       wallpaper_mode="$(get_feh_wallpaper_mode)"
 
       # If there's no wallpaper, try again later.
-      if [[ -z "$wallpaper" ]]; then
+      if [ -z "$wallpaper" ]; then
         sleep "$POLL_INTERVAL"
         continue
       else
@@ -227,10 +227,10 @@ run_loop () {
     fi
 
     blank="$(is_blank && echo 1 || echo 0)"
-    if [[ "$prev_blank" != "$blank" ]]; then
-      if [[ "$blank" == 0 ]]; then
+    if [ "$prev_blank" != "$blank" ]; then
+      if [ "$blank" == 0 ]; then
         set_blurred_wallpaper "$wallpaper_mode"
-      elif [[ "$first_run" == "0" ]]; then
+      elif [ "$first_run" == "0" ]; then
         # Skip set_original_wallpaper if we were started without
         # an active window so that the animation is skipped
         set_original_wallpaper "$wallpaper_mode"
@@ -265,7 +265,7 @@ show_help() {
 }
 
 parse_opts() {
-  while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
+  while [[ "$1" =~ ^- && ! "$1" == "--" ]; do case $1 in
     -h | --help)
       MODE=noop
       show_help
@@ -319,7 +319,7 @@ parse_opts() {
       VERBOSE=2
       ;;
   esac; shift; done
-  if [[ "$1" == '--' ]]; then shift; fi
+  if [ "$1" == '--' ]; then shift; fi
 }
 
 ensure_feh() {
@@ -388,13 +388,13 @@ main() {
 # Perform cleanup operations before stopping.
 do_cleanup () {
   # Guard clause so that it's only ran once
-  if [[ "$CLEANING_UP" == "1" ]]; then return; fi
+  if [ "$CLEANING_UP" == "1" ]; then return; fi
   CLEANING_UP=1
 
   rm -rf "$CACHE_DIR"
 
   # Restore original wallpaper before exiting
-  if [[ "$MODE" == "foreground" ]] && [[ -e "$HOME/.fehbg" ]]; then
+  if [ "$MODE" == "foreground" ]] && [[ -e "$HOME/.fehbg" ]; then
     head "Restoring original wallpaper"
     source "$HOME/.fehbg"
   fi

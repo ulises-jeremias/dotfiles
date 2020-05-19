@@ -31,7 +31,7 @@ dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
 
 [ ! -f "${log_file}" ] && touch ${log_file}
 
-if [ ! -d "${dotfiles_dir}" ] || [[ -n "${clear}" ]]; then
+if [ ! -d "${dotfiles_dir}" ] || [[ -n "${clear}" ]; then
     describe "Removing existing dotfiles"
 
     # Delete existing dotfiles and folders

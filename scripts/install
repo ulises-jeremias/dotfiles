@@ -34,18 +34,18 @@ dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
 
 [ ! -f "${log_file}" ] && touch ${log_file}
 
-if [[ -n "${upgrade}" ]]; then
+if [ -n "${upgrade}" ]; then
     upgrade_flag="--upgrade"
 fi
 
-if [[ -n "${clear}" ]]; then
+if [ -n "${clear}" ]; then
     clear_flag="--clear"
 fi
 
 #==========================================
 # Install dependencies according to os
 #==========================================
-if [[ ! -n "${nodeps}" ]] && [ "${os}" != "" ]; then
+if [ ! -n "${nodeps}" ]] && [ "${os}" != "" ]; then
     ${ROOT}/install-pkgs \
         --log-file=${log_file} ${upgrade_flag} --os=${os} \
         --pkgs=$pkgs

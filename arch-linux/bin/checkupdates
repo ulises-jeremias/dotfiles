@@ -77,7 +77,7 @@ while :; do
 done
 
 # check if messages are to be printed using color
-if [[ -t 2 && $USE_COLOR != "n" ]]; then
+if [ -t 2 && $USE_COLOR != "n" ]; then
 	colorize
 else
 	unset ALL_OFF BOLD BLUE GREEN RED YELLOW
@@ -88,14 +88,14 @@ if ! type -P fakeroot > /dev/null; then
 	exit 1
 fi
 
-if [[ -z $CHECKUPDATES_DB ]]; then
+if [ -z $CHECKUPDATES_DB ]; then
 	CHECKUPDATES_DB="${TMPDIR:-/tmp}/checkup-db-${UID}/"
 fi
 
 trap 'rm -f $CHECKUPDATES_DB/db.lck' INT TERM EXIT
 
 DBPath="$(pacman-conf DBPath)"
-if [[ -z "$DBPath" ]] || [[ ! -d "$DBPath" ]]; then
+if [ -z "$DBPath" ]] || [[ ! -d "$DBPath" ]; then
 	DBPath="/var/lib/pacman/"
 fi
 
