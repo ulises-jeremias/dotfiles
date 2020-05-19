@@ -100,7 +100,7 @@ function +pr-mode-full() {
     # The prompt was not taking up the full width of the terminal when displaying npm info
     # So if we are in a npm directory then we add a one character shim to the width of the filler
      npm_shim=0
-     if [ -n ${pr_com[npm]} ]; then
+     if [[ -n ${pr_com[npm]} ]]; then
          npm_shim+=1
      fi
 
@@ -113,7 +113,7 @@ function +pr-mode-full() {
     # The prompt was not taking up the full width of the terminal when in a virtualenv
     # If we are in a virtualenv then we add a one character shim to the width of the filler
     venv_shim=0
-    if [ -n ${pr_com[venv]} ]; then
+    if [[ -n ${pr_com[venv]} ]]; then
         venv_shim+=1 # Shim the filler to take up the entire width of the prompt
     fi
 
@@ -143,7 +143,7 @@ function +pr-mode-full() {
     )
 
     # Add some connecting lines to the beginning of our prompts
-    if [ -n ${pr_com[vcs]} ]; then
+    if [[ -n ${pr_com[vcs]} ]]; then
         lines[1]="${gray}┌──${lines[1]}${gray}─${reset}"
         lines[2]="${gray}├──${lines[2]}${reset}"
         lines[3]="${gray}└──➤${lines[3]}${reset}"
@@ -187,7 +187,7 @@ function +pr-venv() {
 function +pr-npm() {
     local -a v_npm
 
-    if [ ${NODE_NAME}  != "" ]; then
+    if [[ ${NODE_NAME}  != "" ]]; then
         v_npm=(
             ${cyan}
             ${NODE_NAME}
@@ -239,7 +239,7 @@ function +vi-git-st() {
     remote=${$(git rev-parse --verify ${hook_com[branch]}@{upstream} \
         --symbolic-full-name --abbrev-ref 2>/dev/null)}
 
-    if [ -n ${remote} ]] ; then
+    if [[ -n ${remote} ]] ; then
         ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l | sed -e 's/^[ \t]*//')
         (( $ahead )) && gitstatus+=( "${green}+${ahead}${gray}" )
 
@@ -264,19 +264,19 @@ function +vi-git-statuses() {
     untracked=$( cat /tmp/gitstatus.txt | grep -c "^\?")
     stashes=$(git stash list 2>/dev/null | wc -l | sed -e 's/^[ \t]*//')
 
-    if [ ${staged} != 0 ]] ; then
+    if [[ ${staged} != 0 ]] ; then
         hook_com[misc]+=" ${green}${staged}${gray}"
     fi
 
-    if [ ${unstaged} != 0 ]] ; then
+    if [[ ${unstaged} != 0 ]] ; then
         hook_com[misc]+=" ${red}${unstaged}${gray}"
     fi
 
-    if [ ${untracked} != 0 ]] ; then
+    if [[ ${untracked} != 0 ]] ; then
         hook_com[misc]+=" ${yellow}${untracked}${gray}"
     fi
 
-    if [ ${stashes} != 0 ]] ; then
+    if [[ ${stashes} != 0 ]] ; then
         hook_com[misc]+=" ${gray}${stashes}${gray}"
     fi
 }
