@@ -30,7 +30,7 @@ EOF
 }
 
 toggle_polybar() {
-    if [[ $(pidof polybar) ]]; then
+    if [ $(pidof polybar) ]; then
         pkill -9 polybar
     else
         ~/.config/polybar/launch
@@ -39,7 +39,7 @@ toggle_polybar() {
 
 toggle_compton() {
     if (( opt == 1 )); then
-        if [[ $(pidof compton) ]]; then
+        if [ $(pidof compton) ]; then
             al-compositor --stop
         else
             al-compositor --start
@@ -49,7 +49,7 @@ toggle_compton() {
     on=""
     off=""
     while true; do
-        if [[ $(pidof compton) ]]; then
+        if [ $(pidof compton) ]; then
             echo "$on"
         else
             echo "%{F#888888}$off"
@@ -60,7 +60,7 @@ toggle_compton() {
 
 toggle_redshift() {
     if (( opt == 1 )); then
-        if [[ $(pidof redshift) ]]; then
+        if [ $(pidof redshift) ]; then
             pkill redshift
         else
             redshift &
@@ -69,14 +69,14 @@ toggle_redshift() {
     fi
     icon=""
     while true; do
-        if [[ $(pidof redshift) ]]; then
+        if [ $(pidof redshift) ]; then
             temp=$(sed 's/K//g' <<< "$(grep -o '[0-9].*K' <<< "$(redshift -p 2>/dev/null)")")
         fi
-        if [[ -z $temp ]]; then
+        if [ -z $temp ]; then
             echo " $icon "                # Greyed out (not running)
-        elif [[ $temp -ge 5000 ]]; then
+        elif [ $temp -ge 5000 ]; then
             echo "%{F#8039A0} $icon "     # Blue
-        elif [[ $temp -ge 4000 ]]; then
+        elif [ $temp -ge 4000 ]; then
             echo "%{F#F203F0} $icon "     # Yellow
         else
             echo "%{F#FF5B6C} $icon "     # Orange
@@ -87,7 +87,7 @@ toggle_redshift() {
 
 toggle_caffeine() {
     if (( opt == 1 )); then
-        if [[ $(pidof caffeine) ]]; then
+        if [ $(pidof caffeine) ]; then
             killall caffeine
         else
             caffeine &

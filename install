@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 ## Copyright (C) 2019-2020 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT
@@ -87,7 +87,7 @@ xfce4_pkgs=(
     xfconf
 )
 
-xfce4_utils=(
+util_pkgs=(
     mousepad
     parole
     ristretto
@@ -116,12 +116,12 @@ xfce4_utils=(
     xfce4-weather-plugin
 )
 
-if [[ -n "${nodunst}" ]]; then
+if [ -n "${nodunst}" ]; then
     xfce4_pkgs+=( xfce4-notifyd )
 fi
 
-if [[ -n "${install_utils}" ]]; then
-    for util in "${xfce4_utils[@]}"; do
+if [ -n "${install_utils}" ]; then
+    for util in "${util_pkgs[@]}"; do
         printf "Add ${util} to the installation list? [y/N]: "
         
         read -r input
@@ -143,4 +143,4 @@ args=$@
 args=( "${args[@]/--utils/}" )
 args=( "${args[@]/--nodunst/}" )
 
-${ROOT}/scripts/install "${args[@]}" --pkgs=${pkgs}
+${ROOT}/scripts/install ${args[@]} --pkgs=${pkgs}

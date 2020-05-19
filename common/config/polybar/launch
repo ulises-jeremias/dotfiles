@@ -21,7 +21,7 @@ if [ -f ~/.config/polybar/.polybar-session ]; then
 fi
 
 echo $SESSION
-if [[ " ${themes[@]} " =~ " $1 " ]]; then
+if [ " ${themes[@]} " =~ " $1 " ]; then
     SESSION="$1"
 fi
 

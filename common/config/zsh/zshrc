@@ -17,7 +17,7 @@
 
 # Source the prompt and aliases <<1
 #-------------------------------------------------------------------------------
-if [[ ! -n "$ZSHRUN" ]]; then
+if [ ! -n "$ZSHRUN" ]; then
     source ~/.zsh_prompt
     source ~/.zsh_aliases
 fi

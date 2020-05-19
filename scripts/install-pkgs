@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 ## Copyright (C) 2019-2020 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT
@@ -43,7 +43,7 @@ failed=0
 
 for pkg in $(echo ${pkgs} | tr ',' '\n'); do
     describe "Fetching ${pkg}"
-    if type -p ${pkg} > /dev/null && [[ -n "$upgrade" ]]; then
+    if type -p ${pkg} > /dev/null && [ -n "$upgrade" ]; then
         log_success "Already installed" ${pkg} ${log_file}
         ((success+=1))
     else
