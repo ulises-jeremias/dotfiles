@@ -5,19 +5,19 @@ aur_helpers=( yay aurman pakku pacaur trizen aura pikaur )
 export AUR_HELPER=""
 
 get_aur_helper() {
-    if [ "$AUR_HELPER" != "" ]; then
-        echo $AUR_HELPER
+    if [ "${AUR_HELPER}" != "" ]; then
+        echo ${AUR_HELPER}
         return 0
     fi
 
     for helper in "${aur_helpers[@]}"; do
-        if type -p $helper > /dev/null; then
-            export AUR_HELPER=$helper
+        if type -p ${helper} > /dev/null; then
+            export AUR_HELPER=${helper}
             break
         fi
     done
 
-    echo $AUR_HELPER
+    echo ${AUR_HELPER}
 }
 
 pacman_fetch_pkg() {
@@ -26,13 +26,13 @@ pacman_fetch_pkg() {
 }
 
 aur_helper_fetch_pkg() {
-    aur_helper=$(get_aur_helper)
+    local aur_helper=$(get_aur_helper)
 
-    if [ "$aur_helper" = "" ]; then
+    if [ "${aur_helper}" = "" ]; then
         return 1
     fi
 
-    [ $($aur_helper -Ss $1 | wc -l) -ne 0 ]
+    [ $(${aur_helper} -Ss $1 | wc -l) -ne 0 ]
     return $?
 }
 
@@ -42,23 +42,23 @@ aur_fetch_pkg() {
 }
 
 aur_helper_install() {
-    aur_helper=$(get_aur_helper)
+    local aur_helper=$(get_aur_helper)
 
-    if [ "$aur_helper" = "" ]; then
+    if [ "${aur_helper}" = "" ]; then
         return 1
     fi
 
-    $aur_helper --noconfirm -S $1
+    ${aur_helper} --noconfirm -S $1
     return $?
 }
 
 aur_repos_install() {
     rm -rf /tmp/$1
     repo=$1
-    ! fetch_pkg $repo && repo="$1-git"
-    remote=https://aur.archlinux.org/$repo.git
-    git clone $remote /tmp/$repo > /dev/null
-    pushd /tmp/$repo
+    ! fetch_pkg ${repo} && repo="$1-git"
+    remote=https://aur.archlinux.org/${repo}.git
+    git clone ${remote} /tmp/${repo} > /dev/null
+    pushd /tmp/${repo}
     yes | makepkg -si
     res=$?
     popd

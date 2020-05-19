@@ -3,4 +3,4 @@
 ROOT=$(dirname $0)
 
 sudo rm -rf ~/.config/compton.conf > /dev/null 2>&1
-ln -sf $ROOT/compton.conf ~/.config/compton.conf
+ln -sf ${ROOT}/compton.conf ~/.config/compton.conf

@@ -6,13 +6,13 @@ create_symlink() {
     if [ -e $dotfiles_dir/custom-config/$1 ]; then
         ln -sf $dotfiles_dir/custom-config/$1 $to
     else
-        cp -rf $ROOT/$1 $dotfiles_dir/custom-config/$1
+        cp -rf ${ROOT}/$1 $dotfiles_dir/custom-config/$1
         ln -sf $dotfiles_dir/custom-config/$1 $to
     fi
 }
 
 ROOT=$(dirname $0)
-dotfiles_dir="$ROOT/.."
+dotfiles_dir="${ROOT}/.."
 
 #==========================================
 # Delete existing dot files and folders

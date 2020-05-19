@@ -6,11 +6,12 @@
 ##     @script.name [OPTION] ARGUMENTS...
 ##
 ## Options:
-##     -h, --help                            All client scripts have this, it can be omitted.
+##     -h, --help                            Help.
 ##     -c, --clear                           Will remove existing dotfiles.
 ##     -u, --upgrade                         Will update dependencies anyway.
 ##         --nodeps                          Will not install dependencies.
 ##         --nodunst                         Notifications will use xfce4-notifyd instead.
+##         --utils                           Will answer you to install some utilities.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
@@ -20,7 +21,7 @@
 
 ROOT=$(dirname $0)
 
-source $ROOT/util/opts/opts.sh || exit
+source ${ROOT}/util/opts/opts.sh || exit
 
 # Needed fonts
 fonts=(
@@ -51,7 +52,6 @@ needed_pkgs=(
     networkmanager-dmenu
     network-manager-applet
     numix-icon-theme
-    numix-circle-icon-theme
     pamixer
     playerctl
     polybar
@@ -61,6 +61,8 @@ needed_pkgs=(
     skippy-xd
     termite
     wmctrl
+    xgetres
+    yad
     zsh
     zsh-syntax-highlighting
 )
@@ -68,27 +70,32 @@ needed_pkgs=(
 # xfce4 utils
 xfce4_pkgs=(
     exo
-    garcon
     libxfce4ui
     libxfce4util
-    mousepad
-    orage
-    ristretto
     thunar
     thunar-archive-plugin
     thunar-media-tags-plugin
+    thunar-volman
     tumbler
-    xfburn
-    xfce4-artwork
+    
     xfce4-battery-plugin
+    xfce4-datetime-plugin
+    xfce4-power-manager
+    xfce4-pulseaudio-plugin
+    xfce4-settings
+    xfce4-xkb-plugin
+    xfconf
+)
+
+xfce4_utils=(
+    mousepad
+    parole
+    ristretto
+    xfce4-appfinder
     xfce4-clipman-plugin
     xfce4-cpufreq-plugin
     xfce4-cpugraph-plugin
-    xfce4-datetime-plugin
-    xfce4-dev-tools
-    xfce4-dict
     xfce4-diskperf-plugin
-    xfce4-eyes-plugin
     xfce4-fsguard-plugin
     xfce4-genmon-plugin
     xfce4-mailwatch-plugin
@@ -96,13 +103,9 @@ xfce4_pkgs=(
     xfce4-mpc-plugin
     xfce4-netload-plugin
     xfce4-notes-plugin
-    xfce4-panel
-    xfce4-power-manager
-    xfce4-pulseaudio-plugin
     xfce4-screensaver
     xfce4-screenshooter
     xfce4-sensors-plugin
-    xfce4-settings
     xfce4-smartbookmark-plugin
     xfce4-systemload-plugin
     xfce4-taskmanager
@@ -111,19 +114,33 @@ xfce4_pkgs=(
     xfce4-verve-plugin
     xfce4-wavelan-plugin
     xfce4-weather-plugin
-    xfce4-xkb-plugin
-    xfconf
-    parole
-    xfce4-whiskermenu-plugin
 )
 
-if [[ -n "$nodunst" ]]; then
+if [[ -n "${nodunst}" ]]; then
     xfce4_pkgs+=( xfce4-notifyd )
-fi 
+fi
 
-pkgs=("${needed_pkgs[@]}" "${xfce4_pkgs[@]}")
-pkgs=("${fonts[@]}" "${pkgs[@]}")
+if [[ -n "${install_utils}" ]]; then
+    for util in "${xfce4_utils[@]}"; do
+        printf "Add ${util} to the installation list? [y/N]: "
+        
+        read -r input
+
+        case "${input}" in
+            y|Y|yes|YES|Yes)
+                xfce4_pkgs+=( "${util}" )
+            ;;
+        esac
+    done
+fi
+
+pkgs=( "${needed_pkgs[@]}" "${xfce4_pkgs[@]}" )
+pkgs=( "${fonts[@]}" "${pkgs[@]}" )
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}
 
-$ROOT/scripts/install "$@" --pkgs=$pkgs
+args=$@
+args=( "${args[@]/--utils/}" )
+args=( "${args[@]/--nodunst/}" )
+
+${ROOT}/scripts/install "${args[@]}" --pkgs=${pkgs}

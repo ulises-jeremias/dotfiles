@@ -6,4 +6,4 @@ sudo rm -rf ~/.config/dunst/dunstrc > /dev/null 2>&1
 
 mkdir ~/.config/dunst > /dev/null 2>&1
 
-ln -sf $ROOT/dunstrc ~/.config/dunst/dunstrc
+ln -sf ${ROOT}/dunstrc ~/.config/dunst/dunstrc

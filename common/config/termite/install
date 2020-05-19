@@ -4,4 +4,4 @@ ROOT=$(dirname $0)
 
 sudo rm -rf ~/.config/termite/config > /dev/null 2>&1
 mkdir ~/.config/termite > /dev/null 2>&1
-ln -sf $ROOT/config ~/.config/termite/config
+ln -sf ${ROOT}/config ~/.config/termite/config

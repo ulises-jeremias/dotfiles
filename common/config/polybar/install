@@ -11,9 +11,9 @@ sudo rm -rf ~/.config/polybar/modules.conf > /dev/null 2>&1
 
 mkdir ~/.config/polybar > /dev/null 2>&1
 
-ln -sf $ROOT/modules ~/.config/polybar/modules
-ln -sf $ROOT/polybars ~/.config/polybar/polybars
-ln -sf $ROOT/config ~/.config/polybar/config
-ln -sf $ROOT/launch ~/.config/polybar/launch
-ln -sf $ROOT/master.conf ~/.config/polybar/master.conf
-ln -sf $ROOT/modules.conf ~/.config/polybar/modules.conf
+ln -sf ${ROOT}/modules ~/.config/polybar/modules
+ln -sf ${ROOT}/polybars ~/.config/polybar/polybars
+ln -sf ${ROOT}/config ~/.config/polybar/config
+ln -sf ${ROOT}/launch ~/.config/polybar/launch
+ln -sf ${ROOT}/master.conf ~/.config/polybar/master.conf
+ln -sf ${ROOT}/modules.conf ~/.config/polybar/modules.conf

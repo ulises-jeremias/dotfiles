@@ -6,7 +6,7 @@
 ##     @script.name [OPTION] ARGUMENTS...
 ##
 ## Options:
-##     -h, --help                            All client scripts have this, it can be omitted.
+##     -h, --help                            Help.
 ##     -c, --clear                           Will remove existing dotfiles.
 ##         
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
@@ -18,8 +18,8 @@
 
 ROOT=$(dirname $0)
 
-source $ROOT/../util/opts/opts.sh || exit
-source $ROOT/../util/logs.sh || exit
+source ${ROOT}/../util/opts/opts.sh || exit
+source ${ROOT}/../util/logs.sh || exit
 
 #==========================================
 # Default argument values and preprocessing
@@ -27,45 +27,45 @@ source $ROOT/../util/logs.sh || exit
 os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
-dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
+dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
 
-[ ! -f "$log_file" ] && touch $log_file
+[ ! -f "${log_file}" ] && touch ${log_file}
 
-if [ ! -d "$dotfiles_dir" ] || [[ -n "$clear" ]]; then
+if [ ! -d "${dotfiles_dir}" ] || [[ -n "${clear}" ]]; then
     describe "Removing existing dotfiles"
 
     # Delete existing dotfiles and folders
-    rm -rf $dotfiles_dir > /dev/null 2>&1
+    rm -rf ${dotfiles_dir} > /dev/null 2>&1
 
     # Create dotfiles folder
-    mkdir $dotfiles_dir
-    mkdir $dotfiles_dir/config
+    mkdir ${dotfiles_dir}
+    mkdir ${dotfiles_dir}/config
 
-    mkdir $dotfiles_dir/custom-config
+    mkdir ${dotfiles_dir}/custom-config
 
-    log_success "Success" $config $log_file
+    log_success "Success" ${config} ${log_file}
 fi
 
 #==========================================
 # Copy bin files and create symlinks
 #==========================================
 describe "Installing binaries\n" 0
-cp -rf $ROOT/../common/bin $dotfiles_dir
+cp -rf ${ROOT}/../common/bin ${dotfiles_dir}
 
-if [ -d "$ROOT/../$os/bin" ]; then
-    cp -rf $ROOT/../$os/bin $dotfiles_dir
+if [ -d "${ROOT}/../${os}/bin" ]; then
+    cp -rf ${ROOT}/../${os}/bin ${dotfiles_dir}
 fi
 
-if [ ! -d "$HOME/bin" ]; then
+if [ ! -d "${HOME}/bin" ]; then
     mkdir ~/bin
 fi
 
-for bin_path in $(find $dotfiles_dir/bin -maxdepth 1 -mindepth 1 -type f); do
-    bin=$(basename $bin_path)
+for bin_path in $(find ${dotfiles_dir}/bin -maxdepth 1 -mindepth 1 -type f); do
+    bin=$(basename "${bin_path}")
 
-    chmod +x $bin_path
-    sudo rm -rf ~/bin/$bin > /dev/null 2>&1
-    ln -sf $bin_path ~/bin/$bin
+    chmod +x "${bin_path}"
+    sudo rm -rf ~/bin/${bin} > /dev/null 2>&1
+    ln -sf "${bin_path}" ~/bin/${bin}
 done
 
 echo
@@ -78,35 +78,35 @@ success=0
 failed=0
 
 describe "Installing dotfiles\n" 0
-for config_path in $(find $ROOT/../common/config/ -maxdepth 1 -mindepth 1 -type d); do
-    config=$(basename $config_path)
+for config_path in $(find ${ROOT}/../common/config/ -maxdepth 1 -mindepth 1 -type d); do
+    config=$(basename ${config_path})
 
-    describe "Installing $config dotfiles"
+    describe "Installing ${config} dotfiles"
 
-    os_config_path=$config_path
+    os_config_path=${config_path}
 
-    if [ -x "$ROOT/../$os/config/$config/install" ]; then
-        os_config_path="$ROOT/../$os/config/$config"
+    if [ -x "${ROOT}/../${os}/config/${config}/install" ]; then
+        os_config_path="${ROOT}/../${os}/config/${config}"
     fi
 
-    cp -rf $os_config_path $dotfiles_dir/config
-    if bash $dotfiles_dir/config/$config/install; then
-        log_success "Installed successfully" $config $log_file
+    cp -rf ${os_config_path} ${dotfiles_dir}/config
+    if bash ${dotfiles_dir}/config/${config}/install; then
+        log_success "Installed successfully" ${config} ${log_file}
         ((success+=1))
     else
-        log_failed "Installation failed" $config $log_file
+        log_failed "Installation failed" ${config} ${log_file}
         ((failed+=1))
     fi
 done
 
-all=$(expr $success + $failed)
+all=$(expr ${success} + ${failed})
 
 echo
-echo "${green}Success: ${success} ${red}Failed: ${failed}${reset} Total: $all"
+echo "${GREEN}Success: ${success} ${RED}Failed: ${failed}${RESET} Total: ${all}"
 
 describe "Setting up default and custom configs\n\n"
 
-rm -rf $dotfiles_dir/default-config > /dev/null 2>&1
-cp -rf $ROOT/../default-config $dotfiles_dir/default-config
-chmod +x $dotfiles_dir/default-config/install
-$dotfiles_dir/default-config/install
+rm -rf ${dotfiles_dir}/default-config > /dev/null 2>&1
+cp -rf ${ROOT}/../default-config ${dotfiles_dir}/default-config
+chmod +x ${dotfiles_dir}/default-config/install
+${dotfiles_dir}/default-config/install

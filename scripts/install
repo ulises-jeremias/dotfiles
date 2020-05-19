@@ -6,7 +6,7 @@
 ##     @script.name [OPTION] ARGUMENTS...
 ##
 ## Options:
-##     -h, --help                            All client scripts have this, it can be omitted.
+##     -h, --help                            Help.
 ##     -c, --clear                           Will remove existing dotfiles.
 ##     -u, --upgrade                         Will update dependencies anyway.
 ##         --nodeps                          Will not install dependencies.
@@ -21,33 +21,33 @@
 
 ROOT=$(dirname $0)
 
-source $ROOT/../util/opts/opts.sh || exit
-source $ROOT/../util/logs.sh || exit
+source ${ROOT}/../util/opts/opts.sh || exit
+source ${ROOT}/../util/logs.sh || exit
 
 #==========================================
 # Default argument values and preprocessing
 #==========================================
-os=${os:-""}
+os=${os:-"common"}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
 
-[ ! -f "$log_file" ] && touch $log_file
+[ ! -f "${log_file}" ] && touch ${log_file}
 
-if [[ -n "$upgrade" ]]; then
-    $upgrade_flag="--upgrade"
+if [[ -n "${upgrade}" ]]; then
+    upgrade_flag="--upgrade"
 fi
 
-if [[ -n "$clear" ]]; then
-    $clear_flag="--clear"
+if [[ -n "${clear}" ]]; then
+    clear_flag="--clear"
 fi
 
 #==========================================
 # Install dependencies according to os
 #==========================================
-if [[ ! -n "$nodeps" ]] && [ "$os" != "" ]; then
-    $ROOT/install-pkgs \
-        --log-file=$log_file $upgrade_flag --os=$os \
+if [[ ! -n "${nodeps}" ]] && [ "${os}" != "" ]; then
+    ${ROOT}/install-pkgs \
+        --log-file=${log_file} ${upgrade_flag} --os=${os} \
         --pkgs=$pkgs
 fi
 
@@ -56,7 +56,7 @@ echo
 #==========================================
 # Install dotfiles according to os
 #==========================================
-$ROOT/install-dotfiles --log-file=$log_file --dotfiles-dir=$dotfiles_dir --os=$os $clear_flag
+${ROOT}/install-dotfiles --log-file=${log_file} --dotfiles-dir=$dotfiles_dir --os=${os} ${clear_flag}
 
 #==========================================
 # Set zsh as the default shell
@@ -69,7 +69,7 @@ sudo chsh -s /bin/zsh
 # been installed
 #==========================================
 echo -e "\n====== Summary ======\n"
-cat $log_file
+cat ${log_file}
 echo
 echo "Enjoy dotfiles :D"
-rm $log_file
+rm ${log_file}

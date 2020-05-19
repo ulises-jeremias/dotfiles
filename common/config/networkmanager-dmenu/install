@@ -6,4 +6,4 @@ sudo rm -rf ~/.config/networkmanager-dmenu/config.ini > /dev/null 2>&1
 
 mkdir ~/.config/networkmanager-dmenu > /dev/null 2>&1
 
-ln -sf $ROOT/config.ini ~/.config/networkmanager-dmenu/config.ini
+ln -sf ${ROOT}/config.ini ~/.config/networkmanager-dmenu/config.ini

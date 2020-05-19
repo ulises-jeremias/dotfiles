@@ -6,7 +6,7 @@
 ##     @script.name [OPTION] ARGUMENTS...
 ##
 ## Options:
-##     -h, --help                            All client scripts have this, it can be omitted.
+##     -h, --help                            Help.
 ##     -u, --upgrade                         Will update dependencies anyway.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
@@ -18,8 +18,8 @@
 
 ROOT=$(dirname $0)
 
-source $ROOT/../util/opts/opts.sh || exit
-source $ROOT/../util/logs.sh || exit
+source ${ROOT}/../util/opts/opts.sh || exit
+source ${ROOT}/../util/logs.sh || exit
 
 #==========================================
 # Default argument values and preprocessing
@@ -29,9 +29,9 @@ time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 pkgs=${pkgs:-""}
 
-[ ! -f "$log_file" ] && touch $log_file
+[ ! -f "${log_file}" ] && touch ${log_file}
 
-. $ROOT/$os/install-pkgs
+. ${ROOT}/$os/install-pkgs
 
 #==========================================
 # Installing process
@@ -41,32 +41,32 @@ describe "Starting process\n\n" 0
 success=0
 failed=0
 
-for pkg in $(echo $pkgs | tr ',' '\n'); do
-    describe "Fetching $pkg"
-    if type -p $pkg > /dev/null && [[ -n "$upgrade" ]]; then
-        log_success "Already installed" $pkg $log_file
+for pkg in $(echo ${pkgs} | tr ',' '\n'); do
+    describe "Fetching ${pkg}"
+    if type -p ${pkg} > /dev/null && [[ -n "$upgrade" ]]; then
+        log_success "Already installed" ${pkg} ${log_file}
         ((success+=1))
     else
-        if ! pkg_exists $pkg; then
-            log_failed "Package not found" $pkg $log_file
+        if ! pkg_exists ${pkg}; then
+            log_failed "Package not found" ${pkg} ${log_file}
             ((failed+=1))
             continue
         fi
 
-        log_warn "Package not installed" $pkg $log_file
+        log_warn "Package not installed" ${pkg} ${log_file}
 
-        describe "Installing $pkg\n" 0
-        if pkg_install $pkg; then
-            log_success "Installed successfully" $pkg $log_file
+        describe "Installing ${pkg}\n" 0
+        if pkg_install ${pkg}; then
+            log_success "Installed successfully" ${pkg} ${log_file}
             ((success+=1))
         else
-            log_failed "Installation fialed" $pkg $log_file
+            log_failed "Installation fialed" ${pkg} ${log_file}
             ((failed+=1))
         fi   
     fi   
 done
 
-all=$(expr $success + $failed)
+all=$(expr ${success} + ${failed})
 
 echo
-echo "${green}Success: ${success} ${red}Failed: ${failed}${reset} Total: $all"
+echo "${GREEN}Success: ${success} ${RED}Failed: ${failed}${REET} Total: ${all}"
