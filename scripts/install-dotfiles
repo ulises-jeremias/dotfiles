@@ -29,7 +29,7 @@ time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
 
-[[ ! -f "${log_file}" ]] && touch ${log_file}
+[ ! -f "${log_file}" ] && touch ${log_file}
 
 if [ ! -d "${dotfiles_dir}" ] || [ -n "${clear}" ]; then
     describe "Removing existing dotfiles"
