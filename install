@@ -1,17 +1,26 @@
 #!/usr/bin/env bash
 
+## Copyright (C) 2019-2020 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT
+##
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            All client scripts have this, it can be omitted.
+##     -c, --clear                           Will remove existing dotfiles.
+##     -u, --upgrade                         Will update dependencies anyway.
+##         --nodeps                          Will not install dependencies.
+##         --nodunst                         Notifications will use xfce4-notifyd instead.
+##
+##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
+##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
+##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
+##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
+##
+
 ROOT=$(dirname $0)
 
-has_param() {
-    local term="$1"
-    shift
-    for arg; do
-        if [[ $arg == "$term" ]]; then
-            return 0
-        fi
-    done
-    return 1
-}
+source $ROOT/util/opts/opts.sh || exit
 
 # Needed fonts
 fonts=(
@@ -108,7 +117,7 @@ xfce4_pkgs=(
     xfce4-whiskermenu-plugin
 )
 
-if has_param '--nodunst' "$@"; then
+if [[ -n "$nodunst" ]]; then
     xfce4_pkgs+=( xfce4-notifyd )
 fi 
 
@@ -117,4 +126,4 @@ pkgs=("${fonts[@]}" "${pkgs[@]}")
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}
 
-$ROOT/scripts/install "$@" --pkgs $pkgs
+$ROOT/scripts/install "$@" --pkgs=$pkgs

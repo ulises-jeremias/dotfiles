@@ -1,21 +1,28 @@
 #!/usr/bin/env bash
 
+## Copyright (C) 2019-2020 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT
+##
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            All client scripts have this, it can be omitted.
+##     -c, --clear                           Will remove existing dotfiles.
+##     -u, --upgrade                         Will update dependencies anyway.
+##         --nodeps                          Will not install dependencies.
+##
+##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
+##                                           where common is supposed to work correctly with any linux distro.
+##                                           `common` is set as default value for this flag.
+##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
+##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
+##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
+##
+
 ROOT=$(dirname $0)
 
-. $ROOT/../lib/log.sh
-
-#==========================================
-# Args declaration
-#==========================================
-. $ROOT/../lib/flags/declares.sh
-
-variables["--os"]="os"
-variables["-l"]="log_file";
-variables["--log-file"]="log_file";
-variables["--dotfiles-dir"]="dotfiles_dir";
-variables["--pkgs"]="pkgs";
-
-. $ROOT/../lib/flags/arguments.sh
+source $ROOT/../util/opts/opts.sh || exit
+source $ROOT/../util/logs.sh || exit
 
 #==========================================
 # Default argument values and preprocessing
@@ -23,25 +30,25 @@ variables["--pkgs"]="pkgs";
 os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
-dotfiles_dir=${dotfiles_dir:"$HOME/dotfiles"}
+dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
 
 [ ! -f "$log_file" ] && touch $log_file
 
-if has_param '-u' "$@" || has_param '--upgrade' "$@"; then
-    upgrade_flag="-u"
+if [[ -n "$upgrade" ]]; then
+    $upgrade_flag="--upgrade"
 fi
 
-if has_param '-c' "$@" || has_param '--clear' "$@"; then
-    clean_flag="-c"
+if [[ -n "$clear" ]]; then
+    $clear_flag="--clear"
 fi
 
 #==========================================
 # Install dependencies according to os
 #==========================================
-if ! has_param '--nodeps' "$@" && [ "$os" != "" ]; then
+if [[ ! -n "$nodeps" ]] && [ "$os" != "" ]; then
     $ROOT/install-pkgs \
-        -l $log_file $upgrade_flag --os $os \
-        --pkgs $pkgs
+        --log-file=$log_file $upgrade_flag --os=$os \
+        --pkgs=$pkgs
 fi
 
 echo
@@ -49,7 +56,7 @@ echo
 #==========================================
 # Install dotfiles according to os
 #==========================================
-$ROOT/install-dotfiles -l $log_file --os $os $clean_flag --dotfiles-dir $dotfiles_dir
+$ROOT/install-dotfiles --log-file=$log_file --dotfiles-dir=$dotfiles_dir --os=$os $clear_flag
 
 #==========================================
 # Set zsh as the default shell

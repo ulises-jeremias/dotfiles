@@ -1,20 +1,25 @@
 #!/usr/bin/env bash
 
+## Copyright (C) 2019-2020 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT
+##
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            All client scripts have this, it can be omitted.
+##     -u, --upgrade                         Will update dependencies anyway.
+##
+##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
+##                                           where common is supposed to work correctly with any linux distro.
+##                                           `common` is set as default value for this flag.
+##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
+##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
+##
+
 ROOT=$(dirname $0)
 
-. $ROOT/../lib/log.sh
-
-#==========================================
-# Args declaration
-#==========================================
-. $ROOT/../lib/flags/declares.sh
-
-variables["--os"]="os"
-variables["-l"]="log_file";
-variables["--log-file"]="log_file";
-variables["--pkgs"]="packages";
-
-. $ROOT/../lib/flags/arguments.sh
+source $ROOT/../util/opts/opts.sh || exit
+source $ROOT/../util/logs.sh || exit
 
 #==========================================
 # Default argument values and preprocessing
@@ -22,13 +27,9 @@ variables["--pkgs"]="packages";
 os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
-packages=${packages:-""}
+pkgs=${pkgs:-""}
 
 [ ! -f "$log_file" ] && touch $log_file
-
-if has_param '-u' "$@" || has_param '--upgrade' "$@"; then
-    upgrade=true
-fi
 
 . $ROOT/$os/install-pkgs
 
@@ -40,9 +41,9 @@ describe "Starting process\n\n" 0
 success=0
 failed=0
 
-for pkg in $(echo $packages | tr ',' '\n'); do
+for pkg in $(echo $pkgs | tr ',' '\n'); do
     describe "Fetching $pkg"
-    if type -p $pkg > /dev/null && [ "$upgrade" != "true" ]; then
+    if type -p $pkg > /dev/null && [[ -n "$upgrade" ]]; then
         log_success "Already installed" $pkg $log_file
         ((success+=1))
     else
