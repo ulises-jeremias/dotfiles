@@ -14,7 +14,7 @@ usage() {
 
      -v,--version      Display script version
 
-     -p,--polybar      Toggle the configured polybar session, NO additional options
+     -p,--polybar      Toggle the configured polybar session, can use toggle option
 
      -c,--compton      Toggle compton or daemon monitoring icon, can use toggle option
 
@@ -30,16 +30,29 @@ EOF
 }
 
 toggle_polybar() {
-    if [ $(pidof polybar) ]; then
-        pkill -9 polybar
-    else
-        ~/.config/polybar/launch
+    if (( opt == 1 )); then
+        if [ $(pidof polybar | wc -l) -ne 0 ]; then
+            pkill -9 polybar
+        else
+            ~/.config/polybar/launch
+        fi
+        exit 0
     fi
+    on=""
+    off=""
+    while true; do
+        if [ $(pidof polybar | wc -l) -ne 0 ]; then
+            echo "$on"
+        else
+            echo "%{F#888888}$off"
+        fi
+        sleep 2
+    done
 }
 
 toggle_compton() {
     if (( opt == 1 )); then
-        if [ $(pidof compton) ]; then
+        if [ $(pidof compton | wc -l) -ne 0 ]; then
             al-compositor --stop
         else
             al-compositor --start
@@ -49,7 +62,7 @@ toggle_compton() {
     on=""
     off=""
     while true; do
-        if [ $(pidof compton) ]; then
+        if [ $(pidof compton | wc -l) -ne 0 ]; then
             echo "$on"
         else
             echo "%{F#888888}$off"
@@ -60,7 +73,7 @@ toggle_compton() {
 
 toggle_redshift() {
     if (( opt == 1 )); then
-        if [ $(pidof redshift) ]; then
+        if [ $(pidof redshift | wc -l) -ne 0 ]; then
             pkill redshift
         else
             redshift &
@@ -69,7 +82,7 @@ toggle_redshift() {
     fi
     icon=""
     while true; do
-        if [ $(pidof redshift) ]; then
+        if [ $(pidof redshift | wc -l) -ne 0 ]; then
             temp=$(sed 's/K//g' <<< "$(grep -o '[0-9].*K' <<< "$(redshift -p 2>/dev/null)")")
         fi
         if [ -z $temp ]; then
@@ -87,7 +100,7 @@ toggle_redshift() {
 
 toggle_caffeine() {
     if (( opt == 1 )); then
-        if [ $(pidof caffeine) ]; then
+        if [ $(pidof caffeine | wc -l) -ne 0 ]; then
             killall caffeine
         else
             caffeine &
@@ -106,7 +119,10 @@ toggle_caffeine() {
 case $1 in
     -h|--help) usage ;;
     -v|--version) echo -e "$NAME -- Version $VER" ;;
-    -p|--polybar) toggle_polybar ;;
+    -p|--polybar)
+        [[ $2 =~ (-t|--toggle) ]] && opt=1
+        toggle_polybar
+        ;;
     -c|--compton)
         [[ $2 =~ (-t|--toggle) ]] && opt=1
         toggle_compton
@@ -121,4 +137,3 @@ case $1 in
         ;;
     *) echo -e "Option does not exist: $1" && usage && exit 1
 esac
-
