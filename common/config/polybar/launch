@@ -25,7 +25,6 @@ if [ " ${themes[@]} " =~ " $1 " ]; then
     SESSION="$1"
 fi
 
-
 if [ "$SESSION" = "top-bar-only" ]; then
     polybar polybar-top-only -r
 elif [ "$SESSION" = "small-top-bar-only" ]; then

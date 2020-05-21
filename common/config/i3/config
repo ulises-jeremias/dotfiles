@@ -62,8 +62,8 @@ bindsym $Mod+Return     exec --no-startup-id exo-open --launch TerminalEmulator
 bindsym $Mod+x exec --no-startup-id ~/bin/rofi_run -l
 
 # Screenshot
-bindsym Print exec --no-startup-id "scrot '%S.png' -e 'mv $f $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png ; feh $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png'"
-bindsym Shift+Print exec --no-startup-id "scrot -s '%S.png' -e 'mv $f $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png ; feh $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png'"
+bindsym Print exec --no-startup-id "~/bin/screenshooter"
+bindsym Shift+Print exec --no-startup-id "~/bin/screenshooter -r"
 
 # audio
 bindsym XF86AudioPlay        exec --no-startup-id playerctl play-pause
@@ -79,7 +79,7 @@ bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 10
 bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
 
 # toggle
-bindsym $Mod+Control+p exec --no-startup-id ~/bin/toggle -p &
+bindsym $Mod+Control+p exec --no-startup-id ~/bin/toggle -p -t &
 
 ###########          Workspace Bindings          ###############
 
@@ -172,10 +172,10 @@ bindsym $Mod+Shift+Left  move left  10px
 bindsym $Mod+Shift+Right move right 10px
 
 # Size
-bindsym Alt+Shift+Up    resize shrink height 10 px or 1 ppt
-bindsym Alt+Shift+Down  resize grow   height 10 px or 1 ppt
-bindsym Alt+Shift+Left  resize shrink width  10 px or 1 ppt
-bindsym Alt+Shift+Right resize grow   width  10 px or 1 ppt
+bindsym $Mod+Control+Shift+Up    resize shrink height 10 px or 1 ppt
+bindsym $Mod+Control+Shift+Down  resize grow   height 10 px or 1 ppt
+bindsym $Mod+Control+Shift+Left  resize shrink width  10 px or 1 ppt
+bindsym $Mod+Control+Shift+Right resize grow   width  10 px or 1 ppt
 
 # layout toggle, keycode 23 is Tab
 bindcode Mod1+23 layout toggle tabbed split
