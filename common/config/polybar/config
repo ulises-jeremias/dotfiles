@@ -9,3 +9,8 @@ include-file = ~/.config/polybar/polybars/bottom.conf
 include-file = ~/.config/polybar/polybars/small-top.conf
 include-file = ~/.config/polybar/polybars/small-top-only.conf
 include-file = ~/.config/polybar/polybars/small-bottom.conf
+
+;---------;
+; CUSTOM  ;
+;---------;
+include-file = ~/.config/polybar/polybars/custom.conf
