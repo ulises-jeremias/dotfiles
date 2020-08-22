@@ -66,7 +66,7 @@ needed_pkgs=(
     xrandr
     yad
     zsh
-    zsh-syntax-highlighting
+    zsh-syntax-highlighting-git
     zsh-theme-powerlevel10k
 )
 
