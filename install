@@ -41,6 +41,7 @@ fonts=(
 # Needed apps, themes and icons
 needed_pkgs=(
     arc-gtk-theme
+    arandr
     dbus-python
     dunst
     drun
@@ -62,6 +63,7 @@ needed_pkgs=(
     termite
     wmctrl
     xgetres
+    xrandr
     yad
     zsh
     zsh-syntax-highlighting
@@ -77,7 +79,6 @@ xfce4_pkgs=(
     thunar-media-tags-plugin
     thunar-volman
     tumbler
-    
     xfce4-battery-plugin
     xfce4-datetime-plugin
     xfce4-power-manager
