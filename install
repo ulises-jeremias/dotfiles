@@ -121,7 +121,7 @@ if [ -n "${nodunst}" ]; then
     xfce4_pkgs+=( xfce4-notifyd )
 fi
 
-if [ -n "${install_utils}" ]; then
+if [ -n "${utils}" ]; then
     for util in "${util_pkgs[@]}"; do
         printf "Add ${util} to the installation list? [y/N]: "
         
