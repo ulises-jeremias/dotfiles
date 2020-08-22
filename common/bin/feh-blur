@@ -151,7 +151,7 @@ get_open_windows_count() {
 
 is_blank() {
   count=$(get_open_windows_count)
-  [[ "$count" -eq 0 ]]
+  [ "$count" -eq 0 ]
 }
 
 set_blurred_wallpaper() {
@@ -188,7 +188,7 @@ kill_other_instances() {
     head "Stopping other instances of $BIN..."
 
     local count=1
-    while [[ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]; do
+    while [ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]; do
       count=$(( count + 1 ))
       old_pid="$(pgrep -fo "$PROC_EXPR")"
 
@@ -265,7 +265,7 @@ show_help() {
 }
 
 parse_opts() {
-  while [[ "$1" =~ ^- && ! "$1" == "--" ]; do case $1 in
+  while [ "$1" =~ ^- && ! "$1" == "--" ]; do case $1 in
     -h | --help)
       MODE=noop
       show_help
@@ -394,7 +394,7 @@ do_cleanup () {
   rm -rf "$CACHE_DIR"
 
   # Restore original wallpaper before exiting
-  if [ "$MODE" == "foreground" ]] && [[ -e "$HOME/.fehbg" ]; then
+  if [ "$MODE" == "foreground" ] && [ -e "$HOME/.fehbg" ]; then
     head "Restoring original wallpaper"
     source "$HOME/.fehbg"
   fi
