@@ -21,6 +21,7 @@ sudo rm -rf ~/.gitconfig > /dev/null 2>&1
 sudo rm -rf ~/.xprofile > /dev/null 2>&1
 sudo rm -rf ~/.Xresources > /dev/null 2>&1
 sudo rm -rf ~/.Xresources.d > /dev/null 2>&1
+sudo rm -rf ~/.config/i3 > /dev/null 2>&1
 sudo rm -rf ~/.config/polybar/modules/custom.conf > /dev/null 2>&1
 sudo rm -rf ~/.config/polybar/polybars/custom.conf > /dev/null 2>&1
 
@@ -41,6 +42,7 @@ create_symlink gitconfig
 create_symlink xprofile
 create_symlink Xresources
 create_symlink Xresources.d
+create_symlink "i3" "$HOME/.config/i3"
 create_symlink "polybar/modules/custom.conf" "$HOME/.config/polybar/modules/custom.conf"
 create_symlink "polybar/polybars/custom.conf" "$HOME/.config/polybar/polybars/custom.conf"
 

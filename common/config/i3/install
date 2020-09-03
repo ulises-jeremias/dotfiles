@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-ROOT=$(dirname $0)
-
-sudo rm -rf ~/.config/i3/config > /dev/null 2>&1
-
-mkdir ~/.config/i3 > /dev/null 2>&1
-
-ln -sf ${ROOT}/config ~/.config/i3/config
