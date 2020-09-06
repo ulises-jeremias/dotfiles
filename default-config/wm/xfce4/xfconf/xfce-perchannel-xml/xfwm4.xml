@@ -65,7 +65,7 @@
     <property name="snap_to_windows" type="bool" value="true"/>
     <property name="snap_width" type="int" value="39"/>
     <property name="sync_to_vblank" type="bool" value="true"/>
-    <property name="theme" type="string" value="ArchLabs-dARK"/>
+    <property name="theme" type="string" value="Arc-Darker"/>
     <property name="tile_on_move" type="bool" value="true"/>
     <property name="title_alignment" type="string" value="center"/>
     <property name="title_font" type="string" value="Sans 10"/>

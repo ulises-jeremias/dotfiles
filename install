@@ -13,133 +13,18 @@
 ##         --nodunst                         Notifications will use xfce4-notifyd instead.
 ##         --utils                           Will answer you to install some utilities.
 ##
-##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
+##         --os=OS_NAME                      Operating System. Posible values: arch-linux | debian
+##         --wms=COMMA_SEPARATED_WMS         Window managers. Posible wms: i3, openbox
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
-##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
 ##
 
 ROOT=$(dirname $0)
 
 source ${ROOT}/util/opts/opts.sh || exit
 
-# Needed fonts
-fonts=(
-    nerd-fonts-ubuntu-mono
-    noto-fonts
-    noto-fonts-cjk
-    noto-fonts-emoji
-    noto-fonts-extra
-    terminus-font
-    ttf-anonymous-pro
-    ttf-dejavu
-    ttf-font-awesome
-    ttf-liberation
-    ttf-linux-libertine
-)
-
-# Needed apps, themes and icons
-needed_pkgs=(
-    arc-gtk-theme
-    arandr
-    dbus-python
-    dunst
-    drun
-    feh
-    graphicsmagick
-    i3lock-fancy
-    jgmenu
-    jq
-    networkmanager-dmenu
-    network-manager-applet
-    numix-icon-theme
-    pamixer
-    playerctl
-    polybar
-    pulseaudio
-    rofi
-    scrot
-    skippy-xd
-    termite
-    wmctrl
-    xgetres
-    xrandr
-    yad
-    zsh
-    zsh-syntax-highlighting-git
-    zsh-theme-powerlevel10k
-)
-
-# xfce4 utils
-xfce4_pkgs=(
-    exo
-    libxfce4ui
-    libxfce4util
-    thunar
-    thunar-archive-plugin
-    thunar-media-tags-plugin
-    thunar-volman
-    tumbler
-    xfce4-battery-plugin
-    xfce4-datetime-plugin
-    xfce4-power-manager
-    xfce4-pulseaudio-plugin
-    xfce4-settings
-    xfce4-xkb-plugin
-    xfconf
-)
-
-util_pkgs=(
-    mousepad
-    parole
-    ristretto
-    xfce4-appfinder
-    xfce4-clipman-plugin
-    xfce4-cpufreq-plugin
-    xfce4-cpugraph-plugin
-    xfce4-diskperf-plugin
-    xfce4-fsguard-plugin
-    xfce4-genmon-plugin
-    xfce4-mailwatch-plugin
-    xfce4-mount-plugin
-    xfce4-mpc-plugin
-    xfce4-netload-plugin
-    xfce4-notes-plugin
-    xfce4-screensaver
-    xfce4-screenshooter
-    xfce4-sensors-plugin
-    xfce4-smartbookmark-plugin
-    xfce4-systemload-plugin
-    xfce4-taskmanager
-    xfce4-time-out-plugin
-    xfce4-timer-plugin
-    xfce4-verve-plugin
-    xfce4-wavelan-plugin
-    xfce4-weather-plugin
-)
-
-if [ -n "${nodunst}" ]; then
-    xfce4_pkgs+=( xfce4-notifyd )
-fi
-
-if [ -n "${utils}" ]; then
-    for util in "${util_pkgs[@]}"; do
-        printf "Add ${util} to the installation list? [y/N]: "
-        
-        read -r input
-
-        case "${input}" in
-            y|Y|yes|YES|Yes)
-                xfce4_pkgs+=( "${util}" )
-            ;;
-        esac
-    done
-fi
-
-pkgs=( "${needed_pkgs[@]}" "${xfce4_pkgs[@]}" )
-pkgs=( "${fonts[@]}" "${pkgs[@]}" )
-pkgs=$(printf ",%s" "${pkgs[@]}")
-pkgs=${pkgs:1}
+# load deps for give os. Defines pkgs variable
+source ${ROOT}/${os}/deps.sh || exit
 
 args=$@
 args=( "${args[@]/--utils/}" )

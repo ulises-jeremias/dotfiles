@@ -42,11 +42,17 @@ create_symlink gitconfig
 create_symlink xprofile
 create_symlink Xresources
 create_symlink Xresources.d
-create_symlink "i3" "$HOME/.config/i3"
 create_symlink "polybar/modules/custom.conf" "$HOME/.config/polybar/modules/custom.conf"
 create_symlink "polybar/polybars/custom.conf" "$HOME/.config/polybar/polybars/custom.conf"
 
 sudo chmod +x ~/.xprofile
+
+printf "Setting up wm...\\n"
+
+for script in $dotfiles_dir/custom-config/**/install; do
+    [ -e "${script}" ] || break
+    ${script}
+done
 
 printf "Setting up git...\\n"
 
@@ -56,7 +62,7 @@ defaultGithub=$(git config --global github.user)
 
 read -rp "Name [$defaultName]: " name
 read -rp "Email [$defaultEmail]: " email
-read -rp "Github username [$defaultGithub]: " github
+read -rp "Name [$defaultGithub]: " github
 
 git config --global user.name "${name:-$defaultName}"
 git config --global user.email "${email:-$defaultEmail}"

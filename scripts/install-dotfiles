@@ -12,6 +12,7 @@
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
 ##                                           where common is supposed to work correctly with any linux distro.
 ##                                           `common` is set as default value for this flag.
+##         --wms=COMMA_SEPARATED_WMS         Window managers. Posible wms: i3, openbox
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##
@@ -28,6 +29,7 @@ os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
+wms=${wms:-""}
 
 [ ! -f "${log_file}" ] && touch ${log_file}
 
@@ -107,6 +109,14 @@ echo "${GREEN}Success: ${success} ${RED}Failed: ${failed}${RESET} Total: ${all}"
 describe "Setting up default and custom configs\n\n"
 
 rm -rf ${dotfiles_dir}/default-config > /dev/null 2>&1
-cp -rf ${ROOT}/../default-config ${dotfiles_dir}/default-config
+cp -rf ${ROOT}/../default-config/common ${dotfiles_dir}/default-config
+
+for wm in xfce4 $(echo ${wms} | tr ',' '\n'); do
+    [ -e "${ROOT}/../default-config/wm/${wm}/install" ] || continue
+    cp -rf ${ROOT}/../default-config/wm/${wm} ${dotfiles_dir}/default-config
+    cp -rf ${ROOT}/../default-config/wm/${wm} ${dotfiles_dir}/custom-config
+    chmod +x ${dotfiles_dir}/default-config/${wm}/install
+done
+
 chmod +x ${dotfiles_dir}/default-config/install
 ${dotfiles_dir}/default-config/install

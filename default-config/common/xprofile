@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # sourced at boot by ~/.xinitrc and most display managers
 
@@ -7,12 +7,9 @@ export XDG_CONFIG_HOME
 
 [ "$PATH" == *"$HOME/bin"* ] || PATH="$HOME/bin:$PATH"
 
-compton -b &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 gnome-keyring-daemon --start --components=pkcs11 &
-ksuperkey -e 'Super_L=Alt_L|F1' &
-ksuperkey -e 'Super_R=Alt_L|F1' &
-volumeicon &
-nm-applet &
 xset dpms 600 900 1200
 xset r rate 350 60
+
+~/bin/autostart &

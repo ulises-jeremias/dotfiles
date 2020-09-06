@@ -5,7 +5,7 @@ NOTIFIED=0
 NOTIFY_ICON=/usr/share/icons/Numix-Circle/32x32/apps/system-software-update.png
 
 get_total_updates() {
-    UPDATES=$(checkupdates 2>/dev/null | wc -l)
+    UPDATES=$(~/bin/checkupdates 2>/dev/null | wc -l)
 }
 
 while true; do

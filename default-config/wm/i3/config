@@ -71,8 +71,8 @@ bindsym XF86AudioNext        exec --no-startup-id playerctl next
 bindsym XF86AudioPrev        exec --no-startup-id playerctl previous
 bindsym XF86AudioStop        exec --no-startup-id playerctl stop
 bindsym XF86AudioMute        exec --no-startup-id pamixer -t
-bindsym XF86AudioRaiseVolume exec --no-startup-id pamixer -i 2
-bindsym XF86AudioLowerVolume exec --no-startup-id pamixer -d 2
+bindsym XF86AudioRaiseVolume exec --no-startup-id pamixer -i 1
+bindsym XF86AudioLowerVolume exec --no-startup-id pamixer -d 1
 
 # backlight
 bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 10
@@ -217,18 +217,6 @@ bindsym $Mod+Control+plus        gaps inner all     plus  5
 bindsym $Mod+Control+minus       gaps inner all     minus 5
 bindsym $Mod+Control+Shift+plus  gaps outer all     plus  5
 bindsym $Mod+Control+Shift+minus gaps outer all     minus 5
-
-############    application settings   ############
-
-# assign applications to specific workspace
-assign [class="(?i)(?:termite)"]    → $WS2
-assign [class="(?i)(?:alacrity)"]   → $WS2
-assign [class="(?i)(?:xterm)"]      → $WS2
-assign [class="(?i)(?:chromium)"]   → $WS3
-assign [class="(?i)(?:firefox)"]    → $WS3
-assign [class="(?i)(?:code)"]       → $WS4
-assign [class="(?i)(?:thunar)"]     → $WS5
-assign [class="(?i)(?:steam)"]      → $WS7
 
 # focus, floating, & sticky
 for_window [class="(?i)(?:qt5ct|pinentry)"]          floating enable, focus

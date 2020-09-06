@@ -11,9 +11,10 @@
 ##     -u, --upgrade                         Will update dependencies anyway.
 ##         --nodeps                          Will not install dependencies.
 ##
-##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
+##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian
 ##                                           where common is supposed to work correctly with any linux distro.
 ##                                           `common` is set as default value for this flag.
+##         --wms=COMMA_SEPARATED_WMS         Window managers. Posible wms: i3, openbox
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
@@ -31,6 +32,7 @@ os=${os:-"common"}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
+wms=${wms:-""}
 
 [ ! -f "${log_file}" ] && touch ${log_file}
 
@@ -48,7 +50,7 @@ fi
 if [ ! -n "${nodeps}" ] && [ "${os}" != "" ]; then
     ${ROOT}/install-pkgs \
         --log-file=${log_file} ${upgrade_flag} --os=${os} \
-        --pkgs=$pkgs
+        --pkgs=${pkgs}
 fi
 
 echo
@@ -56,7 +58,7 @@ echo
 #==========================================
 # Install dotfiles according to os
 #==========================================
-${ROOT}/install-dotfiles --log-file=${log_file} --dotfiles-dir=$dotfiles_dir --os=${os} ${clear_flag}
+${ROOT}/install-dotfiles --log-file=${log_file} --dotfiles-dir=${dotfiles_dir} --os=${os} --wms=${wms} ${clear_flag}
 
 #==========================================
 # Set zsh as the default shell

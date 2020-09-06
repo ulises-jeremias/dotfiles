@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# required for xfce settings to work
+xfsettingsd &
+
+# load X params required for dotfiles to work
+xrdb -I$HOME -load ~/.Xresources &
+
+# load compton
+compton --config ~/.config/compton.conf &
+
+# set background using feh
+~/.config/feh/.fehbg &
+
+# open polybar
+~/.config/polybar/launch &
