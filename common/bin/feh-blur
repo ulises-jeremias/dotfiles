@@ -265,7 +265,7 @@ show_help() {
 }
 
 parse_opts() {
-  while [ "$1" =~ ^- && ! "$1" == "--" ]; do case $1 in
+  while [ "$1" =~ ^- ] && [ ! "$1" == "--" ]; do case $1 in
     -h | --help)
       MODE=noop
       show_help
