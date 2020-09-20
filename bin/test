@@ -1,0 +1,89 @@
+#!/usr/bin/env sh
+
+## Copyright (C) 2019-2020 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT
+##
+## IMPORTANT: Remenber to read the files in `docs/docker` before updating this file
+##
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Help.
+##     -b, --build                           Build docker image
+##
+##         --os=OS_NAME                      Operating System. Posible values: arch-linux | debian
+##         --wm=WINDOW_MANAGER               Window manager. Posible values: i3 | openbox
+##         --xport=XPORT                     Port for windowed X server. Default 1225
+##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
+##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
+##
+
+ROOT=$(dirname $0)
+
+source "${ROOT}/../util/opts/opts.sh" || exit
+source "${ROOT}/../util/logs.sh" || exit
+
+#==========================================
+# Default argument values and preprocessing
+#==========================================
+time_str=$(date +'%m-%d-%y_%H:%M:%S')
+log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
+
+USER_FLAG="-u $(id -u):$(id -g)"
+XPORT=${xport:-1225}
+
+[ ! -f "${log_file}" ] && touch ${log_file}
+
+# setup windowed X server
+xephyr_ini() {
+    if ! type -p Xephyr > /dev/null; then
+        log_failed "Xephyr is not installed in this system" ${log_file}
+        exit -1
+    fi
+
+    Xephyr :${XPORT} -ac -br -screen 1024x768 -resizeable -reset -terminate &
+}
+
+# creates docker image if it doesn't exists
+docker_ini() {
+    if ! type -p docker > /dev/null; then
+        log_failed "Docker is not installed in this system" ${log_file}
+        exit -1
+    fi
+
+    if type -p md5 > /dev/null; then
+        lockSum=$(md5 -r docker/${os}/wm/${wm}.sh | awk '{ print $1 }')
+    else
+        lockSum=$(md5sum -t docker/${os}/wm/${wm}.sh | awk '{ print $1 }')
+    fi
+
+    IMAGE_NAME="${os}-${wm}-${lockSum}:latest"
+    IMAGE_NAME_ARRAY=(${IMAGE_NAME//:/ })
+
+    if [[ -n "${build}" ]] || [[ "$(docker images ${IMAGE_NAME_ARRAY[0]} | grep ${IMAGE_NAME_ARRAY[1]} 2> /dev/null)" = "" ]]; then
+        docker build -f ./docker/${os}/Dockerfile -t "${IMAGE_NAME}" \
+            --build-arg WINDOW_MANAGER=${wm} \
+            --build-arg USER=${USER} \
+            .
+    fi
+}
+
+# docker run
+docker_run() {
+    docker run --rm -it -e DISPLAY=:${XPORT} \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -v "$(pwd)":"/home/${USER}/dotfiles-repo" \
+        -w "/home/${USER}" \
+        ${USER_FLAG} \
+        "${IMAGE_NAME}"
+    exit
+}
+
+# test process
+xephyr_ini
+docker_ini
+docker_run
+
+# Help shown by default
+[[ -z "$documentation" ]] && parse_documentation
+echo "$documentation"
