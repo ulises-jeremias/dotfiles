@@ -6,13 +6,7 @@ Dotfile generator that allows quick configuration of different window managers i
   - [How it looks](#how-it-looks)
   - [Installation](#installation)
   - [Customization](#customization)
-    - [Polybar](#polybar)
-    - [Zsh](#zsh)
-    - [NeoVim](#neovim)
-    - [Misc Customization](#misc-customization)
-    - [Window Managers](#window-managers)
-      - [i3 Gaps](#i3-gaps)
-      - [Openbox](#openbox)
+  - [Testing](#testing)
 
 ## How it looks
 
@@ -31,8 +25,10 @@ Dotfile generator that allows quick configuration of different window managers i
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 $ cd /tmp/dotfiles
-$ ./install # use -h to know more about install options
+$ ./install --os=<OS> --wms=<WMS> # use -h to know more about install options
 ```
+
+being `OS = arch-linux | debian` and `WMS = i3,openbox,...`.
 
 The installation script will install all the necessary dependencies that allow your dotfiles config work correctly.
 
@@ -51,60 +47,10 @@ $ git pull origin master
 
 To apply configuration files after the installation process you should only run the command `<dotfiles_dir>/default-config/install` after having modified the contents of the directory `<dotfiles_dir>/custom-config`.
 
-### Polybar
+Read more about this at [customization docs](./docs/CUSTOMIZATION.md).
 
-The polybar configuration is parameterizable. For this you can modify the parameters of the file `<dotfiles_dir>/custom-config/Xresources.d/polybar`. In case you have problems with this, you can check the default values in `<dotfiles_dir>/default-config/Xresources.d/polybar`.
+## Testing
 
-You can also add modules and polybars in the files `<dotfiles_dir>/custom-config/polybar/modules/custom.conf` and `<dotfiles_dir>/custom-config/polybar/polybars/custom.conf`, respectively.
+Maybe you want to contribute to this project or just test what the setup would look like before installing it. For this we develop test environments in which you can see how the changes look!
 
-For the parameterization of modules, you can use all those that are defined on `<dotfiles_dir>/config/polybar/modules.conf` and `<dotfiles_dir>/custom-config/polybar/modules/custom.conf`.
-
-### Zsh
-
-Any file in your `<dotfiles_dir>/custom-config` directory ending with `.sh` will automatically be sourced when you open a shell. You can use this to add additional alias, functions, etc.
-
-For example, you can create the file `<dotfiles_dir>/custom-config/zsh/paths.sh` with the following content.
-
-```sh
-# custom exports
-
-export LD_LIBRARY_PATH=/usr/local/lib
-export PATH="$(yarn global bin):$HOME/bin:$HOME/.local/bin:$PATH"
-
-export NVM_DIR="$HOME/.config"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/zsh_completion" ] && \. "$NVM_DIR/zsh_completion"  # This loads nvm zsh_completion
-```
-
-This file will be automatically sourced.
-
-### NeoVim
-
-Not yet
-
-### Misc Customization
-
-You can use your own configuration file in place of any of the following
-
-- gitconfig
-- xprofile
-- Xresources
-
-To do so you just need to include a file of the same name in your version controlled directory that you save into `custom-config` the create symlinks scripts will link the files properly.
-
-To add configuration files after the installation process you should only run the command `<dotfiles_dir>/default-config/install` after having modified the contents of the directory `<dotfiles_dir>/custom-config`.
-
-### Window Managers
-
-This section explains how to customize the installed window managers. It is important to note that in some cases, to update configuration files after the installation process you should only run the command `<dotfiles_dir>/default-config/install` after having modified the contents of the directory `<dotfiles_dir>/custom-config`.
-
-#### i3 Gaps
-
-All `i3-gaps` configuration is in file `<dotfiles_dir>/custom-config/i3/config`. You are completely free to configure it as you wish. In case you have problems or want to go back, you can see the default configuration in `<dotfiles_dir>/default-config/i3/config`.
-
-#### Openbox
-
-All `openbox` configurations are in `<dotfiles_dir>/custom-config/openbox`. You are completely free to configure it as you wish. In case you have problems or want to go back, you can see the default configuration in `<dotfiles_dir>/default-config/openbox`.
-
-These dotfiles are fully compatible with openbox configuration app. You can use them instead of doing it by hand.
-
+You can read more about this at [testing docs](./docs/TESTING.md).
