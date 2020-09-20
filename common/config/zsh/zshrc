@@ -162,13 +162,13 @@ source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 # >>1
 
 # Source Default Configurations <<1
-for fname in $(find ~/dotfiles/default-config -name "*.sh*"); do
+for fname in $(find ~/dotfiles/default-config -wholename "**/*.sh*"); do
     source $fname
 done
 # >>1
 
 # Source Custom Configurations <<1
-for fname in $(find ~/dotfiles/custom-config -name "*.sh*"); do
+for fname in $(find ~/dotfiles/custom-config -wholename "**/*.sh*"); do
     source $fname
 done
 # >>1

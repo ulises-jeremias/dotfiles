@@ -11,6 +11,8 @@
     untracked = yellow
 [push]
     default = matching
+[pull]
+	rebase = false
 [user]
     name =
     email =
