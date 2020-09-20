@@ -53,4 +53,14 @@ Read more about this at [customization docs](./docs/CUSTOMIZATION.md).
 
 Maybe you want to contribute to this project or just test what the setup would look like before installing it. For this we develop test environments in which you can see how the changes look!
 
+To run testing environment just run the following commands;
+
+```sh
+$ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
+$ cd /tmp/dotfiles
+$ ./bin/test --os=<OS> --wms=<WMS> # use -h to know more about install options
+```
+
+being `OS = arch-linux | debian` and `WMS = i3,openbox,...`.
+
 You can read more about this at [testing docs](./docs/TESTING.md).

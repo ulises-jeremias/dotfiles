@@ -1,6 +1,6 @@
 # Testing
 
-To run the development environment you just have to run the following commands in the repository root;
+To run testing environment just run the following commands;
 
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
