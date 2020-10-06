@@ -38,7 +38,6 @@ needed_pkgs=(
     termite
     wmctrl
     xgetres
-    xrandr
     yad
     zsh
     zsh-syntax-highlighting-git
