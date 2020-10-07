@@ -108,7 +108,7 @@
     </item>
     <item label="Exit openbox">
       <action name="Execute">
-        <command>~/bin/rofi_run -l</command>
+        <command>~/bin/rofi-run -l</command>
       </action>
     </item>
   </menu>
