@@ -1,16 +1,10 @@
 # Needed fonts
 fonts=(
-    nerd-fonts-ubuntu-mono
+    nerd-fonts-hack
     noto-fonts
     noto-fonts-cjk
     noto-fonts-emoji
     noto-fonts-extra
-    terminus-font
-    ttf-anonymous-pro
-    ttf-dejavu
-    ttf-font-awesome
-    ttf-liberation
-    ttf-linux-libertine
 )
 
 # Needed apps, themes and icons
