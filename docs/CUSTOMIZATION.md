@@ -7,6 +7,7 @@
   - [Common Apps](#common-apps)
     - [Polybar](#polybar)
     - [Zsh](#zsh)
+    - [Zsh + Power Level 10k](#zsh--power-level-10k)
     - [NeoVim](#neovim)
   - [Misc Customization](#misc-customization)
 
@@ -62,6 +63,19 @@ export PATH="$(yarn global bin):$HOME/bin:$HOME/.local/bin:$PATH"
 export NVM_DIR="$HOME/.config"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/zsh_completion" ] && \. "$NVM_DIR/zsh_completion"  # This loads nvm zsh_completion
+```
+
+### Zsh + Power Level 10k
+
+You can include [Power Level 10k](https://github.com/romkatv/powerlevel10k) creating a file at you `custom-config`, e.g. `<dotfiles_dir>/custom-config/zsh/p10k.sh` with the following content:
+
+```sh
+# Source Power Level 10k <<1
+source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+# >>1
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 ```
 
 This file will be automatically sourced.

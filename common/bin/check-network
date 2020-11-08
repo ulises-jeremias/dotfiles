@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-disconnect1="/"
-disconnect2="\\"
-wconnected=""
-econnected=""
+wdisconnect="睊"
+wconnected="直"
+econnected="歷"
+edisconnect="轢"
 
 id="$(ip link | awk '/state UP/ {print $2}')"
 
@@ -12,9 +12,7 @@ while true; do
         [[ $id == e* ]] && echo "$econnected" || echo "$wconnected"
         sleep 25
     else
-        echo "$disconnect1"  # /
-        sleep 0.6
-        echo "$disconnect2"  # \
+        [[ $id == e* ]] && echo "$edisconnect" || echo "$wdisconnect"
         sleep 0.6
     fi
 done
