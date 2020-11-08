@@ -31,6 +31,7 @@ needed_pkgs=(
     skippy-xd
     termite
     wmctrl
+    xdotool
     xgetres
     yad
     zsh
