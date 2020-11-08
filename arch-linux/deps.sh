@@ -41,7 +41,6 @@ needed_pkgs=(
     yad
     zsh
     zsh-syntax-highlighting-git
-    zsh-theme-powerlevel10k
 )
 
 # xfce4 utils

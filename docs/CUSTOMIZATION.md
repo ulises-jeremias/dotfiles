@@ -65,9 +65,11 @@ export NVM_DIR="$HOME/.config"
 [ -s "$NVM_DIR/zsh_completion" ] && \. "$NVM_DIR/zsh_completion"  # This loads nvm zsh_completion
 ```
 
+This file will be automatically sourced.
+
 ### Zsh + Power Level 10k
 
-You can include [Power Level 10k](https://github.com/romkatv/powerlevel10k) creating a file at you `custom-config`, e.g. `<dotfiles_dir>/custom-config/zsh/p10k.sh` with the following content:
+You can use [Power Level 10k](https://github.com/romkatv/powerlevel10k) as your zsh theme installing it and creating a file at your `custom-config`, e.g. `<dotfiles_dir>/custom-config/zsh/p10k.sh`, with the following content:
 
 ```sh
 # Source Power Level 10k <<1
