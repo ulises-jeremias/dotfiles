@@ -93,7 +93,7 @@ for arg in "$@"; do
             else
                 ANS="$(rofi -sep "|" -dmenu -i -p 'System' -width 20 \
                     -hide-scrollbar -line-padding 4 -padding 20 \
-                    -lines 4 <<< " Lock| Logout| Reboot| Shutdown")"
+                    -lines 4 <<< " Lock|﫼 Logout| Reboot| Shutdown")"
             fi
 
             case "$ANS" in
