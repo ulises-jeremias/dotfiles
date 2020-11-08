@@ -157,10 +157,6 @@ fi
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # >>1
 
-# Source Power Level 10k <<1
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-# >>1
-
 # Source Default Configurations <<1
 for fname in $(find ~/dotfiles/default-config -wholename "**/*.sh*"); do
     source $fname

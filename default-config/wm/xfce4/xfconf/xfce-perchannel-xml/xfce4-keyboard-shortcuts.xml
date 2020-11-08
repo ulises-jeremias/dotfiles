@@ -19,7 +19,7 @@
       <property name="XF86Mail" type="empty"/>
     </property>
     <property name="custom" type="empty">
-      <property name="&lt;Alt&gt;F1" type="string" value="rofi_run"/>
+      <property name="&lt;Alt&gt;F1" type="string" value="rofi-run"/>
       <property name="&lt;Alt&gt;F2" type="empty">
         <property name="startup-notify" type="bool" value="false"/>
       </property>
