@@ -2,8 +2,8 @@
 
 wdisconnect="睊"
 wconnected="直"
-econnected="歷"
-edisconnect="轢"
+econnected=""
+edisconnect=""
 
 id="$(ip link | awk '/state UP/ {print $2}')"
 
