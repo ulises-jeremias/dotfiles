@@ -2,6 +2,8 @@
 ! POLYBAR SETTINGS
 !==========================================
 
+polybar.radius: 5.0
+
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ! Polybar Modules
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -17,6 +19,8 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ! Polybar Top Bar attributes
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+polybar.top.background: #00000000
 
 ! Modules
 ! polybar.top.left: 
@@ -37,6 +41,8 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ! Polybar Top Bar attributes
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+polybar.bottom.background: #00000000
 
 ! Modules
 ! polybar.bottom.left: 
