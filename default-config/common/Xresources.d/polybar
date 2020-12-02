@@ -39,7 +39,7 @@ polybar.top.background: #00000000
 ! polybar.top.border.left.size:       ! e.g. 0
 
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-! Polybar Top Bar attributes
+! Polybar Bottom Bar attributes
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 polybar.bottom.background: #00000000
