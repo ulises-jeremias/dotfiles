@@ -92,6 +92,10 @@ else
     needed_pkgs+=( dunst )
 fi
 
+if [ -n "${bluetooth}" ]; then
+    needed_pkgs+=(  )
+fi
+
 if [ -n "${utils}" ]; then
     for util in "${util_pkgs[@]}"; do
         printf "Add ${util} to the installation list? [y/N]: "
