@@ -9,6 +9,14 @@ while pgrep -u $UID -x polybar > /dev/null; do sleep 1; done
 polybars=$(xgetres polybar.polybars)
 polybars="${polybars:-polybar-top,polybar-bottom}"
 
-for bar in $(echo ${polybars} | tr ',' '\n'); do
-    polybar ${bar} -r &
-done
+if type xrandr > /dev/null; then
+    for bar in $(echo ${polybars} | tr ',' '\n'); do
+        for m in $(xrandr --query | grep " connected" | cut -d" " -f1); do
+            MONITOR=$m polybar ${bar} -r &
+        done
+    done
+else
+    for bar in $(echo ${polybars} | tr ',' '\n'); do
+        polybar ${bar} -r &
+    done
+fi
