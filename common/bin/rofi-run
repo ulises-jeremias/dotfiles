@@ -26,18 +26,9 @@ usage() {
 
      -c,--clipboard     Select previous clipboard entries (requires greenclip)
 
-     -p,--polybar       Select polybar theme
-
-
   Without any options the run dialog will be opened.
 
 EOF
-}
-
-toggle_polybar() {
-    echo > ~/.config/polybar/.polybar-session
-    echo "export POLYBAR_SESSION=\"$1\"" >> ~/.config/polybar/.polybar-session
-    ~/.config/polybar/launch
 }
 
 for arg in "$@"; do
@@ -100,19 +91,7 @@ for arg in "$@"; do
                 *Lock) i3lock-fancy ;;
                 *Reboot) systemctl reboot ;;
                 *Shutdown) systemctl -i poweroff ;;
-                *Logout) session-logout || pkill -15 -t tty"$XDG_VTNR" Xorg ;;
-            esac
-            ;;
-        -p|--polybar)
-            ANS="$(rofi -sep "|" -dmenu -i -p 'Polybar session theme' -width 55 \
-                -hide-scrollbar -line-padding 4 -padding 20 \
-                -lines 4 <<< "Two bars layout|Two bars small layout|Top bar only|Small top bar only")"
-
-            case "$ANS" in
-                "Two bars layout") toggle_polybar two-bars-layout ;;
-                "Top bar only") toggle_polybar top-bar-only ;;
-                "Two bars small layout") toggle_polybar two-bars-small-layout ;;
-                "Small top bar only") toggle_polybar small-top-bar-only ;;
+                *Logout) pkill -15 -t tty"$XDG_VTNR" Xorg ;;
             esac
             ;;
         *)

@@ -34,7 +34,7 @@ toggle_polybar() {
         if [ $(pidof polybar | wc -l) -ne 0 ]; then
             pkill -9 polybar
         else
-            ~/.config/polybar/launch
+            ~/.config/polybar/launch &
         fi
         exit 0
     fi
