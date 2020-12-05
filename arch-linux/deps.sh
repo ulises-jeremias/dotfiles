@@ -93,7 +93,7 @@ else
 fi
 
 if [ -n "${bluetooth}" ]; then
-    needed_pkgs+=(  )
+    needed_pkgs+=( bluez )
 fi
 
 if [ -n "${utils}" ]; then
