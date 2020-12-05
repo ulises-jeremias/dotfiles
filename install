@@ -12,6 +12,7 @@
 ##         --nodeps                          Will not install dependencies.
 ##         --nodunst                         Notifications will use xfce4-notifyd instead.
 ##         --utils                           Will answer you to install some utilities.
+##         --bluetooth                       Will add bluetooth to the dependencies added.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: arch-linux | debian
 ##         --wms=COMMA_SEPARATED_WMS         Window managers. Posible wms: i3, openbox
@@ -29,5 +30,6 @@ source ${ROOT}/${os}/deps.sh || exit
 args=$@
 args=( "${args[@]/--utils/}" )
 args=( "${args[@]/--nodunst/}" )
+args=( "${args[@]/--bluetooth/}" )
 
 ${ROOT}/scripts/install ${args[@]} --pkgs=${pkgs}
