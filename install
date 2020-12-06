@@ -14,7 +14,8 @@
 ##         --utils                           Will answer you to install some utilities.
 ##         --bluetooth                       Will add bluetooth to the dependencies added.
 ##
-##         --os=OS_NAME                      Operating System. Posible values: arch-linux | debian
+##         --os=OS_NAME                      Operating System. Posible values: arch-linux | debian.
+##                                           By default, the installation script will determine which is your OS.
 ##         --wms=COMMA_SEPARATED_WMS         Window managers. Posible wms: i3, openbox
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
@@ -23,6 +24,9 @@
 ROOT=$(dirname $0)
 
 source ${ROOT}/util/opts/opts.sh || exit
+
+# override OS with a correct value with the given params
+source ${ROOT}/util/os.sh || exit
 
 # load deps for give os. Defines pkgs variable
 source ${ROOT}/${os}/deps.sh || exit
