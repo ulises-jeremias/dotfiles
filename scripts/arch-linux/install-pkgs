@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 aur_helpers=( yay aurman pakku pacaur trizen aura pikaur )
 

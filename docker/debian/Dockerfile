@@ -38,6 +38,7 @@ RUN apt-get update \
         libgirepository1.0-dev \
         libxml2-utils \
         gperf \
+        software-properties-common \
         xserver-xorg \
         xinit \
     && rm -rf /tmp/* /var/tmp/*

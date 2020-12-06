@@ -1,15 +1,13 @@
-#!/usr/bin/env sh
-
-fetch_pkg() {
-    apt search $1
+pkg_install() {
+    if [ -x "${ROOT}/debian/$1" ]; then
+        ${ROOT}/debian/$1
+        return $?
+    fi
+    sudo apt install $1
     return $?
 }
 
-pkg_install() {
-    
-}
-
 pkg_exists() {
-    fetch_pkg $1
+    [ -f "${ROOT}/debian/$1" ] || apt search $1
     return $?
 }

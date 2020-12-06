@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+git clone https://github.com/johanmalm/jgmenu.git /tmp/jgmenu
+pushd /tmp/jgmenu
+./configure --prefix=$HOME --with-lx --with-pmenu
+make
+make install
+popd

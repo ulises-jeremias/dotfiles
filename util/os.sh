@@ -35,5 +35,3 @@ if [[ ! " ${oss[@]} " =~ " ${os} " ]]; then
     echo "${os} is not supported"
     exit 1
 fi
-
-echo "Installing dotfiles for ${os}"

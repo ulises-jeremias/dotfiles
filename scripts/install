@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 ## Copyright (C) 2019-2020 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT
@@ -24,6 +24,9 @@ ROOT=$(dirname $0)
 
 source ${ROOT}/../util/opts/opts.sh || exit
 source ${ROOT}/../util/logs.sh || exit
+
+# override OS with a correct value with the given params
+source ${ROOT}/../util/os.sh || exit
 
 #==========================================
 # Default argument values and preprocessing
