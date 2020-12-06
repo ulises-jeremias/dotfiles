@@ -1,6 +1,6 @@
 pkg_install() {
-    if [ -x "${ROOT}/debian/$1" ]; then
-        ${ROOT}/debian/$1
+    if [ -f "${ROOT}/debian/$1" ]; then
+        bash ${ROOT}/debian/$1
         return $?
     fi
     sudo apt install $1
