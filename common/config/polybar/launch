@@ -6,33 +6,17 @@ pkill -9 polybar
 # Wait until the processes have been shut down
 while pgrep -u $UID -x polybar > /dev/null; do sleep 1; done
 
-themes=(
-    top-bar-only
-    small-top-bar-only
-    two-bars-small-layout
-    two-bars-layout
-)
+polybars=$(xgetres polybar.polybars)
+polybars="${polybars:-polybar-top,polybar-bottom}"
 
-SESSION="two-bars-layout"
-
-if [ -f ~/.config/polybar/.polybar-session ]; then
-    source ~/.config/polybar/.polybar-session
-    SESSION="$POLYBAR_SESSION"
-fi
-
-echo $SESSION
-if [[ " ${themes[@]} " =~ " $1 " ]]; then
-    SESSION="$1"
-fi
-
-if [ "$SESSION" = "top-bar-only" ]; then
-    polybar polybar-top-only -r
-elif [ "$SESSION" = "small-top-bar-only" ]; then
-    polybar small-polybar-top-only -r
-elif [ "$SESSION" = "two-bars-small-layout" ]; then
-    polybar small-polybar-top -r &
-    polybar small-polybar-bottom -r
+if type xrandr > /dev/null; then
+    for bar in $(echo ${polybars} | tr ',' '\n'); do
+        for m in $(xrandr --query | grep " connected" | cut -d" " -f1); do
+            MONITOR=$m polybar ${bar} -r &
+        done
+    done
 else
-    polybar polybar-top -r &
-    polybar polybar-bottom -r
+    for bar in $(echo ${polybars} | tr ',' '\n'); do
+        polybar ${bar} -r &
+    done
 fi

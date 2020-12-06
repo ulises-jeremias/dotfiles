@@ -25,10 +25,10 @@ Dotfile generator that allows quick configuration of different window managers i
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 $ cd /tmp/dotfiles
-$ ./install --os=<OS> --wms=<WMS> # use -h to know more about install options
+$ ./install --wms=<WMS> # use -h to know more about install options
 ```
 
-being `OS = arch-linux | debian` and `WMS = i3,openbox,...`.
+being `WMS = i3,openbox,...`.
 
 The installation script will install all the necessary dependencies that allow your dotfiles config work correctly.
 

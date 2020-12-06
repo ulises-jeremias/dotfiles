@@ -2,6 +2,9 @@
 ! POLYBAR SETTINGS
 !==========================================
 
+polybar.polybars: polybar-top,polybar-bottom
+polybar.radius: 5.0
+
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ! Polybar Modules
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -12,11 +15,13 @@
 
 ! Networking
 ! polybar.modules.wifi.iface: 
-! polybar.modules.eth.iface: 
+! polybar.modules.eth.iface:
 
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ! Polybar Top Bar attributes
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+polybar.top.background: #00000000
 
 ! Modules
 ! polybar.top.left: 
@@ -35,8 +40,10 @@
 ! polybar.top.border.left.size:       ! e.g. 0
 
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-! Polybar Top Bar attributes
+! Polybar Bottom Bar attributes
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+polybar.bottom.background: #00000000
 
 ! Modules
 ! polybar.bottom.left: 

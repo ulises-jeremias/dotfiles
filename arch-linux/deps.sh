@@ -31,6 +31,7 @@ needed_pkgs=(
     skippy-xd
     termite
     wmctrl
+    xdotool
     xgetres
     yad
     zsh
@@ -89,6 +90,11 @@ if [ -n "${nodunst}" ]; then
     xfce4_pkgs+=( xfce4-notifyd )
 else
     needed_pkgs+=( dunst )
+fi
+
+if [ -n "${bluetooth}" ]; then
+    needed_pkgs+=( bluez )
+    util_pkgs+=( blueman pulseaudio-module-bluetooth )
 fi
 
 if [ -n "${utils}" ]; then

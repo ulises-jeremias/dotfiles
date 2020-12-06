@@ -26,13 +26,13 @@ set $WS4 "4: "
 set $WS5 "5: "
 set $WS6 "6: "
 set $WS7 "7: "
-set $WS8 "8: "
+set $WS8 "8: ﭮ"
 
 ###############     Autostart      ##################
 
 # run with reload
 exec_always --no-startup-id xrdb -I$HOME -load ~/.Xresources
-exec_always --no-startup-id compton --config ~/.config/compton.conf
+exec_always --no-startup-id picom --config ~/.config/picom.conf
 exec_always --no-startup-id ~/.config/feh/.fehbg
 exec_always --no-startup-id ~/.config/polybar/launch
 
