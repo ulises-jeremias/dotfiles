@@ -59,6 +59,15 @@ cat <<EOF
 ╰┄┄┄┄┄┄┄╯
 EOF
 }
+external_above() {
+cat <<EOF
+┌────┐
+└────┘  External monitor ($ext)
+ ┏━━┓    above of interal monitor ($internal)
+ ┗━━┛
+    
+EOF
+}
 
 
 print_menu() {
@@ -71,6 +80,8 @@ echo -e '\0'
 external_on_top
 echo -e '\0'
 internal_off
+echo -e '\0'
+external_above
 }
 
 disable_screensaver() {
@@ -130,6 +141,10 @@ case "$res" in
         xrandr --output $ext --auto --output $internal --off
         enable_screensaver
         # fix_hdmi_audio
+        ;;
+    5) 
+        xrandr --output $internal --auto --primary --output $ext --auto --above $internal
+        disable_screensaver
         ;;
     *)
         ;;
