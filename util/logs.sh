@@ -18,20 +18,20 @@ describe() {
 log_warn() {
     message=${1:-"Warning"}
     log="${YELLOW}${WARN} ${message}${RESET}"
-    printf " %s\n" "${log}"
-    [ -f "$3" ] && printf "%s %s\n" "$2" "${log}" >> "$3"
+    echo -e "${log}"
+    [ -f "$3" ] && echo "$2 ${log}" >> "$3"
 }
 
 log_failed() {
     message=${1:-"Failed"}
     log="${RED}${CROSS} ${message}${RESET}"
-    printf " %s\n" "${log}"
-    [ -f "$3" ] && printf "%s %s\n" "$2" "${log}" >> "$3"
+    echo -e "${log}"
+    [ -f "$3" ] && echo "$2 ${log}" >> "$3"
 }
 
 log_success() {
     message=${1:-"Success"}
     log="${GREEN}${CHECK} ${message}${RESET}"
-    printf " %s\n" "${log}"
-    [ -f "$3" ] && printf "%s %s\n" "$2" "${log}" >> "$3"
+    echo -e "${log}"
+    [ -f "$3" ] && echo "$2 ${log}" >> "$3"
 }
