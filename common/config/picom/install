@@ -3,4 +3,4 @@
 ROOT=$(dirname $0)
 
 sudo rm -rf ~/.config/picom.conf > /dev/null 2>&1
-ln -sf ${ROOT}/picom.conf ~/.config/picom.conf
+ln -sf "${ROOT}"/picom.conf ~/.config/picom.conf

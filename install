@@ -23,17 +23,17 @@
 
 ROOT=$(dirname $0)
 
-source ${ROOT}/util/opts/opts.sh || exit
+source "${ROOT}"/util/opts/opts.sh || exit
 
 # override OS with a correct value with the given params
-source ${ROOT}/util/os.sh || exit
+source "${ROOT}"/util/os.sh || exit
 
 # load deps for give os. Defines pkgs variable
-source ${ROOT}/${os}/deps.sh || exit
+source "${ROOT}"/${os}/deps.sh || exit
 
 args=$@
 args=( "${args[@]/--utils/}" )
 args=( "${args[@]/--nodunst/}" )
 args=( "${args[@]/--bluetooth/}" )
 
-${ROOT}/scripts/install ${args[@]} --pkgs=${pkgs}
+"${ROOT}"/scripts/install ${args[@]} --pkgs=${pkgs}

@@ -22,11 +22,11 @@
 
 ROOT=$(dirname $0)
 
-source ${ROOT}/../util/opts/opts.sh || exit
-source ${ROOT}/../util/logs.sh || exit
+source "${ROOT}"/../util/opts/opts.sh || exit
+source "${ROOT}"/../util/logs.sh || exit
 
 # override OS with a correct value with the given params
-source ${ROOT}/../util/os.sh || exit
+source "${ROOT}"/../util/os.sh || exit
 
 #==========================================
 # Default argument values and preprocessing
@@ -51,7 +51,7 @@ fi
 # Install dependencies according to os
 #==========================================
 if [ ! -n "${nodeps}" ] && [ "${os}" != "" ]; then
-    ${ROOT}/install-pkgs \
+    "${ROOT}"/install-pkgs \
         --log-file=${log_file} ${upgrade_flag} --os=${os} \
         --pkgs=${pkgs}
 fi
@@ -61,7 +61,7 @@ echo
 #==========================================
 # Install dotfiles according to os
 #==========================================
-${ROOT}/install-dotfiles --log-file=${log_file} --dotfiles-dir=${dotfiles_dir} --os=${os} --wms=${wms} ${clear_flag}
+"${ROOT}"/install-dotfiles --log-file=${log_file} --dotfiles-dir=${dotfiles_dir} --os=${os} --wms=${wms} ${clear_flag}
 
 #==========================================
 # Set zsh as the default shell

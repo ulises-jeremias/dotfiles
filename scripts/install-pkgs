@@ -18,11 +18,11 @@
 
 ROOT=$(dirname $0)
 
-source ${ROOT}/../util/opts/opts.sh || exit
-source ${ROOT}/../util/logs.sh || exit
+source "${ROOT}"/../util/opts/opts.sh || exit
+source "${ROOT}"/../util/logs.sh || exit
 
 # override OS with a correct value with the given params
-source ${ROOT}/../util/os.sh || exit
+source "${ROOT}"/../util/os.sh || exit
 
 #==========================================
 # Default argument values and preprocessing
@@ -34,7 +34,7 @@ pkgs=${pkgs:-""}
 
 [ ! -f "${log_file}" ] && touch ${log_file}
 
-. ${ROOT}/$os/install-pkgs
+. "${ROOT}"/$os/install-pkgs
 
 #==========================================
 # Installing process

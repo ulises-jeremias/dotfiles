@@ -20,8 +20,8 @@
 
 ROOT=$(dirname $0)
 
-source "${ROOT}/../util/opts/opts.sh" || exit
-source "${ROOT}/../util/logs.sh" || exit
+source ""${ROOT}"/../util/opts/opts.sh" || exit
+source ""${ROOT}"/../util/logs.sh" || exit
 
 #==========================================
 # Default argument values and preprocessing
