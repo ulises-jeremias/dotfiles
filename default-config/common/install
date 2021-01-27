@@ -12,7 +12,7 @@ create_symlink() {
 }
 
 ROOT=$(dirname $0)
-dotfiles_dir=""${ROOT}"/.."
+dotfiles_dir="${ROOT}/.."
 
 #==========================================
 # Delete existing dot files and folders

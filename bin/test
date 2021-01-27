@@ -20,8 +20,8 @@
 
 ROOT=$(dirname $0)
 
-source ""${ROOT}"/../util/opts/opts.sh" || exit
-source ""${ROOT}"/../util/logs.sh" || exit
+source "${ROOT}/../util/opts/opts.sh" || exit
+source "${ROOT}/../util/logs.sh" || exit
 
 #==========================================
 # Default argument values and preprocessing
@@ -38,17 +38,17 @@ XPORT=${xport:-1225}
 xephyr_ini() {
     if ! type -p Xephyr > /dev/null; then
         log_failed "Xephyr is not installed in this system" ${log_file}
-        exit -1
+        exit 1
     fi
 
-    Xephyr :${XPORT} -ac -br -screen 1024x768 -resizeable -reset -terminate &
+    Xephyr :"${XPORT}" -ac -br -screen 1024x768 -resizeable -reset -terminate &
 }
 
 # creates docker image if it doesn't exists
 docker_ini() {
     if ! type -p docker > /dev/null; then
         log_failed "Docker is not installed in this system" ${log_file}
-        exit -1
+        exit 1
     fi
 
     if type -p md5 > /dev/null; then
@@ -85,5 +85,5 @@ docker_ini
 docker_run
 
 # Help shown by default
-[[ -z "$documentation" ]] && parse_documentation
-echo "$documentation"
+[[ -z "${documentation}" ]] && parse_documentation
+echo "${documentation}"

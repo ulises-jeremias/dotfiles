@@ -57,7 +57,7 @@ fi
 describe "Installing binaries\n" 0
 cp -rf "${ROOT}"/../common/bin ${dotfiles_dir}
 
-if [ -d ""${ROOT}"/../${os}/bin" ]; then
+if [ -d "${ROOT}/../${os}/bin" ]; then
     cp -rf "${ROOT}"/../${os}/bin ${dotfiles_dir}
 fi
 
@@ -90,8 +90,8 @@ for config_path in $(find "${ROOT}"/../common/config/ -maxdepth 1 -mindepth 1 -t
 
     os_config_path=${config_path}
 
-    if [ -x ""${ROOT}"/../${os}/config/${config}/install" ]; then
-        os_config_path=""${ROOT}"/../${os}/config/${config}"
+    if [ -x "${ROOT}/../${os}/config/${config}/install" ]; then
+        os_config_path="${ROOT}/../${os}/config/${config}"
     fi
 
     cp -rf ${os_config_path} ${dotfiles_dir}/config
@@ -115,7 +115,7 @@ rm -rf ${dotfiles_dir}/default-config > /dev/null 2>&1
 cp -rf "${ROOT}"/../default-config/common ${dotfiles_dir}/default-config
 
 for wm in xfce4 $(echo ${wms} | tr ',' '\n'); do
-    [ -e ""${ROOT}"/../default-config/wm/${wm}/install" ] || continue
+    [ -e "${ROOT}/../default-config/wm/${wm}/install" ] || continue
     cp -rf "${ROOT}"/../default-config/wm/${wm} ${dotfiles_dir}/default-config
     cp -rf "${ROOT}"/../default-config/wm/${wm} ${dotfiles_dir}/custom-config
     chmod +x ${dotfiles_dir}/default-config/${wm}/install
