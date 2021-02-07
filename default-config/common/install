@@ -56,11 +56,11 @@ done
 
 printf "Setting up git...\\n"
 
-defaultName=$(git config --global user.name)
-defaultEmail=$(git config --global user.email)
+default_name=$(git config --global user.name)
+default_email=$(git config --global user.email)
 
-read -rp "Name [$defaultName]: " name
-read -rp "Email [$defaultEmail]: " email
+read -rp "Name [$default_name]: " name
+read -rp "Email [$default_email]: " email
 
-git config --global user.name "${name:-$defaultName}"
-git config --global user.email "${email:-$defaultEmail}"
+git config --global user.name "${name:-$default_name}"
+git config --global user.email "${email:-$default_email}"
