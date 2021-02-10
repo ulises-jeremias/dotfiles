@@ -20,7 +20,7 @@
 ##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
 ##
 
-ROOT=$(dirname $0)
+ROOT=$(dirname "$0")
 
 source "${ROOT}"/../util/opts/opts.sh || exit
 source "${ROOT}"/../util/logs.sh || exit
@@ -37,7 +37,7 @@ log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
 wms=${wms:-""}
 
-[ ! -f "${log_file}" ] && touch ${log_file}
+[ ! -f "${log_file}" ] && touch "${log_file}"
 
 if [ -n "${upgrade}" ]; then
     upgrade_flag="--upgrade"
@@ -52,8 +52,8 @@ fi
 #==========================================
 if [ ! -n "${nodeps}" ] && [ "${os}" != "" ]; then
     "${ROOT}"/install-pkgs \
-        --log-file=${log_file} ${upgrade_flag} --os=${os} \
-        --pkgs=${pkgs}
+        --log-file="${log_file}" ${upgrade_flag} --os="${os}" \
+        --pkgs="${pkgs}"
 fi
 
 echo
@@ -61,7 +61,7 @@ echo
 #==========================================
 # Install dotfiles according to os
 #==========================================
-"${ROOT}"/install-dotfiles --log-file=${log_file} --dotfiles-dir=${dotfiles_dir} --os=${os} --wms=${wms} ${clear_flag}
+"${ROOT}"/install-dotfiles --log-file="${log_file}" --dotfiles-dir="${dotfiles_dir}" --os="${os}" --wms="${wms}" ${clear_flag}
 
 #==========================================
 # Set zsh as the default shell
@@ -74,7 +74,7 @@ sudo chsh -s /bin/zsh
 # been installed
 #==========================================
 echo -e "\n====== Summary ======\n"
-cat ${log_file}
+cat "${log_file}"
 echo
 echo "Enjoy dotfiles :D"
-rm ${log_file}
+rm "${log_file}"
