@@ -91,11 +91,11 @@ display_usage() {
 }
 
 exec_op() {
-  if [ "$2" = '+' ]; then
-    NEWVAL=$(echo "$3 + $1" | bc)
-  elif [ "$2" = '-' ]; then
-    NEWVAL=$(echo "$3 - $1" | bc)
-  elif [ "$2" = '=' ]; then
+  if [ "$1" = '+' ]; then
+    NEWVAL=$(echo "$3 + $2" | bc)
+  elif [ "$1" = '-' ]; then
+    NEWVAL=$(echo "$3 - $2" | bc)
+  elif [ "$1" = '=' ]; then
     NEWVAL=$2
   fi
   if [ "$(echo "$NEWVAL < 0.0" | bc)" -eq 1 ]; then
