@@ -28,12 +28,12 @@ KEY="0867dd59b3bfcbdf3f98937d4df8c340"
 UNITS="metric"
 SYMBOL="°C"
 
-if [ ! -z "$CITY" ]; then
+if [ -n "$CITY" ]; then
   weather=$(curl -sf "http://api.openweathermap.org/data/2.5/weather?APPID=$KEY&q=$CITY&units=$UNITS")
 else
   location=$(curl -sf https://location.services.mozilla.com/v1/geolocate?key=geoclue)
 
-  if [ ! -z "$location" ]; then
+  if [ -n "$location" ]; then
     location_lat="$(echo "$location" | jq '.location.lat')"
     location_lon="$(echo "$location" | jq '.location.lng')"
 
@@ -41,7 +41,7 @@ else
   fi
 fi
 
-if [ ! -z "$weather" ]; then
+if [ -n "$weather" ]; then
   weather_desc=$(echo "$weather" | jq -r ".weather[0].description")
   weather_temp=$(echo "$weather" | jq ".main.temp" | cut -d "." -f 1)
   weather_icon=$(echo "$weather" | jq -r ".weather[0].icon")
