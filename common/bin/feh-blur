@@ -54,13 +54,13 @@ EXT="ppm"
 wall_original="$CACHE_DIR/original.$EXT"
 
 # Echo some info. Only if verbose=1
-info () {
+info() {
   if [ "$VERBOSE" -gt 0 ]; then
     echo "    $1"
   fi
 }
 
-head () {
+head() {
   if [ "$VERBOSE" -gt 0 ]; then
     echo ""
     echo -e " \033[31m>>\033[32m $1\033[0m"
@@ -68,14 +68,14 @@ head () {
 }
 
 # Log some debug info
-debug () {
+debug() {
   if [ "$VERBOSE" -gt 1 ]; then
     echo "  - $1"
   fi
 }
 
 # Generate a bunch of images
-generate_blurred_images () {
+generate_blurred_images() {
   mkdir -p "$CACHE_DIR"
   local source="$1"
   local original="$CACHE_DIR/original.$EXT"
@@ -90,10 +90,10 @@ generate_blurred_images () {
   local fx2=""
   local fx3=""
 
-  if [ "$BLUR_STRENGTH" != "0" ]; then 
-    fx1="$fx1 -scale 25% -blur 0x$(( "$BLUR_STRENGTH" / 4 )) -scale 400%"
-    fx2="$fx2 -scale 25% -blur 0x$(( "$BLUR_STRENGTH" / 2 )) -scale 400%"
-    fx3="$fx3 -scale 25% -blur 0x$(( "$BLUR_STRENGTH" / 1 )) -scale 400%"
+  if [ "$BLUR_STRENGTH" != "0" ]; then
+    fx1="$fx1 -scale 25% -blur 0x$(("$BLUR_STRENGTH" / 4)) -scale 400%"
+    fx2="$fx2 -scale 25% -blur 0x$(("$BLUR_STRENGTH" / 2)) -scale 400%"
+    fx3="$fx3 -scale 25% -blur 0x$(("$BLUR_STRENGTH" / 1)) -scale 400%"
   fi
 
   if [ "$REDUCE_CONTRAST" = "1" ]; then
@@ -103,9 +103,9 @@ generate_blurred_images () {
   fi
 
   if [ "$DIM_STRENGTH" != "0" ]; then
-    fx1="$fx1 -fill $DIM_COLOR -colorize $(( "$DIM_STRENGTH" / 4 ))%"
-    fx2="$fx2 -fill $DIM_COLOR -colorize $(( "$DIM_STRENGTH" / 2 ))%"
-    fx3="$fx3 -fill $DIM_COLOR -colorize $(( "$DIM_STRENGTH" / 1 ))%"
+    fx1="$fx1 -fill $DIM_COLOR -colorize $(("$DIM_STRENGTH" / 4))%"
+    fx2="$fx2 -fill $DIM_COLOR -colorize $(("$DIM_STRENGTH" / 2))%"
+    fx3="$fx3 -fill $DIM_COLOR -colorize $(("$DIM_STRENGTH" / 1))%"
   fi
 
   gm convert "$original" \
@@ -160,13 +160,13 @@ set_blurred_wallpaper() {
 
   if [ "$ANIMATE_FADE" == 1 ]; then
     # We're going to redirect output to /dev/null to supress feh warnings
-    feh --no-fehbg "$mode" "$CACHE_DIR/blur-0.$EXT" &> /dev/null
+    feh --no-fehbg "$mode" "$CACHE_DIR/blur-0.$EXT" &>/dev/null
     sleep $ANIMATION_INTERVAL
-    feh --no-fehbg "$mode" "$CACHE_DIR/blur-1.$EXT" &> /dev/null
+    feh --no-fehbg "$mode" "$CACHE_DIR/blur-1.$EXT" &>/dev/null
     sleep $ANIMATION_INTERVAL
   fi
 
-  feh --no-fehbg "$mode" "$CACHE_DIR/blur-final.$EXT" &> /dev/null
+  feh --no-fehbg "$mode" "$CACHE_DIR/blur-final.$EXT" &>/dev/null
 }
 
 set_original_wallpaper() {
@@ -174,13 +174,13 @@ set_original_wallpaper() {
   local mode="$1" # --bg-tile
 
   if [ "$ANIMATE_FADE" == 1 ]; then
-    feh --no-fehbg "$mode" "$CACHE_DIR/blur-1.$EXT" &> /dev/null
+    feh --no-fehbg "$mode" "$CACHE_DIR/blur-1.$EXT" &>/dev/null
     sleep $ANIMATION_INTERVAL
-    feh --no-fehbg "$mode" "$CACHE_DIR/blur-0.$EXT" &> /dev/null
+    feh --no-fehbg "$mode" "$CACHE_DIR/blur-0.$EXT" &>/dev/null
     sleep $ANIMATION_INTERVAL
   fi
 
-  feh --no-fehbg "$mode" "$wall_original" &> /dev/null
+  feh --no-fehbg "$mode" "$wall_original" &>/dev/null
 }
 
 kill_other_instances() {
@@ -189,7 +189,7 @@ kill_other_instances() {
 
     local count=1
     while [ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]; do
-      count=$(( count + 1 ))
+      count=$((count + 1))
       old_pid="$(pgrep -fo "$PROC_EXPR")"
 
       # Kill it; if it refuses after some time, force-stop it
@@ -203,7 +203,7 @@ kill_other_instances() {
   fi
 }
 
-run_loop () {
+run_loop() {
   prev_blank="-"
   prev_wallpaper="-"
   first_run="1"
@@ -265,60 +265,63 @@ show_help() {
 }
 
 parse_opts() {
-  while [[ "$1" =~ ^- ]] && [ ! "$1" == "--" ]; do case $1 in
+  while [[ "$1" =~ ^- ]] && [ ! "$1" == "--" ]; do
+    case $1 in
     -h | --help)
       MODE=noop
       show_help
       ;;
-    -V | --version )
+    -V | --version)
       MODE=noop
       echo version
       ;;
-    -b | --blur )
+    -b | --blur)
       shift
       BLUR_STRENGTH="$1"
       ;;
-    -c | --uncontrast )
+    -c | --uncontrast)
       REDUCE_CONTRAST=1
       ;;
-    --save-image )
+    --save-image)
       shift
       BLUR_IMAGE_SAVE_LOCATION="$1"
       ;;
-    --no-animate )
+    --no-animate)
       ANIMATE_FADE=0
       ;;
-    -D | --dim | --darken )
+    -D | --dim | --darken)
       shift
       DIM_COLOR="#000"
       DIM_STRENGTH="$1"
       ;;
-    --lighten )
+    --lighten)
       shift
       DIM_COLOR="#fff"
       DIM_STRENGTH="$1"
       ;;
-    --tint-color )
+    --tint-color)
       shift
       DIM_COLOR="$1"
       ;;
-    --tint-strength )
+    --tint-strength)
       shift
       DIM_STRENGTH="$1"
       ;;
-    -d | --daemon )
+    -d | --daemon)
       MODE=background
       ;;
-    -s | --stop )
+    -s | --stop)
       MODE=stop
       ;;
-    -q | --quiet )
+    -q | --quiet)
       VERBOSE=0
       ;;
-    -v | --verbose )
+    -v | --verbose)
       VERBOSE=2
       ;;
-  esac; shift; done
+    esac
+    shift
+  done
   if [ "$1" == '--' ]; then shift; fi
 }
 
@@ -359,34 +362,35 @@ main() {
   parse_opts "$@"
 
   case "$MODE" in
-    background)
-      kill_other_instances
-      print_usage
-      "$0" --worker --quiet & disown
+  background)
+    kill_other_instances
+    print_usage
+    "$0" --worker --quiet &
+    disown
 
-      head "Background mode"
-      info "$BIN started in background mode!"
-      info "To stop, use '$BIN --stop'."
-      ;;
-  
-    stop)
-      kill_other_instances
-      ;;
+    head "Background mode"
+    info "$BIN started in background mode!"
+    info "To stop, use '$BIN --stop'."
+    ;;
 
-    noop)
-      exit
-      ;;
+  stop)
+    kill_other_instances
+    ;;
 
-    *)
-      kill_other_instances
-      print_usage
-      run_loop
-      ;;
+  noop)
+    exit
+    ;;
+
+  *)
+    kill_other_instances
+    print_usage
+    run_loop
+    ;;
   esac
 }
 
 # Perform cleanup operations before stopping.
-do_cleanup () {
+do_cleanup() {
   # Guard clause so that it's only ran once
   if [ "$CLEANING_UP" == "1" ]; then return; fi
   CLEANING_UP=1
@@ -400,7 +404,7 @@ do_cleanup () {
   fi
 }
 
-finish () {
+finish() {
   do_cleanup
   exit 1
 }

@@ -4,7 +4,7 @@
 xfsettingsd &
 
 # load X params required for dotfiles to work
-xrdb -I$HOME -load ~/.Xresources &
+xrdb -I"${HOME}" -load ~/.Xresources &
 
 # load picom
 picom --config ~/.config/picom.conf &

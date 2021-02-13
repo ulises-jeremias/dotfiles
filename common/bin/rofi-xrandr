@@ -3,85 +3,83 @@
 internal=LVDS1
 ext=VGA1
 
-internal=$(xrandr|grep primary|cut -d' ' -f1)
-ext=$(xrandr |grep ' 'connected| grep -v primary | head -n 1| cut -d' ' -f1)
-
+internal=$(xrandr | grep primary | cut -d' ' -f1)
+ext=$(xrandr | grep connected | grep -v primary | head -n 1 | cut -d' ' -f1)
 
 external_on_top() {
-#cat <<EOF
-#┌────┬──┐
-#│    │  │           External monitor ($ext)
-#├────┘  │           on top of interal monitor ($internal)
-#└───────┘
-#EOF
-cat <<EOF
+    #cat <<EOF
+    #┌────┬──┐
+    #│    │  │           External monitor (${ext})
+    #├────┘  │           on top of interal monitor ($internal)
+    #└───────┘
+    #EOF
+    cat <<EOF
 ┏━━━━┱──┐
-┃    ┃  │           External monitor ($ext)
+┃    ┃  │           External monitor (${ext})
 ┡━━━━┛  │           on top of interal monitor ($internal)
 └───────┘
 EOF
 }
 external_right() {
-#cat <<EOF
-#┌───────┐ ┌────┐
-#│       │ │    │   External monitor ($ext)
-#│       │ └────┘   right of interal monitor ($internal)
-#└───────┘
-#EOF
-cat <<EOF
+    #cat <<EOF
+    #┌───────┐ ┌────┐
+    #│       │ │    │   External monitor (${ext})
+    #│       │ └────┘   right of interal monitor ($internal)
+    #└───────┘
+    #EOF
+    cat <<EOF
 ┌───────┐ ┏━━━━┓
-│       │ ┃    ┃   External monitor ($ext)
+│       │ ┃    ┃   External monitor (${ext})
 │       │ ┗━━━━┛   right of interal monitor ($internal)
 └───────┘
 EOF
 }
 external_left() {
-cat <<EOF
+    cat <<EOF
 ┏━━━━┓ ┌───────┐
-┃    ┃ │       │   External monitor ($ext)
+┃    ┃ │       │   External monitor (${ext})
 ┗━━━━┛ │       │   left of interal monitor ($internal)
        └───────┘
 EOF
 }
 external_off() {
-cat <<EOF
+    cat <<EOF
 ┌───────┐ ╭┄┄┄┄╮
-│       │ ┆    ┆   External monitor ($ext) disabled
+│       │ ┆    ┆   External monitor (${ext}) disabled
 │       │ ╰┄┄┄┄╯
 └───────┘
 EOF
 }
 internal_off() {
-cat <<EOF
+    cat <<EOF
 ╭┄┄┄┄┄┄┄╮ ┏━━━━┓
-┆       ┆ ┃    ┃   External monitor ($ext) enabled
+┆       ┆ ┃    ┃   External monitor (${ext}) enabled
 ┆       ┆ ┗━━━━┛   Internal monitor ($internal) disabled.
 ╰┄┄┄┄┄┄┄╯
 EOF
 }
 external_above() {
-cat <<EOF
+    cat <<EOF
 ┌────┐
-└────┘  External monitor ($ext)
+└────┘  External monitor (${ext})
  ┏━━┓    above of interal monitor ($internal)
  ┗━━┛
     
 EOF
 }
 
-
 print_menu() {
-external_off
-echo -e '\0'
-external_right
-echo -e '\0'
-external_left
-echo -e '\0'
-external_on_top
-echo -e '\0'
-internal_off
-echo -e '\0'
-external_above
+    external_off
+    echo -e '\0'
+    external_right
+    echo -e '\0'
+    external_left
+    echo -e '\0'
+    external_on_top
+    echo -e '\0'
+    internal_off
+    echo -e '\0'
+    external_above
 }
 
 disable_screensaver() {
@@ -94,8 +92,8 @@ enable_screensaver() {
 }
 
 fix_hdmi_audio() {
-    if [[ $(< /sys/class/drm/card0/*HDMI*/status) = connected ]] &&
-       [[ "$1" != "force-disable" ]] ; then
+    if [[ $(</sys/class/drm/card0/*HDMI*/status) = connected ]] &&
+        [[ "$1" != "force-disable" ]]; then
         # echo "Audio output: HDMI"
         pactl set-card-profile 0 output:hdmi-stereo+input:analog-stereo
     else
@@ -112,40 +110,40 @@ res=$(print_menu | rofi \
     -eh "$element_height" -p '' -no-custom \
     -format i)
 
-if [ -z "$res" ] ; then
+if [ -z "$res" ]; then
     exit
 fi
 
 case "$res" in
-    0)
-        xrandr --output $ext --off --output $internal --auto --primary
-        enable_screensaver
-        # fix_hdmi_audio force-disable
-        ;;
-    1)
-        xrandr --output $internal --auto --primary --output $ext --auto --right-of $internal
-        disable_screensaver
-        # fix_hdmi_audio
-        ;;
-    2)
-        xrandr --output $internal --auto --primary --output $ext --auto --left-of $internal
-        disable_screensaver
-        # fix_hdmi_audio
-        ;;
-    3)
-        xrandr --output $internal --auto --primary --output $ext --auto --pos 0x0
-        disable_screensaver
-        # fix_hdmi_audio
-        ;;
-    4)
-        xrandr --output $ext --auto --output $internal --off
-        enable_screensaver
-        # fix_hdmi_audio
-        ;;
-    5) 
-        xrandr --output $internal --auto --primary --output $ext --auto --above $internal
-        disable_screensaver
-        ;;
-    *)
-        ;;
+0)
+    xrandr --output "${ext}" --off --output "${internal}" --auto --primary
+    enable_screensaver
+    # fix_hdmi_audio force-disable
+    ;;
+1)
+    xrandr --output "${internal}" --auto --primary --output "${ext}" --auto --right-of "${internal}"
+    disable_screensaver
+    # fix_hdmi_audio
+    ;;
+2)
+    xrandr --output "${internal}" --auto --primary --output "${ext}" --auto --left-of "${internal}"
+    disable_screensaver
+    # fix_hdmi_audio
+    ;;
+3)
+    xrandr --output "${internal}" --auto --primary --output "${ext}" --auto --pos 0x0
+    disable_screensaver
+    # fix_hdmi_audio
+    ;;
+4)
+    xrandr --output "${ext}" --auto --output "${internal}" --off
+    enable_screensaver
+    # fix_hdmi_audio
+    ;;
+5)
+    xrandr --output "${internal}" --auto --primary --output "${ext}" --auto --above "${internal}"
+    disable_screensaver
+    ;;
+*) ;;
+
 esac

@@ -8,11 +8,11 @@ edisconnect=""
 id="$(ip link | awk '/state UP/ {print $2}')"
 
 while true; do
-    if ping -c 1 google.com >/dev/null 2>&1; then
-        [[ $id == e* ]] && echo "$econnected" || echo "$wconnected"
-        sleep 25
-    else
-        [[ $id == e* ]] && echo "$edisconnect" || echo "$wdisconnect"
-        sleep 0.6
-    fi
+  if ping -c 1 google.com >/dev/null 2>&1; then
+    [[ $id == e* ]] && echo "$econnected" || echo "$wconnected"
+    sleep 25
+  else
+    [[ $id == e* ]] && echo "$edisconnect" || echo "$wdisconnect"
+    sleep 0.6
+  fi
 done

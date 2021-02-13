@@ -4,7 +4,7 @@ NAME=$(basename "$0")
 VER="0.1"
 
 usage() {
-    cat <<- EOF
+    cat <<-EOF
 
  USAGE:  $NAME [OPTIONS [ADDITIONAL]]
 
@@ -22,7 +22,7 @@ EOF
 }
 
 shoot() {
-    if type -p xfce4-screenshooter > /dev/null; then
+    if type -p xfce4-screenshooter >/dev/null; then
         if [ -n "$region" ]; then
             region_flag="-r"
         fi
@@ -35,15 +35,14 @@ shoot() {
     fi
 }
 
-
 # Catch command line options
 case $1 in
-    -h|--help) usage ;;
-    -v|--version) echo -e "$NAME -- Version $VER" ;;
-    -f|--fullscreen) shoot ;;
-    -r|--redshift)
-        region=1
-        shoot
-        ;;
-    *) shoot
+-h | --help) usage ;;
+-v | --version) echo -e "$NAME -- Version $VER" ;;
+-f | --fullscreen) shoot ;;
+-r | --redshift)
+    region=1
+    shoot
+    ;;
+*) shoot ;;
 esac

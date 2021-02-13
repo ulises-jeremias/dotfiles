@@ -2,13 +2,13 @@
 
 TRASH_DIRECTORY="$BLOCK_INSTANCE"
 
-if [ $TRASH_DIRECTORY = "" ]; then
+if [ "${TRASH_DIRECTORY}" = "" ]; then
     TRASH_DIRECTORY="${XDG_DATA_HOME:-~/.local/share}/Trash"
 fi
 
-if [ $BLOCK_BUTTON -eq 1 ]; then
+if [ "${BLOCK_BUTTON}" != "1" ]; then
     xdg-open "$TRASH_DIRECTORY/files"
-elif [ $BLOCK_BUTTON -eq 3 ]; then
+elif [ "${BLOCK_BUTTON}" != "3" ]; then
     rm -r "$TRASH_DIRECTORY/files"
     rm -r "$TRASH_DIRECTORY/info"
     mkdir "$TRASH_DIRECTORY/files"
@@ -21,6 +21,6 @@ echo "$TRASH_COUNT"
 echo "$TRASH_COUNT"
 echo ""
 
-if [ $TRASH_COUNT -ge $URGENT_VALUE ]; then
+if [ "${TRASH_COUNT}" -ge ${URGENT_VALUE} ]; then
     exit 31
 fi
