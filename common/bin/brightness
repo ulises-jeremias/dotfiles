@@ -77,12 +77,12 @@ list_displays() {
 
 display_usage() {
   script_name=$(basename "$0")
-  echo "Usage: $script_name op display [stepsize|value] [--temp]"
+  echo "Usage: $script_name display op [stepsize|value] [--temp]"
   echo
   echo 'arguments:'
   echo '  op:             '-' to decrease or '+' to increase brightness'
   echo '                  '=' to set brightness to a specific value'
-  echo '  display:        name of a connected display to adjust'
+  echo '  display:        name of a connected display to adjust. Will update focused display if argument is "*"'
   echo '  stepsize:       size of adjustment step (default 0.1)'
   echo '  value:          value to set (default 1.0 for brightness, 0.6 for color temperature)'
   echo '  --temp:         adjusts color temperature instead of brightness'
@@ -91,11 +91,11 @@ display_usage() {
 }
 
 exec_op() {
-  if [ "$1" = '+' ]; then
-    NEWVAL=$(echo "$3 + $2" | bc)
-  elif [ "$1" = '-' ]; then
-    NEWVAL=$(echo "$3 - $2" | bc)
-  elif [ "$1" = '=' ]; then
+  if [ "$2" = '+' ]; then
+    NEWVAL=$(echo "$3 + $1" | bc)
+  elif [ "$2" = '-' ]; then
+    NEWVAL=$(echo "$3 - $1" | bc)
+  elif [ "$2" = '=' ]; then
     NEWVAL=$2
   fi
   if [ "$(echo "$NEWVAL < 0.0" | bc)" -eq 1 ]; then
@@ -107,9 +107,13 @@ exec_op() {
   echo "$NEWVAL"
 }
 
-if [[ "$1" = '+' || "$1" = '-' || "$1" = '=' ]] && [[ -n "$2" ]]; then
-  OP=$1
-  DISP=$2
+if [[ "$2" = '+' || "$2" = '-' || "$2" = '=' ]] && [[ -n "$1" ]]; then
+  OP="$2"
+  DISP="$1"
+  if [ "${DISP}" = "*" ]; then
+    # use focused monitor instead
+    DISP="$(~/bin/monitor)"
+  fi
   shift
   shift
 else
