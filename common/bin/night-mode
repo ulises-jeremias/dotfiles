@@ -5,7 +5,7 @@ source ~/.config/night_mode
 
 night_mode() {
   for display in $(xrandr | grep " connected" | awk '{print $1}'); do
-    xrandr --output ${display} --gamma $1 --brightness $2
+    xrandr --output "${display}" --gamma "$1" --brightness "$2"
   done
 }
 
