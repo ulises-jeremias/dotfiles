@@ -140,8 +140,8 @@ bindkey '^R' history-incremental-search-backward
 bindkey '^R' history-incremental-pattern-search-backward
 bindkey '^?' backward-delete-char
 bindkey '^H' backward-delete-char
-bindkey '\e[A' history-search-backward
-bindkey '\e[B' history-search-forward
+bindkey '\e[A' history-beginning-search-backward
+bindkey '\e[B' history-beginning-search-forward
 # >>1
 
 # Aliases <<1
