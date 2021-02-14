@@ -40,20 +40,20 @@ wms=${wms:-""}
 [ ! -f "${log_file}" ] && touch "${log_file}"
 
 if [ -n "${upgrade}" ]; then
-    upgrade_flag="--upgrade"
+  upgrade_flag="--upgrade"
 fi
 
 if [ -n "${clear}" ]; then
-    clear_flag="--clear"
+  clear_flag="--clear"
 fi
 
 #==========================================
 # Install dependencies according to os
 #==========================================
-if [ ! -n "${nodeps}" ] && [ "${os}" != "" ]; then
-    "${ROOT}"/install-pkgs \
-        --log-file="${log_file}" ${upgrade_flag} --os="${os}" \
-        --pkgs="${pkgs}"
+if [ -z "${nodeps}" ] && [ -n "${os}" ]; then
+  "${ROOT}"/install-pkgs \
+    --log-file="${log_file}" ${upgrade_flag} --os="${os}" \
+    --pkgs="${pkgs}"
 fi
 
 echo

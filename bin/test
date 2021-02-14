@@ -18,7 +18,7 @@
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##
 
-ROOT=$(dirname $0)
+ROOT=$(dirname "$0")
 
 source "${ROOT}/../util/opts/opts.sh" || exit
 source "${ROOT}/../util/logs.sh" || exit

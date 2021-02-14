@@ -1,8 +1,10 @@
+#!/usr/bin/env bash
+
 is_darwin() {
 	uname -a | grep Darwin > /dev/null;
 }
 
-if [ ! -n "${os}" ]; then
+if [ -z "${os}" ]; then
     # Find the current distribution
     if [ -f /etc/os-release ]; then
         if grep -q arch /etc/os-release; then
@@ -31,7 +33,7 @@ fi
 
 oss=( arch-linux debian )
 
-if [[ ! " ${oss[@]} " =~ " ${os} " ]]; then
+if [[ ! " ${oss[*]} " = *"${os}"* ]]; then
     echo "${os} is not supported"
     exit 1
 fi

@@ -20,7 +20,7 @@
 ##                             used instead. Short version is not available in this
 ##                             format.
 
-ROOT=$(dirname $0)
+ROOT=$(dirname "$0")
 source "${ROOT}/opts.sh" || exit # Bash implementation, slower
 
 # Boolean and parameter options

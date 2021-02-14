@@ -11,7 +11,7 @@ create_symlink() {
     fi
 }
 
-ROOT=$(dirname $0)
+ROOT=$(dirname "$0")
 dotfiles_dir="${ROOT}/.."
 
 #==========================================

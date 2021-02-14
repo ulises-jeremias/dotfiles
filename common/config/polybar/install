@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ROOT=$(dirname $0)
+ROOT=$(dirname "$0")
 
 sudo rm -rf ~/.config/polybar/modules > /dev/null 2>&1
 sudo rm -rf ~/.config/polybar/polybars > /dev/null 2>&1
