@@ -21,6 +21,7 @@ needed_pkgs=(
     networkmanager-dmenu
     network-manager-applet
     numix-icon-theme
+    pacman-contrib
     pamixer
     pavucontrol
     playerctl
