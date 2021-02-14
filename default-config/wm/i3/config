@@ -75,8 +75,10 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pamixer -i 1
 bindsym XF86AudioLowerVolume exec --no-startup-id pamixer -d 1
 
 # backlight
-bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 10
-bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
+bindsym XF86MonBrightnessUp         exec --no-startup-id ~/bin/brightness "*" + 0.1
+bindsym XF86MonBrightnessDown       exec --no-startup-id ~/bin/brightness "*" - 0.1
+bindsym XF86MonBrightnessUp+Shift   exec --no-startup-id ~/bin/brightness "*" + 0.01
+bindsym XF86MonBrightnessDown+Shift exec --no-startup-id ~/bin/brightness "*" - 0.01
 
 # toggle
 bindsym $Mod+Control+p exec --no-startup-id ~/bin/toggle -p -t &
