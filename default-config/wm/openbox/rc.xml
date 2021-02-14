@@ -232,12 +232,12 @@
     </keybind>
     <keybind key="XF86MonBrightnessUp">
       <action name="Execute">
-        <command>xbacklight +10</command>
+        <command>~/bin/brightness "*" + 0.1</command>
       </action>
     </keybind>
     <keybind key="XF86MonBrightnessDown">
       <action name="Execute">
-        <command>xbacklight -10</command>
+        <command>~/bin/brightness "*" - 0.1</command>
       </action>
     </keybind>
     <keybind key="Print">

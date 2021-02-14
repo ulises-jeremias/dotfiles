@@ -3,4 +3,4 @@
 ROOT=$(dirname "$0")
 
 sudo rm -rf ~/.config/i3 > /dev/null 2>&1
-ln -sf ${ROOT} ~/.config/i3
+ln -sf "${ROOT}" ~/.config/i3

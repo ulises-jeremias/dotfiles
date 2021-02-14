@@ -17,6 +17,11 @@ polybar.radius: 5.0
 ! polybar.modules.wifi.iface: 
 ! polybar.modules.eth.iface:
 
+! Backlight
+! Use the following command to list available cards:
+! $ ls -1 /sys/class/backlight/
+! polybar.modules.backlight.card: ! e.g. intel_backlight
+
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ! Polybar Top Bar attributes
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
