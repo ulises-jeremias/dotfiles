@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-[[ ! -f ~/.config/night_mode ]] && echo "NIGHT_MODE=\"disabled\"" >~/.config/night_mode
+[[ ! -f ~/.config/night_mode ]] && echo "NIGHT_MODE=\"enabled\"" >~/.config/night_mode
 source ~/.config/night_mode
 
 night_mode() {

@@ -58,7 +58,11 @@ get_gamma() {
 }
 
 get_brightness() {
-  get_display_info "$1" 'Brightness: '
+  if type -p xbacklight > /dev/null; then
+    xbacklight -get -display "$1"
+  else
+    get_display_info "$1" 'Brightness: '
+  fi
 }
 
 list_displays() {
@@ -163,4 +167,11 @@ else
   NEWBRIGHT=$(exec_op "$OP" "$OPVAL" "$CURRBRIGHT")
 fi
 
-xrandr --output "$DISP" --brightness "$NEWBRIGHT" --gamma "$NEWGAMMA"
+if type -p xbacklight > /dev/null && [ "$1" != '--temp' ]; then
+  xbacklight -display "$DISP" -set "$((NEWBRIGHT * 100))"
+elif type -p xbacklight > /dev/null && [ "$1" = '--temp' ]; then
+  xbacklight -display "$DISP" -set "$((NEWBRIGHT * 100))"
+  xrandr --output "$DISP" --gamma "$NEWGAMMA"
+else
+  xrandr --output "$DISP" --brightness "$NEWBRIGHT" --gamma "$NEWGAMMA"
+fi
