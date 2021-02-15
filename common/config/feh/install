@@ -3,9 +3,8 @@
 ROOT=$(dirname "$0")
 
 sudo rm -rf ~/.config/feh/.fehbg > /dev/null 2>&1
-sudo rm -rf ~/.config/feh/wallpaper.jpg > /dev/null 2>&1
 
 mkdir ~/.config/feh > /dev/null 2>&1
 
 ln -sf "${ROOT}"/fehbg ~/.config/feh/.fehbg
-ln -sf "${ROOT}"/wallpaper.jpg ~/.config/feh/wallpaper.jpg
+[ ! -f ~/.config/feh/wallpaper.jpg ] && ln -sf "${ROOT}"/wallpaper.jpg ~/.config/feh/wallpaper.jpg
