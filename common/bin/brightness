@@ -116,7 +116,7 @@ if [[ "$2" = '+' || "$2" = '-' || "$2" = '=' ]] && [[ -n "$1" ]]; then
   DISP="$1"
   if [ "${DISP}" = "*" ]; then
     # use focused monitor instead
-    DISP="$(~/bin/display)"
+    DISP="$(~/bin/monitor)"
   fi
   shift
   shift
