@@ -58,8 +58,8 @@ get_gamma() {
 }
 
 get_brightness() {
-  if type -p xbacklight > /dev/null; then
-    xbacklight -get -display "$1"
+  if type -p xbacklight >/dev/null; then
+    echo "$(xbacklight -get -display "$1") / 100" | bc -l | awk '{printf "%f", $0}'
   else
     get_display_info "$1" 'Brightness: '
   fi
@@ -116,7 +116,7 @@ if [[ "$2" = '+' || "$2" = '-' || "$2" = '=' ]] && [[ -n "$1" ]]; then
   DISP="$1"
   if [ "${DISP}" = "*" ]; then
     # use focused monitor instead
-    DISP="$(~/bin/monitor)"
+    DISP="$(~/bin/display)"
   fi
   shift
   shift
@@ -141,6 +141,7 @@ else
 fi
 
 CURRBRIGHT=$(get_brightness "$DISP")
+echo $CURRBRIGHT
 if [[ ! "$CURRBRIGHT" =~ ^[0-9]+.[0-9]+$ ]]; then
   echo "Error: Selected display $DISP has no brightness value!"
   echo
@@ -167,10 +168,12 @@ else
   NEWBRIGHT=$(exec_op "$OP" "$OPVAL" "$CURRBRIGHT")
 fi
 
-if type -p xbacklight > /dev/null && [ "$1" != '--temp' ]; then
-  xbacklight -display "$DISP" -set "$((NEWBRIGHT * 100))"
-elif type -p xbacklight > /dev/null && [ "$1" = '--temp' ]; then
-  xbacklight -display "$DISP" -set "$((NEWBRIGHT * 100))"
+if type -p xbacklight >/dev/null && [ "$1" != '--temp' ]; then
+  NEWBRIGHT=$(echo "$NEWBRIGHT * 100" | bc)
+  xbacklight -display "$DISP" -set "$NEWBRIGHT"
+elif type -p xbacklight >/dev/null && [ "$1" = '--temp' ]; then
+  NEWBRIGHT=$(echo "$NEWBRIGHT * 100" | bc)
+  xbacklight -display "$DISP" -set "$NEWBRIGHT"
   xrandr --output "$DISP" --gamma "$NEWGAMMA"
 else
   xrandr --output "$DISP" --brightness "$NEWBRIGHT" --gamma "$NEWGAMMA"
