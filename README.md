@@ -47,7 +47,7 @@ $ git pull origin master
 
 To apply configuration files after the installation process you should only run the command `<dotfiles_dir>/default-config/install` after having modified the contents of the directory `<dotfiles_dir>/custom-config`.
 
-Read more about this at [customization docs](./docs/CUSTOMIZATION.md).
+Read more about this at [customization docs](https://github.com/ulises-jeremias/dotfiles/wiki/Customization).
 
 ## Testing
 
@@ -63,4 +63,4 @@ $ ./bin/test --os=<OS> --wms=<WMS> # use -h to know more about install options
 
 being `OS = arch-linux | debian` and `WMS = i3,openbox,...`.
 
-You can read more about this at [testing docs](./docs/TESTING.md).
+You can read more about this at [testing docs](https://github.com/ulises-jeremias/dotfiles/wiki/Testing).
