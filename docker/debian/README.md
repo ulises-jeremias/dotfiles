@@ -2,7 +2,7 @@
 
 ## Dependecies
 
-- [Xephyr](https://wiki.archlinux.org/index.php/Xephyr)
+- [Xephyr](https://packages.debian.org/es/jessie/xserver-xephyr)
 - [Docker](https://www.docker.com/)
 
 ## Build Docker
