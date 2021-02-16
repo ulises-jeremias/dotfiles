@@ -8,7 +8,7 @@ import os
 
 
 def main():
-    city = "La Plata"
+    city = os.getenv('CITY')
     api_key = "da1f3c25743ea88ae4cfa4b006e3eee0"
 
     try:
