@@ -1,0 +1,45 @@
+
+name: Deploy Docs
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Latest Dotfiles Wiki
+      uses: actions/checkout@v2
+      with:
+        repository: ${{github.repository}}.wiki
+        path: dotfiles.wiki
+
+    - name: Check Wiki repo content
+        run: |
+          ls -al
+    
+    - name: Checkout github-wikito-converter
+      uses: actions/checkout@v2
+      with:
+        repository: yakivmospan/github-wikito-converter
+        path: github-wikito-converter
+
+    - name: Build and Install github-wikito-converter globally
+      run: |
+        cd github-wikito-converter
+        npm run install
+        npm run build-and-install-g
+        cd ..
+
+    - name: Build Docs
+      run: |
+        mkdir public
+        gwtc --file-name index --output ./public ./dotfiles.wiki
+
+    - name: Deploy to gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
