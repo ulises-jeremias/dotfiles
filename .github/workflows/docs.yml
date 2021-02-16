@@ -28,7 +28,7 @@ jobs:
     - name: Build and Install github-wikito-converter globally
       run: |
         cd github-wikito-converter
-        npm run install
+        npm install
         npm run build-and-install-g
         cd ..
 
