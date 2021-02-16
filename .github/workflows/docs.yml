@@ -17,8 +17,8 @@ jobs:
         path: dotfiles.wiki
 
     - name: Check Wiki repo content
-        run: |
-          ls -al
+      run: |
+        ls -al
     
     - name: Checkout github-wikito-converter
       uses: actions/checkout@v2
