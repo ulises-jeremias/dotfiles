@@ -1,22 +1,29 @@
-# Dotfiles
+<div align="center">
+<h1>Dotfiles Generator</h1>
+
+[Docs](https://ulises-jeremias.github.io/dotfiles) |
+[Changelog](#) |
+[Contributing](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md)
+
+</div>
+<div align="center">
+
+[![Docs Deployment][docsdeploymentbadge]][docsdeploymenturl]
+[![License: MIT][licensebadge]][licenseurl]
+
+</div>
 
 Dotfile generator that allows quick configuration of different window managers in multiple OSs.
-
-- [Dotfiles](#dotfiles)
-  - [How it looks](#how-it-looks)
-  - [Installation](#installation)
-  - [Customization](#customization)
-  - [Testing](#testing)
 
 ## How it looks
 
 <center>
 
-<img src="./static/screen.png" align="left" width="48.75%" style="margin-left: 2.5%; margin-right: 5%" />
+<img src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen.png" align="left" width="48.75%" style="margin-left: 2.5%; margin-right: 5%" />
 
-<img src="./static/nvim&termite.png" width="48.75%" />
+<img src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim&termite.png" width="48.75%" />
 
-<img src="./static/demo.gif" width="100%" style="margin-top: 15px;" />
+<img src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" width="100%" style="margin-top: 15px;" />
 
 </center>
 
@@ -47,7 +54,7 @@ $ git pull origin master
 
 To apply configuration files after the installation process you should only run the command `<dotfiles_dir>/default-config/install` after having modified the contents of the directory `<dotfiles_dir>/custom-config`.
 
-Read more about this at [customization docs](https://github.com/ulises-jeremias/dotfiles/wiki/Customization).
+Read more about this at [customization docs](https://ulises-jeremias.github.io/dotfiles/#Customization).
 
 ## Testing
 
@@ -63,4 +70,9 @@ $ ./bin/test --os=<OS> --wms=<WMS> # use -h to know more about install options
 
 being `OS = arch-linux | debian` and `WMS = i3,openbox,...`.
 
-You can read more about this at [testing docs](https://github.com/ulises-jeremias/dotfiles/wiki/Testing).
+You can read more about this at [testing docs](https://ulises-jeremias.github.io/dotfiles/#Testing).
+
+[docsdeploymentbadge]: https://github.com/ulises-jeremias/dotfiles/workflows/Deploy%20Docs/badge.svg
+[licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
+[docsdeploymenturl]: https://github.com/ulises-jeremias/dotfiles/commits/master
+[licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE
