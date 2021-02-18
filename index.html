@@ -823,10 +823,27 @@ $ git pull origin master</pre><p>To apply configuration files after the installa
 <p>For the parameterization of modules, you can use all those that are defined on <code>&lt;dotfiles_dir&gt;/config/polybar/modules.conf</code> and <code>&lt;dotfiles_dir&gt;/config/polybar/polybars/*</code>.</p>
 <h3 id="examples">Examples</h3>
 <h4 id="custom-module-example">Custom Module Example</h4>
-<p>Example of custom module defined at <code>&lt;dotfiles_dir&gt;/custom-config/polybar/modules/custom.conf</code> using existing module <code>module/spotify</code>:</p>
+<p>Example of custom modules defined at <code>&lt;dotfiles_dir&gt;/custom-config/polybar/modules/custom.conf</code> using existing module <code>module/spotify</code>:</p>
 <pre class="hljs"><span class="hljs-section">[module/custom-spotify]</span>
 <span class="hljs-attr">inherit</span> = module/spotify
-<span class="hljs-attr">intervarl</span> = <span class="hljs-number">5</span></pre><h4 id="custom-bar-example">Custom Bar Example</h4>
+<span class="hljs-attr">intervarl</span> = <span class="hljs-number">5</span>
+
+<span class="hljs-section">[module/i3-with-icons]</span>
+<span class="hljs-attr">inherit</span> = module/i3
+
+<span class="hljs-attr">ws-icon-0</span> = <span class="hljs-number">1</span><span class="hljs-comment">;</span>
+<span class="hljs-attr">ws-icon-1</span> = <span class="hljs-number">2</span><span class="hljs-comment">;</span>
+<span class="hljs-attr">ws-icon-2</span> = <span class="hljs-number">3</span><span class="hljs-comment">;</span>
+<span class="hljs-attr">ws-icon-3</span> = <span class="hljs-number">4</span><span class="hljs-comment">;</span>
+<span class="hljs-attr">ws-icon-4</span> = <span class="hljs-number">5</span><span class="hljs-comment">;</span>
+<span class="hljs-attr">ws-icon-5</span> = <span class="hljs-number">6</span><span class="hljs-comment">;</span>
+<span class="hljs-attr">ws-icon-6</span> = <span class="hljs-number">7</span><span class="hljs-comment">;</span>
+<span class="hljs-attr">ws-icon-7</span> = <span class="hljs-number">8</span><span class="hljs-comment">;</span>
+
+<span class="hljs-comment">; modified labels using icon</span>
+<span class="hljs-attr">label-focused</span> = %index% %icon%
+<span class="hljs-attr">label-unfocused</span> = %index% %icon%
+<span class="hljs-attr">label-visible</span> = %index% %icon%</pre><h4 id="custom-bar-example">Custom Bar Example</h4>
 <p>Example of custom bar defined at <code>&lt;dotfiles_dir&gt;/custom-config/polybar/polybars/custom.conf</code> using existing bar <code>bar/polybar-top</code>:</p>
 <pre class="hljs"><span class="hljs-section">[bar/i3-polybar-top]</span>
 <span class="hljs-attr">inherit</span> = bar/polybar-top
