@@ -2,7 +2,7 @@
 ! POLYBAR SETTINGS
 !==========================================
 
-polybar.polybars: polybar-top,polybar-bottom
+polybar.polybars: polybar-top polybar-bottom
 polybar.radius: 5.0
 
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
