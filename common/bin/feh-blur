@@ -90,7 +90,7 @@ generate_blurred_images() {
   local fx2=""
   local fx3=""
 
-  if [ "$BLUR_STRENGTH" != "0" ]; then
+  if [ "$BLUR_STRENGTH" -ne 0 ]; then
     fx1="$fx1 -scale 25% -blur 0x$(("$BLUR_STRENGTH" / 4)) -scale 400%"
     fx2="$fx2 -scale 25% -blur 0x$(("$BLUR_STRENGTH" / 2)) -scale 400%"
     fx3="$fx3 -scale 25% -blur 0x$(("$BLUR_STRENGTH" / 1)) -scale 400%"
@@ -102,7 +102,7 @@ generate_blurred_images() {
     fx3="+contrast +contrast +contrast $fx3"
   fi
 
-  if [ "$DIM_STRENGTH" != "0" ]; then
+  if [ "$DIM_STRENGTH" -ne 0 ]; then
     fx1="$fx1 -fill $DIM_COLOR -colorize $(("$DIM_STRENGTH" / 4))%"
     fx2="$fx2 -fill $DIM_COLOR -colorize $(("$DIM_STRENGTH" / 2))%"
     fx3="$fx3 -fill $DIM_COLOR -colorize $(("$DIM_STRENGTH" / 1))%"

@@ -21,7 +21,7 @@ get_aur_helper() {
 }
 
 pacman_fetch_pkg() {
-  [ "$(pacman -Ss "$1" | wc -l)" != "0" ]
+  [ "$(pacman -Ss "$1" | wc -l)" -ne 0 ]
   return $?
 }
 
@@ -33,12 +33,12 @@ aur_helper_fetch_pkg() {
     return 1
   fi
 
-  [ "$(${aur_helper} -Ss "$1" | wc -l)" != "0" ]
+  [ "$(${aur_helper} -Ss "$1" | wc -l)" -ne 0 ]
   return $?
 }
 
 aur_fetch_pkg() {
-  [ "$(git ls-remote https://aur.archlinux.org/"$1".git | wc -l)" != "0" ]
+  [ "$(git ls-remote https://aur.archlinux.org/"$1".git | wc -l)" -ne 0 ]
   return $?
 }
 
