@@ -2,5 +2,5 @@
 
 ROOT=$(dirname "$0")
 
-sudo rm -rf ~/.config/openbox > /dev/null 2>&1
+sudo rm -rf ~/.config/openbox >/dev/null 2>&1
 ln -sf "${ROOT}" ~/.config/openbox

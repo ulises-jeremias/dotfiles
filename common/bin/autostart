@@ -9,6 +9,8 @@ xrdb -I"${HOME}" -load ~/.Xresources &
 # load picom
 picom --config ~/.config/picom.conf &
 
+# TODO: load git notify pointing to dotfiles repo
+
 # set background using feh
 ~/.config/feh/.fehbg &
 

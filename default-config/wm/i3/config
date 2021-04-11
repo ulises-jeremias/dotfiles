@@ -1,12 +1,15 @@
 # border & title
-for_window [class="^.*"] border pixel 1, title_format "<b> %class >> %title </b>"
+# NOTE: Title format is hidden because of `alpha` property set to `1`.
+# Font size set to `0` is to hidde this bar
+for_window [class="^.*"] border pixel 1, title_format "<b alpha='1'> %class >> %title </b>"
 
 # gaps
 gaps inner 10
 gaps outer 10
 
 # font
-font pango:monospace 12
+# TODO: Figure out if this font is used anywhere
+font pango:monospace 0
 
 # mod key used for most binds
 # Mod1 = Alt

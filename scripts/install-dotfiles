@@ -54,7 +54,7 @@ fi
 #==========================================
 # Copy bin files and create symlinks
 #==========================================
-describe "Installing binaries\n" 0
+describe "Installing binaries" 0
 cp -rf "${ROOT}"/../common/bin "${dotfiles_dir}"
 
 if [ -d "${ROOT}/../${os}/bin" ]; then
@@ -65,7 +65,7 @@ if [ ! -d "${HOME}/bin" ]; then
   mkdir ~/bin
 fi
 
-for bin_path in $(find "${dotfiles_dir}"/bin -maxdepth 1 -mindepth 1 -type f); do
+for bin_path in "${dotfiles_dir}"/bin/*; do
   bin=$(basename "${bin_path}")
 
   chmod +x "${bin_path}"
@@ -82,8 +82,8 @@ echo
 success=0
 failed=0
 
-describe "Installing dotfiles\n" 0
-for config_path in $(find "${ROOT}"/../common/config/ -maxdepth 1 -mindepth 1 -type d); do
+describe "Installing dotfiles" 0
+for config_path in "${ROOT}"/../common/config/*; do
   config=$(basename "${config_path}")
 
   describe "Installing ${config} dotfiles"
@@ -104,15 +104,25 @@ for config_path in $(find "${ROOT}"/../common/config/ -maxdepth 1 -mindepth 1 -t
   fi
 done
 
-all=$((${success} + ${failed}))
+all=$((success + failed))
 
 echo
 echo "${GREEN}Success: ${success} ${RED}Failed: ${failed}${RESET} Total: ${all}"
 
-describe "Setting up default and custom configs\n\n"
+describe "Setting up default and custom configs"
 
 rm -rf "${dotfiles_dir}"/default-config >/dev/null 2>&1
 cp -rf "${ROOT}"/../default-config/common "${dotfiles_dir}"/default-config
+
+# create new bin directories
+if [ ! -d "${dotfiles_dir}"/custom-config/bin ]; then
+  cp -rf "${dotfiles_dir}"/default-config/bin "${dotfiles_dir}"/custom-config
+fi
+
+# add README for custom config
+if [ ! -e "${dotfiles_dir}"/custom-config/README.md ]; then
+  cp -rf "${dotfiles_dir}"/default-config/README.md "${dotfiles_dir}"/custom-config
+fi
 
 for wm in xfce4 $(echo "${wms}" | tr ',' '\n'); do
   [ -e "${ROOT}/../default-config/wm/${wm}/install" ] || continue

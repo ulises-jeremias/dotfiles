@@ -87,31 +87,31 @@ util_pkgs=(
 )
 
 if [ -n "${nodunst}" ]; then
-    xfce4_pkgs+=( xfce4-notifyd )
+    xfce4_pkgs+=(xfce4-notifyd)
 else
-    needed_pkgs+=( dunst )
+    needed_pkgs+=(dunst)
 fi
 
 if [ -n "${bluetooth}" ]; then
-    needed_pkgs+=( bluez )
-    util_pkgs+=( blueman pulseaudio-module-bluetooth )
+    needed_pkgs+=(bluez)
+    util_pkgs+=(blueman pulseaudio-module-bluetooth)
 fi
 
 if [ -n "${utils}" ]; then
     for util in "${util_pkgs[@]}"; do
-        printf "Add ${util} to the installation list? [y/N]: "
-        
+        printf "Add %s to the installation list? [y/N]: " "${util}"
+
         read -r input
 
         case "${input}" in
-            y|Y|yes|YES|Yes)
-                xfce4_pkgs+=( "${util}" )
+        y | Y | yes | YES | Yes)
+            xfce4_pkgs+=("${util}")
             ;;
         esac
     done
 fi
 
-pkgs=( "${needed_pkgs[@]}" "${xfce4_pkgs[@]}" )
-pkgs=( "${fonts[@]}" "${pkgs[@]}" )
+pkgs=("${needed_pkgs[@]}" "${xfce4_pkgs[@]}")
+pkgs=("${fonts[@]}" "${pkgs[@]}")
 pkgs=$(printf ",%s" "${pkgs[@]}")
 pkgs=${pkgs:1}

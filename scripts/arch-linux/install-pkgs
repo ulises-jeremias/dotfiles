@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-aur_helpers=( yay aurman pakku pacaur trizen aura pikaur )
+aur_helpers=(yay aurman pakku pacaur trizen aura pikaur)
 
 export AUR_HELPER=""
 

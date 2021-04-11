@@ -17,21 +17,21 @@ describe() {
 
 log_warn() {
     message=${1:-"Warning"}
-    log="${YELLOW}${WARN} ${message}${RESET}\n"
-    printf " %s" "${log}"
-    [ -f "$3" ] && printf "%s %s" "$2" "${log}" >> "$3"
+    log="${YELLOW}${WARN} ${message}${RESET}"
+    printf " %s\n" "${log}"
+    [ -f "$3" ] && printf "%s %s\n" "$2" "${log}" >> "$3"
 }
 
 log_failed() {
     message=${1:-"Failed"}
-    log="${RED}${CROSS} ${message}${RESET}\n"
-    printf " %s" "${log}"
-    [ -f "$3" ] && printf "%s %s" "$2" "${log}" >> "$3"
+    log="${RED}${CROSS} ${message}${RESET}"
+    printf " %s\n" "${log}"
+    [ -f "$3" ] && printf "%s %s\n" "$2" "${log}" >> "$3"
 }
 
 log_success() {
     message=${1:-"Success"}
-    log="${GREEN}${CHECK} ${message}${RESET}\n"
-    printf " %s" "${log}"
-    [ -f "$3" ] && printf "%s %s" "$2" "${log}" >> "$3"
+    log="${GREEN}${CHECK} ${message}${RESET}"
+    printf " %s\n" "${log}"
+    [ -f "$3" ] && printf "%s %s\n" "$2" "${log}" >> "$3"
 }

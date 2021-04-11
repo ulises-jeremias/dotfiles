@@ -39,7 +39,7 @@ pkgs=${pkgs:-""}
 #==========================================
 # Installing process
 #==========================================
-describe "Starting process\n\n" 0
+describe "Starting process" 0
 
 success=0
 failed=0
@@ -58,7 +58,7 @@ for pkg in $(echo "${pkgs}" | tr ',' '\n'); do
 
     log_warn "Package not installed" "${pkg}" "${log_file}"
 
-    describe "Installing ${pkg}\n" 0
+    describe "Installing ${pkg}" 0
     if pkg_install "${pkg}"; then
       log_success "Installed successfully" "${pkg}" "${log_file}"
       ((success += 1))
