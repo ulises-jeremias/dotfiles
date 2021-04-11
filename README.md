@@ -52,7 +52,13 @@ $ git remote add origin git@github.com:your-username/your-custom-config-repo.git
 $ git pull origin master
 ```
 
-To apply configuration files after the installation process you should only run the command `<dotfiles_dir>/default-config/install` after having modified the contents of the directory `<dotfiles_dir>/custom-config`.
+If you updated the updated the directory `<dotfiles_dir>/custom-config` you will need to apply those changes:
+
+- To apply configuration files from scratch after the installation process you should only run the installation command
+with the same flags you did before but with `--nodeps` to avoid installing all dependencies again.
+
+- In some cases there are directories that already have their own `./install` script. You will need to execute only that
+installation script if the changes are on those directories.
 
 Read more about this at [customization docs](https://ulises-jeremias.github.io/dotfiles/#Customization).
 
