@@ -31,7 +31,7 @@ SYMBOL="°C"
 if [ -n "$CITY" ]; then
   weather=$(curl -sf "http://api.openweathermap.org/data/2.5/weather?APPID=$KEY&q=$CITY&units=$UNITS")
 else
-  location=$(curl -sf https://location.services.mozilla.com/v1/geolocate?key=geoclue)
+  location=$(curl -sf "https://location.services.mozilla.com/v1/geolocate?key=geoclue")
 
   if [ -n "$location" ]; then
     location_lat="$(echo "$location" | jq '.location.lat')"
