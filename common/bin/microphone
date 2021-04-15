@@ -1,12 +1,74 @@
 #!/usr/bin/env bash
 
+RESET=$(tput sgr0) # No color
+
+reset=${RESET}
+muted_color=${RESET}
+unmuted_color=${RESET}
+exec_toggle=false
+
+show_help() {
+  # Prints help message
+  cat <<EOF
+microphone: Simple bash script to listen and toggle microphone status.
+USAGE: microphone [OPTIONS]
+
+OPTIONS:
+ -h, --help               Print help and exit
+ -t, --toggle             Switch microphone to oposite status.
+     --muted-color        Font color for muted icon
+     --unmuted-color      Font color for unmuted icon
+EOF
+}
+
+parse_cmd_args() {
+  # read arguments
+  opts=$(
+    getopt \
+      --longoptions "toggle,help,muted-color:,unmuted-color:" \
+      --name "$(basename "$0")" \
+      --options "th" \
+      -- "$@"
+  )
+
+  eval set -- "${opts}"
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --muted-color)
+      muted_color=$2
+      shift 2
+      ;;
+
+    -t | --toggle)
+      exec_toggle=true
+      shift
+      ;;
+
+    --unmuted-color)
+      unmuted_color=$2
+      shift 2
+      ;;
+
+    -h | --help)
+      show_help
+      exit
+      ;;
+
+    *)
+      break
+      ;;
+    esac
+  done
+}
+
 status() {
   MUTED=$(pacmd list-sources | awk '/\*/,EOF {print}' | awk '/muted/ {print $2; exit}')
 
   if [ "$MUTED" = "yes" ]; then
-    echo ""
+    echo "${muted_color}${reset}"
   else
-    echo ""
+    echo "${unmuted_color}${reset}"
   fi
 }
 
@@ -32,11 +94,11 @@ toggle() {
   fi
 }
 
-case "$1" in
---toggle)
+parse_cmd_args "$@"
+
+if [[ ${exec_toggle} = true ]]; then
   toggle
-  ;;
-*)
-  listen
-  ;;
-esac
+  exit
+fi
+
+listen
