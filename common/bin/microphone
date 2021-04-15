@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 RESET=$(tput sgr0) # No color
+RED=$(tput setaf 1)
 
 reset=${RESET}
-muted_color=${RESET}
+muted_color=${RED}
 unmuted_color=${RESET}
 exec_toggle=false
+no_unmuted=false
 
 show_help() {
   # Prints help message
@@ -15,9 +17,10 @@ USAGE: microphone [OPTIONS]
 
 OPTIONS:
  -h, --help               Print help and exit
- -t, --toggle             Switch microphone to oposite status.
+ -t, --toggle             Switch microphone to oposite status
      --muted-color        Font color for muted icon
      --unmuted-color      Font color for unmuted icon
+     --no-unmuted         Don't show icon when status is mic enabled
 EOF
 }
 
@@ -25,7 +28,7 @@ parse_cmd_args() {
   # read arguments
   opts=$(
     getopt \
-      --longoptions "toggle,help,muted-color:,unmuted-color:" \
+      --longoptions "toggle,help,no-unmuted,muted-color:,unmuted-color:" \
       --name "$(basename "$0")" \
       --options "th" \
       -- "$@"
@@ -40,14 +43,19 @@ parse_cmd_args() {
       shift 2
       ;;
 
-    -t | --toggle)
-      exec_toggle=true
-      shift
-      ;;
-
     --unmuted-color)
       unmuted_color=$2
       shift 2
+      ;;
+
+    --no-unmuted)
+      no_unmuted=$2
+      shift 2
+      ;;
+
+    -t | --toggle)
+      exec_toggle=true
+      shift
       ;;
 
     -h | --help)
@@ -66,7 +74,7 @@ status() {
   MUTED=$(pacmd list-sources | awk '/\*/,EOF {print}' | awk '/muted/ {print $2; exit}')
 
   if [ "$MUTED" = "yes" ]; then
-    echo "${muted_color}${reset}"
+    [ "${no_unmuted}" = true ] && echo "${muted_color}${reset}"
   else
     echo "${unmuted_color}${reset}"
   fi
