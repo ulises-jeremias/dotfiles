@@ -47,7 +47,7 @@ xephyr_ini() {
 # creates docker image if it doesn't exists
 docker_ini() {
     if ! type -p docker > /dev/null; then
-        log_failed "Docker is not installed in this system" ${log_file}
+        log_failed "Docker is not installed on this system" ${log_file}
         exit 1
     fi
 
