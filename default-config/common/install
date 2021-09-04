@@ -3,10 +3,14 @@
 create_symlink() {
   to=${2:-"$HOME/.$1"}
 
-  if [ -e "${dotfiles_dir}"/custom-config/"$1" ]; then
-    ln -sf "${dotfiles_dir}"/custom-config/"$1" "${to}"
-  else
+  if [ ! -e "${dotfiles_dir}"/custom-config/"$1" ]; then
     cp -rf "${ROOT}"/"$1" "${dotfiles_dir}"/custom-config/"$1"
+  fi
+
+  if [ -e "${dotfiles_dir}"/custom-config/"$1"/install ]; then
+    chmod +x "${dotfiles_dir}"/custom-config/"$1"/install
+    "${dotfiles_dir}"/custom-config/"$1"/install
+  else
     ln -sf "${dotfiles_dir}"/custom-config/"$1" "${to}"
   fi
 }
@@ -43,15 +47,9 @@ create_symlink Xresources
 create_symlink Xresources.d
 create_symlink "polybar/modules/custom.conf" "$HOME/.config/polybar/modules/custom.conf"
 create_symlink "polybar/polybars/custom.conf" "$HOME/.config/polybar/polybars/custom.conf"
+create_symlink alacritty
 
 sudo chmod +x ~/.xprofile
-
-#==========================================
-# Install alacritty themes
-#==========================================
-printf "Setting up alacritty themes...\\n"
-sudo chmod +x "${ROOT}/alacritty/install"
-"${ROOT}"/alacritty/install
 
 printf "Setting up wm...\\n"
 
