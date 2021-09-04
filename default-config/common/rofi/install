@@ -4,10 +4,10 @@ ROOT=$(dirname "$0")
 
 printf "Setting up rofi themes...\\n"
 
-rm -rf "${ROOT}"/rofi-themes-collection
-git clone https://github.com/lr-tech/rofi-themes-collection.git "${ROOT}"/rofi-themes-collection
+rm -rf "${ROOT}"/rofi-themes
+git clone https://github.com/ulises-jeremias/rofi-themes.git "${ROOT}"/rofi-themes
 sudo rm -rf ~/.config/rofi/themes >/dev/null 2>&1
 sudo rm -rf ~/.config/rofi/config.rasi >/dev/null 2>&1
 mkdir -p ~/.config/rofi
-ln -sf "${ROOT}"/rofi-themes-collection/themes ~/.config/rofi/themes
+ln -sf "${ROOT}"/rofi-themes/themes ~/.config/rofi/themes
 ln -sf "${ROOT}"/config.rasi ~/.config/rofi/config.rasi
