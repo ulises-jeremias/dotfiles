@@ -41,13 +41,13 @@ touch ~/.config/polybar/modules/polybar.conf >/dev/null 2>&1
 [ ! -d "${dotfiles_dir}"/custom-config/polybar/modules ] && mkdir -p "${dotfiles_dir}"/custom-config/polybar/modules
 [ ! -d "${dotfiles_dir}"/custom-config/polybar/polybars ] && mkdir -p "${dotfiles_dir}"/custom-config/polybar/polybars
 
+create_symlink alacritty
 create_symlink gitconfig
 create_symlink xprofile
 create_symlink Xresources
 create_symlink Xresources.d
 create_symlink "polybar/modules/custom.conf" "$HOME/.config/polybar/modules/custom.conf"
 create_symlink "polybar/polybars/custom.conf" "$HOME/.config/polybar/polybars/custom.conf"
-create_symlink alacritty
 
 sudo chmod +x ~/.xprofile
 
