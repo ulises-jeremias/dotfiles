@@ -46,6 +46,13 @@ create_symlink "polybar/polybars/custom.conf" "$HOME/.config/polybar/polybars/cu
 
 sudo chmod +x ~/.xprofile
 
+#==========================================
+# Install alacritty themes
+#==========================================
+printf "Setting up alacritty themes...\\n"
+sudo chmod +x "${ROOT}/alacritty/install"
+"${ROOT}"/alacritty/install
+
 printf "Setting up wm...\\n"
 
 for script in "${dotfiles_dir}"/custom-config/**/install; do

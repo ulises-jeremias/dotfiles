@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+ROOT=$(dirname "$0")
+
+sudo rm -rf ~/.config/alacritty/alacritty.yml > /dev/null 2>&1
+mkdir ~/.config/alacritty > /dev/null 2>&1
+ln -sf "${ROOT}"/alacritty.yml ~/.config/alacritty/alacritty.yml

@@ -1,0 +1,159 @@
+env:
+  TERM: xterm-256color
+  WINIT_X11_SCALE_FACTOR: "1"
+window:
+  dimensions:
+    columns: 80
+    lines: 24
+  padding:
+    x: 10
+    "y": 10
+  dynamic_padding: false
+  decorations: full
+  startup_mode: Windowed
+scrolling:
+  history: 2500
+  multiplier: 3
+font:
+  normal:
+    family: Hack
+    style: Regular
+  bold:
+    family: Hack
+    style: Bold
+  italic:
+    family: Hack
+    style: Italic
+  bold_italic:
+    family: Hack
+    style: Bold Italic
+  size: 9.5
+  offset:
+    x: 0
+    "y": 0
+  glyph_offset:
+    x: 0
+    "y": 0
+draw_bold_text_with_bright_colors: true
+visual:
+  animation: EaseOutExpo
+  duration: 0
+  color: "#ffffff"
+background_opacity: 0.9
+selection:
+  semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
+  save_to_clipboard: false
+window.dynamic_title: true
+cursor:
+  style: Block
+  unfocused_hollow: true
+live_config_reload: false
+working_directory: None
+alt_send_esc: true
+mouse:
+  double_click:
+    threshold: 300
+  triple_click:
+    threshold: 300
+  hide_when_typing:
+    false
+    #url:
+    #launcher:
+    #  program: xdg-open
+    #modifiers: None
+mouse_bindings:
+  - mouse: Middle
+    action: PasteSelection
+key_bindings:
+  - key: V
+    mods: Control|Shift
+    action: Paste
+  - key: C
+    mods: Control|Shift
+    action: Copy
+  - key: Insert
+    mods: Shift
+    action: PasteSelection
+  - key: Key0
+    mods: Control
+    action: ResetFontSize
+  - key: Equals
+    mods: Control
+    action: IncreaseFontSize
+  - key: Minus
+    mods: Control
+    action: DecreaseFontSize
+  - key: Return
+    mods: Alt
+    action: ToggleFullscreen
+  - key: Paste
+    action: Paste
+  - key: Copy
+    action: Copy
+  - key: L
+    mods: Control
+    action: ClearLogNotice
+  - key: L
+    mods: Control
+    chars: "\f"
+  - key: PageUp
+    mods: Shift
+    action: ScrollPageUp
+    mode: ~Alt
+  - key: PageDown
+    mods: Shift
+    action: ScrollPageDown
+    mode: ~Alt
+  - key: Home
+    mods: Shift
+    action: ScrollToTop
+    mode: ~Alt
+  - key: End
+    mods: Shift
+    action: ScrollToBottom
+    mode: ~Alt
+debug:
+  render_timer: false
+  persistent_logging: false
+  log_level: Warn
+  print_events: false
+colors:
+  primary:
+    background: "#0A0E14"
+    foreground: "#B3B1AD"
+    dim_foreground: "#dbdbdb"
+    bright_foreground: "#d9d9d9"
+    dim_background: "#202020"
+    bright_background: "#3a3a3a"
+  normal:
+    black: "#01060E"
+    red: "#EA6C73"
+    green: "#91B362"
+    yellow: "#F9AF4F"
+    blue: "#53BDFA"
+    magenta: "#FAE994"
+    cyan: "#90E1C6"
+    white: "#C7C7C7"
+  bright:
+    black: "#686868"
+    red: "#F07178"
+    green: "#C2D94C"
+    yellow: "#FFB454"
+    blue: "#59C2FF"
+    magenta: "#FFEE99"
+    cyan: "#95E6CB"
+    white: "#FFFFFF"
+  cursor:
+    text: "#c2c2b0"
+    cursor: "#c2c2b0"
+    background: "#f0f0f0"
+    foreground: "#26282a"
+  dim:
+    black: "#232323"
+    red: "#74423f"
+    green: "#5e6547"
+    yellow: "#8b7653"
+    blue: "#556b79"
+    magenta: "#6e4962"
+    cyan: "#5c8482"
+    white: "#828282"

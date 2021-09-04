@@ -5,7 +5,7 @@ stay_alive           = 1
 csv_cmd              = pmenu
 tint2_look           = 1
 at_pointer           = 0
-terminal_exec        = termite
+terminal_exec        = alacritty
 terminal_args        = -e
 #monitor             = 0
 

@@ -9,6 +9,7 @@ fonts=(
 
 # Needed apps, themes and icons
 needed_pkgs=(
+    alacritty
     arc-theme
     arandr
     python-dbus
@@ -29,7 +30,7 @@ needed_pkgs=(
     rofi
     scrot
     # skippy-xd
-    termite
+    # termite
     wmctrl
     xdotool
     xgetres
@@ -58,6 +59,7 @@ xfce4_pkgs=(
 )
 
 util_pkgs=(
+    alacritty-theme-switch
     mousepad
     parole
     ristretto
