@@ -10,4 +10,3 @@ sudo rm -rf ~/.config/rofi/themes >/dev/null 2>&1
 sudo rm -rf ~/.config/rofi/config.rasi >/dev/null 2>&1
 mkdir -p ~/.config/rofi
 ln -sf "${ROOT}"/rofi-themes/themes ~/.config/rofi/themes
-ln -sf "${ROOT}"/config.rasi ~/.config/rofi/config.rasi
