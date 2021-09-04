@@ -10,6 +10,7 @@ fonts=(
 # Needed apps, themes and icons
 needed_pkgs=(
     alacritty
+    alacritty-theme-switch
     arc-theme
     arandr
     python-dbus
@@ -59,7 +60,6 @@ xfce4_pkgs=(
 )
 
 util_pkgs=(
-    alacritty-theme-switch
     mousepad
     parole
     ristretto

@@ -40,6 +40,7 @@ touch ~/.config/polybar/modules/polybar.conf >/dev/null 2>&1
 
 create_symlink alacritty
 create_symlink gitconfig
+create_symlink rofi
 create_symlink xprofile
 create_symlink Xresources
 create_symlink Xresources.d
