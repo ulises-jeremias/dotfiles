@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# https://github.com/rstacruz/feh-blur
+
+# https://github.com/rstacruz/feh-blur-wallpaper
 
 if [ "$1" != "--worker" ]; then
   # Where to write stuff
