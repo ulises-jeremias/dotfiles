@@ -13,7 +13,7 @@
 
 </div>
 
-Dotfile generator that allows quick configuration of different window managers in multiple OSs.
+Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
 ## How it looks
 
