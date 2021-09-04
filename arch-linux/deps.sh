@@ -1,5 +1,6 @@
 # Needed fonts
 fonts=(
+    montserrat-ttf
     nerd-fonts-hack
     noto-fonts
     noto-fonts-cjk
