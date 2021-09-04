@@ -21,7 +21,7 @@ Dotfile generator that allows quick configuration of different window managers i
 
 <img src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen.png" align="left" width="48.75%" style="margin-left: 2.5%; margin-right: 5%" />
 
-<img src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim&termite.png" width="48.75%" />
+<img src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" width="48.75%" />
 
 <img src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" width="100%" style="margin-top: 15px;" />
 
