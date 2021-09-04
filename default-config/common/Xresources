@@ -21,6 +21,5 @@
 *.color15: #c0c5ce
 
 #include ".Xresources.d/polybar"
-#include ".Xresources.d/rofi"
 #include ".Xresources.d/urxvt"
 #include ".Xresources.d/xterm"
