@@ -58,7 +58,11 @@ get_gamma() {
 }
 
 get_brightness() {
-  if type -p xbacklight >/dev/null; then
+  if type -p brightnessctl >/dev/null; then
+    echo "$(brightnessctl -q get) / 100000" | bc -l | awk '{printf "%f\n", $0}'
+  elif type -p blight >/dev/null; then
+    echo "$(blight get) / 100000" | bc -l | awk '{printf "%f\n", $0}'
+  elif type -p xbacklight >/dev/null; then
     echo "$(xbacklight -get -display "$1") / 100" | bc -l | awk '{printf "%f", $0}'
   else
     get_display_info "$1" 'Brightness: '
@@ -168,7 +172,13 @@ else
   NEWBRIGHT=$(exec_op "$OP" "$OPVAL" "$CURRBRIGHT")
 fi
 
-if type -p xbacklight >/dev/null && [ "$1" != '--temp' ]; then
+if type -p brightnessctl >/dev/null && [ "$1" != '--temp' ]; then
+  NEWBRIGHT=$(echo "$NEWBRIGHT * 100000" | bc)
+  brightnessctl -q set "$NEWBRIGHT"
+elif type -p blight >/dev/null && [ "$1" != '--temp' ]; then
+  NEWBRIGHT=$(echo "$NEWBRIGHT * 100000" | bc)
+  blight set "$NEWBRIGHT"
+elif type -p xbacklight >/dev/null && [ "$1" != '--temp' ]; then
   NEWBRIGHT=$(echo "$NEWBRIGHT * 100" | bc)
   xbacklight -display "$DISP" -set "$NEWBRIGHT"
 elif type -p xbacklight >/dev/null && [ "$1" = '--temp' ]; then
