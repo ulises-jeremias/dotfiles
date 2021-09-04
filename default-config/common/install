@@ -7,10 +7,7 @@ create_symlink() {
     cp -rf "${ROOT}"/"$1" "${dotfiles_dir}"/custom-config/"$1"
   fi
 
-  if [ -e "${dotfiles_dir}"/custom-config/"$1"/install ]; then
-    chmod +x "${dotfiles_dir}"/custom-config/"$1"/install
-    "${dotfiles_dir}"/custom-config/"$1"/install
-  else
+  if [ ! -e "${dotfiles_dir}"/custom-config/"$1"/install ]; then
     ln -sf "${dotfiles_dir}"/custom-config/"$1" "${to}"
   fi
 }
