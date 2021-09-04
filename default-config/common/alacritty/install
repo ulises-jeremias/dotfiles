@@ -2,6 +2,7 @@
 
 ROOT=$(dirname "$0")
 
+rm -rf "${ROOT}"/alacritty-theme
 git clone https://github.com/eendroroy/alacritty-theme "${ROOT}"/alacritty-theme
 sudo rm -rf ~/.config/alacritty/themes >/dev/null 2>&1
 ln -sf "${ROOT}"/alacritty-theme/themes ~/.config/alacritty/themes
