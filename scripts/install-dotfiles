@@ -110,6 +110,8 @@ echo
 echo "${GREEN}Success: ${success} ${RED}Failed: ${failed}${RESET} Total: ${all}"
 
 describe "Setting up default and custom configs"
+echo
+echo
 
 rm -rf "${dotfiles_dir}"/default-config >/dev/null 2>&1
 cp -rf "${ROOT}"/../default-config/common "${dotfiles_dir}"/default-config
