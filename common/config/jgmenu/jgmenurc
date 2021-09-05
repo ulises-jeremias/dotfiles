@@ -38,7 +38,7 @@ item_border          = 0
 
 sep_height           = 5
 
-font                 = monospace 12px
+font                 = Hack Nerd Font Mono 12px
 #font_fallback       = xtg
 icon_size            = 24
 icon_text_spacing   = 10
