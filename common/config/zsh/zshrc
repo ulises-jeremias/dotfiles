@@ -114,6 +114,7 @@ PATH="$HOME/.pyenv/shims:/usr/local/bin:$PATH"
 # >>2
 # Editor and display configurations <<2
 #-------------------------------------------------------------------------------
+export BROWSER=xdg-open
 export EDITOR='vim'
 export VISUAL='vim'
 export GIT_EDITOR=$EDITOR
