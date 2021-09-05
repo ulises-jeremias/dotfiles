@@ -15,6 +15,9 @@ create_symlink() {
 ROOT=$(dirname "$0")
 dotfiles_dir="${ROOT}/.."
 
+echo ""
+echo ""
+
 #==========================================
 # Delete existing dot files and folders
 #==========================================
