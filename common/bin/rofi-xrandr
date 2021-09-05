@@ -108,7 +108,7 @@ element_count=5
 res=$(print_menu | rofi \
     -dmenu -sep '\0' -lines "$element_count" \
     -eh "$element_height" -p '' -no-custom \
-    -format i "${HOME}"/.config/rofi/tools.rasi)
+    -format i -theme "${HOME}"/.config/rofi/tools.rasi)
 
 if [ -z "$res" ]; then
     exit
