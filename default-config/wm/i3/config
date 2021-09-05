@@ -1,7 +1,7 @@
 # border & title
 # NOTE: Title format is hidden because of `alpha` property set to `1`.
 # Font size set to `0` is to hidde this bar
-for_window [class="^.*"] border pixel 1, title_format "<b alpha='1'> %class >> %title </b>"
+for_window [class="^.*"] border pixel 0, title_format "<b alpha='1'> %class >> %title </b>"
 
 # gaps
 gaps inner 10
