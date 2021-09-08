@@ -15,6 +15,7 @@ scrolling:
   history: 2500
   multiplier: 3
 font:
+  size: 12
   normal:
     family: Hack Nerd Font
     style: Regular
