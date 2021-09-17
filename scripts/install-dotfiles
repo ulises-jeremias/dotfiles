@@ -61,16 +61,16 @@ if [ -d "${ROOT}/../${os}/bin" ]; then
   cp -rf "${ROOT}"/../"${os}"/bin "${dotfiles_dir}"
 fi
 
-if [ ! -d "${HOME}/bin" ]; then
-  mkdir ~/bin
+if [ ! -d "${HOME}/.local/bin" ]; then
+  mkdir ~/.local/bin
 fi
 
 for bin_path in "${dotfiles_dir}"/bin/*; do
   bin=$(basename "${bin_path}")
 
   chmod +x "${bin_path}"
-  sudo rm -rf ~/bin/"${bin}" >/dev/null 2>&1
-  ln -sf "${bin_path}" ~/bin/"${bin}"
+  sudo rm -rf ~/.local/bin/"${bin}" >/dev/null 2>&1
+  ln -sf "${bin_path}" ~/.local/bin/"${bin}"
 done
 
 echo

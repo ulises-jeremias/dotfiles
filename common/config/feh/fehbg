@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-feh --bg-fill "$HOME/.config/feh/wallpaper.jpg"
-feh-blur --blur 10 -d

@@ -11,8 +11,9 @@ picom --config ~/.config/picom.conf &
 
 # TODO: load git notify pointing to dotfiles repo
 
-# set background using feh
-~/.config/feh/.fehbg &
+# restore last configured wallpaper
+~/.local/bin/wall-d -f -r &
+~/.local/bin/feh-blur --blur 10 -d &
 
 # open polybar
 ~/.config/polybar/launch &

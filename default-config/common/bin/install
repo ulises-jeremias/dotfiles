@@ -10,6 +10,6 @@ for bin_path in "${ROOT}"/*; do
   fi
 
   chmod +x "${bin_path}"
-  sudo rm -rf ~/bin/"${bin}" >/dev/null 2>&1
-  ln -sf "${bin_path}" ~/bin/"${bin}"
+  sudo rm -rf ~/.local/bin/"${bin}" >/dev/null 2>&1
+  ln -sf "${bin_path}" ~/.local/bin/"${bin}"
 done
