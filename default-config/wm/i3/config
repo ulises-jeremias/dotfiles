@@ -224,6 +224,7 @@ bindsym $Mod+Control+Shift+plus  gaps outer all     plus  5
 bindsym $Mod+Control+Shift+minus gaps outer all     minus 5
 
 # focus, floating, & sticky
+for_window [class="Sxiv"]                            floating enable
 for_window [class="(?i)(?:qt5ct|pinentry)"]          floating enable, focus
 for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
 for_window [window_role="(?i)(?:pop-up|setup)"]      floating enable
