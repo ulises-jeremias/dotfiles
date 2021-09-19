@@ -1,13 +1,12 @@
 #!/usr/bin/env sh
 
-rm -rf /opt/dots-git
-mkdir -p /opt/dots-git
-cp -Rf ./* /opt/dots-git
-install -Dm644 LICENSE /usr/share/licenses/dots-git/LICENSE
-install -Dm644 README.md /usr/share/doc/dots-git/README.md
-cp -Rf arch-linux /opt/dots-git
-cp -Rf common /opt/dots-git
-cp -Rf default-config /opt/dots-git
-cp -Rf scripts /opt/dots-git
-cp -Rf util /opt/dots-git
-install -Dm755 dots /usr/bin/dots
+ROOT=$(dirname "$0")
+
+PKGNAME=${PKGNAME:-"dots-git"}
+
+rm -rf "${PKGDIR}"/opt/"${PKGNAME}"
+mkdir -p "${PKGDIR}"/opt/"${PKGNAME}"
+cp -Rf "${ROOT}"/* "${PKGDIR}"/opt/"${PKGNAME}"
+install -Dm644 "${ROOT}"/LICENSE /usr/share/licenses/"${PKGNAME}"/LICENSE
+install -Dm644 "${ROOT}"/README.md /usr/share/doc/"${PKGNAME}"/README.md
+install -Dm755 "${ROOT}"/dots /usr/bin/dots
