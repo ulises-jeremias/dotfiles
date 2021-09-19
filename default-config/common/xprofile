@@ -5,7 +5,7 @@
 XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_CONFIG_HOME
 
-[[ "${PATH}" == *"${HOME}/.local/bin"* ]] || PATH="${HOME}/.local/bin:${PATH}"
+[[ "${PATH}" == *"${HOME}/.local/bin"* ]] || export PATH="${HOME}/.local/bin:${PATH}"
 
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 gnome-keyring-daemon --start --components=pkcs11 &
