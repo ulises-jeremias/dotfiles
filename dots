@@ -23,6 +23,10 @@
 
 ROOT=$(dirname "$0")
 
+if [[ -d /opt/dots-git ]]; then
+    ROOT=/opt/dots-git
+fi
+
 source "${ROOT}"/util/opts/opts.sh || exit
 
 # override OS with a correct value with the given params
