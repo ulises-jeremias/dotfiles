@@ -33,7 +33,7 @@ Dotfiles generator that allows quick configuration of different window managers 
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 $ cd /tmp/dotfiles
-$ ./install --wms=<WMS> # use -h to know more about install options
+$ ./dots-config --wms=<WMS> # use -h to know more about install options
 ```
 
 being `WMS = i3,openbox,...`.
