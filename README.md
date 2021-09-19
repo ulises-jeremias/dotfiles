@@ -21,7 +21,7 @@ Dotfiles generator that allows quick configuration of different window managers 
 
 ## Arch Linux
 
-> Install [`dots`](https://aur.archlinux.org/packages/dots-git/) from AUR
+> Install [dots](https://aur.archlinux.org/packages/dots-git/) from AUR
 
 ```sh
 $ yay dots-git
