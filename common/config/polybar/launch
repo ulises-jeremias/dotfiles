@@ -4,14 +4,12 @@
 pkill -9 polybar
 
 # Wait until the processes have been shut down
-while pgrep -u $UID -x polybar > /dev/null; do sleep 1; done
+while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
 
 polybars=$(xgetres polybar.polybars)
 polybars="${polybars:-"polybar-top polybar-bottom"}"
 
-if [ -z "$TERM" ]; then
-  export TERM=xterm
-fi
+export TERM=xterm
 
 # if type xrandr > /dev/null; then
 #     for bar in $(echo "${polybars}" | tr ' ' '\n'); do
@@ -26,5 +24,5 @@ fi
 # fi
 
 for bar in $(echo "${polybars}" | tr ' ' '\n'); do
-    polybar -r "${bar}" &
+  polybar -r "${bar}" &
 done
