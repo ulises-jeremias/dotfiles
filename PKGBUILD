@@ -68,7 +68,7 @@ xfce4_pkgs=(
 )
 
 # Maintainer: Ulises Jeremias Cornejo Fandos <ulisescf.24@domain.com>
-pkgname=dotfiles-git
+pkgname=dots-git
 pkgver=1.0
 pkgrel=1
 epoch=
