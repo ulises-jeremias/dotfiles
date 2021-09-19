@@ -9,7 +9,9 @@ while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
 polybars=$(xgetres polybar.polybars)
 polybars="${polybars:-"polybar-top polybar-bottom"}"
 
-export TERM=xterm
+if [ -z "${TERM}" ]; then
+  export TERM=xterm-256color
+fi
 
 # if type xrandr > /dev/null; then
 #     for bar in $(echo "${polybars}" | tr ' ' '\n'); do
