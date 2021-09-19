@@ -61,7 +61,7 @@ xfce4_pkgs=(
 )
 
 pkgname=dots-git
-pkgver=1.0.r329.8f029ea
+pkgver=1.0.0
 pkgrel=1
 epoch=
 pkgdesc="Dotfiles generator that allows quick configuration and managing of different tools and window managers in multiple OSs"
@@ -95,11 +95,6 @@ source=("git+$url.git")
 noextract=()
 md5sums=('SKIP')
 validpgpkeys=()
-
-pkgver() {
-	cd ./dotfiles || exit
-	printf "1.0.r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-}
 
 package() {
 	cd ./dotfiles || exit
