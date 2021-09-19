@@ -30,6 +30,8 @@ $ dots --help
 
 ## Installation from Source
 
+> Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`
+
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 $ cd /tmp/dotfiles
