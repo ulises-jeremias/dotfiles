@@ -14,7 +14,6 @@ needed_pkgs=(
     arc-theme
     arandr
     python-dbus
-    drun
     feh
     graphicsmagick
     i3lock-fancy
