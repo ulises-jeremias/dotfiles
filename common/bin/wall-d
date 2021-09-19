@@ -118,7 +118,7 @@ single() {
     [ -z "${wall_options}" ] && exit 0
 
     if [ "${only_betterlockscreen}" = "true" ]; then
-        betterlockscreen -u "${wall1}" -r "${resolution1}"
+        betterlockscreen -u ${wall1} -r ${resolution1}
     else
         if [ "${use_feh}" = "true" ]; then
             feh --bg-${wall_options} ${wall1}
@@ -127,11 +127,11 @@ single() {
         fi
     fi
 
-    [ "${with_pywall}" = "true" ] && wal -i "${wall1}" -n
+    [ "${with_pywall}" = "true" ] && wal -i ${wall1} -n
 
     if [ "${with_betterlockscreen}" = "true" ]; then
         dunstify "${0}" "${start_message}"
-        betterlockscreen -u "${wall1}" -r "${resolution1}"
+        betterlockscreen -u ${wall1} -r ${resolution1}
         dunstify "${0}" "${finish_message}"
     fi
 }
@@ -172,11 +172,11 @@ dual() {
         xwallpaper --output ${monitor1} --${wall_options} ${dwall1} --output ${monitor2} --${wall_options} ${dwall2} && sed -i "s|xwallpaper.*|xwallpaper --output ${monitor1} --${wall_options} ${dwall1} --output ${monitor2} --${wall_options} ${dwall2}|" "${DEFAULT_WALLPAPER_SCRIPT_PATH}"
     fi
 
-    [ "${with_pywall}" = "true" ] && wal -i "${dwall1}" -n
+    [ "${with_pywall}" = "true" ] && wal -i ${dwall1} -n
 
     if [ "${with_betterlockscreen}" = "true" ]; then
         dunstify "${0}" "${start_message}"
-        betterlockscreen -u "${dwall1}" -r "${resolution1}"
+        betterlockscreen -u ${dwall1} -r ${resolution1}
         dunstify "${0}" "${finish_message}"
     fi
 }
@@ -213,16 +213,16 @@ triple() {
     [ -z "${wall_options}" ] && exit 0
 
     if [ "${use_feh}" = "true" ]; then
-        feh --bg-"${wall_options}" "${dwall1}" "${dwall2}"
+        feh --bg-"${wall_options}" ${dwall1} "${dwall2}"
     else
         xwallpaper --output ${monitor1} --${wall_options} ${twall1} --output ${monitor2} --${wall_options} ${twall2} --output ${monitor3} --${wall_options} ${twall3} && sed -i "s|xwallpaper.*|xwallpaper --output ${monitor1} --${wall_options} ${twall1} --output ${monitor2} --${wall_options} ${twall2} --output ${monitor3} --${wall_options} ${twall3} |" "${DEFAULT_WALLPAPER_SCRIPT_PATH}"
     fi
 
-    [ "${with_pywall}" = "true" ] && wal -i "${twall2}" -n
+    [ "${with_pywall}" = "true" ] && wal -i ${twall2} -n
 
     if [ "${with_betterlockscreen}" = "true" ]; then
         dunstify "${0}" "${start_message}"
-        betterlockscreen -u "${twall2}" -r "${resolution2}"
+        betterlockscreen -u ${twall2} -r ${resolution2}
         dunstify "${0}" "${finish_message}"
     fi
 }
