@@ -1,6 +1,5 @@
 # Needed fonts
 fonts=(
-    montserrat-ttf
     nerd-fonts-hack
     noto-fonts
     noto-fonts-cjk
@@ -30,9 +29,11 @@ needed_pkgs=(
     playerctl
     polybar
     pulseaudio
+    python-pywal
     rofi
     scrot
     skippy-xd
+    sxiv
     # termite
     wmctrl
     xdotool
