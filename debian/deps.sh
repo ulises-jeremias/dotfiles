@@ -46,47 +46,20 @@ xfce4_pkgs=(
     exo
     libxfce4ui
     libxfce4util
-    thunar
-    thunar-archive-plugin
-    thunar-media-tags-plugin
-    thunar-volman
-    tumbler
-    xfce4-battery-plugin
-    xfce4-datetime-plugin
-    xfce4-power-manager
-    xfce4-pulseaudio-plugin
     xfce4-settings
     xfce4-xkb-plugin
     xfconf
+    xfce4-notifyd
 )
 
 util_pkgs=(
-    mousepad
-    parole
-    ristretto
-    xfce4-appfinder
-    xfce4-clipman-plugin
-    xfce4-cpufreq-plugin
-    xfce4-cpugraph-plugin
-    xfce4-diskperf-plugin
-    xfce4-fsguard-plugin
-    xfce4-genmon-plugin
-    xfce4-mailwatch-plugin
-    xfce4-mount-plugin
-    xfce4-mpc-plugin
-    xfce4-netload-plugin
-    xfce4-notes-plugin
-    xfce4-screensaver
-    xfce4-screenshooter
-    xfce4-sensors-plugin
-    xfce4-smartbookmark-plugin
-    xfce4-systemload-plugin
-    xfce4-taskmanager
-    xfce4-time-out-plugin
-    xfce4-timer-plugin
-    xfce4-verve-plugin
-    xfce4-wavelan-plugin
-    xfce4-weather-plugin
+    "dunst: Customizable and lightweight notification-daemon. Will be used by default for notifications if installed"
+    "thunar: Modern file manager for Xfce"
+    "thunar-archive-plugin: Create and extract archives in Thunar"
+    "thunar-media-tags-plugin: Adds special features for media files to the Thunar File Manager"
+    "thunar-volman: Automatic management of removeable devices in Thunar"
+    "xfce4-power-manager: Power manager for the Xfce4 desktop"
+    "xfce4-screenshooter: An application to take screenshots"
 )
 
 if [ -n "${nodunst}" ]; then
@@ -97,18 +70,20 @@ fi
 
 if [ -n "${bluetooth}" ]; then
     needed_pkgs+=(bluez)
-    util_pkgs+=(blueman pulseaudio-module-bluetooth)
+    util_pkgs+=(blueman pulseaudio-module-bt)
 fi
 
 if [ -n "${utils}" ]; then
     for util in "${util_pkgs[@]}"; do
-        printf "Add %s to the installation list? [y/N]: " "${util}"
+        util_pkg="${util%%:*}"
+        echo "${util}"
+        printf "Add %s to the installation list? [y/N]: " "${util_pkg}"
 
         read -r input
 
         case "${input}" in
         y | Y | yes | YES | Yes)
-            xfce4_pkgs+=("${util}")
+            xfce4_pkgs+=("${util_pkg}")
             ;;
         esac
     done
