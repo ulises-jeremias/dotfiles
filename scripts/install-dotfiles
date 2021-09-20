@@ -83,6 +83,7 @@ success=0
 failed=0
 
 describe "Installing dotfiles" 0
+echo
 for config_path in "${ROOT}"/../common/config/*; do
   config=$(basename "${config_path}")
 
