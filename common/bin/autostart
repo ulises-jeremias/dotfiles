@@ -7,7 +7,7 @@ xfsettingsd &
 xrdb -I"${HOME}" -load ~/.Xresources &
 
 # load picom
-picom --config ~/.config/picom.conf &
+picom --config "${XDG_CONFIG_HOME}"/picom.conf &
 
 # TODO: load git notify pointing to dotfiles repo
 
@@ -16,4 +16,4 @@ picom --config ~/.config/picom.conf &
 ~/.local/bin/feh-blur --blur 10 -d &
 
 # open polybar
-~/.config/polybar/launch &
+"${XDG_CONFIG_HOME}"/polybar/launch &

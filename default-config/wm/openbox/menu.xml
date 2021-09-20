@@ -53,17 +53,17 @@
         <separator/>
         <item label="Edit menu.xml">
           <action name="Execute">
-            <command>exo-open ~/.config/openbox/menu.xml</command>
+            <command>exo-open "${XDG_CONFIG_HOME}"/openbox/menu.xml</command>
           </action>
         </item>
         <item label="Edit rc.xml">
           <action name="Execute">
-            <command>exo-open ~/.config/openbox/rc.xml</command>
+            <command>exo-open "${XDG_CONFIG_HOME}"/openbox/rc.xml</command>
           </action>
         </item>
         <item label="Edit autostart">
           <action name="Execute">
-            <command>exo-open ~/.config/openbox/autostart</command>
+            <command>exo-open "${XDG_CONFIG_HOME}"/openbox/autostart</command>
           </action>
         </item>
         <separator/>

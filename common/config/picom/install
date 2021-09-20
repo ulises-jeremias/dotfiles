@@ -2,5 +2,5 @@
 
 ROOT=$(dirname "$0")
 
-sudo rm -rf ~/.config/picom.conf > /dev/null 2>&1
-ln -sf "${ROOT}"/picom.conf ~/.config/picom.conf
+sudo rm -rf "${XDG_CONFIG_HOME}"/picom.conf > /dev/null 2>&1
+ln -sf "${ROOT}"/picom.conf "${XDG_CONFIG_HOME}"/picom.conf

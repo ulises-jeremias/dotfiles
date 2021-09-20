@@ -2,12 +2,12 @@
 
 ROOT=$(dirname "$0")
 
-sudo rm -rf ~/.config/jgmenu/jgmenurc > /dev/null 2>&1
-sudo rm -rf ~/.config/jgmenu/append.csv > /dev/null 2>&1
-sudo rm -rf ~/.config/jgmenu/prepend.csv > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME}"/jgmenu/jgmenurc > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME}"/jgmenu/append.csv > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME}"/jgmenu/prepend.csv > /dev/null 2>&1
 
-mkdir ~/.config/jgmenu > /dev/null 2>&1
+mkdir "${XDG_CONFIG_HOME}"/jgmenu > /dev/null 2>&1
 
-ln -sf "${ROOT}"/jgmenurc ~/.config/jgmenu/jgmenurc
-ln -sf "${ROOT}"/append.csv ~/.config/jgmenu/append.csv
-ln -sf "${ROOT}"/prepend.csv ~/.config/jgmenu/prepend.csv
+ln -sf "${ROOT}"/jgmenurc "${XDG_CONFIG_HOME}"/jgmenu/jgmenurc
+ln -sf "${ROOT}"/append.csv "${XDG_CONFIG_HOME}"/jgmenu/append.csv
+ln -sf "${ROOT}"/prepend.csv "${XDG_CONFIG_HOME}"/jgmenu/prepend.csv

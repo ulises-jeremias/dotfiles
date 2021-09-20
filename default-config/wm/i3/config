@@ -35,9 +35,9 @@ set $WS8 "8"
 
 # run with reload
 exec_always --no-startup-id xrdb -I$HOME -load ~/.Xresources
-exec_always --no-startup-id picom --config ~/.config/picom.conf
-exec_always --no-startup-id ~/.config/feh/.fehbg
-exec_always --no-startup-id ~/.config/polybar/launch
+exec_always --no-startup-id picom --config "${XDG_CONFIG_HOME}"/picom.conf
+exec_always --no-startup-id "${XDG_CONFIG_HOME}"/feh/.fehbg
+exec_always --no-startup-id "${XDG_CONFIG_HOME}"/polybar/launch
 
 # run once
 exec --no-startup-id xfsettingsd

@@ -44,10 +44,10 @@ for arg in "$@"; do
   -r | --run)
     rofi -modi run,drun -show drun -line-padding 4 \
       -columns 1 -padding 35 -show-icons \
-      -drun-icon-theme "Numix-Circle" -theme "${HOME}"/.config/rofi/apps.rasi
+      -drun-icon-theme "Numix-Circle" -theme "${XDG_CONFIG_HOME}"/rofi/apps.rasi
     ;;
   -w | --window)
-    rofi -modi window -show window -theme "${HOME}"/.config/rofi/tools.rasi -hide-scrollbar -padding 35 -line-padding 4
+    rofi -modi window -show window -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi -hide-scrollbar -padding 35 -line-padding 4
     ;;
   -q | --qalculate)
     hash qalc &>/dev/null ||
@@ -58,7 +58,7 @@ for arg in "$@"; do
 
     rofi -modi "calc:qalc +u8 -nocurrencies" -padding 35 \
       -show "calc:qalc +u8 -nocurrencies" -line-padding 4 \
-      -hide-scrollbar -theme "${HOME}"/.config/rofi/tools.rasi
+      -hide-scrollbar -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi
     ;;
   -c | --clipboard)
     hash greenclip &>/dev/null ||
@@ -69,7 +69,7 @@ for arg in "$@"; do
 
     rofi -modi "clipboard:greenclip print" -padding 35 \
       -line-padding 4 -show "clipboard:greenclip print" \
-      -hide-scrollbar -theme "${HOME}"/.config/rofi/tools.rasi
+      -hide-scrollbar -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi
     ;;
   -b | --browser)
     hash surfraw &>/dev/null ||
@@ -80,18 +80,18 @@ for arg in "$@"; do
 
     surfraw -browser="$BROWSER" "$(sr -elvi | awk -F'-' '{print $1}' |
       sed '/:/d' | awk '{$1=$1};1' |
-      rofi -hide-scrollbar -theme "${HOME}"/.config/rofi/tools.rasi -kb-row-select 'Tab' \
+      rofi -hide-scrollbar -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi -kb-row-select 'Tab' \
         -kb-row-tab 'Control+space' -dmenu \
         -mesg 'Tab for Autocomplete' -i -p 'Web Search' \
         -padding 35 -line-padding 4)"
     ;;
   -l | --logout)
     if grep -q 'exec startx' ~/.*profile; then
-      ANS="$(rofi -theme "${HOME}"/.config/rofi/tools.rasi -sep "|" -dmenu -i -p 'System' -width 20 \
+      ANS="$(rofi -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi -sep "|" -dmenu -i -p 'System' -width 20 \
         -hide-scrollbar -line-padding 4 -padding 20 \
         -lines 3 <<<" Lock| Reboot| Shutdown")"
     else
-      ANS="$(rofi -theme "${HOME}"/.config/rofi/tools.rasi -sep "|" -dmenu -i -p 'System' -width 20 \
+      ANS="$(rofi -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi -sep "|" -dmenu -i -p 'System' -width 20 \
         -hide-scrollbar -line-padding 4 -padding 20 \
         -lines 6 <<<" Hibernate| Lock|﫼 Logout| Reboot| Shutdown|鈴 Suspend")"
     fi

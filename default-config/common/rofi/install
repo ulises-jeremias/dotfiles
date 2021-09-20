@@ -7,12 +7,12 @@ printf "Setting up rofi themes...\\n"
 rm -rf "${ROOT}"/rofi-themes
 git clone https://github.com/ulises-jeremias/rofi-themes.git "${ROOT}"/rofi-themes
 
-sudo rm -rf ~/.config/rofi/themes >/dev/null 2>&1
-sudo rm -rf ~/.config/rofi/config.rasi >/dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME}"/rofi/themes >/dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME}"/rofi/config.rasi >/dev/null 2>&1
 
-mkdir -p ~/.config/rofi
+mkdir -p "${XDG_CONFIG_HOME}"/rofi
 
-ln -sf "${ROOT}"/rofi-themes/themes ~/.config/rofi/themes
-ln -sf "${ROOT}"/apps.rasi ~/.config/rofi/apps.rasi
-ln -sf "${ROOT}"/networks.rasi ~/.config/rofi/networks.rasi
-ln -sf "${ROOT}"/tools.rasi ~/.config/rofi/tools.rasi
+ln -sf "${ROOT}"/rofi-themes/themes "${XDG_CONFIG_HOME}"/rofi/themes
+ln -sf "${ROOT}"/apps.rasi "${XDG_CONFIG_HOME}"/rofi/apps.rasi
+ln -sf "${ROOT}"/networks.rasi "${XDG_CONFIG_HOME}"/rofi/networks.rasi
+ln -sf "${ROOT}"/tools.rasi "${XDG_CONFIG_HOME}"/rofi/tools.rasi
