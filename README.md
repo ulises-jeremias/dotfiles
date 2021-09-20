@@ -63,6 +63,15 @@ Maybe you want to contribute to this project or just test what the setup would l
 
 You can read more about this at [Testing Docs](https://ulises-jeremias.github.io/dotfiles/#Testing).
 
+## Contributors 
+
+<a href="https://github.com/ulises-jeremias/dotfiles/contributors">
+  <img src="https://contrib.rocks/image?repo=ulises-jeremias/dotfiles"/>
+</a>
+
+Made with [contributors-img](https://contrib.rocks).
+
+
 [docsdeploymentbadge]: https://github.com/ulises-jeremias/dotfiles/workflows/Deploy%20Docs/badge.svg
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
 [docsdeploymenturl]: https://github.com/ulises-jeremias/dotfiles/commits/master
