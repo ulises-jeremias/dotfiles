@@ -1,12 +1,10 @@
 #!/usr/bin/env sh
 
 ROOT=$(dirname "$0")
-
 PKGNAME=${PKGNAME:-"dots-git"}
 
-rm -rf "${PKGDIR}"/opt/"${PKGNAME}"
-mkdir -p "${PKGDIR}"/opt/"${PKGNAME}"
-cp -Rf "${ROOT}"/* "${PKGDIR}"/opt/"${PKGNAME}"
-install -Dm644 "${ROOT}"/LICENSE /usr/share/licenses/"${PKGNAME}"/LICENSE
-install -Dm644 "${ROOT}"/README.md /usr/share/doc/"${PKGNAME}"/README.md
-install -Dm755 "${ROOT}"/dots /usr/bin/dots
+install -d "${PKGDIR}/opt/${PKGNAME}"
+cp -Rf * "${PKGDIR}/opt/${PKGNAME}"
+install -Dm644 LICENSE -t "${PKGDIR}/usr/share/licenses/${PKGNAME}/"
+install -Dm644 README.md -t "${PKGDIR}/usr/share/doc/${PKGNAME}/"
+install -Dm755 dots -t "${PKGDIR}/usr/bin/"
