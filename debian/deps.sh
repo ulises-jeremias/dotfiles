@@ -43,7 +43,7 @@ needed_pkgs=(
 
 # xfce4 utils
 xfce4_pkgs=(
-    exo
+    exo-utils
     libxfce4ui
     libxfce4util
     xfce4-settings
