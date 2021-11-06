@@ -5,7 +5,7 @@ pkg_install() {
     bash "${ROOT}"/debian/"$1"
     return $?
   fi
-  sudo apt install "$1"
+  sudo apt install "$1" -y
   return $?
 }
 
