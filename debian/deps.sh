@@ -19,6 +19,7 @@ needed_pkgs=(
     i3lock-fancy
     jgmenu
     jq
+    libx11-dev
     networkmanager-dmenu
     # network-manager-applet
     numix-icon-theme
