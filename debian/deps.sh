@@ -13,7 +13,7 @@ needed_pkgs=(
     alacritty-theme-switch
     arc-theme
     arandr
-    python-dbus
+    python3-dbus
     feh
     graphicsmagick
     i3lock-fancy
@@ -27,7 +27,7 @@ needed_pkgs=(
     playerctl
     polybar
     pulseaudio
-    python-pywal
+    python3-pywal
     rofi
     scrot
     # skippy-xd
