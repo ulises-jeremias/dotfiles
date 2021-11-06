@@ -23,6 +23,9 @@
 
 ROOT=$(dirname "$0")
 
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CONFIG_HOME
+
 if [[ -d /opt/dots-git ]]; then
     ROOT=/opt/dots-git
 fi
