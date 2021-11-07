@@ -5,11 +5,11 @@ SCRIPT_NAME=$(basename "$0")
 
 for bin_path in "${ROOT}"/*; do
   bin=$(basename "${bin_path}")
-  if [[ "${bin}" == "${SCRIPT_NAME}" ]]; then
+  if [[ "${bin}" = "${SCRIPT_NAME}" ]]; then
     continue
   fi
 
   chmod +x "${bin_path}"
-  sudo rm -rf ~/.local/bin/"${bin}" >/dev/null 2>&1
-  ln -sf "${bin_path}" ~/.local/bin/"${bin}"
+  rm -f ~/.local/bin/"${bin}" >/dev/null 2>&1
+  ln -sf "$(realpath "${bin_path}")" ~/.local/bin/"${bin}"
 done
