@@ -17,9 +17,9 @@
 
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
-![Dotfiles Overview](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif)
-
 ![Dotfiles Screen Overview](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg)
+
+![Dotfiles Overview](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif)
 
 ## Arch Linux
 
