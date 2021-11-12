@@ -3,4 +3,4 @@
 git clone https://github.com/firecat53/networkmanager-dmenu /tmp/networkmanager-dmenu
 [ ! -d ~/.local/bin ] && mkdir ~/.local/bin
 cp /tmp/networkmanager-dmenu/networkmanager_dmenu ~/.local/bin
-chmod +x ~/.local/bin/networkmanager_dmenu
+chmod +x dots-scripts networkmanager_dmenu

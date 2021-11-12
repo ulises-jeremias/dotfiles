@@ -120,7 +120,7 @@ if [[ "$2" = '+' || "$2" = '-' || "$2" = '=' ]] && [[ -n "$1" ]]; then
   DISP="$1"
   if [ "${DISP}" = "*" ]; then
     # use focused monitor instead
-    DISP="$(~/.local/bin/monitor)"
+    DISP="$(dots-scripts monitor)"
   fi
   shift
   shift

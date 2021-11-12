@@ -17,8 +17,8 @@ picom --config "${XDG_CONFIG_HOME}"/picom.conf &
 # TODO: load git notify pointing to dotfiles repo
 
 # restore last configured wallpaper
-~/.local/bin/wall-d -f -r &
-~/.local/bin/feh-blur --blur 10 -d &
+dots-scripts wall-d -f -r &
+dots-scripts feh-blur --blur 10 -d &
 
 # open polybar
 "${XDG_CONFIG_HOME}"/polybar/launch &
