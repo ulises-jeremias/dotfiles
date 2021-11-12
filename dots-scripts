@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2020 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://ulises-jeremias.github.io/dotfiles
+##
+##     @script.name [SCRIPT_NAME] [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Show this help message.
+##     -l, --list                            List all available scripts.
+##
+
+ROOT=$(dirname "$0")
+
+if [[ -d /opt/dots-git ]]; then
+    ROOT=/opt/dots-git
+fi
+
+show_message_with_usage() {
+    [[ -z "$documentation" ]] && parse_documentation
+    echo "$documentation"
+    echo
+    echo "$1"
+    exit 1
+}
+
+source "${ROOT}"/util/opts/opts.sh || exit
+
+scripts_list=(
+    "autostart: bootstrap for all the important apps on the system init"
+    "brightness: control the brightness of the screen using different backends such us xbacklight, brightnessctl, blight or xrandr"
+    "check-network: check if the network is up"
+    "checkupdates: check for updates"
+    "feh-blur: blur the background of the current window"
+    "git-notify: notify when a git commit is made"
+    "microphone: control the microphone"
+    "monitor: print the current monitor name"
+    "night-mode: toggle night mode"
+    "openweathermap-detailed: print the detailed weather information"
+    "popup-calendar: show a calendar in a popup"
+    "rofi-bluetooth: show a rofi menu to manage bluetooth devices"
+    "rofi-randr: show a rofi menu to manage the screen resolution"
+    "rofi-run: show a rofi menu to run commands"
+    "rofi-xrandr: show a rofi menu to manage the screen resolution with charts"
+    "screenshooter: take a screenshot"
+    "spotify: get the current song playing in spotify"
+    "sysupdate: update the system"
+    "toggle: toggle the state of some applications"
+    "updates: check for updates"
+    "wall-d: change and restore the wallpaper using different backends such us feh or xwallpaper"
+    "weather: print the current weather information"
+)
+
+# list all available scripts with description with colors
+if [[ -n "${list}" ]]; then
+    for script in "${scripts_list[@]}"; do
+        script_name=$(echo "${script}" | cut -d ':' -f 1)
+        script_desc=$(echo "${script}" | cut -d ':' -f 2)
+        echo -e "$(tput setaf 3)${script_name}$(tput sgr0) - ${script_desc}"
+    done
+    exit
+fi
+
+script=${arguments[0]}
+
+if [[ -z "${script}" ]]; then
+    show_message_with_usage "No script specified."
+fi
+
+# validate script is in the list
+if [[ ! "${scripts_list[*]}" =~ "${script}" ]]; then
+    show_message_with_usage "Invalid script specified."
+fi
+
+LOCAL_BIN_DIR="${HOME}/.local/bin"
+
+if [[ ! -x "${LOCAL_BIN_DIR}/${script}" ]]; then
+    show_message_with_usage "Script not found: ${LOCAL_BIN_DIR}/${script}"
+fi
+
+"${LOCAL_BIN_DIR}/${script}" "${arguments[@]:1}"
