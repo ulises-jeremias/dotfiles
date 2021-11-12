@@ -55,7 +55,6 @@ scripts_list=(
     "weather: print the current weather information"
 )
 
-# list all available scripts with description with colors and in two columns using awk
 if [[ -n "${scripts}" ]]; then
     for script in "${scripts_list[@]}"; do
         script_name=$(echo "${script}" | cut -d ':' -f 1)
@@ -71,7 +70,6 @@ if [[ -z "${script}" ]]; then
     show_message_with_usage "No script specified."
 fi
 
-# validate script is in the list
 if [[ ! "${scripts_list[*]}" =~ "${script}" ]]; then
     show_message_with_usage "Invalid script specified."
 fi
