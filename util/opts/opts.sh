@@ -88,16 +88,16 @@ parse_options() {
         parse_documentation
         while read -r line; do
             case "$line" in
-                "-h, --help"*)  continue ;;
-                "--help, -h"*)  continue ;;
-                -*," "--*)      option=$(echo "$line" | awk -F'(^-|, --| )'  '{ print $2"="$3 }') ;;
-                --*," "-*)      option=$(echo "$line" | awk -F'(--|, -| )'   '{ print $3"="$2 }') ;;
-                --*=*)          option=$(echo "$line" | awk -F'(--|=| )'     '{ print $2"=?" }') ;;
-                --*" "*)        option=$(echo "$line" | awk -F'(--| )'       '{ print $2 }') ;;
-                *)              continue ;;
+            "-h, --help"*) continue ;;
+            "--help, -h"*) continue ;;
+            -*," "--*) option=$(echo "$line" | awk -F'(^-|, --| )' '{ print $2"="$3 }') ;;
+            --*," "-*) option=$(echo "$line" | awk -F'(--|, -| )' '{ print $3"="$2 }') ;;
+            --*=*) option=$(echo "$line" | awk -F'(--|=| )' '{ print $2"=?" }') ;;
+            --*" "*) option=$(echo "$line" | awk -F'(--| )' '{ print $2 }') ;;
+            *) continue ;;
             esac
             options+=("$option")
-        done <<< "$documentation"
+        done <<<"$documentation"
     fi
 
     options+=(h=help)
@@ -186,25 +186,31 @@ parse_options() {
 
             # Long option with unnecessary value
             elif [[ "$option" = -$known_option_name=* && "$known_option_var" != "?" ]]; then
-                option_value=${option#*=}
-                show_error "--$known_option_name does not accept a value, you specified \"$option_value\""
-                exit 1
+                if [[ -z "${NO_CHECK}" ]]; then
+                    option_value=${option#*=}
+                    show_error "--$known_option_name does not accept a value, you specified \"$option_value\""
+                    exit 1
+                fi
             fi
         done
 
         # Unknown option
         if [[ -z "$option_value" ]]; then
-            option=${option%%=*}
-            [[ "$option" = \?* ]] && option=${option#*\?}
-            show_error "unrecognized option -$option"
-            exit 1
+            if [[ -z "${NO_CHECK}" ]]; then
+                option=${option%%=*}
+                [[ "$option" = \?* ]] && option=${option#*\?}
+                show_error "unrecognized option -$option"
+                exit 1
+            fi
         fi
 
         # Help option
         if [[ -n "$help" ]]; then
-            [[ -z "$documentation" ]] && parse_documentation
-            echo "$documentation"
-            exit
+            if [[ -z "${NO_HELP}" ]]; then
+                [[ -z "$documentation" ]] && parse_documentation
+                echo "$documentation"
+                exit
+            fi
         fi
     done
 }

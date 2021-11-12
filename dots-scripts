@@ -14,9 +14,9 @@
 
 ROOT=$(dirname "$0")
 
-if [[ -d /opt/dots-git ]]; then
-    ROOT=/opt/dots-git
-fi
+# if [[ -d /opt/dots-git ]]; then
+    #ROOT=/opt/dots-git
+#fi
 
 show_message_with_usage() {
     [[ -z "$documentation" ]] && parse_documentation
@@ -26,6 +26,8 @@ show_message_with_usage() {
     exit 1
 }
 
+NO_HELP=true
+NO_CHECK=true
 source "${ROOT}"/util/opts/opts.sh || exit
 
 scripts_list=(
@@ -80,4 +82,4 @@ if [[ ! -x "${LOCAL_BIN_DIR}/${script}" ]]; then
     show_message_with_usage "Script not found: ${LOCAL_BIN_DIR}/${script}"
 fi
 
-"${LOCAL_BIN_DIR}/${script}" "${arguments[@]:1}"
+"${LOCAL_BIN_DIR}/${script}" "${@:2}"
