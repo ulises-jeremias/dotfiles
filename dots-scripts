@@ -9,7 +9,7 @@
 ##
 ## Options:
 ##     -h, --help                            Show this help message.
-##     -l, --list                            List all available scripts.
+##         --scripts                         List all available scripts.
 ##
 
 ROOT=$(dirname "$0")
@@ -56,7 +56,7 @@ scripts_list=(
 )
 
 # list all available scripts with description with colors and in two columns using awk
-if [[ -n "${list}" ]]; then
+if [[ -n "${scripts}" ]]; then
     for script in "${scripts_list[@]}"; do
         script_name=$(echo "${script}" | cut -d ':' -f 1)
         script_desc=$(echo "${script}" | cut -d ':' -f 2)
