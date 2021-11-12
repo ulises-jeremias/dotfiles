@@ -53,12 +53,12 @@ scripts_list=(
     "weather: print the current weather information"
 )
 
-# list all available scripts with description with colors
+# list all available scripts with description with colors and in two columns using awk
 if [[ -n "${list}" ]]; then
     for script in "${scripts_list[@]}"; do
         script_name=$(echo "${script}" | cut -d ':' -f 1)
         script_desc=$(echo "${script}" | cut -d ':' -f 2)
-        echo -e "$(tput setaf 3)${script_name}$(tput sgr0) - ${script_desc}"
+        echo -e "$(tput setaf 3)${script_name}$(tput sgr0) $(tput setaf 7)${script_desc}$(tput sgr0)"
     done
     exit
 fi
