@@ -14,9 +14,9 @@
 
 ROOT=$(dirname "$0")
 
-# if [[ -d /opt/dots-git ]]; then
-    #ROOT=/opt/dots-git
-#fi
+if [[ -d /opt/dots-git ]]; then
+    ROOT=/opt/dots-git
+fi
 
 show_message_with_usage() {
     [[ -z "$documentation" ]] && parse_documentation
