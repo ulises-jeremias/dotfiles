@@ -58,7 +58,6 @@ scripts_list=(
 script=${arguments[0]}
 
 if [[ -n "${script}" ]]; then
-    # validate script is in the list
     if [[ ! "${scripts_list[*]}" =~ "${script}" ]]; then
         show_message_with_usage "Invalid script specified."
     fi
@@ -73,7 +72,6 @@ if [[ -n "${script}" ]]; then
     exit $?
 fi
 
-# list all available scripts with description with colors and in two columns using awk
 if [[ -n "${list}" ]]; then
     for script in "${scripts_list[@]}"; do
         script_name=$(echo "${script}" | cut -d ':' -f 1)
