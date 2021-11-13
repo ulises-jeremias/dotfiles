@@ -9,7 +9,7 @@
 ##
 ## Options:
 ##     -h, --help                            Show this help message.
-##         --scripts                         List all available scripts.
+##     -l, --list                            List all available scripts.
 ##
 
 ROOT=$(dirname "$0")
@@ -55,8 +55,26 @@ scripts_list=(
     "weather: print the current weather information"
 )
 
+script=${arguments[0]}
+
+if [[ -n "${script}" ]]; then
+    # validate script is in the list
+    if [[ ! "${scripts_list[*]}" =~ "${script}" ]]; then
+        show_message_with_usage "Invalid script specified."
+    fi
+
+    LOCAL_BIN_DIR="${HOME}/.local/bin"
+
+    if [[ ! -x "${LOCAL_BIN_DIR}/${script}" ]]; then
+        show_message_with_usage "Script not found: ${LOCAL_BIN_DIR}/${script}"
+    fi
+
+    "${LOCAL_BIN_DIR}/${script}" "${@:2}"
+    exit $?
+fi
+
 # list all available scripts with description with colors and in two columns using awk
-if [[ -n "${scripts}" ]]; then
+if [[ -n "${list}" ]]; then
     for script in "${scripts_list[@]}"; do
         script_name=$(echo "${script}" | cut -d ':' -f 1)
         script_desc=$(echo "${script}" | cut -d ':' -f 2)
@@ -65,21 +83,4 @@ if [[ -n "${scripts}" ]]; then
     exit
 fi
 
-script=${arguments[0]}
-
-if [[ -z "${script}" ]]; then
-    show_message_with_usage "No script specified."
-fi
-
-# validate script is in the list
-if [[ ! "${scripts_list[*]}" =~ "${script}" ]]; then
-    show_message_with_usage "Invalid script specified."
-fi
-
-LOCAL_BIN_DIR="${HOME}/.local/bin"
-
-if [[ ! -x "${LOCAL_BIN_DIR}/${script}" ]]; then
-    show_message_with_usage "Script not found: ${LOCAL_BIN_DIR}/${script}"
-fi
-
-"${LOCAL_BIN_DIR}/${script}" "${@:2}"
+show_message_with_usage "No script specified."
