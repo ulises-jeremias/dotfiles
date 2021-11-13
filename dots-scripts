@@ -83,4 +83,10 @@ if [[ -n "${list}" ]]; then
     exit
 fi
 
+if [[ -n "${help}" ]]; then
+    [[ -z "$documentation" ]] && parse_documentation
+    echo "$documentation"
+    exit
+fi
+
 show_message_with_usage "No script specified."
