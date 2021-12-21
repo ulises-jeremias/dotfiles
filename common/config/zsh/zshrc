@@ -144,6 +144,16 @@ bindkey '\e[A' history-beginning-search-backward
 bindkey '\e[B' history-beginning-search-forward
 # >>1
 
+# bindkey
+bindkey "^U"    backward-kill-line
+bindkey "^u"    backward-kill-line
+bindkey "^[l"   down-case-word
+bindkey "^[L"   down-case-word
+
+# ctrl+<- | ctrl+->
+bindkey "^[[1;5D" backward-word
+bindkey "^[[1;5C" forward-word
+
 # Aliases <<1
 #-------------------------------------------------------------------------------
 if [ "$(uname)" = "Darwin" ]; then
@@ -154,7 +164,6 @@ fi
 # >>1
 
 # Source Syntaxhighlighting <<1
-# TODO: Use a plugin manager for this
 if [ -e /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
     source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 elif [ -e /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
