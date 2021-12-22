@@ -2,6 +2,6 @@
 
 ROOT=$(dirname "$0")
 
-sudo rm -rf "${XDG_CONFIG_HOME}"/alacritty/alacritty.yml > /dev/null 2>&1
-mkdir "${XDG_CONFIG_HOME}"/alacritty > /dev/null 2>&1
-ln -sf "${ROOT}"/alacritty.yml "${XDG_CONFIG_HOME}"/alacritty/alacritty.yml
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/alacritty/alacritty.yml > /dev/null 2>&1
+mkdir "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/alacritty > /dev/null 2>&1
+ln -sf "${ROOT}"/alacritty.yml "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/alacritty/alacritty.yml

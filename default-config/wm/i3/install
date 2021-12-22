@@ -2,5 +2,5 @@
 
 ROOT=$(dirname "$0")
 
-sudo rm -rf "${XDG_CONFIG_HOME}"/i3 >/dev/null 2>&1
-ln -sf "${ROOT}" "${XDG_CONFIG_HOME}"/i3
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/i3 >/dev/null 2>&1
+ln -sf "${ROOT}" "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/i3

@@ -2,8 +2,8 @@
 
 ROOT=$(dirname "$0")
 
-sudo rm -rf "${XDG_CONFIG_HOME}"/networkmanager-dmenu/config.ini > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/networkmanager-dmenu/config.ini > /dev/null 2>&1
 
-mkdir "${XDG_CONFIG_HOME}"/networkmanager-dmenu > /dev/null 2>&1
+mkdir "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/networkmanager-dmenu > /dev/null 2>&1
 
-ln -sf "${ROOT}"/config.ini "${XDG_CONFIG_HOME}"/networkmanager-dmenu/config.ini
+ln -sf "${ROOT}"/config.ini "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/networkmanager-dmenu/config.ini

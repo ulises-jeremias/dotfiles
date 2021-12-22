@@ -2,5 +2,5 @@
 
 ROOT=$(dirname "$0")
 
-sudo rm -rf "${XDG_CONFIG_HOME}"/xfce4 >/dev/null 2>&1
-ln -sf "${ROOT}" "${XDG_CONFIG_HOME}"/xfce4
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/xfce4 >/dev/null 2>&1
+ln -sf "${ROOT}" "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/xfce4

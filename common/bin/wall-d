@@ -8,7 +8,7 @@
 
 PICTURES_DIR="" # path to wallpapers directory
 DEFAULT_WALLPAPER_SCRIPT_PATH="${HOME}"/.local/bin/defaultwallpaper.sh
-ROFI_THEME="${XDG_CONFIG_HOME}"/rofi/tools.rasi
+ROFI_THEME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/tools.rasi
 
 [ -f "${DEFAULT_WALLPAPER_SCRIPT_PATH}" ] && echo "defaultwallpaper.sh exists" || echo xwallpaper >>"${DEFAULT_WALLPAPER_SCRIPT_PATH}" && chmod +x "${DEFAULT_WALLPAPER_SCRIPT_PATH}"
 

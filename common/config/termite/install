@@ -2,6 +2,6 @@
 
 ROOT=$(dirname "$0")
 
-sudo rm -rf "${XDG_CONFIG_HOME}"/termite/config > /dev/null 2>&1
-mkdir "${XDG_CONFIG_HOME}"/termite > /dev/null 2>&1
-ln -sf "${ROOT}"/config "${XDG_CONFIG_HOME}"/termite/config
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/termite/config > /dev/null 2>&1
+mkdir "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/termite > /dev/null 2>&1
+ln -sf "${ROOT}"/config "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/termite/config

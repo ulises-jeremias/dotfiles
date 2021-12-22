@@ -22,8 +22,8 @@ sudo rm -rf ~/.gitconfig >/dev/null 2>&1
 sudo rm -rf ~/.xprofile >/dev/null 2>&1
 sudo rm -rf ~/.Xresources >/dev/null 2>&1
 sudo rm -rf ~/.Xresources.d >/dev/null 2>&1
-sudo rm -rf "${XDG_CONFIG_HOME}"/polybar/modules/custom.conf >/dev/null 2>&1
-sudo rm -rf "${XDG_CONFIG_HOME}"/polybar/polybars/custom.conf >/dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/modules/custom.conf >/dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/polybars/custom.conf >/dev/null 2>&1
 
 #==========================================
 # Create symlinks in the home folder
@@ -32,8 +32,8 @@ sudo rm -rf "${XDG_CONFIG_HOME}"/polybar/polybars/custom.conf >/dev/null 2>&1
 touch ~/.gitconfig >/dev/null 2>&1
 touch ~/.xprofile >/dev/null 2>&1
 touch ~/.Xresources >/dev/null 2>&1
-touch "${XDG_CONFIG_HOME}"/polybar/modules/custom.conf >/dev/null 2>&1
-touch "${XDG_CONFIG_HOME}"/polybar/modules/polybar.conf >/dev/null 2>&1
+touch "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/modules/custom.conf >/dev/null 2>&1
+touch "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/modules/polybar.conf >/dev/null 2>&1
 
 [ ! -d "${dotfiles_dir}"/custom-config/polybar/modules ] && mkdir -p "${dotfiles_dir}"/custom-config/polybar/modules
 [ ! -d "${dotfiles_dir}"/custom-config/polybar/polybars ] && mkdir -p "${dotfiles_dir}"/custom-config/polybar/polybars
@@ -44,8 +44,8 @@ create_symlink rofi
 create_symlink xprofile
 create_symlink Xresources
 create_symlink Xresources.d
-create_symlink "polybar/modules/custom.conf" "${XDG_CONFIG_HOME}/polybar/modules/custom.conf"
-create_symlink "polybar/polybars/custom.conf" "${XDG_CONFIG_HOME}/polybar/polybars/custom.conf"
+create_symlink "polybar/modules/custom.conf" "${XDG_CONFIG_HOME:-"${HOME}"/.config}/polybar/modules/custom.conf"
+create_symlink "polybar/polybars/custom.conf" "${XDG_CONFIG_HOME:-"${HOME}"/.config}/polybar/polybars/custom.conf"
 
 sudo chmod +x ~/.xprofile
 

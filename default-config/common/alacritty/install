@@ -6,6 +6,6 @@ printf "Setting up alacritty themes...\\n"
 
 rm -rf "${ROOT}"/alacritty-theme
 git clone https://github.com/eendroroy/alacritty-theme "${ROOT}"/alacritty-theme
-sudo rm -rf "${XDG_CONFIG_HOME}"/alacritty/themes >/dev/null 2>&1
-mkdir -p "${XDG_CONFIG_HOME}"/alacritty
-ln -sf "${ROOT}"/alacritty-theme/themes "${XDG_CONFIG_HOME}"/alacritty/themes
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/alacritty/themes >/dev/null 2>&1
+mkdir -p "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/alacritty
+ln -sf "${ROOT}"/alacritty-theme/themes "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/alacritty/themes
