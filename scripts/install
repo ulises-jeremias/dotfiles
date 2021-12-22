@@ -64,12 +64,6 @@ echo
 "${ROOT}"/install-dotfiles --log-file="${log_file}" --dotfiles-dir="${dotfiles_dir}" --os="${os}" --wms="${wms}" ${clear_flag}
 
 #==========================================
-# Set zsh as the default shell
-#==========================================
-echo
-sudo chsh -s /bin/zsh
-
-#==========================================
 # Give the user a summary of what has
 # been installed
 #==========================================

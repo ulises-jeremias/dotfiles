@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+ROOT=$(dirname "$0")
+dotfiles_dir="${ROOT}"
+
+#==========================================
+# Make symlink for bin files
+#==========================================
+if [ ! -d "${HOME}/.local/bin" ]; then
+  mkdir ~/.local/bin
+fi
+
+printf "Installing binaries... "
+
+for bin_path in "${dotfiles_dir}"/bin/*; do
+  bin=$(basename "${bin_path}")
+
+  chmod +x "${bin_path}"
+  sudo rm -rf ~/.local/bin/"${bin}" >/dev/null 2>&1
+  ln -sf "${bin_path}" ~/.local/bin/"${bin}"
+done
+
+echo "Done."
+
+#==========================================
+# Execute dotfiles install strategy
+#==========================================
+if [[ -z "${SKIP_CONFIG_INSTALL}" ]]; then
+  printf "Installing dotfiles... "
+
+  for config_path in "${dotfiles_dir}"/config/*; do
+    config=$(basename "${config_path}")
+    "${dotfiles_dir}"/config/"${config}"/install
+  done
+
+  echo "Done."
+fi
+
+printf "Installing default config... "
+
+#==========================================
+# Execute config installation
+#==========================================
+chmod +x "${dotfiles_dir}"/default-config/install
+"${dotfiles_dir}"/default-config/install
+
+echo "Done."
+
+#==========================================
+# Set zsh as the default shell
+#==========================================
+echo
+sudo chsh -s /bin/zsh
