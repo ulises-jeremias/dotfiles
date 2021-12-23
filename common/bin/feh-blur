@@ -35,7 +35,8 @@ if [ "$1" != "--worker" ]; then
 fi
 
 # The name of this program
-export BIN="$(basename "$0")"
+BIN="$(basename "$0")"
+export BIN
 
 # Expression for proc grepping
 PROC_EXPR="bash.*$(basename "$0")"

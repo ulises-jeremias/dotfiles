@@ -35,7 +35,7 @@ scripts_list=(
     "brightness: control the brightness of the screen using different backends such us xbacklight, brightnessctl, blight or xrandr"
     "check-network: check if the network is up"
     "checkupdates: check for updates"
-    "feh-blur: blur the background of the current window"
+    "feh-blur: blur the background of the current window when using feh to set the background"
     "git-notify: notify when a git commit is made"
     "microphone: control the microphone"
     "monitor: print the current monitor name"
