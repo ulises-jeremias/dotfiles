@@ -1,6 +1,10 @@
 name: Deploy Docs
 
 on:
+  # execute this workflow on each push to master and 
+  # schedule also all days of the week.
+  schedule:
+    - cron: "0 0 * * *"
   push:
     branches:
       - master
