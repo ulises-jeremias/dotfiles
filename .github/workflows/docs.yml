@@ -1,7 +1,7 @@
 name: Deploy Docs
 
 on:
-  # execute this workflow on each push to master and 
+  # execute this workflow on each push to master and
   # schedule also all days of the week.
   schedule:
     - cron: "0 0 * * *"
@@ -9,40 +9,43 @@ on:
     branches:
       - master
 
+  # execute this workflow manually
+  workflow_dispatch:
+
 jobs:
   ubuntu:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Latest Dotfiles Wiki
-      uses: actions/checkout@v2
-      with:
-        repository: ${{github.repository}}.wiki
-        path: dotfiles.wiki
+      - name: Checkout Latest Dotfiles Wiki
+        uses: actions/checkout@v2
+        with:
+          repository: ${{github.repository}}.wiki
+          path: dotfiles.wiki
 
-    - name: Check Wiki repo content
-      run: |
-        ls -al
-    
-    - name: Checkout github-wikito-converter
-      uses: actions/checkout@v2
-      with:
-        repository: yakivmospan/github-wikito-converter
-        path: github-wikito-converter
+      - name: Check Wiki repo content
+        run: |
+          ls -al
 
-    - name: Build and Install github-wikito-converter globally
-      run: |
-        cd github-wikito-converter
-        npm install
-        npm run build
-        cd ..
+      - name: Checkout github-wikito-converter
+        uses: actions/checkout@v2
+        with:
+          repository: yakivmospan/github-wikito-converter
+          path: github-wikito-converter
 
-    - name: Build Docs
-      run: |
-        mkdir public
-        node ./github-wikito-converter/dist/cli/gwtc.js --file-name index --output ./public --toc-level 4 ./dotfiles.wiki
+      - name: Build and Install github-wikito-converter globally
+        run: |
+          cd github-wikito-converter
+          npm install
+          npm run build
+          cd ..
 
-    - name: Deploy to gh-pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
+      - name: Build Docs
+        run: |
+          mkdir public
+          node ./github-wikito-converter/dist/cli/gwtc.js --file-name index --output ./public --toc-level 4 ./dotfiles.wiki
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
