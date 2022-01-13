@@ -22,11 +22,3 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Update AUR package
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
-
-      - name: Commit and Push Updated PKGBUILD
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ secrets.AUR_EMAIL }}"
-          git add PKGBUILD.dev
-          git commit -m "Update AUR package"
-          git push origin ${{ github.ref }}
