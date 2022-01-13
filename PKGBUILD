@@ -55,7 +55,7 @@ xfce4_pkgs=(
 	xfce4-notifyd
 )
 
-pkgname=dots
+pkgname=dots-stable
 pkgver=1.0.0
 pkgrel=1
 pkgdesc="Dotfiles generator that allows quick configuration and managing of different tools and window managers in multiple OSs"
@@ -75,8 +75,8 @@ optdepends=(
 	"xfce4-power-manager: Power manager for the Xfce4 desktop"
 	"xfce4-screenshooter: An application to take screenshots"
 )
-provides=(dots)
-conflicts=(dots)
+provides=(dots dots-scripts)
+conflicts=(dots dots-scripts)
 source=("git+$url.git")
 md5sums=('SKIP')
 
