@@ -50,4 +50,4 @@ echo "Done."
 # Set zsh as the default shell
 #==========================================
 echo
-sudo chsh -s /bin/zsh
+sudo chsh -s /usr/bin/zsh
