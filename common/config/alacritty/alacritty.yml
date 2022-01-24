@@ -2,6 +2,7 @@ env:
   TERM: xterm-256color
   WINIT_X11_SCALE_FACTOR: "1"
 window:
+  opacity: 0.85
   dimensions:
     columns: 80
     lines: 24
@@ -39,7 +40,6 @@ visual:
   animation: EaseOutExpo
   duration: 0
   color: "#ffffff"
-background_opacity: 0.9
 selection:
   semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
   save_to_clipboard: false
