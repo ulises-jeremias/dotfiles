@@ -16,11 +16,11 @@
 # Depends on:
 #   Arch repositories: rofi, bluez-utils (contains bluetoothctl)
 
-if type -p rofi >/dev/null; then
+if ! type -p rofi >/dev/null; then
   echo "Command not found: rofi. Please install it."
 fi
 
-if type -p bluetoothctl >/dev/null; then
+if ! type -p bluetoothctl >/dev/null; then
   echo "Command not found: bluetoothctl. Please install bluetoothctl or bluez-utils (contains bluetoothctl)"
   exit 1
 fi
