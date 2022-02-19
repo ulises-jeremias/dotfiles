@@ -18,6 +18,10 @@ if [[ -d /opt/dots-git ]]; then
     ROOT=/opt/dots-git
 fi
 
+if [[ -d /opt/dots-stable ]]; then
+    ROOT=/opt/dots-stable
+fi
+
 show_message_with_usage() {
     [[ -z "$documentation" ]] && parse_documentation
     echo "$documentation"
