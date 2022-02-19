@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 ROOT=$(dirname "$0")
-PKGNAME=${PKGNAME:-"dots-git"}
+PKGNAME=${PKGNAME:-"dots"}
 
 install -d "${PKGDIR}/opt/${PKGNAME}"
 cp -Rf ./* "${PKGDIR}/opt/${PKGNAME}"
