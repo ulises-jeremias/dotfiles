@@ -91,6 +91,8 @@ package() {
 	git fetch --tags
 	latest_release=$(git describe --tags "$(git rev-list --tags --max-count=1)")
 	git checkout "${latest_release}"
-	export PKGNAME=dots
+	PKGNAME=dots
+	PKGDIR=
+	export PKGDIR PKGNAME
 	sudo ./install
 }
