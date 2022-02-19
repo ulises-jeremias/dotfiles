@@ -14,12 +14,8 @@
 
 ROOT=$(dirname "$0")
 
-if [[ -d /opt/dots-git ]]; then
-    ROOT=/opt/dots-git
-fi
-
-if [[ -d /opt/dots-stable ]]; then
-    ROOT=/opt/dots-stable
+if [[ -d /opt/dots ]]; then
+    ROOT=/opt/dots
 fi
 
 show_message_with_usage() {

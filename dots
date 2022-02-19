@@ -28,12 +28,8 @@ ROOT=$(dirname "$0")
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CONFIG_HOME
 
-if [[ -d /opt/dots-git ]]; then
-    ROOT=/opt/dots-git
-fi
-
-if [[ -d /opt/dots-stable ]]; then
-    ROOT=/opt/dots-stable
+if [[ -d /opt/dots ]]; then
+    ROOT=/opt/dots
 fi
 
 source "${ROOT}"/util/opts/opts.sh || exit
