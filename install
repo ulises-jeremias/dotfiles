@@ -4,8 +4,8 @@ ROOT=$(dirname "$0")
 PKGNAME=${PKGNAME:-"dots"}
 
 install -d "${PKGDIR}/opt/${PKGNAME}"
-cp -Rf ./* "${PKGDIR}/opt/${PKGNAME}"
-install -Dm644 LICENSE -t "${PKGDIR}/usr/share/licenses/${PKGNAME}/"
-install -Dm644 README.md -t "${PKGDIR}/usr/share/doc/${PKGNAME}/"
-install -Dm755 dots -t "${PKGDIR}/usr/bin/"
-install -Dm755 dots-scripts -t "${PKGDIR}/usr/bin/"
+cp -Rf "${ROOT}"/* "${PKGDIR}/opt/${PKGNAME}"
+install -Dm644 -t -C LICENSE "${PKGDIR}/usr/share/licenses/${PKGNAME}/"
+install -Dm644 -t -C README.md "${PKGDIR}/usr/share/doc/${PKGNAME}/"
+install -Dm755 -t -C dots "${PKGDIR}/usr/bin/"
+install -Dm755 -t -C dots-scripts "${PKGDIR}/usr/bin/"
