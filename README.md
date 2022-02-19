@@ -1,7 +1,7 @@
 <div align="center">
 <h1>Dotfiles Generator</h1>
 
-[Docs](https://ulises-jeremias.github.io/dotfiles) |
+[Docs](https://github.com/ulises-jeremias/dotfiles/wiki) |
 [Changelog](#) |
 [Contributing](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md)
 
@@ -47,7 +47,7 @@ The installation script allows you to install all the necessary dependencies tha
 
 There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the `custom-config` directory. You are encouraged to maintain a separate github repository of configurations for your own dotfiles.
 
-Read more about this at [Customization Docs](https://ulises-jeremias.github.io/dotfiles/#Customization).
+Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
 
 ### Examples
 
@@ -63,7 +63,7 @@ Read more about this at [Customization Docs](https://ulises-jeremias.github.io/d
 
 Maybe you want to contribute to this project or just test what the setup would look like before installing it. For this we develop test environments in which you can see how the changes look!
 
-You can read more about this at [Testing Docs](https://ulises-jeremias.github.io/dotfiles/#Testing).
+You can read more about this at [Testing Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Testing).
 
 ## Contributors 
 
