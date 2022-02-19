@@ -3,9 +3,15 @@
 ROOT=$(dirname "$0")
 PKGNAME=${PKGNAME:-"dots"}
 
+rm -rf "${PKGDIR}/opt/${PKGNAME}" \
+    "${PKGDIR}/usr/bin/dots" \
+    "${PKGDIR}/usr/bin/dots-scripts" \
+    "${PKGDIR}/usr/share/licenses/${PKGNAME}/" \
+    "${PKGDIR}/usr/share/doc/${PKGNAME}/"
+
 install -d "${PKGDIR}/opt/${PKGNAME}"
 cp -Rf "${ROOT}"/* "${PKGDIR}/opt/${PKGNAME}"
-install -Dm644 -t LICENSE "${PKGDIR}/usr/share/licenses/${PKGNAME}/"
-install -Dm644 -t README.md "${PKGDIR}/usr/share/doc/${PKGNAME}/"
-install -Dm755 -t dots "${PKGDIR}/usr/bin/"
-install -Dm755 -t dots-scripts "${PKGDIR}/usr/bin/"
+install -Dm644 "${ROOT}"/LICENSE -t "${PKGDIR}/usr/share/licenses/${PKGNAME}/"
+install -Dm644 "${ROOT}"/README.md -t "${PKGDIR}/usr/share/doc/${PKGNAME}/"
+install -Dm755 "${ROOT}"/dots -t "${PKGDIR}/usr/bin/"
+install -Dm755 "${ROOT}"/dots-scripts -t "${PKGDIR}/usr/bin/"
