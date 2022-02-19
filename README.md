@@ -9,8 +9,8 @@
 <div align="center">
 
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
+[![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR)](https://aur.archlinux.org/packages/dots-stable)
 [![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR)](https://aur.archlinux.org/packages/dots-git)
-[![Docs Deployment][docsdeploymentbadge]][docsdeploymenturl]
 [![License: MIT][licensebadge]][licenseurl]
 
 </div>
@@ -76,5 +76,4 @@ Made with [contributors-img](https://contrib.rocks).
 
 [docsdeploymentbadge]: https://github.com/ulises-jeremias/dotfiles/workflows/Deploy%20Docs/badge.svg
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
-[docsdeploymenturl]: https://github.com/ulises-jeremias/dotfiles/commits/master
 [licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE
