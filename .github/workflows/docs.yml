@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  ubuntu:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Latest Dotfiles Wiki
@@ -42,7 +42,7 @@ jobs:
       - name: Build Docs
         run: |
           mkdir public
-          node ./github-wikito-converter/dist/cli/gwtc.js --file-name index --output ./public --toc-level 4 ./dotfiles.wiki
+          node ./github-wikito-converter/dist/cli/gwtc.js --file-name index --output ./public --toc-level 10 ./dotfiles.wiki
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
