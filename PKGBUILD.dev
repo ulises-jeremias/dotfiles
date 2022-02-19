@@ -88,5 +88,6 @@ pkgver() {
 
 package() {
 	cd dotfiles || exit 1
-	PKGNAME=dots sudo ./install
+	export PKGNAME=dots
+	sudo ./install
 }
