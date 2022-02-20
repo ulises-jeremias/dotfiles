@@ -94,5 +94,5 @@ package() {
 	PKGNAME=dots
 	PKGDIR="${pkgdir}"
 	export PKGDIR PKGNAME
-	./install
+	sudo ./install
 }

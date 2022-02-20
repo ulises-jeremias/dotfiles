@@ -14,11 +14,14 @@ jobs:
       - name: Checkout Latest Dotfiles
         uses: actions/checkout@v2
 
+      - name: Override PKGBUILD
+        run: mv PKGBUILD.dev PKGBUILD
+
       - name: Publish AUR package
         uses: ulises-jeremias/github-actions-aur-publish@v1
         with:
           pkgname: dots-git
-          pkgbuild: ./PKGBUILD.dev
+          pkgbuild: ./PKGBUILD
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
