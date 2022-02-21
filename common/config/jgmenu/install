@@ -2,9 +2,9 @@
 
 ROOT=$(dirname "$0")
 
-sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/jgmenu/jgmenurc > /dev/null 2>&1
-sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/jgmenu/append.csv > /dev/null 2>&1
-sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/jgmenu/prepend.csv > /dev/null 2>&1
+rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/jgmenu/jgmenurc > /dev/null 2>&1
+rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/jgmenu/append.csv > /dev/null 2>&1
+rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/jgmenu/prepend.csv > /dev/null 2>&1
 
 mkdir "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/jgmenu > /dev/null 2>&1
 
