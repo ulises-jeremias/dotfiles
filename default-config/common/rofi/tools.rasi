@@ -6,7 +6,7 @@ configuration {
 
 // override spotlight-dark variables
 * {
-    bg-color: #1C2023FA;
+    bg-color: #1C2023CF;
     fg-color: #A4A4A4;
     tooltip-fg-color: #7E7E7E;
     selected-bg-color: #8fa1b3AA;
