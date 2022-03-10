@@ -2,12 +2,15 @@ name: AUR Publish - Stable version
 
 on:
   push:
-    tags:
-      - v*
 
 jobs:
   aur-publish:
     runs-on: ubuntu-latest
+    
+    environment:
+      name: production
+      url: https://aur.archlinux.org/packages/dots-stable
+    
     steps:
       - name: Checkout Latest Dotfiles Release
         uses: actions/checkout@v2
