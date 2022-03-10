@@ -2,13 +2,17 @@ name: AUR Publish - Stable version
 
 on:
   push:
+    tags:
+      - v*
 
 jobs:
   aur-publish:
     runs-on: ubuntu-latest
     
+    concurrency: stable
+    
     environment:
-      name: production
+      name: stable
       url: https://aur.archlinux.org/packages/dots-stable
     
     steps:
