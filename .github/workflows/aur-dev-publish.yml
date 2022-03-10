@@ -10,6 +10,13 @@ on:
 jobs:
   aur-publish:
     runs-on: ubuntu-latest
+    
+    concurrency: unstable
+    
+    environment:
+      name: unstable
+      url: https://aur.archlinux.org/packages/dots-git
+
     steps:
       - name: Checkout Latest Dotfiles
         uses: actions/checkout@v2
