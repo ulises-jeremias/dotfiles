@@ -4,7 +4,7 @@
 for_window [class="^.*"] border pixel 0, title_format "<b alpha='1'> %class >> %title </b>"
 
 # gaps
-gaps inner 10
+gaps inner 12
 gaps outer 10
 
 # font
@@ -225,6 +225,8 @@ bindsym $Mod+Control+Shift+minus gaps outer all     minus 5
 
 # focus, floating, & sticky
 for_window [class="Sxiv"]                            floating enable
+for_window [class="Thunar|thunar"]                   floating enable, focus
+for_window [title="Volume Control"]                  floating enable, focus
 for_window [class="(?i)(?:qt5ct|pinentry)"]          floating enable, focus
 for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
 for_window [window_role="(?i)(?:pop-up|setup)"]      floating enable
