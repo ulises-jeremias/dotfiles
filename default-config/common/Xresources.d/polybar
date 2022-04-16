@@ -27,6 +27,9 @@ polybar.radius: 5.0
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 polybar.top.background: #00000000
+! polybar.bottom.background-alt:
+! polybar.bottom.foreground:
+! polybar.bottom.foreground-alt:
 
 ! Modules
 ! polybar.top.left: 
@@ -49,6 +52,9 @@ polybar.top.background: #00000000
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 polybar.bottom.background: #00000000
+! polybar.bottom.background-alt:
+! polybar.bottom.foreground:
+! polybar.bottom.foreground-alt:
 
 ! Modules
 ! polybar.bottom.left: 
