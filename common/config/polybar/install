@@ -2,12 +2,12 @@
 
 ROOT=$(dirname "$0")
 
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/modules > /dev/null 2>&1
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/polybars > /dev/null 2>&1
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/config > /dev/null 2>&1
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/launch > /dev/null 2>&1
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/master.conf > /dev/null 2>&1
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/modules.conf > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/modules > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/polybars > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/config > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/launch > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/master.conf > /dev/null 2>&1
+sudo rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/modules.conf > /dev/null 2>&1
 
 mkdir "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar > /dev/null 2>&1
 

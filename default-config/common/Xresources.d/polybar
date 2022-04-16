@@ -3,7 +3,7 @@
 !==========================================
 
 polybar.polybars: polybar-top polybar-bottom
-polybar.radius: 5.0
+polybar.*.radius: 12.0
 
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ! Polybar Modules
