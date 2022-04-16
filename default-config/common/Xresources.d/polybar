@@ -27,9 +27,9 @@ polybar.*.radius: 12.0
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 polybar.top.background: #00000000
-! polybar.bottom.background-alt:
-! polybar.bottom.foreground:
-! polybar.bottom.foreground-alt:
+! polybar.top.background-alt:
+! polybar.top.foreground:
+! polybar.top.foreground-alt:
 
 ! Modules
 ! polybar.top.left: 
