@@ -2,17 +2,20 @@
 
 ROOT=$(dirname "$0")
 
+SOURCE_DIR=$(realpath "${ROOT}")
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
+
 printf "Setting up rofi themes...\\n"
 
-rm -rf "${ROOT}"/rofi-themes
-git clone https://github.com/ulises-jeremias/rofi-themes.git "${ROOT}"/rofi-themes
+rm -rf "${SOURCE_DIR}"/rofi-themes
+git clone https://github.com/ulises-jeremias/rofi-themes.git "${SOURCE_DIR}"/rofi-themes
 
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/themes >/dev/null 2>&1
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/config.rasi >/dev/null 2>&1
+rm -rf "${XDG_CONFIG_HOME}"/rofi/themes >/dev/null 2>&1
+rm -rf "${XDG_CONFIG_HOME}"/rofi/config.rasi >/dev/null 2>&1
 
-mkdir -p "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi
+mkdir -p "${XDG_CONFIG_HOME}"/rofi
 
-ln -sf "${ROOT}"/rofi-themes/themes "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/themes
-ln -sf "${ROOT}"/apps.rasi "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/apps.rasi
-ln -sf "${ROOT}"/networks.rasi "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/networks.rasi
-ln -sf "${ROOT}"/tools.rasi "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/tools.rasi
+ln -sf "${SOURCE_DIR}"/rofi-themes/themes "${XDG_CONFIG_HOME}"/rofi/themes
+ln -sf "${SOURCE_DIR}"/apps.rasi "${XDG_CONFIG_HOME}"/rofi/apps.rasi
+ln -sf "${SOURCE_DIR}"/networks.rasi "${XDG_CONFIG_HOME}"/rofi/networks.rasi
+ln -sf "${SOURCE_DIR}"/tools.rasi "${XDG_CONFIG_HOME}"/rofi/tools.rasi

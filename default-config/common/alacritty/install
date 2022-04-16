@@ -2,10 +2,13 @@
 
 ROOT=$(dirname "$0")
 
+SOURCE_DIR=$(realpath "${ROOT}")
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
+
 printf "Setting up alacritty themes...\\n"
 
-rm -rf "${ROOT}"/alacritty-theme
-git clone https://github.com/eendroroy/alacritty-theme "${ROOT}"/alacritty-theme
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/alacritty/themes >/dev/null 2>&1
-mkdir -p "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/alacritty
-ln -sf "${ROOT}"/alacritty-theme/themes "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/alacritty/themes
+rm -rf "${SOURCE_DIR}"/alacritty-theme
+git clone https://github.com/eendroroy/alacritty-theme "${SOURCE_DIR}"/alacritty-theme
+rm -rf "${XDG_CONFIG_HOME}"/alacritty/themes >/dev/null 2>&1
+mkdir -p "${XDG_CONFIG_HOME}"/alacritty
+ln -sf "${SOURCE_DIR}"/alacritty-theme/themes "${XDG_CONFIG_HOME}"/alacritty/themes

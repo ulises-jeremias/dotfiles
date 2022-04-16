@@ -2,5 +2,8 @@
 
 ROOT=$(dirname "$0")
 
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/picom.conf > /dev/null 2>&1
-ln -sf "${ROOT}"/picom.conf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/picom.conf
+SOURCE_DIR=$(realpath "${ROOT}")
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
+
+rm -rf "${XDG_CONFIG_HOME}"/picom.conf > /dev/null 2>&1
+ln -sf "${SOURCE_DIR}"/picom.conf "${XDG_CONFIG_HOME}"/picom.conf

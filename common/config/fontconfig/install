@@ -2,8 +2,9 @@
 
 ROOT=$(dirname "$0")
 
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/fontconfig/fonts.conf > /dev/null 2>&1
+SOURCE_DIR=$(realpath "${ROOT}")
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
 
-mkdir "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/fontconfig > /dev/null 2>&1
-
-ln -sf "${ROOT}"/fonts.conf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/fontconfig/fonts.conf
+rm -rf "${XDG_CONFIG_HOME}"/fontconfig/fonts.conf > /dev/null 2>&1
+mkdir "${XDG_CONFIG_HOME}"/fontconfig > /dev/null 2>&1
+ln -sf "${SOURCE_DIR}"/fonts.conf "${XDG_CONFIG_HOME}"/fontconfig/fonts.conf

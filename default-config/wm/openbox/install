@@ -2,5 +2,8 @@
 
 ROOT=$(dirname "$0")
 
-rm -rf "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/openbox >/dev/null 2>&1
-ln -sf "${ROOT}" "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/openbox
+SOURCE_DIR=$(realpath "${ROOT}")
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
+
+rm -rf "${XDG_CONFIG_HOME}"/openbox >/dev/null 2>&1
+ln -sf "${SOURCE_DIR}" "${XDG_CONFIG_HOME}"/openbox
