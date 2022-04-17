@@ -1,12 +1,12 @@
 configuration {
-    font            : "Hack Nerd Font Mono 12";
+    font            : "Hack Nerd Font Mono 10";
 }
 
 @import "themes/spotlight-dark.rasi"
 
 // override spotlight-dark variables
 * {
-    bg-color: #1C2023F0;
+    bg-color: #1C2023F8;
     fg-color: #A4A4A4;
     tooltip-fg-color: #7E7E7E;
     selected-bg-color: #4b5263aa;
@@ -15,13 +15,17 @@ configuration {
     insensitive-fg-color: #7E7E7E;
 
     text-color          : @fg-color;
+
+    font            : "Hack Nerd Font Mono 10";
 }
 
 #window {
     location            : northeast;
-    x-offset            : -15;
-    y-offset            : 60;
-    border-radius       : 0;
+    x-offset            : -17;
+    y-offset            : 62;
+    width               : 500;
+    height              : 700;
+    border-radius       : 15;
 }
 
 #prompt {
@@ -29,7 +33,7 @@ configuration {
 }
 
 #inputbar {
-    font                : "Hack Nerd Font Mono 12";
+    font                : "Hack Nerd Font Mono 10";
 }
 
 #entry {
