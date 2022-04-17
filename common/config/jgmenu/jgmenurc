@@ -9,15 +9,15 @@ terminal_exec        = alacritty
 terminal_args        = -e
 #monitor             = 0
 
-menu_margin_x        = 15
+menu_margin_x        = 20
 menu_margin_y        = 60
 menu_width           = 500
 menu_padding_top     = 2
 menu_padding_right   = 2
 menu_padding_bottom  = 5
 menu_padding_left    = 2
-menu_radius          = 0
-menu_border          = 1
+menu_radius          = 12
+menu_border          = 0
 menu_halign          = left
 menu_valign          = top
 
@@ -32,7 +32,7 @@ sub_hover_action     = 1
 item_margin_y        = 5
 item_height          = 30
 item_padding_x       = 8
-item_radius          = 0
+item_radius          = 8
 item_border          = 0
 #item_halign         = left
 
