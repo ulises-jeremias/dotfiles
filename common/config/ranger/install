@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+ROOT=$(dirname "$0")
+
+SOURCE_DIR=$(realpath "${ROOT}")
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
+
+rm -rf "${XDG_CONFIG_HOME}"/ranger >/dev/null 2>&1
+
+mkdir -p "${XDG_CONFIG_HOME}"/ranger
+
+ln -sf "${SOURCE_DIR}"/rc.conf "${XDG_CONFIG_HOME}"/ranger/rc.conf
+ln -sf "${SOURCE_DIR}"/devicons.py "${XDG_CONFIG_HOME}"/ranger/devicons.py
