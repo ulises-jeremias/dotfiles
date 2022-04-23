@@ -81,10 +81,10 @@
     </popupFixedPosition>
   </resize>
   <margins>
-    <top>0</top>
-    <bottom>0</bottom>
-    <left>0</left>
-    <right>0</right>
+    <top>75</top>
+    <bottom>62</bottom>
+    <left>15</left>
+    <right>15</right>
   </margins>
   <dock>
     <position>Floating</position>
