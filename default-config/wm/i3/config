@@ -5,7 +5,9 @@ for_window [class="^.*"] border pixel 0, title_format "<b alpha='1'> %class >> %
 
 # gaps
 gaps inner 12
-gaps outer 70
+gaps outer 62
+gaps left 10
+gaps right 10
 
 # font
 # TODO: Figure out if this font is used anywhere
