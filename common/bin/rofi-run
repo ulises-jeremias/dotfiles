@@ -102,7 +102,7 @@ for arg in "$@"; do
     *Reboot) systemctl -i reboot ;;
     *Shutdown) systemctl -i poweroff ;;
     *Suspend) systemctl suspend ;;
-    *Logout) pkill -15 -t tty"$XDG_VTNR" Xorg ;;
+    *Logout) loginctl terminate-session "${XDG_SESSION_ID-}" ;;
     esac
     ;;
   *)
