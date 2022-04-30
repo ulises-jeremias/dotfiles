@@ -1,0 +1,44 @@
+URxvt.font: xft:Consolas:size=14
+URxvt.scrollBar: false
+URxvt.matcher.button: 1
+URxvt.perl-ext-common: default,clipboard,url-select
+URxvt.url-select.launcher: /usr/bin/chromium
+URxvt.url-select.underline: true
+URxvt.keysym.M-u: perl:url-select:select_next
+URxvt.internalBorder: 5
+URxvt.externalBorder: 0
+
+URxvt.geometry: 100x24
+
+*.cursorColor: #aeafad
+
+! Colors
+URxvt.color0: #130F1C
+URxvt.color8: #5A545E
+
+URxvt.color1: #AD6A72
+URxvt.color9: #D99395
+
+URxvt.color2: #A2B07F
+URxvt.color10: #C4D1A1
+
+URxvt.color3: #B39976
+URxvt.color11: #D1C894
+
+URxvt.color4: #829BA8
+URxvt.color12: #9BB6D4
+
+URxvt.color5: #AD748E
+URxvt.color13: #DB9CBE
+
+URxvt.color6: #728C85
+URxvt.color14: #A6B9B6
+
+URxvt.color7: #B5ADB8
+URxvt.color15: #D4CED9
+
+URxvt.background: [85]#242325
+URxvt.foreground: 15
+URxvt*.transparent: true
+! URxvt*.shading: 0 to 99 darkens, 101 to 200 lightens
+URxvt*.shading: 30
