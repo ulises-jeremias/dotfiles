@@ -159,9 +159,3 @@ client.unfocused #2F343F #353945 #90a4ae #292d2e #2F343F
 client.urgent #f25056 #f25056 #ffffff #900000 #f25056
 
 workspace_layout tabbed
-
-assign [class="Skype"] 1
-assign [class="skypeforlinux"] 1
-assign [class="Slack"] 1
-# start skype, slack, chromium browser and terminal
-exec --no-startup-id i3-msg 'workspace 1;exec --no-startup-id skypeforlinux;exec --no-startup-id slack;workspace 2;exec chromium;exec urxvt'
