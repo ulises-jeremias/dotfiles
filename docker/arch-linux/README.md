@@ -1,6 +1,6 @@
 # Arch Linux - Testing Environment
 
-## Dependecies
+## Dependencies
 
 - [Xephyr](https://wiki.archlinux.org/index.php/Xephyr)
 - [Docker](https://www.docker.com/)

@@ -1,6 +1,6 @@
 # Debian - Testing Environment
 
-## Dependecies
+## Dependencies
 
 - [Xephyr](https://packages.debian.org/es/jessie/xserver-xephyr)
 - [Docker](https://www.docker.com/)
