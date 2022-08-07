@@ -14,10 +14,11 @@ printf "Installing binaries... "
 
 for bin_path in "${dotfiles_dir}"/bin/*; do
   bin=$(basename "${bin_path}")
+  bin_real_path=$(realpath "${bin_path}")
 
   chmod +x "${bin_path}"
   rm -rf ~/.local/bin/"${bin}" >/dev/null 2>&1
-  ln -sf "${bin_path}" ~/.local/bin/"${bin}"
+  ln -sf "${bin_real_path}" ~/.local/bin/"${bin}"
 done
 
 echo "Done."
