@@ -22,7 +22,13 @@ EOF
 }
 
 shoot() {
-    if type -p xfce4-screenshooter >/dev/null; then
+    if type -p flameshot >/dev/null; then
+        if [ -n "$region" ]; then
+            flameshot gui
+        else
+            flameshot full
+        fi
+    elif type -p xfce4-screenshooter >/dev/null; then
         if [ -n "$region" ]; then
             region_flag="-r"
         fi
