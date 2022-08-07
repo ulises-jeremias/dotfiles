@@ -39,6 +39,7 @@ scripts_list=(
     "git-notify: notify when a git commit is made"
     "microphone: control the microphone"
     "monitor: print the current monitor name"
+    "next-workspace: switch to next existing workspace"
     "night-mode: toggle night mode"
     "openweathermap-detailed: print the detailed weather information"
     "popup-calendar: show a calendar in a popup"
