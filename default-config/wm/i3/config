@@ -115,8 +115,8 @@ bindsym $mod+Mod1+Left workspace prev
 bindsym $mod+Mod1+Right workspace next
 
 # switch to next or previous existing workspaces
-bindsym $mod+Control+Left dots-scripts next-workspace --left
-bindsym $mod+Control+Right dots-scripts next-workspace
+bindsym $mod+Control+Left exec --no-startup-id dots-scripts next-workspace --left
+bindsym $mod+Control+Right exec --no-startup-id dots-scripts next-workspace
 
 # move focused container to workspace
 bindsym $Mod+Shift+1 move container to workspace $WS1; workspace $WS1
