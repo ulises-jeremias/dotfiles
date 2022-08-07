@@ -59,7 +59,7 @@ scripts_list=(
 script=${arguments[0]}
 
 if [[ -n "${script}" ]]; then
-    if [[ ! "${scripts_list[*]}" =~ "${script}" ]]; then
+    if [[ ! "${scripts_list[*]}" =~ ${script} ]]; then
         show_message_with_usage "Invalid script specified."
     fi
 
