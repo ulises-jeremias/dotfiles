@@ -110,9 +110,13 @@ bindsym $mod+Mod2+KP_6 workspace $WS6
 bindsym $mod+Mod2+KP_7 workspace $WS7
 bindsym $mod+Mod2+KP_8 workspace $WS8
 
-# switch to next or previous workspace
+# switch to next or previous active workspace
 bindsym $mod+Mod1+Left workspace prev
 bindsym $mod+Mod1+Right workspace next
+
+# switch to next or previous existing workspaces
+bindsym $mod+Control+Left dots-scripts next-workspace --left
+bindsym $mod+Control+Right dots-scripts next-workspace
 
 # move focused container to workspace
 bindsym $Mod+Shift+1 move container to workspace $WS1; workspace $WS1
