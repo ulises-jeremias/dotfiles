@@ -61,13 +61,16 @@
     </font>
   </theme>
   <desktops>
-    <number>4</number>
+    <number>8</number>
     <firstdesk>0</firstdesk>
     <names>
       <name>1</name>
       <name>2</name>
       <name>3</name>
       <name>4</name>
+      <name>5</name>
+      <name>6</name>
+      <name>7</name>
     </names>
     <popupTime>800</popupTime>
   </desktops>
@@ -120,6 +123,26 @@
         <to>4</to>
       </action>
     </keybind>
+    <keybind key="W-5">
+      <action name="GoToDesktop">
+        <to>5</to>
+      </action>
+    </keybind>
+    <keybind key="W-6">
+      <action name="GoToDesktop">
+        <to>6</to>
+      </action>
+    </keybind>
+    <keybind key="W-7">
+      <action name="GoToDesktop">
+        <to>7</to>
+      </action>
+    </keybind>
+    <keybind key="W-8">
+      <action name="GoToDesktop">
+        <to>8</to>
+      </action>
+    </keybind>
     <keybind key="S-W-1">
       <action name="SendToDesktop">
         <desktop>1</desktop>
@@ -138,6 +161,26 @@
     <keybind key="S-W-4">
       <action name="SendToDesktop">
         <desktop>4</desktop>
+      </action>
+    </keybind>
+    <keybind key="S-W-5">
+      <action name="SendToDesktop">
+        <desktop>5</desktop>
+      </action>
+    </keybind>
+    <keybind key="S-W-6">
+      <action name="SendToDesktop">
+        <desktop>6</desktop>
+      </action>
+    </keybind>
+    <keybind key="S-W-7">
+      <action name="SendToDesktop">
+        <desktop>7</desktop>
+      </action>
+    </keybind>
+    <keybind key="S-W-8">
+      <action name="SendToDesktop">
+        <desktop>8</desktop>
       </action>
     </keybind>
     <keybind key="A-Tab">
