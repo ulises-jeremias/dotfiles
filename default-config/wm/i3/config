@@ -101,22 +101,22 @@ bindsym $Mod+7 workspace $WS7
 bindsym $Mod+8 workspace $WS8
 
 # switch to workspace - numpad alternatives
-bindsym $mod+Mod2+KP_1 workspace $WS1
-bindsym $mod+Mod2+KP_2 workspace $WS2
-bindsym $mod+Mod2+KP_3 workspace $WS3
-bindsym $mod+Mod2+KP_4 workspace $WS4
-bindsym $mod+Mod2+KP_5 workspace $WS5
-bindsym $mod+Mod2+KP_6 workspace $WS6
-bindsym $mod+Mod2+KP_7 workspace $WS7
-bindsym $mod+Mod2+KP_8 workspace $WS8
+bindsym $Mod+Mod2+KP_1 workspace $WS1
+bindsym $Mod+Mod2+KP_2 workspace $WS2
+bindsym $Mod+Mod2+KP_3 workspace $WS3
+bindsym $Mod+Mod2+KP_4 workspace $WS4
+bindsym $Mod+Mod2+KP_5 workspace $WS5
+bindsym $Mod+Mod2+KP_6 workspace $WS6
+bindsym $Mod+Mod2+KP_7 workspace $WS7
+bindsym $Mod+Mod2+KP_8 workspace $WS8
 
 # switch to next or previous active workspace
-bindsym $mod+Mod1+Left workspace prev
-bindsym $mod+Mod1+Right workspace next
+bindsym $Mod+Mod1+Left workspace prev
+bindsym $Mod+Mod1+Right workspace next
 
 # switch to next or previous existing workspaces
-bindsym $mod+Control+Left exec --no-startup-id dots-scripts next-workspace --left
-bindsym $mod+Control+Right exec --no-startup-id dots-scripts next-workspace
+bindsym $Mod+Control+Left exec --no-startup-id dots-scripts next-workspace --left
+bindsym $Mod+Control+Right exec --no-startup-id dots-scripts next-workspace
 
 # move focused container to workspace
 bindsym $Mod+Shift+1 move container to workspace $WS1; workspace $WS1
