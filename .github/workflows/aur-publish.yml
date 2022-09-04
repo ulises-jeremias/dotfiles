@@ -6,7 +6,13 @@ on:
       - v*
 
 jobs:
+  shellcheck:
+    uses: ./.github/workflows/shellcheck.yml
+
   aur-publish:
+    needs:
+      - shellcheck
+
     runs-on: ubuntu-latest
     
     concurrency: stable
