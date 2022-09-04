@@ -66,6 +66,9 @@ bindsym $Mod+Return     exec --no-startup-id exo-open --launch TerminalEmulator
 # logout script
 bindsym $Mod+x exec --no-startup-id dots-scripts rofi-run -l
 
+# clipboard script
+bindsym Mod1+Control+c exec --no-startup-id dots-scripts rofi-run -c
+
 # Screenshot
 bindsym Print exec --no-startup-id dots-scripts screenshooter
 bindsym Shift+Print exec --no-startup-id dots-scripts screenshooter -r

@@ -14,13 +14,7 @@
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##
 
-ROOT=$(dirname "$0")
-
-if [[ -d /opt/dots ]]; then
-    ROOT=/opt/dots
-fi
-
-source "${ROOT}"/util/opts/opts.sh || exit
+source /opt/dots/util/easy-options/easyoptions.sh || exit
 
 #==========================================
 # Default argument values and preprocessing

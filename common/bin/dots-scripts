@@ -12,12 +12,6 @@
 ##     -l, --list                            List all available scripts.
 ##
 
-ROOT=$(dirname "$0")
-
-if [[ -d /opt/dots ]]; then
-    ROOT=/opt/dots
-fi
-
 show_message_with_usage() {
     [[ -z "$documentation" ]] && parse_documentation
     echo "$documentation"
@@ -28,7 +22,7 @@ show_message_with_usage() {
 
 NO_HELP=true
 NO_CHECK=true
-source "${ROOT}"/util/opts/opts.sh || exit
+source /opt/dots/util/easy-options/easyoptions.sh || exit
 
 scripts_list=(
     "autostart: bootstrap for all the important apps on the system init"
