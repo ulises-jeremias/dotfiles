@@ -16,6 +16,7 @@ needed_pkgs=(
     arandr
     dbus-python
     feh
+    flameshot
     graphicsmagick
     i3lock-fancy
     jgmenu
@@ -34,7 +35,6 @@ needed_pkgs=(
     scrot
     skippy-xd
     sxiv
-    # termite
     wmctrl
     xdotool
     xgetres
@@ -55,7 +55,9 @@ xfce4_pkgs=(
 )
 
 util_pkgs=(
+    "greenclip: Simple clipboard manager. Will be used in rofi"
     "dunst: Customizable and lightweight notification-daemon. Will be used by default for notifications if installed"
+    "termite: Simple terminal emulator"
     "thunar: Modern file manager for Xfce"
     "thunar-archive-plugin: Create and extract archives in Thunar"
     "thunar-media-tags-plugin: Adds special features for media files to the Thunar File Manager"
