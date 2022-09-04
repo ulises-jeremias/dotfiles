@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Important:
 # * Make sure you are using the UTF-8 encoding
 # * Don't change the variable names (e.g. intro_msg=)

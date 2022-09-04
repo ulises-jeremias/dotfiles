@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Needed fonts
 fonts=(
     nerd-fonts-hack

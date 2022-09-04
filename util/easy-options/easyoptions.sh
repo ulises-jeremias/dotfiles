@@ -109,7 +109,7 @@ parse_options() {
         option_name=${option%=$option_var}
         if [[ "${#option_name}" = "1" ]]; then
             short_options="${short_options}${option_name}"
-            if [[ "${#option_var}" > "1" ]]; then
+            if [[ "${#option_var}" -gt 1 ]]; then
                 short_option_vars+=("$option_var")
             fi
         fi
