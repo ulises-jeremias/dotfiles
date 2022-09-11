@@ -77,10 +77,10 @@ To run the testing environment just run the following commands;
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 $ cd /tmp/dotfiles
-$ ./playground/bin/test --os=<OS> --wms=<WMS> # use -h to know more about install options
+$ source ./util/os.sh
+$ echo "$os" # Check if the detected OS is correct
+$ ./playground/bin/test --os="$os" --wms=<WMS> # use -h to know more about install options
 ```
-
-being `OS = arch-linux | debian` and `WMS = i3,openbox,...`
 
 ### Vagrant
 
@@ -89,14 +89,14 @@ To run the testing environment just run the following commands;
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 $ cd /tmp/dotfiles
-$ cd ./playground/vagrant/<OS>
+$ source ./util/os.sh
+$ echo "$os" # Check if the detected OS is correct
+$ cd ./playground/vagrant/"$os"
 $ vagrant up
 
 # to access the VM
 $ vagrant ssh
 ```
-
-being `OS = arch-linux | debian`
 
 ## Contributors
 
