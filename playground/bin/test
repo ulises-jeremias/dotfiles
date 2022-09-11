@@ -20,7 +20,7 @@
 
 ROOT=$(dirname "$0")
 
-source "${ROOT}/../../util/opts/opts.sh" || exit
+source "${ROOT}/../../util/easy-options/easyoptions.sh" || exit
 source "${ROOT}/../../util/logs.sh" || exit
 
 DOCKER_DIR="${ROOT}/../docker"

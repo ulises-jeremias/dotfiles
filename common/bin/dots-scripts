@@ -12,12 +12,6 @@
 ##     -l, --list                            List all available scripts.
 ##
 
-ROOT=$(dirname "$0")
-
-if [[ -d /opt/dots ]]; then
-    ROOT=/opt/dots
-fi
-
 show_message_with_usage() {
     [[ -z "$documentation" ]] && parse_documentation
     echo "$documentation"
@@ -28,7 +22,7 @@ show_message_with_usage() {
 
 NO_HELP=true
 NO_CHECK=true
-source "${ROOT}"/util/opts/opts.sh || exit
+source /opt/dots/util/easy-options/easyoptions.sh || exit
 
 scripts_list=(
     "autostart: bootstrap for all the important apps on the system init"
@@ -39,6 +33,7 @@ scripts_list=(
     "git-notify: notify when a git commit is made"
     "microphone: control the microphone"
     "monitor: print the current monitor name"
+    "next-workspace: switch to next existing workspace"
     "night-mode: toggle night mode"
     "openweathermap-detailed: print the detailed weather information"
     "popup-calendar: show a calendar in a popup"
@@ -58,7 +53,7 @@ scripts_list=(
 script=${arguments[0]}
 
 if [[ -n "${script}" ]]; then
-    if [[ ! "${scripts_list[*]}" =~ "${script}" ]]; then
+    if [[ ! "${scripts_list[*]}" =~ ${script} ]]; then
         show_message_with_usage "Invalid script specified."
     fi
 

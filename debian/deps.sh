@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Needed fonts
 fonts=(
     nerd-fonts-hack
@@ -71,7 +73,7 @@ fi
 
 if [ -n "${bluetooth}" ]; then
     needed_pkgs+=(bluez)
-    util_pkgs+=(blueman pulseaudio-module-bt)
+    util_pkgs+=(blueman)
 fi
 
 if [ -n "${utils}" ]; then

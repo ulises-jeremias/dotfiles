@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2022 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+##     @script.name [SCRIPT_NAME] [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Show this help message.
+##     -l, --list                            List all available backups.
+##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
+##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
+##
+
+source /opt/dots/util/easy-options/easyoptions.sh || exit
+
+#==========================================
+# Default argument values and preprocessing
+#==========================================
+time_str=$(date +'%m-%d-%y_%H:%M:%S')
+log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
+dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
+
+if ! type -t tar >/dev/null 2>&1; then
+    echo "tar is not installed, please install it."
+    exit 1
+fi
+
+BACKUPS_DIR="${dotfiles_dir}/backups"
+
+if [[ ! -d "${BACKUPS_DIR}" ]]; then
+    mkdir -p "${BACKUPS_DIR}"
+fi
+
+if [[ -n "${list}" ]]; then
+    # enumerate available backups
+    echo "Available backups:"
+    i=1
+    for filepath in "${BACKUPS_DIR}"/*.zip; do
+        echo "  ${i}) $(basename "${filepath}")"
+        i=$((i+1))
+    done
+    exit 0
+fi
+
+create_backup() {
+    # create zip file at `${BACKUPS_DIR}/backup_${time_str}.zip` with all files in `${dotfiles_dir}`
+    # except `${BACKUPS_DIR}`.
+    local backup_file="${BACKUPS_DIR}/backup_${time_str}.zip"
+    tar -czf "${backup_file}" -C "${dotfiles_dir}" --exclude "${BACKUPS_DIR}" .
+    echo "Backup created at ${backup_file}"
+}
+
+create_backup

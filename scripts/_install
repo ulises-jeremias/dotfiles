@@ -17,7 +17,7 @@ for bin_path in "${dotfiles_dir}"/bin/*; do
 
   chmod +x "${bin_path}"
   rm -rf ~/.local/bin/"${bin}" >/dev/null 2>&1
-  ln -sf "${bin_path}" ~/.local/bin/"${bin}"
+  ln -sf "$(realpath "${bin_path}")" ~/.local/bin/"${bin}"
 done
 
 echo "Done."

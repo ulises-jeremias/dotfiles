@@ -17,6 +17,7 @@ needed_pkgs=(
 	arandr
 	dbus-python
 	feh
+	flameshot
 	graphicsmagick
 	i3lock-fancy
 	jgmenu
@@ -35,7 +36,6 @@ needed_pkgs=(
 	scrot
 	skippy-xd
 	sxiv
-	# termite
 	wmctrl
 	xdotool
 	xgetres
@@ -64,10 +64,11 @@ url="https://github.com/ulises-jeremias/dotfiles"
 license=('MIT')
 depends=(git "${fonts[@]}" "${needed_pkgs[@]}" "${xfce4_pkgs[@]}")
 optdepends=(
+	"greenclip: Simple clipboard manager. Will be used in rofi"
 	"bluez: Daemons for the bluetooth protocol stack. Needed for the bluetooth integration in polybar"
 	"blueman: GTK+ Bluetooth Manager. Optional."
-	"pulseaudio-module-bt: PulseAudio Bluetooth modules with SBC, AAC, APTX, APTX-HD, Sony LDAC (A2DP codec) support. Needed for the bluetooth integration in polybar"
 	"dunst: Customizable and lightweight notification-daemon. Will be used by default for notifications if installed"
+	"termite: Simple terminal emulator"
 	"thunar: Modern file manager for Xfce"
 	"thunar-archive-plugin: Create and extract archives in Thunar"
 	"thunar-media-tags-plugin: Adds special features for media files to the Thunar File Manager"
@@ -75,8 +76,8 @@ optdepends=(
 	"xfce4-power-manager: Power manager for the Xfce4 desktop"
 	"xfce4-screenshooter: An application to take screenshots"
 )
-provides=(dots dots-scripts)
-conflicts=(dots dots-scripts)
+provides=(dots)
+conflicts=(dots)
 source=("git+$url.git")
 md5sums=('SKIP')
 
