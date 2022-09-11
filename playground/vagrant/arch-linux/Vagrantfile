@@ -30,7 +30,7 @@ Vagrant.configure("2") do |config|
     vb.customize ['storageattach', :id,  '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', './data.vdi']
   end
 
-  config.vm.provision "VM Setup" type: "shell", path: "provision/vm-setup.sh"
+  config.vm.provision "VM Setup", type: "shell", path: "provision/vm-setup.sh"
   config.vm.provision "Install Yay", type: "shell", path: "provision/yay.sh"
   config.vm.provision "Bash Conf", type: "file", source: ".bashrc", destination: "/home/vagrant/.bashrc"
   config.vm.provision "Sddm Conf", type: "file", source: "sddm.conf", destination: "/tmp/sddm.conf"
