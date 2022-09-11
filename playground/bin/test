@@ -20,24 +20,28 @@
 
 ROOT=$(dirname "$0")
 
-source "${ROOT}/../util/easy-options/easyoptions.sh" || exit
-source "${ROOT}/../util/logs.sh" || exit
+source "${ROOT}/../../util/easy-options/easyoptions.sh" || exit
+source "${ROOT}/../../util/logs.sh" || exit
+
+DOCKER_DIR="${ROOT}/../docker"
 
 #==========================================
 # Default argument values and preprocessing
 #==========================================
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
+os=${os:-"arch-linux"}
+wm=${wm:-"i3"}
 
 USER_FLAG="-u $(id -u):$(id -g)"
 XPORT=${xport:-1225}
 
-[ ! -f "${log_file}" ] && touch ${log_file}
+[ ! -f "${log_file}" ] && touch "${log_file}"
 
 # setup windowed X server
 xephyr_ini() {
-    if ! type -p Xephyr > /dev/null; then
-        log_failed "Xephyr is not installed in this system" ${log_file}
+    if ! type -p Xephyr >/dev/null; then
+        log_failed "Xephyr is not installed in this system" "${log_file}"
         exit 1
     fi
 
@@ -46,24 +50,24 @@ xephyr_ini() {
 
 # creates docker image if it doesn't exists
 docker_ini() {
-    if ! type -p docker > /dev/null; then
-        log_failed "Docker is not installed on this system" ${log_file}
+    if ! type -p docker >/dev/null; then
+        log_failed "Docker is not installed on this system" "${log_file}"
         exit 1
     fi
 
-    if type -p md5 > /dev/null; then
-        lockSum=$(md5 -r docker/${os}/wm/${wm}.sh | awk '{ print $1 }')
+    if type -p md5 >/dev/null; then
+        lockSum=$(md5 -r "${DOCKER_DIR}"/"${os}"/wm/"${wm}".sh | awk '{ print $1 }')
     else
-        lockSum=$(md5sum -t docker/${os}/wm/${wm}.sh | awk '{ print $1 }')
+        lockSum=$(md5sum -t "${DOCKER_DIR}"/"${os}"/wm/"${wm}".sh | awk '{ print $1 }')
     fi
 
     IMAGE_NAME="${os}-${wm}-${lockSum}:latest"
     IMAGE_NAME_ARRAY=(${IMAGE_NAME//:/ })
 
-    if [[ -n "${build}" ]] || [[ "$(docker images ${IMAGE_NAME_ARRAY[0]} | grep ${IMAGE_NAME_ARRAY[1]} 2> /dev/null)" = "" ]]; then
-        docker build -f ./docker/${os}/Dockerfile -t "${IMAGE_NAME}" \
-            --build-arg WINDOW_MANAGER=${wm} \
-            --build-arg USER=${USER} \
+    if [[ -n "${build}" ]] || [[ "$(docker images ${IMAGE_NAME_ARRAY[0]} | grep ${IMAGE_NAME_ARRAY[1]} 2>/dev/null)" = "" ]]; then
+        docker build -f "${DOCKER_DIR}"/"${os}"/Dockerfile -t "${IMAGE_NAME}" \
+            --build-arg WINDOW_MANAGER="${wm}" \
+            --build-arg USER="${USER}" \
             .
     fi
 }
