@@ -67,5 +67,5 @@ ENV LANG C.UTF-8
 
 ENV PATH=$PATH:$GOPATH/bin
 
-COPY bashrc /etc/bash.bashrc
+COPY docker/debian/.bashrc /etc/bash.bashrc
 RUN chmod a+rwx /etc/bash.bashrc

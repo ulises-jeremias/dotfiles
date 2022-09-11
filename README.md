@@ -68,9 +68,35 @@ Read more about this at [Customization Docs](https://github.com/ulises-jeremias/
 
 ## Testing
 
-Maybe you want to contribute to this project or just test what the setup would look like before installing it. For this we develop test environments in which you can see how the changes look!
+We have different testing environments that allow us to test the dotfiles generator in different OSs and window managers.
 
-You can read more about this at [Testing Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Testing).
+### Docker and Xephyr
+
+To run the testing environment just run the following commands;
+
+```sh
+$ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
+$ cd /tmp/dotfiles
+$ ./playground/bin/test --os=<OS> --wms=<WMS> # use -h to know more about install options
+```
+
+being `OS = arch-linux | debian` and `WMS = i3,openbox,...`
+
+### Vagrant
+
+To run the testing environment just run the following commands;
+
+```sh
+$ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
+$ cd /tmp/dotfiles
+$ cd ./playground/vagrant/<OS>
+$ vagrant up
+
+# to access the VM
+$ vagrant ssh
+```
+
+being `OS = arch-linux | debian`
 
 ## Contributors
 

@@ -1,0 +1,63 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "archlinux/archlinux"
+
+  if Vagrant.has_plugin?("vagrant-disksize")
+      config.disksize.size = '40GB'
+  end
+
+  config.vm.synced_folder "../../../", "/home/vagrant/host-source"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "archlinux"
+    # Display the VirtualBox GUI when booting the machine
+    vb.gui = true
+    vb.customize ["modifyvm", :id, "--monitorcount", "2"]
+    vb.customize ["modifyvm", :id, "--cpus", 4]
+
+    # Customize the amount of memory on the VM:
+    vb.memory = "8192"
+
+    vb.customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']
+    vb.customize ["modifyvm", :id, "--vram", "64"]
+
+    unless File.exist?('./data.vdi')
+      vb.customize ['createhd', '--filename', './data.vdi', '--variant', 'Fixed', '--size', 20 * 1024]
+    end
+
+    vb.customize ['storageattach', :id,  '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', './data.vdi']
+  end
+
+  # virtualbox-guest-utils
+  config.vm.provision "shell", run: "never", inline: "pacman -Rs --noconfirm virtualbox-guest-utils-nox || true"
+  config.vm.provision "shell", inline: "pacman -Syu --noconfirm --needed --noprogressbar virtualbox-guest-utils"
+
+  # yay
+  config.vm.provision "Yay Requirements", type: "shell", inline: <<-SHELL
+      pacman -S --noconfirm --needed --noprogressbar base-devel git
+  SHELL
+
+  config.vm.provision "Yay", type: "shell", privileged: false, inline: <<-SHELL
+      cd /tmp
+      git clone https://aur.archlinux.org/yay.git
+      cd yay
+      makepkg -si --noconfirm
+      cd ..
+      rm -rf /tmp/yay
+  SHELL
+
+  # bash
+  config.vm.provision "Bash Conf", type: "file", source: ".bashrc", destination: "/home/vagrant/.bashrc"
+
+  # Login Manager
+  config.vm.provision "Sddm Conf", type: "file", source: "sddm.conf", destination: "/tmp/sddm.conf"
+  config.vm.provision "Sddm", type: "shell", inline: <<-SHELL
+      mv /tmp/sddm.conf /etc/sddm.conf
+      pacman -S --noconfirm --needed --noprogressbar xorg-server plasma-desktop sddm kwallet-pam ark dolphin kate konsole kwalletmanager okular gwenview spectacle
+      systemctl enable sddm
+      localectl --no-convert set-x11-keymap us
+  SHELL
+end

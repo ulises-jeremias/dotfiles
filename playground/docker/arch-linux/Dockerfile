@@ -61,5 +61,5 @@ RUN locale-gen en_US.UTF-8
 ENV LC_CTYPE 'en_US.UTF-8'
 ENV LANG C.UTF-8
 
-COPY bashrc /etc/bash.bashrc
+COPY docker/arch-linux/.bashrc /etc/bash.bashrc
 RUN chmod a+rwx /etc/bash.bashrc
