@@ -18,6 +18,8 @@
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##
 
+set -e
+
 ROOT=$(dirname "$0")
 
 source "${ROOT}/../../util/easy-options/easyoptions.sh" || exit
@@ -68,7 +70,7 @@ docker_ini() {
         docker build -f "${DOCKER_DIR}"/"${os}"/Dockerfile -t "${IMAGE_NAME}" \
             --build-arg WINDOW_MANAGER="${wm}" \
             --build-arg USER="${USER}" \
-            .
+            "${DOCKER_DIR}"/"${os}"
     fi
 }
 

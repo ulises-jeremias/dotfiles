@@ -49,7 +49,7 @@ RUN cd /tmp \
     && install -Dm644 ${YAY_FOLDER}/yay.8 /usr/share/man/man8/yay.8
 
 # Install and setup given window manager
-COPY docker/arch-linux/wm/${WINDOW_MANAGER}.sh /tmp/wm-setup.sh
+COPY wm/${WINDOW_MANAGER}.sh /tmp/wm-setup.sh
 RUN chmod a+rwx /tmp/wm-setup.sh && /tmp/wm-setup.sh
 
 # Set correct locale
@@ -61,5 +61,5 @@ RUN locale-gen en_US.UTF-8
 ENV LC_CTYPE 'en_US.UTF-8'
 ENV LANG C.UTF-8
 
-COPY docker/arch-linux/.bashrc /etc/bash.bashrc
+COPY .bashrc /etc/bash.bashrc
 RUN chmod a+rwx /etc/bash.bashrc

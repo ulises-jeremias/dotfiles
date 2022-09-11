@@ -53,7 +53,7 @@ RUN useradd -m ${USER} \
     && rm -rf /home/${USER}/.bashrc
 
 # Install and setup given window manager
-COPY docker/debian/wm/${WINDOW_MANAGER}.sh /tmp/wm-setup.sh
+COPY wm/${WINDOW_MANAGER}.sh /tmp/wm-setup.sh
 RUN chmod a+rwx /tmp/wm-setup.sh && /tmp/wm-setup.sh
 
 # Set correct locale
@@ -67,5 +67,5 @@ ENV LANG C.UTF-8
 
 ENV PATH=$PATH:$GOPATH/bin
 
-COPY docker/debian/.bashrc /etc/bash.bashrc
+COPY .bashrc /etc/bash.bashrc
 RUN chmod a+rwx /etc/bash.bashrc

@@ -30,35 +30,9 @@ Vagrant.configure("2") do |config|
     vb.customize ['storageattach', :id,  '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', './data.vdi']
   end
 
-  config.vm.provision "shell", inline: "pacman -Syu --noconfirm --needed --noprogressbar"
-
-  # virtualbox-guest-utils
-  config.vm.provision "shell", run: "never", inline: "pacman -Rs --noconfirm virtualbox-guest-utils-nox || true"
-  config.vm.provision "shell", inline: "pacman -S --noconfirm --needed --noprogressbar virtualbox-guest-utils"
-
-  # yay
-  config.vm.provision "Yay Requirements", type: "shell", inline: <<-SHELL
-    pacman -S --noconfirm --needed --noprogressbar base-devel git
-  SHELL
-
-  config.vm.provision "Yay", type: "shell", privileged: false, inline: <<-SHELL
-    cd /tmp
-    git clone https://aur.archlinux.org/yay.git
-    cd yay
-    makepkg -si --noconfirm
-    cd ..
-    rm -rf /tmp/yay
-  SHELL
-
-  # bash
+  config.vm.provision "VM Setup" type: "shell", path: "provision/vm-setup.sh"
+  config.vm.provision "Install Yay", type: "shell", path: "provision/yay.sh"
   config.vm.provision "Bash Conf", type: "file", source: ".bashrc", destination: "/home/vagrant/.bashrc"
-
-  # Login Manager
   config.vm.provision "Sddm Conf", type: "file", source: "sddm.conf", destination: "/tmp/sddm.conf"
-  config.vm.provision "Sddm", type: "shell", inline: <<-SHELL
-    mv /tmp/sddm.conf /etc/sddm.conf
-    pacman -S --noconfirm --needed --noprogressbar xorg-server plasma-desktop sddm kwallet-pam ark dolphin kate konsole kwalletmanager okular gwenview spectacle
-    systemctl enable sddm
-    localectl --no-convert set-x11-keymap us
-  SHELL
+  config.vm.provision "Setup Sddm", type: "shell", path: "provision/sddm.sh"
 end
