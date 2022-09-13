@@ -16,13 +16,15 @@
 ##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
 ##
 
+set -e
+
 ROOT=$(dirname "$0")
 
-source "${ROOT}"/../util/easy-options/easyoptions.sh || exit
-source "${ROOT}"/../util/logs.sh || exit
+source "${ROOT}"/../util/easy-options/easyoptions.sh
+source "${ROOT}"/../util/logs.sh
 
 # override OS with a correct value with the given params
-source "${ROOT}"/../util/os.sh || exit
+source "${ROOT}"/../util/os.sh
 
 #==========================================
 # Default argument values and preprocessing
@@ -40,6 +42,8 @@ pkgs=${pkgs:-""}
 # Installing process
 #==========================================
 describe "Starting process" 0
+
+update_db
 
 success=0
 failed=0

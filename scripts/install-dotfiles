@@ -17,13 +17,15 @@
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##
 
+set -e
+
 ROOT=$(dirname "$0")
 
-source "${ROOT}"/../util/easy-options/easyoptions.sh || exit
-source "${ROOT}"/../util/logs.sh || exit
+source "${ROOT}"/../util/easy-options/easyoptions.sh
+source "${ROOT}"/../util/logs.sh
 
 # override OS with a correct value with the given params
-source "${ROOT}"/../util/os.sh || exit
+source "${ROOT}"/../util/os.sh
 
 #==========================================
 # Default argument values and preprocessing

@@ -13,3 +13,8 @@ pkg_exists() {
   [ -f "${ROOT}/debian/$1" ] || apt search "$1"
   return $?
 }
+
+update_db() {
+  sudo apt update
+  return $?
+}

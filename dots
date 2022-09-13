@@ -23,6 +23,8 @@
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##
 
+set -e
+
 ROOT=$(dirname "$0")
 
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -32,15 +34,15 @@ if [[ "$ROOT" = "/usr/bin" && -d /opt/dots ]]; then
     ROOT=/opt/dots
 fi
 
-source "${ROOT}"/util/easy-options/easyoptions.sh || exit
+source "${ROOT}"/util/easy-options/easyoptions.sh
 
 # override OS with a correct value with the given params
-source "${ROOT}"/util/os.sh || exit
+source "${ROOT}"/util/os.sh
 
 echo "Installing dotfiles for OS: ${os}"
 
 # load deps for give os. Defines pkgs variable
-source "${ROOT}"/"${os}"/deps.sh || exit
+source "${ROOT}"/"${os}"/deps.sh
 
 args="$*"
 args=( "${args/--utils/}" )

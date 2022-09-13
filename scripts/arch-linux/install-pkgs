@@ -85,3 +85,8 @@ pkg_exists() {
   fetch_pkg "$1" || fetch_pkg "$1-git"
   return $?
 }
+
+update_db() {
+  sudo pacman -Sy
+  return $?
+}
