@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
 
+ROOT=$(dirname "$0")
+SOURCE_DIR=$(realpath "${ROOT}")
+DOTFILES_DIR=$(realpath "${SOURCE_DIR}/..")
+
 create_symlink() {
   to=${2:-"$HOME/.$1"}
 
-  if [ ! -e "${dotfiles_dir}"/custom-config/"$1" ]; then
-    cp -rf "${ROOT}"/"$1" "${dotfiles_dir}"/custom-config/"$1"
+  if [ ! -e "${DOTFILES_DIR}"/custom-config/"$1" ]; then
+    cp -rf "${SOURCE_DIR}"/"$1" "${DOTFILES_DIR}"/custom-config/"$1"
   fi
 
-  if [ ! -e "${dotfiles_dir}"/custom-config/"$1"/install ]; then
-    ln -sf "${dotfiles_dir}"/custom-config/"$1" "${to}"
+  if [ ! -e "${DOTFILES_DIR}"/custom-config/"$1"/install ]; then
+    ln -sf "${DOTFILES_DIR}"/custom-config/"$1" "${to}"
   fi
 }
-
-ROOT=$(dirname "$0")
-dotfiles_dir="${ROOT}/.."
 
 #==========================================
 # Delete existing dot files and folders
@@ -35,8 +36,8 @@ touch ~/.Xresources >/dev/null 2>&1
 touch "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/modules/custom.conf >/dev/null 2>&1
 touch "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/modules/polybar.conf >/dev/null 2>&1
 
-[ ! -d "${dotfiles_dir}"/custom-config/polybar/modules ] && mkdir -p "${dotfiles_dir}"/custom-config/polybar/modules
-[ ! -d "${dotfiles_dir}"/custom-config/polybar/polybars ] && mkdir -p "${dotfiles_dir}"/custom-config/polybar/polybars
+[ ! -d "${DOTFILES_DIR}"/custom-config/polybar/modules ] && mkdir -p "${DOTFILES_DIR}"/custom-config/polybar/modules
+[ ! -d "${DOTFILES_DIR}"/custom-config/polybar/polybars ] && mkdir -p "${DOTFILES_DIR}"/custom-config/polybar/polybars
 
 create_symlink alacritty
 create_symlink gitconfig
@@ -51,7 +52,7 @@ sudo chmod +x ~/.xprofile
 
 printf "Setting up wm...\\n"
 
-for script in "${dotfiles_dir}"/custom-config/**/install; do
+for script in "${DOTFILES_DIR}"/custom-config/**/install; do
   [ -e "${script}" ] || break
   [ -x "${script}" ] || {
     chmod +x "${script}"

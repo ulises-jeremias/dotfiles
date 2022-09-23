@@ -7,8 +7,14 @@ XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
 
 printf "Setting up rofi themes...\\n"
 
-rm -rf "${SOURCE_DIR}"/rofi-themes
-git clone https://github.com/ulises-jeremias/rofi-themes.git "${SOURCE_DIR}"/rofi-themes
+if [[ ! -d "${SOURCE_DIR}"/rofi-themes/.git ]]; then
+    rm -rf "${SOURCE_DIR}"/rofi-themes
+    git clone https://github.com/ulises-jeremias/rofi-themes.git "${SOURCE_DIR}"/rofi-themes
+fi
+
+cd "${SOURCE_DIR}"/rofi-themes || exit 1
+git pull
+cd "${SOURCE_DIR}" || exit 1
 
 rm -rf "${XDG_CONFIG_HOME}"/rofi/themes >/dev/null 2>&1
 rm -rf "${XDG_CONFIG_HOME}"/rofi/config.rasi >/dev/null 2>&1

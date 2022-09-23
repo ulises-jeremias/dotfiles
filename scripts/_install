@@ -3,7 +3,7 @@
 set -e
 
 ROOT=$(dirname "$0")
-dotfiles_dir="${ROOT}"
+DOTFILES_DIR=$(realpath "${ROOT}")
 
 #==========================================
 # Make symlink for bin files
@@ -14,7 +14,7 @@ fi
 
 printf "Installing binaries... "
 
-for bin_path in "${dotfiles_dir}"/bin/*; do
+for bin_path in "${DOTFILES_DIR}"/bin/*; do
   bin=$(basename "${bin_path}")
 
   chmod +x "${bin_path}"
@@ -30,9 +30,9 @@ echo "Done."
 if [[ -z "${SKIP_CONFIG_INSTALL}" ]]; then
   printf "Installing dotfiles... "
 
-  for config_path in "${dotfiles_dir}"/config/*; do
+  for config_path in "${DOTFILES_DIR}"/config/*; do
     config=$(basename "${config_path}")
-    "${dotfiles_dir}"/config/"${config}"/install
+    "${DOTFILES_DIR}"/config/"${config}"/install
   done
 
   echo "Done."
@@ -43,8 +43,8 @@ printf "Installing default config... "
 #==========================================
 # Execute config installation
 #==========================================
-chmod +x "${dotfiles_dir}"/default-config/install
-"${dotfiles_dir}"/default-config/install
+chmod +x "${DOTFILES_DIR}"/default-config/install
+"${DOTFILES_DIR}"/default-config/install
 
 echo "Done."
 
