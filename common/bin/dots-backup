@@ -11,7 +11,9 @@
 ##     -h, --help                            Show this help message.
 ##     -l, --list                            List all available backups.
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
-##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
+##         --dotfiles-dir=DOTFILES_PATH      Dotfiles output dir, is ~/dotfiles by default.
+##         --backup-dir=BACKUPS_PATH         Backup output dir, is ~/dotfiles/backup by default.
+##         --backup-name=BACKUP_NAME         Backup name, is dotfiles_backup by default.
 ##
 
 source /opt/dots/util/easy-options/easyoptions.sh || exit
@@ -22,23 +24,23 @@ source /opt/dots/util/easy-options/easyoptions.sh || exit
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
+backup_dir=${backup_dir:-"${dotfiles_dir}/backup"}
+backup_name=${backup_name:-"dotfiles_backup"}
 
 if ! type -t tar >/dev/null 2>&1; then
     echo "tar is not installed, please install it."
     exit 1
 fi
 
-BACKUPS_DIR="${dotfiles_dir}/backups"
-
-if [[ ! -d "${BACKUPS_DIR}" ]]; then
-    mkdir -p "${BACKUPS_DIR}"
+if [[ ! -d "${backup_dir}" ]]; then
+    mkdir -p "${backup_dir}"
 fi
 
 if [[ -n "${list}" ]]; then
     # enumerate available backups
     echo "Available backups:"
     i=1
-    for filepath in "${BACKUPS_DIR}"/*.zip; do
+    for filepath in "${backup_dir}"/*.zip; do
         echo "  ${i}) $(basename "${filepath}")"
         i=$((i+1))
     done
@@ -46,10 +48,10 @@ if [[ -n "${list}" ]]; then
 fi
 
 create_backup() {
-    # create zip file at `${BACKUPS_DIR}/backup_${time_str}.zip` with all files in `${dotfiles_dir}`
-    # except `${BACKUPS_DIR}`.
-    local backup_file="${BACKUPS_DIR}/backup_${time_str}.zip"
-    tar -czf "${backup_file}" -C "${dotfiles_dir}" --exclude "${BACKUPS_DIR}" .
+    # create zip file at `${backup_dir}/${time_str}_${backup_name}.zip` with all files in `${dotfiles_dir}`
+    # except `${backup_dir}`.
+    local backup_file="${backup_dir}/${time_str}_${backup_name}.zip"
+    tar -czf "${backup_file}" -C "${dotfiles_dir}" --exclude "${backup_dir}" .
     echo "Backup created at ${backup_file}"
 }
 
