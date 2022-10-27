@@ -137,7 +137,7 @@ bindsym $Mod+Shift+Mod2+KP_Down move container to workspace $WS2; workspace $WS2
 bindsym $Mod+Shift+Mod2+KP_Next move container to workspace $WS3; workspace $WS3
 bindsym $Mod+Shift+Mod2+KP_Left move container to workspace $WS4; workspace $WS4
 bindsym $Mod+Shift+Mod2+KP_Begin move container to workspace $WS5; workspace $WS5
-bindsym $Mod+Shift+Mod2+KP_Right move container to workspace $WS6; workspace $WS7
+bindsym $Mod+Shift+Mod2+KP_Right move container to workspace $WS6; workspace $WS6
 bindsym $Mod+Shift+Mod2+KP_Home move container to workspace $WS7; workspace $WS7
 bindsym $Mod+Shift+Mod2+KP_Up move container to workspace $WS8; workspace $WS8
 
