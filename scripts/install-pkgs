@@ -50,7 +50,7 @@ failed=0
 
 for pkg in $(echo "${pkgs}" | tr ',' '\n'); do
   describe "Fetching ${pkg}"
-  if type -p "${pkg}" >/dev/null && [ -n "$upgrade" ]; then
+  if type -p "${pkg}" >/dev/null && [ -z "$upgrade" ]; then
     log_success "Already installed" "${pkg}" "${log_file}"
     ((success += 1))
   else
@@ -67,7 +67,7 @@ for pkg in $(echo "${pkgs}" | tr ',' '\n'); do
       log_success "Installed successfully" "${pkg}" "${log_file}"
       ((success += 1))
     else
-      log_failed "Installation fialed" "${pkg}" "${log_file}"
+      log_failed "Installation failed" "${pkg}" "${log_file}"
       ((failed += 1))
     fi
   fi
