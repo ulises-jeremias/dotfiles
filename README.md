@@ -26,15 +26,15 @@ Dotfiles generator that allows quick configuration of different window managers 
 Install [dots-stable](https://aur.archlinux.org/packages/dots-stable/) from AUR
 
 ```sh
-$ yay dots-stable
-$ dots --help
+yay dots-stable
+dots --help
 ```
 
 or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/) from AUR
 
 ```sh
-$ yay dots-git
-$ dots --help
+yay dots-git
+dots --help
 ```
 
 ## Installation from Source
@@ -42,10 +42,10 @@ $ dots --help
 > Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`
 
 ```sh
-$ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
-$ cd /tmp/dotfiles
-$ sudo ./install
-$ dots --help
+git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
+cd /tmp/dotfiles
+sudo ./install
+dots --help
 ```
 
 The installation script allows you to install all the necessary dependencies that allow your dotfiles config work correctly.
@@ -75,9 +75,9 @@ We have different testing environments that allow us to test the dotfiles genera
 To run the testing environment just run the following commands;
 
 ```sh
-$ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
-$ cd /tmp/dotfiles
-$ ./playground/bin/test-with-docker --os="<os>" --wms=<WMS> # use -h to know more about install options
+git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
+cd /tmp/dotfiles
+./playground/bin/test-with-docker --os="<os>" --wms=<WMS> # use -h to know more about install options
 ```
 
 ### Vagrant
@@ -85,13 +85,13 @@ $ ./playground/bin/test-with-docker --os="<os>" --wms=<WMS> # use -h to know mor
 To run the testing environment just run the following commands;
 
 ```sh
-$ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
-$ cd /tmp/dotfiles
-$ cd ./playground/vagrant/<os>/
-$ vagrant up
+git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
+cd /tmp/dotfiles
+cd ./playground/vagrant/<os>/
+vagrant up
 
 # to access the VM
-$ vagrant ssh
+vagrant ssh
 ```
 
 ## Contributors
