@@ -102,7 +102,7 @@ vagrant ssh
 ├── arch-linux              # Arch Linux override files (used by dots when installing in Arch Linux based distros)
 │   ├── bin/                # binaries to be installed in Arch Linux based distros
 │   ├── deps.sh             # Arch Linux specific dependencies
-│   └── install-pkgs        # Arch Linux specific script to install packages from the AUR and the official repos
+│   └── install-pkgs.sh     # Arch Linux specific script to install packages from the AUR and the official repos
 ├── common                  # common files (used by dots when installing in any OS)
 │   ├── bin/                # common binaries to be installed in any OS
 │   ├── config/             # common config files to be installed in any OS
@@ -110,7 +110,7 @@ vagrant ssh
 ├── debian                  # Debian override files (used by dots when installing in Debian based distros)
 │   ├── bin/                # binaries to be installed in Debian based distros
 │   ├── deps.sh             # Debian specific dependencies
-│   └── install-pkgs        # Debian specific script to install packages from the official repos and other sources
+│   └── install-pkgs.sh     # Debian specific script to install packages from the official repos and other sources
 ├── default-config          # default config files (used by dots when installing in any OS). Check the docs https://github.com/ulises-jeremias/dotfiles/wiki/Customization for more info.
 ├── playground              # testing environments
 │   └── bin/                # scripts to run the testing environments
