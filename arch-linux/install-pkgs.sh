@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# This file assumes that it is being executed at ../scripts
+# and there is a ROOT variable pointing to it
+
 aur_helpers=(yay aurman pakku pacaur trizen aura pikaur)
 
 export AUR_HELPER=""

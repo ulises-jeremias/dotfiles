@@ -36,7 +36,7 @@ pkgs=${pkgs:-""}
 
 [ ! -f "${log_file}" ] && touch "${log_file}"
 
-. "${ROOT}"/"${os}"/install-pkgs
+. "${ROOT}"/../"${os}"/install-pkgs.sh
 
 #==========================================
 # Installing process
