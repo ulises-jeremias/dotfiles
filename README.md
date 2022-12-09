@@ -98,26 +98,34 @@ vagrant ssh
 
 ```sh
 .
-├── .github          # github related files
-├── arch-linux       # Arch Linux override files (used by dots when installing in Arch Linux based distros)
-│   └── bin          # binaries to be installed in Arch Linux based distros
-│   └── deps.sh      # Arch Linux specific dependencies
-├── common           # common files (used by dots when installing in any OS)
-│   └── bin          # common binaries to be installed in any OS
-│   └── config       # common config files to be installed in any OS
-├── debian           # Debian override files (used by dots when installing in Debian based distros)
-│   └── bin          # binaries to be installed in Debian based distros
-│   └── deps.sh      # Debian specific dependencies
-├── default-config   # default config files (used by dots when installing in any OS). Check the docs https://github.com/ulises-jeremias/dotfiles/wiki/Customization for more info.
-├── playground       # testing environments
-│   └── bin          # scripts to run the testing environments
-│   └── docker       # docker setup to bootstrap the testing environments
-│   └── vagrant      # vagrant setup to bootstrap the testing environments
-├── scripts          # scripts used by dots to install the dotfiles
-├── static           # static files used by the README
-├── ui               # ui files used by dots when installing in interactive mode - WIP
-├── util             # util files used by dots
-└── install          # installation script
+├── .github                 # github related files
+├── arch-linux              # Arch Linux override files (used by dots when installing in Arch Linux based distros)
+│   ├── bin/                # binaries to be installed in Arch Linux based distros
+│   └── deps.sh             # Arch Linux specific dependencies
+├── common                  # common files (used by dots when installing in any OS)
+│   ├── bin/                # common binaries to be installed in any OS
+│   └── config              # common config files to be installed in any OS
+├── debian                  # Debian override files (used by dots when installing in Debian based distros)
+│   ├── bin/                # binaries to be installed in Debian based distros
+│   └── deps.sh             # Debian specific dependencies
+├── default-config          # default config files (used by dots when installing in any OS). Check the docs https://github.com/ulises-jeremias/dotfiles/wiki/Customization for more info.
+├── playground              # testing environments
+│   └── bin/                # scripts to run the testing environments
+│   └── docker/             # docker setup to bootstrap the testing environments
+│   └── vagrant/            # vagrant setup to bootstrap the testing environments
+├── scripts                 # scripts used by dots to install the dotfiles
+│   ├── arch-linux          # Arch Linux specific scripts
+│   │   └── install-pkgs    # Arch Linux specific script to install packages from the AUR and the official repos
+│   ├── debian              # Debian specific scripts
+│   │   └── install-pkgs    # Debian specific script to install packages from the official repos and other sources
+|   ├── install-pkgs        # script to install packages from the official repos and other sources
+│   ├── install-dotfiles    # script to install the dotfiles in the system
+│   ├── install             # main installation script
+├── static/                 # static files used by the README
+├── ui/                     # ui files used by dots when installing in interactive mode - WIP
+├── util/                   # util files used by dots
+├── dots                    # dots binary to install the dotfiles
+└── install                 # installation `dots` binary in the system
 ```
 
 ## Contributors
