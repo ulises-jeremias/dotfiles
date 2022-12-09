@@ -3,6 +3,10 @@
 ROOT=$(dirname "$0")
 PKGNAME=${PKGNAME:-"dots"}
 
+# override OS with a correct value with the given params
+# creates variable `os`
+. "${ROOT}"/util/os.sh
+
 rm -rf "${PKGDIR}/opt/${PKGNAME}" \
     "${PKGDIR}/usr/bin/dots" \
     "${PKGDIR}/usr/bin/dots-scripts" \
@@ -10,10 +14,6 @@ rm -rf "${PKGDIR}/opt/${PKGNAME}" \
     "${PKGDIR}/usr/share/doc/${PKGNAME}/"
 
 install -d "${PKGDIR}/opt/${PKGNAME}"
-
-# override OS with a correct value with the given params
-# creates variable `os`
-source "${ROOT}"/util/os.sh
 
 for dirname in common "${os}" default-config scripts ui util dots; do
     cp -Rf "${ROOT}"/"${dirname}" "${PKGDIR}/opt/${PKGNAME}"
