@@ -77,7 +77,7 @@ To run the testing environment just run the following commands;
 ```sh
 $ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 $ cd /tmp/dotfiles
-$ ./playground/bin/test --os="<os>" --wms=<WMS> # use -h to know more about install options
+$ ./playground/bin/test-with-docker --os="<os>" --wms=<WMS> # use -h to know more about install options
 ```
 
 ### Vagrant
