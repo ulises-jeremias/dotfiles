@@ -94,6 +94,32 @@ vagrant up
 vagrant ssh
 ```
 
+## Repository Structure
+
+```sh
+.
+├── .github          # github related files
+├── arch-linux       # Arch Linux override files (used by dots when installing in Arch Linux based distros)
+│   └── bin          # binaries to be installed in Arch Linux based distros
+│   └── deps.sh      # Arch Linux specific dependencies
+├── common           # common files (used by dots when installing in any OS)
+│   └── bin          # common binaries to be installed in any OS
+│   └── config       # common config files to be installed in any OS
+├── debian           # Debian override files (used by dots when installing in Debian based distros)
+│   └── bin          # binaries to be installed in Debian based distros
+│   └── deps.sh      # Debian specific dependencies
+├── default-config   # default config files (used by dots when installing in any OS). Check the docs https://github.com/ulises-jeremias/dotfiles/wiki/Customization for more info.
+├── playground       # testing environments
+│   └── bin          # scripts to run the testing environments
+│   └── docker       # docker setup to bootstrap the testing environments
+│   └── vagrant      # vagrant setup to bootstrap the testing environments
+├── scripts          # scripts used by dots to install the dotfiles
+├── static           # static files used by the README
+├── ui               # ui files used by dots when installing in interactive mode - WIP
+├── util             # util files used by dots
+└── install          # installation script
+```
+
 ## Contributors
 
 <a href="https://github.com/ulises-jeremias/dotfiles/contributors">
