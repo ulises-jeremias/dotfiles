@@ -17,6 +17,10 @@ configuration {
     text-color          : @fg-color;
 }
 
+#window {
+    y-offset            : 25;
+}
+
 #prompt {
     margin              : 10 16 24 20;
 }
