@@ -105,21 +105,21 @@ vagrant ssh
 │   └── install-pkgs        # Arch Linux specific script to install packages from the AUR and the official repos
 ├── common                  # common files (used by dots when installing in any OS)
 │   ├── bin/                # common binaries to be installed in any OS
-│   └── config              # common config files to be installed in any OS
+│   ├── config/             # common config files to be installed in any OS
+│   └── install             # script installed by dots at <dotfiles_dir>/install
 ├── debian                  # Debian override files (used by dots when installing in Debian based distros)
 │   ├── bin/                # binaries to be installed in Debian based distros
 │   ├── deps.sh             # Debian specific dependencies
-│   └── install-pkgs    # Debian specific script to install packages from the official repos and other sources
+│   └── install-pkgs        # Debian specific script to install packages from the official repos and other sources
 ├── default-config          # default config files (used by dots when installing in any OS). Check the docs https://github.com/ulises-jeremias/dotfiles/wiki/Customization for more info.
 ├── playground              # testing environments
 │   └── bin/                # scripts to run the testing environments
 │   └── docker/             # docker setup to bootstrap the testing environments
 │   └── vagrant/            # vagrant setup to bootstrap the testing environments
 ├── scripts                 # scripts used by dots to install the dotfiles
-|   ├── _install            # script installed by dots at <dotfiles_dir>/install
-|   ├── install-pkgs        # script to install packages from the official repos and other sources
+│   └── install-pkgs        # script to install packages from the official repos and other sources
 │   ├── install-dotfiles    # script to install the dotfiles in the system
-│   ├── install             # main installation script
+│   └── install             # main installation script
 ├── static/                 # static files used by the README
 ├── ui/                     # ui files used by dots when installing in interactive mode - WIP
 ├── util/                   # util files used by dots
