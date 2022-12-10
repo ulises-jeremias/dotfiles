@@ -17,13 +17,23 @@
 
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
-<div align="center">
-  <img alt="Dotfiles Screen Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" height="175wh" />
-  <img alt="Nord Two Lines" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png" height="175wh" />
-  <img alt="Launchpad" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" height="175wh" />
-  <img alt="Spotlight Dark" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png" height="175wh" />
-  <img alt="Dotfiles Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" height="175wh" />
-  <img alt="i3 with alacritty" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" height="175wh" />
+<style>
+  .examples > img {
+    width: 100%;
+    height: 100%;
+    max-width: 30%;
+    max-height: 30%;
+    aspect-ratio: 16 / 9;
+  }
+</style>
+
+<div align="center" class="examples">
+  <img alt="Dotfiles Screen Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" />
+  <img alt="Dotfiles Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" />
+  <img alt="i3 with alacritty" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" />
+  <img alt="Nord Two Lines" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png" />
+  <img alt="Launchpad" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" />
+  <img alt="Spotlight Dark" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png" />
 </div>
 
 ## Arch Linux
