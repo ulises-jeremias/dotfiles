@@ -17,25 +17,48 @@
 
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
-## Arch Linux
+## Installation
 
-Install [dots-stable](https://aur.archlinux.org/packages/dots-stable/) from AUR
+### From the Arch Linux User Repository (AUR)
 
-```sh
-yay dots-stable
-dots --help
-```
+- Using a helper like [yay](https://github.com/Jguer/yay)
 
-or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/) from AUR
+  Install [dots-stable](https://aur.archlinux.org/packages/dots-stable/)
 
-```sh
-yay dots-git
-dots --help
-```
+  ```sh
+  yay dots-stable
+  dots --help
+  ```
+
+  or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/)
+
+  ```sh
+  yay dots-git
+  dots --help
+  ```
+
+- Using `makepkg`
+
+  ```sh
+  git clone https://aur.archlinux.org/dots-stable.git /tmp/dots-stable
+  cd /tmp/dots-stable
+  makepkg -si
+  dots --help
+  ```
+
+  or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/)
+
+  ```sh
+  git clone https://aur.archlinux.org/dots-git.git /tmp/dots-git
+  cd /tmp/dots-git
+  makepkg -si
+  dots --help
+  ```
 
 ## Installation from Source
 
-> Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`
+> Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`.
+> Note: This will install unstable versions of the dotfiles generator. You can switch to a stable version by using any existing git tag.
 
 ```sh
 git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
