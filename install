@@ -9,7 +9,6 @@ PKGNAME=${PKGNAME:-"dots"}
 
 rm -rf "${PKGDIR}/opt/${PKGNAME}" \
     "${PKGDIR}/usr/bin/dots" \
-    "${PKGDIR}/usr/bin/dots-scripts" \
     "${PKGDIR}/usr/share/licenses/${PKGNAME}/" \
     "${PKGDIR}/usr/share/doc/${PKGNAME}/"
 
