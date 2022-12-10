@@ -50,6 +50,10 @@ if [ -n "${clear}" ]; then
   clear_flag="--clear"
 fi
 
+if [ -n "${dry_run}" ]; then
+  dry_run_flag="--dry-run"
+fi
+
 #==========================================
 # Install dependencies according to os
 #==========================================
@@ -57,8 +61,8 @@ if [ -z "${nodeps}" ] && [ -n "${os}" ]; then
   "${ROOT}"/install-pkgs \
     --log-file="${log_file}" ${upgrade_flag} \
     --os="${os}" \
-    --dry-run="${dry_run}" \
-    --pkgs="${pkgs}"
+    --pkgs="${pkgs}" \
+    ${dry_run_flag}
 fi
 
 echo
@@ -68,9 +72,9 @@ echo
 #==========================================
 "${ROOT}"/install-dotfiles --log-file="${log_file}" \
   --dotfiles-dir="${dotfiles_dir}" \
-  --dry-run="${dry_run}" \
   --os="${os}" \
   --wms="${wms}" \
+  ${dry_run_flag} \
   ${clear_flag}
 
 #==========================================
