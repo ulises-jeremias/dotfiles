@@ -132,6 +132,8 @@ vagrant ssh
 │   ├── deps.sh             # Debian specific dependencies
 │   └── install-pkgs.sh     # Debian specific script to install packages from the official repos and other sources
 ├── default-config          # default config files (used by dots when installing in any OS). Check the docs https://github.com/ulises-jeremias/dotfiles/wiki/Customization for more info.
+│   ├── common/             # common config files to be installed in any OS
+│   ├── wm/                 # window manager config files to be installed in any OS based on the intallation flag `--wms`
 ├── playground              # testing environments
 │   └── bin/                # scripts to run the testing environments
 │   └── docker/             # docker setup to bootstrap the testing environments
