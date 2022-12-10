@@ -17,7 +17,7 @@
 
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
-![Examples](./static/examples.svg)
+<img alt="Examples" src="./static/examples.svg" />
 
 ## Arch Linux
 
