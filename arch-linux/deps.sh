@@ -77,7 +77,7 @@ if [ -n "${bluetooth}" ]; then
     util_pkgs+=(blueman)
 fi
 
-if [ -n "${utils}" ]; then
+if [ -n "${utils}" ] && [ -z "${nodeps}" ]; then
     for util in "${util_pkgs[@]}"; do
         util_pkg="${util%%:*}"
         echo "${util}"
