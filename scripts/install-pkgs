@@ -37,17 +37,17 @@ pkgs=${pkgs:-""}
 
 [ ! -f "${log_file}" ] && touch "${log_file}"
 
-if [ -n "${dry_run}" ]; then
-  log_warn "Dry run" "Nothing will be installed" "${log_file}"
-  exit 0
-fi
-
 . "${ROOT}"/../"${os}"/install-pkgs.sh
 
 #==========================================
 # Installing process
 #==========================================
 describe "Starting process" 0
+
+if [ -n "${dry_run}" ]; then
+  log_success "Dry run" "Nothing will be installed" "${log_file}"
+  exit 0
+fi
 
 update_db
 
