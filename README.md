@@ -58,7 +58,7 @@ Dotfiles generator that allows quick configuration of different window managers 
 ## Installation from Source
 
 > Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`.
-> Note: This will install unstable versions of the dotfiles generator. You can switch to a stable version by using any existing git tag.
+> This will install unstable versions of the dotfiles generator. You can switch to a stable version by using any existing git tag.
 
 ```sh
 git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
