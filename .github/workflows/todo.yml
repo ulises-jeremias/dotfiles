@@ -5,6 +5,8 @@ on:
 
 jobs:
   todo:
+    name: TODO
+
     runs-on: ubuntu-latest
 
     steps:
