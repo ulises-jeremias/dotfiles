@@ -2,18 +2,20 @@ name: AUR Publish - Development version
 
 on:
   push:
-    branches:
-      - master
     tags:
       - v*
 
+  schedule:
+    - cron: "31 1,12 * * *"
+
 jobs:
-  shellcheck:
-    uses: ./.github/workflows/shellcheck.yml
+  ci:
+    name: CI Checks
+    uses: ./.github/workflows/ci.yml
 
   aur-publish:
     needs:
-      - shellcheck
+      - ci
 
     runs-on: ubuntu-latest
     

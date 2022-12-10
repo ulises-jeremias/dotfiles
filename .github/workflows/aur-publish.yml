@@ -6,12 +6,13 @@ on:
       - v*
 
 jobs:
-  shellcheck:
-    uses: ./.github/workflows/shellcheck.yml
+  ci:
+    name: CI Checks
+    uses: ./.github/workflows/ci.yml
 
   aur-publish:
     needs:
-      - shellcheck
+      - ci
 
     runs-on: ubuntu-latest
     
