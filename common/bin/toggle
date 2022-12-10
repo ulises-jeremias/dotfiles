@@ -16,7 +16,7 @@ usage() {
 
     -p,--polybar      Toggle the configured polybar session, can use toggle option
 
-    -c,--picom      Toggle picom or daemon monitoring icon, can use toggle option
+    -c,--picom        Toggle picom or daemon monitoring icon, can use toggle option
 
     -r,--redshift     Toggle redshift or daemon monitoring icon, can use toggle option
 
