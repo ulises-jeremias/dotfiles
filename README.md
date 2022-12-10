@@ -17,9 +17,14 @@
 
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
-![Dotfiles Screen Overview](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg)
-
-![Dotfiles Overview](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif)
+<div align="center">
+  <img alt="Dotfiles Screen Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" height="175wh" />
+  <img alt="Nord Two Lines" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png" height="175wh" />
+  <img alt="Launchpad" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" height="175wh" />
+  <img alt="Spotlight Dark" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png" height="175wh" />
+  <img alt="Dotfiles Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" height="175wh" />
+  <img alt="i3 with alacritty" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" height="175wh" />
+</div>
 
 ## Arch Linux
 
@@ -55,16 +60,6 @@ The installation script allows you to install all the necessary dependencies tha
 There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the `custom-config` directory. You are encouraged to maintain a separate github repository of configurations for your own dotfiles.
 
 Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
-
-### Examples
-
-![i3 with alacritty](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png)
-
-![Apps finder](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png)
-
-![Apps finder](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png)
-
-![Apps finder](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png)
 
 ## Testing
 
