@@ -9,6 +9,7 @@
 ##     -h, --help                            Help.
 ##     -c, --clear                           Will remove existing dotfiles.
 ##     -u, --upgrade                         Will update dependencies anyway.
+##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
 ##         --nodeps                          Will not install dependencies.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian
@@ -54,7 +55,9 @@ fi
 #==========================================
 if [ -z "${nodeps}" ] && [ -n "${os}" ]; then
   "${ROOT}"/install-pkgs \
-    --log-file="${log_file}" ${upgrade_flag} --os="${os}" \
+    --log-file="${log_file}" ${upgrade_flag} \
+    --os="${os}" \
+    --dry-run="${dry_run}" \
     --pkgs="${pkgs}"
 fi
 
@@ -63,7 +66,12 @@ echo
 #==========================================
 # Install dotfiles according to os
 #==========================================
-"${ROOT}"/install-dotfiles --log-file="${log_file}" --dotfiles-dir="${dotfiles_dir}" --os="${os}" --wms="${wms}" ${clear_flag}
+"${ROOT}"/install-dotfiles --log-file="${log_file}" \
+  --dotfiles-dir="${dotfiles_dir}" \
+  --dry-run="${dry_run}" \
+  --os="${os}" \
+  --wms="${wms}" \
+  ${clear_flag}
 
 #==========================================
 # Give the user a summary of what has

@@ -7,7 +7,8 @@
 ##
 ## Options:
 ##     -h, --help                            Help.
-##     -u, --upgrade                         Will update dependencies anyway.
+##     -u, --upgrade                         Will update dependencies even if they are already installed.
+##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
 ##                                           where common is supposed to work correctly with any linux distro.
@@ -35,6 +36,11 @@ log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
 pkgs=${pkgs:-""}
 
 [ ! -f "${log_file}" ] && touch "${log_file}"
+
+if [ -n "${dry_run}" ]; then
+  log_warn "Dry run" "Nothing will be installed" "${log_file}"
+  exit 0
+fi
 
 . "${ROOT}"/../"${os}"/install-pkgs.sh
 

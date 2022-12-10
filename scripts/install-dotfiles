@@ -7,7 +7,8 @@
 ##
 ## Options:
 ##     -h, --help                            Help.
-##     -c, --clear                           Will remove existing dotfiles.
+##     -c, --clear                           Will remove existing dotfiles before installing the new ones.
+##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
 ##                                           where common is supposed to work correctly with any linux distro.
@@ -86,7 +87,11 @@ for config_path in "${ROOT}"/../common/config/*; do
   fi
 
   cp -rf "${os_config_path}" "${dotfiles_dir}"/config
-  if bash "${dotfiles_dir}"/config/"${config}"/install; then
+  if [ -n "${dry_run}" ]; then
+    log_success "Dry run" "${dotfiles_dir}/config/${config}/install" "${log_file}"
+    ((success += 1))
+    continue
+  elif bash "${dotfiles_dir}"/config/"${config}"/install; then
     log_success "Installed successfully" "${config}" "${log_file}"
     ((success += 1))
   else
@@ -130,4 +135,8 @@ done
 #==========================================
 cp -f "${ROOT}"/../common/install "${dotfiles_dir}"/install
 chmod +x "${dotfiles_dir}"/install
-SKIP_CONFIG_INSTALL=true "${dotfiles_dir}"/install
+if [ -n "${dry_run}" ]; then
+  log_success "Dry run" "SKIP_CONFIG_INSTALL=true ${dotfiles_dir}/install" "${log_file}"
+else
+  SKIP_CONFIG_INSTALL=true "${dotfiles_dir}"/install
+fi
