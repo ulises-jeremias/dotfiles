@@ -17,23 +17,13 @@
 
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
-<style>
-  .examples > img {
-    width: 100%;
-    height: 100%;
-    max-width: 30%;
-    max-height: 30%;
-    aspect-ratio: 16 / 9;
-  }
-</style>
-
 <div align="center" class="examples">
-  <img alt="Dotfiles Screen Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" />
-  <img alt="Dotfiles Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" />
-  <img alt="i3 with alacritty" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" />
-  <img alt="Nord Two Lines" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png" />
-  <img alt="Launchpad" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" />
-  <img alt="Spotlight Dark" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png" />
+  <img alt="Dotfiles Screen Overview" style="max-width: 30%; aspect-ratio: 16/9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" />
+  <img alt="Dotfiles Overview" style="max-width: 30%; aspect-ratio: 16/9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" />
+  <img alt="i3 with alacritty" style="max-width: 30%; aspect-ratio: 16/9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" />
+  <img alt="Nord Two Lines" style="max-width: 30%; aspect-ratio: 16/9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png" />
+  <img alt="Launchpad" style="max-width: 30%; aspect-ratio: 16/9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" />
+  <img alt="Spotlight Dark" style="max-width: 30%; aspect-ratio: 16/9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png" />
 </div>
 
 ## Arch Linux
