@@ -18,14 +18,12 @@
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
 <div align="center">
-  <img alt="Dotfiles Screen Overview" style="width: 25%; height: 28%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" />
-  <img alt="Dotfiles Overview" style="width: 25%; height: 28%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" />
-  <img alt="i3 with alacritty" style="width: 25%; height: 28%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" />
-</div>
-<div align="center">
-  <img alt="Nord Two Lines" style="width: 25%; height: 28%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png" />
-  <img alt="Launchpad" style="width: 25%; height: 28%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" />
-  <img alt="Spotlight Dark" style="width: 25%; height: 28%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png" />
+  <img alt="Nord Two Lines" style="width: 20%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png" />
+  <img alt="Launchpad" style="width: 20%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" />
+  <img alt="Spotlight Dark" style="width: 20%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png" />
+  <img alt="Dotfiles Screen Overview" style="width: 20%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" />
+  <img alt="Dotfiles Overview" style="width: 20%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" />
+  <img alt="i3 with alacritty" style="width: 20%; aspect-ratio: 16 / 9;" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" />
 </div>
 
 ## Arch Linux
