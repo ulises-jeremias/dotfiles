@@ -39,6 +39,8 @@ Dotfiles generator that allows quick configuration of different window managers 
 
 - Using `makepkg`
 
+  Install [dots-stable](https://aur.archlinux.org/packages/dots-stable/)
+
   ```sh
   git clone https://aur.archlinux.org/dots-stable.git /tmp/dots-stable
   cd /tmp/dots-stable
