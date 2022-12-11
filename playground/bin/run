@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2022 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT
+##
+## IMPORTANT: Remember to read the files in `docs/docker` before updating this file
+##
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Help.
+##         --os=OS_NAME                      Operating System. Posible values: arch-linux | debian
+##         --wm=WINDOW_MANAGER               Window manager. Posible values: i3 | openbox
+##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_playground_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
+##
+## Docker options:
+##         --docker                          Use docker compose to run the environment.
+##         --build                           Build the docker compose.
+##         --remove                          Remove the docker compose.
+##
+## Vagrant options:
+##         --vagrant                         Use Vagrant to run the environment.
+##         --provision                       Provision the VM
+##         --remove                          Remove the created VM.
+##
+
+set -e
+
+ROOT=$(dirname "$0")
+DOCKER_DIR="$(realpath "${ROOT}/../docker")"
+VAGRANT_DIR="$(realpath "${ROOT}/../vagrant")"
+
+source "${ROOT}/../../util/easy-options/easyoptions.sh" || exit
+source "${ROOT}/../../util/logs.sh" || exit
+
+
+#==========================================
+# Default argument values and preprocessing
+#==========================================
+time_str=$(date +'%m-%d-%y_%H:%M:%S')
+log_file=${log_file:-"/tmp/dots_playground_log_$time_str.txt"}
+os=${os:-"arch-linux"}
+wm=${wm:-"i3"}
+
+[ ! -f "${log_file}" ] && touch "${log_file}"
+
+if [ -n "${docker}" ]; then
+    cd "${DOCKER_DIR}" || exit 1
+
+    command="up"
+    [ -n "${build}" ] && command="build"
+    [ -n "${remove}" ] && command="down"
+
+    OS="${os}" WINDOW_MANAGER="${wm}" docker-compose "${command}" 2>&1 | tee -a "${log_file}"
+    exit $?
+fi
+
+if [ -n "${vagrant}" ]; then
+    cd "${VAGRANT_DIR}/${os}" || exit 1
+
+    command="up"
+    [ -n "${build}" ] && command="provision"
+    [ -n "${remove}" ] && command="destroy -f"
+
+    WINDOW_MANAGER="${wm}" vagrant "${command}" 2>&1 | tee -a "${log_file}"
+    exit $?
+fi
+
+# Help shown by default
+[[ -z "${documentation}" ]] && parse_documentation
+echo "${documentation}"

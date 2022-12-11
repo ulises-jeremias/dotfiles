@@ -99,7 +99,11 @@ To run the testing environment just run the following commands;
 ```sh
 git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 cd /tmp/dotfiles
-./playground/docker/bin/run --os="<os>" --wms=<WMS> # use -h to know more about the available options
+
+# start the docker compose env
+./playground/bin/run --docker
+
+# use -h to know more about the available options
 ```
 
 ### Vagrant
@@ -112,13 +116,15 @@ cd /tmp/dotfiles
 cd ./playground/vagrant/<os>/
 
 # start the VM
-vagrant up
+./playground/bin/run --vagrant
 
 # provision the VM
-vagrant provision
+./playground/bin/run --vagrant --provision
 
-# to access the VM
-vagrant ssh
+# remove the VM
+./playground/bin/run --vagrant --remove
+
+# use -h to know more about the available options
 ```
 
 ## Repository Structure

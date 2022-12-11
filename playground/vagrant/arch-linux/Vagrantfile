@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
   end
 
   login_manager = ENV['PLAYGROUND_LOGIN_MANAGER'] || 'sddm'
-  wm = ENV['PLAYGROUND_WM'] || 'plasma'
+  wm = ENV['WINDOW_MANAGER'] || 'plasma'
 
   config.vm.provision "VM Setup", type: "shell", path: "provision/vm-setup.sh"
   config.vm.provision "Install Yay", type: "shell", path: "provision/yay.sh"
