@@ -51,7 +51,7 @@ if [ -n "${docker}" ]; then
     [ -n "${build}" ] && command="build"
     [ -n "${remove}" ] && command="down"
 
-    OS="${os}" WINDOW_MANAGER="${wm}" docker-compose "${command}" 2>&1 | tee -a "${log_file}"
+    OS="${os}" WINDOW_MANAGER="${wm}" docker-compose ${command} 2>&1 | tee -a "${log_file}"
     exit $?
 fi
 
@@ -62,7 +62,7 @@ if [ -n "${vagrant}" ]; then
     [ -n "${build}" ] && command="provision"
     [ -n "${remove}" ] && command="destroy -f"
 
-    WINDOW_MANAGER="${wm}" vagrant "${command}" 2>&1 | tee -a "${log_file}"
+    WINDOW_MANAGER="${wm}" vagrant ${command} 2>&1 | tee -a "${log_file}"
     exit $?
 fi
 
