@@ -6,7 +6,7 @@ FROM archlinux:${ARCHLINUX_VERSION} as base
 
 ARG ARCHLINUX_VERSION
 ARG WINDOW_MANAGER
-ARG USER=test
+ARG USER=dots
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -63,3 +63,5 @@ ENV LANG C.UTF-8
 
 COPY .bashrc /etc/bash.bashrc
 RUN chmod a+rwx /etc/bash.bashrc
+
+USER ${USER}

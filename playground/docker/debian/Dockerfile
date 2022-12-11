@@ -6,7 +6,7 @@ FROM debian:${DEBIAN_VERSION} as base
 
 ARG DEBIAN_VERSION
 ARG WINDOW_MANAGER
-ARG USER=test
+ARG USER=dots
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -69,3 +69,5 @@ ENV PATH=$PATH:$GOPATH/bin
 
 COPY .bashrc /etc/bash.bashrc
 RUN chmod a+rwx /etc/bash.bashrc
+
+USER ${USER}
