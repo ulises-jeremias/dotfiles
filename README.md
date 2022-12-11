@@ -110,7 +110,12 @@ To run the testing environment just run the following commands;
 git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 cd /tmp/dotfiles
 cd ./playground/vagrant/<os>/
+
+# start the VM
 vagrant up
+
+# provision the VM
+vagrant provision
 
 # to access the VM
 vagrant ssh
