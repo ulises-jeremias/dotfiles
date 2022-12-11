@@ -13,7 +13,7 @@
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
 ##                                           where common is supposed to work correctly with any linux distro.
 ##                                           `common` is set as default value for this flag.
-##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/install_progress_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
+##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_install_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
 ##
 
@@ -32,7 +32,7 @@ source "${ROOT}"/../util/os.sh
 #==========================================
 os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
-log_file=${log_file:-"/tmp/install_progress_log_$time_str.txt"}
+log_file=${log_file:-"/tmp/dots_install_log_$time_str.txt"}
 pkgs=${pkgs:-""}
 
 [ ! -f "${log_file}" ] && touch "${log_file}"
