@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-ROOT=$(dirname "$0")
-SOURCE_DIR=$(realpath "${ROOT}")
+SOURCE_DIR="$(realpath "$(dirname "$0")")"
 
 if [ ! -d "${SOURCE_DIR}"/alacritty-theme/.git ]; then
   rm -rf "${SOURCE_DIR}"/alacritty-theme

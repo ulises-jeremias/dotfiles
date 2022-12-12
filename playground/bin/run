@@ -26,12 +26,12 @@
 
 set -e
 
-ROOT=$(dirname "$0")
+ROOT="$(realpath "$(dirname "$0")")"
 DOCKER_DIR="$(realpath "${ROOT}/../docker")"
 VAGRANT_DIR="$(realpath "${ROOT}/../vagrant")"
 
-source "${ROOT}/../../util/easy-options/easyoptions.sh" || exit
-source "${ROOT}/../../util/logs.sh" || exit
+. "${ROOT}/../../util/easy-options/easyoptions.sh" || exit
+. "${ROOT}/../../util/logs.sh" || exit
 
 
 #==========================================

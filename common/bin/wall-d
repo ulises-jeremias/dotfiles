@@ -84,7 +84,7 @@ done
 
 #  show dmenu in pywal colors only if ran with -p flag
 if [ "${with_pywall}" = "true" ]; then
-    source "${HOME}"/.cache/wal/colors.sh
+    . "${HOME}"/.cache/wal/colors.sh
     color_options="-nb ${color0} -nf ${color15} -sb ${color1} -sf ${color15}"
 else
     color_options=""

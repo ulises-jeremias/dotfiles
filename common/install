@@ -2,7 +2,7 @@
 
 set -e
 
-ROOT=$(dirname "$0")
+ROOT="$(realpath "$(dirname "$0")")"
 DOTFILES_DIR=$(realpath "${ROOT}")
 
 #==========================================

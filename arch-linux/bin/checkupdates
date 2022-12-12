@@ -27,8 +27,8 @@ DOWNLOAD_CACHE=0
 USE_COLOR=0
 
 # Import libmakepkg
-source "$LIBRARY"/util/message.sh
-source "$LIBRARY"/util/parseopts.sh
+. "$LIBRARY"/util/message.sh
+. "$LIBRARY"/util/parseopts.sh
 
 usage() {
 	cat << __EOF__

@@ -26,7 +26,7 @@
 
 set -e
 
-ROOT=$(dirname "$0")
+ROOT="$(realpath "$(dirname "$0")")"
 
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CONFIG_HOME
@@ -35,15 +35,15 @@ if [[ "$ROOT" = "/usr/bin" && -d /opt/dots ]]; then
     ROOT=/opt/dots
 fi
 
-source "${ROOT}"/util/easy-options/easyoptions.sh
+. "${ROOT}"/util/easy-options/easyoptions.sh
 
 # override OS with a correct value with the given params
-source "${ROOT}"/util/os.sh
+. "${ROOT}"/util/os.sh
 
 echo "Installing dotfiles for OS: ${os}"
 
 # load deps for give os. Defines pkgs variable
-source "${ROOT}"/"${os}"/deps.sh
+. "${ROOT}"/"${os}"/deps.sh
 
 args="$*"
 args=( "${args/--utils/}" )

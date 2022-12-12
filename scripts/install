@@ -23,13 +23,14 @@
 
 set -e
 
-ROOT=$(dirname "$0")
+ROOT="$(realpath "$(dirname "$0")"/..)"
+SCRIPTS_DIR="${ROOT}"/scripts
 
-source "${ROOT}"/../util/easy-options/easyoptions.sh
-source "${ROOT}"/../util/logs.sh
+. "${ROOT}"/util/easy-options/easyoptions.sh
+. "${ROOT}"/util/logs.sh
 
 # override OS with a correct value with the given params
-source "${ROOT}"/../util/os.sh
+. "${ROOT}"/util/os.sh
 
 #==========================================
 # Default argument values and preprocessing
@@ -58,10 +59,11 @@ fi
 # Install dependencies according to os
 #==========================================
 if [ -z "${nodeps}" ] && [ -n "${os}" ]; then
-  "${ROOT}"/install-pkgs \
-    --log-file="${log_file}" ${upgrade_flag} \
+  "${SCRIPTS_DIR}"/install-pkgs \
+    --log-file="${log_file}" \
     --os="${os}" \
     --pkgs="${pkgs}" \
+    ${upgrade_flag} \
     ${dry_run_flag}
 fi
 
@@ -70,7 +72,7 @@ echo
 #==========================================
 # Install dotfiles according to os
 #==========================================
-"${ROOT}"/install-dotfiles --log-file="${log_file}" \
+"${SCRIPTS_DIR}"/install-dotfiles --log-file="${log_file}" \
   --dotfiles-dir="${dotfiles_dir}" \
   --os="${os}" \
   --wms="${wms}" \

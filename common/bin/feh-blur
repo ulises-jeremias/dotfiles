@@ -402,7 +402,7 @@ do_cleanup() {
   # Restore original wallpaper before exiting
   if [ "$MODE" == "foreground" ] && [ -e "$HOME/.fehbg" ]; then
     head "Restoring original wallpaper"
-    source "$HOME/.fehbg"
+    . "$HOME/.fehbg"
   fi
 }
 

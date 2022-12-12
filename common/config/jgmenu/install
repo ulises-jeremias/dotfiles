@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-ROOT=$(dirname "$0")
-
-SOURCE_DIR=$(realpath "${ROOT}")
+SOURCE_DIR="$(realpath "$(dirname "$0")")"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
 
 rm -rf "${XDG_CONFIG_HOME}"/jgmenu/jgmenurc > /dev/null 2>&1

@@ -19,13 +19,13 @@
 
 set -e
 
-ROOT=$(dirname "$0")
+ROOT="$(realpath "$(dirname "$0")"/..)"
 
-source "${ROOT}"/../util/easy-options/easyoptions.sh
-source "${ROOT}"/../util/logs.sh
+. "${ROOT}"/util/easy-options/easyoptions.sh
+. "${ROOT}"/util/logs.sh
 
 # override OS with a correct value with the given params
-source "${ROOT}"/../util/os.sh
+. "${ROOT}"/util/os.sh
 
 #==========================================
 # Default argument values and preprocessing
@@ -37,7 +37,7 @@ pkgs=${pkgs:-""}
 
 [ ! -f "${log_file}" ] && touch "${log_file}"
 
-. "${ROOT}"/../"${os}"/install-pkgs.sh
+. "${ROOT}"/"${os}"/install-pkgs.sh
 
 #==========================================
 # Installing process

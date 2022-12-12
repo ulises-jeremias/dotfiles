@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 [[ ! -f "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/night_mode ]] && echo "NIGHT_MODE=\"enabled\"" >"${XDG_CONFIG_HOME:-"${HOME}"/.config}"/night_mode
-source "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/night_mode
+. "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/night_mode
 
 night_mode() {
   for display in $(xrandr | grep " connected" | awk '{print $1}'); do

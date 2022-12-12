@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-ROOT=$(dirname "$0")
+ROOT="$(realpath "$(dirname "$0")")"
 PKGNAME=${PKGNAME:-"dots"}
 
 # override OS with a correct value with the given params
