@@ -18,9 +18,9 @@
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
 - [Installation](#installation)
-  - [From the Arch Linux User Repository (AUR)](#from-the-arch-linux-user-repository-aur)
-  - [From Source](#from-source)
-- [After Install Customization](#after-install-customization)
+  - [From the Arch-Linux User Repository (AUR)](#from-the-arch-linux-user-repository-aur)
+  - [From source](#from-source)
+- [Post install customization](#post-install-customization)
   - [Examples](#examples)
 - [Testing](#testing)
   - [Docker and Xephyr](#docker-and-xephyr)
@@ -30,7 +30,7 @@ Dotfiles generator that allows quick configuration of different window managers 
 
 ## Installation
 
-### From the Arch Linux User Repository (AUR)
+### From the Arch-Linux User Repository (AUR)
 
 - Using a helper like [yay](https://github.com/Jguer/yay)
 
@@ -68,7 +68,7 @@ Dotfiles generator that allows quick configuration of different window managers 
   dots --help
   ```
 
-### From Source
+### From source
 
 > Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`.
 > This will install unstable versions of the dotfiles generator. You can switch to a stable version by using any existing git tag.
@@ -82,7 +82,7 @@ dots --help
 
 The installation script allows you to install all the necessary dependencies that allow your dotfiles config work correctly.
 
-## After Install Customization
+## Post install customization
 
 There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the `custom-config` directory. You are encouraged to maintain a separate github repository of configurations for your own dotfiles.
 
