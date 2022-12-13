@@ -17,6 +17,17 @@
 
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
+- [Installation](#installation)
+  - [From the Arch Linux User Repository (AUR)](#from-the-arch-linux-user-repository-aur)
+- [Installation from Source](#installation-from-source)
+- [Customization](#customization)
+  - [Examples](#examples)
+- [Testing](#testing)
+  - [Docker and Xephyr](#docker-and-xephyr)
+  - [Vagrant](#vagrant)
+- [Repository Structure](#repository-structure)
+- [Contributors](#contributors)
+
 ## Installation
 
 ### From the Arch Linux User Repository (AUR)
@@ -101,7 +112,7 @@ git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 cd /tmp/dotfiles
 
 # start the docker compose env
-./playground/bin/run --docker
+./bin/play --docker
 
 # use -h to know more about the available options
 ```
@@ -116,13 +127,13 @@ cd /tmp/dotfiles
 cd ./playground/vagrant/<os>/
 
 # start the VM
-./playground/bin/run --vagrant
+./bin/play --vagrant
 
 # provision the VM
-./playground/bin/run --vagrant --provision
+./bin/play --vagrant --provision
 
 # remove the VM
-./playground/bin/run --vagrant --remove
+./bin/play --vagrant --remove
 
 # use -h to know more about the available options
 ```
@@ -136,6 +147,8 @@ cd ./playground/vagrant/<os>/
 │   ├── bin/                # binaries to be installed in Arch Linux based distros
 │   ├── deps.sh             # Arch Linux specific dependencies
 │   └── install-pkgs.sh     # Arch Linux specific script to install packages from the AUR and the official repos
+├── bin/                    # Useful binaries
+│   └── play                # script to run the testing environments
 ├── common                  # common files (used by dots when installing in any OS)
 │   ├── bin/                # common binaries to be installed in any OS
 │   ├── config/             # common config files to be installed in any OS
@@ -148,7 +161,6 @@ cd ./playground/vagrant/<os>/
 │   ├── common/             # common config files to be installed in any OS
 │   ├── wm/                 # window manager config files to be installed in any OS based on the intallation flag `--wms`
 ├── playground              # testing environments
-│   └── bin/                # scripts to run the testing environments
 │   └── docker/             # docker setup to bootstrap the testing environments
 │   └── vagrant/            # vagrant setup to bootstrap the testing environments
 ├── scripts                 # scripts used by dots to install the dotfiles

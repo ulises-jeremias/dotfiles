@@ -26,12 +26,13 @@
 
 set -e
 
-ROOT="$(realpath "$(dirname "$0")")"
-DOCKER_DIR="$(realpath "${ROOT}/../docker")"
-VAGRANT_DIR="$(realpath "${ROOT}/../vagrant")"
+ROOT="$(realpath "$(dirname "$0")"/..)"
+PLAYGROUND_DIR="$(realpath "${ROOT}/playground")"
+DOCKER_DIR="$(realpath "${PLAYGROUND_DIR}/docker")"
+VAGRANT_DIR="$(realpath "${PLAYGROUND_DIR}/vagrant")"
 
-. "${ROOT}/../../util/easy-options/easyoptions.sh" || exit
-. "${ROOT}/../../util/logs.sh" || exit
+. "${ROOT}/util/easy-options/easyoptions.sh" || exit
+. "${ROOT}/util/logs.sh" || exit
 
 
 #==========================================
@@ -51,6 +52,8 @@ if [ -n "${docker}" ]; then
     [ -n "${build}" ] && command="build"
     [ -n "${remove}" ] && command="down"
 
+    echo "Running command: OS=${os} WINDOW_MANAGER=${wm} docker-compose ${command}"
+
     OS="${os}" WINDOW_MANAGER="${wm}" docker-compose ${command} 2>&1 | tee -a "${log_file}"
     exit $?
 fi
@@ -60,7 +63,9 @@ if [ -n "${vagrant}" ]; then
 
     command="up"
     [ -n "${build}" ] && command="provision"
-    [ -n "${remove}" ] && command="destroy -f"
+    [ -n "${remove}" ] && command="destroy"
+
+    echo "Running command: WINDOW_MANAGER=${wm} vagrant ${command}"
 
     WINDOW_MANAGER="${wm}" vagrant ${command} 2>&1 | tee -a "${log_file}"
     exit $?
