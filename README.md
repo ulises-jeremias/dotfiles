@@ -19,7 +19,7 @@ Dotfiles generator that allows quick configuration of different window managers 
 
 - [Installation](#installation)
   - [From the Arch Linux User Repository (AUR)](#from-the-arch-linux-user-repository-aur)
-  - [Installation from Source](#installation-from-source)
+  - [From Source](#from-source)
 - [After Install Customization](#after-install-customization)
   - [Examples](#examples)
 - [Testing](#testing)
@@ -68,7 +68,7 @@ Dotfiles generator that allows quick configuration of different window managers 
   dots --help
   ```
 
-### Installation from Source
+### From Source
 
 > Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`.
 > This will install unstable versions of the dotfiles generator. You can switch to a stable version by using any existing git tag.
