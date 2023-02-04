@@ -3,6 +3,8 @@
 ROOT="$(realpath "$(dirname "$0")")"
 PKGNAME=${PKGNAME:-"dots"}
 
+BINARY_NAME="$(echo "${PKGNAME}" | sed 's/-git//g')"
+
 # override OS with a correct value with the given params
 # creates variable `os`
 . "${ROOT}"/util/os.sh
@@ -21,4 +23,4 @@ done
 install -Dm644 "${ROOT}"/LICENSE -t "${DESTDIR}/usr/share/licenses/${PKGNAME}/"
 install -Dm644 "${ROOT}"/README.md -t "${DESTDIR}/usr/share/doc/${PKGNAME}/"
 install -Dm755 "${ROOT}"/dots -t "${DESTDIR}/opt/${PKGNAME}/"
-ln -s "${DESTDIR}/opt/${PKGNAME}/dots" "${DESTDIR}/usr/bin/${PKGNAME}"
+ln -s "${DESTDIR}/opt/${PKGNAME}/dots" "${DESTDIR}/usr/bin/${BINARY_NAME}"
