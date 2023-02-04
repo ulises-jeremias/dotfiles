@@ -182,14 +182,14 @@ if [[ -z "${ZSH_NO_DEFAULTS}" ]]; then
     bindkey "^[[1;5C" forward-word
 
     # Source Default Configurations <<1
-    for fname in $(find ~/dotfiles/default-config -wholename "**/*sh"); do
+    for fname in $(find ~/dotfiles/default-config -wholename "**/*.sh" -o -wholename "**/*.zsh"); do
         source ${fname}
     done
     # >>1
 fi
 
 # Source Custom Configurations <<1
-for fname in $(find ~/dotfiles/custom-config -wholename "**/*sh"); do
+for fname in $(find ~/dotfiles/custom-config -wholename "**/*.sh" -o -wholename "**/*.zsh"); do
     source ${fname}
 done
 # >>1
