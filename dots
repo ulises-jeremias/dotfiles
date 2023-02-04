@@ -31,10 +31,6 @@ ROOT="$(realpath "$(dirname "$0")")"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CONFIG_HOME
 
-if [[ "$ROOT" = "/usr/bin" && -d /opt/dots ]]; then
-    ROOT=/opt/dots
-fi
-
 . "${ROOT}"/util/easy-options/easyoptions.sh
 
 # override OS with a correct value with the given params

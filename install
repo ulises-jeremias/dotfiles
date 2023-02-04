@@ -7,17 +7,18 @@ PKGNAME=${PKGNAME:-"dots"}
 # creates variable `os`
 . "${ROOT}"/util/os.sh
 
-rm -rf "${PKGDIR}/opt/${PKGNAME}" \
-    "${PKGDIR}/usr/bin/dots" \
-    "${PKGDIR}/usr/share/licenses/${PKGNAME}/" \
-    "${PKGDIR}/usr/share/doc/${PKGNAME}/"
+rm -rf "${DESTDIR}/opt/${PKGNAME}" \
+    "${DESTDIR}/usr/bin/dots" \
+    "${DESTDIR}/usr/share/licenses/${PKGNAME}/" \
+    "${DESTDIR}/usr/share/doc/${PKGNAME}/"
 
-install -d "${PKGDIR}/opt/${PKGNAME}"
+install -d "${DESTDIR}/opt/${PKGNAME}"
 
-for dirname in common "${os}" default-config scripts ui util dots; do
-    cp -Rf "${ROOT}"/"${dirname}" "${PKGDIR}/opt/${PKGNAME}"
+for dirname in common "${os}" default-config scripts ui util; do
+    cp -Rf "${ROOT}"/"${dirname}" "${DESTDIR}/opt/${PKGNAME}"
 done
 
-install -Dm644 "${ROOT}"/LICENSE -t "${PKGDIR}/usr/share/licenses/${PKGNAME}/"
-install -Dm644 "${ROOT}"/README.md -t "${PKGDIR}/usr/share/doc/${PKGNAME}/"
-install -Dm755 "${ROOT}"/dots -t "${PKGDIR}/usr/bin/"
+install -Dm644 "${ROOT}"/LICENSE -t "${DESTDIR}/usr/share/licenses/${PKGNAME}/"
+install -Dm644 "${ROOT}"/README.md -t "${DESTDIR}/usr/share/doc/${PKGNAME}/"
+install -Dm755 "${ROOT}"/dots -t "${DESTDIR}/opt/${PKGNAME}/"
+ln -s "${DESTDIR}/opt/${PKGNAME}/dots" "${DESTDIR}/usr/bin/${PKGNAME}"

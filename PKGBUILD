@@ -82,18 +82,18 @@ source=("git+$url.git")
 md5sums=('SKIP')
 
 pkgver() {
-	cd dotfiles || exit 1
+	cd "${srcdir}/${pkgname}-${pkgver}" || exit 1
 	git fetch --tags
 	git describe --tags "$(git rev-list --tags --max-count=1)" | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 package() {
-	cd dotfiles || exit 1
+	cd "${srcdir}/${pkgname}-${pkgver}" || exit 1
 	git fetch --tags
 	latest_release=$(git describe --tags "$(git rev-list --tags --max-count=1)")
 	git checkout "${latest_release}"
-	PKGNAME=dots
-	PKGDIR="${pkgdir}"
-	export PKGDIR PKGNAME
-	sudo ./install
+	PKGNAME="${pkgname}"
+	DESTDIR="${pkgdir}"
+	export DESTDIR PKGNAME
+	./install
 }
