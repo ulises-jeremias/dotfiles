@@ -89,7 +89,7 @@ pkgver() {
 
 package() {
 	cd dotfiles || exit 1
-	PKGNAME="${pkgname}"
+	PKGNAME=dots
 	DESTDIR="${pkgdir}"
 	export DESTDIR PKGNAME
 	./install
