@@ -69,7 +69,9 @@ echo
 success=0
 failed=0
 
-describe "Installing dotfiles" 0
+echo
+describe "Installing dotfiles"
+echo
 echo
 for config_path in "${ROOT}"/common/config/*; do
   config=$(basename "${config_path}")
@@ -111,6 +113,8 @@ echo "${GREEN}Success: ${success} ${RED}Failed: ${failed}${RESET} Total: ${all}"
 # Copy default and custom configs
 #==========================================
 
+echo
+echo
 describe "Setting up default and custom configs"
 echo
 echo
