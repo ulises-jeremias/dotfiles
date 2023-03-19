@@ -10,13 +10,11 @@
 ##     -c, --clear                           Will remove existing dotfiles.
 ##     -u, --upgrade                         Will update dependencies anyway.
 ##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
-##         --interactive                     Will ask for user input before installing dotfiles.
 ##         --nodeps                          Will not install dependencies.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian
 ##                                           where common is supposed to work correctly with any linux distro.
 ##                                           `common` is set as default value for this flag.
-##         --wms=COMMA_SEPARATED_WMS         Window managers. Posible wms: i3, openbox
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_install_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
@@ -40,7 +38,6 @@ os=${os:-"common"}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/dots_install_log_$time_str.txt"}
 dotfiles_dir=${dotfiles_dir:-"$HOME/dotfiles"}
-wms=${wms:-""}
 
 [ ! -f "${log_file}" ] && touch "${log_file}"
 
@@ -80,10 +77,8 @@ echo
 "${SCRIPTS_DIR}"/install-dotfiles --log-file="${log_file}" \
   --dotfiles-dir="${dotfiles_dir}" \
   --os="${os}" \
-  --wms="${wms}" \
   ${dry_run_flag} \
-  ${clear_flag} \
-  ${interactive_flag}
+  ${clear_flag}
 
 #==========================================
 # Give the user a summary of what has

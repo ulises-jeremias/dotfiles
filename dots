@@ -12,7 +12,6 @@
 ##     -c, --clear                           Will remove existing dotfiles.
 ##     -u, --upgrade                         Will update dependencies anyway.
 ##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
-##         --interactive                     Will ask for user input before installing dotfiles.
 ##         --nodeps                          Will not install dependencies.
 ##         --nodunst                         Notifications will use xfce4-notifyd instead.
 ##         --utils                           Will answer you to install some utilities.
@@ -20,7 +19,6 @@
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: arch-linux | debian.
 ##                                           By default, the installation script will determine which is your OS.
-##         --wms=COMMA_SEPARATED_WMS         Window managers. Posible wms: i3, openbox
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_install_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##
