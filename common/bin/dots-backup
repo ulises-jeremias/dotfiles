@@ -10,7 +10,9 @@
 ## Options:
 ##     -h, --help                            Show this help message.
 ##     -l, --list                            List all available backups.
+##     -r, --rollback                        Rollback to a previous backup.
 ##     -c, --register-cron                   Register a cron job to run this script.
+##     -u, --unregister-cron                 Unregister the cron job.
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_install_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##         --dotfiles-dir=DOTFILES_PATH      Dotfiles output dir, is ~/dotfiles by default.
 ##         --backup-dir=BACKUPS_PATH         Backup output dir, is ~/dotfiles/backup by default.
@@ -57,6 +59,27 @@ if [ -n "${register_cron}" ]; then
     exit 0
 fi
 
+if [ -n "${unregister_cron}" ]; then
+    if ! type -t crontab >/dev/null 2>&1; then
+        echo "crontab is not installed, please install it."
+        exit 1
+    fi
+
+    echo "Unregistering cron job..."
+
+    crontab -l > /tmp/cron.tr
+    sed -i "/dots-backup/d" /tmp/cron.tr
+
+    crontab /tmp/cron.tr
+
+    echo ""
+    echo "Current crontab: "
+    crontab -l
+    echo ""
+
+    exit 0
+fi
+
 if ! type -t tar >/dev/null 2>&1; then
     echo "tar is not installed, please install it."
     exit 1
@@ -79,11 +102,38 @@ if [[ -n "${list}" ]]; then
 fi
 
 create_backup() {
-    # create zip file at `${backup_dir}/${time_str}_${backup_name}.zip` with all files in `${dotfiles_dir}`
+    local next_backup_name="${backup_name}"
+    if [[ -n "$1" ]]; then
+        next_backup_name="${next_backup_name}_$1"
+    fi
+    # create zip file at `${backup_dir}/${time_str}_${next_backup_name}.zip` with all files in `${dotfiles_dir}`
     # except `${backup_dir}`.
-    local backup_file="${backup_dir}/${time_str}_${backup_name}.zip"
+    local backup_file="${backup_dir}/${time_str}_${next_backup_name}.zip"
     tar -czf "${backup_file}" -C "${dotfiles_dir}" --exclude "${backup_dir}" .
     echo "Backup created at ${backup_file}"
 }
+
+rollback_to_backup() {
+    # rollback to backup
+    local backup_file="${backup_dir}/${backup_name}.zip"
+    if [[ ! -f "${backup_file}" ]]; then
+        echo "Backup file ${backup_file} does not exist."
+        exit 1
+    fi
+
+    echo "Rolling back to backup ${backup_file}..."
+    rm -rf "${dotfiles_dir}"
+    mkdir -p "${dotfiles_dir}"
+    tar -xzf "${backup_file}" -C "${dotfiles_dir}"
+    echo "Rollback complete."
+    echo "Run the command \"${dotfiles_dir}/install\" to install the dotfiles."
+}
+
+if [[ -n "${rollback}" ]]; then
+    create_backup "before_rollback"
+    rollback_to_backup
+    exit 0
+fi
+
 
 create_backup
