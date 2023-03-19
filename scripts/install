@@ -10,6 +10,7 @@
 ##     -c, --clear                           Will remove existing dotfiles.
 ##     -u, --upgrade                         Will update dependencies anyway.
 ##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
+##         --interactive                     Will ask for user input before installing dotfiles.
 ##         --nodeps                          Will not install dependencies.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian
@@ -55,6 +56,10 @@ if [ -n "${dry_run}" ]; then
   dry_run_flag="--dry-run"
 fi
 
+if [ -n "${interactive}" ]; then
+  interactive_flag="--interactive"
+fi
+
 #==========================================
 # Install dependencies according to os
 #==========================================
@@ -77,7 +82,8 @@ echo
   --os="${os}" \
   --wms="${wms}" \
   ${dry_run_flag} \
-  ${clear_flag}
+  ${clear_flag} \
+  ${interactive_flag}
 
 #==========================================
 # Give the user a summary of what has

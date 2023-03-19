@@ -12,6 +12,7 @@
 ##     -c, --clear                           Will remove existing dotfiles.
 ##     -u, --upgrade                         Will update dependencies anyway.
 ##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
+##         --interactive                     Will ask for user input before installing dotfiles.
 ##         --nodeps                          Will not install dependencies.
 ##         --nodunst                         Notifications will use xfce4-notifyd instead.
 ##         --utils                           Will answer you to install some utilities.

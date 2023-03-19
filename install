@@ -21,4 +21,12 @@ done
 install -Dm644 "${ROOT}"/LICENSE -t "${DESTDIR}/usr/share/licenses/${PKGNAME}/"
 install -Dm644 "${ROOT}"/README.md -t "${DESTDIR}/usr/share/doc/${PKGNAME}/"
 install -Dm755 "${ROOT}"/dots -t "${DESTDIR}/opt/${PKGNAME}/"
-ln -s "${DESTDIR}/opt/${PKGNAME}/dots" "${DESTDIR}/usr/bin/${PKGNAME}"
+
+# Create dots binary at ${DESTDIR}/usr/bin/${PKGNAME} to wrap the file at ${DESTDIR}/opt/${PKGNAME}/dots
+cat > "${DESTDIR}/usr/bin/${PKGNAME}" <<EOF
+#!/usr/bin/env sh
+
+${DESTDIR}/opt/${PKGNAME}/dots "\$@"
+EOF
+
+chmod +x "${DESTDIR}/usr/bin/${PKGNAME}"

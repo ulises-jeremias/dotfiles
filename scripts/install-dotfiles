@@ -9,6 +9,7 @@
 ##     -h, --help                            Help.
 ##     -c, --clear                           Will remove existing dotfiles before installing the new ones.
 ##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
+##         --interactive                     Will ask for user input before installing dotfiles.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
 ##                                           where common is supposed to work correctly with any linux distro.
@@ -75,6 +76,14 @@ describe "Installing dotfiles" 0
 echo
 for config_path in "${ROOT}"/common/config/*; do
   config=$(basename "${config_path}")
+
+  if [ -n "${interactive}" ]; then
+    read -p "Install ${config} dotfiles? [y/N] " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      continue
+    fi
+  fi
 
   describe "Installing ${config} dotfiles"
 
