@@ -102,13 +102,9 @@ if [[ -n "${list}" ]]; then
 fi
 
 create_backup() {
-    local next_backup_name="${backup_name}"
-    if [[ -n "$1" ]]; then
-        next_backup_name="${next_backup_name}_$1"
-    fi
-    # create zip file at `${backup_dir}/${time_str}_${next_backup_name}.zip` with all files in `${dotfiles_dir}`
+    # create zip file at `${backup_dir}/${time_str}_${backup_name}.zip` with all files in `${dotfiles_dir}`
     # except `${backup_dir}`.
-    local backup_file="${backup_dir}/${time_str}_${next_backup_name}.zip"
+    local backup_file="${backup_dir}/${time_str}_${backup_name}.zip"
     tar -czf "${backup_file}" -C "${dotfiles_dir}" --exclude "${backup_dir}" .
     echo "Backup created at ${backup_file}"
 }
@@ -130,7 +126,7 @@ rollback_to_backup() {
 }
 
 if [[ -n "${rollback}" ]]; then
-    create_backup "before_rollback"
+    create_backup
     rollback_to_backup
     exit 0
 fi
