@@ -49,7 +49,6 @@ cursor:
   unfocused_hollow: true
 live_config_reload: false
 working_directory: None
-alt_send_esc: true
 mouse:
   double_click:
     threshold: 300
