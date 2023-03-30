@@ -6,25 +6,28 @@ pkill -9 polybar
 # Wait until the processes have been shut down
 while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
 
-polybars=$(xgetres polybar.polybars)
-polybars="${polybars:-"polybar-top polybar-bottom"}"
+# shellcheck source=/dev/null
+source ~/.config/polybar/.env.sh
+
+polybars="${POLYBAR_BARS:-"polybar-top,polybar-bottom"}"
+polybars="${polybars:-"polybar-top,polybar-bottom"}"
 
 if [ -z "${TERM}" ]; then
   export TERM=xterm-256color
 fi
 
 # if type xrandr > /dev/null; then
-#     for bar in $(echo "${polybars}" | tr ' ' '\n'); do
+#     for bar in $(echo "${polybars}" | tr ',' '\n'); do
 #         for m in $(xrandr --query | grep " connected" | cut -d" " -f1); do
-#             MONITOR=$m polybar "${bar}" -r &
+#             MONITOR=$m polybar "${bar}" 2>&1 | tee -a /tmp/polybar-"${m}"-"${bar}".log & disown
 #         done
 #     done
 # else
-#     for bar in $(echo "${polybars}" | tr ' ' '\n'); do
-#         polybar "${bar}" -r &
+#     for bar in $(echo "${polybars}" | tr ',' '\n'); do
+#         polybar "${bar}" 2>&1 | tee -a /tmp/polybar-"${bar}".log & disown
 #     done
 # fi
 
-for bar in $(echo "${polybars}" | tr ' ' '\n'); do
-  polybar -r "${bar}" &
+for bar in $(echo "${polybars}" | tr ',' '\n'); do
+  polybar -r "${bar}" 2>&1 | tee -a /tmp/polybar-"${bar}".log & disown
 done

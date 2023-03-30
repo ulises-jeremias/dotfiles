@@ -9,6 +9,7 @@ rm -rf "${XDG_CONFIG_HOME}"/polybar/config.ini > /dev/null 2>&1
 rm -rf "${XDG_CONFIG_HOME}"/polybar/launch > /dev/null 2>&1
 rm -rf "${XDG_CONFIG_HOME}"/polybar/master.conf > /dev/null 2>&1
 rm -rf "${XDG_CONFIG_HOME}"/polybar/modules.conf > /dev/null 2>&1
+rm -rf "${XDG_CONFIG_HOME}"/polybar/.env.sh> /dev/null 2>&1
 
 mkdir "${XDG_CONFIG_HOME}"/polybar > /dev/null 2>&1
 
@@ -18,3 +19,4 @@ ln -sf "${SOURCE_DIR}"/config.ini "${XDG_CONFIG_HOME}"/polybar/config.ini
 ln -sf "${SOURCE_DIR}"/launch "${XDG_CONFIG_HOME}"/polybar/launch
 ln -sf "${SOURCE_DIR}"/master.conf "${XDG_CONFIG_HOME}"/polybar/master.conf
 ln -sf "${SOURCE_DIR}"/modules.conf "${XDG_CONFIG_HOME}"/polybar/modules.conf
+ln -sf "${SOURCE_DIR}"/.env.sh "${XDG_CONFIG_HOME}"/polybar/.env.sh
