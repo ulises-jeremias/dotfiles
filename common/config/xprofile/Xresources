@@ -1,9 +1,3 @@
-! Base 16 colors
-
 #include ".Xresources.d/base16.Xresources"
-
-! Apps customization
-
-#include ".Xresources.d/polybar.Xresources"
 #include ".Xresources.d/urxvt.Xresources"
 #include ".Xresources.d/xterm.Xresources"

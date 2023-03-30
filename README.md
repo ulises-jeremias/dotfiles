@@ -84,7 +84,7 @@ The installation script allows you to install all the necessary dependencies tha
 
 ## Post install customization
 
-There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the `custom-config` directory. You are encouraged to maintain a separate github repository of configurations for your own dotfiles.
+There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the generated dotfiles directory. You are encouraged to maintain a separate github repository of configurations for your own dotfiles.
 
 Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
 
@@ -157,9 +157,6 @@ cd ./playground/vagrant/<os>/
 │   ├── bin/                # binaries to be installed in Debian based distros
 │   ├── deps.sh             # Debian specific dependencies
 │   └── install-pkgs.sh     # Debian specific script to install packages from the official repos and other sources
-├── default-config          # default config files (used by dots when installing in any OS). Check the docs https://github.com/ulises-jeremias/dotfiles/wiki/Customization for more info.
-│   ├── common/             # common config files to be installed in any OS
-│   ├── wm/                 # window manager config files to be installed in any OS based on user input
 ├── playground              # testing environments
 │   └── docker/             # docker setup to bootstrap the testing environments
 │   └── vagrant/            # vagrant setup to bootstrap the testing environments

@@ -17,8 +17,8 @@
 
 # @todo: Remove hardcoded path: ~/dotfiles/
 
-if [ -e ~/dotfiles/custom-config/zsh/zsh-preconfig.sh ]; then
-    source ~/dotfiles/custom-config/zsh/zsh-preconfig.sh
+if [ -e ~/.zsh/zsh-preconfig.zsh ]; then
+    source ~/.zsh/zsh-preconfig.zsh
 fi
 
 # Source the prompt and aliases <<1
@@ -180,16 +180,11 @@ if [[ -z "${ZSH_NO_DEFAULTS}" ]]; then
     # ctrl+<- | ctrl+->
     bindkey "^[[1;5D" backward-word
     bindkey "^[[1;5C" forward-word
-
-    # Source Default Configurations <<1
-    for fname in $(find ~/dotfiles/default-config -wholename "**/*.sh" -o -wholename "**/*.zsh"); do
-        source ${fname}
-    done
-    # >>1
 fi
 
 # Source Custom Configurations <<1
-for fname in $(find ~/dotfiles/custom-config -wholename "**/*.sh" -o -wholename "**/*.zsh"); do
-    source ${fname}
+shopt -s nullglob
+for file in ~/.zsh/custom/*.zsh; do
+    source $file
 done
 # >>1

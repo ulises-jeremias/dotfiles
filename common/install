@@ -38,18 +38,4 @@ if [[ -z "${SKIP_CONFIG_INSTALL}" ]]; then
   echo "Done."
 fi
 
-printf "Installing default config... "
-
-#==========================================
-# Execute config installation
-#==========================================
-chmod +x "${DOTFILES_DIR}"/custom-config/install
-"${DOTFILES_DIR}"/custom-config/install
-
 echo "Done."
-
-#==========================================
-# Set zsh as the default shell
-#==========================================
-echo
-sudo chsh -s /usr/bin/zsh

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+SOURCE_DIR="$(realpath "$(dirname "$0")")"
+
+rm -rf ~/gitconfig > /dev/null 2>&1
+
+ln -sf "${SOURCE_DIR}"/gitconfig ~/gitconfig
+
+echo
+printf "Setting up git...\\n"
+
+default_name=$(git config --global user.name)
+default_email=$(git config --global user.email)
+
+read -rp "Name [$default_name]: " name
+read -rp "Email [$default_email]: " email
+
+git config --global user.name "${name:-$default_name}"
+git config --global user.email "${email:-$default_email}"

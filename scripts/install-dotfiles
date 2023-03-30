@@ -45,10 +45,16 @@ if [ ! -d "${dotfiles_dir}" ] || [ -n "${clear}" ]; then
   rm -rf "${dotfiles_dir}" >/dev/null 2>&1
 
   # Create dotfiles folder and subfolders
-  mkdir -p "${dotfiles_dir}"/{config,bin,custom-config,default-config}
+  mkdir -p "${dotfiles_dir}"/{config,bin}
 
   log_success "Success" "${config}" "${log_file}"
 fi
+
+#==========================================
+# Copy README.md
+#==========================================
+describe "Copying README.md" 0
+cp "${ROOT}"/common/README.md "${dotfiles_dir}"/README.md
 
 #==========================================
 # Copy bin files
@@ -76,10 +82,13 @@ echo
 for config_path in "${ROOT}"/common/config/*; do
   config=$(basename "${config_path}")
 
-  read -p "Install ${config} dotfiles? [y/N] " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    continue
+  # if directory contains file `required` then install it without asking
+  if [ ! -f "${config_path}/required" ]; then
+    read -p "Install ${config} dotfiles? [y/N] " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      continue
+    fi
   fi
 
   describe "Installing ${config} dotfiles"
@@ -110,51 +119,9 @@ echo
 echo "${GREEN}Success: ${success} ${RED}Failed: ${failed}${RESET} Total: ${all}"
 
 #==========================================
-# Copy default and custom configs
-#==========================================
-
-echo
-echo
-describe "Setting up default and custom configs"
-echo
-echo
-
-rm -rf "${dotfiles_dir}"/default-config >/dev/null 2>&1
-cp -rf "${ROOT}"/default-config/common "${dotfiles_dir}"/default-config
-
-# create new bin directories
-if [ ! -d "${dotfiles_dir}"/custom-config/bin ]; then
-  cp -rf "${dotfiles_dir}"/default-config/bin "${dotfiles_dir}"/custom-config
-fi
-
-# add README for custom config
-if [ ! -e "${dotfiles_dir}"/custom-config/README.md ]; then
-  cp -rf "${dotfiles_dir}"/default-config/README.md "${dotfiles_dir}"/custom-config
-fi
-
-available_wms=$(ls "${ROOT}"/default-config/wm)
-
-for wm in ${available_wms}; do
-  [ -e "${ROOT}/default-config/wm/${wm}/install" ] || continue
-  # Install default config for xfce4 anyways
-  if [ "${wm}" != "xfce4" ]; then
-    read -p "Install ${wm} default config? [y/N] " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      continue
-    fi
-  fi
-  cp -rf "${ROOT}"/default-config/wm/"${wm}" "${dotfiles_dir}"/default-config
-  cp -rf "${ROOT}"/default-config/wm/"${wm}" "${dotfiles_dir}"/custom-config
-  chmod +x "${dotfiles_dir}"/default-config/"${wm}"/install
-done
-
-#==========================================
 # Copy install script to dotfiles dir
 # and execute it
 #==========================================
-cp -f "${dotfiles_dir}"/default-config/install "${dotfiles_dir}"/custom-config
-chmod +x "${dotfiles_dir}"/custom-config/install
 cp -f "${ROOT}"/common/install "${dotfiles_dir}"/install
 chmod +x "${dotfiles_dir}"/install
 if [ -n "${dry_run}" ]; then
