@@ -19,17 +19,15 @@ export POLYBAR_MODULES_BACKLIGHT_CARD=intel_backlight
 
 export POLYBAR_TOP_RADIUS=12.0
 
-export POLYBAR_TOP_BACKGROUND=#B01C2023
-export POLYBAR_TOP_BACKGROUND=#282c34
-export POLYBAR_TOP_BACKGROUND=#00000000
+export POLYBAR_TOP_BACKGROUND=
 export POLYBAR_TOP_BACKGROUND_ALT=
 export POLYBAR_TOP_FOREGROUND=
 export POLYBAR_TOP_FOREGROUND_ALT=
 
 # Modules
-export POLYBAR_TOP_LEFT="jgmenu menu window_switch pulseaudio-microphone pulseaudio-bar backlight-acpi-bar"
+export POLYBAR_TOP_LEFT=
 export POLYBAR_TOP_CENTER=
-export POLYBAR_TOP_RIGHT="pkg night-mode filesystem memory cpu temperature networkmanager-dmenu battery"
+export POLYBAR_TOP_RIGHT=
 
 # Dimesions
 export POLYBAR_TOP_WIDTH=100%
@@ -54,7 +52,7 @@ export POLYBAR_BOTTOM_FOREGROUND=
 export POLYBAR_BOTTOM_FOREGROUND_ALT=
 
 # Modules
-export POLYBAR_BOTTOM_LEFT="i3-with-icons"
+export POLYBAR_BOTTOM_LEFT=
 export POLYBAR_BOTTOM_CENTER=
 export POLYBAR_BOTTOM_RIGHT=
 
