@@ -43,8 +43,8 @@ printf "Installing default config... "
 #==========================================
 # Execute config installation
 #==========================================
-chmod +x "${DOTFILES_DIR}"/default-config/install
-"${DOTFILES_DIR}"/default-config/install
+chmod +x "${DOTFILES_DIR}"/custom-config/install
+"${DOTFILES_DIR}"/custom-config/install
 
 echo "Done."
 

@@ -153,6 +153,8 @@ done
 # Copy install script to dotfiles dir
 # and execute it
 #==========================================
+cp -f "${dotfiles_dir}"/default-config/install "${dotfiles_dir}"/custom-config
+chmod +x "${dotfiles_dir}"/custom-config/install
 cp -f "${ROOT}"/common/install "${dotfiles_dir}"/install
 chmod +x "${dotfiles_dir}"/install
 if [ -n "${dry_run}" ]; then
