@@ -14,13 +14,8 @@ fi
 
 printf "Installing binaries... "
 
-for bin_path in "${DOTFILES_DIR}"/bin/*; do
-  bin=$(basename "${bin_path}")
-
-  chmod +x "${bin_path}"
-  rm -rf ~/.local/bin/"${bin}" >/dev/null 2>&1
-  ln -sf "$(realpath "${bin_path}")" ~/.local/bin/"${bin}"
-done
+chmod +x "${DOTFILES_DIR}"/bin/install
+"${DOTFILES_DIR}"/bin/install
 
 echo "Done."
 
@@ -32,6 +27,7 @@ if [[ -z "${SKIP_CONFIG_INSTALL}" ]]; then
 
   for config_path in "${DOTFILES_DIR}"/config/*; do
     config=$(basename "${config_path}")
+    chmod +x "${DOTFILES_DIR}"/config/"${config}"/install
     "${DOTFILES_DIR}"/config/"${config}"/install
   done
 

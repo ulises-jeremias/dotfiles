@@ -2,9 +2,9 @@
 
 SOURCE_DIR="$(realpath "$(dirname "$0")")"
 
-rm -rf ~/gitconfig > /dev/null 2>&1
+rm -rf ~/.gitconfig > /dev/null 2>&1
 
-ln -sf "${SOURCE_DIR}"/gitconfig ~/gitconfig
+ln -sf "${SOURCE_DIR}"/gitconfig ~/.gitconfig
 
 echo
 printf "Setting up git...\\n"

@@ -183,8 +183,10 @@ if [[ -z "${ZSH_NO_DEFAULTS}" ]]; then
 fi
 
 # Source Custom Configurations <<1
-shopt -s nullglob
-for file in ~/.zsh/custom/*.zsh; do
-    source $file
-done
+# if there are files in ~/.zsh/custom/*.zsh, source them
+if [ -d ~/.zsh/custom ]; then
+    for config_file ($HOME/.zsh/custom/*.zsh(N)); do
+        source $config_file
+    done
+fi
 # >>1
