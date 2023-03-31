@@ -12,18 +12,18 @@ if [ ! -d "${HOME}/.local/bin" ]; then
   mkdir ~/.local/bin
 fi
 
-printf "Installing binaries... "
+printf "Installing binaries..."
 
 chmod +x "${DOTFILES_DIR}"/bin/install
 "${DOTFILES_DIR}"/bin/install
 
-echo "Done."
+echo "Successfully installed binaries."
 
 #==========================================
 # Execute dotfiles install strategy
 #==========================================
 if [[ -z "${SKIP_CONFIG_INSTALL}" ]]; then
-  printf "Installing dotfiles... "
+  printf "Installing configuration files..."
 
   for config_path in "${DOTFILES_DIR}"/config/*; do
     config=$(basename "${config_path}")
@@ -31,7 +31,8 @@ if [[ -z "${SKIP_CONFIG_INSTALL}" ]]; then
     "${DOTFILES_DIR}"/config/"${config}"/install
   done
 
-  echo "Done."
+  echo "Successfully installed configuration files."
 fi
 
-echo "Done."
+echo "Successfully installed dotfiles."
+echo "Happy hacking! :D"
