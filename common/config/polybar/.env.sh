@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 export POLYBAR_BARS="polybar-top,polybar-bottom"
 
 # Battery ~> Use $ ls -1 /sys/class/power_supply/
