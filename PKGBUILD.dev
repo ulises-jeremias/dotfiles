@@ -19,7 +19,6 @@ needed_pkgs=(
 	feh
 	flameshot
 	graphicsmagick
-	greenclip
 	i3lock-fancy
 	jgmenu
 	jq
@@ -34,6 +33,7 @@ needed_pkgs=(
 	pulseaudio
 	python-pywal
 	rofi
+	rofi-greenclip
 	scrot
 	skippy-xd
 	sxiv

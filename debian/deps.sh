@@ -18,7 +18,6 @@ needed_pkgs=(
     python3-dbus
     feh
     graphicsmagick
-    greenclip
     i3lock-fancy
     jgmenu
     jq
@@ -33,6 +32,7 @@ needed_pkgs=(
     pulseaudio
     python3-pywal
     rofi
+    rofi-greenclip
     scrot
     # skippy-xd
     sxiv
