@@ -18,6 +18,7 @@ needed_pkgs=(
     python3-dbus
     feh
     graphicsmagick
+    greenclip
     i3lock-fancy
     jgmenu
     jq

@@ -18,6 +18,7 @@ needed_pkgs=(
     feh
     flameshot
     graphicsmagick
+    greenclip
     i3lock-fancy
     jgmenu
     jq
