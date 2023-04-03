@@ -2,13 +2,8 @@
 
 SOURCE_DIR="$(realpath "$(dirname "$0")")"
 
-rm -rf ~/.xprofile >/dev/null 2>&1
 rm -rf ~/.Xresources >/dev/null 2>&1
 rm -rf ~/.Xresources.d >/dev/null 2>&1
 
-ln -sf "${SOURCE_DIR}"/gitconfig ~/.xprofile
-ln -sf "${SOURCE_DIR}"/xprofile ~/.xprofile
 ln -sf "${SOURCE_DIR}"/Xresources ~/.Xresources
 ln -sf "${SOURCE_DIR}"/Xresources.d ~/.Xresources.d
-
-sudo chmod +x ~/.xprofile
