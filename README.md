@@ -6,7 +6,7 @@
 [Changelog](#) |
 [Contributing](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md)
 
-</div>
+</div> <!-- center -->
 <div align="center">
 
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
@@ -14,9 +14,7 @@
 [![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development)](https://aur.archlinux.org/packages/dots-git)
 [![License: MIT][licensebadge]][licenseurl]
 
-</div>
-
-<br>
+</div> <!-- center -->
 
 <h1>
   <a href="#--------">
@@ -54,13 +52,17 @@ Most were written from scratch. Some details:
   </a>
 </h1>
 
+<br>
+
 <div align="center">
 
 ```ocaml
 CLICK OR TAP ❲☰❳ TO SHOW TABLE-OF-CONTENTS
 ```
 
-</div>
+</div> <!-- center -->
+
+</div> <!-- justify -->
 
 Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
