@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<h1>Dotfiles Generator</h1>
+
 [Docs](https://github.com/ulises-jeremias/dotfiles/wiki) |
 [Changelog](#) |
 [Contributing](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md)
