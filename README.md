@@ -1,5 +1,23 @@
 <div align="justify">
 
+<div align="center">
+
+[Docs](https://github.com/ulises-jeremias/dotfiles/wiki) |
+[Changelog](#) |
+[Contributing](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md)
+
+</div>
+<div align="center">
+
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
+[![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable)](https://aur.archlinux.org/packages/dots-stable)
+[![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development)](https://aur.archlinux.org/packages/dots-git)
+[![License: MIT][licensebadge]][licenseurl]
+
+</div>
+
+<br>
+
 <h1>
   <a href="#--------">
     <img alt="" align="right" src="https://badges.pufler.dev/visits/ulises-jeremias/dotfiles?style=flat-square&label=&color=000000&logo=github&logoColor=white&labelColor=000000"/>
@@ -32,27 +50,9 @@ Most were written from scratch. Some details:
 
 <h1>
   <a href="#---------1">
-    <img alt="" align="right" src="https://img.shields.io/github/commit-activity/m/ulises-jeremias/dotfiles/ng?style=flat-square&label=&color=000000&logo=gitbook&logoColor=white&labelColor=000000"/>
+    <img alt="" align="right" src="https://img.shields.io/github/commit-activity/y/ulises-jeremias/dotfiles?color=000000&label=%20&logo=gitbook&logoColor=white&style=flat-square"/>
   </a>
 </h1>
-
-<br>
-
-<div align="center">
-
-[Docs](https://github.com/ulises-jeremias/dotfiles/wiki) |
-[Changelog](#) |
-[Contributing](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md)
-
-</div>
-<div align="center">
-
-[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
-[![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable)](https://aur.archlinux.org/packages/dots-stable)
-[![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development)](https://aur.archlinux.org/packages/dots-git)
-[![License: MIT][licensebadge]][licenseurl]
-
-</div>
 
 <div align="center">
 
