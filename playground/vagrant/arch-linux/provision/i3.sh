@@ -3,5 +3,5 @@
 set -e
 
 pacman -Syu --noconfirm --needed --noprogressbar \
-  i3-gaps \
+  i3-wm \
   i3status

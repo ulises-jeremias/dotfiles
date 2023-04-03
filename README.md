@@ -1,5 +1,44 @@
+<div align="justify">
+
+<h1>
+  <a href="#--------">
+    <img alt="" align="right" src="https://badges.pufler.dev/visits/ulises-jeremias/dotfiles?style=flat-square&label=&color=000000&logo=github&logoColor=white&labelColor=000000"/>
+  </a>
+</h1>
+
+### :octocat: ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup>
+
+<a href="#octocat--hi-there-thanks-for-dropping-by">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" alt="" align="right" width="400px" srcset="./static/screen-2.jpg"/>
+    <img alt="" align="right" width="400px" src="./static/screen-2.jpg"/>
+  </picture>
+</a>
+
+You might be here looking for (Linux) rice reference or to (full?) replicate my personal
+configuration of my favorites Window Managers and several apps as well. :snowman:
+
+Most were written from scratch. Some details:
+
+- **Window Manager** :bento: [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
+- **Panel** :blossom: [Polybar](https://polybar.github.io/)!
+- **Application Launcher** :rocket: [Rofi](https://github.com/davatorium/rofi) which blazing fast!
+- **Desktop Notification** :herb: [Dunst](https://github.com/dunst-project/dunst) which minimalist!
+- **Terminal Emulator** :leaves: [Alacritty](https://alacritty.org/) which GPU accelerated!
+- **Shell** :shell: [Zsh](https://zsh.org) with several post-installation tweaks!
+- **Compositor** :shaved_ice: [Picom](https://github.com/yshui/picom) for perfection topping!
+- **File Manager** :flower_playing_cards: [Thunar](https://docs.xfce.org/xfce/thunar/start) customized side-pane!
+- and many more!
+
+<h1>
+  <a href="#---------1">
+    <img alt="" align="right" src="https://img.shields.io/github/commit-activity/m/ulises-jeremias/dotfiles/ng?style=flat-square&label=&color=000000&logo=gitbook&logoColor=white&labelColor=000000"/>
+  </a>
+</h1>
+
+<br>
+
 <div align="center">
-<h1>Dotfiles Generator</h1>
 
 [Docs](https://github.com/ulises-jeremias/dotfiles/wiki) |
 [Changelog](#) |
@@ -15,18 +54,15 @@
 
 </div>
 
-Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
+<div align="center">
 
-- [Installation](#installation)
-  - [From the Arch-Linux User Repository (AUR)](#from-the-arch-linux-user-repository-aur)
-  - [From source](#from-source)
-- [Post install customization](#post-install-customization)
-  - [Examples](#examples)
-- [Testing](#testing)
-  - [Docker and Xephyr](#docker-and-xephyr)
-  - [Vagrant](#vagrant)
-- [Repository Structure](#repository-structure)
-- [Contributors](#contributors)
+```ocaml
+CLICK OR TAP ❲☰❳ TO SHOW TABLE-OF-CONTENTS
+```
+
+</div>
+
+Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
 
 ## Installation
 
