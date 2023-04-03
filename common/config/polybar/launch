@@ -9,8 +9,9 @@ while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
 # shellcheck source=/dev/null
 source ~/.config/polybar/.env.sh
 
-# source .env.i3.sh or .env.openbox.sh depending on the WM
-WM=$(echo "${XDG_CURRENT_DESKTOP}" | tr '[:upper:]' '[:lower:]')
+# source .env.i3.sh, .env.openbox.sh, . . . depending on the WM
+WM=$(wmctrl -m | grep -oE 'Name: .*' | cut -d' ' -f2)
+WM=$(echo "${WM}" | tr '[:upper:]' '[:lower:]')
 # shellcheck source=/dev/null
 [[ -f ~/.config/polybar/.env."${WM}".sh ]] && source ~/.config/polybar/.env."${WM}".sh
 
@@ -25,5 +26,6 @@ polybars="${POLYBAR_BARS}"
 # fi
 
 for bar in $(echo "${polybars}" | tr ',' '\n'); do
-  polybar -r "${bar}" 2>&1 | tee -a /tmp/polybar-"${bar}".log & disown
+  polybar -r "${bar}" 2>&1 | tee -a /tmp/polybar-"${bar}".log &
+  disown
 done
