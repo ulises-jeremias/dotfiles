@@ -59,11 +59,11 @@ if [[ -n "${script}" ]]; then
 
     LOCAL_BIN_DIR="${HOME}/.local/bin"
 
-    if [[ ! -x "${LOCAL_BIN_DIR}/${script}" ]]; then
-        show_message_with_usage "Script not found: ${LOCAL_BIN_DIR}/${script}"
+    if [[ ! -x "${LOCAL_BIN_DIR}/dots-${script}" ]]; then
+        show_message_with_usage "Script not found: ${LOCAL_BIN_DIR}/dots-${script}"
     fi
 
-    "${LOCAL_BIN_DIR}/${script}" "${@:2}"
+    "${LOCAL_BIN_DIR}/dots-${script}" "${@:2}"
     exit $?
 fi
 
