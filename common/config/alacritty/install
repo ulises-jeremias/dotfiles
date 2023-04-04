@@ -13,3 +13,8 @@ cd "${SOURCE_DIR}" || exit 1
 
 rm -rf ~/.config/alacritty/themes >/dev/null 2>&1
 ln -sf "${SOURCE_DIR}"/alacritty-theme/themes ~/.config/alacritty/themes
+
+# if npm is installed and alacritty-theme-switch is not installed, install it
+if command -v npm >/dev/null 2>&1 && ! command -v alacritty-theme-switch >/dev/null 2>&1; then
+  npm install -g alacritty-theme-switch
+fi

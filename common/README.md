@@ -14,7 +14,12 @@ cd /tmp/dotfiles
 sudo ./install
 ```
 
-### Installation
+### Install dependencies
+
+```sh
+cd <path-to-this-repository>
+./install-deps
+```
 
 ```sh
 cd <path-to-this-repository>

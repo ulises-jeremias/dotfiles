@@ -14,7 +14,7 @@ rm -rf "${DESTDIR}/opt/${PKGNAME}" \
 
 install -d "${DESTDIR}/opt/${PKGNAME}"
 
-for dirname in common "${os}" scripts ui util; do
+for dirname in common "${os}" ui util; do
     cp -Rf "${ROOT}"/"${dirname}" "${DESTDIR}/opt/${PKGNAME}"
 done
 

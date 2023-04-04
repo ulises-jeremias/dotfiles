@@ -8,24 +8,23 @@
 ## Options:
 ##     -h, --help                            Help.
 ##     -u, --upgrade                         Will update dependencies even if they are already installed.
-##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
 ##
 ##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
 ##                                           where common is supposed to work correctly with any linux distro.
 ##                                           `common` is set as default value for this flag.
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_install_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
-##         --pkgs=COMMA_SEPARATED_DEPS       Dependencies to install.
 ##
 
 set -e
 
-ROOT="$(realpath "$(dirname "$0")"/..)"
+ROOT="$(realpath "$(dirname "$0")")"
+DOTFILES_DIR=$(realpath "${ROOT}")
 
-. "${ROOT}"/util/easy-options/easyoptions.sh
-. "${ROOT}"/util/logs.sh
+. /opt/dots/util/easy-options/easyoptions.sh
+. /opt/dots/util/logs.sh
 
 # override OS with a correct value with the given params
-. "${ROOT}"/util/os.sh
+. /opt/dots/util/os.sh
 
 #==========================================
 # Default argument values and preprocessing
@@ -33,28 +32,41 @@ ROOT="$(realpath "$(dirname "$0")"/..)"
 os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/dots_install_log_$time_str.txt"}
-pkgs=${pkgs:-""}
 
 [ ! -f "${log_file}" ] && touch "${log_file}"
 
-. "${ROOT}"/"${os}"/install-pkgs.sh
+. /opt/dots/"${os}"/install-pkgs.sh
 
 #==========================================
 # Installing process
 #==========================================
 describe "Starting process" 0
 
-if [ -n "${dry_run}" ]; then
-  log_success "Dry run" "Nothing will be installed" "${log_file}"
-  exit 0
-fi
-
 update_db
 
 success=0
 failed=0
 
-for pkg in $(echo "${pkgs}" | tr ',' '\n'); do
+get_pkgs() {
+  # get all pkgs.list files from all dirs inside "${DOTFILES_DIR}"/config
+  # and then get all lines from all files
+  # note: not all directories have a pkgs.list file
+
+  pkgs=$(find "${DOTFILES_DIR}"/config -name pkgs.list -exec cat {} \;)
+
+  # remove empty lines
+  pkgs=$(echo "${pkgs}" | sed '/^$/d')
+
+  # remove comments
+  pkgs=$(echo "${pkgs}" | sed '/^#/d')
+
+  # remove duplicates
+  pkgs=$(echo "${pkgs}" | sort | uniq)
+
+  echo "${pkgs}"
+}
+
+for pkg in $(get_pkgs); do
   describe "Fetching ${pkg}"
   if type -p "${pkg}" >/dev/null && [ -z "$upgrade" ]; then
     log_success "Already installed" "${pkg}" "${log_file}"

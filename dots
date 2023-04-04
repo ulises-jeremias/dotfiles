@@ -1,24 +1,17 @@
 #!/usr/bin/env bash
 
 ## Copyright (C) 2019-2022 Ulises Jeremias Cornejo Fandos
-## Licensed under MIT.
-##
-## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+## Licensed under MIT
 ##
 ##     @script.name [OPTION] ARGUMENTS...
 ##
 ## Options:
 ##     -h, --help                            Help.
-##     -c, --clear                           Will remove existing dotfiles.
-##     -u, --upgrade                         Will update dependencies anyway.
-##         --dry-run                         Will not install anything. Just will create the dotfiles dir.
-##         --nodeps                          Will not install dependencies.
-##         --nodunst                         Notifications will use xfce4-notifyd instead.
-##         --utils                           Will answer you to install some utilities.
-##         --bluetooth                       Will add bluetooth to the dependencies added.
+##     -c, --clear                           Will remove existing dotfiles before installing the new ones.
 ##
-##         --os=OS_NAME                      Operating System. Posible values: arch-linux | debian.
-##                                           By default, the installation script will determine which is your OS.
+##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
+##                                           where common is supposed to work correctly with any linux distro.
+##                                           `common` is set as default value for this flag.
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_install_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
 ##
@@ -27,22 +20,97 @@ set -e
 
 ROOT="$(realpath "$(dirname "$0")")"
 
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-export XDG_CONFIG_HOME
-
 . "${ROOT}"/util/easy-options/easyoptions.sh
+. "${ROOT}"/util/logs.sh
 
 # override OS with a correct value with the given params
 . "${ROOT}"/util/os.sh
 
-echo "Installing dotfiles for OS: ${os}"
+#==========================================
+# Default argument values and preprocessing
+#==========================================
+os=${os:-""}
+time_str=$(date +'%m-%d-%y_%H:%M:%S')
+log_file=${log_file:-"/tmp/dots_install_log_$time_str.txt"}
+dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
 
-# load deps for give os. Defines pkgs variable
-. "${ROOT}"/"${os}"/deps.sh
+[ ! -f "${log_file}" ] && touch "${log_file}"
 
-args="$*"
-args=( "${args/--utils/}" )
-args=( "${args/--nodunst/}" )
-args=( "${args/--bluetooth/}" )
+if [ ! -d "${dotfiles_dir}" ] || [ -n "${clear}" ]; then
+  [ -d "${dotfiles_dir}" ] && describe "Removing existing dotfiles" 
+  [ ! -d "${dotfiles_dir}" ] && describe "Creating dotfiles dir"
 
-"${ROOT}"/scripts/install ${args[*]} --pkgs="${pkgs}"
+  # Delete existing dotfiles and folders if any
+  rm -rf "${dotfiles_dir}" >/dev/null 2>&1
+
+  # Create dotfiles folder and subfolders
+  mkdir -p "${dotfiles_dir}"/{config,bin}
+
+  log_success "Success" "${config}" "${log_file}"
+fi
+
+#==========================================
+# Copy README.md
+#==========================================
+describe "Copying README.md" 0
+cp "${ROOT}"/common/README.md "${dotfiles_dir}"/README.md
+
+#==========================================
+# Copy bin files
+#==========================================
+describe "Copying binaries" 0
+cp -rf "${ROOT}"/common/bin/* "${dotfiles_dir}"/bin
+
+if [ -d "${ROOT}/${os}/bin" ]; then
+  cp -rf "${ROOT}"/"${os}"/bin/* "${dotfiles_dir}"/bin
+fi
+
+echo
+
+#==========================================
+# Copy dotfiles and execute dotfiles
+# install strategy
+#==========================================
+echo
+describe "Installing dotfiles"
+echo
+echo
+for config_path in "${ROOT}"/common/config/*; do
+  config=$(basename "${config_path}")
+
+  # if directory contains file `required` then install it without asking
+  if [ ! -f "${config_path}/required" ]; then
+    read -p "Install ${config} dotfiles? [y/N] " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      continue
+    fi
+  fi
+
+  describe "Installing ${config} dotfiles"
+
+  os_config_path=${config_path}
+
+  if [ -d "${ROOT}/${os}/config/${config}" ]; then
+    os_config_path="${ROOT}/${os}/config/${config}"
+  fi
+
+  cp -rf "${os_config_path}" "${dotfiles_dir}"/config
+  
+  log_success "Success" "${config}" "${log_file}"
+done
+
+#==========================================
+# Copy install script to dotfiles dir
+# and execute it
+#==========================================
+cp -f "${ROOT}"/common/{install,install-deps} "${dotfiles_dir}"
+chmod +x "${dotfiles_dir}"/{install,install-deps}
+
+log_success "Dotfiles generated successfully" "" "${log_file}"
+
+echo
+echo
+echo "Run '${dotfiles_dir}/install-deps' to install needed packages"
+echo "Run '${dotfiles_dir}/install' to install dotfiles"
+echo
