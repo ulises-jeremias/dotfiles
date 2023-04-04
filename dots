@@ -111,6 +111,9 @@ log_success "Dotfiles generated successfully" "" "${log_file}"
 
 echo
 echo
-echo "Run '${dotfiles_dir}/install-deps' to install needed packages"
-echo "Run '${dotfiles_dir}/install' to install dotfiles"
+echo "Run the following commands to install the dotfiles:"
+echo
+echo "  cd ${dotfiles_dir}"
+echo "  ./install-deps"
+echo "  ./install"
 echo
