@@ -14,6 +14,9 @@ xset r rate 350 60
 # run xfsettingsd in the background if it's not already running
 [[ -z "$(pgrep xfsettingsd)" ]] && xfsettingsd &
 
+# run xfce4-power-manager in the background if it's not already running
+[[ -z "$(pgrep xfce4-power-manager)" ]] && xfce4-power-manager --daemon &
+
 # load X params required for dotfiles to work
 xrdb -I"${HOME}" -load ~/.Xresources &
 
