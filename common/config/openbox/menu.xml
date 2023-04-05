@@ -63,7 +63,7 @@
         </item>
         <item label="Edit autostart">
           <action name="Execute">
-            <command>exo-open "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/openbox/autostart</command>
+            <command>exo-open "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/openbox/autostart.sh</command>
           </action>
         </item>
         <separator/>

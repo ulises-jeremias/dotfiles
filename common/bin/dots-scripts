@@ -25,7 +25,6 @@ NO_CHECK=true
 source /opt/dots/util/easy-options/easyoptions.sh || exit
 
 scripts_list=(
-    "autostart: bootstrap for all the important apps on the system init"
     "brightness: control the brightness of the screen using different backends such us xbacklight, brightnessctl, blight or xrandr"
     "check-network: check if the network is up"
     "checkupdates: check for updates"
