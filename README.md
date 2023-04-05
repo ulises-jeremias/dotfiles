@@ -128,17 +128,6 @@ There is no need to fork this repository in order to customize it. Everything ca
 
 Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
 
-### Examples
-
-<div class="container">
-  <img alt="Dotfiles Screen Overview" src="./static/screen-2.jpg" />
-  <img alt="Nord Two Lines" src="./static/screenshot-nord-two-lines.png" />
-  <img alt="Launchpad" src="./static/screenshot-launchpad.png" />
-  <img alt="Spotlight Dark" src="./static/screenshot-spotlight-dark.png" />
-  <img alt="Dotfiles Overview" src="./static/demo.gif" />
-  <img alt="i3 with alacritty" src="./static/nvim.png" />
-</div>
-
 ## Testing
 
 We have different testing environments that allow us to test the dotfiles generator in different OSs and window managers.
