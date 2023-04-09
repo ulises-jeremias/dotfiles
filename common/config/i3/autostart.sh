@@ -24,7 +24,7 @@ xrdb -I"${HOME}" -load ~/.Xresources &
 [[ -z "$(pgrep picom)" ]] && picom --config "${XDG_CONFIG_HOME}"/picom.conf &
 
 # i3 autotiling
-[[ -z "$(pgrep autotiling)" ]] && autotiling &
+[[ -z "$(pgrep autotiling)" ]] && "${XDG_CONFIG_HOME}"/i3/autotiling &
 
 # restore last configured wallpaper and colors
 dots-scripts wall-d -f -r &
