@@ -31,8 +31,8 @@ dots-scripts feh-blur --blur 10 -d &
 # open polybar
 "${XDG_CONFIG_HOME}"/polybar/launch &
 
-# i3 autotiling
-[[ -z "$(pgrep autotiling)" ]] && "${XDG_CONFIG_HOME}"/i3/autotiling &
+# TODO: Make i3 autotiling work properly
+# [[ -z "$(pgrep autotiling)" ]] && "${XDG_CONFIG_HOME}"/i3/autotiling &
 
 # Start nm-applet
 [[ -z "$(pgrep nm-applet)" ]] && nm-applet &
