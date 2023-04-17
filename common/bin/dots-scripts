@@ -45,7 +45,6 @@ scripts_list=(
     "sysupdate: update the system"
     "toggle: toggle the state of some applications"
     "updates: check for updates"
-    "wall-d: change and restore the wallpaper using different backends such us feh or xwallpaper"
     "weather: print the current weather information"
 )
 
