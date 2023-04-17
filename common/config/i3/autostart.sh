@@ -23,9 +23,10 @@ xrdb -I"${HOME}" -load ~/.Xresources &
 # load picom
 [[ -z "$(pgrep picom)" ]] && picom --config "${XDG_CONFIG_HOME}"/picom.conf &
 
-# restore last configured wallpaper and colors
-dots-scripts wall-d -f -r &
-wal -R -q
+# restore colorscheme
+[[ -z "$(pgrep wal)" ]] && wal -R -q
+
+# run feh-blur in the background
 dots-scripts feh-blur --blur 10 -d &
 
 # open polybar
