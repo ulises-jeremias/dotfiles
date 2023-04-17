@@ -1,7 +1,6 @@
 arc-gtk-theme
 arandr
 dbus-python
-feh
 flameshot
 graphicsmagick
 jq
@@ -11,9 +10,7 @@ pamixer
 pavucontrol
 playerctl
 pulseaudio
-python-pywal
 skippy-xd
 sxiv
 wmctrl
-wpgtk
 yad
