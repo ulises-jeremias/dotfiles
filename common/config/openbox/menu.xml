@@ -21,12 +21,12 @@
     <menu id="screenshot" label="Screenshot">
       <item label="Screenshot">
         <action name="Execute">
-          <command>dots-scripts screenshooter</command>
+          <command>~/.local/bin/dots-scripts screenshooter</command>
         </action>
       </item>
       <item label="Screenshot in 5">
         <action name="Execute">
-          <command>dots-scripts screenshooter</command>
+          <command>~/.local/bin/dots-scripts screenshooter</command>
         </action>
       </item>
     </menu>
@@ -107,7 +107,7 @@
     </item>
     <item label="Exit openbox">
       <action name="Execute">
-        <command>dots-scripts rofi-run -l</command>
+        <command>~/.local/bin/dots-scripts rofi-run -l</command>
       </action>
     </item>
   </menu>

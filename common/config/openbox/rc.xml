@@ -276,22 +276,22 @@
     </keybind>
     <keybind key="XF86MonBrightnessUp">
       <action name="Execute">
-        <command>dots-scripts brightness "*" + 0.1</command>
+        <command>~/.local/bin/dots-scripts brightness "*" + 0.1</command>
       </action>
     </keybind>
     <keybind key="XF86MonBrightnessDown">
       <action name="Execute">
-        <command>dots-scripts brightness "*" - 0.1</command>
+        <command>~/.local/bin/dots-scripts brightness "*" - 0.1</command>
       </action>
     </keybind>
     <keybind key="Print">
       <action name="Execute">
-        <command>dots-scripts screenshooter</command>
+        <command>~/.local/bin/dots-scripts screenshooter</command>
       </action>
     </keybind>
     <keybind key="A-Print">
       <action name="Execute">
-        <command>dots-scripts screenshooter -r</command>
+        <command>~/.local/bin/dots-scripts screenshooter -r</command>
       </action>
     </keybind>
     <keybind key="W-f">
@@ -336,22 +336,22 @@
     </keybind>
     <keybind key="A-F1">
       <action name="Execute">
-        <command>dots-scripts rofi-run -r</command>
+        <command>~/.local/bin/dots-scripts rofi-run -r</command>
       </action>
     </keybind>
     <keybind key="C-space">
       <action name="Execute">
-        <command>dots-scripts rofi-run -r</command>
+        <command>~/.local/bin/dots-scripts rofi-run -r</command>
       </action>
     </keybind>
     <keybind key="W-x">
       <action name="Execute">
-        <command>dots-scripts rofi-run -l</command>
+        <command>~/.local/bin/dots-scripts rofi-run -l</command>
       </action>
     </keybind>
     <keybind key="C-A-Delete">
       <action name="Execute">
-        <command>dots-scripts rofi-run -l</command>
+        <command>~/.local/bin/dots-scripts rofi-run -l</command>
       </action>
     </keybind>
     <keybind key="W-S-Escape">
