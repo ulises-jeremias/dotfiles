@@ -182,6 +182,8 @@ if [[ -z "${ZSH_NO_DEFAULTS}" ]]; then
     bindkey "^[[1;5C" forward-word
 fi
 
+(wal -R -q -e -t -n) >> /dev/null
+
 # Source Custom Configurations <<1
 # if there are files in ~/.zsh/custom/*.zsh, source them
 if [ -d ~/.zsh/custom ]; then
