@@ -23,19 +23,20 @@ xrdb -I"${HOME}" -load ~/.Xresources &
 # load picom
 [[ -z "$(pgrep picom)" ]] && picom --config "${XDG_CONFIG_HOME}"/picom.conf &
 
-# i3 autotiling
-[[ -z "$(pgrep autotiling)" ]] && "${XDG_CONFIG_HOME}"/i3/autotiling &
+# restore colorscheme
+[[ -z "$(pgrep wal)" ]] && wal -R -q
 
-# restore last configured wallpaper and colors
-dots-scripts wall-d -f -r &
-wal -R -q
+# run feh-blur in the background
 dots-scripts feh-blur --blur 10 -d &
 
 # open polybar
 "${XDG_CONFIG_HOME}"/polybar/launch &
 
-# Start greenclip daemon
-[[ -z "$(pgrep greenclip)" ]] && greenclip daemon &
+# TODO: Make i3 autotiling work properly
+# [[ -z "$(pgrep autotiling)" ]] && "${XDG_CONFIG_HOME}"/i3/autotiling &
 
 # Start nm-applet
 [[ -z "$(pgrep nm-applet)" ]] && nm-applet &
+
+# Start greenclip daemon
+[[ -z "$(pgrep greenclip)" ]] && greenclip daemon &
