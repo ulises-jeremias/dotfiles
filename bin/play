@@ -3,8 +3,6 @@
 ## Copyright (C) 2019-2022 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT
 ##
-## IMPORTANT: Remember to read the files in `docs/docker` before updating this file
-##
 ##     @script.name [OPTION] ARGUMENTS...
 ##
 ## Options:
@@ -13,13 +11,7 @@
 ##         --wm=WINDOW_MANAGER               Window manager. Posible values: i3 | openbox
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_playground_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##
-## Docker options:
-##         --docker                          Use docker compose to run the environment.
-##         --build                           Build the docker compose.
-##         --remove                          Remove the docker compose.
-##
 ## Vagrant options:
-##         --vagrant                         Use Vagrant to run the environment.
 ##         --provision                       Provision the VM
 ##         --remove                          Remove the created VM.
 ##
@@ -28,7 +20,6 @@ set -e
 
 ROOT="$(realpath "$(dirname "$0")"/..)"
 PLAYGROUND_DIR="$(realpath "${ROOT}/playground")"
-DOCKER_DIR="$(realpath "${PLAYGROUND_DIR}/docker")"
 VAGRANT_DIR="$(realpath "${PLAYGROUND_DIR}/vagrant")"
 
 . "${ROOT}/util/easy-options/easyoptions.sh" || exit
@@ -45,32 +36,13 @@ wm=${wm:-"i3"}
 
 [ ! -f "${log_file}" ] && touch "${log_file}"
 
-if [ -n "${docker}" ]; then
-    cd "${DOCKER_DIR}" || exit 1
+cd "${VAGRANT_DIR}/${os}" || exit 1
 
-    command="up"
-    [ -n "${build}" ] && command="build"
-    [ -n "${remove}" ] && command="down"
+command="up"
+[ -n "${build}" ] && command="provision"
+[ -n "${remove}" ] && command="destroy"
 
-    echo "Running command: OS=${os} WINDOW_MANAGER=${wm} docker-compose ${command}"
+echo "Running command: WINDOW_MANAGER=${wm} vagrant ${command}"
 
-    OS="${os}" WINDOW_MANAGER="${wm}" docker-compose ${command} 2>&1 | tee -a "${log_file}"
-    exit $?
-fi
-
-if [ -n "${vagrant}" ]; then
-    cd "${VAGRANT_DIR}/${os}" || exit 1
-
-    command="up"
-    [ -n "${build}" ] && command="provision"
-    [ -n "${remove}" ] && command="destroy"
-
-    echo "Running command: WINDOW_MANAGER=${wm} vagrant ${command}"
-
-    WINDOW_MANAGER="${wm}" vagrant ${command} 2>&1 | tee -a "${log_file}"
-    exit $?
-fi
-
-# Help shown by default
-[[ -z "${documentation}" ]] && parse_documentation
-echo "${documentation}"
+WINDOW_MANAGER="${wm}" vagrant ${command} 2>&1 | tee -a "${log_file}"
+exit $?

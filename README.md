@@ -130,39 +130,22 @@ Read more about this at [Customization Docs](https://github.com/ulises-jeremias/
 
 ## Testing
 
-We have different testing environments that allow us to test the dotfiles generator in different OSs and window managers.
-
-### Docker and Xephyr
+We use [Vagrant](https://www.vagrantup.com/) to test the installation of the dotfiles generator in different OSs.
 
 To run the testing environment just run the following commands;
 
 ```sh
 git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 cd /tmp/dotfiles
-
-# start the docker compose env
-./bin/play --docker
-
-# use -h to know more about the available options
-```
-
-### Vagrant
-
-To run the testing environment just run the following commands;
-
-```sh
-git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
-cd /tmp/dotfiles
-cd ./playground/vagrant/<os>/
 
 # start the VM
-./bin/play --vagrant
+./bin/play
 
 # provision the VM
-./bin/play --vagrant --provision
+./bin/play --provision
 
 # remove the VM
-./bin/play --vagrant --remove
+./bin/play --remove
 
 # use -h to know more about the available options
 ```
@@ -187,7 +170,6 @@ cd ./playground/vagrant/<os>/
 │   ├── deps.sh             # Debian specific dependencies
 │   └── install-pkgs.sh     # Debian specific script to install packages from the official repos and other sources
 ├── playground              # testing environments
-│   └── docker/             # docker setup to bootstrap the testing environments
 │   └── vagrant/            # vagrant setup to bootstrap the testing environments
 ├── scripts                 # scripts used by dots to install the dotfiles
 │   └── install-pkgs        # script to install packages from the official repos and other sources
