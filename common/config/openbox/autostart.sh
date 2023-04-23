@@ -6,15 +6,16 @@ export XDG_CONFIG_HOME
 [[ "${PATH}" == *"${HOME}/.local/bin"* ]] || export PATH="${HOME}/.local/bin:${PATH}"
 
 run() {
-  if ! pgrep "$1"; then
-    "$@"&
+  if [[ -n "$(pgrep "$1")" ]]; then
+    # shellcheck disable=SC2068
+    $@ &
   fi
 }
 
 run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 run gnome-keyring-daemon --start --components=pkcs11
-run xset dpms 600 900 1200
-run xset r rate 350 60
+xset dpms 600 900 1200
+xset r rate 350 60
 
 # required for xfce settings to work
 # run xfsettingsd in the background if it's not already running
