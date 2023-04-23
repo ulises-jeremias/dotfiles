@@ -230,34 +230,34 @@ bindsym $Mod+Control+Shift+plus  gaps outer all     plus  5
 bindsym $Mod+Control+Shift+minus gaps outer all     minus 5
 
 # focus, floating, & sticky
-for_window [window_role="(?i)(?:pop-up|setup|task_dialog|dialog|menu|Preferences)"] floating enable border normal
-for_window [title="Volume Control"] floating enable sticky enable border normal
-for_window [title="(?i)(?:copying|deleting|moving)"] floating enable border normal
-for_window [class="Sxiv"] floating enable border normal
-for_window [class="(?i)(?:qt5ct|pinentry)"] floating enable sticky enable border normal
+for_window [window_role="(?i)(?:pop-up|setup|task_dialog|dialog|menu|Preferences)"] floating enable
+for_window [title="Volume Control"] floating enable sticky enable
+for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
+for_window [class="Sxiv"] floating enable
+for_window [class="(?i)(?:qt5ct|pinentry)"] floating enable sticky enable
 for_window [title="alsamixer"] floating enable border pixel 1
 for_window [class="Clipgrab"] floating enable
 for_window [title="File Transfer*"] floating enable
 for_window [class="Galculator"] floating enable border pixel 1
-for_window [class="GParted"] floating enable border normal
-for_window [title="(?i)wpg"] floating enable border normal
-for_window [title="i3_help"] floating enable sticky enable border normal
+for_window [class="GParted"] floating enable
+for_window [title="(?i)wpg"] floating enable
+for_window [title="i3_help"] floating enable sticky enable
 for_window [class="Lightdm-gtk-greeter-settings"] floating enable
-for_window [class="Lxappearance"] floating enable sticky enable border normal
+for_window [class="Lxappearance"] floating enable sticky enable
 for_window [class="Manjaro-hello"] floating enable
-for_window [class="Manjaro Settings Manager"] floating enable border normal
+for_window [class="Manjaro Settings Manager"] floating enable
 for_window [title="MuseScore: Play Panel"] floating enable
-for_window [class="Nitrogen"] floating enable sticky enable border normal
+for_window [class="Nitrogen"] floating enable sticky enable
 for_window [class="Oblogout"] fullscreen enable
 for_window [class="octopi"] floating enable
 for_window [class="Pamac-manager"] floating enable
 for_window [class="Pavucontrol"] floating enable
-for_window [class="Qtconfig-qt4"] floating enable sticky enable border normal
-for_window [class="Simple-scan"] floating enable border normal
-for_window [class="(?i)System-config-printer.py"] floating enable border normal
-for_window [class="Thus"] floating enable border normal
-for_window [class="Timeset-gui"] floating enable border normal
-for_window [class="(?i)virtualbox"] floating enable border normal
+for_window [class="Qtconfig-qt4"] floating enable sticky enable
+for_window [class="Simple-scan"] floating enable
+for_window [class="(?i)System-config-printer.py"] floating enable
+for_window [class="Thus"] floating enable
+for_window [class="Timeset-gui"] floating enable
+for_window [class="(?i)virtualbox"] floating enable
 for_window [class="(?i)virtualbox"] fullscreen enable 
 for_window [class="Xfburn"] floating enable
 
