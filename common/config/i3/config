@@ -147,7 +147,9 @@ bindsym $Mod+Shift+c reload
 
 # Scratchpad, Floating
 bindsym $Mod+space floating toggle
-floating_modifier  Mod1
+
+# Use Mouse+$mod to drag floating windows
+floating_modifier  $mod
 
 bindsym $Mod+Shift+z move scratchpad
 bindsym $Mod+z scratchpad show
