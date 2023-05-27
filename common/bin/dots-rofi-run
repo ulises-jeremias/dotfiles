@@ -93,7 +93,7 @@ for arg in "$@"; do
     else
       ANS="$(rofi -theme "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/tools.rasi -sep "|" -dmenu -i -p 'System' -width 20 \
         -hide-scrollbar -line-padding 4 -padding 20 \
-        -lines 6 <<<" Hibernate| Lock|﫼 Logout| Reboot| Shutdown|鈴 Suspend")"
+        -lines 6 <<<"󰋣 Hibernate| Lock|󰗽 Logout| Reboot| Shutdown|󰒲 Suspend")"
     fi
 
     case "$ANS" in
