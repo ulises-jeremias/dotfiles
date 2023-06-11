@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout Latest Dotfiles
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Override PKGBUILD
         run: mv PKGBUILD.dev PKGBUILD
@@ -36,7 +36,7 @@ jobs:
         uses: ulises-jeremias/github-actions-aur-publish@v1
         with:
           pkgname: dots-git
-          pkgbuild: ./PKGBUILD
+          pkgbuild: ./PKGBUILD.dev
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
