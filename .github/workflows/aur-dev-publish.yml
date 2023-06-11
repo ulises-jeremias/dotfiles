@@ -29,9 +29,6 @@ jobs:
       - name: Checkout Latest Dotfiles
         uses: actions/checkout@v3
 
-      - name: Override PKGBUILD
-        run: mv PKGBUILD.dev PKGBUILD
-
       - name: Publish AUR package
         uses: ulises-jeremias/github-actions-aur-publish@v1
         with:
