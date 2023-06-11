@@ -1,6 +1,8 @@
 name: AUR Publish - Development version
 
 on:
+  workflow_dispatch:
+
   push:
     tags:
       - v*
