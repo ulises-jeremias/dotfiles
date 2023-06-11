@@ -6,7 +6,7 @@ on:
       - v*
 
   schedule:
-    - cron: "31 1,12 * * *"
+    - cron: "0 0 * * *"
 
 jobs:
   ci:

@@ -7,8 +7,7 @@ on:
   workflow_call:
 
   schedule:
-    # Every day at 00:00
-    - cron: "0 0 * * *"
+    - cron: "31 1,12 * * *"
 
   push:
     branches:
