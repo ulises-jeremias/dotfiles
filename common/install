@@ -44,8 +44,13 @@ fi
 
 describe "Creating symlinks for bin files"
 
-chmod +x "${DOTFILES_DIR}"/bin/install
-"${DOTFILES_DIR}"/bin/install
+for bin_path in "${DOTFILES_DIR}"/bin/*; do
+  bin=$(basename "${bin_path}")
+
+  chmod +x "${bin_path}"
+  rm -f ~/.local/bin/"${bin}" >/dev/null 2>&1
+  ln -sf "$(realpath "${bin_path}")" ~/.local/bin/"${bin}"
+done
 
 echo -e "${GREEN}Done${RESET}"
 
