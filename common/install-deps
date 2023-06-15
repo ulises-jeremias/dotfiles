@@ -48,11 +48,11 @@ success=0
 failed=0
 
 get_pkgs() {
-  # get all pkgs.list files from all dirs inside "${DOTFILES_DIR}"/config
+  # get all pkgs.list.${os} files from all dirs inside "${DOTFILES_DIR}"/config
   # and then get all lines from all files
-  # note: not all directories have a pkgs.list file
+  # note: not all directories have a pkgs.list.${os} file
 
-  pkgs=$(find "${DOTFILES_DIR}"/config -name pkgs.list -exec cat {} \;)
+  pkgs=$(find "${DOTFILES_DIR}"/config -name "pkgs.list.${os}" -exec cat {} \;)
 
   # remove empty lines
   pkgs=$(echo "${pkgs}" | sed '/^$/d')
