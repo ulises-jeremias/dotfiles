@@ -40,3 +40,4 @@ jobs:
           commit_message: Update AUR package
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
           update_pkgver: true
+          allow_empty_commits: false
