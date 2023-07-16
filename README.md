@@ -24,7 +24,8 @@
   </a>
 </h1>
 
-### 👋 ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup>
+<details open>
+<summary>👋 ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup></summary>
 
 <a href="#octocat--hi-there-thanks-for-dropping-by">
   <picture>
@@ -48,27 +49,10 @@ Most of them were written from scratch. Here are some details:
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - and many more!
 
-<h1>
-  <a href="#---------1">
-    <img alt="" align="right" src="https://img.shields.io/github/commit-activity/y/ulises-jeremias/dotfiles?color=000000&label=%20&logo=gitbook&logoColor=white&style=flat-square"/>
-  </a>
-</h1>
+</details>
 
-<br>
-
-<div align="center">
-
-```ocaml
-CLICK OR TAP ❲☰❳ TO SHOW TABLE OF CONTENTS
-```
-
-</div> <!-- center -->
-
-</div> <!-- justify -->
-
-Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
-
-## 🌟 Installation
+<details>
+<summary>🌟 Installation</summary>
 
 ### From the Arch-Linux User Repository (AUR)
 
@@ -122,13 +106,19 @@ dots --help
 
 The installation script allows you to install all the necessary dependencies to make your dotfiles config work correctly.
 
-## 🎨 Post install customization
+</details>
+
+<details>
+<summary>🎨 Post install customization</summary>
 
 There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the generated dotfiles directory. You are encouraged to maintain a separate GitHub repository of configurations for your own dotfiles.
 
 Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
 
-## 🧪 Testing
+</details>
+
+<details>
+<summary>🧪 Testing</summary>
 
 We use [Vagrant](https://www.vagrantup.com/) to test the installation of the dotfiles generator in different OSs.
 
@@ -150,7 +140,10 @@ cd /tmp/dotfiles
 # use -h to know more about the available options
 ```
 
-## 📁 Repository Structure
+</details>
+
+<details>
+<summary>📁 Repository Structure</summary>
 
 ```sh
 .
@@ -164,7 +157,9 @@ cd /tmp/dotfiles
 ├── common                  # common files (used by dots when installing in any OS)
 │   ├── bin/                # common binaries to be installed in any OS
 │   ├── config/             # common config files to be installed in any OS
-│   └── install             # script installed by dots at <dotfiles_dir>/install
+│   └── install             # script installed by dots at
+
+ <dotfiles_dir>/install
 ├── debian                  # Debian override files (used by dots when installing in Debian based distros)
 │   ├── bin/                # binaries to be installed in Debian based distros
 │   ├── deps.sh             # Debian specific dependencies
@@ -182,6 +177,8 @@ cd /tmp/dotfiles
 └── install                 # installation `dots` binary in the system
 ```
 
+</details>
+
 ## 🤝 Contributors
 
 <a href="https://github.com/ulises-jeremias/dotfiles/contributors">
@@ -192,3 +189,4 @@ Made with [contributors-img](https://contrib.rocks).
 
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
 [licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE
+</div> <!-- justify -->
