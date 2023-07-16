@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<h1>Dotfiles Generator</h1>
+<h1>🔥 Dotfiles Generator</h1>
 
 [Docs](https://github.com/ulises-jeremias/dotfiles/wiki) |
 [Changelog](#) |
@@ -24,7 +24,8 @@
   </a>
 </h1>
 
-### :octocat: ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup>
+<details open>
+<summary>👋 ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup></summary>
 
 <a href="#octocat--hi-there-thanks-for-dropping-by">
   <picture>
@@ -33,42 +34,25 @@
   </picture>
 </a>
 
-You might be here looking for (Linux) rice reference or to (full?) replicate my personal
-configuration of my favorites Window Managers and several apps as well. :snowman:
+You might be here looking for (Linux) rice reference or to fully replicate my personal
+configuration of my favorite Window Managers and several apps as well. ❄️
 
-Most were written from scratch. Some details:
+Most of them were written from scratch. Here are some details:
 
-- **Window Manager** :bento: [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
-- **Panel** :blossom: [Polybar](https://polybar.github.io/)!
-- **Application Launcher** :rocket: [Rofi](https://github.com/davatorium/rofi) which blazing fast!
-- **Desktop Notification** :herb: [Dunst](https://github.com/dunst-project/dunst) which minimalist!
-- **Terminal Emulator** :leaves: [Alacritty](https://alacritty.org/) which GPU accelerated!
-- **Shell** :shell: [Zsh](https://zsh.org) with several post-installation tweaks!
-- **Compositor** :shaved_ice: [Picom](https://github.com/yshui/picom) for perfection topping!
-- **File Manager** :flower_playing_cards: [Thunar](https://docs.xfce.org/xfce/thunar/start) customized side-pane!
+- **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
+- **Panel** 🌸 [Polybar](https://polybar.github.io/)!
+- **Application Launcher** 🚀 [Rofi](https://github.com/davatorium/rofi) which is blazing fast!
+- **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
+- **Terminal Emulator** 🌿 [Alacritty](https://alacritty.org/) which is GPU accelerated!
+- **Shell** 🐚 [Zsh](https://zsh.org) with several post-installation tweaks!
+- **Compositor** 🍧 [Picom](https://github.com/yshui/picom) for that perfection topping!
+- **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - and many more!
 
-<h1>
-  <a href="#---------1">
-    <img alt="" align="right" src="https://img.shields.io/github/commit-activity/y/ulises-jeremias/dotfiles?color=000000&label=%20&logo=gitbook&logoColor=white&style=flat-square"/>
-  </a>
-</h1>
+</details>
 
-<br>
-
-<div align="center">
-
-```ocaml
-CLICK OR TAP ❲☰❳ TO SHOW TABLE-OF-CONTENTS
-```
-
-</div> <!-- center -->
-
-</div> <!-- justify -->
-
-Dotfiles generator that allows quick configuration of different window managers in multiple OSs.
-
-## Installation
+<details>
+<summary>🌟 Installation</summary>
 
 ### From the Arch-Linux User Repository (AUR)
 
@@ -120,19 +104,25 @@ sudo ./install
 dots --help
 ```
 
-The installation script allows you to install all the necessary dependencies that allow your dotfiles config work correctly.
+The installation script allows you to install all the necessary dependencies to make your dotfiles config work correctly.
 
-## Post install customization
+</details>
 
-There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the generated dotfiles directory. You are encouraged to maintain a separate github repository of configurations for your own dotfiles.
+<details>
+<summary>🎨 Post install customization</summary>
+
+There is no need to fork this repository in order to customize it. Everything can be customized by leveraging the generated dotfiles directory. You are encouraged to maintain a separate GitHub repository of configurations for your own dotfiles.
 
 Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
 
-## Testing
+</details>
+
+<details>
+<summary>🧪 Testing</summary>
 
 We use [Vagrant](https://www.vagrantup.com/) to test the installation of the dotfiles generator in different OSs.
 
-To run the testing environment just run the following commands;
+To run the testing environment, just execute the following commands:
 
 ```sh
 git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
@@ -150,11 +140,14 @@ cd /tmp/dotfiles
 # use -h to know more about the available options
 ```
 
-## Repository Structure
+</details>
+
+<details>
+<summary>📁 Repository Structure</summary>
 
 ```sh
 .
-├── .github                 # github related files
+├── .github                 # GitHub related files
 ├── arch-linux              # Arch Linux override files (used by dots when installing in Arch Linux based distros)
 │   ├── bin/                # binaries to be installed in Arch Linux based distros
 │   ├── deps.sh             # Arch Linux specific dependencies
@@ -164,25 +157,29 @@ cd /tmp/dotfiles
 ├── common                  # common files (used by dots when installing in any OS)
 │   ├── bin/                # common binaries to be installed in any OS
 │   ├── config/             # common config files to be installed in any OS
-│   └── install             # script installed by dots at <dotfiles_dir>/install
+│   └── install             # script installed by dots at
+
+ <dotfiles_dir>/install
 ├── debian                  # Debian override files (used by dots when installing in Debian based distros)
 │   ├── bin/                # binaries to be installed in Debian based distros
 │   ├── deps.sh             # Debian specific dependencies
 │   └── install-pkgs.sh     # Debian specific script to install packages from the official repos and other sources
 ├── playground              # testing environments
-│   └── vagrant/            # vagrant setup to bootstrap the testing environments
+│   └── vagrant/            # Vagrant setup to bootstrap the testing environments
 ├── scripts                 # scripts used by dots to install the dotfiles
 │   └── install-pkgs        # script to install packages from the official repos and other sources
 │   ├── install-dotfiles    # script to install the dotfiles in the system
 │   └── install             # main installation script
 ├── static/                 # static files used by the README
-├── ui/                     # ui files used by dots when installing in interactive mode - WIP
-├── util/                   # util files used by dots
+├── ui/                     # UI files used by dots when installing in interactive mode - WIP
+├── util/                   # utility files used by dots
 ├── dots                    # dots binary to install the dotfiles
 └── install                 # installation `dots` binary in the system
 ```
 
-## Contributors
+</details>
+
+## 🤝 Contributors
 
 <a href="https://github.com/ulises-jeremias/dotfiles/contributors">
   <img src="https://contrib.rocks/image?repo=ulises-jeremias/dotfiles"/>
@@ -192,3 +189,4 @@ Made with [contributors-img](https://contrib.rocks).
 
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
 [licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE
+</div> <!-- justify -->

@@ -20,6 +20,11 @@ show_message_with_usage() {
     exit 1
 }
 
+# if ~/.local/bin is not in the PATH, add it
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    export PATH="$HOME/.local/bin:${PATH}"
+fi
+
 NO_HELP=true
 NO_CHECK=true
 source /opt/dots/util/easy-options/easyoptions.sh || exit

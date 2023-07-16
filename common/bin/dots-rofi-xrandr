@@ -6,6 +6,8 @@ ext=VGA1
 internal=$(xrandr | grep primary | cut -d' ' -f1)
 ext=$(xrandr | grep connected | grep -v primary | head -n 1 | cut -d' ' -f1)
 
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
+
 external_on_top() {
     #cat <<EOF
     #┌────┬──┐
@@ -108,7 +110,7 @@ element_count=5
 res=$(print_menu | rofi \
     -dmenu -sep '\0' -lines "$element_count" \
     -eh "$element_height" -p '' -no-custom \
-    -format i -theme "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/tools.rasi)
+    -format i -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi)
 
 if [ -z "$res" ]; then
     exit

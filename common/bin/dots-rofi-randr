@@ -7,6 +7,8 @@
 typeset XRANDR_TXT # readonly; stdout of running xrandr without any options
 typeset -A OUTPUT_CONFIGURED # key=connected output name
 
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
+
 main() {
   local -i iteration
   local max_iteration
@@ -76,7 +78,7 @@ select_output() {
   case ${#menu} in
     0) return "${err_no_options}" ;;
     1) echo "${menu}" ;;
-    *) echo ${(F)menu} | rofi -dmenu -theme "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/tools.rasi -l 10 -p "$1" ;;
+    *) echo ${(F)menu} | rofi -dmenu -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi -l 10 -p "$1" ;;
   esac
 }
 
@@ -110,7 +112,7 @@ right of ${anchor}
 above ${anchor}
 below ${anchor}
 mirror ${anchor}
-off" | rofi -dmenu -theme "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/tools.rasi -l 10 -p "Select position of $1:" | read selection
+off" | rofi -dmenu -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi -l 10 -p "Select position of $1:" | read selection
 
   case "${selection[(w)1]}" in
     left) echo "--left-of ${anchor}" ;;
@@ -154,7 +156,7 @@ select_mode() {
     | grep x \
     | cat <(echo auto) -)"
 
-  echo "${menu}" | rofi -dmenu -theme "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/rofi/tools.rasi -l 10 -p "Select mode for $1:" | read selection
+  echo "${menu}" | rofi -dmenu -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi -l 10 -p "Select mode for $1:" | read selection
 
   case "${selection}" in
     'auto') echo '--auto' ;;

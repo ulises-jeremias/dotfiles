@@ -3,6 +3,8 @@
 NAME=$(basename "$0")
 VER="0.4"
 
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
+
 usage() {
   cat <<-EOF
 
@@ -34,7 +36,7 @@ toggle_polybar() {
     if [ "$(pidof polybar | wc -l)" -ne 0 ]; then
       pkill -9 polybar
     else
-      "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/polybar/launch &
+      "${XDG_CONFIG_HOME}"/polybar/launch &
     fi
     exit 0
   fi
