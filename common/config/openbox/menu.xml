@@ -31,8 +31,6 @@
       </item>
     </menu>
     <separator/>
-    <menu execute="al-places-pipemenu --recent ~/" id="pipe-placesmenu" label="Places"/>
-    <separator/>
     <menu id="preferences" label="Preferences">
       <menu id="obConfig" label="Openbox">
         <item label="Obconf">
@@ -97,8 +95,6 @@
         </action>
       </item>
     </menu>
-    <menu execute="al-help-pipemenu" id="help" label="Help and Info"/>
-    <menu execute="al-kb-pipemenu" id="keybinds" label="Keybinds"/>
     <separator/>
     <item label="Lock screen">
       <action name="Execute">
