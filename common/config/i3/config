@@ -1,13 +1,4 @@
-# border & title
-# NOTE: Title format is hidden because of `alpha` property set to `1`.
-# Font size set to `0` is to hidde this bar
-for_window [class="^.*"] border pixel 0, title_format "<b alpha='1'> %class >> %title </b>"
-
-# gaps
-gaps inner 12
-gaps outer 62
-# gaps left 10
-# gaps right 10
+# Documentation: https://i3wm.org/docs/userguide.html
 
 # font
 # TODO: Figure out if this font is used anywhere
@@ -182,11 +173,32 @@ bindsym $Mod+Shift+Down  move down  10px
 bindsym $Mod+Shift+Left  move left  10px
 bindsym $Mod+Shift+Right move right 10px
 
-# Size
-bindsym $Mod+Control+Shift+Up    resize shrink height 10 px or 1 ppt
-bindsym $Mod+Control+Shift+Down  resize grow   height 10 px or 1 ppt
-bindsym $Mod+Control+Shift+Left  resize shrink width  10 px or 1 ppt
-bindsym $Mod+Control+Shift+Right resize grow   width  10 px or 1 ppt
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
+
+        # Pressing left will shrink the window’s width.
+        # Pressing right will grow the window’s width.
+        # Pressing up will shrink the window’s height.
+        # Pressing down will grow the window’s height.
+        bindsym j resize shrink width 10 px or 10 ppt
+        bindsym k resize grow height 10 px or 10 ppt
+        bindsym l resize shrink height 10 px or 10 ppt
+        bindsym semicolon resize grow width 10 px or 10 ppt
+
+        # same bindings, but for the arrow keys
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape or $mod+r
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $Mod+r mode "default"
+}
+
+bindsym $Mod+r mode "resize"
 
 # layout toggle, keycode 23 is Tab
 bindcode Mod1+23 layout toggle tabbed split
@@ -207,27 +219,73 @@ default_orientation horizontal
 
 ###############      Border & Gaps     ###############
 
+# border & title
+# NOTE: Title format is hidden because of `alpha` property set to `1`.
+# Font size set to `0` is to hidde this bar
+for_window [class="^.*"] border pixel 0, title_format "<b alpha='1'> %class >> %title </b>"
+
+# Smart borders (draw borders around container only if it is not the only container on this workspace)
+# on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
+smart_borders on
+
+# gaps
+gaps inner 12
+gaps outer 62
+# gaps left 10
+# gaps right 10
+
+
 new_window normal
 new_float  normal
 
 hide_edge_borders both
 
-bindsym $Mod+shift+b border toggle
+bindsym $Mod+Shift+b border toggle
 
 # changing border style
 bindsym $Mod+n border normal
 bindsym $Mod+y border 1pixel
 bindsym $Mod+u border none
 
-# change gaps
-bindsym $Mod+plus                gaps inner current plus  5
-bindsym $Mod+minus               gaps inner current minus 5
-bindsym $Mod+Shift+plus          gaps outer current plus  5
-bindsym $Mod+Shift+minus         gaps outer current minus 5
-bindsym $Mod+Control+plus        gaps inner all     plus  5
-bindsym $Mod+Control+minus       gaps inner all     minus 5
-bindsym $Mod+Control+Shift+plus  gaps outer all     plus  5
-bindsym $Mod+Control+Shift+minus gaps outer all     minus 5
+# Smart gaps (gaps used if only more than one container on the workspace)
+smart_gaps on
+
+# Press $mod+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
+set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
+bindsym $mod+g mode "$mode_gaps"
+
+mode "$mode_gaps" {
+        bindsym o      mode "$mode_gaps_outer"
+        bindsym i      mode "$mode_gaps_inner"
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+mode "$mode_gaps_inner" {
+        bindsym plus  gaps inner current plus 5
+        bindsym minus gaps inner current minus 5
+        bindsym 0     gaps inner current set 0
+
+        bindsym Shift+plus  gaps inner all plus 5
+        bindsym Shift+minus gaps inner all minus 5
+        bindsym Shift+0     gaps inner all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+mode "$mode_gaps_outer" {
+        bindsym plus  gaps outer current plus 5
+        bindsym minus gaps outer current minus 5
+        bindsym 0     gaps outer current set 0
+
+        bindsym Shift+plus  gaps outer all plus 5
+        bindsym Shift+minus gaps outer all minus 5
+        bindsym Shift+0     gaps outer all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
 
 # focus, floating, & sticky
 for_window [window_role="(?i)(?:pop-up|setup|task_dialog|dialog|menu|Preferences)"] floating enable
@@ -260,6 +318,5 @@ for_window [class="Timeset-gui"] floating enable
 for_window [class="(?i)virtualbox"] floating enable
 for_window [class="(?i)virtualbox"] fullscreen enable 
 for_window [class="Xfburn"] floating enable
-
 
 popup_during_fullscreen smart
