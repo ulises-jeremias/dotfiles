@@ -5,12 +5,11 @@ SOURCE_DIR="$(realpath "$(dirname "$0")")"
 rm -rf ~/.zshrc > /dev/null 2>&1
 rm -rf ~/.zsh_prompt > /dev/null 2>&1
 rm -rf ~/.zsh_aliases > /dev/null 2>&1
-
-mkdir -p ~/.zsh/custom
+rm -rf ~/.zsh/custom > /dev/null 2>&1
 
 ln -sf "${SOURCE_DIR}"/zshrc ~/.zshrc
 ln -sf "${SOURCE_DIR}"/zsh_prompt ~/.zsh_prompt
 ln -sf "${SOURCE_DIR}"/zsh_aliases ~/.zsh_aliases
 ln -sf "${SOURCE_DIR}"/custom ~/.zsh/custom
 
-sudo chsh -s /usr/bin/zsh
+sudo chsh "${USER}" -s /usr/bin/zsh
