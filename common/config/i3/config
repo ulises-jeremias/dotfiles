@@ -226,14 +226,13 @@ for_window [class="^.*"] border pixel 0, title_format "<b alpha='1'> %class >> %
 
 # Smart borders (draw borders around container only if it is not the only container on this workspace)
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
-smart_borders on
+smart_borders no_gaps
 
 # gaps
 gaps inner 12
 gaps outer 62
 # gaps left 10
 # gaps right 10
-
 
 new_window normal
 new_float  normal
@@ -246,9 +245,6 @@ bindsym $Mod+Shift+b border toggle
 bindsym $Mod+n border normal
 bindsym $Mod+y border 1pixel
 bindsym $Mod+u border none
-
-# Smart gaps (gaps used if only more than one container on the workspace)
-smart_gaps on
 
 # Press $mod+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
 set $mode_gaps Gaps: (o) outer, (i) inner
