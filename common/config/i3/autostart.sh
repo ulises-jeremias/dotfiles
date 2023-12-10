@@ -36,3 +36,6 @@ dots-scripts feh-blur --blur 10 -d &
 
 # Start greenclip daemon
 [[ -z "$(pgrep greenclip)" ]] && greenclip daemon &
+
+# Start dunst
+[[ -z "$(pgrep i3-layouts)" ]] && i3-layouts &
