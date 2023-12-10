@@ -18,8 +18,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Latest Repo Content
+    - name: Checkout Latest Wiki Content
       uses: actions/checkout@v4
+      with:
+        repository: ulises-jeremias/dotfiles.wiki
+        path: docs
 
     - name: Checkout github-wikito-converter
       uses: actions/checkout@v4
