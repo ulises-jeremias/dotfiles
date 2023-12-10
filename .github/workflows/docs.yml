@@ -40,7 +40,7 @@ jobs:
     - name: Build Docs
       run: |
         mkdir public
-        node ./github-wikito-converter/dist/cli/gwtc.js --file-name index --output ./public --toc-level 4 ./docs
+        node ./github-wikito-converter/dist/cli/gwtc.js --file-name index --output ./public --toc-level 3 ./docs
 
     - name: Deploy to gh-pages
       uses: peaceiris/actions-gh-pages@v3
