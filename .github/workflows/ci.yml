@@ -18,13 +18,9 @@ on:
       - master
 
 jobs:
-  shellcheck:
-    name: Shellcheck
-    uses: ./.github/workflows/shellcheck.yml
-
-  markdownlint:
-    name: Markdown Lint
-    uses: ./.github/workflows/markdownlint.yml
+  lint:
+    name: Super Linter
+    uses: ./.github/workflows/lint.yml
 
   todo:
     if: github.event_name == 'push'
