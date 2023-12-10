@@ -2,6 +2,9 @@
 
 SOURCE_DIR="$(realpath "$(dirname "$0")")"
 
+mkdir -p ~/.config/alacritty
+ln -sf "${SOURCE_DIR}"/alacritty.yml ~/.config/alacritty/alacritty.yml
+
 if [ ! -d "${SOURCE_DIR}"/alacritty-theme/.git ]; then
   rm -rf "${SOURCE_DIR}"/alacritty-theme
   git clone https://github.com/eendroroy/alacritty-theme "${SOURCE_DIR}"/alacritty-theme
