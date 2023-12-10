@@ -100,7 +100,7 @@ for arg in "$@"; do
 
     case "$ANS" in
     *Hibernate) systemctl hibernate ;;
-    *Lock) i3lock-fancy -p ;;
+    *Lock) betterlockscreen --lock blur ;;
     *Reboot) systemctl -i reboot ;;
     *Shutdown) systemctl -i poweroff ;;
     *Suspend) systemctl suspend ;;

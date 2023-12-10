@@ -98,7 +98,7 @@
     <separator/>
     <item label="Lock screen">
       <action name="Execute">
-        <command>i3lock-fancy -p</command>
+        <command>betterlockscreen --lock blur</command>
       </action>
     </item>
     <item label="Exit openbox">
