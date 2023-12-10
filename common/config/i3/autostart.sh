@@ -31,11 +31,11 @@ dots-scripts feh-blur --blur 10 -d &
 # open polybar
 "${XDG_CONFIG_HOME}"/polybar/launch &
 
-# i3 layouts
-[[ -z "$(pgrep i3-layouts)" ]] && whereis i3-layouts && i3-layouts &
-
 # Start nm-applet
 [[ -z "$(pgrep nm-applet)" ]] && nm-applet &
 
 # Start greenclip daemon
 [[ -z "$(pgrep greenclip)" ]] && greenclip daemon &
+
+# i3 layouts daemon
+exec i3-layouts

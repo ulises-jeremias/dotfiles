@@ -215,6 +215,9 @@ bindsym $Mod+r mode "resize"
 bindcode Mod1+23 layout toggle tabbed split
 bindcode $Mod+23 layout toggle splitv splith
 
+# task switcher using skippy-xd
+bindsym $Mod+Shift+Tab exec --no-startup-id skippy-xd
+
 # switch to workspace with urgent window
 for_window [urgent="latest"] focus
 focus_on_window_activation   focus
