@@ -4,7 +4,7 @@
 
 <h1>🔥 Dotfiles Generator</h1>
 
-[Docs](https://github.com/ulises-jeremias/dotfiles/wiki) |
+[Docs](https://ulises-jeremias.github.io/dotfiles) |
 [Changelog](#) |
 [Contributing](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md)
 
