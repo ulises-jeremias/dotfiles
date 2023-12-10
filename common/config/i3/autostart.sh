@@ -31,8 +31,8 @@ dots-scripts feh-blur --blur 10 -d &
 # open polybar
 "${XDG_CONFIG_HOME}"/polybar/launch &
 
-# i3 autotiling
-# [[ -z "$(pgrep autotiling)" ]] && "${XDG_CONFIG_HOME}"/i3/autotiling &
+# i3 layouts
+[[ -z "$(pgrep i3-layouts)" ]] && whereis i3-layouts && i3-layouts &
 
 # Start nm-applet
 [[ -z "$(pgrep nm-applet)" ]] && nm-applet &
