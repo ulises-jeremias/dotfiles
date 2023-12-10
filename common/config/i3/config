@@ -29,6 +29,9 @@ set $WS8 "8"
 # run with reload
 exec_always --no-startup-id ~/.config/i3/autostart.sh
 
+# run i3-layouts
+exec i3-layouts
+
 # needed for super to launch rofi through ksuperkey, see ~/.xprofile
 bindsym Mod1+F1 exec --no-startup-id ~/.local/bin/dots-scripts rofi-run -r
 
