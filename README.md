@@ -37,7 +37,9 @@
 You might be here looking for (Linux) rice reference or to fully replicate my personal
 configuration of my favorite Window Managers and several apps as well. ❄️
 
-Most of them were written from scratch. Here are some details:
+This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!
+
+Most of my dotfiles where written from scratch, but I also took inspiration from other dotfiles repositories. The highlights about my dotfiles are the following:
 
 - **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
 - **Panel** 🌸 [Polybar](https://polybar.github.io/)!
@@ -62,14 +64,14 @@ Most of them were written from scratch. Here are some details:
 
   ```sh
   yay dots-stable
-  dots --help
+  dots
   ```
 
   or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/)
 
   ```sh
   yay dots-git
-  dots --help
+  dots
   ```
 
 - Using `makepkg`
@@ -80,7 +82,7 @@ Most of them were written from scratch. Here are some details:
   git clone https://aur.archlinux.org/dots-stable.git /tmp/dots-stable
   cd /tmp/dots-stable
   makepkg -si
-  dots --help
+  dots
   ```
 
   or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/)
@@ -89,7 +91,7 @@ Most of them were written from scratch. Here are some details:
   git clone https://aur.archlinux.org/dots-git.git /tmp/dots-git
   cd /tmp/dots-git
   makepkg -si
-  dots --help
+  dots
   ```
 
 ### From source
@@ -101,10 +103,20 @@ Most of them were written from scratch. Here are some details:
 git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
 cd /tmp/dotfiles
 sudo ./install
-dots --help
+dots
 ```
 
 The installation script allows you to install all the necessary dependencies to make your dotfiles config work correctly.
+
+### Using Chezmoi
+
+> This is a recommended way to install the dotfiles generator. It will install the latest stable version of the dotfiles generator using [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible.
+
+```sh
+chezmoi init --apply ulises-jeremias
+```
+
+This will install the dotfiles generator in `~/.local/share/chezmoi`.
 
 </details>
 
@@ -148,30 +160,9 @@ cd /tmp/dotfiles
 ```sh
 .
 ├── .github                 # GitHub related files
-├── arch-linux              # Arch Linux override files (used by dots when installing in Arch Linux based distros)
-│   ├── bin/                # binaries to be installed in Arch Linux based distros
-│   ├── deps.sh             # Arch Linux specific dependencies
-│   └── install-pkgs.sh     # Arch Linux specific script to install packages from the AUR and the official repos
-├── bin/                    # Useful binaries
-│   └── play                # script to run the testing environments
-├── common                  # common files (used by dots when installing in any OS)
-│   ├── bin/                # common binaries to be installed in any OS
-│   ├── config/             # common config files to be installed in any OS
-│   └── install             # script installed by dots at
-
- <dotfiles_dir>/install
-├── debian                  # Debian override files (used by dots when installing in Debian based distros)
-│   ├── bin/                # binaries to be installed in Debian based distros
-│   ├── deps.sh             # Debian specific dependencies
-│   └── install-pkgs.sh     # Debian specific script to install packages from the official repos and other sources
-├── playground              # testing environments
-│   └── vagrant/            # Vagrant setup to bootstrap the testing environments
-├── scripts                 # scripts used by dots to install the dotfiles
-│   └── install-pkgs        # script to install packages from the official repos and other sources
-│   ├── install-dotfiles    # script to install the dotfiles in the system
-│   └── install             # main installation script
+├── playground              # testing environment using Vagrant
+├── root                    # root directory of the dotfiles
 ├── static/                 # static files used by the README
-├── ui/                     # UI files used by dots when installing in interactive mode - WIP
 ├── lib/                    # utility files used by dots
 ├── dots                    # dots binary to install the dotfiles
 └── install                 # installation `dots` binary in the system
