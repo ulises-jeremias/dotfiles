@@ -4,7 +4,6 @@ ROOT="$(realpath "$(dirname "$0")")"
 PKGNAME=${PKGNAME:-"dots"}
 
 rm -rf "${PKGDIR}/opt/${PKGNAME}" \
-    "${PKGDIR}/usr/bin/dots" \
     "${PKGDIR}/usr/share/licenses/${PKGNAME}/" \
     "${PKGDIR}/usr/share/doc/${PKGNAME}/"
 
@@ -14,15 +13,3 @@ cp -Rf "${ROOT}"/lib "${PKGDIR}/opt/${PKGNAME}"
 
 install -Dm644 "${ROOT}"/LICENSE -t "${PKGDIR}/usr/share/licenses/${PKGNAME}/"
 install -Dm644 "${ROOT}"/README.md -t "${PKGDIR}/usr/share/doc/${PKGNAME}/"
-install -Dm755 "${ROOT}"/dots -t "${PKGDIR}/opt/${PKGNAME}/"
-
-mkdir -p "${PKGDIR}"/usr/bin
-
-# Create dots binary at ${PKGDIR}/usr/bin/${PKGNAME} to wrap the file at ${PKGDIR}/opt/${PKGNAME}/dots
-cat > "${PKGDIR}"/usr/bin/"${PKGNAME}" <<EOF
-#!/usr/bin/env sh
-
-${PKGDIR}/opt/${PKGNAME}/dots "\$@"
-EOF
-
-chmod +x "${PKGDIR}/usr/bin/${PKGNAME}"
