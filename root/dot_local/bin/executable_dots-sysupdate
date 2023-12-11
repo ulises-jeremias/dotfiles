@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if type -p yay >/dev/null; then
+    yay -Syu
+elif type -p trizen >/dev/null; then
+    trizen -Syu
+elif type -p pacaur >/dev/null; then
+    pacaur -Syu
+elif type -p pikaur >/dev/null; then
+    pikaur -Syu
+elif type -p aura >/dev/null; then
+    aura -Syu
+elif type -p aurman >/dev/null; then
+    aurman -Syu
+elif type -p pakku >/dev/null; then
+    pakku -Syu
+else
+    echo "No AUR helper found. Using pacman."
+    sudo pacman -Syyuu
+fi

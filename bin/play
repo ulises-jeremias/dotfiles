@@ -20,8 +20,8 @@ set -e
 ROOT="$(realpath "$(dirname "$0")"/..)"
 PLAYGROUND_DIR="$(realpath "${ROOT}/playground")"
 
-. "${ROOT}/util/easy-options/easyoptions.sh" || exit
-. "${ROOT}/util/logs.sh" || exit
+. "${ROOT}/lib/easy-options/easyoptions.sh" || exit
+. "${ROOT}/lib/logs.sh" || exit
 
 
 #==========================================

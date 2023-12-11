@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_menu xmlns="http://openbox.org/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://openbox.org/  file:///usr/share/openbox/menu.xsd">
+  <menu id="root-menu" label="Openbox 3">
+    <separator/>
+    <item label="Terminal">
+      <action name="Execute">
+        <command>exo-open --launch TerminalEmulator</command>
+      </action>
+    </item>
+    <item label="Web Browser">
+      <action name="Execute">
+        <command>exo-open --launch WebBrowser</command>
+      </action>
+    </item>
+    <item label="File Manager">
+      <action name="Execute">
+        <command>exo-open --launch FileManager</command>
+      </action>
+    </item>
+    <separator/>
+    <menu id="screenshot" label="Screenshot">
+      <item label="Screenshot">
+        <action name="Execute">
+          <command>~/.local/bin/dots-scripts screenshooter</command>
+        </action>
+      </item>
+      <item label="Screenshot in 5">
+        <action name="Execute">
+          <command>~/.local/bin/dots-scripts screenshooter</command>
+        </action>
+      </item>
+    </menu>
+    <separator/>
+    <menu id="preferences" label="Preferences">
+      <menu id="obConfig" label="Openbox">
+        <item label="Obconf">
+          <action name="Execute">
+            <command>obconf</command>
+          </action>
+        </item>
+        <item label="Kickshaw">
+          <action name="Execute">
+            <command>kickshaw</command>
+          </action>
+        </item>
+        <item label="obkey">
+          <action name="Execute">
+            <command>obkey</command>
+          </action>
+        </item>
+        <separator/>
+        <item label="Edit menu.xml">
+          <action name="Execute">
+            <command>exo-open "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/openbox/menu.xml</command>
+          </action>
+        </item>
+        <item label="Edit rc.xml">
+          <action name="Execute">
+            <command>exo-open "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/openbox/rc.xml</command>
+          </action>
+        </item>
+        <item label="Edit autostart">
+          <action name="Execute">
+            <command>exo-open "${XDG_CONFIG_HOME:-"${HOME}"/.config}"/openbox/autostart.sh</command>
+          </action>
+        </item>
+        <separator/>
+        <item label="Openbox Reconfigure">
+          <action name="Reconfigure"/>
+        </item>
+        <item label="Openbox Restart">
+          <action name="Restart"/>
+        </item>
+      </menu>
+      <separator/>
+      <item label="Xfce4 appearance settings">
+        <action name="Execute">
+          <command>xfce4-appearance-settings</command>
+        </action>
+      </item>
+      <separator/>
+      <item label="Xfce4 power settings">
+        <action name="Execute">
+          <command>xfce4-power-manager</command>
+        </action>
+      </item>
+      <item label="Pulse audio volume control">
+        <action name="Execute">
+          <command>pavucontrol</command>
+        </action>
+      </item>
+      <item label="Xfce4 settings manager">
+        <action name="Execute">
+          <command>xfce4-settings-manager</command>
+        </action>
+      </item>
+    </menu>
+    <separator/>
+    <item label="Lock screen">
+      <action name="Execute">
+        <command>betterlockscreen --lock blur</command>
+      </action>
+    </item>
+    <item label="Exit openbox">
+      <action name="Execute">
+        <command>~/.local/bin/dots-scripts rofi-run -l</command>
+      </action>
+    </item>
+  </menu>
+</openbox_menu>
+<!-- vim:sw=2
+-->

@@ -7,13 +7,7 @@
 ##
 ## Options:
 ##     -h, --help                            Help.
-##     -c, --clear                           Will remove existing dotfiles before installing the new ones.
-##
-##         --os=OS_NAME                      Operating System. Posible values: common | arch-linux | debian | ...
-##                                           where common is supposed to work correctly with any linux distro.
-##                                           `common` is set as default value for this flag.
-##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_install_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
-##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/dotfiles by default.
+##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/.local/share/dotfiles by default.
 ##
 
 set -e
@@ -21,18 +15,29 @@ set -e
 # POSIX way to get script's dir: https://stackoverflow.com/a/29834779/12156188
 ROOT="$(cd -P -- "$(dirname -- "$(command -v -- "$0")")" && pwd -P)"
 
-. "${ROOT}"/util/easy-options/easyoptions.sh
-. "${ROOT}"/util/logs.sh
-
-# override OS with a correct value with the given params
-. "${ROOT}"/util/os.sh
+NO_CHECK=1
+NO_HELP=1
+. "${ROOT}"/lib/easy-options/easyoptions.sh
+. "${ROOT}"/lib/logs.sh
 
 #==========================================
 # Default argument values and preprocessing
 #==========================================
-os=${os:-""}
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
-log_file=${log_file:-"/tmp/dots_install_log_$time_str.txt"}
-dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
+dotfiles_dir=${dotfiles_dir:-"${HOME}/.local/share/dotfiles"}
+
+if ! chezmoi="$(command -v chezmoi)"; then
+    echo "chezmoi is not installed, please install it first."
+    exit 1
+fi
+
+if [ ! -d "${dotfiles_dir}" ]; then
+    echo "Dotfiles dir '${dotfiles_dir}' does not exist, downloading dotfiles..."
+    chezmoi init ulises-jeremias --verbose --apply --source="${dotfiles_dir}"
+fi
+
+echo "Running 'chezmoi --source=${dotfiles_dir} $*'" >&2
+
+exec "${chezmoi}" --source="${dotfiles_dir}" "$@"
 
 

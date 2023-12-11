@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+NAME=$(basename "$0")
+VER="0.1"
+
+usage() {
+    cat <<-EOF
+
+ USAGE:  $NAME [OPTIONS [ADDITIONAL]]
+
+ OPTIONS:
+
+     -h,--help         Display this message
+
+     -v,--version      Display script version
+
+     -f,--fullscreen   Take a screenshot of the entire screen
+
+     -r,--region       Select a region to be captured by clicking a point of the screen without releasing the mouse button, dragging your mouse to the other corner of the region, and releasing the mouse button.
+
+EOF
+}
+
+shoot() {
+    if type -p flameshot >/dev/null; then
+        if [ -n "$region" ]; then
+            flameshot gui
+        else
+            flameshot full
+        fi
+    elif type -p xfce4-screenshooter >/dev/null; then
+        if [ -n "$region" ]; then
+            region_flag="-r"
+        fi
+        xfce4-screenshooter $region_flag
+    else
+        if [ -n "$region" ]; then
+            region_flag="-s"
+        fi
+        scrot $region_flag '%S.png' -e 'mv $f $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png ; feh $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png'
+    fi
+}
+
+# Catch command line options
+case $1 in
+-h | --help) usage ;;
+-v | --version) echo -e "$NAME -- Version $VER" ;;
+-f | --fullscreen) shoot ;;
+-r | --redshift)
+    region=1
+    shoot
+    ;;
+*) shoot ;;
+esac

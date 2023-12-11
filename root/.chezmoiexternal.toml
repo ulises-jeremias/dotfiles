@@ -1,0 +1,26 @@
+[".config/alacritty/themes"]
+    type = "archive"
+    url = "https://github.com/alacritty/alacritty-theme/archive/master.tar.gz"
+    exact = true
+    stripComponents = 2
+    refreshPeriod = "168h"
+    path = "themes"
+    include = ["**/themes/**"]
+[".config/rofi/themes"]
+    type = "archive"
+    url = "https://github.com/ulises-jeremias/rofi-themes/archive/main.tar.gz"
+    exact = true
+    stripComponents = 2
+    refreshPeriod = "168h"
+    path = "themes"
+    include = ["**/themes/**"]
+[".zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/zsh-users/zsh-syntax-highlighting/master/zsh-syntax-highlighting.zsh"
+    exact = true
+    refreshPeriod = "168h"
+[".zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/zsh-users/zsh-autosuggestions/master/zsh-autosuggestions.zsh"
+    exact = true
+    refreshPeriod = "168h"

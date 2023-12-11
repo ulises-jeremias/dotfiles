@@ -5,7 +5,7 @@ PKGNAME=${PKGNAME:-"dots"}
 
 # override OS with a correct value with the given params
 # creates variable `os`
-. "${ROOT}"/util/os.sh
+. "${ROOT}"/lib/os.sh
 
 rm -rf "${PKGDIR}/opt/${PKGNAME}" \
     "${PKGDIR}/usr/bin/dots" \
@@ -14,9 +14,7 @@ rm -rf "${PKGDIR}/opt/${PKGNAME}" \
 
 install -d "${PKGDIR}/opt/${PKGNAME}"
 
-for dirname in common "${os}" ui util; do
-    cp -Rf "${ROOT}"/"${dirname}" "${PKGDIR}/opt/${PKGNAME}"
-done
+cp -Rf "${ROOT}"/lib "${PKGDIR}/opt/${PKGNAME}"
 
 install -Dm644 "${ROOT}"/LICENSE -t "${PKGDIR}/usr/share/licenses/${PKGNAME}/"
 install -Dm644 "${ROOT}"/README.md -t "${PKGDIR}/usr/share/doc/${PKGNAME}/"

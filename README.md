@@ -172,7 +172,7 @@ cd /tmp/dotfiles
 │   └── install             # main installation script
 ├── static/                 # static files used by the README
 ├── ui/                     # UI files used by dots when installing in interactive mode - WIP
-├── util/                   # utility files used by dots
+├── lib/                    # utility files used by dots
 ├── dots                    # dots binary to install the dotfiles
 └── install                 # installation `dots` binary in the system
 ```

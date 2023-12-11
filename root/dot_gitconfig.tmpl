@@ -1,0 +1,170 @@
+# set your user tokens as environment variables, such as ~/.secrets
+# See the README for examples.
+[color]
+  ui = auto
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red
+  new = green
+[alias]
+  # list all aliases
+  la = "!git config -l | grep alias | cut -c 7-"
+
+  # add
+  a = add                           # add
+  chunkyadd = add --patch           # stage commits chunk by chunk
+
+  # Shows list of contributors of a repository.
+  contributors = shortlog --summary --numbered --email
+
+  # via http://philjackson.github.io/2013/04/07/handy-git-tips-to-stop-you-getting-fired.html
+  snapshot = !git stash save "snapshot: $(date)" && git stash apply "stash@{0}"
+  snapshots = !git stash list --grep snapshot
+
+  #via http://stackoverflow.com/questions/5188320/how-can-i-get-a-list-of-git-branches-ordered-by-most-recent-commit
+  recent-branches = !git for-each-ref --count=15 --sort=-committerdate refs/heads/ --format='%(refname:short)'
+
+  # branch
+  b = branch -v                     # branch (verbose)
+  ren-remote = "!f() { git push origin origin/$1:refs/heads/$2 :$1; } ; f"
+  ren-local = branch -m
+  ren = !git ren-local $1 $2 && git ren-remote $1 $2
+
+  # commit
+  c = commit -m                     # commit with message
+  ca = commit -am                   # commit all with message
+  ci = commit                       # commit
+  amend = commit --amend            # ammend your last commit
+  amend-noedit = commit --amend --no-edit # amend your last commit reusing last commit's message
+  ammend = commit --amend           # ammend your last commit
+  ammend-noedit = commit --amend --no-edit # amend your last commit reusing last commit's message
+
+  # checkout
+  co = checkout                     # checkout
+  nb = checkout -b                  # create and switch to a new branch (mnemonic: "git new branch branchname...")
+
+  # cherry-pick
+  cp = cherry-pick -x               # grab a change from a branch
+
+  # diff
+  d = diff                          # diff unstaged changes
+  dc = diff --cached                # diff staged changes
+  last = diff HEAD^                 # diff last committed change
+
+  # log
+  l = log --graph --date=short
+  changes = log --pretty=format:\"%h %cr %cn %Cgreen%s%Creset\" --name-status
+  short = log --pretty=format:\"%h %cr %cn %Cgreen%s%Creset\"
+  simple = log --pretty=format:\" * %s\"
+  shortnocolor = log --pretty=format:\"%h %cr %cn %s\"
+  filelog = log -u                  # show changes to a file
+
+  # pull
+  pl = pull                         # pull
+
+  # push
+  ps = push                         # push
+
+  # rebase
+  rc = rebase --continue            # continue rebase
+  rs = rebase --skip                # skip rebase
+
+  # merge
+  mt = mergetool                    # fire up the merge tool
+
+  # remote
+  r = remote -v                     # show remotes (verbose)
+
+  # reset
+  unstage = reset HEAD              # remove files from index (tracking)
+  uncommit = reset --soft HEAD^     # go back before last commit, with files in uncommitted state
+
+  # stash
+  ss = stash                        # stash changes
+  sl = stash list                   # list stashes
+  sa = stash apply                  # apply stash (restore changes)
+  sd = stash drop                   # drop stashes (destroy changes)
+
+  # status
+  s = status                        # status
+  st = status                       # status
+  stat = status                     # status
+
+  # tag
+  t = tag -n                        # show tags with <n> lines of each tag message
+
+  # svn helpers
+  svnr = svn rebase
+  svnd = svn dcommit
+  svnl = svn log --oneline --show-commit
+
+  # checkout remote head, via https://twitter.com/jnesselr/status/1334586152691625985
+  cdef = "!f() { git checkout $(git originhead ${1:-origin}); } ; f"
+  originhead = "!f() { git remote show ${1:-origin} | grep 'HEAD branch' | cut -d ' ' -f5; } ; f"
+[format]
+  pretty = format:%C(blue)%ad%C(reset) %C(yellow)%h%C(green)%d%C(reset) %C(blue)%s %C(magenta) [%an]%C(reset)
+[mergetool]
+  prompt = false
+  keepBackup = false
+  writeToTemp = true
+
+  {{- range (list "" "g" "m") }}
+[mergetool " {{- . -}} vimdiff"]
+  cmd = " {{- . -}} vim -c 'Gvdiffsplit!' $MERGED"     # use fugitive.vim for 3-way merge
+  {{- end }}
+[merge]
+  summary = true
+  verbosity = 1
+  tool = vimdiff
+  guitool = gvimdiff
+[apply]
+  whitespace = nowarn
+[branch]
+  autosetupmerge = true
+[push]
+  # 'git push' will push the current branch to its tracking branch
+  # the usual default is to push all branches
+  default = upstream
+[core]
+  autocrlf = false
+  editor = vim
+  excludesfile = {{ .chezmoi.homeDir -}}
+    /.config/git/ignore
+  attributesFile = {{ .chezmoi.homeDir -}}
+    /.config/git/attributes
+[advice]
+  statusHints = false
+[diff]
+  # Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject
+  # instead of a/b/c/d as prefixes for patches
+  mnemonicprefix = true
+  algorithm = patience
+  compactionHeuristic = true
+[diff "spaceman-diff"]
+  command = spaceman-diff
+[rerere]
+  # Remember my merges
+  # http://gitfu.wordpress.com/2008/04/20/git-rerere-rereremember-what-you-did-last-time/
+  enabled = true
+[commit]
+  template = {{ .chezmoi.homeDir -}}
+    /.config/git/templates/commit_message.txt
+[pager]
+  branch = false
+  stash = false
+[include]
+  path = .gitconfig.user
+    {{- range $file := list "diff-merge-tools" "gui-config" }}
+  path = {{ $.chezmoi.homeDir -}}
+    /.config/git/
+    {{-   $file }}
+    {{- end }}
+
+{{- /*
+ vim:ft=gitconfig:
+*/}}
