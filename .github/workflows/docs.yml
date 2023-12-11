@@ -57,6 +57,8 @@ jobs:
     needs:
       - job-sync-docs-to-wiki
       - job-sync-wiki-to-docs
+    # run if any of the previous jobs succeeded
+    if: ${{ needs.job-sync-docs-to-wiki.result == 'success' || needs.job-sync-wiki-to-docs.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Latest Wiki Content

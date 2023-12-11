@@ -159,7 +159,7 @@ cd /tmp/dotfiles
 ├── static/                 # static files used by the README
 ├── lib/                    # utility files used by dots
 ├── dots                    # dots binary to install the dotfiles
-└── install                 # installation `dots` binary in the system
+└── install.sh              # installation script
 ```
 
 </details>

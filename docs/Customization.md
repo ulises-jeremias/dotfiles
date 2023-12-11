@@ -2,35 +2,21 @@
 
 You don't need to fork this repository to customize it. You can easily customize the dotfiles by leveraging the generated dotfiles directory. We encourage you to maintain a separate GitHub repository for your own dotfiles configurations.
 
-To get started, follow these steps:
+We use [Chezmoi](https://www.chezmoi.io/) to manage the dotfiles. Chezmoi is a sophisticated yet easy-to-use command-line tool that helps you manage your dotfiles across multiple machines. It is designed to be secure, flexible, and easy to use.
 
-1. Change directory to your dotfiles directory:
-   ```sh
-   cd <dotfiles_dir>
-   ```
+To customize the dotfiles, follow these steps:
 
-2. Initialize a new Git repository:
-   ```sh
-   git init
-   ```
+1. Clone the dotfiles repository to your local machine.
 
-3. Add your custom dotfiles repository as a remote origin:
-   ```sh
-   git remote add origin git@github.com:your-username/your-dotfiles-repo.git
-   ```
+2. Run the command `chezmoi init` to initialize Chezmoi.
 
-4. Pull the changes from the remote origin:
-   ```sh
-   git pull origin master
-   ```
+3. Run the command `chezmoi edit-config` to open the dotfiles directory.
 
-If you made changes to the `<dotfiles_dir>/config` directory, you need to apply those changes. Here's how:
+4. Customize the dotfiles to suit your preferences and workflow.
 
-- For directories that already have their own `./install` script, you only need to execute the installation script if the changes are within those directories.
+5. Run the command `chezmoi apply` to apply the changes.
 
-- If you want to ensure that your customizations are applied to all your dotfiles, run the `<dotfiles_dir>/install` script. This will automatically run the installation process for all the dotfiles in your dotfiles directory.
-
-### Examples
+## Examples
 
 Here are some examples of customizations made using the dotfiles:
 

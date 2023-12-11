@@ -1,6 +1,6 @@
 Openbox is a lightweight and highly configurable window manager that provides a simple yet powerful environment for managing windows in your desktop. With its flexibility and extensive customization options, Openbox allows you to create a personalized and efficient workflow.
 
-The `openbox` configuration files are located at `~/.config/openbox`, which is a symbolic link to the directory `<dotfiles_dir>/config/openbox`. This gives you the freedom to fully customize and fine-tune Openbox according to your preferences.
+The `openbox` configuration files are located at `~/.config/openbox`. This gives you the freedom to fully customize and fine-tune Openbox according to your preferences.
 
 ## Configuring Openbox
 

@@ -15,18 +15,21 @@
 
 </div>
 
-The Dotfiles Generator is a powerful tool that allows you to quickly configure different window managers in multiple operating systems. Whether you are looking for a Linux rice reference or want to replicate my personal configuration, this tool provides an efficient and streamlined process.
+You might be here looking for (Linux) rice reference or to fully replicate my personal
+configuration of my favorite Window Managers and several apps as well. ❄️
 
-Here are some key features of the Dotfiles Generator:
+This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!
 
-- **Window Manager**: 🍱 Choose between i3, Openbox, or XFCE to customize your desktop experience.
-- **Panel**: 🌸 Utilize Polybar, a flexible and feature-rich panel, to enhance your desktop workflow.
-- **Application Launcher**: 🚀 Rofi, a fast and lightweight application launcher, provides quick access to your favorite apps.
-- **Desktop Notification**: 🌿 Enjoy Dunst, a minimalist notification daemon, for unobtrusive notifications.
-- **Terminal Emulator**: 🌿 Alacritty, a GPU-accelerated terminal emulator, ensures smooth and responsive terminal sessions.
-- **Shell**: 🐚 Customize your shell experience with Zsh and take advantage of various post-installation tweaks.
-- **Compositor**: 🍧 Enhance your desktop's visual appeal with Picom, a compositor for achieving eye-catching effects.
-- **File Manager**: 🃏 Thunar, a versatile file manager, allows you to navigate your file system with ease.
+Most of my dotfiles where written from scratch, but I also took inspiration from other dotfiles repositories. The highlights about my dotfiles are the following:
+
+- **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
+- **Panel** 🌸 [Polybar](https://polybar.github.io/)!
+- **Application Launcher** 🚀 [Rofi](https://github.com/davatorium/rofi) which is blazing fast!
+- **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
+- **Terminal Emulator** 🌿 [Alacritty](https://alacritty.org/) which is GPU accelerated!
+- **Shell** 🐚 [Zsh](https://zsh.org) with several post-installation tweaks!
+- **Compositor** 🍧 [Picom](https://github.com/yshui/picom) for that perfection topping!
+- **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - and many more!
 
 <img alt="Dotfiles Screen Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" />

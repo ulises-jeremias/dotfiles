@@ -24,12 +24,12 @@ Zsh is fully compatible with most shell scripts written for Bash. You can run yo
 
 ## Customizing Zsh!
 
-Any file in your `<dotfiles_dir>/config/zsh/custom` directory ending with `.zsh` will automatically be sourced when you open a shell. You can use this to add additional aliases, functions, and more.
+Any file in your `~/.zsh/custom` directory ending with `.zsh` will automatically be sourced when you open a shell. You can use this to add additional aliases, functions, and more.
 
 <details open>
 <summary><strong>Parameters</strong></summary>
 
-It is possible to parameterize the default Zsh configuration with certain environment variables. You just need to create the file `<dotfiles_dir>/config/zsh/custom/zsh-preconfig.zsh` with one of the following variables:
+It is possible to parameterize the default Zsh configuration with certain environment variables. You just need to create the file `~/.zsh/custom/zsh-preconfig.zsh` with one of the following variables:
 
 - `ZSH_NO_DEFAULTS`: If set, the default configuration will not be loaded.
 - `ZSH_NO_DEFAULT_PROMPT`: If set, the default prompt will not be loaded.
@@ -54,7 +54,7 @@ To add Antigen as your plugin manager, execute the following command to download
 curl -L git.io/antigen > ~/.antigen.zsh
 ```
 
-Then, create the file `<dotfiles_dir>/config/zsh/custom/antigen.zsh` with the following content:
+Then, create the file `~/.zsh/custom/antigen.zsh` with the following content:
 
 ```sh
 source "${HOME}"/.antigen.zsh
@@ -68,7 +68,7 @@ This file will be automatically sourced.
 <details>
 <summary><strong>Zsh + Power Level 10k</strong></summary>
 
-You can use [Power Level 10k](https://github.com/romkatv/powerlevel10k) as your Zsh theme by installing it and creating a custom file, e.g., `<dotfiles_dir>/config/zsh/custom/p10k.zsh`, with the following content:
+You can use [Power Level 10k](https://github.com/romkatv/powerlevel10k) as your Zsh theme by installing it and creating a custom file, e.g., `~/.zsh/custom/p10k.zsh`, with the following content:
 
 ```sh
 # Source Power Level 10k 💡
@@ -93,7 +93,7 @@ To customize your dotfiles setup to use Oh My Zsh, you can follow these steps:
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
-2. Once Oh My Zsh is installed, you can create a custom file, e.g., `<dotfiles_dir>/config/zsh/custom/oh-my-zsh.zsh`, with the following content:
+2. Once Oh My Zsh is installed, you can create a custom file, e.g., `~/.zsh/custom/oh-my-zsh.zsh`, with the following content:
 
 ```shell
 # Load Oh My Zsh

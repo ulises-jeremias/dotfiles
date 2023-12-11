@@ -1,4 +1,4 @@
-XFCE4 is a versatile and lightweight desktop environment that comes with a set of default configurations. In the dotfiles installation, XFCE4 configurations are located at `~/.config/xfce4`, which is a symlink to the directory `<dotfiles_dir>/config/xfce4`. You have the freedom to customize XFCE4 according to your preferences.
+XFCE4 is a versatile and lightweight desktop environment that comes with a set of default configurations. In the dotfiles installation, XFCE4 configurations are located at `~/.config/xfce4`. These configurations are backed by XFCE4 components, which means that any customization you apply to XFCE4 will be applied globally to all the installed dotfiles.
 
 ## Global Configurations
 
