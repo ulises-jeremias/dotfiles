@@ -19,7 +19,7 @@
 ##         --backup-name=BACKUP_NAME         Backup name, is dotfiles_backup by default.
 ##
 
-source /opt/dots/util/easy-options/easyoptions.sh || exit
+source /opt/dots/lib/easy-options/easyoptions.sh || exit
 
 #==========================================
 # Default argument values and preprocessing

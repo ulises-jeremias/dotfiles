@@ -27,7 +27,7 @@ fi
 
 NO_HELP=true
 NO_CHECK=true
-source /opt/dots/util/easy-options/easyoptions.sh || exit
+source /opt/dots/lib/easy-options/easyoptions.sh || exit
 
 scripts_list=(
     "brightness: control the brightness of the screen using different backends such us xbacklight, brightnessctl, blight or xrandr"
