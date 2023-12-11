@@ -1,0 +1,1 @@
+Display internal temperature.

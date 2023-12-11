@@ -4,25 +4,63 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "docs/**"
     tags:
       - v*
       - git-v*
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    
+
   schedule:
     - cron: '0 0 * * *'
 
+  repository_dispatch:
+    types: [docs]
+
+  gollum:
+
 jobs:
+  job-sync-docs-to-wiki:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    if: github.event_name != 'gollum'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Sync docs to wiki
+        uses: newrelic/wiki-sync-action@v1.0.1
+        with:
+          source: docs
+          destination: wiki
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  job-sync-wiki-to-docs:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    if: github.event_name == 'gollum'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Sync Wiki to Docs
+        uses: newrelic/wiki-sync-action@v1.0.1
+        with:
+          source: wiki
+          destination: docs
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master # since default branch is master in this example
+
   deploy:
+    needs:
+      - job-sync-docs-to-wiki
+      - job-sync-wiki-to-docs
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Latest Wiki Content
       uses: actions/checkout@v4
-      with:
-        repository: ulises-jeremias/dotfiles.wiki
-        path: docs
 
     - name: Checkout github-wikito-converter
       uses: actions/checkout@v4
