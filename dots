@@ -1,24 +1,6 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2019-2022 Ulises Jeremias Cornejo Fandos
-## Licensed under MIT
-##
-##     @script.name [OPTION] ARGUMENTS...
-##
-## Options:
-##     -h, --help                            Help.
-##         --dotfiles-dir=OUTPUT_PATH        Dotfiles output dir, is ~/.local/share/dotfiles by default.
-##
-
-set -e
-
-# POSIX way to get script's dir: https://stackoverflow.com/a/29834779/12156188
-ROOT="$(cd -P -- "$(dirname -- "$(command -v -- "$0")")" && pwd -P)"
-
-NO_CHECK=1
-NO_HELP=1
-. "${ROOT}"/lib/easy-options/easyoptions.sh
-. "${ROOT}"/lib/logs.sh
+set -e # -e: exit on error
 
 #==========================================
 # Default argument values and preprocessing
@@ -42,9 +24,12 @@ if ! chezmoi="$(command -v chezmoi)"; then
 	unset chezmoi_install_script bin_dir
 fi
 
+# POSIX way to get script's dir: https://stackoverflow.com/a/29834779/12156188
+dotfiles_dir="$(cd -P -- "$(dirname -- "$(command -v -- "$0")")" && pwd -P)"
+
 if [ ! -d "${dotfiles_dir}" ]; then
 	echo "Dotfiles dir '${dotfiles_dir}' does not exist, downloading dotfiles..."
-	chezmoi init ulises-jeremias --verbose --apply --source="${dotfiles_dir}"
+	chezmoi init --apply --source="${dotfiles_dir}"
 fi
 
 echo "Running 'chezmoi --source=${dotfiles_dir} $*'" >&2

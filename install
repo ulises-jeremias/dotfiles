@@ -3,10 +3,6 @@
 ROOT="$(realpath "$(dirname "$0")")"
 PKGNAME=${PKGNAME:-"dots"}
 
-# override OS with a correct value with the given params
-# creates variable `os`
-. "${ROOT}"/lib/os.sh
-
 rm -rf "${PKGDIR}/opt/${PKGNAME}" \
     "${PKGDIR}/usr/bin/dots" \
     "${PKGDIR}/usr/share/licenses/${PKGNAME}/" \
