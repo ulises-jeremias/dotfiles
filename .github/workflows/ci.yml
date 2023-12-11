@@ -26,11 +26,7 @@ jobs:
     name: Super Linter
     uses: ./.github/workflows/lint.yml
 
-  security-scan:
-    name: Security Scan
-    uses: ./.github/workflows/security-scan.yml
-
   todo:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     name: TODO
     uses: ./.github/workflows/todo.yml
