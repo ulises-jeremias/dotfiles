@@ -718,7 +718,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <div align="center">
   <h1>🚀 Dotfiles Generator</h1>
 
-  <a href="https://ulises-jeremias.github.io/dotfiles/">Docs</a> |
+  <a href="https://github.com/ulises-jeremias/dotfiles/wiki">Docs</a> |
   <a href="#">Changelog</a> |
   <a href="https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md">Contributing</a>
 
@@ -732,19 +732,27 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 
 </div>
 
-<p>The Dotfiles Generator is a powerful tool that allows you to quickly configure different window managers in multiple operating systems. Whether you are looking for a Linux rice reference or want to replicate my personal configuration, this tool provides an efficient and streamlined process.</p>
-<p>Here are some key features of the Dotfiles Generator:</p>
+<p>You might be here looking for (Linux) rice reference or to fully replicate my personal
+configuration of my favorite Window Managers and several apps as well. ❄️</p>
+<p>This dotfiles are backed by <a href="https://www.chezmoi.io/">Chezmoi</a> which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!</p>
+<p>Most of my dotfiles where written from scratch, but I also took inspiration from other dotfiles repositories. The highlights about my dotfiles are the following:</p>
 <ul>
-<li><strong>Window Manager</strong>: 🍱 Choose between i3, Openbox, or XFCE to customize your desktop experience.</li>
-<li><strong>Panel</strong>: 🌸 Utilize Polybar, a flexible and feature-rich panel, to enhance your desktop workflow.</li>
-<li><strong>Application Launcher</strong>: 🚀 Rofi, a fast and lightweight application launcher, provides quick access to your favorite apps.</li>
-<li><strong>Desktop Notification</strong>: 🌿 Enjoy Dunst, a minimalist notification daemon, for unobtrusive notifications.</li>
-<li><strong>Terminal Emulator</strong>: 🌿 Alacritty, a GPU-accelerated terminal emulator, ensures smooth and responsive terminal sessions.</li>
-<li><strong>Shell</strong>: 🐚 Customize your shell experience with Zsh and take advantage of various post-installation tweaks.</li>
-<li><strong>Compositor</strong>: 🍧 Enhance your desktop&#39;s visual appeal with Picom, a compositor for achieving eye-catching effects.</li>
-<li><strong>File Manager</strong>: 🃏 Thunar, a versatile file manager, allows you to navigate your file system with ease.</li>
+<li><strong>Window Manager</strong> 🍱 <a href="https://i3wm.org">i3</a> and/or <a href="http://openbox.org/wiki/Main_Page">Openbox</a> and/or <a href="https://www.xfce.org/">XFCE</a>!</li>
+<li><strong>Panel</strong> 🌸 <a href="https://polybar.github.io/">Polybar</a>!</li>
+<li><strong>Application Launcher</strong> 🚀 <a href="https://github.com/davatorium/rofi">Rofi</a> which is blazing fast!</li>
+<li><strong>Desktop Notification</strong> 🌿 <a href="https://github.com/dunst-project/dunst">Dunst</a> which is minimalist!</li>
+<li><strong>Terminal Emulator</strong> 🌿 <a href="https://alacritty.org/">Alacritty</a> which is GPU accelerated!</li>
+<li><strong>Shell</strong> 🐚 <a href="https://zsh.org">Zsh</a> with several post-installation tweaks!</li>
+<li><strong>Compositor</strong> 🍧 <a href="https://github.com/yshui/picom">Picom</a> for that perfection topping!</li>
+<li><strong>File Manager</strong> 🃏 <a href="https://docs.xfce.org/xfce/thunar/start">Thunar</a> with a customized side pane!</li>
 <li>and many more!</li>
 </ul>
+<p><img alt="Dotfiles Screen Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" />
+<img alt="Nord Two Lines" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png" />
+<img alt="Launchpad" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" />
+<img alt="Spotlight Dark" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png" />
+<img alt="Dotfiles Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" />
+<img alt="i3 with alacritty" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" /></p>
 <p class="page" id="Dots-Scripts"></p><h1>💥 Dots Scripts Utility</h1>
 <p>In the dotfiles installation process, various scripts are added for configuring applications and modules. While these scripts are primarily used for module configuration, they can also be used independently. To simplify the management of these scripts, we provide the <code>dots-scripts</code> utility.</p>
 <p>The <code>dots-scripts</code> utility provides a convenient way to manage and execute these scripts. You can explore their functionalities and customize them as needed.</p>
@@ -783,25 +791,21 @@ dots-scripts &lt;script&gt;  <span class="hljs-comment"># Run a specific script 
 <p class="page" id="Customization"></p><h1>🎨 Customization</h1>
 <h1 id="customizing-dotfiles">Customizing Dotfiles</h1>
 <p>You don&#39;t need to fork this repository to customize it. You can easily customize the dotfiles by leveraging the generated dotfiles directory. We encourage you to maintain a separate GitHub repository for your own dotfiles configurations.</p>
-<p>To get started, follow these steps:</p>
+<p>We use <a href="https://www.chezmoi.io/">Chezmoi</a> to manage the dotfiles. Chezmoi is a sophisticated yet easy-to-use command-line tool that helps you manage your dotfiles across multiple machines. It is designed to be secure, flexible, and easy to use.</p>
+<p>To customize the dotfiles, follow these steps:</p>
 <ol>
-<li><p>Change directory to your dotfiles directory:</p>
-<pre class="hljs"><span class="hljs-built_in">cd</span> &lt;dotfiles_dir&gt;</pre></li>
-<li><p>Initialize a new Git repository:</p>
-<pre class="hljs">git init</pre></li>
-<li><p>Add your custom dotfiles repository as a remote origin:</p>
-<pre class="hljs">git remote add origin git@github.com:your-username/your-dotfiles-repo.git</pre></li>
-<li><p>Pull the changes from the remote origin:</p>
-<pre class="hljs">git pull origin master</pre></li>
+<li><p>Clone the dotfiles repository to your local machine.</p>
+</li>
+<li><p>Run the command <code>chezmoi init</code> to initialize Chezmoi.</p>
+</li>
+<li><p>Run the command <code>chezmoi edit-config</code> to open the dotfiles directory.</p>
+</li>
+<li><p>Customize the dotfiles to suit your preferences and workflow.</p>
+</li>
+<li><p>Run the command <code>chezmoi apply</code> to apply the changes.</p>
+</li>
 </ol>
-<p>If you made changes to the <code>&lt;dotfiles_dir&gt;/config</code> directory, you need to apply those changes. Here&#39;s how:</p>
-<ul>
-<li><p>For directories that already have their own <code>./install</code> script, you only need to execute the installation script if the changes are within those directories.</p>
-</li>
-<li><p>If you want to ensure that your customizations are applied to all your dotfiles, run the <code>&lt;dotfiles_dir&gt;/install</code> script. This will automatically run the installation process for all the dotfiles in your dotfiles directory.</p>
-</li>
-</ul>
-<h3 id="examples">Examples</h3>
+<h2 id="examples">Examples</h2>
 <p>Here are some examples of customizations made using the dotfiles:</p>
 <p><img src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" /></p>
 <p><img src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" /></p>
@@ -811,21 +815,20 @@ dots-scripts &lt;script&gt;  <span class="hljs-comment"># Run a specific script 
 <p class="page" id="Window-Managers"></p><h1>🪟 Window Manager</h1>
 <p>🖌️ You can customize the installed window managers, including i3, Openbox, and XFCE4, to suit your preferences and workflow. Here&#39;s how you can customize each of them:</p>
 <h2 id="i3-window-manager">i3 Window Manager</h2>
-<p>To customize i3, you can modify the configuration files located in the <code>&lt;dotfiles_dir&gt;/config/i3</code> directory. These files control various aspects of i3&#39;s behavior, such as keybindings, workspace layouts, and appearance. After making any changes, run the command <code>&lt;dotfiles_dir&gt;/install</code> to apply the modifications.</p>
+<p>To customize i3, you can modify the configuration files located in the <code>~/.config/i3</code> directory. These files control various aspects of i3&#39;s behavior, such as keybindings, workspace layouts, and appearance. After making any changes, run the command <code>chezmoi apply</code> to update the i3 configuration.</p>
 <p>For more detailed instructions and information about i3 customization, please refer to the <a href="#i3">i3 customization documentation</a>.</p>
 <h2 id="openbox-window-manager">Openbox Window Manager</h2>
-<p>For customizing Openbox, you can edit the configuration files located in the <code>&lt;dotfiles_dir&gt;/config/openbox</code> directory. These files define the behavior, appearance, and keybindings for Openbox. Make your desired changes to these files, and then run <code>&lt;dotfiles_dir&gt;/install</code> to update the Openbox configuration.</p>
+<p>For customizing Openbox, you can edit the configuration files located in the <code>~/.config/openbox</code> directory. These files define the behavior, appearance, and keybindings for Openbox. Make your desired changes to these files, and then run command <code>chezmoi apply</code> to apply the changes.</p>
 <p>If you need additional guidance or want to explore more about Openbox customization, please visit the <a href="#Openbox">Openbox customization documentation</a>.</p>
 <h2 id="xfce4-window-manager">XFCE4 Window Manager</h2>
 <p>XFCE4 customization is handled through the xfce4 tools included in the dotfiles installation. To customize XFCE4, use the xfce4 settings manager (<code>xfce4-settings-manager</code>). This utility allows you to modify various aspects of the XFCE4 desktop environment, including themes, appearance, panels, and more. Any customizations made through the xfce4 settings manager will be applied globally to all the installed dotfiles and affect all the window managers you have installed.</p>
 <p>For more detailed instructions and tips on XFCE4 customization, please refer to the <a href="#Xfce4">XFCE4 customization documentation</a>.</p>
-<p>🔧 Remember to run <code>&lt;dotfiles_dir&gt;/install</code> after making any changes to the configuration files to ensure that the customizations are applied.</p>
-<p>📝 Note: It is important to update configuration files by running <code>&lt;dotfiles_dir&gt;/install</code> after modifying the contents of the <code>&lt;dotfiles_dir&gt;/config</code> directory.</p>
+<p>🔧 Remember to run command <code>chezmoi apply</code> after making any changes to the configuration files to ensure that the customizations are applied.</p>
 <p>Feel free to customize each window manager according to your preferences, and if you have any further questions or need more specific guidance, please refer to the respective documentation for each window manager.</p>
 <hr>
 <p><strong>IMPORTANT</strong>: If you encounter any issues or need further assistance with customization, please refer to the dotfiles documentation or seek help from the dotfiles community.</p>
 <p class="page" id="Xfce4"></p><h1>XFCE 4</h1>
-<p>XFCE4 is a versatile and lightweight desktop environment that comes with a set of default configurations. In the dotfiles installation, XFCE4 configurations are located at <code>~/.config/xfce4</code>, which is a symlink to the directory <code>&lt;dotfiles_dir&gt;/config/xfce4</code>. You have the freedom to customize XFCE4 according to your preferences.</p>
+<p>XFCE4 is a versatile and lightweight desktop environment that comes with a set of default configurations. In the dotfiles installation, XFCE4 configurations are located at <code>~/.config/xfce4</code>. These configurations are backed by XFCE4 components, which means that any customization you apply to XFCE4 will be applied globally to all the installed dotfiles.</p>
 <h2 id="global-configurations">Global Configurations</h2>
 <p>The installed dotfiles are backed by some XFCE4 components, which means that any customization you apply to XFCE4 will be applied globally to all the installed dotfiles. This allows you to have consistent configurations across different window managers.</p>
 <h2 id="using-xfce4-settings-manager">Using XFCE4 Settings Manager</h2>
@@ -854,7 +857,7 @@ dots-scripts &lt;script&gt;  <span class="hljs-comment"># Run a specific script 
 <p>📝 Note: If you encounter any issues or need further assistance with XFCE4 customization, please refer to the dotfiles documentation or seek help from the dotfiles community.</p>
 <p>Enjoy customizing XFCE4 and make it your own!</p>
 <p class="page" id="i3"></p><h1>i3 WM</h1>
-<p>The <code>i3-wm</code> configuration is located at <code>~/.config/i3/config</code>, which is a symbolic link to the file <code>&lt;dotfiles_dir&gt;/config/i3/config</code>. This file contains the actual configuration for <code>i3-wm</code>, and you have complete freedom to customize it according to your preferences.</p>
+<p>The <code>i3-wm</code> configuration is located at <code>~/.config/i3/config</code>. This file contains the actual configuration for <code>i3-wm</code>, and you have complete freedom to customize it according to your preferences.</p>
 <p>To understand the different options available for customization, you can refer to the <a href="https://i3wm.org/docs/userguide.html">i3 User Guide</a>, which provides detailed documentation on various aspects of the i3 window manager.</p>
 <h2 id="autostart-applications">Autostart Applications</h2>
 <p>In the dotfiles installation, we have included a list of applications that are automatically started when the i3 session begins. You can find this list in the <code>~/.config/i3/autostart.sh</code> file. Feel free to modify this file to add or remove applications based on your requirements.</p>
@@ -955,7 +958,7 @@ dots-scripts &lt;script&gt;  <span class="hljs-comment"># Run a specific script 
 <p>Enjoy the power and flexibility of i3, and personalize it to create your ideal window manager environment!</p>
 <p class="page" id="Openbox"></p><h1>Openbox</h1>
 <p>Openbox is a lightweight and highly configurable window manager that provides a simple yet powerful environment for managing windows in your desktop. With its flexibility and extensive customization options, Openbox allows you to create a personalized and efficient workflow.</p>
-<p>The <code>openbox</code> configuration files are located at <code>~/.config/openbox</code>, which is a symbolic link to the directory <code>&lt;dotfiles_dir&gt;/config/openbox</code>. This gives you the freedom to fully customize and fine-tune Openbox according to your preferences.</p>
+<p>The <code>openbox</code> configuration files are located at <code>~/.config/openbox</code>. This gives you the freedom to fully customize and fine-tune Openbox according to your preferences.</p>
 <h2 id="configuring-openbox">Configuring Openbox</h2>
 <p>To simplify the configuration process, you can use <code>obconf</code>, a graphical configuration tool designed specifically for Openbox. <code>obconf</code> provides an intuitive interface that allows you to easily customize various aspects of Openbox, including window appearance, desktop settings, mouse behavior, and more.</p>
 <p>If <code>obconf</code> is available in your package manager, you can install it using the appropriate installation command for your operating system. Once installed, you can launch <code>obconf</code> and explore the wide range of customization options it offers.</p>
@@ -966,7 +969,7 @@ dots-scripts &lt;script&gt;  <span class="hljs-comment"># Run a specific script 
 <p>Unleash the power of Openbox and create a unique desktop environment that reflects your style and optimizes your daily tasks!</p>
 <p class="page" id="Alacritty"></p><h1>Alacritty</h1>
 <p><a href="https://github.com/alacritty/alacritty">Alacritty</a> is a blazing-fast, GPU-accelerated terminal emulator that offers a highly customizable and efficient terminal experience. It is designed to be simple yet powerful, providing exceptional performance while consuming minimal system resources.</p>
-<p>When you install the dotfiles for Alacritty, you gain access to a comprehensive collection of themes from the <a href="https://github.com/eendroroy/alacritty-theme">alacritty-theme</a> repository. These themes are located in the directory <code>~/.config/alacritty/themes</code>, which is a symbolic link to the <code>&lt;dotfiles_dir&gt;/config/alacritty/alacritty-theme/themes</code> directory.</p>
+<p>When you install the dotfiles for Alacritty, you gain access to a comprehensive collection of themes from the <a href="https://github.com/eendroroy/alacritty-theme">alacritty-theme</a> repository. These themes are located in the directory <code>~/.config/alacritty/themes</code>.</p>
 <p>To switch between themes, you can manually modify the Alacritty configuration files. However, we highly recommend using the convenient tool called <a href="https://github.com/rajasegar/alacritty-themes">alacritty-themes</a> for a seamless and hassle-free theme management experience.</p>
 <p>With <code>alacritty-themes</code>, you can easily browse, preview, and apply different themes to your Alacritty terminal emulator. The tool provides a user-friendly command-line interface that simplifies the process of selecting and configuring themes.</p>
 <p>To use <code>alacritty-themes</code>, follow these steps:</p>
@@ -997,7 +1000,7 @@ dots-scripts &lt;script&gt;  <span class="hljs-comment"># Run a specific script 
 <p>🧩 <strong>Modularity</strong>: Polybar follows a modular approach, enabling you to add and configure various modules to display specific system information. With a wide range of available modules and the ability to create custom modules, you can tailor your status bar to meet your specific needs.</p>
 <p>🌈 <strong>Visual Appeal</strong>: Polybar allows you to create visually stunning status bars that seamlessly integrate with your desktop environment. With support for icons, different font styles, and customizable module formatting, you can design a status bar that matches your aesthetic preferences.</p>
 <h2 id="configuration-parameters">Configuration Parameters</h2>
-<p>Polybar&#39;s configuration is highly parameterizable, allowing you to customize various aspects of your bar. To modify these parameters, you can edit the file <code>&lt;dotfiles_dir&gt;/config/polybar/.env.sh</code>.</p>
+<p>Polybar&#39;s configuration is highly parameterizable, allowing you to customize various aspects of your bar. To modify these parameters, you can edit the files <code>~/.config/polybar/.env.sh</code>.</p>
 <p>Within this file, you will find a wide range of parameters that can be adjusted to create your unique Polybar setup. These parameters enable you to customize different bars, define module behavior, and leverage the provided tools and utilities to enhance your Polybar experience.</p>
 <p>Explore the available parameters, experiment with different values, and fine-tune your Polybar configuration to create a status bar that reflects your style and provides the information you desire.</p>
 <p>Customize your Polybar, unleash your creativity, and enjoy a beautifully designed and informative status bar that enhances your desktop workflow.</p>
@@ -1015,11 +1018,11 @@ dots-scripts &lt;script&gt;  <span class="hljs-comment"># Run a specific script 
 <p>🔗 <strong>Seamless Compatibility</strong></p>
 <p>Zsh is fully compatible with most shell scripts written for Bash. You can run your existing Bash scripts without any modifications in Zsh, ensuring a smooth transition. Additionally, Zsh provides better handling of corner cases and edge scenarios, making it a reliable choice for shell scripting.</p>
 <h2 id="customizing-zsh-">Customizing Zsh!</h2>
-<p>Any file in your <code>&lt;dotfiles_dir&gt;/config/zsh/custom</code> directory ending with <code>.zsh</code> will automatically be sourced when you open a shell. You can use this to add additional aliases, functions, and more.</p>
+<p>Any file in your <code>~/.zsh/custom</code> directory ending with <code>.zsh</code> will automatically be sourced when you open a shell. You can use this to add additional aliases, functions, and more.</p>
 <details open>
 <summary><strong>Parameters</strong></summary>
 
-It is possible to parameterize the default Zsh configuration with certain environment variables. You just need to create the file <code>&lt;dotfiles_dir&gt;/config/zsh/custom/zsh-preconfig.zsh</code> with one of the following variables:
+It is possible to parameterize the default Zsh configuration with certain environment variables. You just need to create the file <code>~/.zsh/custom/zsh-preconfig.zsh</code> with one of the following variables:
 
 - <code>ZSH_NO_DEFAULTS</code>: If set, the default configuration will not be loaded.
 - <code>ZSH_NO_DEFAULT_PROMPT</code>: If set, the default prompt will not be loaded.
@@ -1042,7 +1045,7 @@ To add Antigen as your plugin manager, execute the following command to download
 <code>sh
 curl -L git.io/antigen &gt; ~/.antigen.zsh</code>
 
-Then, create the file <code>&lt;dotfiles_dir&gt;/config/zsh/custom/antigen.zsh</code> with the following content:
+Then, create the file <code>~/.zsh/custom/antigen.zsh</code> with the following content:
 
 <code>sh
 source &quot;${HOME}&quot;/.antigen.zsh
@@ -1055,7 +1058,7 @@ This file will be automatically sourced.
 <details>
 <summary><strong>Zsh + Power Level 10k</strong></summary>
 
-You can use <a href="https://github.com/romkatv/powerlevel10k">Power Level 10k</a> as your Zsh theme by installing it and creating a custom file, e.g., <code>&lt;dotfiles_dir&gt;/config/zsh/custom/p10k.zsh</code>, with the following content:
+You can use <a href="https://github.com/romkatv/powerlevel10k">Power Level 10k</a> as your Zsh theme by installing it and creating a custom file, e.g., <code>~/.zsh/custom/p10k.zsh</code>, with the following content:
 
 <code>sh
 # Source Power Level 10k 💡
@@ -1078,7 +1081,7 @@ To customize your dotfiles setup to use Oh My Zsh, you can follow these steps:
 <code>shell
 sh -c &quot;$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&quot;</code>
 
-2. Once Oh My Zsh is installed, you can create a custom file, e.g., <code>&lt;dotfiles_dir&gt;/config/zsh/custom/oh-my-zsh.zsh</code>, with the following content:
+2. Once Oh My Zsh is installed, you can create a custom file, e.g., <code>~/.zsh/custom/oh-my-zsh.zsh</code>, with the following content:
 
 <code>shell
 # Load Oh My Zsh
@@ -1098,20 +1101,8 @@ Feel free to explore the Oh My Zsh documentation and customize your shell experi
 </details>
 
 <p class="page" id="Dots-Eject"></p><h1>⏏️ Dots Eject</h1>
-<p>We encourage you to use <code>dots</code> as a tool to keep your dotfiles always updated and maintain a consistent configuration across your systems. However, we understand that there may be situations where you want to have your own independent distribution of dotfiles.</p>
-<p>To eject from <code>dots</code> and create your own dotfiles distribution, you can follow these steps:</p>
-<ol>
-<li><p>Create a copy of the entire <code>&lt;dotfiles_dir&gt;</code> directory. This will serve as the foundation for your custom dotfiles setup.</p>
-</li>
-<li><p>Within the copied directory, you will find a script named <code>install</code>. This script can be used as a starting point for your own dotfiles installation process. You can modify it according to your needs and preferences.</p>
-</li>
-<li><p>Review the contents of the <code>install</code> script and customize it to suit your requirements. You can add or remove installation steps, update paths, or make any other necessary adjustments.</p>
-</li>
-<li><p>Once you have customized the <code>install</code> script and set up your dotfiles according to your preferences, you can use it to deploy your dotfiles on different systems or share them with others.</p>
-</li>
-</ol>
-<p>Remember that by ejecting from <code>dots</code>, you are taking full responsibility for maintaining and updating your dotfiles. It&#39;s recommended to establish a version control system (such as Git) to track changes and easily synchronize your dotfiles across multiple machines.</p>
-<p>Feel free to explore and modify the <code>install</code> script and other files in your copied dotfiles directory to create a customized dotfiles distribution that perfectly suits your needs. Happy dotfile customization! ✨🔧</p>
+<p>We encourage you to use <a href="https://www.chezmoi.io/">Chezmoi</a> as a tool to keep your dotfiles always updated and maintain a consistent configuration across your systems. However, we understand that there may be situations where you want to have your own independent distribution of dotfiles.</p>
+<p>To eject from Chezmoi and create your own dotfiles distribution, you can follow the steps documented in the guide <a href="https://www.chezmoi.io/user-guide/advanced/migrate-away-from-chezmoi/">Migrate away from chezmoi</a>.</p>
 <p class="page" id="CONTRIBUTING"></p><h1>💯 Contributing</h1>
 <p>Thank you for considering contributing to Dotfiles! We appreciate your interest in improving the project. To ensure a smooth and collaborative contribution process, please review the following guidelines.</p>
 <h2 id="communication">Communication</h2>
