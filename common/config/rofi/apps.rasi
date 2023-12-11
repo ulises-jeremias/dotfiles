@@ -1,5 +1,0 @@
-@import "themes/launchpad.rasi"
-
-#window {
-    padding             : 76 136;
-}

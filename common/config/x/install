@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-SOURCE_DIR="$(realpath "$(dirname "$0")")"
-
-rm -rf ~/.Xresources >/dev/null 2>&1
-rm -rf ~/.Xresources.d >/dev/null 2>&1
-
-ln -sf "${SOURCE_DIR}"/Xresources ~/.Xresources
-ln -sf "${SOURCE_DIR}"/Xresources.d ~/.Xresources.d

@@ -7,7 +7,6 @@
 ##
 ## Options:
 ##     -h, --help                            Help.
-##         --os=OS_NAME                      Operating System. Posible values: arch-linux | debian
 ##         --wm=WINDOW_MANAGER               Window manager. Posible values: i3 | openbox
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_playground_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##
@@ -20,7 +19,6 @@ set -e
 
 ROOT="$(realpath "$(dirname "$0")"/..)"
 PLAYGROUND_DIR="$(realpath "${ROOT}/playground")"
-VAGRANT_DIR="$(realpath "${PLAYGROUND_DIR}/vagrant")"
 
 . "${ROOT}/util/easy-options/easyoptions.sh" || exit
 . "${ROOT}/util/logs.sh" || exit
@@ -36,7 +34,7 @@ wm=${wm:-"i3"}
 
 [ ! -f "${log_file}" ] && touch "${log_file}"
 
-cd "${VAGRANT_DIR}/${os}" || exit 1
+cd "${PLAYGROUND_DIR}" || exit 1
 
 command="up"
 [ -n "${build}" ] && command="provision"

@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-SOURCE_DIR="$(realpath "$(dirname "$0")")"
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
-
-rm -rf "${XDG_CONFIG_HOME}"/openbox >/dev/null 2>&1
-ln -sf "${SOURCE_DIR}" "${XDG_CONFIG_HOME}"/openbox

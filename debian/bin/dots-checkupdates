@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-echo "$(apt list --upgradable 2> /dev/null | grep -c upgradable)"

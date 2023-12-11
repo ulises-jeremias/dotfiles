@@ -18,7 +18,8 @@
 
 set -e
 
-ROOT="$(realpath "$(dirname "$0")")"
+# POSIX way to get script's dir: https://stackoverflow.com/a/29834779/12156188
+ROOT="$(cd -P -- "$(dirname -- "$(command -v -- "$0")")" && pwd -P)"
 
 . "${ROOT}"/util/easy-options/easyoptions.sh
 . "${ROOT}"/util/logs.sh
@@ -34,86 +35,4 @@ time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/dots_install_log_$time_str.txt"}
 dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
 
-[ ! -f "${log_file}" ] && touch "${log_file}"
 
-if [ ! -d "${dotfiles_dir}" ] || [ -n "${clear}" ]; then
-  [ -d "${dotfiles_dir}" ] && describe "Removing existing dotfiles" 
-  [ ! -d "${dotfiles_dir}" ] && describe "Creating dotfiles dir"
-
-  # Delete existing dotfiles and folders if any
-  rm -rf "${dotfiles_dir}" >/dev/null 2>&1
-
-  # Create dotfiles folder and subfolders
-  mkdir -p "${dotfiles_dir}"/{config,bin}
-
-  log_success "Success" "${config}" "${log_file}"
-fi
-
-#==========================================
-# Copy README.md
-#==========================================
-describe "Copying README.md" 0
-cp "${ROOT}"/common/README.md "${dotfiles_dir}"/README.md
-
-#==========================================
-# Copy bin files
-#==========================================
-describe "Copying binaries" 0
-cp -rf "${ROOT}"/common/bin/* "${dotfiles_dir}"/bin
-
-if [ -d "${ROOT}/${os}/bin" ]; then
-  cp -rf "${ROOT}"/"${os}"/bin/* "${dotfiles_dir}"/bin
-fi
-
-echo
-
-#==========================================
-# Copy dotfiles and execute dotfiles
-# install strategy
-#==========================================
-echo
-describe "Installing dotfiles"
-echo
-echo
-for config_path in "${ROOT}"/common/config/*; do
-  config=$(basename "${config_path}")
-
-  # if directory contains file `required` then install it without asking
-  if [ ! -f "${config_path}/required" ]; then
-    read -p "Install ${config} dotfiles? [y/N] " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      continue
-    fi
-  fi
-
-  describe "Installing ${config} dotfiles"
-
-  os_config_path=${config_path}
-
-  if [ -d "${ROOT}/${os}/config/${config}" ]; then
-    os_config_path="${ROOT}/${os}/config/${config}"
-  fi
-
-  cp -rf "${os_config_path}" "${dotfiles_dir}"/config
-  
-  log_success "Success" "${config}" "${log_file}"
-done
-
-#==========================================
-# Copy install script to dotfiles dir
-# and execute it
-#==========================================
-cp -f "${ROOT}"/common/{install,install-deps} "${dotfiles_dir}"
-chmod +x "${dotfiles_dir}"/{install,install-deps}
-
-log_success "Dotfiles generated successfully" "" "${log_file}"
-
-echo
-echo
-echo "Run the following commands to install the dotfiles:"
-echo
-echo "  cd ${dotfiles_dir}"
-echo "  ./install-deps"
-echo "  ./install"
-echo
