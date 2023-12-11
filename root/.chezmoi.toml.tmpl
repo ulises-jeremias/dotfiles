@@ -9,7 +9,7 @@
 {{-   $osid = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
 {{- end -}}
 
-{{/* detect GitHub codespaces, VSCode remote containers, Docker containers, Multipass VMs, and Vagrant boxes */}}
+{{/* detect Gitconfig codespaces, VSCode remote containers, Docker containers, Multipass VMs, and Vagrant boxes */}}
 {{- if or (env "CODESPACES") (env "REMOTE_CONTAINERS_IPC") (eq .chezmoi.username "root" "ubuntu" "vagrant" "vscode") -}}
 {{-   $ephemeral = true -}}
 {{-   $headless = true -}}
@@ -41,3 +41,6 @@
     ephemeral = {{ $ephemeral }}
     headless = {{ $headless }}
     osid = {{ $osid | quote }}
+[data.gitconfig.user]
+    name = {{ promptStringOnce . "gitUserName" "What is your git username" | quote }}
+    email = {{ promptStringOnce . "gitUserEmail" "What is your Git email address" | quote }}
