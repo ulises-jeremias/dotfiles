@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+yay -S --noconfirm \
+  arc-gtk-theme \
+  arandr \
+  betterlockscreen \
+  dbus-python \
+  flameshot \
+  graphicsmagick \
+  jq \
+  numix-icon-theme \
+  pacman-contrib \
+  pamixer \
+  pavucontrol \
+  playerctl \
+  pulseaudio \
+  skippy-xd \
+  sxiv \
+  wmctrl \
+  yad
