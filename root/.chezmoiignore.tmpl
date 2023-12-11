@@ -1,3 +1,17 @@
-{{ if ne .chezmoi.os "linux" }}
+{{- if ne .chezmoi.os "linux" -}}
 .chezmoiscripts/linux/**
+{{- end -}}
+
+{{- if (or (.ephemeral) (.headless)) -}}
+.config/alacrity/**
+.config/fontconfig/**
+.config/i3/**
+.config/jgmenu/**
+.config/networkmanager-dmenu/**
+.config/openbox/**
+.config/polybar/**
+.config/rofi/**
+.config/wpg/**
+.config/xfce4/**
+.config/picom.conf
 {{- end -}}
