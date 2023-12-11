@@ -56,6 +56,28 @@ Most of my dotfiles where written from scratch, but I also took inspiration from
 <details>
 <summary>🌟 Installation</summary>
 
+### Using Chezmoi (recommended)
+
+> This is a recommended way to install the dotfiles generator. It will install the latest stable version of the dotfiles generator using [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible.
+
+```sh
+chezmoi init --apply ulises-jeremias
+```
+
+This will install the dotfiles in `~/.local/share/chezmoi`.
+
+### From source
+
+> Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`.
+> This will install unstable versions of the dotfiles generator. You can switch to a stable version by using any existing git tag.
+
+```sh
+git clone https://github.com/ulises-jeremias/dotfiles ~/.local/share/chezmoi
+~/.local/share/chezmoi/install.sh
+```
+
+The installation script allows you to install all the necessary dependencies to make your dotfiles config work correctly.
+
 ### From the Arch-Linux User Repository (AUR)
 
 - Using a helper like [yay](https://github.com/Jguer/yay)
@@ -64,14 +86,12 @@ Most of my dotfiles where written from scratch, but I also took inspiration from
 
   ```sh
   yay dots-stable
-  dots
   ```
 
   or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/)
 
   ```sh
   yay dots-git
-  dots
   ```
 
 - Using `makepkg`
@@ -82,7 +102,6 @@ Most of my dotfiles where written from scratch, but I also took inspiration from
   git clone https://aur.archlinux.org/dots-stable.git /tmp/dots-stable
   cd /tmp/dots-stable
   makepkg -si
-  dots
   ```
 
   or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/)
@@ -91,32 +110,7 @@ Most of my dotfiles where written from scratch, but I also took inspiration from
   git clone https://aur.archlinux.org/dots-git.git /tmp/dots-git
   cd /tmp/dots-git
   makepkg -si
-  dots
   ```
-
-### From source
-
-> Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`.
-> This will install unstable versions of the dotfiles generator. You can switch to a stable version by using any existing git tag.
-
-```sh
-git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
-cd /tmp/dotfiles
-sudo ./install
-dots
-```
-
-The installation script allows you to install all the necessary dependencies to make your dotfiles config work correctly.
-
-### Using Chezmoi
-
-> This is a recommended way to install the dotfiles generator. It will install the latest stable version of the dotfiles generator using [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible.
-
-```sh
-chezmoi init --apply ulises-jeremias
-```
-
-This will install the dotfiles generator in `~/.local/share/dotfiles`.
 
 </details>
 
