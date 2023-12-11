@@ -1,0 +1,13 @@
+{{ if (and (not .ephemeral) (not .headless)) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+yay -S --noconfirm \
+  feh \
+  python-pywal
+
+sudo pip3 install wpgtk
+{{      end -}}
+
+{{ end -}}

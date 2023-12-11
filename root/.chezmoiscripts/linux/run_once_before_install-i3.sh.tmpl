@@ -1,0 +1,12 @@
+{{ if (and (not .ephemeral) (not .headless)) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+yay -S --noconfirm \
+  i3-wm
+
+sudo pip3 install i3-layouts
+{{      end -}}
+
+{{ end -}}

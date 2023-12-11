@@ -1,3 +1,6 @@
+{{ if (and (not .ephemeral) (not .headless)) -}}
+
+{{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
 sudo pacman -S --noconfirm \
@@ -6,3 +9,6 @@ sudo pacman -S --noconfirm \
   noto-fonts-emoji \
   noto-fonts-extra \
   ttf-hack-nerd
+{{      end -}}
+
+{{ end -}}

@@ -1,0 +1,9 @@
+{{ if (and (not .ephemeral) (not .headless)) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+sudo pacman -S --noconfirm openbox
+{{      end -}}
+
+{{ end -}}

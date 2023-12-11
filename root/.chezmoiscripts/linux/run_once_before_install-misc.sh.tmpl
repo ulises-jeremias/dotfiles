@@ -1,5 +1,8 @@
+{{ if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
+{{      if (and (not .ephemeral) (not .headless)) -}}
+# Install packages
 yay -S --noconfirm \
   arc-gtk-theme \
   arandr \
@@ -18,3 +21,11 @@ yay -S --noconfirm \
   sxiv \
   wmctrl \
   yad
+
+{{      else -}}
+
+yay -S --noconfirm jq
+
+{{      end -}}
+
+{{ end -}}

@@ -1,3 +1,6 @@
+{{ if (and (not .ephemeral) (not .headless)) -}}
+
+{{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
 yay -S --noconfirm \
@@ -10,3 +13,6 @@ yay -S --noconfirm \
   xfce4-notifyd \
   xfce4-power-manager \
   xfce4-screenshooter
+{{      end -}}
+
+{{ end -}}
