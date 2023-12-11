@@ -17,10 +17,18 @@ on:
     branches:
       - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     name: Super Linter
     uses: ./.github/workflows/lint.yml
+
+  security-scan:
+    name: Security Scan
+    uses: ./.github/workflows/security-scan.yml
 
   todo:
     if: github.event_name == 'push'
