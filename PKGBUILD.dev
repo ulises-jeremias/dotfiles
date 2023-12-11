@@ -20,9 +20,9 @@ pkgver() {
 }
 
 package() {
-	cd dotfiles
-	PKGNAME=dots
-	PKGDIR="${pkgdir}"
-	export PKGDIR PKGNAME
-	./install
+	if [[ ! -d "${HOME}/.local/share/chezmoi" ]]; then
+		cp -rf ./dotfiles ~/.local/share/chezmoi
+	fi
+
+	chezmoi init --apply --verbose --force --source ~/.local/share/chezmoi
 }

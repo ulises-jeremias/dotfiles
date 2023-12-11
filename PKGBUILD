@@ -15,17 +15,20 @@ source=("git+$url.git")
 md5sums=('SKIP')
 
 pkgver() {
-	cd dotfiles
+	cd dotfiles || exit
 	git describe --tags "$(git rev-list --tags --max-count=1)" | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 package() {
-	cd dotfiles
+	cd dotfiles || exit
 	git fetch --tags
 	latest_release=$(git describe --tags "$(git rev-list --tags --max-count=1)")
 	git checkout "${latest_release}"
-	PKGNAME=dots
-	PKGDIR="${pkgdir}"
-	export PKGDIR PKGNAME
-	./install
+	cd ..
+
+	if [[ ! -d "${HOME}/.local/share/chezmoi" ]]; then
+		cp -rf ./dotfiles ~/.local/share/chezmoi
+	fi
+
+	chezmoi init --apply --verbose --force --source ~/.local/share/chezmoi
 }

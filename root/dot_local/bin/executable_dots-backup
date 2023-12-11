@@ -19,7 +19,7 @@
 ##         --backup-name=BACKUP_NAME         Backup name, is dotfiles_backup by default.
 ##
 
-source /opt/dots/lib/easy-options/easyoptions.sh || exit
+source ~/.local/lib/easy-options/easyoptions.sh || exit
 
 #==========================================
 # Default argument values and preprocessing
@@ -35,7 +35,7 @@ if [ -n "${register_cron}" ]; then
         echo "crontab is not installed, please install it."
         exit 1
     fi
-    
+
     echo "Registering cron job..."
 
     read -rp "Minute (range: 0-59): " min
