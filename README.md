@@ -113,7 +113,7 @@ The installation script allows you to install all the necessary dependencies to 
 > This is a recommended way to install the dotfiles generator. It will install the latest stable version of the dotfiles generator using [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible.
 
 ```sh
-chezmoi init --source ~/.local/share/dotfiles --apply ulises-jeremias
+chezmoi init --apply ulises-jeremias
 ```
 
 This will install the dotfiles generator in `~/.local/share/dotfiles`.
