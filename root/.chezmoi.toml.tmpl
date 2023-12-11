@@ -19,6 +19,23 @@
 {{-   $ephemeral = true -}}
 {{- end -}}
 
+{{- if eq .chezmoi.os "windows" -}}
+{{-   $ephemeral = true -}}
+{{- end -}}
+
+{{- if not $ephemeral -}}
+{{-   if stdinIsATTY -}}
+{{-     $headless = promptBoolOnce . "headless" "headless" -}}
+{{-     $ephemeral = promptBoolOnce . "ephemeral" "ephemeral" -}}
+{{-     if not $ephemeral -}}
+{{-       $docker = promptBoolOnce . "docker" "docker" -}}
+{{-     end -}}
+{{-   else -}}
+{{-     $ephemeral = true -}}
+{{-     $headless = true -}}
+{{-   end -}}
+{{- end -}}
+
 [data]
     docker = {{ $docker }}
     ephemeral = {{ $ephemeral }}

@@ -2,7 +2,8 @@
 .chezmoiscripts/linux/**
 {{- end -}}
 
-{{- if (or (.ephemeral) (.headless)) -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{-   if (or (.ephemeral) (.headless)) -}}
 .config/alacrity/**
 .config/fontconfig/**
 .config/i3/**
@@ -14,4 +15,5 @@
 .config/wpg/**
 .config/xfce4/**
 .config/picom.conf
+{{-   end -}}
 {{- end -}}
