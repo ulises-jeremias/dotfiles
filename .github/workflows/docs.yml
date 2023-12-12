@@ -36,7 +36,7 @@ jobs:
         with:
           source: docs
           destination: wiki
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.DOTFILES_GITHUB_TOKEN }}
 
   job-sync-wiki-to-docs:
     permissions:
@@ -51,8 +51,8 @@ jobs:
         with:
           source: wiki
           destination: docs
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master # since default branch is master in this example
+          token: ${{ secrets.DOTFILES_GITHUB_TOKEN }}
+          branch: master
 
   deploy:
     needs:
