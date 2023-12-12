@@ -29,7 +29,7 @@ xrdb -I"${HOME}" -load ~/.Xresources &
 dots feh-blur --blur 10 -d &
 
 # open polybar
-"${XDG_CONFIG_HOME}"/polybar/launch &
+"${XDG_CONFIG_HOME}"/polybar/launch.sh &
 
 # Start nm-applet
 [[ -z "$(pgrep nm-applet)" ]] && nm-applet &

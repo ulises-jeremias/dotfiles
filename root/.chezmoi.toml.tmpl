@@ -42,5 +42,5 @@
     headless = {{ $headless }}
     osid = {{ $osid | quote }}
 [data.gitconfig.user]
-    name = {{ promptStringOnce . "gitUserName" "What is your git username" | quote }}
-    email = {{ promptStringOnce . "gitUserEmail" "What is your Git email address" | quote }}
+    name = {{ promptStringOnce . "gitUserName" "What is the name you use for git" | quote }}
+    email = {{ promptStringOnce . "gitUserEmail" "What is the email you use for git" | quote }}
