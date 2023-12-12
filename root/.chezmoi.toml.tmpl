@@ -1,3 +1,5 @@
+{{- $interactive := stdinIsATTY -}}
+
 {{/* boolean feature tags */}}
 {{- $docker := false -}}{{/* true if this machine should have Docker installed */}}
 {{- $ephemeral := false -}}{{/* true if this machine is ephemeral, e.g. a cloud or VM instance */}}
@@ -24,7 +26,7 @@
 {{- end -}}
 
 {{- if not $ephemeral -}}
-{{-   if stdinIsATTY -}}
+{{-   if $interactive -}}
 {{-     $headless = promptBoolOnce . "headless" "headless" -}}
 {{-     $ephemeral = promptBoolOnce . "ephemeral" "ephemeral" -}}
 {{-     if not $ephemeral -}}
@@ -36,11 +38,18 @@
 {{-   end -}}
 {{- end -}}
 
+{{- $gitUserName := "" -}}
+{{- $gitUserEmail := "" -}}
+{{- if $interactive -}}
+{{-   $gitUserName = promptStringOnce . "gitUserName" "What is the name you use for git" -}}
+{{-   $gitUserEmail = promptStringOnce . "gitUserEmail" "What is the email you use for git" -}}
+{{- end -}}
+
 [data]
     docker = {{ $docker }}
     ephemeral = {{ $ephemeral }}
     headless = {{ $headless }}
     osid = {{ $osid | quote }}
 [data.gitconfig.user]
-    name = {{ promptStringOnce . "gitUserName" "What is the name you use for git" | quote }}
-    email = {{ promptStringOnce . "gitUserEmail" "What is the email you use for git" | quote }}
+    name = {{ $gitUserName | quote }}
+    email = {{ $gitUserEmail | quote }}
