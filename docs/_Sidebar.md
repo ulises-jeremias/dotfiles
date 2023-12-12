@@ -1,5 +1,5 @@
 - [🏠 Home](Home)
-- [💥 Dots Scripts Utility](Dots-Scripts)
+- [💥 Dots Scripts Utility](dots)
 - [📁 Dots Backup Tool](Dots-Backup)
 - [🎨 Customization](Customization)
   - [🪟 Window Manager](Window-Managers)

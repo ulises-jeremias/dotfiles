@@ -2,10 +2,10 @@
 
 The Rofi Bluetooth module is a custom module created around the [`internal/script`](https://github.com/polybar/polybar/wiki/Module:-script) module. It provides functionality to display the state of the Bluetooth connection and allows you to easily control the Bluetooth settings.
 
-This module shows the state of the bluetooth. It uses the script `dots-scripts rofi-bluetooth` to get the state and listen for changes.
+This module shows the state of the bluetooth. It uses the script `dots rofi-bluetooth` to get the state and listen for changes.
 
 ```sh
-dots-scripts rofi-bluetooth --status | cut -d " " -f 1
+dots rofi-bluetooth --status | cut -d " " -f 1
 ```
 
 You can customize the appearance and behavior of the Rofi Bluetooth module by modifying its configuration options. Refer to the [Polybar documentation](https://github.com/polybar/polybar/wiki/Module:-script) for a comprehensive list of configuration options that you can use to customize the module.

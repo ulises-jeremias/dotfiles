@@ -1,6 +1,8 @@
 [Alacritty](https://github.com/alacritty/alacritty) is a blazing-fast, GPU-accelerated terminal emulator that offers a highly customizable and efficient terminal experience. It is designed to be simple yet powerful, providing exceptional performance while consuming minimal system resources.
 
-When you install the dotfiles for Alacritty, you gain access to a comprehensive collection of themes from the [alacritty-theme](https://github.com/eendroroy/alacritty-theme) repository. These themes are located in the directory `~/.config/alacritty/themes`.
+When you install the dotfiles for Alacritty, you gain access to a comprehensive collection of themes from the [alacritty-theme](https://github.com/alacritty/alacritty-theme) repository. These themes are located in the directory `~/.config/alacritty/themes`.
+
+## Switching Themes with `alacritty-themes`
 
 To switch between themes, you can manually modify the Alacritty configuration files. However, we highly recommend using the convenient tool called [alacritty-themes](https://github.com/rajasegar/alacritty-themes) for a seamless and hassle-free theme management experience.
 

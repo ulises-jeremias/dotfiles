@@ -112,4 +112,3 @@ With these steps, you can easily integrate Oh My Zsh into your dotfiles setup an
 
 Feel free to explore the Oh My Zsh documentation and customize your shell experience to suit your needs and preferences. Happy customizing! ✨🚀
 </details>
-

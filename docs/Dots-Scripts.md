@@ -1,18 +1,18 @@
-In the dotfiles installation process, various scripts are added for configuring applications and modules. While these scripts are primarily used for module configuration, they can also be used independently. To simplify the management of these scripts, we provide the `dots-scripts` utility.
+In the dotfiles installation process, various scripts are added for configuring applications and modules. While these scripts are primarily used for module configuration, they can also be used independently. To simplify the management of these scripts, we provide the `dots` utility.
 
-The `dots-scripts` utility provides a convenient way to manage and execute these scripts. You can explore their functionalities and customize them as needed.
+The `dots` utility provides a convenient way to manage and execute these scripts. You can explore their functionalities and customize them as needed.
 
 ## Usage
 
 ```sh
-dots-scripts --help    # Show help
-dots-scripts --list    # List all available scripts
-dots-scripts <script>  # Run a specific script with optional flags
+dots --help    # Show help
+dots --list    # List all available scripts
+dots <script>  # Run a specific script with optional flags
 ```
 
 ## Available Scripts
 
-> NOTE: The following list may not be exhaustive. You can always check the up-to-date list of scripts by running `dots-scripts --list`.
+> NOTE: The following list may not be exhaustive. You can always check the up-to-date list of scripts by running `dots --list`.
 
 - `brightness`: Control the screen brightness using various backends such as `xbacklight`, `brightnessctl`, `blight`, or `xrandr`.
 - `check-network`: Check if the network connection is up.

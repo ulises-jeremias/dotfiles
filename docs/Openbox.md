@@ -2,6 +2,14 @@ Openbox is a lightweight and highly configurable window manager that provides a 
 
 The `openbox` configuration files are located at `~/.config/openbox`. This gives you the freedom to fully customize and fine-tune Openbox according to your preferences.
 
+To edit the `openbox` configuration, you need to run the following command:
+
+```sh
+chezmoi edit ~/.config/openbox
+```
+
+Remember to apply your changes using `chezmoi apply` and restart Openbox for the modifications to take effect.
+
 ## Configuring Openbox
 
 To simplify the configuration process, you can use `obconf`, a graphical configuration tool designed specifically for Openbox. `obconf` provides an intuitive interface that allows you to easily customize various aspects of Openbox, including window appearance, desktop settings, mouse behavior, and more.

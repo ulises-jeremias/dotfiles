@@ -1,17 +1,14 @@
 <div align="center">
   <h1>🚀 Dotfiles Generator</h1>
   
-  [Docs](https://github.com/ulises-jeremias/dotfiles/wiki) |
+  [Docs](https://ulises-jeremias.github.io/dotfiles) |
   [Changelog](#) |
   [Contributing](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md)
   
-</div>
-<div align="center">
-
-[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
-[![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable)](https://aur.archlinux.org/packages/dots-stable)
-[![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development)](https://aur.archlinux.org/packages/dots-git)
-[![License: MIT][licensebadge]][licenseurl]
+  [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
+  [![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable)](https://aur.archlinux.org/packages/dots-stable)
+  [![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development)](https://aur.archlinux.org/packages/dots-git)
+  [![License: MIT][licensebadge]][licenseurl]
 
 </div>
 
@@ -32,12 +29,17 @@ Most of my dotfiles where written from scratch, but I also took inspiration from
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - and many more!
 
-<img alt="Dotfiles Screen Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg" />
-<img alt="Nord Two Lines" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png" />
-<img alt="Launchpad" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png" />
-<img alt="Spotlight Dark" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png" />
-<img alt="Dotfiles Overview" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif" />
-<img alt="i3 with alacritty" src="https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png" />
+![Dotfiles Screen Overview](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg)
+
+![Nord Two Lines](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png)
+
+![Launchpad](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png)
+
+![Spotlight Dark](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png)
+
+![Dotfiles Overview](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif)
+
+![i3 with alacritty](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png)
 
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
 [licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE

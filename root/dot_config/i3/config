@@ -30,7 +30,7 @@ set $WS8 "8"
 exec_always --no-startup-id ~/.config/i3/autostart.sh
 
 # needed for super to launch rofi through ksuperkey, see ~/.xprofile
-bindsym Mod1+F1 exec --no-startup-id ~/.local/bin/dots-scripts rofi-run -r
+bindsym Mod1+F1 exec --no-startup-id ~/.local/bin/dots rofi-run -r
 
 ###############      i3 Layouts      ###############
 
@@ -51,7 +51,7 @@ bindsym Mod1+q kill
 bindsym Mod1+F4 kill
 
 # launchers
-bindsym Control+space exec --no-startup-id ~/.local/bin/dots-scripts rofi-run -r
+bindsym Control+space exec --no-startup-id ~/.local/bin/dots rofi-run -r
 
 # core
 bindsym $Mod+w          exec --no-startup-id exo-open --launch WebBrowser
@@ -60,14 +60,14 @@ bindsym $Mod+t          exec --no-startup-id exo-open --launch TerminalEmulator
 bindsym $Mod+Return     exec --no-startup-id exo-open --launch TerminalEmulator
 
 # logout script
-bindsym $Mod+x exec --no-startup-id ~/.local/bin/dots-scripts rofi-run -l
+bindsym $Mod+x exec --no-startup-id ~/.local/bin/dots rofi-run -l
 
 # clipboard script
-bindsym Mod1+Control+c exec --no-startup-id ~/.local/bin/dots-scripts rofi-run -c
+bindsym Mod1+Control+c exec --no-startup-id ~/.local/bin/dots rofi-run -c
 
 # Screenshot
-bindsym Print exec --no-startup-id ~/.local/bin/dots-scripts screenshooter
-bindsym Shift+Print exec --no-startup-id ~/.local/bin/dots-scripts screenshooter -r
+bindsym Print exec --no-startup-id ~/.local/bin/dots screenshooter
+bindsym Shift+Print exec --no-startup-id ~/.local/bin/dots screenshooter -r
 
 # audio
 bindsym XF86AudioPlay        exec --no-startup-id playerctl play-pause
@@ -79,13 +79,13 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pamixer -i 1
 bindsym XF86AudioLowerVolume exec --no-startup-id pamixer -d 1
 
 # backlight
-bindsym XF86MonBrightnessUp         exec --no-startup-id ~/.local/bin/dots-scripts brightness "*" + 0.1
-bindsym XF86MonBrightnessDown       exec --no-startup-id ~/.local/bin/dots-scripts brightness "*" - 0.1
-bindsym Shift+XF86MonBrightnessUp   exec --no-startup-id ~/.local/bin/dots-scripts brightness "*" + 0.01
-bindsym Shift+XF86MonBrightnessDown exec --no-startup-id ~/.local/bin/dots-scripts brightness "*" - 0.01
+bindsym XF86MonBrightnessUp         exec --no-startup-id ~/.local/bin/dots brightness "*" + 0.1
+bindsym XF86MonBrightnessDown       exec --no-startup-id ~/.local/bin/dots brightness "*" - 0.1
+bindsym Shift+XF86MonBrightnessUp   exec --no-startup-id ~/.local/bin/dots brightness "*" + 0.01
+bindsym Shift+XF86MonBrightnessDown exec --no-startup-id ~/.local/bin/dots brightness "*" - 0.01
 
 # toggle
-bindsym $Mod+Control+p exec --no-startup-id ~/.local/bin/dots-scripts toggle -p -t &
+bindsym $Mod+Control+p exec --no-startup-id ~/.local/bin/dots toggle -p -t &
 
 ###########          Workspace Bindings          ###############
 
@@ -114,8 +114,8 @@ bindsym $Mod+Mod1+Left workspace prev
 bindsym $Mod+Mod1+Right workspace next
 
 # switch to next or previous existing workspaces
-bindsym $Mod+Control+Left exec --no-startup-id ~/.local/bin/dots-scripts next-workspace --left
-bindsym $Mod+Control+Right exec --no-startup-id ~/.local/bin/dots-scripts next-workspace
+bindsym $Mod+Control+Left exec --no-startup-id ~/.local/bin/dots next-workspace --left
+bindsym $Mod+Control+Right exec --no-startup-id ~/.local/bin/dots next-workspace
 
 # move focused container to workspace
 bindsym $Mod+Shift+1 move container to workspace $WS1; workspace $WS1
@@ -326,7 +326,7 @@ for_window [class="(?i)System-config-printer.py"] floating enable
 for_window [class="Thus"] floating enable
 for_window [class="Timeset-gui"] floating enable
 for_window [class="(?i)virtualbox"] floating enable
-for_window [class="(?i)virtualbox"] fullscreen enable 
+for_window [class="(?i)virtualbox"] fullscreen enable
 for_window [class="Xfburn"] floating enable
 
 popup_during_fullscreen smart
