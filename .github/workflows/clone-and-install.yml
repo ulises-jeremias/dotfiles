@@ -1,0 +1,24 @@
+name: Clone and Install
+
+on:
+  workflow_call:
+
+jobs:
+  clone-and-install:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        devcontainer-image:
+          - mcr.microsoft.com/vscode/devcontainers/base:ubuntu
+    container:
+      image: ${{ matrix.devcontainer-image }}
+      env:
+        CODESPACES: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Dotfiles
+        run: ./install.sh
+      - name: Chezmoi data
+        run: '"$HOME/.local/bin/chezmoi" data'

@@ -22,6 +22,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  clone-and-install:
+    name: Clone and Install
+    uses: ./.github/workflows/clone-and-install.yml
+
   lint:
     name: Super Linter
     uses: ./.github/workflows/lint.yml
