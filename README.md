@@ -167,7 +167,7 @@ cd /tmp/dotfiles
 .
 ├── .github                 # GitHub related files
 ├── playground              # testing environment using Vagrant
-├── root                    # root directory of the dotfiles
+├── home                    # root directory of the dotfiles for the home directory
 ├── static/                 # static files used by the README
 ├── lib/                    # utility files used by dots
 ├── dots                    # dots binary to install the dotfiles
