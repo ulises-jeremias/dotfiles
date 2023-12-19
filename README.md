@@ -69,7 +69,7 @@ sh -c "$(wget -qO- https://raw.githubusercontent.com/ulises-jeremias/dotfiles/ma
 > 💡 We use `wget` here because it comes preinstalled with most Linux distributions. But you can also use `curl`:
 >
 > ```bash
->  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/scripts/install_dotfiles.sh)"
+> sh -c "$(curl -fsSL https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/scripts/install_dotfiles.sh)"
 > ```
 
 This will install the dotfiles in `~/.dotfiles`.
