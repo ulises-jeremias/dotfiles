@@ -56,15 +56,33 @@ Most of my dotfiles where written from scratch, but I also took inspiration from
 
 </details>
 
-<details>
-<summary>🌟 Installation</summary>
+Managed with [`chezmoi`](https://chezmoi.io), a great dotfiles manager.
 
-### Using Chezmoi (recommended)
+## Getting started 🚀
+
+You can use a [convenient script](./scripts/install_dotfiles.sh) to install the dotfiles on any machine with a single command. Simply run the following command in your terminal:
+
+```bash
+sh -c "$(wget -qO- https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/scripts/install_dotfiles.sh)"
+```
+
+> 💡 We use `wget` here because it comes preinstalled with most Linux distributions. But you can also use `curl`:
+>
+> ```bash
+>  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/scripts/install_dotfiles.sh)"
+> ```
+
+This will install the dotfiles in `~/.dotfiles`.
+
+<details open>
+<summary>🌟 Other ways to install the dotfiles</summary>
+
+### Using Chezmoi
 
 > This is a recommended way to install the dotfiles generator. It will install the latest stable version of the dotfiles generator using [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible.
 
 ```sh
-chezmoi init --apply ulises-jeremias
+chezmoi init --apply ulises-jeremias --source ~/.dotfiles
 ```
 
 This will install the dotfiles in `~/.dotfiles`.

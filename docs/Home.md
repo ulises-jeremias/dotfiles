@@ -15,6 +15,8 @@
 You might be here looking for (Linux) rice reference or to fully replicate my personal
 configuration of my favorite Window Managers and several apps as well. ❄️
 
+It's also suitable for use in [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
+
 This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!
 
 Most of my dotfiles where written from scratch, but I also took inspiration from other dotfiles repositories. The highlights about my dotfiles are the following:
