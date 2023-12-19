@@ -27,8 +27,8 @@ package() {
 	cd ..
 
 	if [[ ! -d "${HOME}/.local/share/chezmoi" ]]; then
-		cp -rf ./dotfiles ~/.local/share/chezmoi
+		cp -rf ./dotfiles ~/.dotfiles
 	fi
 
-	chezmoi init --apply --verbose --force --source ~/.local/share/chezmoi
+	chezmoi init --apply --verbose --force --source ~/.dotfiles
 }

@@ -67,7 +67,7 @@ Most of my dotfiles where written from scratch, but I also took inspiration from
 chezmoi init --apply ulises-jeremias
 ```
 
-This will install the dotfiles in `~/.local/share/chezmoi`.
+This will install the dotfiles in `~/.dotfiles`.
 
 ### From source
 
@@ -75,8 +75,8 @@ This will install the dotfiles in `~/.local/share/chezmoi`.
 > This will install unstable versions of the dotfiles generator. You can switch to a stable version by using any existing git tag.
 
 ```sh
-git clone https://github.com/ulises-jeremias/dotfiles ~/.local/share/chezmoi
-~/.local/share/chezmoi/install
+git clone https://github.com/ulises-jeremias/dotfiles ~/.dotfiles
+~/.dotfiles/install
 ```
 
 The installation script allows you to install all the necessary dependencies to make your dotfiles config work correctly.
