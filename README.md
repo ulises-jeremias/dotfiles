@@ -74,7 +74,7 @@ sh -c "$(wget -qO- https://raw.githubusercontent.com/ulises-jeremias/dotfiles/ma
 
 This will install the dotfiles in `~/.dotfiles`.
 
-<details open>
+<details>
 <summary>🌟 Other ways to install the dotfiles</summary>
 
 ### Using Chezmoi
