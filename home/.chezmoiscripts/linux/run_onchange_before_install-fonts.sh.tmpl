@@ -1,4 +1,4 @@
-{{ if (and (not .ephemeral) (not .headless)) -}}
+{{ if and (not .ephemeral) (not .headless) -}}
 
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash

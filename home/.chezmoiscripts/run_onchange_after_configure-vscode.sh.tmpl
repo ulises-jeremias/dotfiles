@@ -1,0 +1,32 @@
+{{ if and (eq .chezmoi.os "darwin" "linux") (not .headless) -}}
+
+{{ $extensions := list
+     "eamodio.gitlens"
+     "EditorConfig.EditorConfig"
+     "golang.go"
+     "jinliming2.vscode-go-template"
+     "ms-azuretools.vscode-docker"
+     "ms-python.python"
+     "ms-vscode-remote.remote-containers"
+     "ms-vscode-remote.remote-ssh"
+     "ms-vscode-remote.remote-ssh-edit"
+     "ms-vscode-remote.vscode-remote-extensionpack"
+     "ms-vscode.cpptools"
+     "redhat.vscode-yaml"
+     "stkb.rewrap"
+     "streetsidesoftware.code-spell-checker"
+     "tamasfe.even-better-toml"
+     "Tyriar.sort-lines"
+     "yzhang.markdown-all-in-one"
+     "VOSCA.vscode-v-analyzer"
+-}}
+
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+{{ range $extensions -}}
+code --force --install-extension {{ . }}
+{{ end -}}
+
+{{ end -}}

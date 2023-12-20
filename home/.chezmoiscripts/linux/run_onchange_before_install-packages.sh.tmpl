@@ -13,7 +13,13 @@ set -eufo pipefail
 
 {{ $aurPackages := list -}}
 
-{{ if (and (not .ephemeral) (not .headless)) -}}
+{{ if not .headless -}}
+{{ $aurPackages = concat $aurPackages (list
+  "visual-studio-code-bin"
+) -}}
+{{ end -}}
+
+{{ if and (not .ephemeral) (not .headless) -}}
 {{ $packages = concat $packages (list
   "arc-gtk-theme"
   "arandr"

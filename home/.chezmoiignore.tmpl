@@ -3,7 +3,7 @@
 {{- end -}}
 
 {{- if eq .chezmoi.os "linux" -}}
-{{-   if (or (.ephemeral) (.headless)) -}}
+{{-   if or (.ephemeral) (.headless) -}}
 .config/alacrity/**
 .config/fontconfig/**
 .config/i3/**
