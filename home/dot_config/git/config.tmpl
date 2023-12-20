@@ -158,12 +158,13 @@
   branch = false
   stash = false
 [include]
-  path = .gitconfig.user
-    {{- range $file := list "diff-merge-tools" "gui-config" }}
+  path = {{ .chezmoi.homeDir -}}
+    /.config/git/config.user
+  {{- range $file := list "diff-merge-tools" "gui-config" }}
   path = {{ $.chezmoi.homeDir -}}
     /.config/git/
     {{-   $file }}
-    {{- end }}
+  {{- end }}
 
 {{- /*
  vim:ft=gitconfig:
