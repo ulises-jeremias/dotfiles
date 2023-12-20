@@ -183,17 +183,17 @@ alias cat=batcat
 {{- end }}
 
 {{- if lookPath "exa" }}
-alias l=exa
-alias la='exa -a'
-alias ll='exa -l'
-alias ls='exa -l'
-alias lsa='exa -la'
+alias l='exa -lah'
+alias la='exa -lAh'
+alias ll='exa -lh'
+alias ls='exa --color=tty'
+alias lsa='exa -lah'
 {{- else if lookPath "lsd" }}
-alias l=lsd
-alias la='lsd -a'
-alias ll='lsd -l'
-alias ls='lsd -l'
-alias lsa='lsd -la'
+alias l='lsd -lah'
+alias la='lsd -lAh'
+alias ll='lsd -lh'
+alias ls='lsd --color=tty'
+alias lsa='lsd -lah'
 {{- else if lookPath "ls" }}
 alias l='ls -lah'
 alias la='ls -lAh'
