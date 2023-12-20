@@ -4,7 +4,11 @@
 set -eufo pipefail
 
 {{ $packages := list
+  "bat"
+  "direnv"
+  "exa"
   "jq"
+  "shellcheck"
 -}}
 
 {{ $aurPackages := list -}}
@@ -34,13 +38,13 @@ set -eufo pipefail
 ) -}}
 {{ end -}}
 
-yay -S --noconfirm {{ $aurPackages | join " " }}
-
 {{ $sudo := "sudo " -}}
 {{ if eq .chezmoi.username "root" -}}
 {{   $sudo = "" -}}
 {{ end -}}
 
 {{ $sudo }}pacman -S --noconfirm {{ $packages | join " " }}
+
+yay -S --noconfirm {{ $aurPackages | join " " }}
 
 {{ end -}}

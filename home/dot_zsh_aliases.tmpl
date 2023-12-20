@@ -156,6 +156,7 @@ alias gstu='git stash --include-untracked'
 alias gsu='git submodule update'
 alias gsw='git switch'
 alias gswc='git switch -c'
+# shellcheck disable=SC2142
 alias gtl='gtl(){ git tag --sort=-v:refname -n -l "${1}*" }; noglob gtl'
 alias gts='git tag -s'
 alias gtv='git tag | sort -V'
@@ -167,11 +168,6 @@ alias gupav='git pull --rebase --autostash -v'
 alias gupv='git pull --rebase -v'
 alias gwch='git whatchanged -p --abbrev-commit --pretty=medium'
 alias gwip='git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify --no-gpg-sign -m "--wip-- [skip ci]"'
-alias l='ls -lah'
-alias la='ls -lAh'
-alias ll='ls -lh'
-alias ls='ls --color=tty'
-alias lsa='ls -lah'
 alias md='mkdir -p'
 alias please="sudo"
 alias pliz="sudo"
@@ -179,3 +175,29 @@ alias rainbow='yes "$(seq 231 -1 16)" | while read i; do printf "\x1b[48;5;${i}m
 alias rd=rmdir
 alias run-help=man
 alias which-command=whence
+
+{{- if lookPath "bat" }}
+alias cat=bat
+{{- else if lookPath "batcat" }}
+alias cat=batcat
+{{- end }}
+
+{{- if lookPath "exa" }}
+alias l=exa
+alias la='exa -a'
+alias ll='exa -l'
+alias ls='exa -l'
+alias lsa='exa -la'
+{{- else if lookPath "lsd" }}
+alias l=lsd
+alias la='lsd -a'
+alias ll='lsd -l'
+alias ls='lsd -l'
+alias lsa='lsd -la'
+{{- else if lookPath "ls" }}
+alias l='ls -lah'
+alias la='ls -lAh'
+alias ll='ls -lh'
+alias ls='ls --color=tty'
+alias lsa='ls -lah'
+{{- end }}
