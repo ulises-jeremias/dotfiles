@@ -1,0 +1,46 @@
+{{ if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+{{ $packages := list
+  "jq"
+-}}
+
+{{ $aurPackages := list -}}
+
+{{ if (and (not .ephemeral) (not .headless)) -}}
+{{ $packages = concat $packages (list
+  "arc-gtk-theme"
+  "arandr"
+  "dbus-python"
+  "flameshot"
+  "graphicsmagick"
+  "jq"
+  "pacman-contrib"
+  "pamixer"
+  "pavucontrol"
+  "playerctl"
+  "pulseaudio"
+  "sxiv"
+  "wmctrl"
+  "yad"
+) -}}
+
+{{ $aurPackages = concat $aurPackages (list
+  "betterlockscreen"
+  "numix-icon-theme"
+  "skippy-xd"
+) -}}
+{{ end -}}
+
+yay -S --noconfirm {{ $aurPackages | join " " }}
+
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+{{   $sudo = "" -}}
+{{ end -}}
+
+{{ $sudo }}pacman -S --noconfirm {{ $packages | join " " }}
+
+{{ end -}}
