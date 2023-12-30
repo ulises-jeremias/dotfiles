@@ -3,9 +3,11 @@
 player_status=$(playerctl status 2> /dev/null)
 
 if [ "${player_status}" = "Playing" ]; then
-  playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}'
+  echo "  $(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}')"
 elif [ "${player_status}" = "Paused" ]; then
-  playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}'
+  echo " 󰏤 $(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}')"
+elif [ "${player_status}" = "Stopped" ]; then
+  echo " 󰓛 $(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}')"
 else
   # Do nothing otherwise
   echo ""
