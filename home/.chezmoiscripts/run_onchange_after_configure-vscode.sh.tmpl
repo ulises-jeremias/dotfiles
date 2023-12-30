@@ -29,4 +29,16 @@ set -eufo pipefail
 code --force --install-extension {{ . }}
 {{ end -}}
 
+SETTINGS_PATH="$HOME/.config/Code/User/settings.json"
+FONT_FAMILY="'Hack Nerd Font Mono', 'Droid Sans Mono', 'monospace'"
+
+# Check if jq is installed
+if ! command -v jq &>/dev/null; then
+    echo "jq is not installed. Please install it to continue."
+    exit 1
+fi
+
+# Modify settings.json
+jq --arg font "${FONT_FAMILY}" '.["editor.fontFamily"]=$font' "${SETTINGS_PATH}" > temp.json && mv temp.json "${SETTINGS_PATH}"
+
 {{ end -}}

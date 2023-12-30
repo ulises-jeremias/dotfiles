@@ -6,8 +6,6 @@ if [ "${player_status}" = "Playing" ]; then
   echo "  $(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}')"
 elif [ "${player_status}" = "Paused" ]; then
   echo " 󰏤 $(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}')"
-elif [ "${player_status}" = "Stopped" ]; then
-  echo " 󰓛 $(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}')"
 else
   # Do nothing otherwise
   echo ""

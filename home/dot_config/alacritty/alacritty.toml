@@ -46,11 +46,11 @@ WINIT_X11_SCALE_FACTOR = "1"
 size = 12
 
 [font.bold]
-family = "Hack Nerd Font"
+family = "Hack Nerd Font Mono"
 style = "Bold"
 
 [font.bold_italic]
-family = "Hack Nerd Font"
+family = "Hack Nerd Font Mono"
 style = "Bold Italic"
 
 [font.glyph_offset]
@@ -58,11 +58,11 @@ x = 0
 y = 0
 
 [font.italic]
-family = "Hack Nerd Font"
+family = "Hack Nerd Font Mono"
 style = "Italic"
 
 [font.normal]
-family = "Hack Nerd Font"
+family = "Hack Nerd Font Mono"
 style = "Regular"
 
 [font.offset]
