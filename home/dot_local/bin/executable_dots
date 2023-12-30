@@ -40,6 +40,7 @@ scripts_list=(
     "next-workspace: switch to next existing workspace"
     "night-mode: toggle night mode"
     "openweathermap-detailed: print the detailed weather information"
+    "player: get the current song playing"
     "popup-calendar: show a calendar in a popup"
     "rofi-bluetooth: show a rofi menu to manage bluetooth devices"
     "rofi-randr: show a rofi menu to manage the screen resolution"
