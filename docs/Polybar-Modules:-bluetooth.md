@@ -21,7 +21,7 @@ The Rofi Bluetooth module offers the following functionality:
 
 The Rofi Bluetooth module provides an intuitive and interactive UI powered by Rofi, which allows you to control the Bluetooth settings easily. Here's a demonstration of the Rofi Bluetooth module in action:
 
-![Rofi Bluetooth](https://raw.githubusercontent.com/wiki/ulises-jeremias/dotfiles/images/polybar/modules/rofi-bluetooth.gif)
+![Rofi Bluetooth](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/rofi-bluetooth.gif?raw=true)
 
 You can use this UI to enable or disable Bluetooth, connect to available devices, and perform other Bluetooth-related actions.
 

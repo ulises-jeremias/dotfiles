@@ -72,13 +72,13 @@ Managed with [`chezmoi`](https://chezmoi.io), a great dotfiles manager.
 You can use a [convenient script](./scripts/install_dotfiles.sh) to install the dotfiles on any machine with a single command. Simply run the following command in your terminal:
 
 ```bash
-sh -c "$(wget -qO- https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/scripts/install_dotfiles.sh)"
+sh -c "$(wget -qO- "https://github.com/ulises-jeremias/dotfiles/blob/master/scripts/install_dotfiles.sh?raw=true")"
 ```
 
 > 💡 We use `wget` here because it comes preinstalled with most Linux distributions. But you can also use `curl`:
 >
 > ```bash
-> sh -c "$(curl -fsSL https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/scripts/install_dotfiles.sh)"
+> sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/master/scripts/install_dotfiles.sh?raw=true")"
 > ```
 
 This will install the dotfiles in `~/.dotfiles`.

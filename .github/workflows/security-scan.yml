@@ -29,8 +29,8 @@ jobs:
           TRIVY_USERNAME: ${{ github.repository_owner }}
           TRIVY_PASSWORD: ${{ github.token }}
         with:
-          scan-type: 'fs'
-          scan-path: '.'
+          scan-type: "fs"
+          scan-path: "."
           ignore-unfixed: true
           severity: "CRITICAL,HIGH"
           format: "sarif"

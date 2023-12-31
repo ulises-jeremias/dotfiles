@@ -16,11 +16,11 @@
     include = ["**/themes/**"]
 [".zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"]
     type = "file"
-    url = "https://raw.githubusercontent.com/zsh-users/zsh-syntax-highlighting/master/zsh-syntax-highlighting.zsh"
+    url = "https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/zsh-syntax-highlighting.zsh?raw=true"
     exact = true
     refreshPeriod = "168h"
 [".zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"]
     type = "file"
-    url = "https://raw.githubusercontent.com/zsh-users/zsh-autosuggestions/master/zsh-autosuggestions.zsh"
+    url = "https://github.com/zsh-users/zsh-autosuggestions/blob/master/zsh-autosuggestions.zsh?raw=true"
     exact = true
     refreshPeriod = "168h"

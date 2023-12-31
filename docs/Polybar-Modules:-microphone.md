@@ -4,9 +4,9 @@ Apologies for the confusion. Here's the updated documentation for the Microphone
 
 The Microphone module is a custom module created around the `internal/script` module in Polybar. It displays the state of the microphone and listens for status changes using the script `dots microphone`.
 
-| Muted                                                       | Unmuted                                                        |
-| :---------------------------------------------------------- | :------------------------------------------------------------- |
-| ![Microphone Muted](https://raw.githubusercontent.com/wiki/ulises-jeremias/dotfiles/images/polybar/modules/microphone-muted.jpg) | ![Microphone Unmuted](https://raw.githubusercontent.com/wiki/ulises-jeremias/dotfiles/images/polybar/modules/microphone-unmuted.jpg) |
+| Muted                                                                                                                                  | Unmuted                                                                                                                                    |
+| :------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| ![Microphone Muted](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/microphone-muted.jpg?raw=true) | ![Microphone Unmuted](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/microphone-unmuted.jpg?raw=true) |
 
 ## Usage
 

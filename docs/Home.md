@@ -9,10 +9,10 @@
 
 <div align="center">
 
-  [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
-  [![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable)](https://aur.archlinux.org/packages/dots-stable)
-  [![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development)](https://aur.archlinux.org/packages/dots-git)
-  [![License: MIT][licensebadge]][licenseurl]
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
+[![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable)](https://aur.archlinux.org/packages/dots-stable)
+[![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development)](https://aur.archlinux.org/packages/dots-git)
+[![License: MIT][licensebadge]][licenseurl]
 
 </div>
 
@@ -35,17 +35,17 @@ Most were written from scratch. Some details:
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - and many more!
 
-![Dotfiles Screen Overview](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screen-2.jpg)
+![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen-2.jpg?raw=true)
 
-![Nord Two Lines](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png)
+![Nord Two Lines](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-nord-two-lines?raw=true.png)
 
-![Launchpad](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png)
+![Launchpad](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-launchpad.png?raw=true)
 
-![Spotlight Dark](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png)
+![Spotlight Dark](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-spotlight-dark?raw=true.png)
 
-![Dotfiles Overview](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/demo.gif)
+![Dotfiles Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/demo.gif?raw=true)
 
-![i3 with alacritty](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png)
+![i3 with alacritty](https://github.com/ulises-jeremias/dotfiles/blob/master/static/nvim.png?raw=true)
 
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
 [licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE

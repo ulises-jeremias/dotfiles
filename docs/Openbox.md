@@ -16,7 +16,7 @@ To simplify the configuration process, you can use `obconf`, a graphical configu
 
 If `obconf` is available in your package manager, you can install it using the appropriate installation command for your operating system. Once installed, you can launch `obconf` and explore the wide range of customization options it offers.
 
-![Openbox Config](https://raw.githubusercontent.com/wiki/ulises-jeremias/dotfiles/images/obconf.jpg)
+![Openbox Config](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/obconf.jpg?raw=true)
 
 Using `obconf`, you can conveniently tweak and adjust Openbox without directly modifying the configuration files. This makes it easy to experiment, fine-tune your settings, and create a seamless desktop experience tailored to your workflow.
 

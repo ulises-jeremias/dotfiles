@@ -5,7 +5,6 @@ title: "(short issue description)"
 labels: [bug]
 assignees: []
 body:
-
   - type: textarea
     id: description
     attributes:
@@ -73,4 +72,4 @@ body:
     attributes:
       label: Environment details (OS name and version, etc.)
     validations:
-        required: true
+      required: true

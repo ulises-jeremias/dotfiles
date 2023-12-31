@@ -15,13 +15,13 @@ jobs:
       - ci
 
     runs-on: ubuntu-latest
-    
+
     concurrency: stable
-    
+
     environment:
       name: stable
       url: https://aur.archlinux.org/packages/dots-stable
-    
+
     steps:
       - name: Checkout Latest Dotfiles Release
         uses: actions/checkout@v4

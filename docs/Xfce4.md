@@ -15,11 +15,11 @@ Here's how you can access the XFCE4 Settings Manager:
 1. Open the application menu by clicking on the menu icon in the panel or by pressing the Super key.
 2. Search for "Settings Manager" and click on it to open the manager.
 
-![Jgmenu](https://raw.githubusercontent.com/wiki/ulises-jeremias/dotfiles/images/settings-manager-open.gif)
+![Jgmenu](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/settings-manager-open.gif?raw=true)
 
 The XFCE4 Settings Manager window will open, providing a range of options for customization.
 
-![settings](https://raw.githubusercontent.com/wiki/ulises-jeremias/dotfiles/images/settings.jpg)
+![settings](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/settings.jpg?raw=true)
 
 In the XFCE4 Settings Manager, you can customize various settings, including:
 

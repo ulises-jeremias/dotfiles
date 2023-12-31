@@ -16,12 +16,12 @@ To customize the dotfiles, follow these steps:
 
 Here are some examples of customizations made using the dotfiles:
 
-![i3 with alacritty](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/nvim.png)
+![i3 with alacritty](https://github.com/ulises-jeremias/dotfiles/blob/master/static/nvim.png?raw=true)
 
-![Apps finder](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-launchpad.png)
+![Apps finder](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-launchpad.png?raw=true)
 
-![Apps finder](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-spotlight-dark.png)
+![Apps finder](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-spotlight-dark.png?raw=true)
 
-![Apps finder](https://raw.githubusercontent.com/ulises-jeremias/dotfiles/master/static/screenshot-nord-two-lines.png)
+![Apps finder](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-nord-two-lines.png?raw=true)
 
 Feel free to customize and personalize your dotfiles to suit your preferences and workflow!

@@ -20,7 +20,7 @@ To use `alacritty-themes`, follow these steps:
 
 Here's a glimpse of how `alacritty-themes` works:
 
-![Alacritty Themes](https://raw.githubusercontent.com/wiki/ulises-jeremias/dotfiles/images/alacritty-themes.gif)
+![Alacritty Themes](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/alacritty-themes.gif?raw=true)
 
 By using `alacritty-themes`, you can effortlessly personalize your Alacritty terminal with stunning visual styles, enhancing both the aesthetics and functionality of your command-line environment.
 

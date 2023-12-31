@@ -41,6 +41,7 @@ ZSH_NO_DEFAULT_PROMPT=true
 ```
 
 This will prevent the default prompt from being loaded, but the default configuration will still be loaded.
+
 </details>
 
 <details>
@@ -63,6 +64,7 @@ antigen apply
 ```
 
 This file will be automatically sourced.
+
 </details>
 
 <details>
@@ -80,6 +82,7 @@ source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 ```
 
 This file will be automatically sourced.
+
 </details>
 
 <details>
@@ -111,4 +114,5 @@ Make sure to replace `/your/oh-my-zsh/path` with the actual path to your Oh My Z
 With these steps, you can easily integrate Oh My Zsh into your dotfiles setup and take advantage of its powerful features and community-driven plugins and themes.
 
 Feel free to explore the Oh My Zsh documentation and customize your shell experience to suit your needs and preferences. Happy customizing! ✨🚀
+
 </details>

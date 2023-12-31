@@ -18,9 +18,9 @@ jobs:
       - ci
 
     runs-on: ubuntu-latest
-    
+
     concurrency: unstable
-    
+
     environment:
       name: unstable
       url: https://aur.archlinux.org/packages/dots-git
