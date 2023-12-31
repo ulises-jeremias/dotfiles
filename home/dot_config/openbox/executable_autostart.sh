@@ -20,13 +20,13 @@ xset r rate 350 60
 xrdb -I"${HOME}" -load ~/.Xresources &
 
 # load compfy
-[[ -z "$(pgrep compfy)" ]] && compfy --config "${XDG_CONFIG_HOME}"/compfy/compfy.conf --daemon
+[[ -z "$(pgrep compfy)" ]] && compfy --config "${XDG_CONFIG_HOME}"/compfy/compfy.conf --daemon &
 
 # restore colorscheme
 [[ -z "$(pgrep wal)" ]] && wal -R -q
 
 # run feh-blur in the background
-dots feh-blur --blur 10 -d &
+dots feh-blur --blur 32 -d &
 
 # open polybar
 "${XDG_CONFIG_HOME}"/polybar/launch.sh &
