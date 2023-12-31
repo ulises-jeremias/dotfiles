@@ -33,14 +33,16 @@ configuration of my favorite Window Managers and several apps as well. ⛄
 
 These configuration is not only suitable for Desktop Environments but also suitable for use in [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
 
+This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!
+
+---
+
 <a href="#octocat--hi-there-thanks-for-dropping-by">
   <picture>
     <source media="(prefers-color-scheme: dark)" alt="" align="right" width="400px" srcset="./static/screen-2.jpg"/>
     <img alt="" align="right" width="400px" src="./static/screen-2.jpg"/>
   </picture>
 </a>
-
-This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!
 
 Most of my dotfiles where written from scratch, but I also took inspiration from other dotfiles repositories. The highlights about my dotfiles are the following:
 
@@ -155,8 +157,6 @@ To customize the dotfiles, follow these steps:
 4. Run the command `chezmoi apply` to apply the changes.
 
 </details>
-
-<br />
 
 Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
 
