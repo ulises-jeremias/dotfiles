@@ -26,7 +26,7 @@ package() {
 	git checkout "${latest_release}"
 	cd ..
 
-	if [[ ! -d "${HOME}/.local/share/chezmoi" ]]; then
+	if [[ ! -d "${HOME}/.dotfiles" ]]; then
 		cp -rf ./dotfiles ~/.dotfiles
 	fi
 
