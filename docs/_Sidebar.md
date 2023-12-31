@@ -38,4 +38,5 @@
       - Zsh + Oh My Zsh
 - [⏏️ Dots Eject](Dots-Eject)
 - [💯 Contributing](CONTRIBUTING)
+- [🛡️ Privacy and Security](Security)
 - [🧪 Testing](Testing)
