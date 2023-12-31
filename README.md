@@ -28,10 +28,10 @@
 <details open>
 <summary>👋 ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup></summary>
 
-You might be here looking for (Linux) rice reference or to fully replicate my personal
-configuration of my favorite Window Managers and several apps as well. ❄️
+You might be here looking for (Linux) rice reference or to (full?) replicate my personal
+configuration of my favorite Window Managers and several apps as well. ⛄
 
-It's also suitable for use in [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
+These configuration is not only suitable for Desktop Environments but also suitable for use in [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
 
 <a href="#octocat--hi-there-thanks-for-dropping-by">
   <picture>
@@ -45,7 +45,7 @@ This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfil
 Most of my dotfiles where written from scratch, but I also took inspiration from other dotfiles repositories. The highlights about my dotfiles are the following:
 
 - **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
-- **Panel** 🌸 [Polybar](https://polybar.github.io/)!
+- **Panel** 🌸 [Polybar](https://polybar.github.io/) whic is a fast and easy-to-use status bar!
 - **Application Launcher** 🚀 [Rofi](https://github.com/davatorium/rofi) which is blazing fast!
 - **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
 - **Terminal Emulator** 🌿 [Alacritty](https://alacritty.org/) which is GPU accelerated!
@@ -135,10 +135,12 @@ The installation script allows you to install all the necessary dependencies to 
 
 </details>
 
-<details>
-<summary>🎨 Post install customization</summary>
+## 🎨 Post install Customization
 
 You can fork this repository and customize it to suit your preferences and workflow. You are encouraged to maintain a separate GitHub repository of configurations for your own dotfiles and keep this repository as a template!
+
+<details>
+<summary>Expand to see the steps to customize your environment!</summary>
 
 We use [Chezmoi](https://www.chezmoi.io/) to manage the dotfiles. Chezmoi is a sophisticated yet easy-to-use command-line tool that helps you manage your dotfiles across multiple machines. It is designed to be secure, flexible, and easy to use.
 
@@ -152,14 +154,19 @@ To customize the dotfiles, follow these steps:
 
 4. Run the command `chezmoi apply` to apply the changes.
 
-Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
-
 </details>
 
-<details>
-<summary>🧪 Testing</summary>
+<br />
 
-We use [Vagrant](https://www.vagrantup.com/) to test the installation of the dotfiles generator in different OSs.
+Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
+
+## 🧪 Testing
+
+We use [Vagrant](https://www.vagrantup.com/) to test the installation of the dotfiles generator in different
+Operating Systems and machine architectures.
+
+<details>
+<summary>Expand to learn how to run a testing environment!</summary>
 
 To run the testing environment, just execute the following commands:
 
@@ -181,30 +188,30 @@ cd /tmp/dotfiles
 
 </details>
 
-<details>
-<summary>📁 Repository Structure</summary>
+## 📁 Repository Structure
 
 ```sh
 .
 ├── .github                 # GitHub related files
-├── playground              # testing environment using Vagrant
-├── home                    # root directory of the dotfiles for the home directory
-├── static/                 # static files used by the README
-├── lib/                    # utility files used by dots
-├── dots                    # dots binary to install the dotfiles
-└── install.sh              # installation script
+├── docs/                   # Documentation files
+├── bin/                    # Scripts used by dots
+├── home/                   # Root directory of the dotfiles for the home directory
+├── lib/                    # Utility files used by dots
+├── playground/             # Testing environment using Vagrant
+├── scripts/                # Scripts used by dots
+├── static/                 # Static files used by the README
+└── install.sh              # Installation script
 ```
-
-</details>
 
 ## 🤝 Contributors
 
 <a href="https://github.com/ulises-jeremias/dotfiles/contributors">
-  <img src="https://contrib.rocks/image?repo=ulises-jeremias/dotfiles"/>
+  <img src="https://contrib.rocks/image?repo=ulises-jeremias/dotfiles" alt="Contributors">
 </a>
 
 Made with [contributors-img](https://contrib.rocks).
 
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
 [licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE
+
 </div> <!-- justify -->
