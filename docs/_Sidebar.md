@@ -36,7 +36,7 @@
       - Zsh + Antigen
       - Zsh + Power Level 10k
       - Zsh + Oh My Zsh
+- [🛡️ Privacy and Security](Security)
 - [⏏️ Dots Eject](Dots-Eject)
 - [💯 Contributing](CONTRIBUTING)
-- [🛡️ Privacy and Security](Security)
 - [🧪 Testing](Testing)
