@@ -38,7 +38,13 @@ These configuration is not only suitable for Desktop Environments but also for u
 
 This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!
 
----
+<div align="center">
+
+```ocaml
+CLICK OR TAP ❲☰❳ TO SHOW TABLE-OF-CONTENTS
+```
+
+</div>
 
 <a href="#octocat--hi-there-thanks-for-dropping-by">
   <picture>
@@ -59,17 +65,7 @@ Most were written from scratch. Some details:
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - and many more!
 
-</details>
-
 Managed with [`chezmoi`](https://chezmoi.io), a great dotfiles manager.
-
-<div align="center">
-
-```ocaml
-CLICK OR TAP ❲☰❳ TO SHOW TABLE-OF-CONTENTS
-```
-
-</div>
 
 ## Getting started 🚀
 
