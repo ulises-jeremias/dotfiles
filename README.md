@@ -63,6 +63,14 @@ Most of my dotfiles where written from scratch, but I also took inspiration from
 
 Managed with [`chezmoi`](https://chezmoi.io), a great dotfiles manager.
 
+<div align="center">
+
+```ocaml
+CLICK OR TAP ❲☰❳ TO SHOW TABLE-OF-CONTENTS
+```
+
+</div>
+
 ## Getting started 🚀
 
 You can use a [convenient script](./scripts/install_dotfiles.sh) to install the dotfiles on any machine with a single command. Simply run the following command in your terminal:
