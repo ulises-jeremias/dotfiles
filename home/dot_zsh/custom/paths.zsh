@@ -12,6 +12,11 @@ PATH="$(yarn global bin):$PATH"
 PATH="$HOME/.local/share/fnm:$HOME/.fnm:$PATH"
 eval "$(fnm env)"
 
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
 # Golang
 PATH="$PATH:$(go env GOBIN):$(go env GOPATH)/bin"
 
