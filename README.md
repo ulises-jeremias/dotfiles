@@ -193,7 +193,7 @@ cd /tmp/dotfiles
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free our [Contributing Guide](./CONTRIBUTING.md).
+Contributions, issues and feature requests are welcome! Check out the [Contributing Guide](./CONTRIBUTING.md) for more details!
 
 Bellow you can find a list of all the amazing contributors who have made this project possible:
 
