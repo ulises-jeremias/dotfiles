@@ -15,8 +15,6 @@
 #===================================================================================
 #
 
-# @todo: Remove hardcoded path: ~/dotfiles/
-
 if [ -e ~/.zsh/zsh-preconfig.zsh ]; then
     source ~/.zsh/zsh-preconfig.zsh
 fi

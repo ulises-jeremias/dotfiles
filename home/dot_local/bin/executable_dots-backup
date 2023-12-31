@@ -14,8 +14,8 @@
 ##     -c, --register-cron                   Register a cron job to run this script.
 ##     -u, --unregister-cron                 Unregister the cron job.
 ##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_install_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
-##         --dotfiles-dir=DOTFILES_PATH      Dotfiles output dir, is ~/dotfiles by default.
-##         --backup-dir=BACKUPS_PATH         Backup output dir, is ~/dotfiles/backup by default.
+##         --dotfiles-dir=DOTFILES_PATH      Dotfiles output dir, is ~/.dotfiles by default.
+##         --backup-dir=BACKUPS_PATH         Backup output dir, is ~/.dotfiles/backup by default.
 ##         --backup-name=BACKUP_NAME         Backup name, is dotfiles_backup by default.
 ##
 
@@ -26,7 +26,7 @@ source ~/.local/lib/easy-options/easyoptions.sh || exit
 #==========================================
 time_str=$(date +'%m-%d-%y_%H:%M:%S')
 log_file=${log_file:-"/tmp/dots_backup_log_$time_str.txt"}
-dotfiles_dir=${dotfiles_dir:-"${HOME}/dotfiles"}
+dotfiles_dir=${dotfiles_dir:-"${HOME}/.dotfiles"}
 backup_dir=${backup_dir:-"${dotfiles_dir}/backup"}
 backup_name=${backup_name:-"dotfiles_backup"}
 
