@@ -2,6 +2,10 @@
 
 <div align="center">
 
+```ocaml
+NEVER SKIP / IGNORE / AVOID README
+```
+
 <h1>🔥 Dotfiles Generator</h1>
 
 [Docs](https://ulises-jeremias.github.io/dotfiles) |
@@ -26,7 +30,7 @@
 </h1>
 
 <details open>
-<summary>👋 ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup></summary>
+<summary>:octocat: ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup></summary>
 
 You might be here looking for (Linux) rice reference or to (full?) replicate my personal
 configuration of my favorite Window Managers and several apps as well. ⛄
