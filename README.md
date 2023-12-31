@@ -47,7 +47,7 @@ This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfil
   </picture>
 </a>
 
-Most of my dotfiles where written from scratch, but I also took inspiration from other dotfiles repositories. The highlights about my dotfiles are the following:
+Most were written from scratch. Some details:
 
 - **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
 - **Panel** 🌸 [Polybar](https://polybar.github.io/) whic is a fast and easy-to-use status bar!
