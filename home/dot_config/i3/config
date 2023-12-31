@@ -34,14 +34,14 @@ bindsym Mod1+F1 exec --no-startup-id ~/.local/bin/dots rofi-run -r
 
 ###############      i3 Layouts      ###############
 
-set $i3l autosplit to workspace $WS1
-set $i3l autosplit to workspace $WS2
-set $i3l autosplit to workspace $WS3
-set $i3l autosplit to workspace $WS4
-set $i3l autosplit to workspace $WS5
-set $i3l autosplit to workspace $WS6
-set $i3l autosplit to workspace $WS7
-set $i3l autosplit to workspace $WS8
+# set $i3l autosplit to workspace $WS1
+# set $i3l autosplit to workspace $WS2
+# set $i3l autosplit to workspace $WS3
+# set $i3l autosplit to workspace $WS4
+# set $i3l autosplit to workspace $WS5
+# set $i3l autosplit to workspace $WS6
+# set $i3l autosplit to workspace $WS7
+# set $i3l autosplit to workspace $WS8
 
 #############         Bindings           ##################
 
@@ -257,7 +257,7 @@ bindsym $Mod+Shift+b border toggle
 
 # changing border style
 bindsym $Mod+n border normal
-bindsym $Mod+y border 1pixel
+bindsym $Mod+y border 2pixel
 bindsym $Mod+u border none
 
 # Press $mod+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
