@@ -191,28 +191,17 @@ cd /tmp/dotfiles
 
 </details>
 
-## 📁 Repository Structure
+## 🤝 Contributing
 
-```sh
-.
-├── .github                 # GitHub related files
-├── docs/                   # Documentation files
-├── bin/                    # Scripts used by dots
-├── home/                   # Root directory of the dotfiles for the home directory
-├── lib/                    # Utility files used by dots
-├── playground/             # Testing environment using Vagrant
-├── scripts/                # Scripts used by dots
-├── static/                 # Static files used by the README
-└── install.sh              # Installation script
-```
+Contributions, issues and feature requests are welcome!<br />Feel free our [Contributing Guide](./CONTRIBUTING.md).
 
-## 🤝 Contributors
+Bellow you can find a list of all the amazing contributors who have made this project possible:
 
 <a href="https://github.com/ulises-jeremias/dotfiles/contributors">
   <img src="https://contrib.rocks/image?repo=ulises-jeremias/dotfiles" alt="Contributors">
 </a>
 
-Made with [contributors-img](https://contrib.rocks).
+_Made with [contributors-img](https://contrib.rocks)._
 
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
 [licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE
