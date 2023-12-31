@@ -18,7 +18,7 @@ usage() {
 
     -p,--polybar      Toggle the configured polybar session, can use toggle option
 
-    -c,--picom        Toggle picom or daemon monitoring icon, can use toggle option
+    -c,--compfy       Toggle compfy or daemon monitoring icon, can use toggle option
 
     -r,--redshift     Toggle redshift or daemon monitoring icon, can use toggle option
 
@@ -52,9 +52,9 @@ toggle_polybar() {
   done
 }
 
-toggle_picom() {
+toggle_compfy() {
   if ((opt == 1)); then
-    if [ "$(pidof picom | wc -l)" -ne 0 ]; then
+    if [ "$(pidof compfy | wc -l)" -ne 0 ]; then
       al-compositor --stop
     else
       al-compositor --start
@@ -64,7 +64,7 @@ toggle_picom() {
   on=""
   off=""
   while true; do
-    if [ "$(pidof picom | wc -l)" -ne 0 ]; then
+    if [ "$(pidof compfy | wc -l)" -ne 0 ]; then
       echo "$on"
     else
       echo "%{F#888888}$off"
@@ -125,9 +125,9 @@ case $1 in
   [[ $2 =~ (-t|--toggle) ]] && opt=1
   toggle_polybar
   ;;
--c | --picom)
+-c | --compfy)
   [[ $2 =~ (-t|--toggle) ]] && opt=1
-  toggle_picom
+  toggle_compfy
   ;;
 -r | --redshift)
   [[ $2 =~ (-t|--toggle) ]] && opt=1

@@ -29,7 +29,7 @@ sudo usermod $USER --append --group docker
 
 #!/usr/bin/env sh
 
-sudo pacman -S --noconfirm docker
+sudo pacman -S --noconfirm --needed docker
 
 sudo systemctl enable docker.service
 

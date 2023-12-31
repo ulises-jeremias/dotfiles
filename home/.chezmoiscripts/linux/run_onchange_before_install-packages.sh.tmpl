@@ -51,8 +51,8 @@ set -eufo pipefail
 {{   $sudo = "" -}}
 {{ end -}}
 
-{{ $sudo }}pacman -S --noconfirm {{ $packages | join " " }}
+{{ $sudo }}pacman -S --noconfirm --needed {{ $packages | join " " }}
 
-yay -S --noconfirm {{ $aurPackages | join " " }}
+yay -S --noconfirm --needed {{ $aurPackages | join " " }}
 
 {{ end -}}

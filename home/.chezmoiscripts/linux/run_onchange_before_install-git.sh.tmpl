@@ -1,5 +1,5 @@
 {{- if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
-sudo pacman -S --noconfirm git
+sudo pacman -S --noconfirm --needed git
 {{- end -}}

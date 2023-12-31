@@ -16,22 +16,22 @@
 
 </div>
 
-You might be here looking for (Linux) rice reference or to fully replicate my personal
-configuration of my favorite Window Managers and several apps as well. ❄️
+You might be here looking for (Linux) rice reference or to (full?) replicate my personal
+configuration of my favorite Window Managers and several apps as well. ⛄
 
-It's also suitable for use in [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
+These configuration is not only suitable for Desktop Environments but also for use in [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
 
 This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!
 
-Most of my dotfiles where written from scratch, but I also took inspiration from other dotfiles repositories. The highlights about my dotfiles are the following:
+Most were written from scratch. Some details:
 
 - **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
-- **Panel** 🌸 [Polybar](https://polybar.github.io/)!
+- **Panel** 🌸 [Polybar](https://polybar.github.io/) whic is a fast and easy-to-use status bar!
 - **Application Launcher** 🚀 [Rofi](https://github.com/davatorium/rofi) which is blazing fast!
 - **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
 - **Terminal Emulator** 🌿 [Alacritty](https://alacritty.org/) which is GPU accelerated!
 - **Shell** 🐚 [Zsh](https://zsh.org) with several post-installation tweaks!
-- **Compositor** 🍧 [Picom](https://github.com/yshui/picom) for that perfection topping!
+- **Compositor** 🍧 [Compfy](https://github.com/allusive-dev/compfy) for that perfection topping with Animations!
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - and many more!
 

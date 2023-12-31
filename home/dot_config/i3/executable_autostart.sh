@@ -19,8 +19,8 @@ xset r rate 350 60
 # load X params required for dotfiles to work
 xrdb -I"${HOME}" -load ~/.Xresources &
 
-# load picom
-[[ -z "$(pgrep picom)" ]] && picom --config "${XDG_CONFIG_HOME}"/picom.conf &
+# load compfy
+[[ -z "$(pgrep compfy)" ]] && compfy --config "${XDG_CONFIG_HOME}"/compfy/compfy.conf --daemon
 
 # restore colorscheme
 [[ -z "$(pgrep wal)" ]] && wal -R -q
