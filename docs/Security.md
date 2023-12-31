@@ -7,7 +7,7 @@ This is a journey, not a destination, and I am open to any input.
 
 </br>
 
-- Manually keeping system up to date using the OS package manager. I use Arch btw so I run `yay -Syyu` every day.
+- Manually keeping system up to date using the OS package manager. [I use Arch, btw](https://wiki.archlinux.org/title/Arch_Linux) so I run `yay -Syyu` every day.
 - Malware scanning and database updating ([clamav](https://github.com/Cisco-Talos/clamav))
 - Firewall ([ufw](https://wiki.archlinux.org/title/Uncomplicated_Firewall))
 - Ban IPs ([fail2ban](https://github.com/fail2ban/fail2ban))
