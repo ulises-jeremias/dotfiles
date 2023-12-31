@@ -6,7 +6,7 @@
 NEVER SKIP / IGNORE / AVOID README
 ```
 
-# 🔥 Dotfiles Generator
+<h1>🔥 Dotfiles Generator</h1>
 
 [Docs](https://ulises-jeremias.github.io/dotfiles) |
 [Changelog](#) |
@@ -29,7 +29,7 @@ NEVER SKIP / IGNORE / AVOID README
   </a>
 </h1>
 
-## :octocat: ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup>
+### :octocat: ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup>
 
 You might be here looking for (Linux) rice reference or to (full?) replicate my personal
 configuration of my favorite Window Managers and several apps as well. ⛄
