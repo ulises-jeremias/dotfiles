@@ -37,11 +37,11 @@ Most were written from scratch. Some details:
 
 ![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen-2.jpg?raw=true)
 
-![Nord Two Lines](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-nord-two-lines?raw=true.png)
+![Nord Two Lines](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-nord-two-lines.png?raw=true)
 
 ![Launchpad](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-launchpad.png?raw=true)
 
-![Spotlight Dark](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-spotlight-dark?raw=true.png)
+![Spotlight Dark](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-spotlight-dark.png?raw=true)
 
 ![Dotfiles Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/demo.gif?raw=true)
 
