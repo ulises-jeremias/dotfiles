@@ -26,7 +26,7 @@ xrdb -I"${HOME}" -load ~/.Xresources &
 [[ -z "$(pgrep wal)" ]] && wal -R -q
 
 # run feh-blur in the background
-dots feh-blur --blur 32 -d &
+dots feh-blur --blur 4 -d &
 
 # open polybar
 "${XDG_CONFIG_HOME}"/polybar/launch.sh &
