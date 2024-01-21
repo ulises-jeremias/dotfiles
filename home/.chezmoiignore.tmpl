@@ -1,10 +1,12 @@
 {{- if ne .chezmoi.os "linux" -}}
 .chezmoiscripts/linux/**
+.clamtk/**
 .ssh/**
 {{- end -}}
 
 {{- if eq .chezmoi.os "linux" -}}
 {{-   if or (.ephemeral) (.headless) -}}
+.clamtk/**
 .config/alacrity/**
 .config/fontconfig/**
 .config/i3/**
