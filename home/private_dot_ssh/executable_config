@@ -1,0 +1,15 @@
+Host aur aur.archlinux.org
+    HostName aur.archlinux.org
+    IdentityFile ~/.ssh/personal_rsa
+
+Host github github.com
+    HostName github.com
+    IdentityFile ~/.ssh/personal_rsa
+
+Host gitlab gitlab.com
+    HostName gitlab.com
+    IdentityFile ~/.ssh/personal_rsa
+
+Host bitbucket bitbucket.org
+    HostName bitbucket.org
+    IdentityFile ~/.ssh/bitbucket_rsa
