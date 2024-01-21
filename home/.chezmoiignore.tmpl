@@ -1,5 +1,6 @@
 {{- if ne .chezmoi.os "linux" -}}
 .chezmoiscripts/linux/**
+.ssh/**
 {{- end -}}
 
 {{- if eq .chezmoi.os "linux" -}}
