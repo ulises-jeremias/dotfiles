@@ -45,9 +45,6 @@
 {{-   $gitUserEmail = promptStringOnce . "gitUserEmail" "What is the email you use for git" -}}
 {{- end -}}
 
-[hooks.read-source-state.pre]
-    command = ".dotfiles/home/.hooks/.install-password-manager.sh"
-
 [data]
     docker = {{ $docker }}
     ephemeral = {{ $ephemeral }}
