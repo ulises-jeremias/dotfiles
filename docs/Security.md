@@ -6,6 +6,7 @@ This is a journey, not a destination, and I am open to any input.
 - Firewall ([ufw](https://wiki.archlinux.org/title/Uncomplicated_Firewall))
 - Ban IPs ([fail2ban](https://github.com/fail2ban/fail2ban))
 - Using [Signal](https://github.com/signalapp) (when possible)
-- Hosting API keys in a private repo
+- Using a password manager. For this dotfiles repo, I use [LastPass](https://www.lastpass.com/), but I'll probably switch to [Bitwarden](https://bitwarden.com/) soon!
+- Hosting API keys in a private repo, encrypted file or a password manager.
 - I could install the hardened Linux kernel, but that might be slightly pedantic...
 - Port scanning ([nmap](https://github.com/nmap/nmap), [rustscan](https://github.com/RustScan/RustScan))
