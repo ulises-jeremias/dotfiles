@@ -5,7 +5,7 @@ The `openbox` configuration files are located at `~/.config/openbox`. This gives
 To edit the `openbox` configuration, you need to run the following command:
 
 ```sh
-chezmoi edit ~/.config/openbox
+chezmoi edit ~/.config/openbox --source ~/.dotfiles
 ```
 
 Remember to apply your changes using `chezmoi apply` and restart Openbox for the modifications to take effect.

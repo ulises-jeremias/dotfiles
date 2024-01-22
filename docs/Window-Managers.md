@@ -8,7 +8,7 @@ For more detailed instructions and information about i3 customization, please re
 
 ## Openbox Window Manager
 
-For customizing Openbox, you can edit the configuration files located in the `~/.config/openbox` directory. These files define the behavior, appearance, and keybindings for Openbox. Make your desired changes to these files, and then run command `chezmoi apply` to apply the changes.
+For customizing Openbox, you can edit the configuration files located in the `~/.config/openbox` directory. These files define the behavior, appearance, and keybindings for Openbox. Make your desired changes to these files, and then run command `chezmoi apply --source ~/.dotfiles` to apply the changes.
 
 If you need additional guidance or want to explore more about Openbox customization, please visit the [Openbox customization documentation](Openbox).
 
@@ -18,7 +18,7 @@ XFCE4 customization is handled through the xfce4 tools included in the dotfiles 
 
 For more detailed instructions and tips on XFCE4 customization, please refer to the [XFCE4 customization documentation](Xfce4).
 
-🔧 Remember to run command `chezmoi apply` after making any changes to the configuration files to ensure that the customizations are applied.
+🔧 Remember to run command `chezmoi apply --source ~/.dotfiles` after making any changes to the configuration files to ensure that the customizations are applied.
 
 Feel free to customize each window manager according to your preferences, and if you have any further questions or need more specific guidance, please refer to the respective documentation for each window manager.
 

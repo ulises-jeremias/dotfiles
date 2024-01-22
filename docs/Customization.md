@@ -4,13 +4,13 @@ We use [Chezmoi](https://www.chezmoi.io/) to manage the dotfiles. Chezmoi is a s
 
 To customize the dotfiles, follow these steps:
 
-1. Run the command `chezmoi init` to initialize Chezmoi.
+1. Run the command `chezmoi init --source ~/.dotfiles` to initialize Chezmoi.
 
-2. Run the command `chezmoi edit` to open the dotfiles directory.
+2. Run the command `chezmoi edit --source ~/.dotfiles` to open the dotfiles directory.
 
 3. Customize the dotfiles to suit your preferences and workflow.
 
-4. Run the command `chezmoi apply` to apply the changes.
+4. Run the command `chezmoi apply --source ~/.dotfiles` to apply the changes.
 
 ## Examples
 

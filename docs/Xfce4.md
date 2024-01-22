@@ -1,6 +1,6 @@
 XFCE4 is a versatile and lightweight desktop environment that comes with a set of default configurations. In the dotfiles installation, XFCE4 configurations are located at `~/.config/xfce4`. These configurations are backed by XFCE4 components, which means that any customization you apply to XFCE4 will be applied globally to all the installed dotfiles.
 
-Remember to run `chezmoi apply` after making any changes to the configuration files to ensure that the customizations are applied.
+Remember to run `chezmoi apply --source ~/.dotfiles` after making any changes to the configuration files to ensure that the customizations are applied.
 
 ## Global Configurations
 

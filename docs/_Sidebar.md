@@ -1,6 +1,5 @@
 - [🏠 Home](Home)
 - [💥 Dots Scripts Utility](dots)
-- [📁 Dots Backup Tool](Dots-Backup)
 - [🎨 Customization](Customization)
   - [🪟 Window Manager](Window-Managers)
     - [XFCE 4](Xfce4)
@@ -37,6 +36,7 @@
       - Zsh + Power Level 10k
       - Zsh + Oh My Zsh
 - [🛡️ Privacy and Security](Security)
+- [📁 Dots Backup Tool](Dots-Backup)
 - [⏏️ Dots Eject](Dots-Eject)
 - [💯 Contributing](CONTRIBUTING)
 - [🧪 Testing](Testing)

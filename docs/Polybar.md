@@ -14,7 +14,7 @@ Polybar stands out as a popular choice for many users due to its flexibility, ex
 
 ## Configuration Parameters
 
-Polybar's configuration is highly parameterizable, allowing you to customize various aspects of your bar. To modify these parameters, you can edit the files running `chezmoi edit ~/.config/polybar/`.
+Polybar's configuration is highly parameterizable, allowing you to customize various aspects of your bar. To modify these parameters, you can edit the files running `chezmoi edit ~/.config/polybar --source ~/.dotfiles`.
 
 Within this directory, you will find a wide amount of files that can be adjusted to create your unique Polybar setup. These parameters enable you to customize different bars, define module behavior, and leverage the provided tools and utilities to enhance your Polybar experience.
 
