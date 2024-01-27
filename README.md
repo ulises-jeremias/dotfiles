@@ -184,8 +184,8 @@ Operating Systems and machine architectures.
 To run the testing environment, just execute the following commands:
 
 ```sh
-git clone https://github.com/ulises-jeremias/dotfiles /tmp/dotfiles
-cd /tmp/dotfiles
+git clone https://github.com/ulises-jeremias/dotfiles
+cd ./dotfiles
 
 # start the VM
 ./bin/play
