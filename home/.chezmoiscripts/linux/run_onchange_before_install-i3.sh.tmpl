@@ -7,14 +7,15 @@ yay -S --noconfirm --needed \
   i3-wm
 
 # Install i3-layouts from PyPI
-sudo pip3 install i3-layouts
+pip3 install --user --upgrade i3-layouts
+
+# Install i3-resurrect from PyPI
+pip3 install --user --upgrade i3-resurrect
 
 # Install i3bgwin from source
 git clone https://github.com/quantum5/i3bgwin
 cd i3bgwin
 make
-
-# Install binary to /usr/local/bin
 sudo cp i3bgwin /usr/local/bin
 sudo chmod +x /usr/local/bin/i3bgwin
 {{      end -}}
