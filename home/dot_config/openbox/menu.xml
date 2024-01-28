@@ -141,7 +141,7 @@
   </menu>
   </menu>
   <separator/>
-    <item label="Lock"><action name="Execute"><command><![CDATA[betterlockscreen --lock blur]]></command></action></item>
+    <item label="Lock"><action name="Execute"><command><![CDATA[betterlockscreen --lock]]></command></action></item>
     <item label="Exit"><action name="Exit"/></item>
 </openbox_pipe_menu>
 <!-- vim:sw=2

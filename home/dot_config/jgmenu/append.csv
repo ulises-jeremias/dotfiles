@@ -1,5 +1,5 @@
 ^sep()
-Lock,betterlockscreen --lock blur,system-lock-screen
+Lock,betterlockscreen --lock,system-lock-screen
 Exit,^checkout(exit),system-shutdown
 
 exit,^tag(exit)
