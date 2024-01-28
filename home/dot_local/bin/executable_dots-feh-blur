@@ -259,6 +259,7 @@ show_help() {
   echo 'Daemon options:'
   echo '  -d, --daemon            run in background'
   echo '  -s, --stop              stop previously-ran daemon'
+  echo '  -t, --toggle            toggle between blurred and original'
   echo ''
   echo 'Other options:'
   echo '  -v, --verbose           show more messages'
@@ -314,6 +315,13 @@ parse_opts() {
       ;;
     -s | --stop)
       MODE=stop
+      ;;
+    -t | --toggle)
+      if [ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]; then
+        MODE=stop
+      else
+        MODE=background
+      fi
       ;;
     -q | --quiet)
       VERBOSE=0
