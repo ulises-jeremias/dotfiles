@@ -19,6 +19,7 @@ configuration {
 
 #window {
     y-offset            : 25;
+    width               : 20%;
 }
 
 #prompt {
