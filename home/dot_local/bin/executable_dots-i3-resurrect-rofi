@@ -4,7 +4,7 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
 
 # Define las acciones con iconos (reemplaza con los iconos de tu preferencia)
 ACTIONS=("󰦛 Restore" "󰆓 Save" "󰆴 Delete")
-TARGETS=(" Both" " Programs" " Layout")
+TARGETS=(" Both" " Programs" " Layout")
 DMENU="rofi -dmenu -i -show-icons -theme ${XDG_CONFIG_HOME}/rofi/tools.rasi"
 
 prompt="i3-resurrect"
