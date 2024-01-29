@@ -34,30 +34,8 @@ NO_HELP=true
 NO_CHECK=true
 source ~/.local/lib/easy-options/easyoptions.sh || exit
 
-scripts_list=(
-    "brightness: control the brightness of the screen using different backends such us xbacklight, brightnessctl, blight or xrandr"
-    "check-network: check if the network is up"
-    "checkupdates: check for updates"
-    "feh-blur: blur the background of the current window when using feh to set the background"
-    "git-notify: notify when a git commit is made"
-    "microphone: control the microphone"
-    "monitor: print the current monitor name"
-    "next-workspace: switch to next existing workspace"
-    "night-mode: toggle night mode"
-    "openweathermap-detailed: print the detailed weather information"
-    "player: get the current song playing"
-    "popup-calendar: show a calendar in a popup"
-    "rofi-bluetooth: show a rofi menu to manage bluetooth devices"
-    "rofi-randr: show a rofi menu to manage the screen resolution"
-    "rofi-run: show a rofi menu to run commands"
-    "rofi-xrandr: show a rofi menu to manage the screen resolution with charts"
-    "screenshooter: take a screenshot"
-    "spotify: get the current song playing in spotify"
-    "sysupdate: update the system"
-    "toggle: toggle the state of some applications"
-    "updates: check for updates"
-    "weather: print the current weather information"
-)
+# Include the dots-scripts.sh file to get the list of scripts
+source ~/.local/lib/dots-scripts.sh || exit
 
 script=${arguments[0]}
 
@@ -78,9 +56,9 @@ fi
 
 if [[ -n "${list}" ]]; then
     for script in "${scripts_list[@]}"; do
-        script_name=$(echo "${script}" | cut -d ':' -f 1)
+        script_name_with_icon=$(echo "${script}" | cut -d ':' -f 1)
         script_desc=$(echo "${script}" | cut -d ':' -f 2)
-        echo -e "$(tput setaf 3)${script_name}$(tput sgr0) $(tput setaf 7)${script_desc}$(tput sgr0)"
+        echo -e "$(tput setaf 3)${script_name_with_icon}$(tput sgr0)$(tput setaf 7)${script_desc}$(tput sgr0)"
     done
     exit
 fi

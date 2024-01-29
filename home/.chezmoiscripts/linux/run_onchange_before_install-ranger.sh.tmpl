@@ -3,5 +3,9 @@
 
 yay -S --noconfirm --needed \
   ranger \
-  ueberzug
+  ueberzug \
+  ranger_devicons-git
+
+mkdir -p ${XDG_CONFIG_HOME:-$HOME/.config}/ranger/plugins
+ln -fsT /usr/share/ranger/plugins/ranger_devicons ${XDG_CONFIG_HOME:-$HOME/.config}/ranger/plugins/ranger_devicons
 {{- end -}}

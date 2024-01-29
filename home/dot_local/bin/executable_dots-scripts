@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2023 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+##     @script.name [SCRIPT_NAME] [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Show this help message.
+##
+
+# if ~/.local/bin is not in the PATH, add it
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    export PATH="$HOME/.local/bin:${PATH}"
+fi
+
+# Add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
+if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
+    export PATH="${HOME}/.pyenv/shims:${PATH}"
+fi
+
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
+
+source ~/.local/lib/easy-options/easyoptions.sh || exit
+
+# Include the dots-scripts.sh file to get the list of scripts
+source ~/.local/lib/dots-scripts.sh || exit
+
+# Function to execute the command in a terminal
+execute_command() {
+    local script_name
+    script_name=$(echo "$1" | cut -d ' ' -f 2 | cut -d ':' -f 1)
+    local command="alacritty --hold -e echo \"dots $script_name\""
+
+    # Open alacritty with the command
+    eval "$command"
+}
+
+# Create the menu with rofi
+selected=$(printf '%s\n' "${scripts_list[@]}" | rofi -dmenu -i -p "Select Script:" -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi)
+
+# If a script is selected, execute or display its command
+if [ -n "$selected" ]; then
+    execute_command "$selected"
+fi

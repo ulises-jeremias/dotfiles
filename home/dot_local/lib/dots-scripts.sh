@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+scripts_list=(
+    " brightness: Control the brightness of the screen using different backends such as xbacklight, brightnessctl, blight, or xrandr"
+    " check-network: Check if the network is up"
+    " checkupdates: Check for updates"
+    " feh-blur: Blur the background of the current window when using feh to set the background"
+    " git-notify: Notify when a git commit is made"
+    " i3-resurrect-rofi: Show a rofi menu to manage i3-resurrect profiles"
+    " microphone: Control the microphone"
+    " monitor: Print the current monitor name"
+    " next-workspace: Switch to the next existing workspace"
+    " night-mode: Toggle night mode"
+    " openweathermap-detailed: Print detailed weather information"
+    " player: Get the current song playing"
+    " popup-calendar: Show a calendar in a popup"
+    " rofi-bluetooth: Show a rofi menu to manage Bluetooth devices"
+    " rofi-randr: Show a rofi menu to manage the screen resolution"
+    " rofi-run: Show a rofi menu to run commands"
+    " rofi-xrandr: Show a rofi menu to manage the screen resolution with charts"
+    " screenshooter: Take a screenshot"
+    " spotify: Get the current song playing in Spotify"
+    " sysupdate: Update the system"
+    " toggle: Toggle the state of some applications"
+    " updates: Check for updates"
+    " weather: Print the current weather information"
+)
