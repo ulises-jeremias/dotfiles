@@ -23,6 +23,8 @@ set $WS5 "5"
 set $WS6 "6"
 set $WS7 "7"
 set $WS8 "8"
+set $WS9 "9"
+set $WS10 "10"
 
 ###############     Autostart      ##################
 
@@ -42,6 +44,8 @@ set $i3l autosplit to workspace $WS5
 set $i3l autosplit to workspace $WS6
 set $i3l autosplit to workspace $WS7
 set $i3l autosplit to workspace $WS8
+set $i3l autosplit to workspace $WS9
+set $i3l autosplit to workspace $WS10
 
 #############         Bindings           ##################
 
@@ -98,6 +102,8 @@ bindsym $Mod+5 workspace $WS5
 bindsym $Mod+6 workspace $WS6
 bindsym $Mod+7 workspace $WS7
 bindsym $Mod+8 workspace $WS8
+bindsym $Mod+9 workspace $WS9
+bindsym $Mod+0 workspace $WS10
 
 # switch to workspace - numpad alternatives
 bindsym $Mod+Mod2+KP_1 workspace $WS1
@@ -108,6 +114,8 @@ bindsym $Mod+Mod2+KP_5 workspace $WS5
 bindsym $Mod+Mod2+KP_6 workspace $WS6
 bindsym $Mod+Mod2+KP_7 workspace $WS7
 bindsym $Mod+Mod2+KP_8 workspace $WS8
+bindsym $Mod+Mod2+KP_9 workspace $WS9
+bindsym $Mod+Mod2+KP_0 workspace $WS10
 
 # switch to next or previous active workspace
 bindsym $Mod+Mod1+Left workspace prev
@@ -126,6 +134,8 @@ bindsym $Mod+Shift+5 move container to workspace $WS5; workspace $WS5
 bindsym $Mod+Shift+6 move container to workspace $WS6; workspace $WS6
 bindsym $Mod+Shift+7 move container to workspace $WS7; workspace $WS7
 bindsym $Mod+Shift+8 move container to workspace $WS8; workspace $WS8
+bindsym $Mod+Shift+9 move container to workspace $WS9; workspace $WS9
+bindsym $Mod+Shift+0 move container to workspace $WS10; workspace $WS10
 
 # move focused container to workspace - numpad alternatives
 bindsym $Mod+Shift+Mod2+KP_End move container to workspace $WS1; workspace $WS1
@@ -136,6 +146,8 @@ bindsym $Mod+Shift+Mod2+KP_Begin move container to workspace $WS5; workspace $WS
 bindsym $Mod+Shift+Mod2+KP_Right move container to workspace $WS6; workspace $WS6
 bindsym $Mod+Shift+Mod2+KP_Home move container to workspace $WS7; workspace $WS7
 bindsym $Mod+Shift+Mod2+KP_Up move container to workspace $WS8; workspace $WS8
+bindsym $Mod+Shift+Mod2+KP_Prior move container to workspace $WS9; workspace $WS9
+bindsym $Mod+Shift+Mod2+KP_Insert move container to workspace $WS10; workspace $WS10
 
 ##############     Reload configs           ################
 
@@ -240,7 +252,7 @@ for_window [class="^.*"] border pixel 0, title_format "<b alpha='1'> %class >> %
 
 # Smart borders (draw borders around container only if it is not the only container on this workspace)
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
-smart_borders no_gaps
+smart_borders on
 
 # gaps
 gaps inner 12
