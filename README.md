@@ -165,13 +165,13 @@ To customize the dotfiles, follow these steps:
 
 </details>
 
-Read more about this at [Customization Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Customization).
+Read more about this at [Customization Docs](https://ulises-jeremias.github.io/dotfiles/#Customization).
 
 ## 🛡️ Privacy and Security
 
 Although I like making it look as nice as possible, these dotfiles also try to be private and secure!
 
-You can read more about this at [Privacy and Security Docs](https://github.com/ulises-jeremias/dotfiles/wiki/#Security).
+You can read more about this at [Privacy and Security Docs](https://ulises-jeremias.github.io/dotfiles/#Security).
 
 ## 🧪 Testing
 
