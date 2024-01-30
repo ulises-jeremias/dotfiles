@@ -24,3 +24,10 @@
     url = "https://github.com/zsh-users/zsh-autosuggestions/blob/master/zsh-autosuggestions.zsh?raw=true"
     exact = true
     refreshPeriod = "168h"
+[".tmux/plugins/tpm"]
+    type = "archive"
+    url = "https://github.com/tmux-plugins/tpm/archive/master.tar.gz"
+    exact = true
+    refreshPeriod = "168h"
+    path = "tpm"
+    stripComponents = 1
