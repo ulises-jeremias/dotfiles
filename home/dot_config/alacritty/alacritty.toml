@@ -1,9 +1,9 @@
 live_config_reload = true
 working_directory = "None"
 
-[shell]
-program = "/bin/zsh"
-args = ["-l", "-c", "tmux attach -t '(∩Ȍ▾Ȍ)⊃━☆ﾟ,*' 2> /dev/null || tmux new -s '(∩Ȍ▾Ȍ)⊃━☆ﾟ,*'"]
+# [shell]
+# program = "/bin/zsh"
+# args = ["-l", "-c", "tmux attach -t '(∩Ȍ▾Ȍ)⊃━☆ﾟ,*' 2> /dev/null || tmux new -s '(∩Ȍ▾Ȍ)⊃━☆ﾟ,*'"]
 
 [colors]
 draw_bold_text_with_bright_colors = true
