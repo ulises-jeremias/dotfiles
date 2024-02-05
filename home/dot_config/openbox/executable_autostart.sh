@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-XDG_CONFIG_HOME="${HOME}"/.config
-export XDG_CONFIG_HOME
 
 [[ "${PATH}" == *"${HOME}/.local/bin"* ]] || export PATH="${HOME}/.local/bin:${PATH}"
 
@@ -20,7 +18,7 @@ xset r rate 350 60
 xrdb -I"${HOME}" -load ~/.Xresources &
 
 # load compfy
-[[ -z "$(pgrep compfy)" ]] && compfy --config "${XDG_CONFIG_HOME}"/compfy/compfy.conf --daemon &
+[[ -z "$(pgrep compfy)" ]] && compfy --config ~/compfy/compfy.conf --daemon &
 
 # restore colorscheme
 [[ -z "$(pgrep wal)" ]] && wal -R -q
@@ -29,7 +27,7 @@ xrdb -I"${HOME}" -load ~/.Xresources &
 # dots feh-blur --blur 32 --darken 12 -c --no-animate -d
 
 # open polybar
-"${XDG_CONFIG_HOME}"/polybar/launch.sh &
+~/.config/polybar/launch.sh &
 
 # Start nm-applet
 [[ -z "$(pgrep nm-applet)" ]] && nm-applet &

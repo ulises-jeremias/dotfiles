@@ -21,8 +21,6 @@ if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; the
     export PATH="${HOME}/.pyenv/shims:${PATH}"
 fi
 
-export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}"/.config}"
-
 source ~/.local/lib/easy-options/easyoptions.sh || exit
 
 # Include the dots-scripts.sh file to get the list of scripts
@@ -39,7 +37,7 @@ execute_command() {
 }
 
 # Create the menu with rofi
-selected=$(printf '%s\n' "${scripts_list[@]}" | rofi -dmenu -i -p "Select Script:" -theme "${XDG_CONFIG_HOME}"/rofi/tools.rasi)
+selected=$(printf '%s\n' "${scripts_list[@]}" | rofi -dmenu -i -p "Select Script:" -theme ~/.config/rofi/tools.rasi)
 
 # If a script is selected, execute or display its command
 if [ -n "$selected" ]; then
