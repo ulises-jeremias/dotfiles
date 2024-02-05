@@ -8,7 +8,7 @@
     <item label="About Xfce"><action name="Execute"><command><![CDATA[xfce4-about]]></command></action></item>
     <item label="Application Finder"><action name="Execute"><command><![CDATA[xfce4-appfinder]]></command></action></item>
     <item label="Bulk Rename"><action name="Execute"><command><![CDATA[thunar --bulk-rename]]></command></action></item>
-    <item label="Compfy"><action name="Execute"><command><![CDATA[compfy]]></command></action></item>
+    <item label="Picom"><action name="Execute"><command><![CDATA[picom]]></command></action></item>
     <item label="File Manager"><action name="Execute"><command><![CDATA[exo-open --launch FileManager]]></command></action></item>
     <item label="Notion"><action name="Execute"><command><![CDATA[/opt/Notion/notion-app]]></command></action></item>
     <item label="picom"><action name="Execute"><command><![CDATA[picom]]></command></action></item>
