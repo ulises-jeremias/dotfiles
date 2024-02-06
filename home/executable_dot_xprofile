@@ -20,11 +20,10 @@
 
 [[ -f /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 ]] && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
-# required for xfce settings to work
-# run xfsettingsd in the background if it's not already running
+# run xfsettingsd in the background, required for xfce settings to work
 xfsettingsd &
 
-# run xfce4-power-manager in the background if it's not already running
+# run xfce4-power-manager in the background
 xfce4-power-manager --daemon &
 
 # load X params required for dotfiles to work
@@ -39,8 +38,8 @@ wal -R -q
 # run feh-blur in the background
 # dots feh-blur --blur 32 --darken 12 -c --no-animate -d
 
-# Start nm-applet
+# start nm-applet
 nm-applet &
 
-# Start greenclip daemon
+# start greenclip daemon
 greenclip daemon &
