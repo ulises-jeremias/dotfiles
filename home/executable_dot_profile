@@ -1,9 +1,19 @@
 #!/usr/bin/env bash
 
-XDG_CONFIG_HOME="${HOME}"/.config
-export XDG_CONFIG_HOME
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+export QT_QPA_PLATFORMTHEME="qt5ct"	# Have QT use qt5ct theme
+export PASSWORD_STORE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/pass-store"
 
-[[ "${PATH}" == *"${HOME}/.local/bin"* ]] || export PATH="${HOME}/.local/bin:${PATH}"
+# add /usr/local/bin to LD_LIBRARY_PATH if it exists and is not already in path
+[[ -d "/usr/local/lib" && ! "$LD_LIBRARY_PATH" =~ "/usr/local/lib" ]] && export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+
+# add /usr/lib to LD_LIBRARY_PATH if it exists and is not already in path
+[[ -d "/usr/lib" && ! "$LD_LIBRARY_PATH" =~ "/usr/lib" ]] && export LD_LIBRARY_PATH="/usr/lib:$LD_LIBRARY_PATH"
+
+# Add ~/.local/bin to PATH if it exists and is not already in path
+[[ -d "${HOME}/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="${HOME}/.local/bin:${PATH}"
 
 # Add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
 if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
