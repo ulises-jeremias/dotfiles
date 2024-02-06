@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This needs checking, will be handled later
+# TODO: add a check for the number of monitors connected and scale the resolution accordingly
 # if [ ! -f "$HOME/.xsync" ] && (( $(xrandr -q | grep -w connected | wc -l) == 1 )); then
 #     mon=$(xrandr -q | grep -w connected | awk '{print $1}')
 #     res_x=$(xrandr | sed "s/x/\ /g" | grep \* | awk '{print $1}')
