@@ -1,21 +1,20 @@
 #!/usr/bin/env bash
 
-# TODO: add a check for the number of monitors connected and scale the resolution accordingly
-# if [ ! -f "$HOME/.xsync" ] && (( $(xrandr -q | grep -w connected | wc -l) == 1 )); then
-#     mon=$(xrandr -q | grep -w connected | awk '{print $1}')
-#     res_x=$(xrandr | sed "s/x/\ /g" | grep \* | awk '{print $1}')
-#     res_y=$(xrandr | sed "s/x/\ /g" | grep \* | awk '{print $2}')
-#     if (( $res_x < 1920)); then
-#         scale_x=$(bc -l <<< "1920/$res_x")
-#         scale_y=$(bc -l <<< "1080/$res_y")
-#         xrandr --output $mon --scale "${scale_x}x${scale_y}"
-#     else
-#         xrandr --auto
-#     fi
-# else
-#     $HOME/.xsync
-#     [ $? -ne 0 ] && xrandr --auto
-# fi
+if [ ! -f "$HOME/.xsync" ] && (($(xrandr -q | grep -c -w connected) == 1)); then
+    mon=$(xrandr -q | grep -w connected | awk '{print $1}')
+    res_x=$(xrandr | sed "s/x/\ /g" | grep \* | awk '{print $1}')
+    res_y=$(xrandr | sed "s/x/\ /g" | grep \* | awk '{print $2}')
+    if ((res_x < 1920)); then
+        scale_x=$(bc -l <<<"1920/$res_x")
+        scale_y=$(bc -l <<<"1080/$res_y")
+        xrandr --output "${mon}" --scale "${scale_x}x${scale_y}"
+    else
+        xrandr --auto
+    fi
+else
+    "$HOME"/.xsync
+    if ! "$HOME"/.xsync; then xrandr --auto; fi
+fi
 [[ -f "$HOME/.xsync" ]] && "$HOME"/.xsync || xrandr --auto
 
 [[ -f /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 ]] && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
