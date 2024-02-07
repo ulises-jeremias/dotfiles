@@ -1,5 +1,5 @@
-#!/bin/zsh
-# vim: set foldmarker=<<,>> foldlevel=0 foldmethod=marker:
+#!/usr/bin/env zsh
+
 #===================================================================================
 #  DESCRIPTION:  You realize, Dr. Angelo, that my intelligence has surpassed yours.
 #       AUTHOR:  Jarrod Taylor
@@ -15,49 +15,38 @@
 #===================================================================================
 #
 
-if [ -e ~/.zsh/zsh-preconfig.zsh ]; then
-    source ~/.zsh/zsh-preconfig.zsh
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Source the prompt and aliases <<1
+# Source the prompt and aliases
 #-------------------------------------------------------------------------------
 if [[ -z "${ZSHRUN}" ]]; then
-    if [[ -z "${ZSH_NO_DEFAULTS}" ]] && [[ -z "${ZSH_NO_DEFAULT_PROMPT}" ]]; then
-        source ~/.zsh_prompt
-    fi
-    source ~/.zsh_aliases
+    [[ -f ~/.zsh_prompt ]] && source ~/.zsh_prompt
+    [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 fi
 
-# Precmd functions local array variable <<2
-#-------------------------------------------------------------------------------
-local -a precmd_functions
-# >>2
-# Precmd functions <<2
-#------------------------------------------------------------------------------
-# Run precmd functions so we get our pimped out prompt
-#------------------------------------------------------------------------------
-precmd_functions=(precmd_prompt)
-# >>2
-# >>1
-
-# General Settings <<1
-# Autoload tab completion <<2
+# General Settings
+# Autoload tab completion
 #-------------------------------------------------------------------------------
 autoload -U compinit
 compinit -C
-# >> 2
-# Modify default zsh directory coloring on ls commands <<2
+
+#
+# Modify default zsh directory coloring on ls commands
 #-------------------------------------------------------------------------------
 export LSCOLORS=gxfxcxdxbxegedabagacad
-# >>2
-# Completion settings <<2
+
+#
+# Completion settings
 #-------------------------------------------------------------------------------
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' list-colors "$LS_COLORS"
 zstyle -e ':completion:*:(ssh|scp|sshfs|ping|telnet|nc|rsync):*' hosts '
         reply=( ${=${${(M)${(f)"$(<~/.ssh/config)"}:#Host*}#Host }:#*\**} )'
-# >>2
-# Set the desired setup options man zshoptions <<2
+
+#
+# Set the desired setup options man zshoptions
 #-------------------------------------------------------------------------------
 # If command can't be executed, and command is name of a directory, cd to directory
 setopt auto_cd
@@ -100,26 +89,28 @@ setopt prompt_percent
 # expansion are performed in prompts.
 # Substitutions within prompts do not affect the command status.
 setopt prompt_subst
-# >>2
-# History settings <<2
+
+#
+# History settings
 #-------------------------------------------------------------------------------
 HISTFILE=~/.zsh_history
 HISTFILESIZE=65536 # search this with `grep | sort -u`
 HISTSIZE=4096
 SAVEHIST=4096
 REPORTTIME=60 # Report time statistics for progs that take more than a minute to run
-# >>2
-# utf-8 in the terminal, will break stuff if your term isn't utf aware <<2
+
+#
+# utf-8 in the terminal, will break stuff if your term isn't utf aware
 #-------------------------------------------------------------------------------
 export LANG=en_US.UTF-8
 export LC_ALL=$LANG
 export LC_COLLATE=C
-# >>2
-# Use the correct ctags <<2
+
+#
+# Use the correct ctags
 #-------------------------------------------------------------------------------
-PATH="$HOME/.pyenv/shims:/usr/local/bin:$PATH"
-# >>2
-# Editor and display configurations <<2
+#
+# Editor and display configurations
 #-------------------------------------------------------------------------------
 export BROWSER=xdg-open
 export EDITOR='nvim'
@@ -129,64 +120,18 @@ export LESS='-imJMWR'
 export PAGER="less $LESS"
 export MANPAGER=$PAGER
 export GIT_PAGER=$PAGER
-# >>2
-#
-# Eliminate lag between transition from normal/insert mode <<2
+
+# Eliminate lag between transition from normal/insert mode
 #-------------------------------------------------------------------------------
 # If this causes issue with other shell commands it can be raised default is 4
 export KEYTIMEOUT=1
-# >>2
-# >>1
-
-# Aliases <<1
-#-------------------------------------------------------------------------------
-if [ "$(uname)" = "Darwin" ]; then
-    alias ls='ls -HG'
-else
-    alias ls='ls --color'
-fi
-# >>1
-
-# Source Syntaxhighlighting <<1
-if [ -e /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-elif [ -e /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
-# >>1
-
-if [[ -z "${ZSH_NO_DEFAULTS}" ]]; then
-    # Key Bindings <<1
-    #-------------------------------------------------------------------------------
-    # Set vi-mode and create a few additional Vim-like mappings
-    #-------------------------------------------------------------------------------
-    bindkey -v
-    bindkey '^R' history-incremental-search-backward
-    bindkey '^R' history-incremental-pattern-search-backward
-    bindkey '^?' backward-delete-char
-    bindkey '^H' backward-delete-char
-    bindkey '\e[A' history-beginning-search-backward
-    bindkey '\e[B' history-beginning-search-forward
-    # >>1
-
-    # bindkey
-    bindkey "^U" backward-kill-line
-    bindkey "^u" backward-kill-line
-    bindkey "^[l" down-case-word
-    bindkey "^[L" down-case-word
-
-    # ctrl+<- | ctrl+->
-    bindkey "^[[1;5D" backward-word
-    bindkey "^[[1;5C" forward-word
-fi
 
 (wal -R -q -e -t -n) >> /dev/null
 
-# Source Custom Configurations <<1
+# Source Custom Configurations
 # if there are files in ~/.zsh/custom/*.zsh, source them
 if [ -d ~/.zsh/custom ]; then
     for config_file ($HOME/.zsh/custom/*.zsh(N)); do
         source $config_file
     done
 fi
-# >>1

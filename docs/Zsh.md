@@ -26,24 +26,6 @@ Zsh is fully compatible with most shell scripts written for Bash. You can run yo
 
 Any file in your `~/.zsh/custom` directory ending with `.zsh` will automatically be sourced when you open a shell. You can use this to add additional aliases, functions, and more.
 
-<details open>
-<summary><strong>Parameters</strong></summary>
-
-It is possible to parameterize the default Zsh configuration with certain environment variables. You just need to create the file `~/.zsh/custom/zsh-preconfig.zsh` with one of the following variables:
-
-- `ZSH_NO_DEFAULTS`: If set, the default configuration will not be loaded.
-- `ZSH_NO_DEFAULT_PROMPT`: If set, the default prompt will not be loaded.
-
-Example file content:
-
-```sh
-ZSH_NO_DEFAULT_PROMPT=true
-```
-
-This will prevent the default prompt from being loaded, but the default configuration will still be loaded.
-
-</details>
-
 <details>
 <summary><strong>Zsh + Antigen</strong></summary>
 

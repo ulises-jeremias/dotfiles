@@ -12,10 +12,13 @@ export PASSWORD_STORE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/pass-store"
 # add /usr/lib to LD_LIBRARY_PATH if it exists and is not already in path
 [[ -d "/usr/lib" && ! "$LD_LIBRARY_PATH" =~ "/usr/lib" ]] && export LD_LIBRARY_PATH="/usr/lib:$LD_LIBRARY_PATH"
 
-# Add ~/.local/bin to PATH if it exists and is not already in path
+# add /usr/local/bin to PATH if it exists and is not already in path
+[[ -d "/usr/local/bin" && ! "$PATH" =~ "/usr/local/bin" ]] && export PATH="/usr/local/bin:$PATH"
+
+# add ~/.local/bin to PATH if it exists and is not already in path
 [[ -d "${HOME}/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="${HOME}/.local/bin:${PATH}"
 
-# Add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
+# add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
 if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
     export PATH="${HOME}/.pyenv/shims:${PATH}"
 fi
