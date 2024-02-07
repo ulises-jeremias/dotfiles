@@ -15,6 +15,8 @@ set -eufo pipefail
 
 {{ if not .headless -}}
 {{ $aurPackages = concat $aurPackages (list
+  "arc-dark-osx-openbox-theme-git"
+  "openbox-arc-git"
   "visual-studio-code-bin"
 ) -}}
 {{ end -}}
