@@ -989,23 +989,6 @@ configuration of my favorite Window Managers and several apps as well. ⛄</p>
 <p>Zsh is fully compatible with most shell scripts written for Bash. You can run your existing Bash scripts without any modifications in Zsh, ensuring a smooth transition. Additionally, Zsh provides better handling of corner cases and edge scenarios, making it a reliable choice for shell scripting.</p>
 <h2 id="customizing-zsh-">Customizing Zsh!</h2>
 <p>Any file in your <code>~/.zsh/custom</code> directory ending with <code>.zsh</code> will automatically be sourced when you open a shell. You can use this to add additional aliases, functions, and more.</p>
-<details open>
-<summary><strong>Parameters</strong></summary>
-
-It is possible to parameterize the default Zsh configuration with certain environment variables. You just need to create the file <code>~/.zsh/custom/zsh-preconfig.zsh</code> with one of the following variables:
-
-- <code>ZSH_NO_DEFAULTS</code>: If set, the default configuration will not be loaded.
-- <code>ZSH_NO_DEFAULT_PROMPT</code>: If set, the default prompt will not be loaded.
-
-Example file content:
-
-<code>sh
-ZSH_NO_DEFAULT_PROMPT=true</code>
-
-This will prevent the default prompt from being loaded, but the default configuration will still be loaded.
-
-</details>
-
 <details>
 <summary><strong>Zsh + Antigen</strong></summary>
 
