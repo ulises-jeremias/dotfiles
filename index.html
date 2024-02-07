@@ -988,7 +988,7 @@ configuration of my favorite Window Managers and several apps as well. ⛄</p>
 <p>🔗 <strong>Seamless Compatibility</strong></p>
 <p>Zsh is fully compatible with most shell scripts written for Bash. You can run your existing Bash scripts without any modifications in Zsh, ensuring a smooth transition. Additionally, Zsh provides better handling of corner cases and edge scenarios, making it a reliable choice for shell scripting.</p>
 <h2 id="customizing-zsh-">Customizing Zsh!</h2>
-<p>Any file in your <code>~/.zsh/custom</code> directory ending with <code>.zsh</code> will automatically be sourced when you open a shell. You can use this to add additional aliases, functions, and more.</p>
+<p>Any file in your <code>~/.zsh/config.d</code> directory ending with <code>.zsh</code> will automatically be sourced when you open a shell. You can use this to add additional aliases, functions, and more.</p>
 <details>
 <summary><strong>Zsh + Antigen</strong></summary>
 
@@ -999,7 +999,7 @@ To add Antigen as your plugin manager, execute the following command to download
 <code>sh
 curl -L git.io/antigen &gt; ~/.antigen.zsh</code>
 
-Then, create the file <code>~/.zsh/custom/antigen.zsh</code> with the following content:
+Then, create the file <code>~/.zsh/config.d/antigen.zsh</code> with the following content:
 
 <code>sh
 source &quot;${HOME}&quot;/.antigen.zsh
@@ -1013,7 +1013,7 @@ This file will be automatically sourced.
 <details>
 <summary><strong>Zsh + Power Level 10k</strong></summary>
 
-You can use <a href="https://github.com/romkatv/powerlevel10k">Power Level 10k</a> as your Zsh theme by installing it and creating a custom file, e.g., <code>~/.zsh/custom/p10k.zsh</code>, with the following content:
+You can use <a href="https://github.com/romkatv/powerlevel10k">Power Level 10k</a> as your Zsh theme by installing it and creating a custom file, e.g., <code>~/.zsh/config.d/p10k.zsh</code>, with the following content:
 
 <code>sh
 # Source Power Level 10k 💡
@@ -1037,7 +1037,7 @@ To customize your dotfiles setup to use Oh My Zsh, you can follow these steps:
 <code>shell
 sh -c &quot;$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&quot;</code>
 
-2. Once Oh My Zsh is installed, you can create a custom file, e.g., <code>~/.zsh/custom/oh-my-zsh.zsh</code>, with the following content:
+2. Once Oh My Zsh is installed, you can create a custom file, e.g., <code>~/.zsh/config.d/oh-my-zsh.zsh</code>, with the following content:
 
 <code>shell
 # Load Oh My Zsh
