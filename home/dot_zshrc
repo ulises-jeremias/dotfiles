@@ -129,9 +129,9 @@ export KEYTIMEOUT=1
 (wal -R -q -e -t -n) >> /dev/null
 
 # Source Custom Configurations
-# if there are files in ~/.zsh/custom/*.zsh, source them
-if [ -d ~/.zsh/custom ]; then
-    for config_file ($HOME/.zsh/custom/*.zsh(N)); do
+# if there are files in ~/.zsh/config.d/*.zsh, source them
+if [ -d ~/.zsh/config.d ]; then
+    for config_file ($HOME/.zsh/config.d/*.zsh(N)); do
         source $config_file
     done
 fi
