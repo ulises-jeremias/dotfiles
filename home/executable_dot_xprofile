@@ -12,10 +12,8 @@ if [ ! -f "$HOME/.xsync" ] && (($(xrandr -q | grep -c -w connected) == 1)); then
         xrandr --auto
     fi
 else
-    "$HOME"/.xsync
     if ! "$HOME"/.xsync; then xrandr --auto; fi
 fi
-[[ -f "$HOME/.xsync" ]] && "$HOME"/.xsync || xrandr --auto
 
 [[ -f /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 ]] && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
