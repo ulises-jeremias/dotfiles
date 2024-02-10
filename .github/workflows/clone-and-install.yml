@@ -24,4 +24,4 @@ jobs:
 
       - name: Chezmoi data
         if: always()
-        run: '"$HOME/.local/bin/chezmoi" data --source=/__w/dotfiles/dotfiles'
+        run: '"$HOME/.local/bin/chezmoi" data'
