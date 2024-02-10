@@ -5,34 +5,26 @@ set -eufo pipefail
 
 {{ $packages := list
   "bat"
+  "btop"
+  "dbus-python"
   "direnv"
   "exa"
   "jq"
+  "neofetch"
+  "pacman-contrib"
   "shellcheck"
 -}}
 
-{{ $aurPackages := list -}}
-
-{{ if not .headless -}}
-{{ $aurPackages = concat $aurPackages (list
-  "arc-dark-osx-openbox-theme-git"
-  "openbox-arc-git"
-  "visual-studio-code-bin"
-) -}}
-{{ end -}}
+{{ $aurPackages := list
+  "cava"
+-}}
 
 {{ if and (not .ephemeral) (not .headless) -}}
 {{ $packages = concat $packages (list
   "arc-gtk-theme"
   "arandr"
-  "btop"
-  "cava"
-  "dbus-python"
   "flameshot"
   "graphicsmagick"
-  "jq"
-  "neofetch"
-  "pacman-contrib"
   "pamixer"
   "pavucontrol"
   "playerctl"
@@ -44,8 +36,11 @@ set -eufo pipefail
 ) -}}
 
 {{ $aurPackages = concat $aurPackages (list
+  "arc-dark-osx-openbox-theme-git"
   "betterlockscreen"
   "numix-icon-theme"
+  "openbox-arc-git"
+  "visual-studio-code-bin"
   "skippy-xd"
 ) -}}
 {{ end -}}
