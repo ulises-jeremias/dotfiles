@@ -1,3 +1,8 @@
+{{- if not .personal -}}
+.ssh/*
+.config/credentials/*
+{{- end -}}
+
 {{- if ne .chezmoi.os "linux" -}}
 .chezmoiscripts/linux/**
 .clamtk/**
@@ -18,9 +23,4 @@
 .config/xfce4/**
 .config/picom.conf
 {{-   end -}}
-{{- end -}}
-
-{{- if not .personal -}}
-.ssh/**
-.config/credentials/**
 {{- end -}}
