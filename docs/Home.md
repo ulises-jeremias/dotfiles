@@ -35,7 +35,7 @@ Most were written from scratch. Some details:
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - and many more!
 
-![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen.jpg?raw=true)
+![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen.png?raw=true)
 
 ![Nord Two Lines](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-nord-two-lines.png?raw=true)
 
