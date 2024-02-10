@@ -23,4 +23,5 @@ jobs:
         run: ./install.sh
 
       - name: Chezmoi data
-        run: '"$HOME/.local/bin/chezmoi" data'
+        if: always()
+        run: '"$HOME/.local/bin/chezmoi" data --source=/__w/dotfiles/dotfiles'
