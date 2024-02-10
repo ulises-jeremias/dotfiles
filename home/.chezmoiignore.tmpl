@@ -1,8 +1,6 @@
 {{- if ne .chezmoi.os "linux" -}}
 .chezmoiscripts/linux/**
 .clamtk/**
-.ssh/**
-.config/credentials/**
 {{- end -}}
 
 {{- if eq .chezmoi.os "linux" -}}
@@ -19,7 +17,10 @@
 .config/wpg/**
 .config/xfce4/**
 .config/picom.conf
+{{-   end -}}
+{{- end -}}
+
+{{- if not .personal -}}
 .ssh/**
 .config/credentials/**
-{{-   end -}}
 {{- end -}}
