@@ -48,8 +48,8 @@ CLICK OR TAP ❲☰❳ TO SHOW TABLE-OF-CONTENTS
 
 <a href="#octocat--hi-there-thanks-for-dropping-by">
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="" align="right" width="400px" srcset="./static/screen-2.jpg"/>
-    <img alt="" align="right" width="400px" src="./static/screen-2.jpg"/>
+    <source media="(prefers-color-scheme: dark)" alt="" align="right" width="400px" srcset="./static/screen.jpg"/>
+    <img alt="" align="right" width="400px" src="./static/screen.jpg"/>
   </picture>
 </a>
 
