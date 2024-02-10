@@ -1,1 +1,3 @@
+{{- if .personal -}}
 {{ (index (lastpassRaw "ssh_personal_rsa") 0).note }}
+{{- end -}}

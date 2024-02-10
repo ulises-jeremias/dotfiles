@@ -1,1 +1,3 @@
+{{- if .personal -}}
 {{ (index (lastpassRaw "github_access_token_notifications") 0).note }}
+{{- end -}}
