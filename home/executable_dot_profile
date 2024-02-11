@@ -4,6 +4,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 export QT_QPA_PLATFORMTHEME="qt5ct"	# Have QT use qt5ct theme
+export TERM=xterm-256color # Set terminal to 256 colors
 export PASSWORD_STORE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/pass-store"
 
 # add /usr/local/bin to LD_LIBRARY_PATH if it exists and is not already in path
