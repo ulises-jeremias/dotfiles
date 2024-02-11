@@ -16,7 +16,11 @@ To customize the dotfiles, follow these steps:
 
 Here are some examples of customizations made using the dotfiles:
 
-![i3 with alacritty](https://github.com/ulises-jeremias/dotfiles/blob/master/static/nvim.png?raw=true)
+![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen.png?raw=true)
+
+![Dotfiles Dark Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen-2.png?raw=true)
+
+![Dotfiles Anime Light Theme Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/anime.png?raw=true)
 
 ![Apps finder](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-launchpad.png?raw=true)
 
