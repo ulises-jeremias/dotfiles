@@ -19,7 +19,7 @@
     <primaryMonitor>Mouse</primaryMonitor>
   </placement>
   <theme>
-    <name>FlatColor</name>
+    <name>Arc-Darker</name>
     <titleLayout>NLIMC</titleLayout>
     <keepBorder>yes</keepBorder>
     <animateIconify>no</animateIconify>

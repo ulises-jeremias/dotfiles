@@ -22,6 +22,7 @@ set -eufo pipefail
 {{ if and (not .ephemeral) (not .headless) -}}
 {{ $packages = concat $packages (list
   "arandr"
+  "arc-gtk-theme"
   "flameshot"
   "graphicsmagick"
   "pamixer"
@@ -35,7 +36,7 @@ set -eufo pipefail
 ) -}}
 
 {{ $aurPackages = concat $aurPackages (list
-  "gtk-theme-flat-color-git"
+  "arc-dark-osx-openbox-theme-git"
   "betterlockscreen"
   "numix-icon-theme"
   "visual-studio-code-bin"
