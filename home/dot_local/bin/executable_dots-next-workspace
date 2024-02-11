@@ -24,7 +24,7 @@ case "$next_index" in
     "${#workspaces[@]}")
         next_index=0
     ;;
-    
+
     "0")
         next_index="${#workspaces[@]}"
     ;;

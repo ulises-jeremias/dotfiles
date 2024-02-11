@@ -50,11 +50,11 @@ try:
 
     if len(song) > trunclen:
         song = song[0:trunclen]
-        song += '...' 
+        song += '...'
         if ('(' in song) and (')' not in song):
             song += ')'
-    
-    # Python3 uses UTF-8 by default. 
+
+    # Python3 uses UTF-8 by default.
     if sys.version_info.major == 3:
         print(output.format(artist=artist, song=song))
     else:
