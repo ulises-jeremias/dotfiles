@@ -37,15 +37,13 @@ Most were written from scratch. Some details:
 
 ![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen.png?raw=true)
 
+![Dotfiles Dark Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen-2.png?raw=true)
+
+![Dotfiles Anime Light Theme Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/anime.png?raw=true)
+
 ![Nord Two Lines](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-nord-two-lines.png?raw=true)
 
 ![Launchpad](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-launchpad.png?raw=true)
-
-![Spotlight Dark](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-spotlight-dark.png?raw=true)
-
-![Dotfiles Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/demo.gif?raw=true)
-
-![i3 with alacritty](https://github.com/ulises-jeremias/dotfiles/blob/master/static/nvim.png?raw=true)
 
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
 [licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE
