@@ -39,11 +39,11 @@ item_border          = 0
 sep_height           = 5
 
 font                 = Hack Nerd Font Mono 12px
-#font_fallback       = xtg
+font_fallback        = xtg
 icon_size            = 24
-icon_text_spacing   = 10
-icon_theme          = Numix-Circle
-icon_theme_fallback = xtg
+icon_text_spacing    = 10
+icon_theme           = Numix-Circle
+icon_theme_fallback  = xtg
 
 #arrow_string        = ▸
 #arrow_width         = 15

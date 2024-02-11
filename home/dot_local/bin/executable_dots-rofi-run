@@ -44,7 +44,7 @@ for arg in "$@"; do
   -r | --run)
     rofi -modi run,drun -show drun -line-padding 4 \
       -columns 1 -padding 35 -show-icons \
-      -drun-icon-theme "Numix-Circle" -theme ~/.config/rofi/apps.rasi
+      -theme ~/.config/rofi/apps.rasi
     ;;
   -w | --window)
     rofi -modi window -show window -theme ~/.config/rofi/tools.rasi -hide-scrollbar -padding 35 -line-padding 4

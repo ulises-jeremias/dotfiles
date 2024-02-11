@@ -2,7 +2,6 @@
 
 BAR_ICON="ﮮ"
 NOTIFIED=0
-NOTIFY_ICON=/usr/share/icons/Numix-Circle/32x32/apps/system-software-update.png
 
 get_total_updates() {
   UPDATES=$(checkupdates 2>/dev/null | wc -l)
@@ -17,11 +16,11 @@ while true; do
   # notify user of updates
   if ((NOTIFIED == 0)) && hash notify-send >/dev/null 2>&1; then
     if ((UPDATES > 50)); then
-      notify-send -u critical -i "${NOTIFY_ICON}" "Updates Available" "${UPDATES} packages"
+      notify-send -u critical "Updates Available" "${UPDATES} packages"
     elif ((UPDATES > 25)); then
-      notify-send -u normal -i "${NOTIFY_ICON}" "Updates Available" "${UPDATES} packages"
+      notify-send -u normal "Updates Available" "${UPDATES} packages"
     elif ((UPDATES > 2)); then
-      notify-send -u low -i "${NOTIFY_ICON}" "Updates Available" "${UPDATES} packages"
+      notify-send -u low "Updates Available" "${UPDATES} packages"
     fi
     NOTIFIED=1
   fi
