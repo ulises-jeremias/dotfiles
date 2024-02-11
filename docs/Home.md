@@ -37,9 +37,9 @@ Most were written from scratch. Some details:
 
 ![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen.png?raw=true)
 
-![Dotfiles Dark Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen-2.jpg?raw=true)
-
 ![Dotfiles Anime Light Theme Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/anime.jpeg?raw=true)
+
+![Dotfiles Dark Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen-2.jpg?raw=true)
 
 ![Nord Two Lines](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-nord-two-lines.png?raw=true)
 
