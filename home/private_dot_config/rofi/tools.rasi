@@ -6,19 +6,6 @@
 
 @import "wal.rasi"
 
-// override spotlight-dark variables
-* {
-    bg-color: @background;
-    fg-color: #A4A4A4;
-    tooltip-fg-color: #7E7E7E;
-    selected-bg-color: #4b5263aa;
-    selected-fg-color: #A4A4A4;
-    insensitive-bg-color: #7E7E7E80;
-    insensitive-fg-color: #7E7E7E;
-
-    text-color          : @fg-color;
-}
-
 configuration {
     font            : "Hack Nerd Font Mono 12";
     display-ssh     : "";
@@ -33,7 +20,6 @@ configuration {
     y-offset            : 25;
     width               : 20%;
     border-radius       : 8;
-    background-color    : @bg-color;
 }
 #mainbox {
     spacing             : 0;
@@ -47,7 +33,6 @@ configuration {
     str: "";
 }
 #prompt {
-    text-color          : @tooltip-fg-color;
     font                : inherit;
     background-color    : inherit;
     margin              : 10 16 24 20;
@@ -56,7 +41,6 @@ configuration {
     font                : inherit;
     background-color    : inherit;
     placeholder         : "";
-    placeholder-color   : @insensitive-fg-color;
     margin              : 11 0;
 }
 #case-indicator {
@@ -67,8 +51,6 @@ configuration {
 #message {
     padding             : 0;
     border              : 2 0 0;
-    border-color        : @insensitive-bg-color;
-    background-color    : @insensitive-bg-color;
 }
 #textbox {
     padding             : 8 24;
@@ -82,7 +64,6 @@ configuration {
     scrollbar           : false;
     background-color    : transparent;
     border              : 2 0 0;
-    border-color        : @insensitive-bg-color;
 }
 #element {
     padding             : 8 24;
@@ -93,17 +74,12 @@ configuration {
 #element normal urgent {
 }
 #element normal active {
-    text-color          : @selected-bg-color;
 }
 #element selected normal {
-    background-color    : @selected-bg-color;
-    text-color          : @selected-fg-color;
 }
 #element selected urgent {
 }
 #element selected active {
-    background-color    : @selected-bg-color;
-    text-color          : @selected-fg-color;
 }
 #element-icon {
     size                : 1em;
@@ -112,4 +88,5 @@ configuration {
 }
 #element-text {
     background-color    : transparent;
+    text-color          : @alternate-active-foreground;
 }
