@@ -86,7 +86,7 @@ prompt {
     enabled:                     true;
     padding:                     12px;
     border-radius:               100%;
-    background-color:            @active-background;
+    background-color:            @selected-normal-background;
     text-color:                  @background;
 }
 
@@ -161,6 +161,6 @@ element-text {
     horizontal-align:            0.5;
 }
 element selected.normal {
-    background-color:            @selected-normal-background;
+    background-color:            @selected-active-background;
     text-color:                  @background;
 }
