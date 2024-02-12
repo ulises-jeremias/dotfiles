@@ -80,14 +80,14 @@ textbox-prompt-colon {
     horizontal-align:            0.5;
     border-radius:               100%;
     background-color:            @urgent-background;
-    text-color:                  @background;
+    text-color:                  @selected-normal-foreground;
 }
 prompt {
     enabled:                     true;
     padding:                     12px;
     border-radius:               100%;
     background-color:            @selected-normal-background;
-    text-color:                  @background;
+    text-color:                  @selected-normal-foreground;
 }
 
 /*****----- Message -----*****/

@@ -74,7 +74,7 @@ textbox-prompt-colon {
     border-radius:               12px;
     vertical-align:              0.5;
     background-color:            @urgent-background;
-    text-color:                  @background;
+    text-color:                  @selected-normal-foreground;
 }
 prompt {
     enabled:                     true;
@@ -82,7 +82,7 @@ prompt {
     border-radius:               12px;
     vertical-align:              0.5;
     background-color:            @selected-normal-background;
-    text-color:                  @background;
+    text-color:                  @selected-normal-foreground;
 }
 
 /*****----- Message -----*****/
