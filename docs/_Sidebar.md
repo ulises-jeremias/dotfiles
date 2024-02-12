@@ -1,5 +1,7 @@
 - [🏠 Home](Home)
-- [💥 Dots Scripts Utility](dots)
+- [💥 Dots Scripts Utility](Dots-Scripts)
+  - [Usage](Dots-Scripts#usage)
+  - [Available Scripts](Dots-Scripts#available-scripts)
 - [🎨 Customization](Customization)
   - [🪟 Window Manager](Window-Managers)
     - [XFCE 4](Xfce4)
