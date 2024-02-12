@@ -3,7 +3,7 @@
 # Define las acciones con iconos (reemplaza con los iconos de tu preferencia)
 ACTIONS=("󰦛 Restore" "󰆓 Save" "󰆴 Delete")
 TARGETS=(" Both" " Programs" " Layout")
-DMENU="rofi -dmenu -i -show-icons -theme ~/.config/rofi/tools.rasi"
+DMENU="rofi -dmenu -i -show-icons -theme ~/.config/rofi/applets.rasi"
 
 prompt="i3-resurrect"
 action=$(printf "%s\n" "${ACTIONS[@]}" | $DMENU -p $prompt | awk '{print $2}')

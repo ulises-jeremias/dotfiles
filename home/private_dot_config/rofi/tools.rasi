@@ -1,84 +1,156 @@
-/*******************************************************************************
- * MACOS SPOTLIGHT LIKE DARK THEME FOR ROFI
- * User                 : ulises-jeremias
- * Theme Repo           : https://github.com/ulises-jeremias/rofi-themes
- *******************************************************************************/
+/**
+ *
+ * Author : Aditya Shakya (adi1090x)
+ * Github : @adi1090x
+ *
+ * Rofi Theme File
+ * Rofi Version: 1.7.3
+ **/
 
-@import "wal.rasi"
-
+/*****----- Configuration -----*****/
 configuration {
-    font            : "Hack Nerd Font Mono 12";
-    display-ssh     : "";
-    display-run     : "";
-    display-drun    : "";
-    display-window  : "";
-    display-combi   : "";
+    show-icons:                 false;
+    font:                       "Hack Nerd Font Mono 14";
+}
 
-}
+/*****----- Global Properties -----*****/
+@import                          "wal.rasi"
+
+/*
+USE_BUTTONS=YES
+*/
+
+/*****----- Main Window -----*****/
 window {
-    location            : center;
-    y-offset            : 25;
-    width               : 20%;
-    border-radius       : 8;
+    /* properties for window widget */
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       600px;
+    x-offset:                    0px;
+    y-offset:                    0px;
+    margin:                      0px;
+    padding:                     0px;
+    border:                      0px solid;
+    border-radius:               12px;
+    border-color:                @selected-normal-foreground;
+    cursor:                      "default";
+    background-color:            @background;
 }
+
+/*****----- Main Box -----*****/
 mainbox {
-    spacing             : 0;
-    background-color    : transparent;
+    enabled:                     true;
+    spacing:                     15px;
+    margin:                      0px;
+    padding:                     30px;
+    background-color:            transparent;
+    children:                    [ "inputbar", "message", "listview" ];
 }
+
+/*****----- Inputbar -----*****/
 inputbar {
-    font                : "Hack Nerd Font Mono 14";
-    background-color    : transparent;
+    enabled:                     true;
+    spacing:                     10px;
+    padding:                     0px;
+    border:                      0px;
+    border-radius:               12px;
+    border-color:                @selected-normal-foreground;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    children:                    [ "textbox-prompt-colon", "prompt"];
 }
+
+dummy {
+    background-color:            transparent;
+}
+
 textbox-prompt-colon {
-    str: "";
+    enabled:                     true;
+    expand:                      false;
+    str:                         "󰣇";
+    padding:                     14px;
+    border-radius:               12px;
+    vertical-align:              0.5;
+    background-color:            @urgent-background;
+    text-color:                  @background;
 }
 prompt {
-    font                : inherit;
-    background-color    : inherit;
-    margin              : 10 16 24 20;
+    enabled:                     true;
+    padding:                     14px;
+    border-radius:               12px;
+    vertical-align:              0.5;
+    background-color:            @selected-normal-background;
+    text-color:                  @background;
 }
-entry {
-    font                : inherit;
-    background-color    : inherit;
-    placeholder         : "";
-    margin              : 11 0;
-}
-case-indicator {
-    margin              : 8 8 8 24;
-    font                : inherit;
-    background-color    : inherit;
-}
+
+/*****----- Message -----*****/
 message {
-    padding             : 0;
-    border              : 2 0 0;
+    enabled:                     true;
+    margin:                      0px;
+    padding:                     10px;
+    border:                      0px solid;
+    border-radius:               12px;
+    border-color:                @selected-normal-foreground;
+    background-color:            @alternate-normal-background;
+    text-color:                  @foreground;
 }
 textbox {
-    padding             : 8 24;
-    background-color    : inherit;
+    background-color:            inherit;
+    text-color:                  inherit;
+    horizontal-align:            0.5;
 }
+
+/*****----- Listview -----*****/
 listview {
-    lines               : 10;
-    columns             : 1;
-    fixed-height        : false;
-    spacing             : 0;
-    scrollbar           : false;
-    background-color    : transparent;
-    border              : 2 0 0;
+    enabled:                     true;
+    columns:                     1;
+    lines:                       5;
+    cycle:                       true;
+    scrollbar:                   false;
+    layout:                      vertical;
+
+    spacing:                     15px;
+    background-color:            transparent;
+    cursor:                      "default";
 }
+
+/*****----- Elements -----*****/
 element {
-    padding             : 8 24;
-    background-color    : transparent;
-}
-element.selected.normal {
-    background-color:            @selected-active-background;
-    text-color:                  @selected-active-foreground;
-}
-element-icon {
-    size                : 1em;
-    margin              : 0 16 0 0;
-    background-color    : transparent;
+    enabled:                     true;
+    padding:                     20px 18px;
+    border:                      0px solid;
+    border-radius:               12px;
+    border-color:                @selected-normal-foreground;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    cursor:                      pointer;
 }
 element-text {
-    background-color    : transparent;
-    text-color          : @alternate-active-foreground;
+    font:                        "Hack Nerd Font Mono 10";
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      inherit;
+}
+element normal.normal,
+element alternate.normal {
+    background-color:            @alternate-normal-background;
+    text-color:                  @foreground;
+}
+element normal.urgent,
+element alternate.urgent,
+element selected.active {
+    background-color:            @urgent-background;
+    text-color:                  @background;
+}
+element normal.active,
+element alternate.active,
+element selected.urgent {
+    background-color:            @selected-active-background;
+    text-color:                  @background;
+}
+element selected.normal {
+    background-color:            @selected-active-background;
+    text-color:                  @selected-active-foreground;
 }
