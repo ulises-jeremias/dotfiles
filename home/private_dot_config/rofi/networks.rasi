@@ -15,7 +15,7 @@ configuration {
     display-combi   : "";
 
 }
-#window {
+window {
     location            : northeast;
     x-offset            : -17;
     y-offset            : 62;
@@ -23,42 +23,42 @@ configuration {
     height              : 700;
     border-radius       : 15;
 }
-#mainbox {
+mainbox {
     spacing             : 0;
     background-color    : transparent;
 }
-#inputbar {
+inputbar {
     font                : "Hack Nerd Font Mono 14";
     background-color    : transparent;
 }
-#textbox-prompt-colon {
+textbox-prompt-colon {
     str: "";
 }
-#prompt {
+prompt {
     font                : inherit;
     background-color    : inherit;
     margin              : 10 16 24 20;
 }
-#entry {
+entry {
     font                : inherit;
     background-color    : inherit;
     placeholder         : "";
     margin              : 11 0;
 }
-#case-indicator {
+case-indicator {
     margin              : 8 8 8 24;
     font                : inherit;
     background-color    : inherit;
 }
-#message {
+message {
     padding             : 0;
     border              : 2 0 0;
 }
-#textbox {
+textbox {
     padding             : 8 24;
     background-color    : inherit;
 }
-#listview {
+listview {
     lines               : 10;
     columns             : 1;
     fixed-height        : false;
@@ -67,28 +67,20 @@ configuration {
     background-color    : transparent;
     border              : 2 0 0;
 }
-#element {
+element {
     padding             : 8 24;
     background-color    : transparent;
 }
-#element normal normal {
+element.selected.normal {
+    background-color:            @selected-active-background;
+    text-color:                  @selected-active-foreground;
 }
-#element normal urgent {
-}
-#element normal active {
-}
-#element selected normal {
-}
-#element selected urgent {
-}
-#element selected active {
-}
-#element-icon {
+element-icon {
     size                : 1em;
     margin              : 0 16 0 0;
     background-color    : transparent;
 }
-#element-text {
+element-text {
     background-color    : transparent;
     text-color          : @alternate-active-foreground;
 }

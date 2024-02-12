@@ -160,7 +160,7 @@ element-text {
     cursor:                      inherit;
     horizontal-align:            0.5;
 }
-element selected.normal {
+element.selected.normal {
     background-color:            @selected-active-background;
-    text-color:                  @background;
+    text-color:                  @selected-active-foreground;
 }
