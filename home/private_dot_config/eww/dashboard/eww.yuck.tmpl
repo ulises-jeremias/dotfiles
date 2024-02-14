@@ -8,7 +8,7 @@
 
 ;; Profile vars
 (defvar IMAGE "images/profile.jpeg")
-(defvar NAME "YOUR NAME")
+(defvar NAME "{{- .profile.user.name -}}")
 (defpoll UNAME :interval "5m" `whoami`)
 
 ;; System vars
