@@ -145,7 +145,7 @@ else
 fi
 
 CURRBRIGHT=$(get_brightness "$DISP")
-echo $CURRBRIGHT
+echo "$CURRBRIGHT"
 if [[ ! "$CURRBRIGHT" =~ ^[0-9]+.[0-9]+$ ]]; then
   echo "Error: Selected display $DISP has no brightness value!"
   echo

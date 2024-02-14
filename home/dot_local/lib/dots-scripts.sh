@@ -11,7 +11,6 @@ scripts_list=(
     " monitor: Print the current monitor name"
     " next-workspace: Switch to the next existing workspace"
     " night-mode: Toggle night mode"
-    " openweathermap-detailed: Print detailed weather information"
     " player: Get the current song playing"
     " popup-calendar: Show a calendar in a popup"
     " rofi-bluetooth: Show a rofi menu to manage Bluetooth devices"
@@ -19,9 +18,7 @@ scripts_list=(
     " rofi-run: Show a rofi menu to run commands"
     " rofi-xrandr: Show a rofi menu to manage the screen resolution with charts"
     " screenshooter: Take a screenshot"
-    " spotify: Get the current song playing in Spotify"
     " sysupdate: Update the system"
     " toggle: Toggle the state of some applications"
     " updates: Check for updates"
-    " weather: Print the current weather information"
 )

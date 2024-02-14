@@ -49,6 +49,11 @@
 {{-   end -}}
 {{- end -}}
 
+{{- $personalEmail := "" -}}
+{{- if $interactive -}}
+{{-   $personalEmail = promptStringOnce . "personalEmail" "What is your personal email account" -}}
+{{- end -}}
+
 {{- $gitUserName := "" -}}
 {{- $gitUserEmail := "" -}}
 {{- if $interactive -}}
@@ -63,6 +68,9 @@
     hostname = {{ $hostname | quote }}
     osid = {{ $osid | quote }}
     personal = {{ $personal }}
+
+[data.email.account]
+    email = {{ $personalEmail | quote }}
 
 [data.gitconfig.user]
     name = {{ $gitUserName | quote }}
