@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# Paths to the original and temporary configuration files
+original_config_file="$HOME/.config/jgmenu/jgmenurc-config"
+target_config_file="$HOME/.config/jgmenu/jgmenurc"
+
+# Function to get color from xrdb
+get_xrdb_color() {
+    xrdb -get "$1"
+}
+
+# Function to update color in the temporary configuration file
+update_color() {
+    local color_name="$1"
+    local color_value="$2"
+    [ -z "$color_value" ] && return # Skip if color_value is empty
+    sed -i "s/^$color_name.*=.*/$color_name=$color_value/" "$target_config_file"
+}
+
+# Ensure the original configuration file exists
+if [ ! -f "$original_config_file" ]; then
+    echo "Original configuration file $original_config_file does not exist."
+    exit 1
+fi
+
+# Copy the original configuration file to the temporary location
+cp "$original_config_file" "$target_config_file"
+
+# Fetch colors from xrdb and update the temporary configuration file
+update_color "color_menu_bg" "$(get_xrdb_color "color8") 92"
+update_color "color_menu_fg" "$(get_xrdb_color "foreground")"
+update_color "color_norm_bg" "$(get_xrdb_color "color8") 0"
+update_color "color_norm_fg" "$(get_xrdb_color "color7")"
+update_color "color_sel_bg" "$(get_xrdb_color "color9") 60"
+update_color "color_sel_fg" "$(get_xrdb_color "foreground")"
+update_color "color_sep_fg" "$(get_xrdb_color "background") 40"
+
+# Set JGMENU_CONFIG to point to the temporary configuration file
+export JGMENU_CONFIG="$target_config_file"
+
+# Run jgmenu with the updated configuration file
+jgmenu_run

@@ -7,6 +7,7 @@ scripts_list=(
     " feh-blur: Blur the background of the current window when using feh to set the background"
     " git-notify: Notify when a git commit is made"
     " i3-resurrect-rofi: Show a rofi menu to manage i3-resurrect profiles"
+	" jgmenu: Show a jgmenu"
     " microphone: Control the microphone"
     " monitor: Print the current monitor name"
     " next-workspace: Switch to the next existing workspace"

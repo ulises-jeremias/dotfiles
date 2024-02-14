@@ -108,7 +108,7 @@
     <item label="GParted"><action name="Execute"><command><![CDATA[/usr/bin/gparted]]></command></action></item>
     <item label="Hardware Locality lstopo"><action name="Execute"><command><![CDATA[lstopo]]></command></action></item>
     <item label="Htop"><action name="Execute"><command><![CDATA[xterm -e 'htop']]></command></action></item>
-    <item label="jgmenu"><action name="Execute"><command><![CDATA[jgmenu_run]]></command></action></item>
+    <item label="jgmenu"><action name="Execute"><command><![CDATA[dots jgmenu]]></command></action></item>
     <item label="kitty"><action name="Execute"><command><![CDATA[kitty]]></command></action></item>
     <item label="Log Out"><action name="Execute"><command><![CDATA[xfce4-session-logout]]></command></action></item>
     <item label="Oracle VM VirtualBox"><action name="Execute"><command><![CDATA[VirtualBox]]></command></action></item>
