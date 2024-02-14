@@ -3,7 +3,7 @@
 import imaplib
 obj = imaplib.IMAP4_SSL('imap.gmail.com', 993)
 {{ if .personal }}
-obj.login('{{ .email.account.email }}', '{{ (index (lastpassRaw "github_access_token_notifications") 0).note }}')
+obj.login('{{ .email.account.email }}', '{{ (index (lastpassRaw "google_apps_password") 0).note }}')
 {{ else }}
 obj.login('{{ .email.account.email }}','PASSWORD')
 {{ end }}
