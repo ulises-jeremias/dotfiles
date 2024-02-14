@@ -5,7 +5,7 @@ obj = imaplib.IMAP4_SSL('imap.gmail.com', 993)
 {{ if .personal }}
 obj.login('{{ .email.account.email }}', '{{ (index (lastpassRaw "github_access_token_notifications") 0).note }}')
 {{ else }}
-obj.login('ulisescf.24@gmail.com','PASSWORD')
+obj.login('{{ .email.account.email }}','PASSWORD')
 {{ end }}
 obj.select()
 print(len(obj.search(None, 'UnSeen')[1][0].split()))
