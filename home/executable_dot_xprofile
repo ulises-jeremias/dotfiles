@@ -17,6 +17,7 @@ else
     xrandr --auto
 fi
 
+# run polkit-gnome-authentication-agent-1 in the background
 [[ -f /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 ]] && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
 # run xfsettingsd in the background, required for xfce settings to work
@@ -25,14 +26,14 @@ xfsettingsd &
 # run xfce4-power-manager in the background
 xfce4-power-manager --daemon &
 
-# load X params required for dotfiles to work
-xrdb -I"${HOME}" -load ~/.Xresources &
-
 # load picom
 picom --config ~/.config/picom/picom.conf --daemon &
 
 # restore colorscheme
 wal -R -q
+
+# start eww daemon
+eww daemon
 
 # run feh-blur in the background
 # dots feh-blur --blur 32 --darken 12 -c --no-animate -d

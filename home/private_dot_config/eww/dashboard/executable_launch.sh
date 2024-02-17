@@ -8,7 +8,17 @@ EWW="$(which eww)"
 ## Run eww daemon if not running already
 if [[ ! $(pidof eww) ]]; then
 	${EWW} daemon
-	sleep 1
+	# wait for eww daemon to start
+	max=10
+	for _ in $(seq 1 $max); do
+		if [[ $(pidof eww) ]]; then
+			break
+		elif [[ $_ -eq $max ]]; then
+			notify-send "Eww daemon failed to start" -u critical
+			exit 1
+		fi
+		sleep 0.1
+	done
 fi
 
 ## Open widgets

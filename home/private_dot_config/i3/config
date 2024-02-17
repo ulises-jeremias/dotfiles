@@ -53,6 +53,7 @@ bindsym Mod1+F4 kill
 
 # launchers
 bindsym Control+space exec --no-startup-id ~/.local/bin/dots rofi-run -r
+bindsym $Mod+d exec --no-startup-id ~/.config/eww/dashboard/launch.sh
 
 # core
 bindsym $Mod+w          exec --no-startup-id exo-open --launch WebBrowser
