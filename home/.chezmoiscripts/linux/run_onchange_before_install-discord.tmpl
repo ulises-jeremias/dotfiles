@@ -1,0 +1,17 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+yay -S --noconfirm --needed \
+    beautiful-discord-git \
+    discord
+
+rm -rf ~/.local/share/wal-discord
+rm -f ~/.local/bin/wal-discord
+git clone https://github.com/guglicap/wal-discord.git ~/.local/share/wal-discord
+chmod +x ~/.local/share/wal-discord/wal-discord
+ln -sf ~/.local/share/wal-discord/wal-discord ~/.local/bin/wal-discord
+{{      end -}}
+
+{{ end -}}

@@ -43,3 +43,6 @@ nm-applet &
 
 # start greenclip daemon
 greenclip daemon &
+
+# start thunar daemon
+thunar --daemon &

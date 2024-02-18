@@ -128,6 +128,7 @@ export GIT_PAGER=$PAGER
 # If this causes issue with other shell commands it can be raised default is 4
 export KEYTIMEOUT=1
 
+# Load pywal colorscheme
 (wal -R -q -e -t -n) >> /dev/null
 
 # Source Custom Configurations
