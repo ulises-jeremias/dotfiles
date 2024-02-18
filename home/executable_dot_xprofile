@@ -18,7 +18,7 @@ else
 fi
 
 # run polkit-gnome-authentication-agent-1 in the background
-[[ -f /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 ]] && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
 # run xfsettingsd in the background, required for xfce settings to work
 xfsettingsd &
