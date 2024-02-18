@@ -16,6 +16,3 @@ elif [ -f "$HOME/.xsync" ]; then
 else
     xrandr --auto
 fi
-
-# Run .desktop files from ~/.config/autostart and /etc/xdg/autostart
-(xdg-autostart) &

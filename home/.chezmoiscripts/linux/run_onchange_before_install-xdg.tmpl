@@ -3,10 +3,13 @@
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
-yay -S --noconfirm --needed \
+sudo pacman -S --noconfirm --needed \
+  python-pyxdg \
   exo \
-  xdg-autostart \
   xdg-user-dirs
+
+yay -S --noconfirm --needed \
+  xdg-autostart
 {{      end -}}
 
 {{ end -}}
