@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Thunar Daemon
+Exec=thunar --daemon
+X-GNOME-Autostart-enabled=true

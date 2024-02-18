@@ -17,32 +17,5 @@ else
     xrandr --auto
 fi
 
-# run polkit-gnome-authentication-agent-1 in the background
-/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-
-# run xfsettingsd in the background, required for xfce settings to work
-xfsettingsd &
-
-# run xfce4-power-manager in the background
-xfce4-power-manager --daemon &
-
-# load picom
-picom --config ~/.config/picom/picom.conf --daemon &
-
-# restore colorscheme
-wal -R -q
-
-# start eww daemon
-eww daemon
-
-# run feh-blur in the background
-# dots feh-blur --blur 32 --darken 12 -c --no-animate -d
-
-# start nm-applet
-nm-applet &
-
-# start greenclip daemon
-greenclip daemon &
-
-# start thunar daemon
-thunar --daemon &
+# Run .desktop files from ~/.config/autostart and /etc/xdg/autostart
+(xdg-autostart) &
