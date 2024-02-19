@@ -4,7 +4,7 @@
  * Theme Repo           : https://github.com/ulises-jeremias/rofi-themes
  *******************************************************************************/
 
-@import "wal.rasi"
+@import "colors.rasi"
 
 configuration {
     font            : "Hack Nerd Font Mono 12";

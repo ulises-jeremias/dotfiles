@@ -8,7 +8,7 @@ configuration {
     font            : "Hack Nerd Font Mono 10";
 }
 
-@import "wal.rasi"
+@import "colors.rasi"
 
 * {
     background: transparent;

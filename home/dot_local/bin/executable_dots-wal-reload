@@ -47,3 +47,11 @@ if ! command -v beautifuldiscord &> /dev/null; then
 fi
 wal-discord
 beautifuldiscord --css ~/.cache/wal-discord/style.css
+
+# Reload rofi colors. First, check if rofi is installed
+if ! command -v rofi &> /dev/null; then
+    echo "rofi is not installed. Please install it and try again."
+    notify-send "rofi is not installed. Please install it and try again." -u critical
+    exit 1
+fi
+cp ~/.cache/wal/colors-rofi-dark.rasi ~/.config/rofi/colors.rasi

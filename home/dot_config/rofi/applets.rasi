@@ -14,7 +14,7 @@ configuration {
 }
 
 /*****----- Global Properties -----*****/
-@import                          "wal.rasi"
+@import                          "colors.rasi"
 
 /*
 USE_BUTTONS=YES
