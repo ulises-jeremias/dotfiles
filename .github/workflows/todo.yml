@@ -1,7 +1,9 @@
 name: Todo Checker
 
 on:
-  workflow_call:
+  push:
+    branches:
+      - master
 
 permissions:
   contents: read

@@ -32,8 +32,3 @@ jobs:
   lint:
     name: Super Linter
     uses: ./.github/workflows/lint.yml
-
-  todo:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    name: TODO
-    uses: ./.github/workflows/todo.yml
