@@ -66,8 +66,7 @@ jobs:
     if: ${{ always() }}
 
     permissions:
-      contents: read
-      statuses: write
+      contents: write
 
     runs-on: ubuntu-latest
 
