@@ -61,9 +61,16 @@ jobs:
     needs:
       - job-sync-docs-to-wiki
       - job-sync-wiki-to-docs
+
     # run if any of the previous jobs succeeded
     if: ${{ always() }}
+
+    permissions:
+      contents: read
+      statuses: write
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Latest Wiki Content
         uses: actions/checkout@v4

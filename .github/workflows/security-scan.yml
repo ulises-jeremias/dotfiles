@@ -22,6 +22,12 @@ jobs:
   security-scan:
     runs-on: ubuntu-22.04
     timeout-minutes: 5
+
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
