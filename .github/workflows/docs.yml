@@ -22,6 +22,9 @@ on:
 
   gollum:
 
+permissions:
+  contents: read
+
 jobs:
   job-sync-docs-to-wiki:
     permissions:

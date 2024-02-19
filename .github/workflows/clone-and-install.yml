@@ -3,6 +3,9 @@ name: Clone and Install
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   clone-and-install:
     runs-on: ubuntu-latest

@@ -8,6 +8,9 @@ on:
       - v*
       - git-v*
 
+permissions:
+  contents: read
+
 jobs:
   ci:
     name: CI Checks

@@ -3,11 +3,18 @@ name: Todo Checker
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   todo:
     name: TODO
 
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      issues: write
 
     steps:
       - name: Begin CI...

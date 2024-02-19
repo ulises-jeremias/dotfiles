@@ -3,6 +3,9 @@ name: Super Linter
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Lint Code Base
