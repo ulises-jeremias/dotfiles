@@ -87,8 +87,8 @@ bindsym XF86MonBrightnessDown       exec --no-startup-id ~/.local/bin/dots brigh
 bindsym Shift+XF86MonBrightnessUp   exec --no-startup-id ~/.local/bin/dots brightness "*" + 0.01
 bindsym Shift+XF86MonBrightnessDown exec --no-startup-id ~/.local/bin/dots brightness "*" - 0.01
 
-# toggle
-bindsym $Mod+p exec --no-startup-id ~/.local/bin/dots toggle -p -t &
+# toggle polybar
+bindsym $Mod+Control+p exec --no-startup-id ~/.local/bin/dots toggle -p -t &
 
 ###########          Workspace Bindings          ###############
 
@@ -180,8 +180,8 @@ bindsym $Mod+Down  focus down
 bindsym $Mod+Up    focus up
 bindsym $Mod+Right focus right
 
-bindsym $Mod+Ctrl+p focus parent
-bindsym $Mod+Ctrl+c focus child
+bindsym $Mod+p focus parent
+bindsym $Mod+c focus child
 
 # move focused window
 bindsym $Mod+Shift+$left  move left  10px
@@ -190,7 +190,7 @@ bindsym $Mod+Shift+$up    move up    10px
 bindsym $Mod+Shift+$right move right 10px
 
 # move position centered
-bindsym $Mod+c move position center
+bindsym $Mod+Control+c move position center
 
 # alternatively, you can use the cursor keys:
 bindsym $Mod+Shift+Up    move up    10px
