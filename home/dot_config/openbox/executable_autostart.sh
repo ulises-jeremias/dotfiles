@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Load the Xresources file if it exists
+[[ -f ~/.Xresources ]] && xrdb -merge ~/.Xresources
+
 # Launch polybar
 ~/.config/polybar/launch.sh &
 
