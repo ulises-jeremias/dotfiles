@@ -177,10 +177,10 @@
 ;; power buttons
 (defwidget logout []
 	(box :class "genwin" :vexpand "false" :hexpand "false"
-		(button :class "btn_logout" :onclick "loginctl terminate-session" "")))
+		(button :class "btn_logout" :onclick "~/.config/eww/dashboard/launch.sh; loginctl terminate-session" "")))
 (defwidget sleep []
 	(box :class "genwin" :vexpand "false" :hexpand "false"
-		(button :class "btn_sleep" :onclick "systemctl suspend" "")))
+		(button :class "btn_sleep" :onclick "~/.config/eww/dashboard/launch.sh; systemctl suspend" "")))
 (defwidget reboot []
 	(box :class "genwin" :vexpand "false" :hexpand "false"
 		(button :class "btn_reboot" :onclick "systemctl -i reboot" "")))

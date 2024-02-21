@@ -28,6 +28,7 @@ if ! command -v eww &> /dev/null; then
     exit 1
 fi
 eww --config "$HOME/.config/eww/dashboard" reload
+eww --config "$HOME/.config/eww/powermenu" reload
 
 # Reload discord colors. First, check if wal-discord and beautifuldiscord are installed
 if ! command -v wal-discord &> /dev/null; then

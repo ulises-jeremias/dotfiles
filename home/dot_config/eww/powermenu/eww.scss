@@ -1,0 +1,92 @@
+@import "colors.scss";
+
+/** Global *******************************************/
+* {
+  all: unset;
+  font-family: feather;
+  font-family: Iosevka;
+}
+
+/** Background ***************************************/
+.bg {
+  background-image: url($wallpaper);
+  background-color: lighten($background, 10%);
+  opacity: 1;
+}
+
+/** Generic window ***********************************/
+.genwin {
+  background-color: lighten($background, 10%);
+  border-radius: 16px;
+}
+
+/** Clock ********************************************/
+.time_hour,
+.time_min {
+  color: $color13;
+  font-size: 70px;
+  font-weight: bold;
+}
+.time_hour {
+  margin: 15px 0px 0px 20px;
+}
+.time_min {
+  margin: 0px 0px 10px 0px;
+}
+
+.time_mer {
+  color: $color11;
+  font-size: 40px;
+  font-weight: bold;
+  margin: 20px 20px 0px 0px;
+}
+
+.time_day {
+  color: $color12;
+  font-size: 30px;
+  font-weight: normal;
+  margin: 0px 0px 20px -30px;
+}
+
+/** Uptime ********************************************/
+.icontimer {
+  color: $color1;
+  font-size: 90px;
+  font-weight: normal;
+}
+
+.uphour {
+  color: $color2;
+  font-size: 42px;
+  font-weight: bold;
+}
+
+.upmin {
+  color: $color2;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/** Power buttons ***************************************/
+.btn_logout,
+.btn_sleep,
+.btn_reboot,
+.btn_poweroff {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.btn_logout {
+  color: $color9;
+}
+.btn_sleep {
+  color: $color11;
+}
+.btn_reboot {
+  color: $color12;
+}
+.btn_poweroff {
+  color: $color13;
+}
+
+/** EOF *************************************************/

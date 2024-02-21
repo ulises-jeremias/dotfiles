@@ -1,0 +1,97 @@
+;; **
+;; ** Widgets config for EWW
+;; ** Created by : @adi1090x
+;; ** Converted by : @tripleo1
+;; ** Last updated by : @ulises-jeremias
+;; **
+
+;; ** Variables ***********************************************************************
+
+;; Time vars
+(defpoll HOUR :interval "5s" `date +\"%I\"`)
+(defpoll MIN :interval "5s" `date +\"%M\"`)
+(defpoll MER :interval "5s" `date +\"%p\"`)
+(defpoll DAY :interval "5s" `date +\"%A\"`)
+
+;; Uptime vars
+(defpoll UPHOUR :interval "5s" `uptime -p | awk '{print $2 \" \" $3}' | sed 's/,//g'`)
+(defpoll UPMIN :interval "5s" `uptime -p | awk '{print $4 \" \" $5}' | sed 's/,//g'`)
+
+;; ** Widgets *************************************************************************
+
+
+;; background
+(defwidget bg []
+	(box :class "bg")
+)
+
+;; clock
+(defwidget clock []
+	(box :class "genwin" :orientation "h" :spacing 50 :space-evenly false :vexpand "false" :hexpand "false"
+		(box :orientation "h" :spacing 0
+			(label :class "time_hour" :valign "start" :wrap "true" :limit-width 25 :text HOUR)
+			(label :class "time_min" :valign "end" :wrap "true" :limit-width 25 :text MIN))
+		(box :orientation "v" :spacing 0
+			(label :class "time_mer" :valign "start" :halign "end" :wrap "true" :limit-width 25 :text MER)
+			(label :class "time_day" :valign "end" :halign "end" :wrap "true" :limit-width 25 :text DAY))))
+
+;; uptime
+(defwidget uptime []
+	(box :class "genwin"
+		(box :orientation "h" :halign "center" :spacing 40 :space-evenly "false" :vexpand "false" :hexpand "false"
+			(label :class "icontimer" :valign "center" :text "祥")
+			(box :orientation "v" :valign "center" :spacing 0 :space-evenly "false" :vexpand "false" :hexpand "false"
+				(label :class "uphour" :halign "start" :wrap "true" :limit-width 25 :text UPHOUR)
+				(label :class "upmin" :halign "start" :wrap "true" :limit-width 25 :text UPMIN)))))
+
+;; power buttons
+(defwidget logout []
+	(box :class "genwin" :vexpand "false" :hexpand "false"
+		(button :class "btn_logout" :onclick "~/.config/eww/powermenu/launch.sh; loginctl terminate-session" "")))
+(defwidget sleep []
+	(box :class "genwin" :vexpand "false" :hexpand "false"
+		(button :class "btn_sleep" :onclick "~/.config/eww/powermenu/launch.sh; systemctl suspend" "")))
+(defwidget reboot []
+	(box :class "genwin" :vexpand "false" :hexpand "false"
+		(button :class "btn_reboot" :onclick "systemctl -i reboot" "")))
+(defwidget poweroff []
+	(box :class "genwin" :vexpand "false" :hexpand "false"
+		(button :class "btn_poweroff" :onclick "systemctl -i poweroff" "")))
+
+;; ** Windows *************************************************************************
+
+
+;; background
+(defwindow background :stacking "fg" :focusable "false" :screen 1
+            :geometry (geometry :x 0 :y 0 :width "1920px" :height "1080px")
+                        (bg))
+
+;; clock
+(defwindow clock :stacking "fg" :focusable "false" :screen 1
+            :geometry (geometry :x 610 :y 350 :width 350 :height 155)
+                        (clock))
+
+;; uptime
+(defwindow uptime :stacking "fg" :focusable "false" :screen 1
+            :geometry (geometry :x 610 :y 520 :width 350 :height 155)
+                        (uptime))
+
+;; logout
+(defwindow logout :stacking "fg" :focusable "false" :screen 1
+            :geometry (geometry :x 975 :y 350 :width 155 :height 155)
+                        (logout))
+
+;; sleep
+(defwindow sleep :stacking "fg" :focusable "false" :screen 1
+            :geometry (geometry :x 1145 :y 350 :width 155 :height 155)
+                        (sleep))
+
+;; reboot
+(defwindow reboot :stacking "fg" :focusable "false" :screen 1
+            :geometry (geometry :x 975 :y 520 :width 155 :height 155)
+                        (reboot))
+
+;; poweroff
+(defwindow poweroff :stacking "fg" :focusable "false" :screen 1
+            :geometry (geometry :x 1145 :y 520 :width 155 :height 155)
+                        (poweroff))
