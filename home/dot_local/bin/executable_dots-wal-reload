@@ -7,14 +7,14 @@
 # Check if wal is installed
 if ! command -v wal &> /dev/null; then
     echo "wal is not installed. Please install it and try again."
-    notify-send "wal is not installed. Please install it and try again." -u critical
+    notify-send "wal is not installed. Please install it and try again."
     exit 1
 fi
 
 # Check if the ~/.cache/wal directory exists
 if [[ ! -d "${HOME}/.cache/wal" ]]; then
     echo "The ~/.cache/wal directory does not exist. Please run wal first."
-    notify-send "The ~/.cache/wal directory does not exist. Please run wal first." -u critical
+    notify-send "The ~/.cache/wal directory does not exist. Please run wal first."
     exit 1
 fi
 
@@ -24,7 +24,7 @@ fi
 # Reload EWW. First, check if eww is installed
 if ! command -v eww &> /dev/null; then
     echo "eww is not installed. Please install it and try again."
-    notify-send "eww is not installed. Please install it and try again." -u critical
+    notify-send "eww is not installed. Please install it and try again."
     exit 1
 fi
 rm -rf "$HOME/.config/eww/dashboard/colors.scss"
@@ -37,12 +37,12 @@ eww --config "$HOME/.config/eww/powermenu" reload
 # Reload discord colors. First, check if wal-discord and beautifuldiscord are installed
 if ! command -v wal-discord &> /dev/null; then
     echo "wal-discord is not installed. Please install it and try again."
-    notify-send "wal-discord is not installed. Please install it and try again." -u critical
+    notify-send "wal-discord is not installed. Please install it and try again."
     exit 1
 fi
 if ! command -v beautifuldiscord &> /dev/null; then
     echo "beautifuldiscord is not installed. Please install it and try again."
-    notify-send "beautifuldiscord is not installed. Please install it and try again." -u critical
+    notify-send "beautifuldiscord is not installed. Please install it and try again."
     exit 1
 fi
 wal-discord
@@ -51,7 +51,7 @@ beautifuldiscord --css ~/.cache/wal-discord/style.css
 # Reload rofi colors. First, check if rofi is installed
 if ! command -v rofi &> /dev/null; then
     echo "rofi is not installed. Please install it and try again."
-    notify-send "rofi is not installed. Please install it and try again." -u critical
+    notify-send "rofi is not installed. Please install it and try again."
     exit 1
 fi
 cp ~/.cache/wal/colors-rofi-dark.rasi ~/.config/rofi/colors.rasi
