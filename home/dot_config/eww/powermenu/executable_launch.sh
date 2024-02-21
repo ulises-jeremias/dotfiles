@@ -24,6 +24,7 @@ fi
 run_eww() {
 	eww --config "$CFG" open-many \
 		background \
+		close \
 		clock \
 		uptime \
 		logout \
@@ -39,6 +40,7 @@ if [[ ! -f "$FILE" ]]; then
 else
 	eww --config "$CFG" close \
 		background \
+		close \
 		clock \
 		uptime \
 		logout \

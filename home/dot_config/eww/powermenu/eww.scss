@@ -9,15 +9,21 @@
 
 /** Background ***************************************/
 .bg {
-  background-image: url($wallpaper);
-  background-color: lighten($background, 10%);
-  opacity: 1;
+  background-color: $background;
+  opacity: 0.2;
 }
 
 /** Generic window ***********************************/
 .genwin {
-  background-color: lighten($background, 10%);
+  background-color: lighten($background, 12%);
   border-radius: 16px;
+}
+
+/** Close button ****************************************/
+.btn_close {
+  font-size: 48px;
+  font-weight: bold;
+  color: $color13;
 }
 
 /** Clock ********************************************/

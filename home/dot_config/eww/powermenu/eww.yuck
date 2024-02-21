@@ -25,6 +25,11 @@
 	(box :class "bg")
 )
 
+;; close
+(defwidget close []
+	(box :vexpand "false" :hexpand "false"
+		(button :class "btn_close" :onclick "~/.config/eww/powermenu/launch.sh" "󱎘")))
+
 ;; clock
 (defwidget clock []
 	(box :class "genwin" :orientation "h" :spacing 50 :space-evenly false :vexpand "false" :hexpand "false"
@@ -65,6 +70,11 @@
 (defwindow background :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 0 :y 0 :width "1920px" :height "1080px")
                         (bg))
+
+;; close button window
+(defwindow close :stacking "fg" :focusable "false" :screen 1
+            :geometry (geometry :x 1250 :y 245 :width 155 :height 155)
+                        (close))
 
 ;; clock
 (defwindow clock :stacking "fg" :focusable "false" :screen 1

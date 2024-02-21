@@ -27,6 +27,10 @@ if ! command -v eww &> /dev/null; then
     notify-send "eww is not installed. Please install it and try again." -u critical
     exit 1
 fi
+rm -rf "$HOME/.config/eww/dashboard/colors.scss"
+rm -rf "$HOME/.config/eww/powermenu/colors.scss"
+ln -sf "$HOME/.cache/wal/colors.scss" "$HOME/.config/eww/dashboard/colors.scss"
+ln -sf "$HOME/.cache/wal/colors.scss" "$HOME/.config/eww/powermenu/colors.scss"
 eww --config "$HOME/.config/eww/dashboard" reload
 eww --config "$HOME/.config/eww/powermenu" reload
 

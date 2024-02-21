@@ -62,7 +62,8 @@ bindsym $Mod+t          exec --no-startup-id exo-open --launch TerminalEmulator
 bindsym $Mod+Return     exec --no-startup-id exo-open --launch TerminalEmulator
 
 # logout script
-bindsym $Mod+x exec --no-startup-id ~/.local/bin/dots rofi-run -l
+# bindsym $Mod+x exec --no-startup-id ~/.local/bin/dots rofi-run -l
+bindsym $Mod+x exec --no-startup-id ~/.config/eww/powermenu/launch.sh
 
 # clipboard script
 bindsym Mod1+Control+c exec --no-startup-id ~/.local/bin/dots rofi-run -c

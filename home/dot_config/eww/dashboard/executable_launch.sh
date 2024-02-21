@@ -49,7 +49,23 @@ if [[ ! -f "$FILE" ]]; then
 	run_eww
 else
 	eww --config "$CFG" close \
-		background profile system clock uptime music github \
-		reddit twitter youtube weather apps mail logout sleep reboot poweroff folders
+		background \
+		profile \
+		system \
+		clock \
+		uptime \
+		music \
+		github \
+		reddit \
+		twitter \
+		youtube \
+		weather \
+		apps \
+		mail \
+		logout \
+		sleep \
+		reboot \
+		poweroff \
+		folders
 	rm "$FILE"
 fi
