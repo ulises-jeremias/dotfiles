@@ -26,7 +26,7 @@
 
 ;; Uptime vars
 (defpoll UPHOUR :interval "5s" `uptime -p | awk '{print $2 \" \" $3}' | sed 's/,//g'`)
-(defpoll UPMIN :interval "5s" `uptime -p | awk '{print $4 \" \" $5}'`)
+(defpoll UPMIN :interval "5s" `uptime -p | awk '{print $4 \" \" $5}' | sed 's/,//g'`)
 
 ;; Music vars
 (defpoll SONG :interval "1s" `scripts/music-info --song`)
