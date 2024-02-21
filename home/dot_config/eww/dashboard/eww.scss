@@ -10,13 +10,13 @@
 /** Background ***************************************/
 .bg {
   background-image: url($wallpaper);
-  background-color: lighten($color8, 7%);
+  background-color: lighten($background, 10%);
   opacity: 1;
 }
 
 /** Generic window ***********************************/
 .genwin {
-  background-color: $color8;
+  background-color: lighten($background, 10%);
   border-radius: 16px;
 }
 
@@ -69,7 +69,7 @@
 .bat_bar,
 scale trough {
   all: unset;
-  background-color: lighten($color8, 7%);
+  background-color: lighten($background, 7.5%);
   border-radius: 16px;
   min-height: 28px;
   min-width: 240px;
@@ -115,14 +115,14 @@ scale trough highlight {
   color: $color11;
   font-size: 40px;
   font-weight: bold;
-  margin: 20px 0px 0px 0px;
+  margin: 20px 20px 0px 0px;
 }
 
 .time_day {
   color: $color12;
   font-size: 30px;
   font-weight: normal;
-  margin: 0px 0px 20px -20px;
+  margin: 0px 0px 20px -30px;
 }
 
 /** Uptime ********************************************/
@@ -195,7 +195,7 @@ scale trough highlight {
 }
 .music_bar scale trough {
   all: unset;
-  background-color: lighten($color8, 7%);
+  background-color: lighten($background, 7.5%);
   border-radius: 8px;
   min-height: 20px;
   min-width: 310px;
@@ -338,7 +338,7 @@ scale trough highlight {
 
 /** Home folders ***************************************/
 .hddbox {
-  background-color: lighten($color8, 7%);
+  background-color: lighten($background, 7.5%);
   border-radius: 10px;
   margin: 15px;
 }
@@ -358,7 +358,7 @@ scale trough highlight {
   margin: 0px 0px 0px 15px;
 }
 .fs_sep {
-  color: $color8;
+  color: lighten($background, 7.5%);
   font-size: 36px;
   font-weight: bold;
 }
