@@ -21,11 +21,6 @@ fi
 # Reset the colorscheme
 (wal -R -q &> /dev/null) || exit 1
 
-# if i3 is running, reload the i3 configuration
-if pgrep -x "i3" &> /dev/null; then
-    i3-msg reload
-fi
-
 # Reload EWW. First, check if eww is installed
 if ! command -v eww &> /dev/null; then
     echo "eww is not installed. Please install it and try again."
