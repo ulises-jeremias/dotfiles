@@ -88,7 +88,7 @@ bindsym Shift+XF86MonBrightnessUp   exec --no-startup-id ~/.local/bin/dots brigh
 bindsym Shift+XF86MonBrightnessDown exec --no-startup-id ~/.local/bin/dots brightness "*" - 0.01
 
 # toggle
-bindsym $Mod+Control+p exec --no-startup-id ~/.local/bin/dots toggle -p -t &
+bindsym $Mod+p exec --no-startup-id ~/.local/bin/dots toggle -p -t &
 
 ###########          Workspace Bindings          ###############
 
