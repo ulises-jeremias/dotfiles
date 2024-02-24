@@ -31,6 +31,23 @@ set $WS8 "8"
 set $WS9 "9"
 set $WS10 "10"
 
+###############       Colors       ################
+# Color palette used for the terminal ( ~/.Xresources file )
+# Colors are gathered based on the documentation:
+# https://i3wm.org/docs/userguide.html#xresources
+# Change the variable name at the place you want to match the color
+# of your terminal like this:
+set_from_resource $fg i3wm.color7 #f4dc98
+set_from_resource $bg i3wm.color3 #0A1837
+
+# class                 border  backgr. text indicator child_border
+client.focused           $bg     $bg     $fg    $bg        $bg
+client.focused_inactive  $bg     $bg     $fg    $bg        $bg
+client.unfocused         $bg     $bg     $fg    $bg        $bg
+client.urgent            $bg     $bg     $fg    $bg        $bg
+client.placeholder       $bg     $bg     $fg    $bg        $bg
+client.background        $bg
+
 ###############      i3 Layouts      ###############
 
 set $i3l autosplit to workspace $WS1
@@ -246,7 +263,7 @@ default_orientation horizontal
 # border & title
 # NOTE: Title format is hidden because of `alpha` property set to `1`.
 # Font size set to `0` is to hidde this bar
-for_window [class="^.*"] border pixel 0, title_format "<b alpha='1'> %class >> %title </b>"
+for_window [class="^.*"] border pixel 2, title_format "<b alpha='1'> %class >> %title </b>"
 
 # Smart borders (draw borders around container only if it is not the only container on this workspace)
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
