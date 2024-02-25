@@ -37,13 +37,13 @@ set $WS10 "10"
 # https://i3wm.org/docs/userguide.html#xresources
 # Change the variable name at the place you want to match the color
 # of your terminal like this:
-set_from_resource $fg i3wm.color7 #f4dc98
 set_from_resource $bg i3wm.color3 #0A1837
+set_from_resource $fg i3wm.color7 #f4dc98
 
 # class                 border  backgr. text indicator child_border
 client.focused           $bg     $bg     $fg    $bg        $bg
-client.focused_inactive  $bg     $bg     $fg    $bg        $bg
-client.unfocused         $bg     $bg     $fg    $bg        $bg
+client.focused_inactive  $fg     $bg     $fg    $bg        $fg
+client.unfocused         $fg     $bg     $fg    $bg        $fg
 client.urgent            $bg     $bg     $fg    $bg        $bg
 client.placeholder       $bg     $bg     $fg    $bg        $bg
 client.background        $bg
@@ -267,7 +267,7 @@ for_window [class="^.*"] border pixel 2, title_format "<b alpha='1'> %class >> %
 
 # Smart borders (draw borders around container only if it is not the only container on this workspace)
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
-smart_borders no_gaps
+smart_borders on
 
 # gaps
 gaps inner 12
