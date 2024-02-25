@@ -67,41 +67,41 @@
 
 
 ;; background
-(defwindow background :stacking "fg" :focusable "false" :screen 1
+(defwindow powermenu-background :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 0 :y 0 :width "1920px" :height "1080px")
                         (bg))
 
 ;; close button window
-(defwindow close :stacking "fg" :focusable "false" :screen 1
+(defwindow powermenu-close :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 1250 :y 245 :width 155 :height 155)
                         (close))
 
 ;; clock
-(defwindow clock :stacking "fg" :focusable "false" :screen 1
+(defwindow powermenu-clock :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 610 :y 350 :width 350 :height 155)
                         (clock))
 
 ;; uptime
-(defwindow uptime :stacking "fg" :focusable "false" :screen 1
+(defwindow powermenu-uptime :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 610 :y 520 :width 350 :height 155)
                         (uptime))
 
 ;; logout
-(defwindow logout :stacking "fg" :focusable "false" :screen 1
+(defwindow powermenu-logout :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 975 :y 350 :width 155 :height 155)
                         (logout))
 
 ;; sleep
-(defwindow sleep :stacking "fg" :focusable "false" :screen 1
+(defwindow powermenu-sleep :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 1145 :y 350 :width 155 :height 155)
                         (sleep))
 
 ;; reboot
-(defwindow reboot :stacking "fg" :focusable "false" :screen 1
+(defwindow powermenu-reboot :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 975 :y 520 :width 155 :height 155)
                         (reboot))
 
 ;; poweroff
-(defwindow poweroff :stacking "fg" :focusable "false" :screen 1
+(defwindow powermenu-poweroff :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 1145 :y 520 :width 155 :height 155)
                         (poweroff))
