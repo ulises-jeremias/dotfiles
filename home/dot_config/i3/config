@@ -37,8 +37,8 @@ set $WS10 "10"
 # https://i3wm.org/docs/userguide.html#xresources
 # Change the variable name at the place you want to match the color
 # of your terminal like this:
-set_from_resource $bg i3wm.color1 #0A1837
-set_from_resource $fg i3wm.color7 #f4dc98
+set_from_resource $bg i3wm.color3 #0A1837
+set_from_resource $fg i3wm.color5 #f4dc98
 
 # class                 border  backgr. text indicator child_border
 client.focused           $bg     $bg     $fg    $bg        $bg
