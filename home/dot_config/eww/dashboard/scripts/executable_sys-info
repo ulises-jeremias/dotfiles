@@ -13,9 +13,9 @@ get_cpu() {
 		PREV_IDLE=$(echo "${fileCont}" | tail -n 1)
 	fi
 
-	CPU=$(grep '^cpu ' </proc/stat) # Get the total CPU statistics.
-	unset "CPU[0]"                  # Discard the "cpu" prefix.
-	IDLE=${CPU[4]}                  # Get the idle CPU time.
+	read -r -a CPU <"/proc/stat"      # Get the total CPU statistics.
+	unset "CPU[0]"                    # Discard the "cpu" prefix.
+	IDLE=${CPU[4]}                    # Get the idle CPU time.
 
 	# Calculate the total CPU time.
 	TOTAL=0
