@@ -1,6 +1,7 @@
 # Documentation: https://i3wm.org/docs/userguide.html
 
 include config.d/autostart.conf
+include config.d/colors.conf
 include config.d/windows-control.conf
 
 # Documentation: https://i3wm.org/docs/userguide.html
@@ -30,23 +31,6 @@ set $WS7 "7"
 set $WS8 "8"
 set $WS9 "9"
 set $WS10 "10"
-
-###############       Colors       ################
-# Color palette used for the terminal ( ~/.Xresources file )
-# Colors are gathered based on the documentation:
-# https://i3wm.org/docs/userguide.html#xresources
-# Change the variable name at the place you want to match the color
-# of your terminal like this:
-set_from_resource $bg i3wm.color3 #0A1837
-set_from_resource $fg i3wm.color5 #f4dc98
-
-# class                 border  backgr. text indicator child_border
-client.focused           $bg     $bg     $fg    $bg        $bg
-client.focused_inactive  $fg     $bg     $fg    $bg        $fg
-client.unfocused         $fg     $bg     $fg    $bg        $fg
-client.urgent            $bg     $bg     $fg    $bg        $bg
-client.placeholder       $bg     $bg     $fg    $bg        $bg
-client.background        $bg
 
 ###############      i3 Layouts      ###############
 
@@ -267,7 +251,7 @@ for_window [class="^.*"] border pixel 2, title_format "<b alpha='1'> %class >> %
 
 # Smart borders (draw borders around container only if it is not the only container on this workspace)
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
-smart_borders on
+smart_borders no_gaps
 
 # gaps
 gaps inner 12
