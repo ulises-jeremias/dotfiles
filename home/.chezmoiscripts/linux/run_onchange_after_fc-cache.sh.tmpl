@@ -1,0 +1,7 @@
+{{- if not .ephemeral -}}
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+fc-cache -f -v
+{{- end -}}
