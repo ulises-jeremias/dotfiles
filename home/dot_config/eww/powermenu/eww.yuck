@@ -50,6 +50,9 @@
 				(label :class "upmin" :halign "start" :wrap "true" :limit-width 25 :text UPMIN)))))
 
 ;; power buttons
+(defwidget lock []
+	(box :class "genwin" :vexpand "false" :hexpand "false"
+		(button :class "btn_lock" :onclick "~/.config/eww/powermenu/launch.sh; betterlockscreen --lock" "󰌾")))
 (defwidget logout []
 	(box :class "genwin" :vexpand "false" :hexpand "false"
 		(button :class "btn_logout" :onclick "~/.config/eww/powermenu/launch.sh; loginctl terminate-session" "")))
@@ -62,6 +65,10 @@
 (defwidget poweroff []
 	(box :class "genwin" :vexpand "false" :hexpand "false"
 		(button :class "btn_poweroff" :onclick "systemctl -i poweroff" "")))
+
+;; placeholder items
+(defwidget placeholder []
+	(box :class "placeholder" :vexpand "false" :hexpand "false"))
 
 ;; ** Windows *************************************************************************
 
@@ -78,7 +85,7 @@
 
 ;; clock
 (defwindow powermenu-clock :stacking "fg" :focusable "false" :screen 1
-            :geometry (geometry :x 610 :y 350 :width 350 :height 155)
+            :geometry (geometry :x 440 :y 350 :width 350 :height 155)
                         (clock))
 
 ;; uptime
@@ -86,9 +93,14 @@
             :geometry (geometry :x 610 :y 520 :width 350 :height 155)
                         (uptime))
 
+;; lock
+(defwindow powermenu-lock :stacking "fg" :focusable "false" :screen 1
+	    :geometry (geometry :x 975 :y 350 :width 155 :height 155)
+					(lock))
+
 ;; logout
 (defwindow powermenu-logout :stacking "fg" :focusable "false" :screen 1
-            :geometry (geometry :x 975 :y 350 :width 155 :height 155)
+            :geometry (geometry :x 1315 :y 520 :width 155 :height 155)
                         (logout))
 
 ;; sleep
@@ -105,3 +117,7 @@
 (defwindow powermenu-poweroff :stacking "fg" :focusable "false" :screen 1
             :geometry (geometry :x 1145 :y 520 :width 155 :height 155)
                         (poweroff))
+
+(defwindow powermenu-placeholder :stacking "fg" :focusable "false" :screen 1
+	    :geometry (geometry :x 805 :y 350 :width 155 :height 155)
+					(placeholder))

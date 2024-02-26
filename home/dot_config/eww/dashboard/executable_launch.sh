@@ -13,27 +13,21 @@ if [[ "$(eww ping)" != "pong" ]]; then
 fi
 
 ## Open widgets
-run_eww() {
-	eww --config "$CFG" open-many --toggle \
-		dashboard-background \
-		dashboard-profile \
-		dashboard-system \
-		dashboard-clock \
-		dashboard-uptime \
-		dashboard-music \
-		dashboard-github \
-		dashboard-reddit \
-		dashboard-twitter \
-		dashboard-youtube \
-		dashboard-weather \
-		dashboard-apps \
-		dashboard-mail \
-		dashboard-logout \
-		dashboard-sleep \
-		dashboard-reboot \
-		dashboard-poweroff \
-		dashboard-folders
-}
-
-## Launch or close widgets accordingly
-run_eww
+eww --config "$CFG" open-many --toggle \
+	dashboard-background \
+	dashboard-profile \
+	dashboard-system \
+	dashboard-clock \
+	dashboard-uptime \
+	dashboard-music \
+	dashboard-github \
+	dashboard-youtube \
+	dashboard-weather \
+	dashboard-mail \
+	dashboard-lock \
+	dashboard-logout \
+	dashboard-sleep \
+	dashboard-reboot \
+	dashboard-poweroff \
+	dashboard-folders \
+	dashboard-placeholder

@@ -13,17 +13,14 @@ if [[ "$(eww ping)" != "pong" ]]; then
 fi
 
 ## Open widgets
-run_eww() {
-	eww --config "$CFG" open-many --toggle \
-		powermenu-background \
-		powermenu-close \
-		powermenu-clock \
-		powermenu-uptime \
-		powermenu-logout \
-		powermenu-sleep \
-		powermenu-reboot \
-		powermenu-poweroff
-}
-
-## Launch or close widgets accordingly
-run_eww
+eww --config "$CFG" open-many --toggle \
+	powermenu-background \
+	powermenu-clock \
+	powermenu-uptime \
+	powermenu-lock \
+	powermenu-logout \
+	powermenu-sleep \
+	powermenu-reboot \
+	powermenu-poweroff \
+	powermenu-placeholder
+	# powermenu-close \

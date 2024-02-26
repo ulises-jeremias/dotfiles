@@ -3,8 +3,7 @@
 /** Global *******************************************/
 * {
   all: unset;
-  font-family: feather;
-  font-family: Iosevka;
+  font-family: feather, Iosevka;
 }
 
 /** Background ***************************************/
@@ -115,14 +114,14 @@ scale trough highlight {
   color: $color11;
   font-size: 40px;
   font-weight: bold;
-  margin: 20px 20px 0px 0px;
+  margin: 20px 0px 0px 0px;
 }
 
 .time_day {
   color: $color12;
   font-size: 30px;
   font-weight: normal;
-  margin: 0px 0px 20px -30px;
+  margin: 0px 0px 20px 0px;
 }
 
 /** Uptime ********************************************/
@@ -229,46 +228,6 @@ scale trough highlight {
   font-weight: normal;
 }
 
-/** Applications ***************************************/
-.appbox {
-  margin: 15px 0px 0px 25px;
-}
-
-.app_fox,
-.app_telegram,
-.app_discord,
-.app_terminal,
-.app_files,
-.app_geany,
-.app_code,
-.app_gimp,
-.app_vbox {
-  background-repeat: no-repeat;
-  background-size: 64px;
-  min-height: 64px;
-  min-width: 64px;
-  margin: 8px 8px 0px 8px;
-}
-
-.app_fox {
-}
-.app_telegram {
-}
-.app_discord {
-}
-.app_terminal {
-}
-.app_files {
-}
-.app_geany {
-}
-.app_code {
-}
-.app_gimp {
-}
-.app_vbox {
-}
-
 /** Links ***************************************/
 .iconweb,
 .iconmail {
@@ -283,14 +242,6 @@ scale trough highlight {
 
 .github {
   background-color: #24292e;
-  border-radius: 16px;
-}
-.reddit {
-  background-color: #e46231;
-  border-radius: 16px;
-}
-.twitter {
-  background-color: #61aad6;
   border-radius: 16px;
 }
 .youtube {
@@ -308,13 +259,14 @@ scale trough highlight {
   margin: 48px 0px 48px 0px;
 }
 .label_mails {
-  color: #404040;
+  color: $color8;
   font-size: 32px;
   font-weight: bold;
   margin: 0px 12px 0px 12px;
 }
 
 /** Power buttons ***************************************/
+.btn_lock,
 .btn_logout,
 .btn_sleep,
 .btn_reboot,
@@ -323,6 +275,9 @@ scale trough highlight {
   font-weight: bold;
 }
 
+.btn_lock {
+  color: $color10;
+}
 .btn_logout {
   color: $color9;
 }
@@ -355,7 +310,6 @@ scale trough highlight {
   opacity: 1;
   font-size: 48px;
   font-weight: bold;
-  margin: 0px 0px 0px 15px;
 }
 .fs_sep {
   color: lighten($background, 7.5%);
@@ -372,7 +326,7 @@ scale trough highlight {
   font-family: Iosevka Nerd Font;
   font-size: 32px;
   font-weight: normal;
-  margin: 0px 0px 0px 75px;
+  margin: 0px 0px 0px 60px;
 }
 .iconfolder1 {
   color: $color9;

@@ -3,18 +3,22 @@
 /** Global *******************************************/
 * {
   all: unset;
-  font-family: feather;
-  font-family: Iosevka;
+  font-family: feather, Iosevka;
 }
 
 /** Background ***************************************/
 .bg {
-  background-color: $background;
-  opacity: 0.2;
+  background-image: url($wallpaper);
+  background-color: lighten($background, 10%);
+  opacity: 1;
 }
 
 /** Generic window ***********************************/
 .genwin {
+  background-color: lighten($background, 12%);
+  border-radius: 16px;
+}
+.placeholder {
   background-color: lighten($background, 12%);
   border-radius: 16px;
 }
@@ -44,14 +48,14 @@
   color: $color11;
   font-size: 40px;
   font-weight: bold;
-  margin: 20px 20px 0px 0px;
+  margin: 20px 0px 0px 0px;
 }
 
 .time_day {
   color: $color12;
   font-size: 30px;
   font-weight: normal;
-  margin: 0px 0px 20px -30px;
+  margin: 0px 0px 20px 0px;
 }
 
 /** Uptime ********************************************/
@@ -74,6 +78,7 @@
 }
 
 /** Power buttons ***************************************/
+.btn_lock,
 .btn_logout,
 .btn_sleep,
 .btn_reboot,
@@ -82,6 +87,9 @@
   font-weight: bold;
 }
 
+.btn_lock {
+  color: $color10;
+}
 .btn_logout {
   color: $color9;
 }

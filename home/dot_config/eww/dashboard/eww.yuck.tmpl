@@ -123,16 +123,6 @@
 	(box :class "github" :vexpand "false" :hexpand "false"
 		(button :class "iconweb" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://github.com" "")))
 
-;; reddit
-(defwidget reddit []
-	(box :class "reddit" :vexpand "false" :hexpand "false"
-		(button :class "iconweb" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://reddit.com" "樓")))
-
-;; twitter
-(defwidget twitter []
-	(box :class "twitter" :vexpand "false" :hexpand "false"
-		(button :class "iconweb" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://twitter.com" "")))
-
 ;; youtube
 (defwidget youtube []
 	(box :class "youtube" :vexpand "false" :hexpand "false"
@@ -158,23 +148,10 @@
 				(label :class "label_quote" :text QUOTE)
 				(label :class "label_quote" :text QUOTE2)))))
 
-;; apps
-(defwidget apps []
-	(box :class "genwin" :orientation "v" :space-evenly "false" :vexpand "false" :hexpand "false"
-		(box :class "appbox" :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :style "background-image: url('images/icons/firefox.svg');" :class "app_fox" :onclick "firefox &")
-			(button :style "background-image: url('images/icons/telegram.svg');" :class "app_telegram" :onclick "telegram-desktop &")
-			(button :style "background-image: url('images/icons/discord.svg');" :class "app_discord" :onclick "discord &"))
-		(box :class "appbox" :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :style "background-image: url('images/icons/terminal.svg');" :class "app_terminal" :onclick "alacritty --working-directory ~ &")
-			(button :style "background-image: url('images/icons/files.svg');" :class "app_files" :onclick "thunar ~")
-			(button :style "background-image: url('images/icons/geany.svg');" :class "app_geany" :onclick "geany &"))
-		(box :class "appbox" :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :style "background-image: url('images/icons/code.svg');" :class "app_code" :onclick "code &")
-			(button :style "background-image: url('images/icons/gimp.svg');" :class "app_gimp" :onclick "gimp &")
-			(button :style "background-image: url('images/icons/virtualbox.svg');" :class "app_vbox" :onclick "virtualbox &"))))
-
 ;; power buttons
+(defwidget lock []
+	(box :class "genwin" :vexpand "false" :hexpand "false"
+		(button :class "btn_lock" :onclick "~/.config/eww/dashboard/launch.sh; betterlockscreen --lock" "󰌾")))
 (defwidget logout []
 	(box :class "genwin" :vexpand "false" :hexpand "false"
 		(button :class "btn_logout" :onclick "~/.config/eww/dashboard/launch.sh; loginctl terminate-session" "")))
@@ -216,6 +193,9 @@
 			(button :class "iconfolder6" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.local" "ﮛ")
 			(button :class "label_folder6" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.local" "~/.local"))))
 
+;; placeholder items
+(defwidget placeholder []
+	(box :class "genwin" :vexpand "false" :hexpand "false"))
 
 ;; ** Windows *************************************************************************
 
@@ -255,19 +235,9 @@
 	    :geometry (geometry :x 515 :y 785 :width 141 :height 145)
 					(github))
 
-;; reddit
-(defwindow dashboard-reddit :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 671 :y 785 :width 141 :height 145)
-					(reddit))
-
-;; twitter
-(defwindow dashboard-twitter :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 827 :y 785 :width 141 :height 145)
-					(twitter))
-
 ;; youtube
 (defwindow dashboard-youtube :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 983 :y 785 :width 142 :height 145)
+	    :geometry (geometry :x 671 :y 785 :width 142 :height 145)
 					(youtube))
 
 ;; weather
@@ -275,37 +245,42 @@
 	    :geometry (geometry :x 880 :y 150 :width 550 :height 325)
 					(weather))
 
-;; apps
-(defwindow dashboard-apps :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 1140 :y 490 :width 290 :height 280)
-					(apps))
-
 ;; mail
 (defwindow dashboard-mail :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 1140 :y 785 :width 290 :height 145)
+	    :geometry (geometry :x 827 :y 785 :width 298 :height 145)
 					(mail))
+
+;; folders
+(defwindow dashboard-folders :stacking "fg" :focusable "false" :screen 1
+	    :geometry (geometry :x 1140 :y 490 :width 290 :height 438)
+					(folders))
+
+;; lock
+(defwindow dashboard-lock :stacking "fg" :focusable "false" :screen 1
+	    :geometry (geometry :x 1445 :y 150 :width 155 :height 155)
+					(lock))
 
 ;; logout
 (defwindow dashboard-logout :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 1445 :y 150 :width 155 :height 155)
+	    :geometry (geometry :x 1615 :y 150 :width 155 :height 155)
 					(logout))
 
 ;; sleep
 (defwindow dashboard-sleep :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 1615 :y 150 :width 155 :height 155)
+	    :geometry (geometry :x 1445 :y 320 :width 155 :height 155)
 					(sleep))
 
 ;; reboot
 (defwindow dashboard-reboot :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 1445 :y 320 :width 155 :height 155)
+	    :geometry (geometry :x 1615 :y 320 :width 155 :height 155)
 					(reboot))
 
 ;; poweroff
 (defwindow dashboard-poweroff :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 1615 :y 320 :width 155 :height 155)
+	    :geometry (geometry :x 1445 :y 490 :width 325 :height 155)
 					(poweroff))
 
-;; folders
-(defwindow dashboard-folders :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 1445 :y 490 :width 325 :height 440)
-					(folders))
+;; placeholder 1
+(defwindow dashboard-placeholder :stacking "fg" :focusable "false" :screen 1
+	    :geometry (geometry :x 1445 :y 660 :width 325 :height 267)
+					(placeholder))
