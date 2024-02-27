@@ -1,0 +1,25 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+sudo pacman -S --noconfirm --needed \
+  ibus \
+  ollama
+
+yay -S --noconfirm --needed \
+  ibus-autostart
+
+git clone https://github.com/apockill/shin.git --branch feature/arbitrary-commands --single-branch
+cd shin
+make
+sudo make install
+ibus restart
+
+# Pull the Mistral model
+ollama pull mistral:7b-instruct
+
+pip3 install --user --upgrade shell-gpt[litellm]
+{{      end -}}
+
+{{ end -}}

@@ -69,7 +69,10 @@ bindsym $Mod+x exec --no-startup-id ~/.config/eww/powermenu/launch.sh
 # clipboard script
 bindsym Mod1+Control+c exec --no-startup-id ~/.local/bin/dots rofi-run -c
 
-# Screenshot
+# run `ibus engine shin` to enable `sgpt` command
+bindsym $Mod+Control+space exec --no-startup-id ibus engine shin
+
+# screenshot
 bindsym Print exec --no-startup-id ~/.local/bin/dots screenshooter
 bindsym Shift+Print exec --no-startup-id ~/.local/bin/dots screenshooter -r
 
