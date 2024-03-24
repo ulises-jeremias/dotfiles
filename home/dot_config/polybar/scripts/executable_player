@@ -12,13 +12,14 @@ title="$(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {pri
 
 status_label=""
 if [ "${player_status}" = "Playing" ]; then
-  status_label="%{T5}%{F#ebcb8b}󰏥%{F}%{T-}"
+  status_label="%{F#ebcb8b}󰏥%{F}"
 elif [ "${player_status}" = "Paused" ]; then
-  status_label="%{T5}%{F#a3be8c}󰐌%{F}%{T-}"
+  status_label="%{F#a3be8c}󰐌%{F}"
 fi
 
-prev_label="%{A1:playerctl prev:}%{F#b48ead}󰒮%{F}%{A}"
-play_pause_label="%{A1:playerctl play-pause:}${status_label}%{A}"
-next_label="%{A1:playerctl next:}%{F#b48ead}󰒭%{F}%{A}"
+# Set the labels for the buttons
+prev_label="%{T3}%{A1:playerctl prev:}%{F#b48ead}󰒮%{F}%{A}%{T-}"
+play_pause_label="%{T2}%{A1:playerctl play-pause:}${status_label}%{A}%{T-}"
+next_label="%{T3}%{A1:playerctl next:}%{F#b48ead}󰒭%{F}%{A}%{T-}"
 
 echo "${prev_label} ${play_pause_label} ${next_label} %{T1}%{F#b48ead}${title}%{F}%{T-}"
