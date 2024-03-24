@@ -1,25 +1,24 @@
 #!/usr/bin/env bash
 
-player_status=$(playerctl status 2> /dev/null)
+player_status=$(playerctl status 2>/dev/null)
 
 # Early return if no player is running
 if [ -z "${player_status}" ]; then
-    echo ""
-    exit 0
+  echo ""
+  exit 0
 fi
 
 title="$(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}')"
 
 status_label=""
 if [ "${player_status}" = "Playing" ]; then
-    status_label="%{F#ebcb8b}󰏤%{F}"
-    elif [ "${player_status}" = "Paused" ]; then
-    status_label="%{F#a3be8c}󰐊%{F}"
+  status_label="%{F#ebcb8b}󰏤%{F}"
+elif [ "${player_status}" = "Paused" ]; then
+  status_label="%{F#a3be8c}󰐊%{F}"
 fi
 
 prev_label="%{A1:playerctl prev:}%{F#b48ead}󰙣%{F}%{A}"
 play_pause_label="%{A1:playerctl play-pause:}${status_label}%{A}"
 next_label="%{A1:playerctl next:}%{F#b48ead}󰙡%{F}%{A}"
-
 
 echo "${prev_label} ${play_pause_label} ${next_label}  ${title}"
