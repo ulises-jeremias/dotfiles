@@ -7,12 +7,6 @@
 # add ~/.emacs.d/bin to path if it exists and is not already in path
 [[ -d "$HOME/.emacs.d/bin" && ! "$PATH" =~ "$HOME/.emacs.d/bin" ]] && PATH="$HOME/.emacs.d/bin:$PATH"
 
-# add /usr/local/bin to LD_LIBRARY_PATH if it exists and is not already in path
-[[ -d "/usr/local/lib" && ! "$LD_LIBRARY_PATH" =~ "/usr/local/lib" ]] && LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
-
-# add /usr/lib to LD_LIBRARY_PATH if it exists and is not already in path
-[[ -d "/usr/lib" && ! "$LD_LIBRARY_PATH" =~ "/usr/lib" ]] && LD_LIBRARY_PATH="/usr/lib:$LD_LIBRARY_PATH"
-
 # add yarn global bin to path if it exists and is not already in path
 YARN_GLOBAL_BIN="$(yarn global bin)"
 [[ -d "$YARN_GLOBAL_BIN" && ! "$PATH" =~ "$YARN_GLOBAL_BIN" ]] && PATH="$YARN_GLOBAL_BIN:$PATH"

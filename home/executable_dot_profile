@@ -10,12 +10,6 @@ export QT_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export SHIN_DEFAULT_COMMAND="sgpt"
 
-# add /usr/local/bin to LD_LIBRARY_PATH if it exists and is not already in path
-[[ -d "/usr/local/lib" && ! "$LD_LIBRARY_PATH" =~ "/usr/local/lib" ]] && export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
-
-# add /usr/lib to LD_LIBRARY_PATH if it exists and is not already in path
-[[ -d "/usr/lib" && ! "$LD_LIBRARY_PATH" =~ "/usr/lib" ]] && export LD_LIBRARY_PATH="/usr/lib:$LD_LIBRARY_PATH"
-
 # add /usr/local/bin to PATH if it exists and is not already in path
 [[ -d "/usr/local/bin" && ! "$PATH" =~ "/usr/local/bin" ]] && export PATH="/usr/local/bin:$PATH"
 
