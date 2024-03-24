@@ -2,8 +2,8 @@
 
 player_status=$(playerctl status 2>/dev/null)
 
-# Early return if no player is running
-if [ -z "${player_status}" ]; then
+# Early return if status is not Playing or Paused
+if [ "${player_status}" != "Playing" ] && [ "${player_status}" != "Paused" ]; then
   echo ""
   exit 0
 fi
