@@ -12,9 +12,9 @@ title="$(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {pri
 
 status_label=""
 if [ "${player_status}" = "Playing" ]; then
-  status_label="%{F#ebcb8b}󰏥%{F}"
+  status_label="%{T5}%{F#ebcb8b}󰏥%{F}%{T-}"
 elif [ "${player_status}" = "Paused" ]; then
-  status_label="%{F#a3be8c}󰐌%{F}"
+  status_label="%{T5}%{F#a3be8c}󰐌%{F}%{T-}"
 fi
 
 prev_label="%{A1:playerctl prev:}%{F#b48ead}󰒮%{F}%{A}"
