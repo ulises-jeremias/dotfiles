@@ -259,9 +259,11 @@ smart_borders no_gaps
 # gaps
 gaps inner 12
 # gaps outer 62
-gaps outer 12
-# gaps left 12
-# gaps right 12
+# gaps outer 12
+gaps top 60
+gaps right 18
+gaps bottom 37
+gaps left 18
 
 new_window normal
 new_float  normal
