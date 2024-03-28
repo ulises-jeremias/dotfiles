@@ -18,8 +18,8 @@ elif [ "${player_status}" = "Paused" ]; then
 fi
 
 # Set the labels for the buttons
-prev_label="%{T3}%{A1:playerctl prev:}%{F#b48ead}󰒮%{F}%{A}%{T-}"
-play_pause_label="%{T2}%{A1:playerctl play-pause:}${status_label}%{A}%{T-}"
-next_label="%{T3}%{A1:playerctl next:}%{F#b48ead}󰒭%{F}%{A}%{T-}"
+prev_label="%{T4}%{A1:playerctl prev:}%{F#b48ead}󰒮%{F}%{A}%{T-}"
+play_pause_label="%{T5}%{A1:playerctl play-pause:}${status_label}%{A}%{T-}"
+next_label="%{T4}%{A1:playerctl next:}%{F#b48ead}󰒭%{F}%{A}%{T-}"
 
 echo "${prev_label} ${play_pause_label} ${next_label} %{T1}%{F#b48ead}${title}%{F}%{T-}"

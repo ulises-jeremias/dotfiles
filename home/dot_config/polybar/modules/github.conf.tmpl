@@ -26,7 +26,8 @@ format = <label>
 ; Available tokens:
 ;   %notifications% (default)
 ; Default: Notifications: %notifications%
-label = 󰊤 %notifications%
+label = %{T4}%{T-} %notifications%
+label-foreground = ${xrdb:color7}
 
 ; Used when GitHub can't be reached
 ; Available tags:
@@ -36,4 +37,5 @@ format-offline = <label-offline>
 ; Available tokens:
 ;   None
 ; Default: Offline
-label-offline = 󰊤 
+label-offline = %{T4}%{T-} -
+label-offline-foreground = ${xrdb:color7}
