@@ -3,7 +3,7 @@
 /** Global *******************************************/
 * {
   all: unset;
-  font-family: feather, Iosevka;
+  font-family: Hack Nerd Font Mono;
 }
 
 /** Background ***************************************/
@@ -12,29 +12,22 @@
   background-color: lighten($background, 10%);
   opacity: 1;
 }
-
-/** Generic window ***********************************/
-.genwin {
-  background-color: lighten($background, 12%);
-  border-radius: 16px;
-}
 .placeholder {
   background-color: lighten($background, 12%);
   border-radius: 16px;
 }
 
-/** Close button ****************************************/
-.btn_close {
-  font-size: 48px;
-  font-weight: bold;
-  color: $color13;
+/** Generic window ***********************************/
+.genwin {
+  background-color: lighten($background, 10%);
+  border-radius: 16px;
 }
 
 /** Clock ********************************************/
 .time_hour,
 .time_min {
   color: $color13;
-  font-size: 70px;
+  font-size: 65px;
   font-weight: bold;
 }
 .time_hour {
@@ -61,7 +54,7 @@
 /** Uptime ********************************************/
 .icontimer {
   color: $color1;
-  font-size: 90px;
+  font-size: 100px;
   font-weight: normal;
 }
 
@@ -83,7 +76,7 @@
 .btn_sleep,
 .btn_reboot,
 .btn_poweroff {
-  font-size: 48px;
+  font-size: 58px;
   font-weight: bold;
 }
 

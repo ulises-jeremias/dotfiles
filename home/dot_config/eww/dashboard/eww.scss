@@ -3,7 +3,7 @@
 /** Global *******************************************/
 * {
   all: unset;
-  font-family: feather, Iosevka;
+  font-family: Hack Nerd Font Mono;
 }
 
 /** Background ***************************************/
@@ -36,7 +36,7 @@
 
 .username {
   color: $color10;
-  font-size: 22px;
+  font-size: 25px;
   font-weight: bold;
   margin: -15px 0px 0px 0px;
 }
@@ -46,7 +46,7 @@
 .iconmem,
 .iconbright,
 .iconbat {
-  font-size: 32px;
+  font-size: 45px;
   font-weight: normal;
 }
 .iconcpu {
@@ -100,7 +100,7 @@ scale trough highlight {
 .time_hour,
 .time_min {
   color: $color13;
-  font-size: 70px;
+  font-size: 65px;
   font-weight: bold;
 }
 .time_hour {
@@ -127,7 +127,7 @@ scale trough highlight {
 /** Uptime ********************************************/
 .icontimer {
   color: $color1;
-  font-size: 90px;
+  font-size: 100px;
   font-weight: normal;
 }
 
@@ -169,7 +169,7 @@ scale trough highlight {
 .btn_prev,
 .btn_play,
 .btn_next {
-  font-family: Iosevka Nerd Font;
+  font-family: Hack Nerd Font Mono;
 }
 .btn_prev {
   color: $color12;
@@ -203,7 +203,7 @@ scale trough highlight {
 
 /** Weather ***************************************/
 .iconweather {
-  font-family: Iosevka Nerd Font;
+  font-family: Hack Nerd Font Mono;
   font-size: 120px;
   font-weight: normal;
   margin: 15px 0px 0px 30px;
@@ -224,7 +224,7 @@ scale trough highlight {
 
 .label_quote {
   color: $color15;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: normal;
 }
 
@@ -232,8 +232,8 @@ scale trough highlight {
 .iconweb,
 .iconmail {
   color: $color15;
-  font-family: Iosevka Nerd Font;
-  font-size: 70px;
+  font-family: Hack Nerd Font Mono;
+  font-size: 95px;
   font-weight: normal;
 }
 .iconmail {
@@ -271,7 +271,7 @@ scale trough highlight {
 .btn_sleep,
 .btn_reboot,
 .btn_poweroff {
-  font-size: 48px;
+  font-size: 58px;
   font-weight: bold;
 }
 
@@ -295,20 +295,20 @@ scale trough highlight {
 .hddbox {
   background-color: lighten($background, 7.5%);
   border-radius: 10px;
-  margin: 15px;
+  margin: 15px 15px 10px 15px;
 }
 .hddicon {
   color: #81a1c1;
-  font-family: Iosevka Nerd Font;
+  font-family: Hack Nerd Font Mono;
   opacity: 1;
-  font-size: 70px;
+  font-size: 80px;
   font-weight: normal;
-  margin: 25px 20px 25px 40px;
+  margin: 25px 20px 25px 35px;
 }
 .hdd_label {
   color: #e5e9f0;
   opacity: 1;
-  font-size: 48px;
+  font-size: 35px;
   font-weight: bold;
 }
 .fs_sep {
@@ -323,8 +323,8 @@ scale trough highlight {
 .iconfolder4,
 .iconfolder5,
 .iconfolder6 {
-  font-family: Iosevka Nerd Font;
-  font-size: 32px;
+  font-family: Hack Nerd Font Mono;
+  font-size: 35px;
   font-weight: normal;
   margin: 0px 0px 0px 60px;
 }
