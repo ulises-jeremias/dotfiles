@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-RESET=$(tput sgr0) # No color
-RED=$(tput setaf 1)
-
-reset=${RESET}
-muted_color=${RED}
-unmuted_color=${RESET}
+reset=""
+muted_color=""
+unmuted_color=""
 exec_toggle=false
 no_unmuted=false
 
