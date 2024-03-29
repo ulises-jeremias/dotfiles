@@ -256,11 +256,10 @@ for_window [class="^.*"] border pixel 2, title_format "<b alpha='1'> %class >> %
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
 smart_borders no_gaps
 
-# gaps
+# gaps: Check the script ~/.config/i3/gaps-setup.sh for more information
+# about how we handle gaps in multi-monitor setups.
 gaps inner 12
-# gaps outer 62
-# gaps outer 12
-gaps top 60
+gaps top 62
 gaps right 18
 gaps bottom 37
 gaps left 18
