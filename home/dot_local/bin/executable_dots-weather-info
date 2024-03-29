@@ -1,7 +1,29 @@
 #!/usr/bin/env bash
 
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2023 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+##     @script.name [SCRIPT_NAME] [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Show this help message.
+##         --getdata                         Get weather data.
+##         --icon                            Get weather icon.
+##         --temp                            Get weather temperature.
+##         --hex                             Get weather hex color.
+##         --stat                            Get weather status.
+##         --quote                           Get weather quote.
+##         --quote2                          Get weather quote.
+##
+
+source ~/.local/lib/easy-options/easyoptions.sh || exit
+
 ## Collect data
-cache_dir="$HOME/.cache/eww/weather"
+cache_dir="$HOME/.cache/dots/weather"
 cache_weather_stat=${cache_dir}/weather-stat
 cache_weather_degree=${cache_dir}/weather-degree
 cache_weather_quote=${cache_dir}/weather-quote
@@ -136,18 +158,18 @@ get_weather_data() {
 }
 
 ## Execute
-if [[ "$1" == "--getdata" ]]; then
+if [[ -n "$getdata" ]]; then
 	get_weather_data
-elif [[ "$1" == "--icon" ]]; then
+elif [[ -n "$icon" ]]; then
 	cat "${cache_weather_icon}"
-elif [[ "$1" == "--temp" ]]; then
+elif [[ -n "$temp" ]]; then
 	cat "${cache_weather_degree}"
-elif [[ "$1" == "--hex" ]]; then
+elif [[ -n "$hex" ]]; then
 	cat "${cache_weather_hex}"
-elif [[ "$1" == "--stat" ]]; then
+elif [[ -n "$stat" ]]; then
 	cat "${cache_weather_stat}"
-elif [[ "$1" == "--quote" ]]; then
+elif [[ -n "$quote" ]]; then
 	head -n1 <"${cache_weather_quote}"
-elif [[ "$1" == "--quote2" ]]; then
+elif [[ -n "$quote2" ]]; then
 	tail -n1 <"${cache_weather_quote}"
 fi

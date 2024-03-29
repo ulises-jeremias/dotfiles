@@ -22,4 +22,5 @@ scripts_list=(
     " sysupdate: Update the system"
     " toggle: Toggle the state of some applications"
     " updates: Check for updates"
+	"󰖔 weather-info: Get information about the weather"
 )

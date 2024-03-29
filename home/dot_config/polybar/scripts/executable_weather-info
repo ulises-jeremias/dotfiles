@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+weather_temp=$(dots-weather-info --temp)
+weather_icon=$(dots-weather-info --icon)
+
+foreground="$(xrdb -get "color7")"
+
+echo " %{F${foreground}}%{T5}$weather_icon%{T-}%{F} $weather_temp"

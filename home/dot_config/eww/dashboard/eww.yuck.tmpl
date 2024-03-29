@@ -39,12 +39,12 @@
 (defpoll TTIME :interval "1s" `scripts/music-info --ttime`)
 
 ;; Weather vars
-(defpoll ICON :interval "15m" `scripts/weather-info --icon`)
-(defpoll STAT :interval "15m" `scripts/weather-info --stat`)
-(defpoll TEMP :interval "15m" `scripts/weather-info --temp`)
-(defpoll HEX :interval "15m" `scripts/weather-info --hex`)
-(defpoll QUOTE :interval "15m" `scripts/weather-info --quote`)
-(defpoll QUOTE2 :interval "15m" `scripts/weather-info --quote2`)
+(defpoll ICON :interval "15m" `~/.local/bin/dots-weather-info --icon`)
+(defpoll STAT :interval "15m" `~/.local/bin/dots-weather-info --stat`)
+(defpoll TEMP :interval "15m" `~/.local/bin/dots-weather-info --temp`)
+(defpoll HEX :interval "15m" `~/.local/bin/dots-weather-info --hex`)
+(defpoll QUOTE :interval "15m" `~/.local/bin/dots-weather-info --quote`)
+(defpoll QUOTE2 :interval "15m" `~/.local/bin/dots-weather-info --quote2`)
 
 ;; Apps vars
 (defpoll MAILS :interval "5m" `scripts/mails`)
