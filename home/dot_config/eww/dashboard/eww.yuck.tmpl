@@ -5,6 +5,54 @@
 ;; ** Last updated by : @ulises-jeremias
 ;; **
 
+;; ** Variables ***********************************************************************
+
+;; Profile vars
+(defvar IMAGE "images/profile.jpeg")
+(defvar NAME "{{- .profile.user.name -}}")
+(defpoll UNAME :interval "5m" `whoami`)
+
+;; System vars
+(defpoll HOST :interval "5s" `hostname`)
+(defpoll CPU_USAGE :interval "1s" `scripts/sys-info --cpu`)
+(defpoll MEM_USAGE :interval "1s" `scripts/sys-info --mem`)
+(defpoll BLIGHT :interval "1s" `scripts/sys-info --blight`)
+(defpoll BATTERY :interval "5s" `scripts/sys-info --bat`)
+
+;; Time vars
+(defpoll HOUR :interval "5s" `date +\"%I\"`)
+(defpoll MIN :interval "5s" `date +\"%M\"`)
+(defpoll MER :interval "5s" `date +\"%p\"`)
+(defpoll DAY :interval "5s" `date +\"%A\"`)
+
+;; Uptime vars
+(defpoll UPHOUR :interval "5s" `uptime -p | awk '{print $2 \" \" $3}' | sed 's/,//g'`)
+(defpoll UPMIN :interval "5s" `uptime -p | awk '{print $4 \" \" $5}' | sed 's/,//g'`)
+
+;; Music vars
+(defpoll SONG :interval "1s" `scripts/music-info --song`)
+(defpoll ARTIST :interval "1s" `scripts/music-info --artist`)
+(defpoll STATUS :interval "1s" `scripts/music-info --status`)
+(defpoll CURRENT :interval "1s" `scripts/music-info --time`)
+(defpoll COVER :interval "1s" `scripts/music-info --cover`)
+(defpoll CTIME :interval "1s" `scripts/music-info --ctime`)
+(defpoll TTIME :interval "1s" `scripts/music-info --ttime`)
+
+;; Weather vars
+(defpoll ICON :interval "15m" `~/.local/bin/dots-weather-info --icon`)
+(defpoll STAT :interval "15m" `~/.local/bin/dots-weather-info --stat`)
+(defpoll TEMP :interval "15m" `~/.local/bin/dots-weather-info --temp`)
+(defpoll HEX :interval "15m" `~/.local/bin/dots-weather-info --hex`)
+(defpoll QUOTE :interval "15m" `~/.local/bin/dots-weather-info --quote`)
+(defpoll QUOTE2 :interval "15m" `~/.local/bin/dots-weather-info --quote2`)
+
+;; Apps vars
+(defpoll MAILS :interval "5m" `scripts/mails`)
+
+;; Files vars
+(defpoll FREE :interval "5s" `df -h / | awk '{print $4}' | tail -n 1 | sed 's/G/GB/'`)
+
+
 ;; ** Widgets *************************************************************************
 
 
