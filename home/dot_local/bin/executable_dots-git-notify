@@ -2,7 +2,6 @@
 
 set -eu
 
-declare SEND_NOTIFY
 # Git commit msg format defaults
 declare REPOSITORY="origin/master"
 declare FORMAT_NAME="--format=%cn"
@@ -10,23 +9,12 @@ declare FORMAT_WHEN="--format=%cr"
 declare FORMAT_SUMMARY="--format=%s"
 declare FORMAT_BODY="--format=%b"
 
-distinguish_os() {
-  # Distinguish between MacOS, Ubuntu, and another Linux
-  case "$(uname)" in
-  "Darwin") SEND_NOTIFY="osascript -e " ;;
-  "Linux") SEND_NOTIFY="notify-send " ;;
-  *) log "Only Mac and Linux platforms are supported." && exit 1 ;;
-  esac
-}
-
 log() {
   # Enable verbose logging; adds "[date]: " prefix
   if [ "${verbose}" = true ]; then
     (echo >&2 "[$(date)]: $*")
-    notify-send "[$(date)]: $*" || true
   else
     echo "$@"
-    notify-send "$@" || true
   fi
 }
 
@@ -34,7 +22,7 @@ ps_jobs() {
   # Search for current job in running processes
   local curr_comm
   curr_comm=$(ps -o command -p "$$" | grep -v COMMAND)
-  ps "$2" | grep -v "${curr_comm}" | grep "$1" | grep -v "grep $1" || true
+  ps $2 | grep -v "$curr_comm" | grep "$1" | grep -v "grep $1" || true
 }
 
 count() {
@@ -104,7 +92,7 @@ parse_cmd_args() {
       bg_count=$(count "${bg_jobs}")
       log "Running background jobs: ${bg_count}"
       if [ "${bg_count}" -gt 0 ]; then
-        ps -fp 0 | head -n 1 # print ps column names header
+        ps | head -n 1 # print ps column names header
         echo "${bg_jobs}"
       fi
       exit 0
@@ -149,7 +137,7 @@ run() {
     current_revision=$(git rev-parse "${REPOSITORY}")
 
     # if we haven't seen that one yet, then we know there's new stuff.
-    if [ ${latest_revision} != "${current_revision}" ]; then
+    if [ "${latest_revision}" != "${current_revision}" ]; then
       log "Changed! New revision: ${current_revision}"
       # mark the newest revision as seen.
       latest_revision=${current_revision}
