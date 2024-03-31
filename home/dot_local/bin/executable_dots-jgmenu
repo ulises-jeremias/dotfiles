@@ -20,6 +20,7 @@ update_color() {
 # Ensure the original configuration file exists
 if [ ! -f "$original_config_file" ]; then
     echo "Original configuration file $original_config_file does not exist."
+    notify-send "$0: Original configuration file $original_config_file does not exist."
     exit 1
 fi
 

@@ -20,6 +20,7 @@ case $action in
     ;;
   *)
     echo "Invalid action"
+    notify-send "$0: Invalid action"
     exit 1
     ;;
 esac
@@ -29,6 +30,7 @@ profile=$(i3-resurrect ls profiles | awk '{$NF=""; $1=""; print $0}' | uniq | $D
 
 if [[ -z "$profile" ]]; then
   echo "Invalid profile"
+  notify-send "$0: Invalid profile"
   exit 1
 fi
 
@@ -47,6 +49,7 @@ case $target in
     ;;
   *)
     echo "Invalid target"
+    notify-send "$0: Invalid target"
     exit 1
     ;;
 esac

@@ -23,8 +23,10 @@ log() {
   # Enable verbose logging; adds "[date]: " prefix
   if [ "${verbose}" = true ]; then
     (echo >&2 "[$(date)]: $*")
+    notify-send "[$(date)]: $*" || true
   else
     echo "$@"
+    notify-send "$@" || true
   fi
 }
 

@@ -186,18 +186,23 @@ all_outputs_configured() {
 environment_check() {
   if ! command -v cat &>/dev/null; then
     echo 'You seem to be missing coreutils. You'\''re gonna have a bad time.' >&2
+    notify-send "$0: You seem to be missing coreutils. You're gonna have a bad time." || true
     exit 255
   elif ! command -v grep &>/dev/null; then
     echo 'grep seems to be missing. You'\''re gonna have a bad time.' >&2
+    notify-send "$0: grep seems to be missing. You're gonna have a bad time." || true
     exit 255
   elif ! command -v xrandr &>/dev/null; then
     echo "Try xrandr-dmenu without xrandr, and you're gonna have a bad time." >&2
+    notify-send "$0: Try xrandr-dmenu without xrandr, and you're gonna have a bad time." || true
     exit 255
   elif ! command -v rofi &>/dev/null; then
     echo "Try xrandr-dmenu without dmenu, and you're gonna have a bad time." >&2
+    notify-send "$0: Try xrandr-dmenu without dmenu, and you're gonna have a bad time." || true
     exit 255
   elif ! xset q &>/dev/null; then
     echo 'Woah there, cowboy! You need to run this from inside X!' >&2
+    notify-send "$0: Woah there, cowboy! You need to run this from inside X!" || true
     exit 1
   fi
 }

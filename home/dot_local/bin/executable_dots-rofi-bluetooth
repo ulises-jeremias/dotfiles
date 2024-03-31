@@ -19,10 +19,13 @@
 
 if ! type -p rofi >/dev/null; then
     echo "Command not found: rofi. Please install it."
+    notify-send "$0: Command not found: rofi. Please install it."
+    exit 1
 fi
 
 if ! type -p bluetoothctl >/dev/null; then
     echo "Command not found: bluetoothctl. Please install bluetoothctl or bluez-utils (contains bluetoothctl)"
+    notify-send "$0: Command not found: bluetoothctl. Please install bluetoothctl or bluez-utils (contains bluetoothctl)"
     exit 1
 fi
 

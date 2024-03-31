@@ -33,5 +33,6 @@ if [ -n "$monitor" ]; then
   exit 0
 else
   echo "Couldn't find any monitor for the current window." >&2
+  notify-send "$0: Couldn't find any monitor for the current window."
   exit 1
 fi

@@ -33,6 +33,7 @@ backup_name=${backup_name:-"dotfiles_backup"}
 if [ -n "${register_cron}" ]; then
     if ! type -t crontab >/dev/null 2>&1; then
         echo "crontab is not installed, please install it."
+        notify-send "crontab is not installed, please install it."
         exit 1
     fi
 
