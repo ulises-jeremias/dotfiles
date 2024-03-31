@@ -31,12 +31,8 @@ EOF
 
 toggle_polybar() {
   if ((opt == 1)); then
-    if [ "$(pidof polybar | wc -l)" -ne 0 ]; then
-      pkill -9 polybar
-    else
-      ~/.config/polybar/launch.sh &
-    fi
-    exit 0
+    polybar-msg cmd toggle
+    exit $?
   fi
   on=""
   off=""
