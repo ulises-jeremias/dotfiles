@@ -56,13 +56,14 @@ CLICK OR TAP ❲☰❳ TO SHOW TABLE-OF-CONTENTS
 Most were written from scratch. Some details:
 
 - **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
-- **Panel** 🌸 [Polybar](https://polybar.github.io/) whic is a fast and easy-to-use status bar!
+- **Panel** 🌸 [Polybar](https://polybar.github.io/) which is a fast and easy-to-use status bar!
 - **Application Launcher** 🚀 [Rofi](https://github.com/davatorium/rofi) which is blazing fast!
 - **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
 - **Terminal Emulator** 🌿 [Alacritty](https://alacritty.org/) which is GPU accelerated!
 - **Shell** 🐚 [Zsh](https://zsh.org) with several post-installation tweaks!
 - **Compositor** 🍧 [Picom fork by FT-Labs](https://github.com/FT-Labs/picom) for that perfection topping with Animations!
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
+- **Widgets** 🎨 [Eww](https://github.com/elkowar/eww) with 2 different pre-backed widgets!
 - and many more!
 
 Managed with [`chezmoi`](https://chezmoi.io), a great dotfiles manager.
