@@ -34,19 +34,15 @@ ln -sf "$HOME/.cache/wal/colors.scss" "$HOME/.config/eww/powermenu/colors.scss"
 eww --config "$HOME/.config/eww/dashboard" reload
 eww --config "$HOME/.config/eww/powermenu" reload
 
-# Reload discord colors. First, check if wal-discord and beautifuldiscord are installed
+# Reload discord colors. First, check if wal-discord is installed
 if ! command -v wal-discord &> /dev/null; then
     echo "wal-discord is not installed. Please install it and try again."
     notify-send "wal-discord is not installed. Please install it and try again."
     exit 1
 fi
-if ! command -v beautifuldiscord &> /dev/null; then
-    echo "beautifuldiscord is not installed. Please install it and try again."
-    notify-send "beautifuldiscord is not installed. Please install it and try again."
-    exit 1
-fi
-wal-discord
-beautifuldiscord --css ~/.cache/wal-discord/style.css
+# Generate the style.css file at ~/.cache/wal-discord/style.css
+# and BetterDiscord theme at ~/.config/BetterDiscord/themes/wal-discord.theme.css
+wal-discord && wal-discord -t
 
 # Reload rofi colors. First, check if rofi is installed
 if ! command -v rofi &> /dev/null; then
