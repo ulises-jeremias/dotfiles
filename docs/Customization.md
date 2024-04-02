@@ -12,20 +12,4 @@ To customize the dotfiles, follow these steps:
 
 4. Run the command `chezmoi apply --source ~/.dotfiles` to apply the changes.
 
-## Examples
-
-Here are some examples of customizations made using the dotfiles:
-
-![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen.png?raw=true)
-
-![Dotfiles Anime Light Theme Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/anime.jpeg?raw=true)
-
-![Dotfiles Dark Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen-2.jpg?raw=true)
-
-![Apps finder](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-launchpad.png?raw=true)
-
-![Apps finder](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-spotlight-dark.png?raw=true)
-
-![Apps finder](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-nord-two-lines.png?raw=true)
-
 Feel free to customize and personalize your dotfiles to suit your preferences and workflow!
