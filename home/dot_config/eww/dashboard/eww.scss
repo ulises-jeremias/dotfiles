@@ -114,14 +114,14 @@ scale trough highlight {
   color: $color11;
   font-size: 40px;
   font-weight: bold;
-  margin: 20px 0px 0px -32px;
+  margin: 20px 0px 0px -35px;
 }
 
 .time_day {
   color: $color12;
-  font-size: 30px;
+  font-size: 25px;
   font-weight: normal;
-  margin: 0px 0px 20px -32px;
+  margin: 0px 0px 20px -35px;
 }
 
 /** Uptime ********************************************/
@@ -133,13 +133,13 @@ scale trough highlight {
 
 .uphour {
   color: $color2;
-  font-size: 42px;
+  font-size: 25px;
   font-weight: bold;
 }
 
 .upmin {
   color: $color2;
-  font-size: 32px;
+  font-size: 25px;
   font-weight: bold;
 }
 
