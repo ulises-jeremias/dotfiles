@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🚀 Dotfiles Generator</h1>
+  <h1>🏠 HorneroConfig - Comprehensive Dotfiles Framework</h1>
   
   [Docs](https://ulises-jeremias.github.io/dotfiles) |
   [Changelog](#) |
@@ -19,9 +19,17 @@
 You might be here looking for (Linux) rice reference or to (full?) replicate my personal
 configuration of my favorite Window Managers and several apps as well. ⛄
 
-These configuration is not only suitable for Desktop Environments but also for use in [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
+HorneroConfig is your artisanal toolkit for crafting the perfect digital workspace.
+Named after the industrious hornero bird, renowned for its skillful nest-building,
+our framework empowers you to construct a robust, functional, and personalized computing environment.
 
-This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!
+Perfectly suited for a wide array of Desktop Environments and Window Managers,
+HorneroConfig thrives across different platforms including [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
+
+Backed by the versatile [Chezmoi](https://www.chezmoi.io/), HorneroConfig stands out as a dotfiles manager
+that adapts flexibly to your needs, streamlining machine setup and ensuring consistency across devices.
+Embrace the spirit of the hornero, and let HorneroConfig transform your configurations
+into a harmonious blend of elegance and efficiency.
 
 Most were written from scratch. Some details:
 

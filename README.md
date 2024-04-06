@@ -6,7 +6,7 @@
 NEVER SKIP / IGNORE / AVOID README
 ```
 
-<h1>🔥 Dotfiles Generator</h1>
+<h1>🏠 HorneroConfig - Comprehensive Dotfiles Framework</h1>
 
 [Docs](https://ulises-jeremias.github.io/dotfiles) |
 [Changelog](#) |
@@ -34,14 +34,22 @@ NEVER SKIP / IGNORE / AVOID README
 You might be here looking for (Linux) rice reference or to (full?) replicate my personal
 configuration of my favorite Window Managers and several apps as well. ⛄
 
-These configuration is not only suitable for Desktop Environments but also for use in [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
+HorneroConfig is your artisanal toolkit for crafting the perfect digital workspace.
+Named after the industrious hornero bird, renowned for its skillful nest-building,
+our framework empowers you to construct a robust, functional, and personalized computing environment.
 
-This dotfiles are backed by [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible. It is easy to bootstrap new machines and keep multiple machines in sync. It supports any platform that is supported by Go!
+Perfectly suited for a wide array of Desktop Environments and Window Managers,
+HorneroConfig thrives across different platforms including [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
+
+Backed by the versatile [Chezmoi](https://www.chezmoi.io/), HorneroConfig stands out as a dotfiles manager
+that adapts flexibly to your needs, streamlining machine setup and ensuring consistency across devices.
+Embrace the spirit of the hornero, and let HorneroConfig transform your configurations
+into a harmonious blend of elegance and efficiency.
 
 <div align="center">
 
 ```ocaml
-CLICK OR TAP ❲☰❳ TO SHOW TABLE-OF-CONTENTS
+TAP ❲☰❳ TO NAVIGATE THE HARMONY OF CONFIGURATION
 ```
 
 </div>
@@ -89,7 +97,7 @@ This will install the dotfiles in `~/.dotfiles`.
 
 ### Using Chezmoi
 
-> This is a recommended way to install the dotfiles generator. It will install the latest stable version of the dotfiles generator using [Chezmoi](https://www.chezmoi.io/) which is a dotfiles manager that is designed to be flexible and extensible.
+> This is the recommended method to install HorneroConfig. It will set up the latest stable version of HorneroConfig on your system using [Chezmoi](https://www.chezmoi.io/), a robust and adaptable dotfiles manager. With Chezmoi, you can easily manage your configuration files across multiple machines, maintaining consistency and simplifying the setup process.
 
 ```sh
 chezmoi init --apply ulises-jeremias --source ~/.dotfiles
@@ -100,7 +108,7 @@ This will install the dotfiles in `~/.dotfiles`.
 ### From source
 
 > Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`.
-> This will install unstable versions of the dotfiles generator. You can switch to a stable version by using any existing git tag.
+> This will install unstable versions of HorneroConfig. You can switch to a stable version by using any existing git tag.
 
 ```sh
 git clone https://github.com/ulises-jeremias/dotfiles ~/.dotfiles
@@ -176,7 +184,7 @@ You can read more about this at [Privacy and Security Docs](https://ulises-jerem
 
 ## 🧪 Testing
 
-We use [Vagrant](https://www.vagrantup.com/) to test the installation of the dotfiles generator in different
+We use [Vagrant](https://www.vagrantup.com/) to test the installation of HorneroConfig in different
 Operating Systems and machine architectures.
 
 <details>

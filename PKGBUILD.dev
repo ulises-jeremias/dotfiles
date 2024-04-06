@@ -3,7 +3,7 @@
 pkgname=dots-git
 pkgver=1.2.2
 pkgrel=1
-pkgdesc="Dotfiles generator that allows quick configuration and managing of different tools and window managers in multiple OSs"
+pkgdesc="HorneroConfig - Comprehensive Dotfiles Framework"
 arch=(any)
 url="https://github.com/ulises-jeremias/dotfiles"
 license=('MIT')
