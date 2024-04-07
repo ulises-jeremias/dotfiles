@@ -12,15 +12,9 @@ if [ -z "${TERM}" ]; then
 fi
 export TERM
 
-WM=$(wmctrl -m | grep -oE 'Name: .*' | cut -d' ' -f2 | tr '[:upper:]' '[:lower:]')
+source ~/.local/lib/dots/dots-rice-config.sh
 
-if [ "${WM}" = "i3" ]; then
-  polybars=("i3-polybar-top" "i3-polybar-bottom")
-else
-  polybars=("polybar-top" "polybar-bottom")
-fi
-
-for bar in "${polybars[@]}"; do
+for bar in "${POLYBARS[@]}"; do
   polybar -r "${bar}" 2>&1 | tee -a /tmp/polybar-"${bar}".log &
   disown
 done

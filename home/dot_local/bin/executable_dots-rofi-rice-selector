@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
-DOTS_CACHE_DIR="$HOME/.cache/dots"
-[[ ! -d "$DOTS_CACHE_DIR" ]] && mkdir -p "$DOTS_CACHE_DIR"
-
-RICES_DIR="$HOME/.local/share/dots/rices"
-
-CURRENT_RICE_FILE="$RICES_DIR/.current_rice"
-[[ ! -f "$CURRENT_RICE_FILE" ]] && echo "hornero" >"$CURRENT_RICE_FILE"
+# This script defines the variables: DOTS_CACHE_DIR, RICES_DIR and CURRENT_RICE_FILE
+source "$HOME/.local/lib/dots/dots-rice-config.sh"
 
 PREVIEWS_DIR="${RICES_DIR}/${options[*]}"
 ROFI_COMMAND="rofi -dmenu -theme ~/.config/rofi/riceselector.rasi"
