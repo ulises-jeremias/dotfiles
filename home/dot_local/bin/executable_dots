@@ -32,10 +32,10 @@ fi
 
 NO_HELP=true
 NO_CHECK=true
-source ~/.local/lib/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 # Include the dots-scripts.sh file to get the list of scripts
-source ~/.local/lib/dots-scripts.sh || exit
+source ~/.local/lib/dots/dots-scripts.sh || exit
 
 script=${arguments[0]}
 

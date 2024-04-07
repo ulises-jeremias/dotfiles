@@ -20,7 +20,7 @@
 ##         --quote2                          Get weather quote.
 ##
 
-source ~/.local/lib/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 ## Collect data
 cache_dir="$HOME/.cache/dots/weather"

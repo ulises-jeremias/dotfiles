@@ -21,10 +21,10 @@ if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; the
     export PATH="${HOME}/.pyenv/shims:${PATH}"
 fi
 
-source ~/.local/lib/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 # Include the dots-scripts.sh file to get the list of scripts
-source ~/.local/lib/dots-scripts.sh || exit
+source ~/.local/lib/dots/dots-scripts.sh || exit
 
 # Function to execute the command in a terminal
 execute_command() {

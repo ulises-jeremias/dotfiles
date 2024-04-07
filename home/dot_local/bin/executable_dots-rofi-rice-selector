@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+DOTS_CACHE_DIR="$HOME/.cache/dots"
+[[ ! -d "$DOTS_CACHE_DIR" ]] && mkdir -p "$DOTS_CACHE_DIR"
+
+RICES_DIR="$HOME/.local/share/dots/rices"
+
+CURRENT_RICE_FILE="$RICES_DIR/.current_rice"
+[[ ! -f "$CURRENT_RICE_FILE" ]] && echo "hornero" >"$CURRENT_RICE_FILE"
+
+PREVIEWS_DIR="${RICES_DIR}/${options[*]}"
+ROFI_COMMAND="rofi -dmenu -theme ~/.config/rofi/riceselector.rasi"
+
+# Get monitor dimensions and scale
+monitor_res=$(xdpyinfo | awk '/dimensions/{print $2}' | cut -d 'x' -f1)
+monitor_height=$(xdpyinfo | awk '/dimensions/{print $2}' | cut -d 'x' -f2)
+monitor_scale=$(xdpyinfo | awk '/resolution/{print $2}' | cut -d 'x' -f1)
+
+# Calculate element size based on monitor resolution and scale
+element_size=$((monitor_res * 10 / monitor_scale))
+
+# Estimate the height of the mainbox (you need to adjust this based on your configuration)
+mainbox_height=500 # This value is an example. Adjust according to your setup.
+
+# Calculate vertical padding to center the mainbox
+total_vertical_space=$((monitor_height - mainbox_height))
+vertical_padding=$((total_vertical_space / 2))
+
+# If the calculated padding is negative, set it to 0
+if [ $vertical_padding -lt 0 ]; then
+    vertical_padding=0
+fi
+
+# Adjust rofi_override to include the calculated padding
+rofi_override="element-icon{size:${element_size}px;} window{padding:${vertical_padding}px 0px;}"
+
+# Check if the xorg-xdpyinfo package is installed
+if ! command -v xdpyinfo >/dev/null 2>&1; then
+    echo "Please install the xorg-xdpyinfo package to continue"
+    dunstify "Missing package" "Please install the xorg-xdpyinfo package to continue" -u critical
+    exit 1
+fi
+
+# List rices
+options=()
+index=0
+selected_index=0
+current_rice=$(<"$CURRENT_RICE_FILE")
+
+for rice_dir in "${RICES_DIR}"/*/; do
+    rice_name=$(basename "$rice_dir")
+    options+=("$rice_name")
+
+    # Check if the current rice matches the current iteration rice
+    if [[ "$current_rice" == "$rice_name" ]]; then
+        selected_index=$index
+    fi
+
+    ((index++))
+done
+
+# Show the rofi selection menu with the starting point set to the current rice and store the result in a variable.
+selected=$(printf "%s\n" "${options[@]}" | while read -r A; do echo -en "$A\x00icon\x1f${PREVIEWS_DIR}$A/preview.png\n"; done | $ROFI_COMMAND -theme-str "$rofi_override" -selected-row "$selected_index")
+
+# If a valid option was selected, write the value to the configuration file and restart BSPWM.
+[[ -n "$selected" && "$selected" != "$current_rice" ]] || exit 1
+echo "$selected" >"$CURRENT_RICE_FILE"

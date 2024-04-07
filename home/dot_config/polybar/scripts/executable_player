@@ -12,7 +12,7 @@
 ##         --title                           Show the title of the current song.
 ##
 
-source ~/.local/lib/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 player_status=$(playerctl status 2>/dev/null)
 
