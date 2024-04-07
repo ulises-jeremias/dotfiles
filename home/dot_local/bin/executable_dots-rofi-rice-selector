@@ -57,6 +57,12 @@ done
 # Show the rofi selection menu with the starting point set to the current rice and store the result in a variable.
 selected=$(printf "%s\n" "${options[@]}" | while read -r A; do echo -en "$A\x00icon\x1f${PREVIEWS_DIR}$A/preview.png\n"; done | $ROFI_COMMAND -theme-str "$rofi_override" -selected-row "$selected_index")
 
-# If a valid option was selected, write the value to the configuration file and restart BSPWM.
+# If a valid option was selected, write the value to the configuration file and apply the rice.
 [[ -n "$selected" && "$selected" != "$current_rice" ]] || exit 1
 echo "$selected" >"$CURRENT_RICE_FILE"
+
+# Apply the selected rice
+if [[ -x "${RICES_DIR}"/"$selected"/apply.sh ]]; then
+    "${RICES_DIR}"/"$selected"/apply.sh
+    exit 0
+fi
