@@ -15,6 +15,6 @@ wpg -a "$BACKGROUND_DIR"/*
 
 wpg -s city.png
 
-~/.config/polybar/launch.sh
+~/.config/polybar/launch.sh &
 
 notify-send "HorneroConfig" "Hornero rice applied successfully."

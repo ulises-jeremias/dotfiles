@@ -15,6 +15,6 @@ wpg -a "$BACKGROUND_DIR"/*
 
 wpg -s anime-girl-flowers-and-butterfly.jpg
 
-~/.config/polybar/launch.sh
+~/.config/polybar/launch.sh &
 
 notify-send "HorneroConfig" "Flowers rice applied successfully."
