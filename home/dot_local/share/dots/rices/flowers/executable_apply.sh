@@ -3,7 +3,7 @@
 RICE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BACKGROUND_DIR="$RICE_DIR/backgrounds"
 
-notify-send "HorneroConfig" "Applying Hornero rice..."
+notify-send "HorneroConfig" "Applying Flowers rice..."
 
 if ! command -v wpg &> /dev/null; then
 	echo "wpg not found. Please install wpg."
@@ -13,8 +13,8 @@ fi
 
 wpg -a "$BACKGROUND_DIR"/*
 
-wpg -s city.png
+wpg -s anime-girl-flowers-and-butterfly.jpg
 
 ~/.config/polybar/launch.sh
 
-notify-send "HorneroConfig" "Hornero rice applied successfully."
+notify-send "HorneroConfig" "Flowers rice applied successfully."
