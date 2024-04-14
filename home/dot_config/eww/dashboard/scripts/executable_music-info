@@ -7,9 +7,9 @@ COVER="/tmp/.music_cover.jpg"
 ## Get status
 get_status() {
 	if [[ $STATUS == *"Playing"* ]]; then
-		echo ""
+		echo "󰏥"
 	else
-		echo "喇"
+		echo "󰐌"
 	fi
 }
 
