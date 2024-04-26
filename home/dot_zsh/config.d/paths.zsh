@@ -33,4 +33,7 @@ PATH="$PATH:$(go env GOBIN):$(go env GOPATH)/bin"
 # Setup direnv
 eval "$(direnv hook zsh)"
 
+# Setup rbenv
+eval "$(rbenv init - zsh)"
+
 export LD_LIBRARY_PATH PATH GOPATH GOROOT
