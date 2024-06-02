@@ -16,6 +16,11 @@ if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     export PATH="$HOME/.local/bin:${PATH}"
 fi
 
+# if ~/bin is not in the PATH, add it
+if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
+    export PATH="$HOME/bin:${PATH}"
+fi
+
 # Add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
 if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
     export PATH="${HOME}/.pyenv/shims:${PATH}"

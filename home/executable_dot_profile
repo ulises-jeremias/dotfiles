@@ -16,6 +16,9 @@ export SHIN_DEFAULT_COMMAND="sgpt"
 # add ~/.local/bin to PATH if it exists and is not already in path
 [[ -d "${HOME}/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="${HOME}/.local/bin:${PATH}"
 
+# add ~/bin to PATH if it exists and is not already in path
+[[ -d "${HOME}/bin" && ":$PATH:" != *":$HOME/bin:"* ]] && export PATH="${HOME}/bin:${PATH}"
+
 # add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
 if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
     export PATH="${HOME}/.pyenv/shims:${PATH}"
