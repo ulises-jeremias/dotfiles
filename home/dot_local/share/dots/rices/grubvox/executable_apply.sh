@@ -13,7 +13,9 @@ fi
 
 wpg -a "$BACKGROUND_DIR"/*
 
-wpg -s city.png
+# Set the first wallpaper as the primary wallpaper
+first_wallpaper=$(find "$BACKGROUND_DIR" -type f | head -n 1)
+wpg -s "$first_wallpaper"
 
 ~/.config/polybar/launch.sh &
 
