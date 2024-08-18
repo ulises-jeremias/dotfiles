@@ -42,6 +42,15 @@ ln -sf "$HOME/.cache/wal/colors.scss" "$HOME/.config/eww/powermenu/colors.scss"
 eww --config "$HOME/.config/eww/dashboard" reload
 eww --config "$HOME/.config/eww/powermenu" reload
 
+# Reload betterlockscreen colors. First, check if betterlockscreen is installed
+if ! command -v betterlockscreen &> /dev/null; then
+    echo "betterlockscreen is not installed. Please install it and try again."
+    notify-send "betterlockscreen is not installed. Please install it and try again."
+    exit 1
+fi
+
+betterlockscreen -u ~/.config/wpg/.current
+
 # Reload discord colors. First, check if wal-discord is installed
 if ! command -v wal-discord &> /dev/null; then
     echo "wal-discord is not installed. Please install it and try again."
