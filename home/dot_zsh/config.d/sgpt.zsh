@@ -1,4 +1,4 @@
-# Shell-GPT integration ZSH v0.2
+# Shell-GPT integration for ZSH
 _sgpt_zsh() {
 if [[ -n "$BUFFER" ]]; then
     _sgpt_prev_cmd=$BUFFER
@@ -10,4 +10,3 @@ fi
 }
 zle -N _sgpt_zsh
 bindkey "^p" _sgpt_zsh
-# Shell-GPT integration ZSH v0.2
