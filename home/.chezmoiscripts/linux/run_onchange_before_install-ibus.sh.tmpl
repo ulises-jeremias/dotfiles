@@ -7,8 +7,15 @@ sudo pacman -S --noconfirm --needed \
   ibus
 
 yay -S --noconfirm --needed \
-  ibus-autostart \
-  shin-git
+  ibus-autostart
+
+git clone https://github.com/apockill/shin.git --single-branch --depth 1 --branch feature/arbitrary-commands /tmp/shin
+cd /tmp/shin
+make
+sudo make install
+
+# Run ibus restart if it's running
+pgrep ibus-daemon && ibus restart
 
 {{      end -}}
 

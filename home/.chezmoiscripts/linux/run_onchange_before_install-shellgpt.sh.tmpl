@@ -11,7 +11,8 @@ yay -S --noconfirm --needed \
 
 sudo systemctl enable --now ollama
 
-ollama pull llama3.1
+# ollama pull llama3.1
+ollama pull mistral:7b-instruct
 
 pipx install shell-gpt[litellm]
 {{      end -}}
