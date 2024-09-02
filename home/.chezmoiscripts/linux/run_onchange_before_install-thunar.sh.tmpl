@@ -3,6 +3,9 @@
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
+sudo pacman -S --noconfirm --needed \
+  gvfs
+
 yay -S --noconfirm --needed \
   thunar \
   thunar-archive-plugin \
@@ -17,7 +20,6 @@ yay -S --noconfirm --needed \
   binutils \
   bzip2 \
   cpio \
-  gvfs \
   lha \
   lrzip \
   lz4 \
