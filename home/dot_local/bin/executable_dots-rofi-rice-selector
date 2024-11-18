@@ -1,68 +1,119 @@
 #!/usr/bin/env bash
 
 # This script defines the variables: DOTS_CACHE_DIR, RICES_DIR and CURRENT_RICE_FILE
+# shellcheck disable=SC1091
 source "$HOME/.local/lib/dots/dots-rice-config.sh"
 
-PREVIEWS_DIR="${RICES_DIR}/${options[*]}"
+# Variables
 ROFI_COMMAND="rofi -dmenu -theme ~/.config/rofi/riceselector.rasi"
+PREVIEWS_DIR="${RICES_DIR}/${options[*]}"
 
-# Get monitor dimensions and scale
-monitor_res=$(xdpyinfo | awk '/dimensions/{print $2}' | cut -d 'x' -f1)
-monitor_height=$(xdpyinfo | awk '/dimensions/{print $2}' | cut -d 'x' -f2)
-monitor_scale=$(xdpyinfo | awk '/resolution/{print $2}' | cut -d 'x' -f1)
+# Function to check dependencies
+check_dependencies() {
+    if ! command -v xdpyinfo >/dev/null 2>&1; then
+        echo "Please install the xorg-xdpyinfo package to continue"
+        notify-send "Missing package" "Please install the xorg-xdpyinfo package to continue" -u critical
+        exit 1
+    fi
+}
 
-# Calculate element size based on monitor resolution and scale
-element_size=$((monitor_res * 10 / monitor_scale))
+# Function to calculate screen parameters
+calculate_screen_parameters() {
+    # Get monitor dimensions and scale
+    monitor_res=$(xdpyinfo | awk '/dimensions/{print $2}' | cut -d 'x' -f1)
+    monitor_height=$(xdpyinfo | awk '/dimensions/{print $2}' | cut -d 'x' -f2)
+    monitor_scale=$(xdpyinfo | awk '/resolution/{print $2}' | cut -d 'x' -f1)
 
-# Estimate the height of the mainbox (you need to adjust this based on your configuration)
-mainbox_height=500 # This value is an example. Adjust according to your setup.
-
-# Calculate vertical padding to center the mainbox
-total_vertical_space=$((monitor_height - mainbox_height))
-vertical_padding=$((total_vertical_space / 2))
-
-# If the calculated padding is negative, set it to 0
-if [ $vertical_padding -lt 0 ]; then
-    vertical_padding=0
-fi
-
-# Adjust rofi_override to include the calculated padding
-rofi_override="element-icon{size:${element_size}px;} window{padding:${vertical_padding}px 0px;}"
-
-# Check if the xorg-xdpyinfo package is installed
-if ! command -v xdpyinfo >/dev/null 2>&1; then
-    echo "Please install the xorg-xdpyinfo package to continue"
-    dunstify "Missing package" "Please install the xorg-xdpyinfo package to continue" -u critical
-    exit 1
-fi
-
-# List rices
-options=()
-index=0
-selected_index=0
-current_rice=$(<"$CURRENT_RICE_FILE")
-
-for rice_dir in "${RICES_DIR}"/*/; do
-    rice_name=$(basename "$rice_dir")
-    options+=("$rice_name")
-
-    # Check if the current rice matches the current iteration rice
-    if [[ "$current_rice" == "$rice_name" ]]; then
-        selected_index=$index
+    # Validate that monitor_scale is not zero
+    if [ -z "$monitor_scale" ] || [ "$monitor_scale" -eq 0 ]; then
+        echo "Error: Monitor scale could not be determined or is zero."
+        exit 1
     fi
 
-    ((index++))
-done
+    # Set minimum and proportional values for element size
+    element_size_min=500
+    element_size_factor=0.5 # 5% of the screen width adjusted by scale
+    element_size=$(awk "BEGIN {size=($monitor_res * $element_size_factor / $monitor_scale); if (size < $element_size_min) size=$element_size_min; print int(size)}")
 
-# Show the rofi selection menu with the starting point set to the current rice and store the result in a variable.
-selected=$(printf "%s\n" "${options[@]}" | while read -r A; do echo -en "$A\x00icon\x1f${PREVIEWS_DIR}$A/preview.png\n"; done | $ROFI_COMMAND -theme-str "$rofi_override" -selected-row "$selected_index")
+    # Adjust the mainbox height based on screen height
+    mainbox_height_factor=0.60 # 60% of the monitor height
+    mainbox_height=$(awk "BEGIN {print int($monitor_height * $mainbox_height_factor)}")
 
-# If a valid option was selected, write the value to the configuration file and apply the rice.
-[[ -n "$selected" && "$selected" != "$current_rice" ]] || exit 1
-echo "$selected" >"$CURRENT_RICE_FILE"
+    # Calculate vertical padding for top and bottom
+    total_vertical_space=$(awk "BEGIN {print $monitor_height - $mainbox_height}")
+    padding_top_factor=0.6    # 60% of the total vertical space goes to top padding
+    padding_bottom_factor=0.5 # 50% of the total vertical space goes to bottom padding
 
-# Apply the selected rice
-if [[ -x "${RICES_DIR}"/"$selected"/apply.sh ]]; then
-    "${RICES_DIR}"/"$selected"/apply.sh
-    exit 0
-fi
+    padding_top=$(awk "BEGIN {padding = $total_vertical_space * $padding_top_factor; if (padding < 0) padding = 0; print int(padding)}")
+    padding_bottom=$(awk "BEGIN {padding = $total_vertical_space * $padding_bottom_factor; if (padding < 0) padding = 0; print int(padding)}")
+
+    # Generate dynamic styles for Rofi with separate top and bottom padding
+    rofi_override="element-icon{size:${element_size}px;} window{padding:${padding_top}px 0px ${padding_bottom}px 0px;}"
+}
+
+# Function to list available rices
+list_rices() {
+    options=()
+    index=0
+    selected_index=0
+    current_rice=$(<"$CURRENT_RICE_FILE")
+
+    for rice_dir in "${RICES_DIR}"/*/; do
+        rice_name=$(basename "$rice_dir")
+        options+=("$rice_name")
+
+        if [[ "$current_rice" == "$rice_name" ]]; then
+            selected_index=$index
+        fi
+
+        ((index++))
+    done
+}
+
+# Function to show rofi menu and select rice
+select_rice() {
+    selected=$(printf "%s\n" "${options[@]}" | while read -r A; do echo -en "$A\x00icon\x1f${PREVIEWS_DIR}$A/preview.png\n"; done | $ROFI_COMMAND -theme-str "$rofi_override" -selected-row "$selected_index")
+
+    [[ -n "$selected" ]] || exit 1
+    echo "$selected" >"$CURRENT_RICE_FILE"
+}
+
+# Function to list and select a background image
+select_background_image() {
+    local backgrounds_dir="${RICES_DIR}/${selected}/backgrounds"
+    [[ -d "$backgrounds_dir" ]] || {
+        echo "No backgrounds directory found for $selected"
+        exit 1
+    }
+
+    local images=()
+    for image in "$backgrounds_dir"/*; do
+        images+=("$(basename "$image")")
+    done
+
+    selected_image=$(printf "%s\n" "${images[@]}" | while read -r A; do echo -en "$A\x00icon\x1f$backgrounds_dir/$A\n"; done | $ROFI_COMMAND -theme-str "$rofi_override")
+    [[ -n "$selected_image" ]] || exit 1
+}
+
+# Function to apply the selected rice with the chosen background
+apply_rice() {
+    if [[ -x "${RICES_DIR}"/"$selected"/apply.sh ]]; then
+        BACKGROUND_IMAGE="$selected_image" "${RICES_DIR}"/"$selected"/apply.sh
+        exit 0
+    else
+        echo "Apply script not found or not executable for $selected"
+        exit 1
+    fi
+}
+
+# Main script execution
+main() {
+    check_dependencies
+    calculate_screen_parameters
+    list_rices
+    select_rice
+    select_background_image
+    apply_rice
+}
+
+main
