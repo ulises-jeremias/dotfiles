@@ -6,7 +6,7 @@
 NEVER SKIP / IGNORE / AVOID README
 ```
 
-<h1>🏠 HorneroConfig - Comprehensive Dotfiles Framework</h1>
+<h1>🏠 HorneroConfig - Yet another Dotfiles Framework</h1>
 
 [Docs](https://ulises-jeremias.github.io/dotfiles) |
 [Changelog](#) |
