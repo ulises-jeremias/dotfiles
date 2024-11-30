@@ -21,6 +21,15 @@ fi
 # Reset the colorscheme
 (wal -R -q &> /dev/null) || exit 1
 
+# If i3 is running, reload the i3 configuration
+# TODO: Figure out a better way to reload i3 configuration
+if pgrep "i3" &> /dev/null; then
+    i3-msg reload
+    if [ -x ~/.config/i3/setup-gaps.sh ]; then
+        ~/.config/i3/setup-gaps.sh
+    fi
+fi
+
 # Reload rofi colors. First, check if rofi is installed
 if ! command -v rofi &> /dev/null; then
     echo "rofi is not installed. Please install it and try again."
