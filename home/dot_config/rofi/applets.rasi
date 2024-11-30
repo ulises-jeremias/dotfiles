@@ -59,7 +59,7 @@ inputbar {
     border-color:                @selected-normal-foreground;
     background-color:            transparent;
     text-color:                  @foreground;
-    children:                    [ "textbox-prompt-colon", "prompt"];
+    children:                    [ "textbox-prompt-colon", "prompt", "entry" ];
 }
 
 dummy {
@@ -77,6 +77,14 @@ textbox-prompt-colon {
     text-color:                  @selected-normal-foreground;
 }
 prompt {
+    enabled:                     true;
+    padding:                     14px;
+    border-radius:               12px;
+    vertical-align:              0.5;
+    background-color:            @urgent-background;
+    text-color:                  @selected-normal-foreground;
+}
+entry {
     enabled:                     true;
     padding:                     14px;
     border-radius:               12px;
