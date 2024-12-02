@@ -180,3 +180,8 @@ lines = 24
 [window.padding]
 x = 25
 y = 20
+
+[bell]
+animation = "Linear"
+duration = 0
+command = { program = "paplay", args = ["/usr/share/sounds/freedesktop/stereo/dialog-error.oga"] }

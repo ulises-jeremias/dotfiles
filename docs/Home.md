@@ -39,7 +39,7 @@ Most were written from scratch. Some details:
 - **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
 - **Terminal Emulator** 🌿 [Alacritty](https://alacritty.org/) which is GPU accelerated!
 - **Shell** 🐚 [Zsh](https://zsh.org) with several post-installation tweaks!
-- **Compositor** 🍧 [Picom fork by FT-Labs](https://github.com/FT-Labs/picom) for that perfection topping with Animations!
+- **Compositor** 🍧 [Picom](https://github.com/yshui/picom) for that perfection topping with Animations!
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - **Widgets** 🎨 [Eww](https://github.com/elkowar/eww) with 2 different pre-backed widgets!
 - and many more!
