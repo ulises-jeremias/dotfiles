@@ -35,9 +35,9 @@ source ~/.local/lib/dots/dots-scripts.sh || exit
 execute_command() {
     local script_name
     script_name=$(echo "$1" | cut -d ' ' -f 2 | cut -d ':' -f 1)
-    local command="alacritty --hold -e echo \"dots $script_name\""
+    local command="kitty --hold -e echo \"dots $script_name\""
 
-    # Open alacritty with the command
+    # Open kitty with the command
     eval "$command"
 }
 

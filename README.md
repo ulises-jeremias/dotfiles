@@ -67,7 +67,7 @@ Most were written from scratch. Some details:
 - **Panel** 🌸 [Polybar](https://polybar.github.io/) which is a fast and easy-to-use status bar!
 - **Application Launcher** 🚀 [Rofi](https://github.com/davatorium/rofi) which is blazing fast!
 - **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
-- **Terminal Emulator** 🌿 [Alacritty](https://alacritty.org/) which is GPU accelerated!
+- **Terminal Emulator** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/) The fast, feature-rich, GPU based terminal emulator!
 - **Shell** 🐚 [Zsh](https://zsh.org) with several post-installation tweaks!
 - **Compositor** 🍧 [Picom](https://github.com/yshui/picom) for that perfection topping with Animations!
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!

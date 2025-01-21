@@ -9,7 +9,7 @@
     - [Openbox](Openbox)
       - [Openbox Configuration](Openbox#openbox-configuration)
   - 🖌️ Misc Customization
-    - [Alacritty](Alacritty)
+    - [Kitty](Kitty)
     - [Apps Launcher](./Rofi:-Apps-Launcher)
     - [Network Manager](Network-Manager)
     - [Polybar](Polybar)

@@ -103,7 +103,7 @@
   </menu>
   <menu id="0.954981522460685" label="System">
     <item label="Add/Remove Software"><action name="Execute"><command><![CDATA[pamac-manager]]></command></action></item>
-    <item label="Alacritty"><action name="Execute"><command><![CDATA[alacritty]]></command></action></item>
+    <item label="Kitty"><action name="Execute"><command><![CDATA[kitty]]></command></action></item>
     <item label="Avahi Zeroconf Browser"><action name="Execute"><command><![CDATA[/usr/bin/avahi-discover]]></command></action></item>
     <item label="GParted"><action name="Execute"><command><![CDATA[/usr/bin/gparted]]></command></action></item>
     <item label="Hardware Locality lstopo"><action name="Execute"><command><![CDATA[lstopo]]></command></action></item>
