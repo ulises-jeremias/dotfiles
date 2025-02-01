@@ -4,14 +4,25 @@
 #!/usr/bin/env bash
 
 sudo pacman -S --noconfirm --needed \
-  gvfs
-
-yay -S --noconfirm --needed \
+  ffmpegthumbnailer \
+  gvfs \
+  gvfs-smb \
+  gvfs-mtp \
+  sshfs \
+  libgsf \
   thunar \
   thunar-archive-plugin \
   thunar-media-tags-plugin \
   thunar-volman \
-  xarchiver
+  tumbler \
+  xarchiver \
+  webp-pixbuf-loader
+
+yay -S --noconfirm --needed \
+  raw-thumbnailer \
+  tumbler-extra-thumbnailers \
+  tumbler-folder-thumbnailer \
+  tumbler-stl-thumbnailer
 
 # install xarchiver and its dependencies
 yay -S --noconfirm --needed \
