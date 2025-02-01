@@ -1,0 +1,7 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<channel name="thunar-volman" version="1.0">
+  <property name="automount-drives" type="empty">
+    <property name="enabled" type="bool" value="false"/>
+  </property>
+</channel>

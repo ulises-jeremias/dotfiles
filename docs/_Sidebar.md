@@ -15,7 +15,6 @@
     - [Polybar](Polybar)
       - [Parameters](Polybar#parameters)
       - Available polybar modules
-        - [alsa](./Polybar-Modules:-alsa)
         - [backlight](./Polybar-Modules:-backlight)
         - [battery](./Polybar-Modules:-battery)
         - [bluetooth](./Polybar-Modules:-bluetooth)
@@ -27,7 +26,7 @@
         - [microphone](./Polybar-Modules:-microphone)
         - [network](./Polybar-Modules:-network)
         - [nightmode](./Polybar-Modules:-nightmode)
-        - [pulseaudio](./Polybar-Modules:-pulseaudio)
+        - [pipewire](./Polybar-Modules:-pipewire)
         - [spotify](./Polybar-Modules:-spotify)
         - [temperature](./Polybar-Modules:-temperature)
     - [Zsh](Zsh)

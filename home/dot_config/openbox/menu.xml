@@ -43,7 +43,7 @@
   </menu>
   <menu id="0.109037752391561" label="Multimedia">
     <item label="Peek"><action name="Execute"><command><![CDATA[peek]]></command></action></item>
-    <item label="PulseAudio Volume Control"><action name="Execute"><command><![CDATA[pavucontrol]]></command></action></item>
+    <item label="PipeWire Volume Control"><action name="Execute"><command><![CDATA[pwvucontrol]]></command></action></item>
     <item label="Qt V4L2 test Utility"><action name="Execute"><command><![CDATA[qv4l2]]></command></action></item>
     <item label="Qt V4L2 video capture utility"><action name="Execute"><command><![CDATA[qvidcap]]></command></action></item>
     <item label="SimpleScreenRecorder"><action name="Execute"><command><![CDATA[simplescreenrecorder --logfile]]></command></action></item>
@@ -90,7 +90,7 @@
     <item label="Openbox Configuration Manager"><action name="Execute"><command><![CDATA[obconf]]></command></action></item>
     <item label="Panel"><action name="Execute"><command><![CDATA[xfce4-panel --preferences]]></command></action></item>
     <item label="Power Manager"><action name="Execute"><command><![CDATA[xfce4-power-manager-settings]]></command></action></item>
-    <item label="PulseAudio Volume Control"><action name="Execute"><command><![CDATA[pavucontrol]]></command></action></item>
+    <item label="PipeWire Volume Control"><action name="Execute"><command><![CDATA[pwvucontrol]]></command></action></item>
     <item label="Removable Drives and Media"><action name="Execute"><command><![CDATA[thunar-volman-settings]]></command></action></item>
     <item label="Session and Startup"><action name="Execute"><command><![CDATA[xfce4-session-settings]]></command></action></item>
     <item label="Settings Editor"><action name="Execute"><command><![CDATA[xfce4-settings-editor]]></command></action></item>

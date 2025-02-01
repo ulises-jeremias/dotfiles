@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.1" encoding="UTF-8"?>
 
 <channel name="xfce4-notifyd" version="1.0">
   <property name="applications" type="empty">
     <property name="known_applications" type="array">
+      <value type="string" value="blueman"/>
+      <value type="string" value="brave-browser"/>
       <value type="string" value="chromium"/>
       <value type="string" value="discord"/>
       <value type="string" value="Firefox"/>
@@ -11,7 +13,10 @@
       <value type="string" value="nm-applet"/>
       <value type="string" value="notify-send"/>
       <value type="string" value="org.freedesktop.network-manager-applet"/>
+      <value type="string" value="org.manjaro.pamac.tray"/>
       <value type="string" value="Package Manager"/>
+      <value type="string" value="Slack"/>
+      <value type="string" value="teams"/>
       <value type="string" value="Terminal"/>
       <value type="string" value="Thunar"/>
       <value type="string" value="Update Manager"/>

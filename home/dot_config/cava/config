@@ -76,11 +76,11 @@
 # For oss 'source' will be the path to a audio device, e.g. '/dev/dsp2'. Default: '/dev/dsp', i.e. the default audio device.
 # README.md contains further information on how to setup CAVA for OSS on FreeBSD.
 #
-method = pulse
-source = auto
-
-; method = pipewire
+; method = pulse
 ; source = auto
+
+method = pipewire
+source = auto
 
 ; method = alsa
 ; source = hw:Loopback,1
