@@ -21,7 +21,13 @@ EOF
 }
 
 parse_cmd_args() {
-  opts=$(getopt --longoptions "toggle,help,no-unmuted,muted-color:,unmuted-color:" --name "$(basename "$0")" --options "th" -- "$@")
+  opts=$(
+    getopt \
+      --longoptions "toggle,help,no-unmuted,muted-color:,unmuted-color:" \
+      --name "$(basename "$0")" \
+      --options "th" \
+      -- "$@"
+  )
   eval set -- "${opts}"
 
   while [[ $# -gt 0 ]]; do
@@ -62,11 +68,6 @@ get_default_source() {
 
 status() {
   DEFAULT_SOURCE=$(get_default_source)
-  if [ -z "$DEFAULT_SOURCE" ]; then
-    echo "No default microphone found."
-    exit 1
-  fi
-
   MUTED=$(wpctl get-volume "$DEFAULT_SOURCE" | grep -oE '\[MUTED\]')
   if [[ -n "$MUTED" ]]; then
     echo -e "${muted_color}${reset}" # Muted icon
@@ -86,11 +87,6 @@ listen() {
 
 toggle() {
   DEFAULT_SOURCE=$(get_default_source)
-  if [ -z "$DEFAULT_SOURCE" ]; then
-    echo "No default microphone found."
-    exit 1
-  fi
-
   wpctl set-mute "$DEFAULT_SOURCE" toggle
 }
 
