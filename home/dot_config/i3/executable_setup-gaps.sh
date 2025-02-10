@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Identify the primary monitor
 primary_monitor=$(xrandr --query | grep " primary" | cut -d' ' -f1)
 
