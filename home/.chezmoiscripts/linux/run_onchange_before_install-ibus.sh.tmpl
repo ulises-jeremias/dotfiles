@@ -15,7 +15,9 @@ make
 sudo make install
 
 # Run ibus restart if it's running
-pgrep ibus-daemon && ibus restart
+if pgrep -x ibus-daemon > /dev/null; then
+  ibus restart
+fi
 
 {{      end -}}
 
