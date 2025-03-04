@@ -68,7 +68,7 @@ get_default_source() {
 
 status() {
   DEFAULT_SOURCE=$(get_default_source)
-  MUTED=$(wpctl get-volume "$DEFAULT_SOURCE" | grep -oE '\[MUTED\]')
+  MUTED=$(wpctl get-volume "$DEFAULT_SOURCE" 2>/dev/null | grep -oE '\[MUTED\]')
   if [[ -n "$MUTED" ]]; then
     echo -e "${muted_color}${reset}" # Muted icon
   else
