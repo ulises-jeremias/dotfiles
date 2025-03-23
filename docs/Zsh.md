@@ -1,100 +1,136 @@
-💡 **Introduction**
+# 🌀 Zsh Configuration Guide
 
-Zsh, or Z Shell, is a powerful and feature-rich shell that provides an enhanced command-line experience. It offers a wide range of interactive features, extensive customization options, and advanced scripting capabilities. In our dotfiles setup, we have chosen to use Zsh as the default shell due to its numerous advantages over other shells like Bash or Fish.
+Zsh (Z Shell) is a powerful, interactive shell that offers advanced features, extensive customization, and a vibrant ecosystem of plugins and themes.
 
-🚀 **Improved User Experience**
+> [!TIP]
+> Everything in this setup is fully customizable. From themes, prompts, plugins, to aliases and functions — you’re in control. All configuration lives in your dotfiles and is managed through chezmoi.
 
-Zsh provides advanced features that enhance productivity and convenience. With features like advanced tab completion, spelling correction, history search, and powerful globbing capabilities, working with the command line becomes easier and faster.
+---
 
-🔧 **Customization Options**
+## ⚙️ Configuration Files Location
 
-Zsh is highly customizable, allowing you to personalize your shell environment. You can define custom functions, aliases, and keybindings to streamline your workflow. Additionally, Zsh offers a wide range of prompt themes and plugins to enhance your shell experience, making it adaptable to your preferences and needs.
+Zsh is configured using a modular structure inside:
 
-💡 **Advanced Scripting Support**
+```sh
+~/.zsh/config.d/
+```
 
-Zsh offers a powerful scripting language with additional features compared to other shells. It supports advanced control structures, associative arrays, and regular expressions, making it an excellent choice for scripting complex tasks. Zsh's scripting capabilities enable you to write efficient and robust scripts.
+Every `.zsh` file inside this folder is automatically sourced on shell startup.
 
-🔋 **Extensive Plugin Ecosystem**
+To edit files using chezmoi:
 
-Zsh has a vibrant community that has developed numerous plugins and extensions to extend its functionality. You can easily enhance your Zsh environment with plugins for syntax highlighting, auto-suggestions, Git integration, and more. These plugins greatly improve productivity and make working in the shell more enjoyable.
+```sh
+chezmoi edit ~/.zsh/config.d/yourfile.zsh --source ~/.dotfiles
+```
 
-🔗 **Seamless Compatibility**
+Apply changes with:
 
-Zsh is fully compatible with most shell scripts written for Bash. You can run your existing Bash scripts without any modifications in Zsh, ensuring a smooth transition. Additionally, Zsh provides better handling of corner cases and edge scenarios, making it a reliable choice for shell scripting.
+```sh
+chezmoi apply
+```
 
-## Customizing Zsh!
+> [!TIP]
+> Use separate files for aliases, plugins, and theme settings for better organization.
 
-Any file in your `~/.zsh/config.d` directory ending with `.zsh` will automatically be sourced when you open a shell. You can use this to add additional aliases, functions, and more.
+---
 
-<details>
-<summary><strong>Zsh + Antigen</strong></summary>
+## 🔧 What You Can Customize
 
-[Antigen](https://github.com/zsh-users/antigen) is a small set of functions that help you easily manage your shell (Zsh) plugins, called bundles. It is similar to bundles in a typical vim+pathogen setup.
+- **Prompt themes** (e.g., Powerlevel10k)
+- **Plugin managers** (e.g., Antigen, Oh My Zsh)
+- **Aliases and shell functions**
+- **Autocompletion and syntax highlighting**
+- **Environment variables**
 
-To add Antigen as your plugin manager, execute the following command to download the latest stable version of Antigen into your home directory (check the [installation](https://github.com/zsh-users/antigen#installation) steps for more details):
+---
+
+## 🎨 Prompt Themes
+
+### Powerlevel10k
+
+To use [Powerlevel10k](https://github.com/romkatv/powerlevel10k):
+
+1. Install the theme
+2. Create a config file:
+
+```sh
+chezmoi edit ~/.zsh/config.d/p10k.zsh
+```
+
+```zsh
+source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+[ ! -f ~/.p10k.zsh ] || source ~/.p10k.zsh
+```
+
+Run `p10k configure` to customize your prompt interactively.
+
+---
+
+## 🔌 Plugin Managers
+
+### Antigen
+
+[Antigen](https://github.com/zsh-users/antigen) allows you to load and manage plugins easily:
 
 ```sh
 curl -L git.io/antigen > ~/.antigen.zsh
 ```
 
-Then, create the file `~/.zsh/config.d/antigen.zsh` with the following content:
-
-```sh
-source "${HOME}"/.antigen.zsh
-
+```zsh
+# ~/.zsh/config.d/antigen.zsh
+source "$HOME/.antigen.zsh"
 antigen apply
 ```
 
-This file will be automatically sourced.
+### Oh My Zsh
 
-</details>
-
-<details>
-<summary><strong>Zsh + Power Level 10k</strong></summary>
-
-You can use [Power Level 10k](https://github.com/romkatv/powerlevel10k) as your Zsh theme by installing it and creating a custom file, e.g., `~/.zsh/config.d/p10k.zsh`, with the following content:
+Install with:
 
 ```sh
-# Source Power Level 10k 💡
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-# 💡
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[ ! -f ~/.p10k.zsh ] || source ~/.p10k.zsh
-```
-
-This file will be automatically sourced.
-
-</details>
-
-<details>
-<summary><strong>Zsh + Oh My Zsh</strong></summary>
-
-To customize your dotfiles setup to use Oh My Zsh, you can follow these steps:
-
-1. Install Oh My Zsh by running the following command in your terminal:
-
-```shell
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
-2. Once Oh My Zsh is installed, you can create a custom file, e.g., `~/.zsh/config.d/oh-my-zsh.zsh`, with the following content:
+Configure in:
 
-```shell
-# Load Oh My Zsh
+```zsh
+# ~/.zsh/config.d/oh-my-zsh.zsh
 export ZSH="/your/oh-my-zsh/path"
-
 source "$ZSH/oh-my-zsh.sh"
 ```
 
-Make sure to replace `/your/oh-my-zsh/path` with the actual path to your Oh My Zsh installation directory.
+---
 
-3. Additionally, you can customize your Oh My Zsh configuration by creating or modifying the `.zshrc` file in your home directory. This file will be automatically sourced when you open a shell.
+## 📁 Structure and Recommendations
 
-4. Restart your terminal or open a new shell session to apply the changes. Oh My Zsh should now be active, and your customizations will take effect.
+We recommend keeping your customizations modular:
 
-With these steps, you can easily integrate Oh My Zsh into your dotfiles setup and take advantage of its powerful features and community-driven plugins and themes.
+- `aliases.zsh`: command shortcuts
+- `functions.zsh`: reusable shell functions
+- `theme.zsh`: your theme settings
+- `plugins.zsh`: plugin manager logic
 
-Feel free to explore the Oh My Zsh documentation and customize your shell experience to suit your needs and preferences. Happy customizing! ✨🚀
+This keeps your configuration clean and easy to maintain.
 
-</details>
+---
+
+## 🧪 Testing Changes
+
+After editing your configuration:
+
+```sh
+source ~/.zshrc
+```
+
+Or simply open a new terminal tab/session.
+
+> [!TIP]
+> Use `zsh -x` to debug issues during shell startup.
+
+---
+
+## 🆘 Need Help?
+
+- [Zsh Documentation](https://zsh.sourceforge.io/Doc/Release/)
+- [Dotfiles Discussions](https://github.com/ulises-jeremias/dotfiles/discussions)
+
+Zsh is not just a shell — it’s a productivity tool. Customize it to reflect your style and workflow! ⚡

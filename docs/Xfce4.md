@@ -1,44 +1,95 @@
-XFCE4 is a versatile and lightweight desktop environment that comes with a set of default configurations. In the dotfiles installation, XFCE4 configurations are located at `~/.config/xfce4`. These configurations are backed by XFCE4 components, which means that any customization you apply to XFCE4 will be applied globally to all the installed dotfiles.
+# 🖥️ XFCE4 Configuration Guide
 
-Remember to run `chezmoi apply --source ~/.dotfiles` after making any changes to the configuration files to ensure that the customizations are applied.
+XFCE4 is a **versatile**, **lightweight**, and **fully customizable** desktop environment. It comes with a set of default configurations and strikes a great balance between performance and functionality. With the dotfiles installation, all your XFCE4 customizations are versioned and managed through chezmoi.
 
-## Global Configurations
+> [!TIP]
+> Everything in this setup is customizable — from themes and panels to keyboard shortcuts and power settings. You can use the Settings Manager or modify files directly.
 
-The installed dotfiles are backed by some XFCE4 components, which means that any customization you apply to XFCE4 will be applied globally to all the installed dotfiles. This allows you to have consistent configurations across different window managers.
+---
 
-## Using XFCE4 Settings Manager
+## 🗂️ Configuration Files Location
 
-To customize XFCE4 configurations, you can use the XFCE4 Settings Manager (`xfce4-settings-manager`). This utility provides a graphical interface for modifying various aspects of the XFCE4 desktop environment.
+Your XFCE4 configuration files are stored at:
 
-Here's how you can access the XFCE4 Settings Manager:
+```sh
+~/.config/xfce4
+```
 
-1. Open the application menu by clicking on the menu icon in the panel or by pressing the Super key.
-2. Search for "Settings Manager" and click on it to open the manager.
+These files are backed by XFCE4 components and apply **globally** across all the installed dotfiles and any window manager you use.
 
-![Jgmenu](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/settings-manager-open.gif?raw=true)
+To make edits via chezmoi:
 
-The XFCE4 Settings Manager window will open, providing a range of options for customization.
+```sh
+chezmoi edit ~/.config/xfce4 --source ~/.dotfiles
+```
 
-![settings](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/settings.jpg?raw=true)
+Apply your changes with:
 
-In the XFCE4 Settings Manager, you can customize various settings, including:
+```sh
+chezmoi apply
+```
+
+> [!TIP]
+> Use `chezmoi diff` to preview changes before applying.
+
+---
+
+## 🌍 Global Configurations
+
+All changes to XFCE4 will reflect globally across any window manager integrated in your dotfiles setup (such as Openbox or i3). This allows for a consistent and seamless experience across sessions.
+
+---
+
+## 🛠️ Using XFCE4 Settings Manager
+
+You can visually manage most XFCE4 settings through the built-in **XFCE4 Settings Manager** (`xfce4-settings-manager`).
+
+### How to Launch
+
+1. Open the application menu (click the icon in the panel or press the Super key)
+2. Search for **"Settings Manager"** and click to open
+
+![Settings Manager](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/settings-manager-open.gif?raw=true)
+
+Once opened, you'll see options like:
 
 - Keyboard shortcuts
 - Mouse and touchpad settings
-- Default applications, such as the browser, terminal emulator, and file manager
+- Default applications (browser, terminal, file manager, etc.)
 - Power manager settings
-- Appearance settings, and more
+- Appearance (themes, icons, fonts)
 
-By making changes in the XFCE4 Settings Manager, you can modify the common configuration for all the installed dotfiles, ensuring a consistent experience across different window managers.
+![Settings](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/settings.jpg?raw=true)
 
-## Customization Freedom
+Any changes here are written to the configuration files managed by chezmoi and apply globally to all dotfiles.
 
-Feel free to explore the XFCE4 Settings Manager and tweak the configurations to suit your preferences. You have the flexibility to customize XFCE4 and make it align with your workflow and visual style.
+---
 
-Remember, any changes you make in the XFCE4 Settings Manager will be applied globally to all the installed dotfiles, providing a unified experience across your window managers.
+## 🔧 What You Can Customize
 
-In case you want to customize anything related to XFCE4 or any other tool in general, the dotfiles installation provides the flexibility to modify the configurations according to your needs.
+- **Panel layout and plugins**
+- **Autostart applications**
+- **Desktop background and display settings**
+- **Keybindings and workspace navigation**
+- **Compositor settings** (like transparency and shadows)
 
-📝 Note: If you encounter any issues or need further assistance with XFCE4 customization, please refer to the dotfiles documentation or seek help from the dotfiles community.
+Make changes either through the GUI or directly by editing files in `~/.config/xfce4`.
 
-Enjoy customizing XFCE4 and make it your own!
+> 🧠 Don’t forget to apply changes with `chezmoi apply`.
+
+---
+
+## 🧪 Tips & Tricks
+
+- Use `picom` for smooth compositing and transparency
+- Combine XFCE4 with tools like `Polybar`, `Rofi`, and `Zsh` for a more powerful environment
+- Replace `xfce4-terminal` with `kitty` or `alacritty` for improved terminal performance
+
+---
+
+## 🆘 Need Help?
+
+- [XFCE Wiki](https://wiki.xfce.org/)
+- [Dotfiles Discussions](https://github.com/ulises-jeremias/dotfiles/discussions)
+
+XFCE4 offers the stability of a traditional desktop with the flexibility of modern customization. Explore, tweak, and make it your own! 🎨

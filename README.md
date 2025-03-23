@@ -84,7 +84,8 @@ You can use a [convenient script](./scripts/install_dotfiles.sh) to install the 
 sh -c "$(wget -qO- "https://github.com/ulises-jeremias/dotfiles/blob/master/scripts/install_dotfiles.sh?raw=true")"
 ```
 
-> 💡 We use `wget` here because it comes preinstalled with most Linux distributions. But you can also use `curl`:
+> [!TIP]
+> We use `wget` here because it comes preinstalled with most Linux distributions. But you can also use `curl`:
 >
 > ```bash
 > sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/master/scripts/install_dotfiles.sh?raw=true")"

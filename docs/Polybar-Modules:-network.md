@@ -1,19 +1,46 @@
-# Network Connection Module
+# 🌐 Polybar Module: Network Connection
 
-The Network Connection module displays an icon representing the current network connection status. By default, a left click on the icon will invoke the `networkmanager-dmenu` utility, which provides a menu for managing network connections.
+The **Network Connection module** displays the current state of your network and gives you quick access to manage connections via a simple menu interface.
 
-## Usage
+> [!TIP]
+> Built for convenience — view your connection status and switch networks with just one click.
 
-The Network Connection module allows you to quickly view the status of your network connection and easily access network management options.
+---
 
-## Icon
+## 📶 Functionality
 
-The Network Connection module uses an icon to represent the network connection status. The appearance of the icon may vary depending on the state of the network connection (e.g., connected, disconnected, etc.).
+- **Status Indicator**: Shows an icon reflecting the current network state (e.g., connected, disconnected)
+- **Left-click**: Opens `networkmanager-dmenu` — a minimal and efficient menu to manage available connections
 
-## Interaction
+---
 
-The Network Connection module supports the following interaction:
+## ⚙️ Configuration Example
 
-- **Left Click**: Invokes `networkmanager-dmenu`, a utility that provides a menu for managing network connections. You can use this menu to perform actions such as connecting to a network, disconnecting from a network, or configuring network settings.
+```ini
+[module/network]
+type = custom/script
+exec = dots check-network
+click-left = networkmanager_dmenu
+interval = 5
+```
 
-Feel free to customize the Network Connection module according to your preferences and integrate it into your Polybar setup.
+> 🧠 The `dots check-network` script prints a visual indicator (icon or label) depending on your connection status.
+
+---
+
+## ✅ Requirements
+
+- [networkmanager-dmenu](https://github.com/firecat53/networkmanager-dmenu) installed
+- `dots check-network` script (part of the dotfiles)
+- NetworkManager service running and managing your network connections
+
+---
+
+## 🎨 Customization Tips
+
+- Adjust the icon output in the `dots check-network` script to match your style or status bar theme
+- You can replace `networkmanager_dmenu` with any other script or launcher (like `nm-connection-editor` or `nmtui`)
+
+---
+
+A lightweight, intuitive way to manage your connection status — always a click away! 📡

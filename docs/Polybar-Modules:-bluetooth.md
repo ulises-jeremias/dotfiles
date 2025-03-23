@@ -1,30 +1,65 @@
-# Rofi Bluetooth Module
+# 📶 Polybar Module: Rofi Bluetooth
 
-The Rofi Bluetooth module is a custom module created around the [`internal/script`](https://github.com/polybar/polybar/wiki/Module:-script) module. It provides functionality to display the state of the Bluetooth connection and allows you to easily control the Bluetooth settings.
+The **Rofi Bluetooth module** is a custom implementation built on top of the [`internal/script`](https://github.com/polybar/polybar/wiki/Module:-script) module. It provides real-time display of your Bluetooth status and offers a clean Rofi-powered interface for managing devices.
 
-This module shows the state of the bluetooth. It uses the script `dots rofi-bluetooth` to get the state and listen for changes.
+> [!TIP]
+> This module integrates seamlessly with the `dots rofi-bluetooth` script and updates dynamically based on your Bluetooth state.
+
+---
+
+## 🔧 How It Works
+
+The module executes:
 
 ```sh
 dots rofi-bluetooth --status | cut -d " " -f 1
 ```
 
-You can customize the appearance and behavior of the Rofi Bluetooth module by modifying its configuration options. Refer to the [Polybar documentation](https://github.com/polybar/polybar/wiki/Module:-script) for a comprehensive list of configuration options that you can use to customize the module.
+This prints the current Bluetooth state (e.g., `ON` or `OFF`) and updates as the state changes.
 
-## Functionality
+---
 
-The Rofi Bluetooth module offers the following functionality:
+## 📦 Features
 
-- Bluetooth State: It shows the current state of the Bluetooth connection, indicating whether it is turned on or off.
-- State Changes: The module listens for changes in the Bluetooth state and updates the displayed state accordingly.
+- **Bluetooth Status**: Displays whether Bluetooth is currently enabled or disabled
+- **Live Updates**: Automatically listens for state changes
+- **Rofi UI**: Launches a Rofi menu to enable/disable Bluetooth and manage paired devices
 
-## Rofi Bluetooth UI
+---
 
-The Rofi Bluetooth module provides an intuitive and interactive UI powered by Rofi, which allows you to control the Bluetooth settings easily. Here's a demonstration of the Rofi Bluetooth module in action:
+## 🖥️ Example Screenshot
+
+Here’s how the Rofi Bluetooth UI looks in action:
 
 ![Rofi Bluetooth](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/rofi-bluetooth.gif?raw=true)
 
-You can use this UI to enable or disable Bluetooth, connect to available devices, and perform other Bluetooth-related actions.
+> [!TIP]
+> You can assign a click action in Polybar to trigger the Rofi UI using `dots rofi-bluetooth`.
 
-Ensure that you have the necessary dependencies and configuration settings in place to use the Rofi Bluetooth module effectively.
+---
 
-Enjoy controlling your Bluetooth settings with the Rofi Bluetooth module in your Polybar configuration!
+## ⚙️ Configuration Tips
+
+This module uses `type = custom/script` in Polybar. Example snippet:
+
+```ini
+[module/rofi-bluetooth]
+type = custom/script
+exec = dots rofi-bluetooth --status | cut -d ' ' -f 1
+click-left = dots rofi-bluetooth
+interval = 5
+```
+
+Refer to the [Polybar script module documentation](https://github.com/polybar/polybar/wiki/Module:-script) for all available options.
+
+---
+
+## ✅ Requirements
+
+- `bluetoothctl` or BlueZ installed and active
+- Rofi installed and configured
+- `dots rofi-bluetooth` script available in your path (included with this dotfiles setup)
+
+---
+
+Control your Bluetooth with style and speed — all from your Polybar. 🔵📡

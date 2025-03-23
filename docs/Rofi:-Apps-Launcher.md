@@ -1,31 +1,89 @@
-We use Rofi for our Apps Launcher with a setup inspired by macOS Launchpad aesthetics, leveraging Rofi for a powerful and customizable launcher experience that integrates seamlessly with your desktop environment.
+# 🚀 Rofi: Apps Launcher Guide
 
-![Rofi Launcher Preview](path/to/preview/image.png)
+We use **Rofi** as our highly customizable and visually pleasing Apps Launcher — inspired by macOS Launchpad aesthetics. It’s lightweight, fast, and integrates seamlessly into your setup.
 
-### Configuration Overview
-
-Our Rofi configuration is designed to be both visually appealing and highly functional. Key features include:
-
-- **Font**: `Hack Nerd Font Mono 10` for clear text rendering.
-- **Appearance**: Fullscreen mode with center alignment and real transparency for an immersive experience.
-- **Dynamic Theming**: Integration with [pywal](https://github.com/dylanaraps/pywal) for automatic color scheme adjustments based on your wallpaper, ensuring a consistent look across your desktop.
-
-### Editing the Configuration
-
-To tailor the Rofi launcher to your preferences:
-
-1. Access the configuration file within chezmoi:
-
-   ```bash
-   chezmoi edit ~/.config/rofi/apps.rasi
-   ```
-
-2. This command opens the `apps.rasi` file in your preferred editor, allowing you to adjust settings such as font, layout, and color.
-
-### Dynamic Color Theming with Wal
-
-`pywal` automatically updates your theme colors based on your current wallpaper. After setting a new wallpaper and running `pywal`, the Rofi launcher will adapt its colors accordingly, providing a cohesive aesthetic across your desktop.
+> [!TIP]
+> Everything in this setup is configurable — from layout, fonts, colors, to behavior. It’s all versioned in your dotfiles and powered by chezmoi.
 
 ---
 
-For further customization and troubleshooting, refer to the [Rofi documentation](https://github.com/davatorium/rofi) and the [chezmoi documentation](https://www.chezmoi.io/).
+## 🗂️ Configuration Files Location
+
+Your launcher configuration lives here:
+
+```sh
+~/.config/rofi/apps.rasi
+```
+
+To edit it with chezmoi:
+
+```sh
+chezmoi edit ~/.config/rofi/apps.rasi
+```
+
+Apply with:
+
+```sh
+chezmoi apply
+```
+
+---
+
+## 🔧 What You Can Customize
+
+- **Fonts** (e.g., Hack Nerd Font Mono)
+- **Color Scheme**
+- **Transparency**
+- **Width / Height / Positioning**
+- **Prompt, search behavior, icons**
+
+> [!TIP]
+> Use `rofi -show drun` to preview your launcher and test changes live.
+
+---
+
+## ✨ Visual and Theming
+
+Our configuration uses:
+
+- **Font**: `Hack Nerd Font Mono 10`
+- **Mode**: Fullscreen with center alignment
+- **Transparency**: Real transparency (requires a compositor like `picom`)
+- **Dynamic Theming**: Integrated with [`pywal`](https://github.com/dylanaraps/pywal) to match your wallpaper
+
+### Dynamic Color with Pywal
+
+After setting a wallpaper and running `wal`, your launcher will update to match the generated color palette:
+
+```sh
+wal -i /path/to/image.jpg
+```
+
+Your Rofi theme then inherits these styles automatically.
+
+---
+
+## 🖼️ Preview
+
+![Rofi Launcher Preview](path/to/preview/image.png)
+
+---
+
+## 🧪 Testing and Launching
+
+To run Rofi and test your setup:
+
+```sh
+rofi -show drun
+```
+
+Or bind a custom keybinding to launch it from Openbox/i3/etc.
+
+---
+
+## 🆘 Need Help?
+
+- [Rofi GitHub Documentation](https://github.com/davatorium/rofi)
+- [chezmoi docs](https://www.chezmoi.io/)
+
+Customize your launcher to be fast, beautiful, and fully yours. Happy launching! 🚀

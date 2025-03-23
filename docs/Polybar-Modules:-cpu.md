@@ -1,12 +1,55 @@
-# CPU Module
+# 🧠 Polybar Module: CPU
 
-The CPU module provides the following information:
+The **CPU module** gives you real-time insights into your system's processor load and temperature — directly from your Polybar.
 
-- CPU Usage: It displays the current CPU usage as a percentage.
-- CPU Temperature: It shows the temperature of the CPU.
+> [!TIP]
+> Great for monitoring system performance at a glance, especially on laptops and lightweight setups.
 
-The module updates the displayed information based on the specified interval to provide real-time CPU usage and temperature data.
+---
 
-Ensure that you have the necessary dependencies and configuration settings in place to retrieve accurate CPU usage and temperature information.
+## 📦 Features
 
-Feel free to customize the CPU module according to your preferences and requirements.
+- **CPU Usage**: Shows current CPU usage as a percentage
+- **CPU Temperature**: Displays the current temperature of your CPU
+
+These metrics are updated at a configurable interval, providing fresh performance data every few seconds.
+
+---
+
+## ⚙️ Configuration Tips
+
+Common options include:
+
+```ini
+[module/cpu]
+type = internal/cpu
+interval = 2
+format =   %percentage:2%%
+format-underline = #f1c40f
+```
+
+> 🧠 Some setups may include temperature info directly in the same module, or use a separate one depending on the available sensors.
+
+---
+
+## ✅ Requirements
+
+- For CPU usage: none (built-in Polybar support)
+- For temperature: requires `lm_sensors`
+
+Install with:
+
+```sh
+sudo pacman -S lm_sensors
+sudo sensors-detect
+```
+
+Then restart Polybar and check the output.
+
+---
+
+## 🧠 Pro Tip
+
+You can combine this module with alert thresholds (e.g., underline or color change) to visually notify when CPU load gets too high.
+
+Stay informed about your system's health without leaving your workspace! 🚀

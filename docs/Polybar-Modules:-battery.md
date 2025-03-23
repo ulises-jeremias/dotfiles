@@ -1,26 +1,58 @@
-# Battery Module
+# 🔋 Polybar Module: Battery
 
-The battery module provides functionality to display the current battery status and percentage. It allows you to keep track of your device's battery level and receive notifications when the battery is running low.
+The **Battery module** provides real-time updates about your system’s power level — right from your Polybar.
 
-You can customize the appearance and behavior of the battery module by modifying its configuration options. Some common configuration options include:
+> [!TIP]
+> This module is fully customizable and supports dynamic formatting for different battery states: charging, discharging, full, or low.
 
-- `format-charging`: The format string to display when the battery is charging.
-- `format-discharging`: The format string to display when the battery is discharging.
-- `format-full`: The format string to display when the battery is fully charged.
-- `format-low`: The format string to display when the battery level is low.
+---
 
-Refer to the [Polybar documentation](https://github.com/polybar/polybar/wiki/Module:-battery) for a comprehensive list of configuration options that you can use to customize the battery module to your liking.
+## ⚙️ Functionality
 
-## Functionality
+The battery module offers:
 
-The battery module offers the following functionality:
+- **Battery Status**: Shows "Charging", "Discharging", or "Full"
+- **Battery Percentage**: Displays the current remaining percentage
+- **Low Battery Warning**: Alerts you visually when the battery level is low
 
-- Current Battery Status: The battery module displays the current status of the battery, such as "Charging," "Discharging," or "Full."
-- Battery Percentage: It also shows the percentage of battery remaining.
-- Low Battery Warning: When the battery level reaches a low threshold, the module can display a warning to alert you that the battery is running low.
+> [!TIP]
+> You can combine this module with other power-related scripts or notifications for a complete power management workflow.
 
-You can customize the module's appearance and behavior to suit your preferences and integrate it seamlessly into your Polybar setup.
+---
 
-Ensure that you have the necessary dependencies and configuration settings in place to use the battery module effectively.
+## 🧩 Configuration Options
 
-Enjoy monitoring your battery status with the battery module in your Polybar configuration!
+You can configure the battery module in your `config.ini` file or equivalent. Common options include:
+
+- `format-charging`: Format displayed while charging (e.g., `Charging: %percentage%%`)
+- `format-discharging`: Format while discharging
+- `format-full`: Format for full battery
+- `format-low`: Format and style when battery level is low (can be used to trigger warnings)
+
+For a full list of configuration options, refer to the [Polybar battery module documentation](https://github.com/polybar/polybar/wiki/Module:-battery).
+
+---
+
+## 🔧 Example Snippet
+
+```ini
+[module/battery]
+type = internal/battery
+battery = BAT0
+format-charging = ⚡ %percentage%%
+format-discharging = 🔋 %percentage%%
+format-full = 💯 %percentage%%
+format-low = 🚨 %percentage%%
+```
+
+---
+
+## 📁 Integration
+
+- Ensure your system exposes battery status through `/sys/class/power_supply/BAT0/` (or the equivalent path)
+- Adjust the `battery` setting if your system uses `BAT1`, `BAT2`, etc.
+- Include the module in your Polybar bar config under the appropriate position (`modules-left`, `modules-center`, `modules-right`)
+
+---
+
+Stay informed and in control of your power status at all times with this simple yet powerful module! ⚡
