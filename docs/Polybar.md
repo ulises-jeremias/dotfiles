@@ -61,8 +61,7 @@ Polybar supports a variety of built-in and custom modules. Some examples:
 - `i3` – workspace info for i3 users
 - `custom/` – your own shell scripts or output
 
-> [!TIP]
-> Check the [Polybar Modules Documentation](./Polybar#parameters) for the full list and how to enable or disable them.
+Check the documentation we have for each module in the sidebar!
 
 ---
 

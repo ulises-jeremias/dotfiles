@@ -13,7 +13,6 @@
     - [Apps Launcher (Rofi)](./Rofi:-Apps-Launcher)
     - [Network Manager](Network-Manager)
     - [Polybar](Polybar)
-      - [Parameters](Polybar#parameters)
       - Available Polybar Modules
         - [backlight](./Polybar-Modules:-backlight)
         - [battery](./Polybar-Modules:-battery)
