@@ -27,7 +27,8 @@ click-right = $EDITOR ~/.config/jgmenu/jgmenurc
 interval = once
 ```
 
-> 🧠 Customize the icon (``) based on your font set or theme.
+> [!TIP]
+> Customize the icon (``) based on your font set or theme.
 
 ---
 

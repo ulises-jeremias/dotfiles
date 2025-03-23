@@ -23,7 +23,8 @@ Each module offers interactive features:
 - **Scroll Down**: Decrease brightness by 5% per scroll
 - **Left Click**: Toggle Redshift (night mode)
 
-> 🧠 Behavior may vary depending on whether your system supports `xbacklight` or `acpi`. You may need to test and switch modules based on your setup.
+> [!TIP]
+> Behavior may vary depending on whether your system supports `xbacklight` or `acpi`. You may need to test and switch modules based on your setup.
 
 ---
 

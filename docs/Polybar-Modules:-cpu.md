@@ -28,7 +28,8 @@ format =   %percentage:2%%
 format-underline = #f1c40f
 ```
 
-> 🧠 Some setups may include temperature info directly in the same module, or use a separate one depending on the available sensors.
+> [!TIP]
+> Some setups may include temperature info directly in the same module, or use a separate one depending on the available sensors.
 
 ---
 

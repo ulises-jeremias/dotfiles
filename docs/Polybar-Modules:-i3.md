@@ -46,7 +46,8 @@ scroll-up = i3-msg workspace prev
 scroll-down = i3-msg workspace next
 ```
 
-> 🧠 You can replace icons (``, ``, etc.) and labels based on your icon font (e.g., Nerd Fonts).
+> [!TIP]
+> You can replace icons (``, ``, etc.) and labels based on your icon font (e.g., Nerd Fonts).
 
 ---
 

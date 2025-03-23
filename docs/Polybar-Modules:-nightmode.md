@@ -24,7 +24,8 @@ click-left = dots night-mode --toggle
 interval = 5
 ```
 
-> 🧠 The `dots night-mode` script handles both the status display and the toggle logic.
+> [!TIP]
+> The `dots night-mode` script handles both the status display and the toggle logic.
 
 ---
 

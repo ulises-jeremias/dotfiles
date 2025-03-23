@@ -25,7 +25,8 @@ format =   %used% / %total% (%percentage%%)
 format-underline = #6c71c4
 ```
 
-> 🧠 Icons like `` can be swapped based on your font (e.g., Nerd Fonts).
+> [!TIP]
+> Icons like `` can be swapped based on your font (e.g., Nerd Fonts).
 
 ---
 

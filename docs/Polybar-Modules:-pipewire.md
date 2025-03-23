@@ -59,7 +59,8 @@ bar-volume-width = 10
 bar-volume-gradient = true
 ```
 
-> 🧠 Both variants use the same data source — only the format and visualization differ.
+> [!TIP]
+> Both variants use the same data source — only the format and visualization differ.
 
 ---
 

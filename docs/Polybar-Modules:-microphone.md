@@ -33,7 +33,8 @@ click-left = dots microphone --toggle
 interval = 2
 ```
 
-> 🧠 Icons and refresh intervals can be adjusted to suit your theme or responsiveness needs.
+> [!TIP]
+> Icons and refresh intervals can be adjusted to suit your theme or responsiveness needs.
 
 ---
 

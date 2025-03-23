@@ -38,7 +38,8 @@ click-left = xfce4-calendar
 interval = 60
 ```
 
-> 🧠 You can replace `xfce4-calendar` with your preferred calendar app or script.
+> [!TIP]
+> You can replace `xfce4-calendar` with your preferred calendar app or script.
 
 ---
 

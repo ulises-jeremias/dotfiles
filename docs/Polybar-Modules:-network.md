@@ -24,7 +24,8 @@ click-left = networkmanager_dmenu
 interval = 5
 ```
 
-> 🧠 The `dots check-network` script prints a visual indicator (icon or label) depending on your connection status.
+> [!TIP]
+> The `dots check-network` script prints a visual indicator (icon or label) depending on your connection status.
 
 ---
 

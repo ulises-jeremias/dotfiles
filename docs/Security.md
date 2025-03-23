@@ -20,7 +20,8 @@ Here’s a list of tools and practices currently in place or under consideration
 yay -Syyu  # [I use Arch, btw](https://wiki.archlinux.org/title/Arch_Linux)
 ```
 
-> 🧠 Consider automating this process with a cron job or alias.
+> [!TIP]
+> Consider automating this process with a cron job or alias.
 
 ### 🛡️ Malware Scanning
 

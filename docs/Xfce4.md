@@ -75,7 +75,8 @@ Any changes here are written to the configuration files managed by chezmoi and a
 
 Make changes either through the GUI or directly by editing files in `~/.config/xfce4`.
 
-> 🧠 Don’t forget to apply changes with `chezmoi apply`.
+> [!TIP]
+> Don’t forget to apply changes with `chezmoi apply`.
 
 ---
 
