@@ -5,9 +5,11 @@
 
 yay -S --noconfirm --needed \
   feh \
-  python-pywal
+  python-pywal \
+  sassc
 
-pip3 install --user --upgrade wpgtk
+pipx install wpgtk
+pipx inject wpgtk pygobject
 {{      end -}}
 
 {{ end -}}

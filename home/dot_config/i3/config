@@ -259,7 +259,7 @@ smart_borders no_gaps
 # gaps: Check the script ~/.config/i3/gaps-setup.sh for more information
 # about how we handle gaps in multi-monitor setups.
 gaps inner 12
-gaps top 62
+gaps top 58
 gaps right 18
 gaps bottom 37
 gaps left 18

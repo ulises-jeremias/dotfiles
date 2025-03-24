@@ -6,7 +6,7 @@
 NEVER SKIP / IGNORE / AVOID README
 ```
 
-<h1>🏠 HorneroConfig - Comprehensive Dotfiles Framework</h1>
+<h1>🏠 HorneroConfig - Yet another Dotfiles Framework</h1>
 
 [Docs](https://ulises-jeremias.github.io/dotfiles) |
 [Changelog](#) |
@@ -67,9 +67,9 @@ Most were written from scratch. Some details:
 - **Panel** 🌸 [Polybar](https://polybar.github.io/) which is a fast and easy-to-use status bar!
 - **Application Launcher** 🚀 [Rofi](https://github.com/davatorium/rofi) which is blazing fast!
 - **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
-- **Terminal Emulator** 🌿 [Alacritty](https://alacritty.org/) which is GPU accelerated!
+- **Terminal Emulator** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/) The fast, feature-rich, GPU based terminal emulator!
 - **Shell** 🐚 [Zsh](https://zsh.org) with several post-installation tweaks!
-- **Compositor** 🍧 [Picom fork by FT-Labs](https://github.com/FT-Labs/picom) for that perfection topping with Animations!
+- **Compositor** 🍧 [Picom](https://github.com/yshui/picom) for that perfection topping with Animations!
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
 - **Widgets** 🎨 [Eww](https://github.com/elkowar/eww) with 2 different pre-backed widgets!
 - and many more!
@@ -84,7 +84,8 @@ You can use a [convenient script](./scripts/install_dotfiles.sh) to install the 
 sh -c "$(wget -qO- "https://github.com/ulises-jeremias/dotfiles/blob/master/scripts/install_dotfiles.sh?raw=true")"
 ```
 
-> 💡 We use `wget` here because it comes preinstalled with most Linux distributions. But you can also use `curl`:
+> [!TIP]
+> We use `wget` here because it comes preinstalled with most Linux distributions. But you can also use `curl`:
 >
 > ```bash
 > sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/master/scripts/install_dotfiles.sh?raw=true")"

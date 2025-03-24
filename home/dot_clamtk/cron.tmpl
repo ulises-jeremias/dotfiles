@@ -1,0 +1,2 @@
+30 13 * * * /usr/bin/clamscan --exclude-dir={{- .chezmoi.homeDir -}}/.clamtk/viruses --exclude-dir=smb4k --exclude-dir=/run/user/{{- .chezmoi.username -}}/gvfs --exclude-dir={{- .chezmoi.homeDir -}}/.gvfs --exclude-dir=.thunderbird --exclude-dir=.mozilla-thunderbird --exclude-dir=.evolution --exclude-dir=Mail --exclude-dir=kmail -i  --detect-pua -r {{- .chezmoi.homeDir -}} --log="$HOME/.clamtk/history/$(date +\%b-\%d-\%Y).log" 2>/dev/null # clamtk-scan
+13 * * * * /usr/bin/freshclam --quiet

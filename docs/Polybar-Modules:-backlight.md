@@ -1,21 +1,50 @@
-Here's an improved version of the documentation for the backlight modules:
+# 🔆 Polybar Module: Backlight
 
-# Backlight Modules
+The **Backlight modules** in this setup allow you to display and control your screen brightness directly from your Polybar.
 
-The backlight modules provide functionality to display the current brightness of the screen using different methods. We offer the following backlight modules:
+> [!TIP]
+> These modules support different backends (`xbacklight`, `acpi`) to adapt to your hardware configuration. Choose the one that fits your system.
 
-- `modules/xbacklight`: Displays the current brightness of the screen using `xbacklight`.
-- `module/backlight-acpi`: Displays the current brightness of the screen using `acpi`.
-- `module/backlight-acpi-bar`: Displays the current brightness of the screen using `acpi` with a progress bar.
+---
 
-## Functionality
+## 📦 Available Modules
 
-The backlight modules offer the following functionality:
+- `modules/xbacklight` – Uses [`xbacklight`](https://linux.die.net/man/1/xbacklight) to read and set brightness
+- `modules/backlight-acpi` – Uses [`acpi`](https://wiki.archlinux.org/title/Backlight#ACPI) for systems with ACPI backlight support
+- `modules/backlight-acpi-bar` – Same as above, but includes a visual progress bar in the module
 
-- Scroll Up: Scrolling up on the module increases the screen brightness by 5% for each scroll step.
-- Scroll Down: Scrolling down on the module decreases the screen brightness by 5% for each scroll step.
-- Left Click: Clicking the module with the left mouse button toggles redshift.
+---
 
-Please note that the functionality of these modules depends on the underlying backlight control method used (e.g., `xbacklight` or `acpi`).
+## ⚙️ Functionality
 
-Enjoy convenient control of screen brightness and redshift toggling with the backlight modules in your Polybar setup.
+Each module offers interactive features:
+
+- **Scroll Up**: Increase brightness by 5% per scroll
+- **Scroll Down**: Decrease brightness by 5% per scroll
+- **Left Click**: Toggle Redshift (night mode)
+
+> [!TIP]
+> Behavior may vary depending on whether your system supports `xbacklight` or `acpi`. You may need to test and switch modules based on your setup.
+
+---
+
+## 📁 Configuration Path
+
+You can find these modules in your dotfiles under:
+
+```sh
+~/.config/polybar/modules/
+```
+
+To enable one of them, reference it in your Polybar config file (e.g., `config.ini`).
+
+---
+
+## 🆘 Troubleshooting
+
+- Ensure the appropriate backend (`xbacklight` or `acpi`) is installed and supported by your system
+- Check permissions for backlight control in `/sys/class/backlight`
+
+---
+
+Enjoy quick and intuitive brightness control — with a Redshift toggle baked right into your bar! 🌅

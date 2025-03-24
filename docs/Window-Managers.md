@@ -1,27 +1,113 @@
-🖌️ You can customize the installed window managers, including i3, Openbox, and XFCE4, to suit your preferences and workflow. Here's how you can customize each of them:
+# 🪟 Window Managers Configuration Guide
 
-## i3 Window Manager
+This guide provides an overview of how to customize the supported window managers in this dotfiles setup: **i3**, **Openbox**, and **XFCE4**.
 
-To customize i3, you can modify the configuration files located in the `~/.config/i3` directory. These files control various aspects of i3's behavior, such as keybindings, workspace layouts, and appearance. After making any changes, run the command `chezmoi apply` to update the i3 configuration.
-
-For more detailed instructions and information about i3 customization, please refer to the [i3 customization documentation](i3).
-
-## Openbox Window Manager
-
-For customizing Openbox, you can edit the configuration files located in the `~/.config/openbox` directory. These files define the behavior, appearance, and keybindings for Openbox. Make your desired changes to these files, and then run command `chezmoi apply --source ~/.dotfiles` to apply the changes.
-
-If you need additional guidance or want to explore more about Openbox customization, please visit the [Openbox customization documentation](Openbox).
-
-## XFCE4 Window Manager
-
-XFCE4 customization is handled through the xfce4 tools included in the dotfiles installation. To customize XFCE4, use the xfce4 settings manager (`xfce4-settings-manager`). This utility allows you to modify various aspects of the XFCE4 desktop environment, including themes, appearance, panels, and more. Any customizations made through the xfce4 settings manager will be applied globally to all the installed dotfiles and affect all the window managers you have installed.
-
-For more detailed instructions and tips on XFCE4 customization, please refer to the [XFCE4 customization documentation](Xfce4).
-
-🔧 Remember to run command `chezmoi apply --source ~/.dotfiles` after making any changes to the configuration files to ensure that the customizations are applied.
-
-Feel free to customize each window manager according to your preferences, and if you have any further questions or need more specific guidance, please refer to the respective documentation for each window manager.
+> [!TIP]
+> Everything is fully customizable — from layout and keybindings to appearance and startup behavior. All configurations are version-controlled using `chezmoi`, making it easy to manage and sync.
 
 ---
 
-**IMPORTANT**: If you encounter any issues or need further assistance with customization, please refer to the dotfiles documentation or seek help from the dotfiles community.
+## 🧱 General Customization Workflow
+
+Regardless of the window manager, the general process is:
+
+1. Locate the config directory
+2. Edit files with `chezmoi edit`
+3. Apply changes with `chezmoi apply`
+4. Restart your WM or re-source configurations (if applicable)
+
+---
+
+## 🔲 i3 Window Manager
+
+📁 **Config Path**: `~/.config/i3`
+
+The i3 configuration controls:
+
+- Keybindings
+- Workspace layout
+- Application launching
+- Status bar integration (e.g., Polybar)
+
+To edit:
+
+```sh
+chezmoi edit ~/.config/i3/config
+chezmoi apply
+```
+
+For more info, check the [i3 customization documentation](i3).
+
+---
+
+## ⚫ Openbox Window Manager
+
+📁 **Config Path**: `~/.config/openbox`
+
+Openbox is a lightweight and highly customizable WM. You can tweak:
+
+- Window behavior and focus model
+- Desktop menus
+- Keybindings
+- Autostart applications
+
+To edit configs:
+
+```sh
+chezmoi edit ~/.config/openbox/rc.xml
+chezmoi apply
+```
+
+GUI alternative: Use `obconf` for quick edits to appearance and themes.
+
+Explore more in the [Openbox customization documentation](Openbox).
+
+---
+
+## 🖥️ XFCE4 Desktop Environment
+
+📁 **Config Path**: `~/.config/xfce4`
+
+XFCE4 is a full-featured desktop environment. Customizations here are **global** and apply across all your installed WMs.
+
+Use the built-in Settings Manager:
+
+```sh
+xfce4-settings-manager
+```
+
+From there, configure:
+
+- Panels
+- Keybindings
+- Appearance
+- Power management
+- Preferred apps
+
+You can also edit config files manually via chezmoi:
+
+```sh
+chezmoi edit ~/.config/xfce4 --source ~/.dotfiles
+chezmoi apply
+```
+
+More details in the [XFCE4 customization documentation](Xfce4).
+
+---
+
+## 🔧 Pro Tips
+
+- Add WM-specific autostart scripts or shared components
+- Mix and match (e.g., run Openbox with Polybar and Rofi)
+- Use `chezmoi diff` to preview config changes
+
+---
+
+## 🆘 Need Help?
+
+If you run into issues or want to go deeper:
+
+- Check the documentation for each WM: [i3](i3), [Openbox](Openbox), [XFCE4](Xfce4)
+- Visit the [Dotfiles Discussions](https://github.com/ulises-jeremias/dotfiles/discussions)
+
+Customizing your window manager is one of the best ways to boost your productivity and tailor your desktop to your style — make it yours! 🎨

@@ -7,22 +7,20 @@ exec_toggle=false
 no_unmuted=false
 
 show_help() {
-  # Prints help message
   cat <<EOF
-microphone: Simple bash script to listen and toggle microphone status.
+microphone: Simple bash script to monitor and toggle microphone status.
 USAGE: microphone [OPTIONS]
 
 OPTIONS:
  -h, --help               Print help and exit
- -t, --toggle             Switch microphone to oposite status
+ -t, --toggle             Switch microphone to the opposite status
      --muted-color        Font color for muted icon
      --unmuted-color      Font color for unmuted icon
-     --no-unmuted         Don't show icon when status is mic enabled
+     --no-unmuted         Don't show icon when the microphone is enabled
 EOF
 }
 
 parse_cmd_args() {
-  # read arguments
   opts=$(
     getopt \
       --longoptions "toggle,help,no-unmuted,muted-color:,unmuted-color:" \
@@ -30,7 +28,6 @@ parse_cmd_args() {
       --options "th" \
       -- "$@"
   )
-
   eval set -- "${opts}"
 
   while [[ $# -gt 0 ]]; do
@@ -39,27 +36,22 @@ parse_cmd_args() {
       muted_color=$2
       shift 2
       ;;
-
     --unmuted-color)
       unmuted_color=$2
       shift 2
       ;;
-
     --no-unmuted)
       no_unmuted=true
       shift 2
       ;;
-
     -t | --toggle)
       exec_toggle=true
-      shift
+      shift 2
       ;;
-
     -h | --help)
       show_help
       exit
       ;;
-
     *)
       break
       ;;
@@ -67,21 +59,26 @@ parse_cmd_args() {
   done
 }
 
-status() {
-  MUTED=$(pacmd list-sources | awk '/\*/,EOF {print}' | awk '/muted/ {print $2; exit}')
+get_default_source() {
+  # Get the ID of the default microphone (source)
+  local default_input_name
+  default_input_name="$(wpctl status | grep "Audio/Source" | awk '{print $3}')"
+  pw-cli ls Node | grep -B 10 "$default_input_name" | grep -E "^\s*id" | awk '{print $2}' | tr -d ','
+}
 
-  if [ "$MUTED" = "yes" ]; then
-    echo -e "${muted_color}${reset}"
+status() {
+  DEFAULT_SOURCE=$(get_default_source)
+  MUTED=$(wpctl get-volume "$DEFAULT_SOURCE" | grep -oE '\[MUTED\]')
+  if [[ -n "$MUTED" ]]; then
+    echo -e "${muted_color}${reset}" # Muted icon
   else
-    [[ ${no_unmuted} != true ]] && echo -e "${unmuted_color}${reset}"
+    [[ ${no_unmuted} != true ]] && echo -e "${unmuted_color}${reset}" # Unmuted icon
   fi
 }
 
 listen() {
   status
-
-  LANG=EN
-  pactl subscribe | while read -r event; do
+  wpctl subscribe | while read -r event; do
     if echo "$event" | grep -q "source" || echo "$event" | grep -q "server"; then
       status
     fi
@@ -89,14 +86,8 @@ listen() {
 }
 
 toggle() {
-  MUTED=$(pacmd list-sources | awk '/\*/,EOF {print}' | awk '/muted/ {print $2; exit}')
-  DEFAULT_SOURCE=$(pacmd list-sources | awk '/\*/,EOF {print $3; exit}')
-
-  if [ "$MUTED" = "yes" ]; then
-    pacmd set-source-mute "$DEFAULT_SOURCE" 0
-  else
-    pacmd set-source-mute "$DEFAULT_SOURCE" 1
-  fi
+  DEFAULT_SOURCE=$(get_default_source)
+  wpctl set-mute "$DEFAULT_SOURCE" toggle
 }
 
 parse_cmd_args "$@"

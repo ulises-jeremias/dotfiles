@@ -4,8 +4,8 @@
 #!/usr/bin/env bash
 
 sudo pacman -Syy --needed git base-devel
-git clone https://aur.archlinux.org/yay.git
-cd yay || exit 1
+git clone https://aur.archlinux.org/yay.git /tmp/yay
+cd /tmp/yay
 makepkg -si
 {{      end -}}
 

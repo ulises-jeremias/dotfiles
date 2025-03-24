@@ -31,7 +31,7 @@ sudo usermod $USER --append --group docker
 
 sudo pacman -S --noconfirm --needed docker
 
-sudo systemctl enable docker.service
+sudo systemctl enable --now docker
 
 sudo usermod $USER --append --group docker
 

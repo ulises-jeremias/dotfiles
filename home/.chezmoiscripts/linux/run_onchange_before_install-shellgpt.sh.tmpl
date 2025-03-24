@@ -4,22 +4,17 @@
 #!/usr/bin/env bash
 
 sudo pacman -S --noconfirm --needed \
-  ibus \
   ollama
 
 yay -S --noconfirm --needed \
-  ibus-autostart
+  litellm
 
-git clone https://github.com/apockill/shin.git --branch feature/arbitrary-commands --single-branch
-cd shin
-make
-sudo make install
-ibus restart
+sudo systemctl enable --now ollama
 
-# Pull the Mistral model
+# ollama pull llama3.1
 ollama pull mistral:7b-instruct
 
-pip3 install --user --upgrade shell-gpt[litellm]
+pipx install shell-gpt[litellm]
 {{      end -}}
 
 {{ end -}}

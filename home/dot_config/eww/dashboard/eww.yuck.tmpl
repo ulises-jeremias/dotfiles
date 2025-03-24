@@ -8,197 +8,193 @@
 ;; ** Variables ***********************************************************************
 
 ;; Profile vars
-(defvar IMAGE "images/profile.jpeg")
-(defvar NAME "{{- .profile.user.name -}}")
-(defpoll UNAME :interval "5m" `whoami`)
+(defvar PROFILE_IMAGE "images/profile.jpeg")
+(defvar PROFILE_NAME "{{- .profile.user.name -}}")
+(defpoll PROFILE_UNAME :interval "5m" `whoami`)
 
 ;; System vars
-(defpoll HOST :interval "5s" `hostname`)
-(defpoll CPU_USAGE :interval "1s" `scripts/sys-info --cpu`)
-(defpoll MEM_USAGE :interval "1s" `scripts/sys-info --mem`)
-(defpoll BLIGHT :interval "1s" `scripts/sys-info --blight`)
-(defpoll BATTERY :interval "5s" `scripts/sys-info --bat`)
+(defpoll SYS_HOST :interval "5s" `hostname`)
+(defpoll SYS_CPU_USAGE :interval "1s" `scripts/sys-info --cpu`)
+(defpoll SYS_MEM_USAGE :interval "1s" `scripts/sys-info --mem`)
+(defpoll SYS_BLIGHT :interval "1s" `scripts/sys-info --blight`)
+(defpoll SYS_BATTERY :interval "5s" `scripts/sys-info --bat`)
 
 ;; Time vars
-(defpoll HOUR :interval "5s" `date +\"%I\"`)
-(defpoll MIN :interval "5s" `date +\"%M\"`)
-(defpoll MER :interval "5s" `date +\"%p\"`)
-(defpoll DAY :interval "5s" `date +\"%A\"`)
+(defpoll TIME_HOUR :interval "5s" `date +"%I"`)
+(defpoll TIME_MIN :interval "5s" `date +"%M"`)
+(defpoll TIME_MER :interval "5s" `date +"%p"`)
+(defpoll TIME_DAY :interval "5s" `date +"%A"`)
 
 ;; Uptime vars
-(defpoll UPHOUR :interval "5s" `uptime -p | awk '{print $2 \" \" $3}' | sed 's/,//g'`)
-(defpoll UPMIN :interval "5s" `uptime -p | awk '{print $4 \" \" $5}' | sed 's/,//g'`)
+(defpoll UPTIME_HOUR :interval "5s" `uptime -p | awk '{print $2 " " $3}' | sed 's/,//g'`)
+(defpoll UPTIME_MIN :interval "5s" `uptime -p | awk '{print $4 " " $5}' | sed 's/,//g'`)
 
 ;; Music vars
-(defpoll SONG :interval "1s" `scripts/music-info --song`)
-(defpoll ARTIST :interval "1s" `scripts/music-info --artist`)
-(defpoll STATUS :interval "1s" `scripts/music-info --status`)
-(defpoll CURRENT :interval "1s" `scripts/music-info --time`)
-(defpoll COVER :interval "1s" `scripts/music-info --cover`)
-(defpoll CTIME :interval "1s" `scripts/music-info --ctime`)
-(defpoll TTIME :interval "1s" `scripts/music-info --ttime`)
+(defpoll MUSIC_SONG :interval "1s" `scripts/music-info --song`)
+(defpoll MUSIC_ARTIST :interval "1s" `scripts/music-info --artist`)
+(defpoll MUSIC_STATUS :interval "1s" `scripts/music-info --status`)
+(defpoll MUSIC_CURRENT :interval "1s" `scripts/music-info --time`)
+(defpoll MUSIC_COVER :interval "1s" `scripts/music-info --cover`)
+(defpoll MUSIC_CTIME :interval "1s" `scripts/music-info --ctime`)
+(defpoll MUSIC_TTIME :interval "1s" `scripts/music-info --ttime`)
 
 ;; Weather vars
-(defpoll ICON :interval "15m" `~/.local/bin/dots-weather-info --icon`)
-(defpoll STAT :interval "15m" `~/.local/bin/dots-weather-info --stat`)
-(defpoll TEMP :interval "15m" `~/.local/bin/dots-weather-info --temp`)
-(defpoll HEX :interval "15m" `~/.local/bin/dots-weather-info --hex`)
-(defpoll QUOTE :interval "15m" `~/.local/bin/dots-weather-info --quote`)
-(defpoll QUOTE2 :interval "15m" `~/.local/bin/dots-weather-info --quote2`)
+(defpoll WEATHER_ICON :interval "15m" `~/.local/bin/dots-weather-info --icon`)
+(defpoll WEATHER_STAT :interval "15m" `~/.local/bin/dots-weather-info --stat`)
+(defpoll WEATHER_TEMP :interval "15m" `~/.local/bin/dots-weather-info --temp`)
+(defpoll WEATHER_HEX :interval "15m" `~/.local/bin/dots-weather-info --hex`)
+(defpoll WEATHER_QUOTE :interval "15m" `~/.local/bin/dots-weather-info --quote`)
+(defpoll WEATHER_QUOTE2 :interval "15m" `~/.local/bin/dots-weather-info --quote2`)
 
 ;; Apps vars
-(defpoll MAILS :interval "5m" `scripts/mails`)
+(defpoll APPS_MAILS :interval "5m" `scripts/mails`)
 
 ;; Files vars
-(defpoll FREE :interval "5s" `df -h / | awk '{print $4}' | tail -n 1 | sed 's/G/GB/'`)
-
+(defpoll FILES_FREE :interval "5s" `df -h / | awk '{print $4}' | tail -n 1 | sed 's/G/GB/'`)
 
 ;; ** Widgets *************************************************************************
 
-
 ;; background
 (defwidget bg []
-	(box :class "bg")
-)
+  (box :class "bg"))
 
 ;; profile
 (defwidget user []
-	(box :class "genwin" :orientation "v" :spacing 35 :space-evenly "false" :vexpand "false" :hexpand "false"
-		(box :style "background-image: url('${IMAGE}');" :class "face" :halign "center")
-		(label :class "fullname" :halign "center" :wrap "true" :limit-width 25 :text NAME)
-		(label :class "username" :halign "center" :wrap "true" :limit-width 25 :text UNAME)))
+  (box :class "genwin" :orientation "v" :spacing 35 :space-evenly "false" :vexpand "false" :hexpand "false"
+    (box :style "background-image: url('${PROFILE_IMAGE}');" :class "face" :halign "center")
+    (label :class "fullname" :halign "center" :wrap "true" :limit-width 25 :text PROFILE_NAME)
+    (label :class "username" :halign "center" :wrap "true" :limit-width 25 :text PROFILE_UNAME)))
 
 ;; system
 (defwidget system []
-	(box :class "genwin" :vexpand "false" :hexpand "false"
-		(box :orientation "v" :spacing 35 :halign "center" :valign "center" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(box :class "cpu_bar" :orientation "h" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
-				(label :class "iconcpu" :text "")
-				(scale :min 0 :max 100 :value CPU_USAGE :active "false"))
-			(box :class "mem_bar" :orientation "h" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
-				(label :class "iconmem" :text "")
-				(scale :min 0 :max 100 :value MEM_USAGE :active "false"))
-			(box :class "bright_bar" :orientation "h" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
-				(label :class "iconbright" :text "")
-				(scale :min 0 :max 100 :value BLIGHT :active "false"))
-			(box :class "bat_bar" :orientation "h" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
-				(label :class "iconbat" :text "")
-				(scale :min 0 :max 100 :value BATTERY :active "false")))))
+  (box :class "genwin" :vexpand "false" :hexpand "false"
+    (box :orientation "v" :spacing 35 :halign "center" :valign "center" :space-evenly "false" :vexpand "false" :hexpand "false"
+      (box :class "cpu_bar" :orientation "h" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
+        (label :class "iconcpu" :text "")
+        (scale :min 0 :max 100 :value SYS_CPU_USAGE :active "false"))
+      (box :class "mem_bar" :orientation "h" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
+        (label :class "iconmem" :text "")
+        (scale :min 0 :max 100 :value SYS_MEM_USAGE :active "false"))
+      (box :class "bright_bar" :orientation "h" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
+        (label :class "iconbright" :text "")
+        (scale :min 0 :max 100 :value SYS_BLIGHT :active "false"))
+      (box :class "bat_bar" :orientation "h" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
+        (label :class "iconbat" :text "")
+        (scale :min 0 :max 100 :value SYS_BATTERY :active "false")))))
 
 ;; clock
 (defwidget clock []
-	(box :class "genwin" :orientation "h" :spacing 50 :space-evenly false :vexpand "false" :hexpand "false"
-		(box :orientation "h" :spacing 0
-			(label :class "time_hour" :valign "start" :wrap "true" :limit-width 25 :text HOUR)
-			(label :class "time_min" :valign "end" :wrap "true" :limit-width 25 :text MIN))
-		(box :orientation "v" :spacing 0
-			(label :class "time_mer" :valign "start" :halign "end" :wrap "true" :limit-width 25 :text MER)
-			(label :class "time_day" :valign "end" :halign "end" :wrap "true" :limit-width 25 :text DAY))))
+  (box :class "genwin" :orientation "h" :spacing 50 :space-evenly false :vexpand "false" :hexpand "false"
+    (box :orientation "h" :spacing 0
+      (label :class "time_hour" :valign "start" :wrap "true" :limit-width 25 :text TIME_HOUR)
+      (label :class "time_min" :valign "end" :wrap "true" :limit-width 25 :text TIME_MIN))
+    (box :orientation "v" :spacing 0
+      (label :class "time_mer" :valign "start" :halign "end" :wrap "true" :limit-width 25 :text TIME_MER)
+      (label :class "time_day" :valign "end" :halign "end" :wrap "true" :limit-width 25 :text TIME_DAY))))
 
 ;; uptime
 (defwidget uptime []
-	(box :class "genwin"
-		(box :orientation "h" :halign "center" :spacing 40 :space-evenly "false" :vexpand "false" :hexpand "false"
-			(label :class "icontimer" :valign "center" :text "󰅐")
-			(box :orientation "v" :valign "center" :spacing 0 :space-evenly "false" :vexpand "false" :hexpand "false"
-				(label :class "uphour" :halign "start" :wrap "true" :limit-width 25 :text UPHOUR)
-				(label :class "upmin" :halign "start" :wrap "true" :limit-width 25 :text UPMIN)))))
+  (box :class "genwin"
+    (box :orientation "h" :halign "center" :spacing 40 :space-evenly "false" :vexpand "false" :hexpand "false"
+      (label :class "icontimer" :valign "center" :text "󰅐")
+      (box :orientation "v" :valign "center" :spacing 0 :space-evenly "false" :vexpand "false" :hexpand "false"
+        (label :class "uphour" :halign "start" :wrap "true" :limit-width 25 :text UPTIME_HOUR)
+        (label :class "upmin" :halign "start" :wrap "true" :limit-width 25 :text UPTIME_MIN)))))
 
-;; Music
+;; music
 (defwidget music []
-	(box :class "genwin" :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-		(box :class "album_art" :vexpand "false" :hexpand "false" :style "background-image: url('${COVER}');")
-		(box :orientation "v" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
-			(label :halign "center" :class "song" :wrap "true" :limit-width 20 :text SONG)
-			(label :halign "center" :class "artist" :wrap "true" :limit-width 15 :text ARTIST)
-			(box :orientation "h" :spacing 20 :halign "center" :space-evenly "true" :vexpand "false" :hexpand "false"
-				(button :class "btn_prev" :onclick "scripts/music-info --prev" "󰒮")
-				(button :class "btn_play" :onclick "scripts/music-info --toggle" STATUS)
-				(button :class "btn_next" :onclick "scripts/music-info --next" "󰒭"))
-			(box :class "music_bar" :halign "center" :vexpand "false" :hexpand "false"
-				(scale :onscroll "mpc -q seek +1" :min 0 :active "true" :max 100 :value CURRENT)))))
+  (box :class "genwin" :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+    (box :class "album_art" :vexpand "false" :hexpand "false" :style "background-image: url('${MUSIC_COVER}');")
+    (box :orientation "v" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
+      (label :halign "center" :class "song" :wrap "true" :limit-width 20 :text MUSIC_SONG)
+      (label :halign "center" :class "artist" :wrap "true" :limit-width 15 :text MUSIC_ARTIST)
+      (box :orientation "h" :spacing 20 :halign "center" :space-evenly "true" :vexpand "false" :hexpand "false"
+        (button :class "btn_prev" :onclick "scripts/music-info --prev" "󰒮")
+        (button :class "btn_play" :onclick "scripts/music-info --toggle" MUSIC_STATUS)
+        (button :class "btn_next" :onclick "scripts/music-info --next" "󰒭"))
+      (box :class "music_bar" :halign "center" :vexpand "false" :hexpand "false"
+        (scale :onscroll "mpc -q seek +1" :min 0 :active "true" :max 100 :value MUSIC_CURRENT)))))
 
 ;; github
 (defwidget github []
-	(box :class "github" :vexpand "false" :hexpand "false"
-		(button :class "iconweb" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://github.com" "󰊤")))
+  (box :class "github" :vexpand "false" :hexpand "false"
+    (button :class "iconweb" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://github.com" "󰊤")))
 
 ;; youtube
 (defwidget youtube []
-	(box :class "youtube" :vexpand "false" :hexpand "false"
-		(button :class "iconweb" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://youtube.com" "󰗃")))
+  (box :class "youtube" :vexpand "false" :hexpand "false"
+    (button :class "iconweb" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://youtube.com" "󰗃")))
 
 ;; mail
 (defwidget mail []
-	(box :class "mail"
-		(box :orientation "h" :halign "center" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :class "iconmail" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://mail.google.com" "󰊫")
-			(box :class "mailbox" :space-evenly "false" :vexpand "false" :hexpand "false"
-				(button :class "label_mails" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://mail.google.com" MAILS)))))
+  (box :class "mail"
+    (box :orientation "h" :halign "center" :spacing 20 :space-evenly "false" :vexpand "false" :hexpand "false"
+      (button :class "iconmail" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://mail.google.com" "󰊫")
+      (box :class "mailbox" :space-evenly "false" :vexpand "false" :hexpand "false"
+        (button :class "label_mails" :onclick "~/.config/eww/dashboard/launch.sh; exo-open https://mail.google.com" APPS_MAILS)))))
 
 ;; weather
 (defwidget weather []
-	(box :class "genwin"
-		(box :orientation "v" :spacing 10 :space-evenly "false" :vexpand "false" :hexpand "false"
-			(box :orientation "h" :vexpand "false" :hexpand "false"
-				(label :class "iconweather" :halign "start" :style "color: ${HEX};" :text ICON)
-				(label :class "label_temp" :halign "end" :text TEMP))
-			(box :orientation "v" :spacing 10 :halign "center" :space-evenly "false" :vexpand "false" :hexpand "false"
-				(label :class "label_stat" :text STAT)
-				(label :class "label_quote" :text QUOTE)
-				(label :class "label_quote" :text QUOTE2)))))
+  (box :class "genwin"
+    (box :orientation "v" :spacing 10 :space-evenly "false" :vexpand "false" :hexpand "false"
+      (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+        (label :class "iconweather" :halign "start" :style "color: ${WEATHER_HEX};" :text WEATHER_ICON)
+        (label :class "label_temp" :halign "end" :text WEATHER_TEMP))
+      (box :orientation "v" :spacing 10 :halign "center" :space-evenly "false" :vexpand "false" :hexpand "false"
+        (label :class "label_stat" :text WEATHER_STAT)
+        (label :class "label_quote" :text WEATHER_QUOTE)
+        (label :class "label_quote" :text WEATHER_QUOTE2)))))
 
 ;; power buttons
 (defwidget lock []
-	(box :class "genwin" :vexpand "false" :hexpand "false"
-		(button :class "btn_lock" :onclick "~/.config/eww/dashboard/launch.sh; betterlockscreen --lock" "")))
+  (box :class "genwin" :vexpand "false" :hexpand "false"
+    (button :class "btn_lock" :onclick "~/.config/eww/dashboard/launch.sh; betterlockscreen --lock" "")))
 (defwidget logout []
-	(box :class "genwin" :vexpand "false" :hexpand "false"
-		(button :class "btn_logout" :onclick "~/.config/eww/dashboard/launch.sh; loginctl terminate-session" "󰗽")))
+  (box :class "genwin" :vexpand "false" :hexpand "false"
+    (button :class "btn_logout" :onclick "~/.config/eww/dashboard/launch.sh; loginctl terminate-session" "󰗽")))
 (defwidget sleep []
-	(box :class "genwin" :vexpand "false" :hexpand "false"
-		(button :class "btn_sleep" :onclick "~/.config/eww/dashboard/launch.sh; systemctl suspend" "")))
+  (box :class "genwin" :vexpand "false" :hexpand "false"
+    (button :class "btn_sleep" :onclick "~/.config/eww/dashboard/launch.sh; systemctl suspend" "")))
 (defwidget reboot []
-	(box :class "genwin" :vexpand "false" :hexpand "false"
-		(button :class "btn_reboot" :onclick "systemctl -i reboot" "")))
+  (box :class "genwin" :vexpand "false" :hexpand "false"
+    (button :class "btn_reboot" :onclick "systemctl -i reboot" "")))
 (defwidget poweroff []
-	(box :class "genwin" :vexpand "false" :hexpand "false"
-		(button :class "btn_poweroff" :onclick "systemctl -i poweroff" "󰐥")))
+  (box :class "genwin" :vexpand "false" :hexpand "false"
+    (button :class "btn_poweroff" :onclick "systemctl -i poweroff" "󰐥")))
 
 ;; folders
 (defwidget folders []
-	(box :class "genwin" :orientation "v" :space-evenly "false" :vexpand "false" :hexpand "false"
-		(box :class "hddbox" :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(box :space-evenly "false" :vexpand "false" :hexpand "false"
-				(button :class "hddicon" :onclick "~/.config/eww/dashboard/launch.sh; exo-open --launch FileManager" "")
-				(label :class "fs_sep" :text "|"))
-			(box :space-evenly "false" :vexpand "false" :hexpand "false"
-				(label :class "hdd_label" :wrap "true" :limit-width 25 :text FREE)))
-		(box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :class "iconfolder1" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Documents" "󱧶")
-			(button :class "label_folder1" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Documents" "Documents"))
-		(box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :class "iconfolder2" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Downloads" "󰉍")
-			(button :class "label_folder2" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Downloads" "Downloads"))
-		(box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :class "iconfolder3" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Music" "󱍙")
-			(button :class "label_folder3" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Music" "Music"))
-		(box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :class "iconfolder4" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Pictures" "󰉏")
-			(button :class "label_folder4" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Pictures" "Pictures"))
-		(box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :class "iconfolder5" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.config" "󱁿")
-			(button :class "label_folder5" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.config" "~/.config"))
-		(box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
-			(button :class "iconfolder6" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.local" "󰚝")
-			(button :class "label_folder6" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.local" "~/.local"))))
+  (box :class "genwin" :orientation "v" :space-evenly "false" :vexpand "false" :hexpand "false"
+    (box :class "hddbox" :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+      (box :space-evenly "false" :vexpand "false" :hexpand "false"
+        (button :class "hddicon" :onclick "~/.config/eww/dashboard/launch.sh; exo-open --launch FileManager" "")
+        (label :class "fs_sep" :text "|"))
+      (box :space-evenly "false" :vexpand "false" :hexpand "false"
+        (label :class "hdd_label" :wrap "true" :limit-width 25 :text FILES_FREE)))
+    (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+      (button :class "iconfolder1" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Documents" "󱧶")
+      (button :class "label_folder1" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Documents" "Documents"))
+    (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+      (button :class "iconfolder2" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Downloads" "󰉍")
+      (button :class "label_folder2" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Downloads" "Downloads"))
+    (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+      (button :class "iconfolder3" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Music" "󱍙")
+      (button :class "label_folder3" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Music" "Music"))
+    (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+      (button :class "iconfolder4" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Pictures" "󰉏")
+      (button :class "label_folder4" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/Pictures" "Pictures"))
+    (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+      (button :class "iconfolder5" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.config" "󱁿")
+      (button :class "label_folder5" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.config" "~/.config"))
+    (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+      (button :class "iconfolder6" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.local" "󰚝")
+      (button :class "label_folder6" :onclick "~/.config/eww/dashboard/launch.sh; exo-open ~/.local" "~/.local"))))
 
 ;; placeholder items
 (defwidget placeholder []
-	(box :class "genwin" :vexpand "false" :hexpand "false"))
+  (box :class "genwin" :vexpand "false" :hexpand "false"))
 
 ;; ** Windows *************************************************************************
-
 
 ;; background
 (defwindow dashboard-background :stacking "fg" :focusable "false" :screen 1

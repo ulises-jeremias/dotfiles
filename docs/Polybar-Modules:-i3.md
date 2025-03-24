@@ -1,17 +1,70 @@
-# i3 Workspace Icon Module
+# 🧩 Polybar Module: i3 Workspace Icons
 
-The i3 Workspace Icon module displays the icon for each workspace in the i3 window manager. It provides convenient functionality to switch between workspaces and navigate through them.
+The **i3 Workspace Icon module** displays dynamic icons for your i3 workspaces and allows you to interactively switch between them via mouse actions.
 
-## Functionality
+> [!TIP]
+> Useful for visually tracking your open workspaces and navigating across them quickly.
 
-The i3 Workspace Icon module supports the following events:
+---
 
-- **Left-click**: Clicking on the module with the left mouse button executes the `i3-msg workspace <index>` command, allowing you to switch to a specific workspace by specifying its index.
-- **Scroll up**: Scrolling up on the module executes the `i3-msg workspace prev` command, allowing you to switch to the previous workspace.
-- **Scroll down**: Scrolling down on the module executes the `i3-msg workspace next` command, allowing you to switch to the next workspace.
+## 🧭 Functionality
 
-By interacting with the i3 Workspace Icon module, you can easily navigate between workspaces in your i3 window manager setup.
+This module supports multiple interactions:
 
-Please note that this module assumes you have the necessary dependencies and configurations set up for i3 window manager, such as `i3-msg` and properly configured workspaces.
+- **Left-click** → Switch to a specific workspace using:
 
-Feel free to customize the appearance and behavior of the i3 Workspace Icon module according to your preferences to enhance your workspace navigation experience.
+  ```sh
+  i3-msg workspace <index>
+  ```
+
+- **Scroll Up** → Move to the previous workspace:
+
+  ```sh
+  i3-msg workspace prev
+  ```
+
+- **Scroll Down** → Move to the next workspace:
+
+  ```sh
+  i3-msg workspace next
+  ```
+
+These commands let you navigate through your i3 setup with ease, straight from your Polybar.
+
+---
+
+## ⚙️ Configuration Snippet
+
+```ini
+[module/i3]
+type = internal/i3
+format = <label-state>
+label-focused =   %name%
+label-unfocused =   %name%
+click-left = i3-msg workspace %index%
+scroll-up = i3-msg workspace prev
+scroll-down = i3-msg workspace next
+```
+
+> [!TIP]
+> You can replace icons (``, ``, etc.) and labels based on your icon font (e.g., Nerd Fonts).
+
+---
+
+## ✅ Requirements
+
+- [i3 Window Manager](https://i3wm.org/)
+- `i3-msg` installed and in your PATH
+- Workspaces must be correctly defined in your i3 configuration
+
+---
+
+## 🎨 Customization Tips
+
+- Map specific icons to workspace names for better visual cues (e.g.,  for terminal,  for browser)
+- Adjust font and padding to align with your overall Polybar theme
+- Combine with other modules like `rofi-run` or `eww` to enhance your window management setup
+
+---
+
+Enhance your workspace switching flow with this sleek and interactive module — right from the bar! 🖱️🖥️

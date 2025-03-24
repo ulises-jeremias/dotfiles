@@ -1,0 +1,24 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+sudo pacman -S --noconfirm --needed \
+  ibus
+
+yay -S --noconfirm --needed \
+  ibus-autostart
+
+git clone https://github.com/apockill/shin.git --single-branch --depth 1 --branch feature/arbitrary-commands /tmp/shin
+cd /tmp/shin
+make
+sudo make install
+
+# Run ibus restart if it's running
+if pgrep -x ibus-daemon > /dev/null; then
+  ibus restart
+fi
+
+{{      end -}}
+
+{{ end -}}

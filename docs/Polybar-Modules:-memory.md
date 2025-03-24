@@ -1,21 +1,48 @@
-# Memory Module
+# 🧠 Polybar Module: Memory
 
-The Memory module displays information about your system's memory usage. It provides details on the total memory available, used memory, and memory usage percentage.
+The **Memory module** displays real-time statistics about your system’s RAM usage. It’s a simple yet essential module to help you monitor memory consumption at a glance.
 
-## Configuration
+> [!TIP]
+> Great for keeping tabs on memory-intensive workflows, especially when multitasking or debugging.
 
-The Memory module does not require any specific configuration. It automatically retrieves memory usage information from your system and displays it in the Polybar panel.
+---
 
-## Usage
+## 📊 Displayed Information
 
-The Memory module provides a convenient way to monitor your system's memory usage. It constantly updates to reflect the current memory usage status.
+- **Total Memory**: The total available memory on your system
+- **Used Memory**: The amount currently in use
+- **Usage Percentage**: A live percentage calculated as `(Used / Total) * 100`
 
-## Display
+---
 
-The Memory module displays the following information:
+## ⚙️ Configuration Example
 
-- **Total Memory**: The total amount of memory available on your system.
-- **Used Memory**: The amount of memory currently in use by running processes.
-- **Memory Usage Percentage**: The percentage of memory usage, calculated as `(Used Memory / Total Memory) * 100`.
+```ini
+[module/memory]
+type = internal/memory
+interval = 5
+format =   %used% / %total% (%percentage%%)
+format-underline = #6c71c4
+```
 
-You can customize the appearance of the Memory module according to your preferences by modifying the Polybar configuration file.
+> [!TIP]
+> Icons like `` can be swapped based on your font (e.g., Nerd Fonts).
+
+---
+
+## ✅ Requirements
+
+- No additional dependencies required — this is a built-in Polybar module
+- Works out of the box with Linux systems that expose `/proc/meminfo`
+
+---
+
+## 🎨 Customization Tips
+
+- Use `format-prefix` and `format-suffix` to add context or emojis
+- Combine with a temperature or CPU module for a complete resource view
+- Adjust `interval` to control how often memory data is refreshed
+
+---
+
+Keep your resource usage in check and optimize your system performance with this lightweight monitor! 📈

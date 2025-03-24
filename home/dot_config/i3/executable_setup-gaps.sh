@@ -1,3 +1,10 @@
+#!/usr/bin/env bash
+
+# exit 0 if there is only one monitor
+if [ "$(xrandr --query | grep " connected" | wc -l)" -eq 1 ]; then
+	exit 0
+fi
+
 # Identify the primary monitor
 primary_monitor=$(xrandr --query | grep " primary" | cut -d' ' -f1)
 

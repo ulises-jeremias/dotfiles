@@ -326,7 +326,7 @@
     </keybind>
     <keybind key="W-v">
       <action name="Execute">
-        <command>pavucontrol</command>
+        <command>pwvucontrol</command>
       </action>
     </keybind>
     <keybind key="W-s">

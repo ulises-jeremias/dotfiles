@@ -1,27 +1,98 @@
+# 🪟 Openbox Configuration Guide
+
 Openbox is a lightweight and highly configurable window manager that provides a simple yet powerful environment for managing windows in your desktop. With its flexibility and extensive customization options, Openbox allows you to create a personalized and efficient workflow.
 
-The `openbox` configuration files are located at `~/.config/openbox`. This gives you the freedom to fully customize and fine-tune Openbox according to your preferences.
+> [!TIP]
+> Everything in this setup is fully customizable. Whether it's the appearance, keybindings, or behavior — you have full control. All configuration files live in your dotfiles repo, versioned with chezmoi, and changes can be applied with `chezmoi apply`.
 
-To edit the `openbox` configuration, you need to run the following command:
+---
+
+## 🗂️ Configuration Files Location
+
+Your Openbox configuration files are located at:
+
+```sh
+~/.config/openbox
+```
+
+These files are managed via chezmoi. To edit them:
 
 ```sh
 chezmoi edit ~/.config/openbox --source ~/.dotfiles
 ```
 
-Remember to apply your changes using `chezmoi apply` and restart Openbox for the modifications to take effect.
+After editing, apply your changes with:
 
-## Configuring Openbox
+```sh
+chezmoi apply
+```
 
-To simplify the configuration process, you can use `obconf`, a graphical configuration tool designed specifically for Openbox. `obconf` provides an intuitive interface that allows you to easily customize various aspects of Openbox, including window appearance, desktop settings, mouse behavior, and more.
+And restart Openbox for the modifications to take effect.
 
-If `obconf` is available in your package manager, you can install it using the appropriate installation command for your operating system. Once installed, you can launch `obconf` and explore the wide range of customization options it offers.
+---
+
+## 🔧 What You Can Customize
+
+- **Window behavior** (e.g., focus models, stacking order)
+- **Keybindings** (move, resize, switch windows, custom shortcuts)
+- **Menus** (right-click desktop menus, application launchers)
+- **Autostart applications** (programs that run when Openbox starts)
+- **Appearance and theming**
+
+### 📂 Key Configuration Files
+
+- `rc.xml`: Main configuration file for keybindings and window behavior
+- `menu.xml`: Right-click desktop menu definition
+- `autostart`: List of applications to run on Openbox startup
+
+> [!TIP]
+> Use `chezmoi diff` to preview changes before applying.
+
+---
+
+## 🖼️ Graphical Configuration with `obconf`
+
+To simplify configuration, you can use **`obconf`**, a GUI configuration tool for Openbox.
+
+If it's available in your package manager, install it:
+
+```sh
+# Example for Arch Linux
+sudo pacman -S obconf
+```
+
+Then launch it:
+
+```sh
+obconf
+```
+
+You can adjust:
+
+- Themes and styles
+- Window decorations
+- Mouse behavior
+- Desktops and workspaces
 
 ![Openbox Config](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/obconf.jpg?raw=true)
 
-Using `obconf`, you can conveniently tweak and adjust Openbox without directly modifying the configuration files. This makes it easy to experiment, fine-tune your settings, and create a seamless desktop experience tailored to your workflow.
+> ✨ Great for quick changes without editing XML files.
 
-If `obconf` is not available in your package manager, don't worry! You can still configure Openbox by manually editing the configuration files located at `~/.config/openbox`. These files provide detailed control over various aspects of Openbox's behavior, allowing you to customize window placement, keybindings, desktop menus, and much more.
+---
 
-Remember to save your configuration changes and restart Openbox for the modifications to take effect. This will ensure that your personalized Openbox setup is applied and ready to enhance your productivity and workflow.
+## 🧩 Integration & Tips
+
+- Use in combination with **Polybar**, **Rofi**, and **Zsh** for a full personalized desktop experience
+- You can dynamically generate menus or autostart entries via scripts
+- Combine with tools like `xrandr`, `feh`, or `picom` for wallpapers, transparency, and compositor support
+
+---
+
+## 🆘 Need Help?
+
+If you get stuck or want to learn more:
+
+- Refer to [Openbox documentation](http://openbox.org/wiki/Help:Configuration)
+- Ask questions in the [Discussions](https://github.com/ulises-jeremias/dotfiles/discussions) section
 
 Unleash the power of Openbox and create a unique desktop environment that reflects your style and optimizes your daily tasks!

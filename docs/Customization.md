@@ -1,15 +1,93 @@
-You can fork this repository and customize it to suit your preferences and workflow. You are encouraged to maintain a separate GitHub repository of configurations for your own dotfiles and keep this repository as a template!
+# 🎨 Dotfiles Customization Guide
 
-We use [Chezmoi](https://www.chezmoi.io/) to manage the dotfiles. Chezmoi is a sophisticated yet easy-to-use command-line tool that helps you manage your dotfiles across multiple machines. It is designed to be secure, flexible, and easy to use.
+This repository is designed to be a starting point for your personalized dotfiles setup. You’re encouraged to **fork it**, adapt it to your needs, and maintain your own GitHub repository with your custom configurations.
 
-To customize the dotfiles, follow these steps:
+> [!TIP]
+> The dotfiles use [Chezmoi](https://www.chezmoi.io/) to manage, edit, and apply configuration changes across multiple machines — securely and efficiently.
 
-1. Run the command `chezmoi init --source ~/.dotfiles` to initialize Chezmoi.
+---
 
-2. Run the command `chezmoi edit --source ~/.dotfiles` to open the dotfiles directory.
+## 🛠️ Getting Started with Customization
 
-3. Customize the dotfiles to suit your preferences and workflow.
+### 1. Fork This Repository
 
-4. Run the command `chezmoi apply --source ~/.dotfiles` to apply the changes.
+Create your own version of the dotfiles:
 
-Feel free to customize and personalize your dotfiles to suit your preferences and workflow!
+```sh
+git clone https://github.com/<your-username>/dotfiles.git ~/.dotfiles
+```
+
+### 2. Initialize Chezmoi
+
+> [!IMPORTANT]
+> This dotfiles setup includes references to my personal LastPass vault for storing sensitive information (like tokens or secrets).  
+> If you plan to use or adapt these configs, make sure to **replace or remove** any references to LastPass and configure your own preferred secret management method — such as Bitwarden, 1Password, `pass`, `gopass`, or `chezmoi's built-in encrypted secrets`.  
+> Double-check any scripts or encrypted templates (`*.tmpl`) before applying changes.
+
+Link your forked dotfiles directory with chezmoi:
+
+```sh
+chezmoi init --source ~/.dotfiles
+```
+
+### 3. Edit Your Configurations
+
+Use chezmoi’s built-in editing command:
+
+```sh
+chezmoi edit --source ~/.dotfiles
+```
+
+Make the changes that suit your preferences:
+
+- Theme and style adjustments
+- New keybindings
+- Custom scripts
+- Tool settings and plugins
+
+### 4. Apply Your Changes
+
+Once you're ready:
+
+```sh
+chezmoi apply --source ~/.dotfiles
+```
+
+All changes will be synced to your system.
+
+---
+
+## 📁 What You Can Customize
+
+- 🪟 Window manager settings (i3, Openbox, XFCE4)
+- 💻 Terminal experience (Zsh, Kitty)
+- 🎨 Theme and color schemes (Rofi, Polybar, Pywal)
+- 🛠️ Utility scripts (`dots`) and workflow helpers
+- 🔒 Security tools and system behaviors
+
+> [!TIP]
+> Use `chezmoi diff` to preview your changes before applying.
+
+---
+
+## 🌍 Multi-Machine Consistency
+
+One of the biggest advantages of using Chezmoi is **portable configuration**. You can sync your setup across multiple machines using a private or public GitHub repository.
+
+Just run:
+
+```sh
+chezmoi init git@github.com:<your-username>/dotfiles.git
+chezmoi apply
+```
+
+And your personalized setup will be ready!
+
+---
+
+## 🆘 Need Help?
+
+- [Chezmoi Docs](https://www.chezmoi.io/docs/)
+- [Dotfiles Discussions](https://github.com/ulises-jeremias/dotfiles/discussions)
+
+Go ahead — personalize everything. Make your desktop, terminal, and tooling truly yours! 🚀

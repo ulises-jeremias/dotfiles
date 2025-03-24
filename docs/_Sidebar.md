@@ -1,7 +1,7 @@
 - [🏠 Home](Home)
 - [💥 Dots Scripts Utility](Dots-Scripts)
 - [🎨 Customization](Customization)
-  - [🪟 Window Manager](Window-Managers)
+  - [🪟 Window Managers](Window-Managers)
     - [XFCE 4](Xfce4)
     - [i3 WM](i3)
       - [Autostart Applications](i3#autostart-applications)
@@ -9,13 +9,11 @@
     - [Openbox](Openbox)
       - [Openbox Configuration](Openbox#openbox-configuration)
   - 🖌️ Misc Customization
-    - [Alacritty](Alacritty)
-    - [Apps Launcher](./Rofi:-Apps-Launcher)
+    - [Kitty Terminal](Kitty)
+    - [Apps Launcher (Rofi)](./Rofi:-Apps-Launcher)
     - [Network Manager](Network-Manager)
     - [Polybar](Polybar)
-      - [Parameters](Polybar#parameters)
-      - Available polybar modules
-        - [alsa](./Polybar-Modules:-alsa)
+      - Available Polybar Modules
         - [backlight](./Polybar-Modules:-backlight)
         - [battery](./Polybar-Modules:-battery)
         - [bluetooth](./Polybar-Modules:-bluetooth)
@@ -27,16 +25,16 @@
         - [microphone](./Polybar-Modules:-microphone)
         - [network](./Polybar-Modules:-network)
         - [nightmode](./Polybar-Modules:-nightmode)
-        - [pulseaudio](./Polybar-Modules:-pulseaudio)
+        - [pipewire](./Polybar-Modules:-pipewire)
         - [spotify](./Polybar-Modules:-spotify)
         - [temperature](./Polybar-Modules:-temperature)
-    - [Zsh](Zsh)
+    - [Zsh Shell](Zsh)
       - Customization and Parameters
       - Zsh + Antigen
-      - Zsh + Power Level 10k
+      - Zsh + Powerlevel10k
       - Zsh + Oh My Zsh
 - [🛡️ Privacy and Security](Security)
 - [📁 Dots Backup Tool](Dots-Backup)
 - [⏏️ Dots Eject](Dots-Eject)
+- [🧪 Testing Environment](Testing)
 - [💯 Contributing](CONTRIBUTING)
-- [🧪 Testing](Testing)

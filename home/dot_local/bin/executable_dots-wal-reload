@@ -21,6 +21,15 @@ fi
 # Reset the colorscheme
 (wal -R -q &> /dev/null) || exit 1
 
+# If i3 is running, reload the i3 configuration
+# TODO: Figure out a better way to reload i3 configuration
+if pgrep "i3" &> /dev/null; then
+    i3-msg reload
+    if [ -x ~/.config/i3/setup-gaps.sh ]; then
+        ~/.config/i3/setup-gaps.sh
+    fi
+fi
+
 # Reload rofi colors. First, check if rofi is installed
 if ! command -v rofi &> /dev/null; then
     echo "rofi is not installed. Please install it and try again."
@@ -41,6 +50,15 @@ ln -sf "$HOME/.cache/wal/colors.scss" "$HOME/.config/eww/dashboard/colors.scss"
 ln -sf "$HOME/.cache/wal/colors.scss" "$HOME/.config/eww/powermenu/colors.scss"
 eww --config "$HOME/.config/eww/dashboard" reload
 eww --config "$HOME/.config/eww/powermenu" reload
+
+# Reload betterlockscreen colors. First, check if betterlockscreen is installed
+if ! command -v betterlockscreen &> /dev/null; then
+    echo "betterlockscreen is not installed. Please install it and try again."
+    notify-send "betterlockscreen is not installed. Please install it and try again."
+    exit 1
+fi
+
+betterlockscreen -u ~/.config/wpg/.current
 
 # Reload discord colors. First, check if wal-discord is installed
 if ! command -v wal-discord &> /dev/null; then

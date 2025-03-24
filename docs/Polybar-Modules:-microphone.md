@@ -1,24 +1,55 @@
-Apologies for the confusion. Here's the updated documentation for the Microphone module, including the images table:
+# 🎙️ Polybar Module: Microphone
 
-# Microphone Module
+The **Microphone module** is a custom script-based Polybar module that displays the mute/unmute status of your system microphone in real-time.
 
-The Microphone module is a custom module created around the `internal/script` module in Polybar. It displays the state of the microphone and listens for status changes using the script `dots microphone`.
+> [!TIP]
+> This module is useful for keeping track of your microphone state during meetings, recordings, or voice calls — right from your status bar.
 
-| Muted                                                                                                                                  | Unmuted                                                                                                                                    |
-| :------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
-| ![Microphone Muted](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/microphone-muted.jpg?raw=true) | ![Microphone Unmuted](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/microphone-unmuted.jpg?raw=true) |
+---
 
-## Usage
+## 🧩 How It Works
 
-The Microphone module provides real-time updates on the microphone status, allowing you to quickly see whether the microphone is currently muted or unmuted.
+This module is built using the `custom/script` Polybar type and is powered by the `dots microphone` script.
 
-## Icons
+It detects the microphone's mute state and updates its icon accordingly. It refreshes on a set interval and can be configured to toggle the mic on click.
 
-The Microphone module uses the following icons to represent the microphone state:
+---
 
-- **Muted**: The microphone is muted.
-- **Unmuted**: The microphone is unmuted.
+## 📸 Visual Indicators
 
-The icons can be customized to match your preferred style and aesthetic.
+| Muted | Unmuted |
+|-------|---------|
+| ![Muted](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/microphone-muted.jpg?raw=true) | ![Unmuted](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/microphone-unmuted.jpg?raw=true) |
 
-In this configuration, the module utilizes the `dots microphone` script to retrieve the microphone state.
+---
+
+## ⚙️ Configuration Example
+
+```ini
+[module/microphone]
+type = custom/script
+exec = dots microphone
+click-left = dots microphone --toggle
+interval = 2
+```
+
+> [!TIP]
+> Icons and refresh intervals can be adjusted to suit your theme or responsiveness needs.
+
+---
+
+## ✅ Requirements
+
+- The `dots microphone` script (included in the dotfiles setup)
+- Microphone control tools (like `pamixer`, `pactl`, or `amixer`) as dependencies
+
+---
+
+## 🎨 Customization Tips
+
+- Change the icons used for muted/unmuted states in the `dots microphone` script
+- Use hover or tooltip support (if available in your Polybar fork) for more context
+
+---
+
+Stay aware of your mic state at all times — avoid the classic “you’re muted!” moment 🎤

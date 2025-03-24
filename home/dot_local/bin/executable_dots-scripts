@@ -16,6 +16,11 @@ if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     export PATH="$HOME/.local/bin:${PATH}"
 fi
 
+# if ~/bin is not in the PATH, add it
+if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
+    export PATH="$HOME/bin:${PATH}"
+fi
+
 # Add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
 if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
     export PATH="${HOME}/.pyenv/shims:${PATH}"
@@ -30,9 +35,9 @@ source ~/.local/lib/dots/dots-scripts.sh || exit
 execute_command() {
     local script_name
     script_name=$(echo "$1" | cut -d ' ' -f 2 | cut -d ':' -f 1)
-    local command="alacritty --hold -e echo \"dots $script_name\""
+    local command="kitty --hold -e echo \"dots $script_name\""
 
-    # Open alacritty with the command
+    # Open kitty with the command
     eval "$command"
 }
 

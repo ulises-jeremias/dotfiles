@@ -3,11 +3,47 @@
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
-yay -S --noconfirm --needed \
+sudo pacman -S --noconfirm --needed \
+  ffmpegthumbnailer \
+  gvfs \
+  gvfs-smb \
+  gvfs-mtp \
+  sshfs \
+  libgsf \
   thunar \
   thunar-archive-plugin \
   thunar-media-tags-plugin \
-  thunar-volman
+  thunar-volman \
+  tumbler \
+  xarchiver \
+  webp-pixbuf-loader
+
+yay -S --noconfirm --needed \
+  raw-thumbnailer \
+  tumbler-extra-thumbnailers \
+  tumbler-folder-thumbnailer \
+  tumbler-stl-thumbnailer
+
+# install xarchiver and its dependencies
+yay -S --noconfirm --needed \
+  xarchiver \
+  arj \
+  binutils \
+  bzip2 \
+  cpio \
+  lha \
+  lrzip \
+  lz4 \
+  lzop \
+  p7zip \
+  tar \
+  unarj \
+  unrar \
+  unzip \
+  xdg-utils \
+  xz \
+  zip \
+  zstd
 {{      end -}}
 
 {{ end -}}

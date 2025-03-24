@@ -10,8 +10,11 @@ set -eufo pipefail
   "direnv"
   "exa"
   "jq"
-  "neofetch"
+  "fastfetch"
   "pacman-contrib"
+  "python"
+  "python-pip"
+  "python-pipx"
   "shellcheck"
 -}}
 
@@ -26,9 +29,8 @@ set -eufo pipefail
   "flameshot"
   "graphicsmagick"
   "pamixer"
-  "pavucontrol"
   "playerctl"
-  "pulseaudio"
+  "pipewire-pulse"
   "sxiv"
   "w3m"
   "wmctrl"
@@ -38,7 +40,9 @@ set -eufo pipefail
 {{ $aurPackages = concat $aurPackages (list
   "arc-dark-osx-openbox-theme-git"
   "betterlockscreen"
-  "numix-icon-theme"
+  "numix-circle-icon-theme-git"
+  "pamac-aur"
+  "pwvucontrol"
   "visual-studio-code-bin"
   "skippy-xd"
 ) -}}
