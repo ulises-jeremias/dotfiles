@@ -1,42 +1,38 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
 Vagrant.configure("2") do |config|
-
   config.vm.box = "archlinux/archlinux"
 
+  # Check for vagrant-libvirt plugin before proceeding
+  unless Vagrant.has_plugin?("vagrant-libvirt")
+    raise 'vagrant-libvirt plugin is not installed. Please install it with: vagrant plugin install vagrant-libvirt'
+  end
+
+  # Resize the disk if the vagrant-disksize plugin is installed
   if Vagrant.has_plugin?("vagrant-disksize")
     config.disksize.size = '40GB'
   end
 
-  config.vm.provider "virtualbox" do |vb|
-    vb.name = "archlinux-dotfiles"
-    # Display the VirtualBox GUI when booting the machine
-    vb.gui = true
+  # Configure for using Virt Manager (libvirt)
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.storage :file, size: '40G', type: 'qcow2'  # Define storage with qcow2 format and 40GB size
 
-    vb.customize ["modifyvm", :id, "--monitorcount", "2"]
-    vb.customize ["modifyvm", :id, "--cpus", 4]
+    # Set VM name and enable graphical interface
+    libvirt.graphics_type = "spice"
+    libvirt.graphics_autoport = 'yes'
+    libvirt.video_type = 'qxl'
 
-    # Customize the amount of memory on the VM:
-    vb.memory = "8192"
-
-    vb.customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']
-    vb.customize ["modifyvm", :id, "--vram", "64"]
-
-    unless File.exist?('./data.vdi')
-      vb.customize ['createhd', '--filename', './data.vdi', '--variant', 'Fixed', '--size', 20 * 1024]
-    end
-
-    vb.customize ['storageattach', :id,  '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', './data.vdi']
+    # Define CPU and memory resources
+    libvirt.cpus = 4
+    libvirt.memory = 8192
   end
 
+  # Define environment variables for login and window managers
   login_manager = ENV['PLAYGROUND_LOGIN_MANAGER'] || 'sddm'
   wm = ENV['WINDOW_MANAGER'] || 'plasma'
 
+  # Provisioning scripts
   config.vm.provision "VM Setup", type: "shell", path: "provision/vm-setup.sh"
   config.vm.provision "Install Yay", type: "shell", path: "provision/yay.sh"
   config.vm.provision "Bash Config", type: "file", source: "config/.bashrc", destination: "/home/vagrant/.bashrc"
-  
   config.vm.provision "Setup Login Manager: " + login_manager, type: "shell", path: "provision/" + login_manager + ".sh"
   config.vm.provision "Setup Window Manager: " + wm, type: "shell", path: "provision/" + wm + ".sh"
 end

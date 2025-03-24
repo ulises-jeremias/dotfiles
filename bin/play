@@ -21,26 +21,34 @@ ROOT="$(realpath "$(dirname "$0")"/..)"
 PLAYGROUND_DIR="$(realpath "${ROOT}/playground")"
 
 . "${ROOT}/lib/easy-options/easyoptions.sh" || exit
-. "${ROOT}/lib/logs.sh" || exit
 
+# Check if Docker Compose is installed
+if ! command -v docker-compose &> /dev/null; then
+    echo "Docker Compose is not installed. Please install Docker Compose to proceed."
+    exit 1
+else
+    echo "Docker Compose is installed."
+fi
 
-#==========================================
+# If all checks pass
+echo "All required components are installed. You can proceed with your Vagrant setup."
+
 # Default argument values and preprocessing
-#==========================================
-time_str=$(date +'%m-%d-%y_%H:%M:%S')
-log_file=${log_file:-"/tmp/dots_playground_log_$time_str.txt"}
-os=${os:-"arch-linux"}
-wm=${wm:-"i3"}
-
-[ ! -f "${log_file}" ] && touch "${log_file}"
+wm="${wm:-"i3"}"
+log_file="${log_file:-/tmp/dots_playground_log_$(date +'%m-%d-%y_%H:%M:%S').txt}"
 
 cd "${PLAYGROUND_DIR}" || exit 1
 
 command="up"
-[ -n "${build}" ] && command="provision"
+[ -n "${provision}" ] && command="provision"
 [ -n "${remove}" ] && command="destroy"
 
-echo "Running command: WINDOW_MANAGER=${wm} vagrant ${command}"
+docker_compose_command="docker-compose run --rm vagrant"
+vagrant_command="vagrant ${command}"
 
-WINDOW_MANAGER="${wm}" vagrant ${command} 2>&1 | tee -a "${log_file}"
+# Combine the Docker Compose and Vagrant commands
+full_command="${docker_compose_command} ${vagrant_command}"
+
+echo "Running command: ${full_command}"
+eval "${full_command}" 2>&1 | tee -a "${log_file}"
 exit $?

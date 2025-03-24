@@ -1,0 +1,15 @@
+services:
+  vagrant:
+    image: vagrantlibvirt/vagrant-libvirt:edge
+    volumes:
+      - /var/run/libvirt:/var/run/libvirt
+      - ~/.vagrant.d:/.vagrant.d
+      - ./:/workspace
+    working_dir: /workspace
+    environment:
+      - LIBVIRT_DEFAULT_URI
+      - WINDOW_MANAGER
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    privileged: true
