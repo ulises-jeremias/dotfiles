@@ -1,2 +1,0 @@
-30 13 * * * /usr/bin/clamscan --exclude-dir=/home/ulisesjcf/.clamtk/viruses --exclude-dir=smb4k --exclude-dir=/run/user/ulisesjcf/gvfs --exclude-dir=/home/ulisesjcf/.gvfs --exclude-dir=.thunderbird --exclude-dir=.mozilla-thunderbird --exclude-dir=.evolution --exclude-dir=Mail --exclude-dir=kmail -i  --detect-pua -r /home/ulisesjcf --log="$HOME/.clamtk/history/$(date +\%b-\%d-\%Y).log" 2>/dev/null # clamtk-scan
-13 * * * * /usr/bin/freshclam --quiet
