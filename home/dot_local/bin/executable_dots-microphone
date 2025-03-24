@@ -97,6 +97,4 @@ if [[ ${exec_toggle} = true ]]; then
   exit
 fi
 
-# Redirection is used to suppress the error message when the wpctl command is not found
-# or the command throws errors.
-listen 2>/dev/null
+listen
