@@ -68,7 +68,7 @@ get_default_source() {
 
 status() {
   DEFAULT_SOURCE=$(get_default_source)
-  MUTED=$(wpctl get-volume "$DEFAULT_SOURCE" 2>/dev/null | grep -oE '\[MUTED\]')
+  MUTED=$(wpctl get-volume "$DEFAULT_SOURCE" | grep -oE '\[MUTED\]')
   if [[ -n "$MUTED" ]]; then
     echo -e "${muted_color}${reset}" # Muted icon
   else
@@ -97,4 +97,6 @@ if [[ ${exec_toggle} = true ]]; then
   exit
 fi
 
-listen
+# Redirection is used to suppress the error message when the wpctl command is not found
+# or the command throws errors.
+listen 2>/dev/null
