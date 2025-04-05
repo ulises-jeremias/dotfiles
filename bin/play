@@ -43,12 +43,12 @@ command="up"
 [ -n "${provision}" ] && command="provision"
 [ -n "${remove}" ] && command="destroy"
 
-docker_compose_command="docker-compose run --rm vagrant"
+docker_compose_command="docker compose run --rm vagrant"
 vagrant_command="vagrant ${command}"
 
 # Combine the Docker Compose and Vagrant commands
 full_command="${docker_compose_command} ${vagrant_command}"
 
 echo "Running command: ${full_command}"
-eval "${full_command}" 2>&1 | tee -a "${log_file}"
+${docker_compose_command} ${vagrant_command} 2>&1 | tee -a "${log_file}"
 exit $?
