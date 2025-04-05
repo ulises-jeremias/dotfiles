@@ -23,7 +23,7 @@ PLAYGROUND_DIR="$(realpath "${ROOT}/playground")"
 . "${ROOT}/lib/easy-options/easyoptions.sh" || exit
 
 # Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+if ! (command -v docker-compose &> /dev/null || command -v docker &> /dev/null && docker compose version &> /dev/null); then
     echo "Docker Compose is not installed. Please install Docker Compose to proceed."
     exit 1
 else
