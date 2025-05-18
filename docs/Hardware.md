@@ -6,7 +6,7 @@ This section contains documentation related to hardware configuration and troubl
 
 ### Graphics
 
-- [NVIDIA Troubleshooting Guide](nvidia-troubleshooting) - Comprehensive guide for NVIDIA driver installation, configuration, and troubleshooting on Arch Linux.
+- [NVIDIA Troubleshooting Guide](./Hardware:-nvidia-troubleshooting) - Comprehensive guide for NVIDIA driver installation, configuration, and troubleshooting on Arch Linux.
 
 ## Future Additions
 

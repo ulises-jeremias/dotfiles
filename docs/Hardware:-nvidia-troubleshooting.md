@@ -125,7 +125,8 @@ sudo pacman -S nvidia-dkms
   nvidia-settings
   ```
 
-> 💡 This usually happens if the internal display is wired through the Intel iGPU and `i915` was blacklisted.
+> [!TIP]
+> This usually happens if the internal display is wired through the Intel iGPU and `i915` was blacklisted.
 
 ---
 
