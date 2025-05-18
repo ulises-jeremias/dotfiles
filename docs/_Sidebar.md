@@ -33,6 +33,8 @@
       - Zsh + Antigen
       - Zsh + Powerlevel10k
       - Zsh + Oh My Zsh
+- [🖥️ Hardware](Hardware)
+  - [NVIDIA Troubleshooting](nvidia-troubleshooting)
 - [🛡️ Privacy and Security](Security)
 - [📁 Dots Backup Tool](Dots-Backup)
 - [⏏️ Dots Eject](Dots-Eject)
