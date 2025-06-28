@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Show this help message.
+##     -s, --startup                         Measure startup performance.
+##     -m, --memory                          Check memory usage of dotfiles.
+##     -b, --benchmark                       Run full benchmark suite.
+##     -r, --report                          Generate performance report.
+##
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+PERF_LOG_DIR="$HOME/.cache/dots/performance"
+[[ ! -d "$PERF_LOG_DIR" ]] && mkdir -p "$PERF_LOG_DIR"
+
+measure_shell_startup() {
+    echo "🚀 Measuring shell startup performance..."
+
+    # Measure zsh startup time
+    local startup_times=()
+    for i in {1..5}; do
+        startup_time=$(time (zsh -i -c exit) 2>&1 | grep real | awk '{print $2}')
+        startup_times+=("$startup_time")
+        echo "  Run $i: $startup_time"
+    done
+
+    # Calculate average
+    echo "  Average startup time across 5 runs"
+
+    # Test specific components
+    echo ""
+    echo "🔧 Component startup analysis:"
+
+    # Test without p10k
+    echo "  Without Powerlevel10k:"
+    time (ZSHRUN=1 zsh -i -c exit) 2>&1 | grep real
+
+    # Test without plugins
+    echo "  Without plugins:"
+    time (zsh --no-rcs -c exit) 2>&1 | grep real
+
+    # Save results
+    {
+        echo "# Shell Startup Performance - $(date)"
+        echo "Standard startup times: ${startup_times[*]}"
+        echo "Baseline (no plugins): $(time (zsh --no-rcs -c exit) 2>&1 | grep real)"
+    } > "$PERF_LOG_DIR/startup_$(date +%Y%m%d_%H%M%S).log"
+}
+
+check_memory_usage() {
+    echo "💾 Analyzing memory usage..."
+
+    # Check currently running processes from dotfiles
+    echo "Current dotfiles processes:"
+    ps aux | grep -E "(polybar|dunst|picom|rofi)" | grep -v grep
+
+    echo ""
+    echo "Memory usage by category:"
+
+    # Window manager
+    wm_mem=$(ps aux | grep -E "(i3|openbox)" | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+    echo "  Window Manager: ${wm_mem:-0 MB}"
+
+    # Status bar
+    bar_mem=$(ps aux | grep polybar | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+    echo "  Polybar: ${bar_mem:-0 MB}"
+
+    # Compositor
+    comp_mem=$(ps aux | grep picom | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+    echo "  Compositor: ${comp_mem:-0 MB}"
+
+    # Terminal
+    term_mem=$(ps aux | grep kitty | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+    echo "  Terminal: ${term_mem:-0 MB}"
+
+    # Calculate total
+    total_mem=$(ps aux | grep -E "(i3|openbox|polybar|picom|kitty|dunst)" | grep -v grep | awk '{sum+=$6} END {print sum/1024}')
+    echo "  Total dotfiles memory: ${total_mem:-0} MB"
+}
+
+run_benchmark() {
+    echo "🏃 Running comprehensive benchmark..."
+
+    local bench_file="$PERF_LOG_DIR/benchmark_$(date +%Y%m%d_%H%M%S).log"
+
+    {
+        echo "# HorneroConfig Performance Benchmark"
+        echo "Date: $(date)"
+        echo "System: $(uname -a)"
+        echo "Memory: $(free -h | grep Mem | awk '{print $2}')"
+        echo "CPU: $(grep 'model name' /proc/cpuinfo | head -1 | cut -d: -f2 | xargs)"
+        echo ""
+    } > "$bench_file"
+
+    # Shell startup
+    echo "Measuring shell startup..." | tee -a "$bench_file"
+    measure_shell_startup | tee -a "$bench_file"
+
+    echo "" | tee -a "$bench_file"
+
+    # Memory usage
+    echo "Checking memory usage..." | tee -a "$bench_file"
+    check_memory_usage | tee -a "$bench_file"
+
+    echo "" | tee -a "$bench_file"
+
+    # Script execution times
+    echo "Script execution performance:" | tee -a "$bench_file"
+    for script in brightness check-network monitor; do
+        if [[ -x "$HOME/.local/bin/dots-$script" ]]; then
+            exec_time=$(time (dots "$script" --help >/dev/null) 2>&1 | grep real | awk '{print $2}')
+            echo "  dots $script: $exec_time" | tee -a "$bench_file"
+        fi
+    done
+
+    echo ""
+    echo "📊 Benchmark complete! Results saved to: $bench_file"
+}
+
+generate_report() {
+    echo "📋 Generating performance report..."
+
+    local report_file="$PERF_LOG_DIR/performance_report_$(date +%Y%m%d).md"
+
+    cat > "$report_file" << EOF
+# HorneroConfig Performance Report
+
+Generated: $(date)
+
+## System Information
+- OS: $(grep PRETTY_NAME /etc/os-release | cut -d'"' -f2)
+- Kernel: $(uname -r)
+- Memory: $(free -h | grep Mem | awk '{print $2}')
+- CPU: $(grep 'model name' /proc/cpuinfo | head -1 | cut -d: -f2 | xargs)
+
+## Performance Metrics
+
+### Shell Startup Time
+$(measure_shell_startup 2>/dev/null | grep -E "(Run|Average|Without)")
+
+### Memory Usage
+$(check_memory_usage 2>/dev/null)
+
+## Recommendations
+
+Based on the analysis:
+- Shell startup time should be under 0.5s for optimal experience
+- Total memory usage should remain under 200MB for lightweight operation
+- Consider disabling heavy plugins if startup time exceeds 1s
+
+## Historical Data
+Recent benchmark files:
+$(ls -lt "$PERF_LOG_DIR"/benchmark_*.log 2>/dev/null | head -3 | awk '{print "- " $9 " (" $6 " " $7 " " $8 ")"}')
+EOF
+
+    echo "📄 Report generated: $report_file"
+
+    # Show quick summary
+    echo ""
+    echo "📊 Quick Summary:"
+    echo "  Latest startup time: $(tail -1 "$PERF_LOG_DIR"/startup_*.log 2>/dev/null | grep -o '[0-9.]*s' | tail -1 || echo 'N/A')"
+    echo "  Current memory usage: $(ps aux | grep -E "(i3|openbox|polybar|picom)" | grep -v grep | awk '{sum+=$6} END {print sum/1024}' || echo '0') MB"
+}
+
+# Main execution
+if [[ -n "${startup}" ]]; then
+    measure_shell_startup
+elif [[ -n "${memory}" ]]; then
+    check_memory_usage
+elif [[ -n "${benchmark}" ]]; then
+    run_benchmark
+elif [[ -n "${report}" ]]; then
+    generate_report
+else
+    echo "🔍 Quick performance check..."
+    measure_shell_startup
+    echo ""
+    check_memory_usage
+fi

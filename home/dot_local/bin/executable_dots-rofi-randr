@@ -1,4 +1,12 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Show a rofi menu to manage the screen resolution
+
 #
 # Setup outputs with xrandr as a backend and dmenu as a frontend
 #

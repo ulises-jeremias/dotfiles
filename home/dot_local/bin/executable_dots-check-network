@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Check if the network is up
+
+wdisconnect="睊"usr/bin/env bash
+
 wdisconnect="睊"
 wconnected="直"
 econnected=""

@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - "docs/**"
+      - "docs/wiki/**"
       - ".github/workflows/docs.yml"
     tags:
       - v*
@@ -37,7 +37,7 @@ jobs:
       - name: Sync docs to wiki
         uses: newrelic/wiki-sync-action@v1.0.1
         with:
-          source: docs
+          source: docs/wiki
           destination: wiki
           token: ${{ secrets.DOTFILES_GITHUB_TOKEN }}
 
@@ -53,7 +53,7 @@ jobs:
         uses: newrelic/wiki-sync-action@v1.0.1
         with:
           source: wiki
-          destination: docs
+          destination: docs/wiki
           token: ${{ secrets.DOTFILES_GITHUB_TOKEN }}
           branch: master
 

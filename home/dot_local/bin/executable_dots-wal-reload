@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## executable_dots-wal-reload utility script
+
+
 # This script is used to reset the wal colorscheme.
 # It will also reset the colorscheme for any application that supports pywal or wal.
 # We will also reload some configurations manually.

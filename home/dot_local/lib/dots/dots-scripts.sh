@@ -22,5 +22,9 @@ scripts_list=(
     " sysupdate: Update the system"
     " toggle: Toggle the state of some applications"
     " updates: Check for updates"
-	"󰖔 weather-info: Get information about the weather"
+	" 󰖔 weather-info: Get information about the weather"
+    "🔧 config-manager: Manage configuration snapshots and backups"
+    "📋 dependencies: Check and install required dependencies"
+    "⚡ performance: Monitor and benchmark system performance"
+    "🔐 security-audit: Run security audits and apply fixes"
 )

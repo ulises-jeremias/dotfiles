@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Print the current monitor name
+
 #
 # Print's the current screen index (zero based).
 #

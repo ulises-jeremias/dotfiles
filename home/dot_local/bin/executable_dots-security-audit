@@ -1,0 +1,275 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Show this help message.
+##     -a, --audit                           Run security audit.
+##     -f, --fix                             Apply security fixes.
+##     -r, --report                          Generate security report.
+##         --permissions                     Check file permissions.
+##         --secrets                         Scan for exposed secrets.
+##
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+SECURITY_LOG="$HOME/.cache/dots/security_audit.log"
+[[ ! -d "$(dirname "$SECURITY_LOG")" ]] && mkdir -p "$(dirname "$SECURITY_LOG")"
+
+check_file_permissions() {
+    echo "🔒 Checking file permissions..."
+
+    local issues=0
+
+    # Check SSH directory permissions
+    if [[ -d "$HOME/.ssh" ]]; then
+        local ssh_perms
+        ssh_perms=$(stat -c %a "$HOME/.ssh")
+        if [[ "$ssh_perms" != "700" ]]; then
+            echo "❌ SSH directory has incorrect permissions: $ssh_perms (should be 700)"
+            ((issues++))
+        else
+            echo "✅ SSH directory permissions correct"
+        fi
+
+        # Check SSH key permissions
+        for key in "$HOME/.ssh"/*; do
+            if [[ -f "$key" ]] && [[ "$key" =~ \.(rsa|ed25519|ecdsa)$ ]]; then
+                local key_perms
+                key_perms=$(stat -c %a "$key")
+                if [[ "$key_perms" != "600" ]]; then
+                    echo "❌ SSH key has incorrect permissions: $(basename "$key") ($key_perms, should be 600)"
+                    ((issues++))
+                fi
+            fi
+        done
+    fi
+
+    # Check credential files
+    local cred_dir="$HOME/.config/private_credentials"
+    if [[ -d "$cred_dir" ]]; then
+        find "$cred_dir" -type f -exec stat -c "%a %n" {} \; | while read -r perms file; do
+            if [[ "$perms" != "600" ]]; then
+                echo "❌ Credential file has incorrect permissions: $(basename "$file") ($perms, should be 600)"
+                ((issues++))
+            fi
+        done
+    fi
+
+    # Check dotfiles scripts are not world-writable
+    find "$HOME/.local/bin" -name "executable_dots-*" -perm /o+w | while read -r script; do
+        echo "❌ Script is world-writable: $(basename "$script")"
+        ((issues++))
+    done
+
+    return $issues
+}
+
+scan_for_secrets() {
+    echo "🔍 Scanning for exposed secrets..."
+
+    local issues=0
+
+    # Common secret patterns
+    local patterns=(
+        "password.*=.*['\"][^'\"]{8,}['\"]"
+        "token.*=.*['\"][^'\"]{16,}['\"]"
+        "api[_-]?key.*=.*['\"][^'\"]{16,}['\"]"
+        "secret.*=.*['\"][^'\"]{16,}['\"]"
+        "private[_-]?key.*=.*['\"][^'\"]{32,}['\"]"
+    )
+
+    for pattern in "${patterns[@]}"; do
+        # Search in dotfiles, exclude known safe files
+        if grep -rEi "$pattern" "$HOME/.dotfiles" \
+           --exclude-dir=".git" \
+           --exclude="*.md" \
+           --exclude="security-audit" 2>/dev/null; then
+            echo "❌ Potential secret found matching pattern: $pattern"
+            ((issues++))
+        fi
+    done
+
+    # Check for hardcoded IPs or domains that might be internal
+    if grep -rE "\b(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|127\.0\.0\.1)\b" \
+       "$HOME/.dotfiles" --exclude-dir=".git" --exclude="*.md" 2>/dev/null; then
+        echo "⚠️  Found internal IP addresses in configuration"
+    fi
+
+    # Check for TODO comments with security implications
+    if grep -ri "TODO.*\(password\|token\|secret\|fix.*security\)" \
+       "$HOME/.dotfiles" --exclude-dir=".git" 2>/dev/null; then
+        echo "⚠️  Found security-related TODO comments"
+    fi
+
+    if [[ $issues -eq 0 ]]; then
+        echo "✅ No obvious secrets found in configuration"
+    fi
+
+    return $issues
+}
+
+check_system_security() {
+    echo "🛡️  Checking system security settings..."
+
+    # Check if firewall is active
+    if command -v ufw >/dev/null 2>&1; then
+        if ufw status | grep -q "Status: active"; then
+            echo "✅ UFW firewall is active"
+        else
+            echo "⚠️  UFW firewall is not active"
+        fi
+    elif command -v firewall-cmd >/dev/null 2>&1; then
+        if firewall-cmd --state 2>/dev/null | grep -q running; then
+            echo "✅ Firewalld is running"
+        else
+            echo "⚠️  Firewalld is not running"
+        fi
+    else
+        echo "⚠️  No firewall management tool detected"
+    fi
+
+    # Check for automatic updates
+    if [[ -f /etc/systemd/system/timers.target.wants/apt-daily.timer ]]; then
+        echo "✅ Automatic updates configured (apt)"
+    elif systemctl is-enabled dnf-automatic.timer >/dev/null 2>&1; then
+        echo "✅ Automatic updates configured (dnf)"
+    else
+        echo "⚠️  Automatic updates not detected"
+    fi
+
+    # Check SSH configuration
+    if [[ -f /etc/ssh/sshd_config ]]; then
+        if grep -q "^PermitRootLogin no" /etc/ssh/sshd_config; then
+            echo "✅ SSH root login disabled"
+        else
+            echo "⚠️  SSH root login not explicitly disabled"
+        fi
+
+        if grep -q "^PasswordAuthentication no" /etc/ssh/sshd_config; then
+            echo "✅ SSH password authentication disabled"
+        else
+            echo "⚠️  SSH password authentication not disabled"
+        fi
+    fi
+}
+
+run_security_audit() {
+    echo "🔐 Running comprehensive security audit..."
+    echo "Timestamp: $(date)" > "$SECURITY_LOG"
+
+    {
+        echo ""
+        check_file_permissions
+        echo ""
+        scan_for_secrets
+        echo ""
+        check_system_security
+    } | tee -a "$SECURITY_LOG"
+
+    echo ""
+    echo "📄 Security audit completed. Log saved to: $SECURITY_LOG"
+}
+
+apply_security_fixes() {
+    echo "🔧 Applying security fixes..."
+
+    # Fix SSH directory permissions
+    if [[ -d "$HOME/.ssh" ]]; then
+        chmod 700 "$HOME/.ssh"
+        echo "✅ Fixed SSH directory permissions"
+
+        # Fix SSH key permissions
+        find "$HOME/.ssh" -name "*.rsa" -o -name "*.ed25519" -o -name "*.ecdsa" | while read -r key; do
+            chmod 600 "$key"
+            echo "✅ Fixed permissions for $(basename "$key")"
+        done
+    fi
+
+    # Fix credential file permissions
+    local cred_dir="$HOME/.config/private_credentials"
+    if [[ -d "$cred_dir" ]]; then
+        find "$cred_dir" -type f -exec chmod 600 {} \;
+        echo "✅ Fixed credential file permissions"
+    fi
+
+    # Fix script permissions
+    find "$HOME/.local/bin" -name "executable_dots-*" -exec chmod 755 {} \;
+    echo "✅ Fixed script permissions"
+
+    echo "🔒 Security fixes applied"
+}
+
+generate_security_report() {
+    local report_file="$HOME/.cache/dots/security_report_$(date +%Y%m%d).md"
+
+    cat > "$report_file" << EOF
+# HorneroConfig Security Report
+
+Generated: $(date)
+
+## Summary
+
+This report contains the security audit results for your HorneroConfig installation.
+
+## File Permissions Audit
+$(check_file_permissions 2>&1)
+
+## Secret Scan Results
+$(scan_for_secrets 2>&1)
+
+## System Security Status
+$(check_system_security 2>&1)
+
+## Recommendations
+
+### High Priority
+- Ensure all SSH keys have 600 permissions
+- Remove any hardcoded secrets from configuration files
+- Enable firewall if not already active
+
+### Medium Priority
+- Set up automatic security updates
+- Review SSH configuration for hardening
+- Regular security audits (monthly)
+
+### Security Checklist
+- [ ] SSH keys properly secured
+- [ ] No secrets in plain text
+- [ ] Firewall configured
+- [ ] Automatic updates enabled
+- [ ] Regular backups configured
+
+## Next Steps
+
+Run \`dots security-audit --fix\` to automatically apply common security fixes.
+
+For additional security, consider:
+- Setting up fail2ban for SSH protection
+- Configuring SELinux/AppArmor if available
+- Using full disk encryption
+- Regular security updates
+EOF
+
+    echo "📋 Security report generated: $report_file"
+}
+
+# Main execution logic
+if [[ -n "${audit}" ]]; then
+    run_security_audit
+elif [[ -n "${fix}" ]]; then
+    apply_security_fixes
+elif [[ -n "${report}" ]]; then
+    generate_security_report
+elif [[ -n "${permissions}" ]]; then
+    check_file_permissions
+elif [[ -n "${secrets}" ]]; then
+    scan_for_secrets
+else
+    run_security_audit
+fi

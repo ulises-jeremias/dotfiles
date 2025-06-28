@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Control the brightness of the screen using different backends such as xbacklight, brightnessctl, blight, or xrandr
+
 set -e
 
 if ! command -v bc &>/dev/null; then

@@ -215,6 +215,30 @@ cd ./dotfiles
 
 Contributions, issues and feature requests are welcome! Check out the [Contributing Guide](./CONTRIBUTING.md) for more details!
 
+### 🔧 Development Setup
+
+To maintain code quality and consistency, this project uses pre-commit hooks. After cloning the repository, set them up:
+
+```bash
+# Install pre-commit (if not already installed)
+pip install pre-commit
+
+# Install the git hook scripts
+pre-commit install
+
+# (Optional) Run against all files
+pre-commit run --all-files
+```
+
+The pre-commit hooks will automatically:
+
+- Check shell scripts with ShellCheck
+- Format code with shfmt
+- Validate dots scripts follow conventions
+- Check for common issues (trailing whitespace, large files, etc.)
+
+This ensures all contributions maintain the project's quality standards!
+
 Bellow you can find a list of all the amazing contributors who have made this project possible:
 
 <a href="https://github.com/ulises-jeremias/dotfiles/contributors">

@@ -1,0 +1,270 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Show this help message.
+##     -c, --create                          Create a new configuration snapshot.
+##     -l, --list                            List all snapshots.
+##     -r, --restore=SNAPSHOT_ID             Restore from a specific snapshot.
+##     -d, --diff=SNAPSHOT_ID                Show differences from a snapshot.
+##         --auto                            Set up automatic snapshots.
+##         --cleanup                         Clean old snapshots (keep last 10).
+##
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+SNAPSHOTS_DIR="$HOME/.cache/dots/snapshots"
+[[ ! -d "$SNAPSHOTS_DIR" ]] && mkdir -p "$SNAPSHOTS_DIR"
+
+create_snapshot() {
+    local timestamp
+    timestamp=$(date +%Y%m%d_%H%M%S)
+    local snapshot_id="config_${timestamp}"
+    local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
+
+    echo "📸 Creating configuration snapshot: $snapshot_id"
+
+    mkdir -p "$snapshot_dir"
+
+    # Create metadata
+    cat > "$snapshot_dir/metadata.json" << EOF
+{
+  "id": "$snapshot_id",
+  "timestamp": "$(date -Iseconds)",
+  "hostname": "$(hostname)",
+  "user": "$(whoami)",
+  "dotfiles_commit": "$(cd ~/.dotfiles && git rev-parse HEAD 2>/dev/null || echo 'unknown')",
+  "system_info": {
+    "os": "$(grep PRETTY_NAME /etc/os-release | cut -d'"' -f2)",
+    "kernel": "$(uname -r)",
+    "shell": "$SHELL"
+  }
+}
+EOF
+
+    # Backup critical configurations
+    echo "  Backing up dotfiles state..."
+    tar -czf "$snapshot_dir/dotfiles.tar.gz" -C "$HOME" .config .local/bin .local/lib .zshrc .p10k.zsh 2>/dev/null || true
+
+    # Backup current rice configuration
+    if [[ -f "$HOME/.local/share/dots/rices/.current_rice" ]]; then
+        cp "$HOME/.local/share/dots/rices/.current_rice" "$snapshot_dir/"
+        echo "  Current rice: $(cat "$HOME/.local/share/dots/rices/.current_rice")"
+    fi
+
+    # Backup package list (if on Arch)
+    if command -v pacman >/dev/null 2>&1; then
+        pacman -Qqe > "$snapshot_dir/packages_explicit.txt"
+        pacman -Qqm > "$snapshot_dir/packages_aur.txt"
+        echo "  Saved package lists"
+    fi
+
+    # Save running processes
+    ps aux > "$snapshot_dir/processes.txt"
+
+    # Calculate size
+    local size
+    size=$(du -sh "$snapshot_dir" | cut -f1)
+    echo "  Snapshot size: $size"
+
+    echo "✅ Snapshot created: $snapshot_id"
+    echo "   Location: $snapshot_dir"
+
+    # Update latest symlink
+    ln -sfn "$snapshot_dir" "$SNAPSHOTS_DIR/latest"
+}
+
+list_snapshots() {
+    echo "📋 Configuration Snapshots"
+    echo ""
+
+    if [[ ! -d "$SNAPSHOTS_DIR" ]] || [[ -z "$(ls -A "$SNAPSHOTS_DIR" 2>/dev/null)" ]]; then
+        echo "No snapshots found. Create one with: dots config-manager --create"
+        return
+    fi
+
+    printf "%-20s %-19s %-15s %-10s %s\n" "ID" "TIMESTAMP" "HOSTNAME" "SIZE" "DOTFILES_COMMIT"
+    printf "%-20s %-19s %-15s %-10s %s\n" "----" "---------" "--------" "----" "---------------"
+
+    for snapshot_dir in "$SNAPSHOTS_DIR"/config_*; do
+        if [[ -d "$snapshot_dir" ]] && [[ -f "$snapshot_dir/metadata.json" ]]; then
+            local id hostname timestamp size commit
+            id=$(basename "$snapshot_dir")
+            hostname=$(jq -r '.hostname // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null || echo "unknown")
+            timestamp=$(jq -r '.timestamp // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null | cut -d'T' -f1,2 | tr 'T' ' ' | cut -d'+' -f1)
+            size=$(du -sh "$snapshot_dir" 2>/dev/null | cut -f1 || echo "?")
+            commit=$(jq -r '.dotfiles_commit // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null | cut -c1-12)
+
+            printf "%-20s %-19s %-15s %-10s %s\n" "$id" "$timestamp" "$hostname" "$size" "$commit"
+        fi
+    done
+
+    echo ""
+    echo "Use 'dots config-manager --restore SNAPSHOT_ID' to restore a snapshot"
+}
+
+restore_snapshot() {
+    local snapshot_id="$1"
+    local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
+
+    if [[ ! -d "$snapshot_dir" ]]; then
+        echo "❌ Snapshot not found: $snapshot_id"
+        return 1
+    fi
+
+    echo "🔄 Restoring configuration from snapshot: $snapshot_id"
+
+    # Show snapshot info
+    if [[ -f "$snapshot_dir/metadata.json" ]]; then
+        echo "  Snapshot info:"
+        echo "    Date: $(jq -r '.timestamp' "$snapshot_dir/metadata.json" 2>/dev/null)"
+        echo "    Host: $(jq -r '.hostname' "$snapshot_dir/metadata.json" 2>/dev/null)"
+        echo "    Commit: $(jq -r '.dotfiles_commit' "$snapshot_dir/metadata.json" 2>/dev/null)"
+    fi
+
+    # Create backup of current state
+    echo "  Creating backup of current state..."
+    create_snapshot
+
+    # Restore files
+    if [[ -f "$snapshot_dir/dotfiles.tar.gz" ]]; then
+        echo "  Restoring dotfiles..."
+        tar -xzf "$snapshot_dir/dotfiles.tar.gz" -C "$HOME" 2>/dev/null || true
+    fi
+
+    # Restore rice configuration
+    if [[ -f "$snapshot_dir/.current_rice" ]]; then
+        cp "$snapshot_dir/.current_rice" "$HOME/.local/share/dots/rices/"
+        echo "  Restored rice: $(cat "$snapshot_dir/.current_rice")"
+    fi
+
+    echo "✅ Restore completed!"
+    echo "   You may need to restart your shell or reload configurations"
+}
+
+show_diff() {
+    local snapshot_id="$1"
+    local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
+
+    if [[ ! -d "$snapshot_dir" ]]; then
+        echo "❌ Snapshot not found: $snapshot_id"
+        return 1
+    fi
+
+    echo "🔍 Comparing current configuration with snapshot: $snapshot_id"
+
+    # Compare rice configuration
+    if [[ -f "$snapshot_dir/.current_rice" ]] && [[ -f "$HOME/.local/share/dots/rices/.current_rice" ]]; then
+        local old_rice new_rice
+        old_rice=$(cat "$snapshot_dir/.current_rice")
+        new_rice=$(cat "$HOME/.local/share/dots/rices/.current_rice")
+
+        if [[ "$old_rice" != "$new_rice" ]]; then
+            echo "  Rice changed: $old_rice → $new_rice"
+        else
+            echo "  Rice unchanged: $new_rice"
+        fi
+    fi
+
+    # Compare package lists (if available)
+    if [[ -f "$snapshot_dir/packages_explicit.txt" ]] && command -v pacman >/dev/null 2>&1; then
+        local current_packages
+        current_packages=$(mktemp)
+        pacman -Qqe > "$current_packages"
+
+        echo ""
+        echo "  Package differences:"
+        echo "    Added packages:"
+        comm -13 "$snapshot_dir/packages_explicit.txt" "$current_packages" | head -10 | sed 's/^/      /'
+        echo "    Removed packages:"
+        comm -23 "$snapshot_dir/packages_explicit.txt" "$current_packages" | head -10 | sed 's/^/      /'
+
+        rm "$current_packages"
+    fi
+}
+
+setup_auto_snapshots() {
+    echo "⚙️  Setting up automatic snapshots..."
+
+    # Create systemd timer for automatic snapshots
+    local timer_dir="$HOME/.config/systemd/user"
+    mkdir -p "$timer_dir"
+
+    # Service file
+    cat > "$timer_dir/dots-snapshot.service" << EOF
+[Unit]
+Description=Create HorneroConfig snapshot
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=$HOME/.local/bin/dots config-manager --create
+EOF
+
+    # Timer file
+    cat > "$timer_dir/dots-snapshot.timer" << EOF
+[Unit]
+Description=Create HorneroConfig snapshots
+Requires=dots-snapshot.service
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+
+    # Enable timer
+    systemctl --user daemon-reload
+    systemctl --user enable dots-snapshot.timer
+    systemctl --user start dots-snapshot.timer
+
+    echo "✅ Automatic snapshots enabled (daily)"
+    echo "   Check status: systemctl --user status dots-snapshot.timer"
+}
+
+cleanup_snapshots() {
+    echo "🧹 Cleaning up old snapshots..."
+
+    local snapshots
+    mapfile -t snapshots < <(ls -1t "$SNAPSHOTS_DIR"/config_* 2>/dev/null || true)
+
+    if [[ ${#snapshots[@]} -le 10 ]]; then
+        echo "  Only ${#snapshots[@]} snapshots found, no cleanup needed"
+        return
+    fi
+
+    local to_remove=("${snapshots[@]:10}")
+
+    echo "  Removing ${#to_remove[@]} old snapshots..."
+    for snapshot in "${to_remove[@]}"; do
+        echo "    Removing: $(basename "$snapshot")"
+        rm -rf "$snapshot"
+    done
+
+    echo "✅ Cleanup completed, kept 10 most recent snapshots"
+}
+
+# Main logic
+if [[ -n "${create}" ]]; then
+    create_snapshot
+elif [[ -n "${list}" ]]; then
+    list_snapshots
+elif [[ -n "${restore}" ]]; then
+    restore_snapshot "$restore"
+elif [[ -n "${diff}" ]]; then
+    show_diff "$diff"
+elif [[ -n "${auto}" ]]; then
+    setup_auto_snapshots
+elif [[ -n "${cleanup}" ]]; then
+    cleanup_snapshots
+else
+    list_snapshots
+fi
