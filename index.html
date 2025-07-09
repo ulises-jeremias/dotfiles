@@ -795,23 +795,31 @@ dots &lt;script&gt;   <span class="hljs-comment"># Run a specific script (with o
 <li><code>brightness</code> – Adjust screen brightness via <code>xbacklight</code>, <code>brightnessctl</code>, <code>blight</code>, or <code>xrandr</code></li>
 <li><code>check-network</code> – Check if you’re connected to the internet</li>
 <li><code>checkupdates</code> – Query available package updates</li>
-<li><code>feh-blur</code> – Blur your wallpaper background with <code>feh</code></li>
-<li><code>git-notify</code> – Send a notification after a Git commit</li>
-<li><code>microphone</code> – Mute/unmute or control mic levels</li>
-<li><code>monitor</code> – Display current monitor name</li>
-<li><code>night-mode</code> – Toggle night mode for low light environments</li>
-<li><code>openweathermap-detailed</code> – Show detailed weather info from OpenWeatherMap</li>
+<li><code>config-manager</code> – Manage configuration snapshots and backups</li>
+<li><code>dependencies</code> – Check and install required system dependencies</li>
+<li><code>feh-blur</code> – Blur the background when using feh to set wallpaper</li>
+<li><code>git-notify</code> – Send notifications when git commits are made</li>
+<li><code>i3-resurrect-rofi</code> – Manage i3-resurrect workspace profiles via Rofi menu</li>
+<li><code>jgmenu</code> – Launch jgmenu application launcher</li>
+<li><code>microphone</code> – Monitor and toggle microphone mute status with visual indicators</li>
+<li><code>monitor</code> – Get the name of the currently active monitor</li>
+<li><code>next-workspace</code> – Switch to the next existing i3 workspace</li>
+<li><code>night-mode</code> – Toggle night mode/blue light filter</li>
+<li><code>performance</code> – Monitor system performance and run benchmarks</li>
 <li><code>popup-calendar</code> – Display a calendar in a popup window</li>
-<li><code>rofi-bluetooth</code> – Manage Bluetooth devices using a Rofi menu</li>
-<li><code>rofi-randr</code> – Change screen resolution using a Rofi menu</li>
-<li><code>rofi-run</code> – Launch applications using a Rofi menu</li>
-<li><code>rofi-xrandr</code> – Extended screen resolution manager using Rofi and charts</li>
-<li><code>screenshooter</code> – Take screenshots or region captures</li>
-<li><code>spotify</code> – Display current song info from Spotify</li>
-<li><code>sysupdate</code> – Run a full system update</li>
-<li><code>toggle</code> – Toggle the state of specific apps or modules (e.g., Polybar menus)</li>
-<li><code>updates</code> – Check for software updates</li>
-<li><code>weather</code> – Display current weather summary</li>
+<li><code>rofi-bluetooth</code> – Manage Bluetooth device connections via Rofi menu</li>
+<li><code>rofi-randr</code> – Display resolution management via Rofi menu</li>
+<li><code>rofi-rice-selector</code> – Select and apply desktop rice themes via Rofi menu</li>
+<li><code>rofi-run</code> – Enhanced Rofi application and command launcher</li>
+<li><code>rofi-xrandr</code> – Advanced display configuration with charts via Rofi</li>
+<li><code>screenshooter</code> – Take screenshots with various options and formats</li>
+<li><code>scripts</code> – Interactive menu to browse and launch available dots scripts</li>
+<li><code>security-audit</code> – Run comprehensive security audits and apply security fixes</li>
+<li><code>sysupdate</code> – Perform comprehensive system updates</li>
+<li><code>toggle</code> – Toggle state of applications like polybar, compositor, notifications</li>
+<li><code>updates</code> – Check and display available package updates with notifications</li>
+<li><code>wal-reload</code> – Reload pywal colorscheme and apply to i3, rofi, eww, betterlockscreen, discord</li>
+<li><code>weather-info</code> – Display current weather information and forecasts</li>
 </ul>
 <hr>
 <h2 id="-customizing-scripts">🧠 Customizing Scripts</h2>
@@ -1550,6 +1558,43 @@ Only recommended if you know your use cases won&#39;t be impacted.</p>
 <pre class="hljs">sudo nmap -sS -p- 192.168.1.1
 rustscan -a 192.168.1.1</pre><p>Use for auditing your local network or spotting unknown open ports.</p>
 <hr>
+<h2 id="-automated-security-auditing">🔍 Automated Security Auditing</h2>
+<ul>
+<li><strong>dots security-audit</strong>: Built-in comprehensive security audit tool<ul>
+<li>Scans applied configurations for exposed secrets</li>
+<li>Checks file permissions across the system</li>
+<li>Validates system security settings</li>
+<li>Generates detailed security reports</li>
+</ul>
+</li>
+</ul>
+<pre class="hljs"><span class="hljs-comment"># Run complete security audit</span>
+dots security-audit
+
+<span class="hljs-comment"># Run specific checks</span>
+dots security-audit --permissions  <span class="hljs-comment"># Check file permissions only</span>
+dots security-audit --secrets      <span class="hljs-comment"># Scan for exposed secrets only</span>
+
+<span class="hljs-comment"># Apply automatic security fixes</span>
+dots security-audit --fix
+
+<span class="hljs-comment"># Generate detailed security report</span>
+dots security-audit --report</pre><p><strong>What it checks:</strong></p>
+<ul>
+<li>SSH key and config permissions</li>
+<li>Credential file security</li>
+<li>World-readable sensitive files</li>
+<li>Applied configuration files for secrets</li>
+<li>Environment variables and shell history</li>
+<li>Firewall status and SSH configuration</li>
+<li>Security tools (fail2ban, AppArmor/SELinux)</li>
+<li>System integrity and updates</li>
+</ul>
+<blockquote>
+<p>[!TIP]
+Run <code>dots security-audit</code> monthly or after major configuration changes to maintain good security hygiene.</p>
+</blockquote>
+<hr>
 <h2 id="-tips-for-staying-secure">🧪 Tips for Staying Secure</h2>
 <ul>
 <li>Use strong, unique passwords + 2FA where possible</li>
@@ -1567,7 +1612,171 @@ rustscan -a 192.168.1.1</pre><p>Use for auditing your local network or spotting 
 </ul>
 <p>Security is an ongoing practice — start with the basics, stay informed, and evolve over time 🔐</p>
 <p class="page" id="Dots-Backup"></p><h1>📁 Dots Backup Tool</h1>
-<p>This documentation is not ready yet. Please come back later or ask for help in the <a href="https://github.com/ulises-jeremias/dotfiles/discussions">Discussions</a> section!</p>
+<h1 id="-dots-backup-guide">💾 Dots Backup Guide</h1>
+<p>The <code>dots backup</code> utility provides comprehensive backup and restoration capabilities for your dotfiles configuration. This tool helps you create snapshots, manage backup schedules, and restore previous configurations when needed.</p>
+<blockquote>
+<p>[!TIP]
+Regular backups are essential for maintaining system stability and recovering from configuration issues. The backup tool integrates seamlessly with chezmoi and your dotfiles workflow.</p>
+</blockquote>
+<hr>
+<h2 id="-usage">🚀 Usage</h2>
+<pre class="hljs"><span class="hljs-comment"># Create a backup with default settings</span>
+dots backup
+
+<span class="hljs-comment"># List all available backups</span>
+dots backup --list
+
+<span class="hljs-comment"># Restore from a specific backup</span>
+dots backup --rollback
+
+<span class="hljs-comment"># Set up automated backups with cron</span>
+dots backup --register-cron
+
+<span class="hljs-comment"># Remove automated backups</span>
+dots backup --unregister-cron</pre><h3 id="advanced-options">Advanced Options</h3>
+<pre class="hljs"><span class="hljs-comment"># Custom backup location</span>
+dots backup --backup-dir=/path/to/custom/location
+
+<span class="hljs-comment"># Custom backup name</span>
+dots backup --backup-name=my-custom-backup
+
+<span class="hljs-comment"># Custom dotfiles directory (if not using default ~/.dotfiles)</span>
+dots backup --dotfiles-dir=/path/to/dotfiles
+
+<span class="hljs-comment"># Custom log file location</span>
+dots backup --log-file=/path/to/custom.log</pre><hr>
+<h2 id="-what-gets-backed-up">📦 What Gets Backed Up</h2>
+<p>The backup tool creates comprehensive snapshots including:</p>
+<ul>
+<li><strong>Dotfiles source</strong>: Your complete <code>~/.dotfiles</code> directory</li>
+<li><strong>Applied configurations</strong>: Key config files from <code>~/.config</code></li>
+<li><strong>Shell configurations</strong>: <code>.zshrc</code>, <code>.bashrc</code>, <code>.profile</code>, etc.</li>
+<li><strong>SSH configurations</strong>: <code>~/.ssh</code> directory (with permission preservation)</li>
+<li><strong>Git configurations</strong>: <code>.gitconfig</code> and related files</li>
+<li><strong>Custom scripts</strong>: <code>~/.local/bin</code> contents</li>
+<li><strong>Application data</strong>: Selected application configurations</li>
+</ul>
+<hr>
+<h2 id="-automated-backups">🔄 Automated Backups</h2>
+<h3 id="setting-up-cron-jobs">Setting Up Cron Jobs</h3>
+<pre class="hljs"><span class="hljs-comment"># Register daily backups at 2 AM</span>
+dots backup --register-cron
+
+<span class="hljs-comment"># This creates a cron job that runs:</span>
+<span class="hljs-comment"># 0 2 * * * /home/user/.local/bin/dots-backup --backup-name=daily_$(date +\%Y\%m\%d)</span></pre><h3 id="managing-automated-backups">Managing Automated Backups</h3>
+<pre class="hljs"><span class="hljs-comment"># View current cron jobs</span>
+crontab -l
+
+<span class="hljs-comment"># Remove automated backups</span>
+dots backup --unregister-cron
+
+<span class="hljs-comment"># Check backup logs</span>
+tail -f ~/.cache/dots/backup.log</pre><hr>
+<h2 id="-backup-management">🔧 Backup Management</h2>
+<h3 id="listing-backups">Listing Backups</h3>
+<pre class="hljs">dots backup --list</pre><p>This shows:</p>
+<ul>
+<li>Backup name and date</li>
+<li>Backup size</li>
+<li>Location on disk</li>
+<li>Backup integrity status</li>
+</ul>
+<h3 id="restoring-from-backup">Restoring from Backup</h3>
+<pre class="hljs"><span class="hljs-comment"># Interactive restoration (shows available backups)</span>
+dots backup --rollback
+
+<span class="hljs-comment"># The restore process:</span>
+<span class="hljs-comment"># 1. Lists available backups with timestamps</span>
+<span class="hljs-comment"># 2. Allows you to select which backup to restore</span>
+<span class="hljs-comment"># 3. Creates a pre-restore backup of current state</span>
+<span class="hljs-comment"># 4. Restores selected backup</span>
+<span class="hljs-comment"># 5. Runs chezmoi apply to sync changes</span></pre><hr>
+<h2 id="-backup-structure">📁 Backup Structure</h2>
+<p>Default backup location: <code>~/.dotfiles/backup/</code></p>
+<pre class="hljs">backup/
+├── dotfiles_backup_20250109_143022/
+│   ├── dotfiles/          <span class="hljs-comment"># Complete .dotfiles directory</span>
+│   ├── configs/           <span class="hljs-comment"># Applied configurations</span>
+│   ├── ssh/              <span class="hljs-comment"># SSH configurations (encrypted)</span>
+│   ├── scripts/          <span class="hljs-comment"># Custom scripts</span>
+│   └── metadata.json     <span class="hljs-comment"># Backup metadata and checksums</span>
+├── dotfiles_backup_20250108_140000/
+└── <span class="hljs-string">...</span></pre><hr>
+<h2 id="-security-features">🛡️ Security Features</h2>
+<h3 id="permission-preservation">Permission Preservation</h3>
+<ul>
+<li>SSH keys maintain 600 permissions</li>
+<li>Directories preserve 700/755 permissions</li>
+<li>Sensitive files are properly secured</li>
+</ul>
+<h3 id="encryption-support">Encryption Support</h3>
+<pre class="hljs"><span class="hljs-comment"># Backup with GPG encryption (if gpg is configured)</span>
+dots backup --encrypt
+
+<span class="hljs-comment"># Restore encrypted backup</span>
+dots backup --rollback --decrypt</pre><h3 id="integrity-checking">Integrity Checking</h3>
+<ul>
+<li>SHA256 checksums for all backed up files</li>
+<li>Automatic integrity verification during restore</li>
+<li>Corruption detection and reporting</li>
+</ul>
+<hr>
+<h2 id="-configuration">⚙️ Configuration</h2>
+<h3 id="default-settings">Default Settings</h3>
+<p>The backup tool uses these defaults:</p>
+<ul>
+<li><strong>Backup directory</strong>: <code>~/.dotfiles/backup</code></li>
+<li><strong>Backup name</strong>: <code>dotfiles_backup_$(date)</code></li>
+<li><strong>Log file</strong>: <code>/tmp/dots_backup_log_$(date).txt</code></li>
+<li><strong>Retention</strong>: Keeps last 10 backups by default</li>
+</ul>
+<h3 id="customizing-backup-behavior">Customizing Backup Behavior</h3>
+<p>You can modify the backup script to:</p>
+<ul>
+<li>Change default retention policy</li>
+<li>Add/remove directories from backup scope</li>
+<li>Modify backup naming conventions</li>
+<li>Customize encryption settings</li>
+</ul>
+<pre class="hljs"><span class="hljs-comment"># Edit the backup script</span>
+chezmoi edit ~/.<span class="hljs-built_in">local</span>/bin/executable_dots-backup
+chezmoi apply</pre><hr>
+<h2 id="-troubleshooting">🆘 Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<p><strong>Permission Denied</strong></p>
+<pre class="hljs"><span class="hljs-comment"># Ensure proper permissions for backup directory</span>
+chmod 755 ~/.dotfiles/backup</pre><p><strong>Large Backup Sizes</strong></p>
+<pre class="hljs"><span class="hljs-comment"># Exclude large files or directories by editing the script</span>
+<span class="hljs-comment"># Add exclusions for cache directories, logs, etc.</span></pre><p><strong>Failed Restores</strong></p>
+<pre class="hljs"><span class="hljs-comment"># Check backup integrity</span>
+dots backup --verify backup_name
+
+<span class="hljs-comment"># Manual restoration</span>
+cp -r ~/.dotfiles/backup/backup_name/dotfiles ~/.dotfiles-restored</pre><h3 id="recovery">Recovery</h3>
+<p>If something goes wrong:</p>
+<ol>
+<li>Current config is automatically backed up before any restore</li>
+<li>Use <code>chezmoi diff</code> to see what changed</li>
+<li>Use <code>chezmoi apply --dry-run</code> to preview changes</li>
+<li>Restore from the automatic pre-restore backup if needed</li>
+</ol>
+<hr>
+<h2 id="-best-practices">💡 Best Practices</h2>
+<ol>
+<li><strong>Regular Backups</strong>: Set up daily automated backups</li>
+<li><strong>Test Restores</strong>: Periodically test backup restoration</li>
+<li><strong>Multiple Locations</strong>: Consider backing up to external storage</li>
+<li><strong>Version Control</strong>: Use git for additional version tracking</li>
+<li><strong>Documentation</strong>: Document any custom backup configurations</li>
+</ol>
+<hr>
+<h2 id="-related-commands">🔗 Related Commands</h2>
+<ul>
+<li><code>chezmoi archive</code> - Create chezmoi-specific archives</li>
+<li><code>dots config-manager</code> - Manage configuration snapshots</li>
+<li><code>dots security-audit</code> - Audit backup security</li>
+</ul>
+<p>The backup system works hand-in-hand with chezmoi to provide comprehensive configuration management and disaster recovery capabilities.</p>
 <p class="page" id="Dots-Eject"></p><h1>⏏️ Dots Eject</h1>
 <h1 id="-dots-eject-guide">🧨 Dots Eject Guide</h1>
 <p>While <a href="https://www.chezmoi.io/">Chezmoi</a> is a powerful and recommended tool for managing dotfiles across multiple systems, we understand that some users may prefer to maintain their own independent distribution.</p>
