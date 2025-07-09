@@ -42,8 +42,8 @@ for script in "${DOTS_BIN_DIR}"/executable_dots-*; do
 done
 
 # Validate dots-scripts.sh is up to date
-scripts_in_dir=$(find "${DOTS_BIN_DIR}" -name "executable_dots-*" -printf "%f\n" | sed 's/executable_dots-//' | sort)
-scripts_in_list=$(grep -o '[a-zA-Z0-9-]*:' "${DOTFILES_ROOT}/home/dot_local/lib/dots/dots-scripts.sh" | sed 's/://' | sort)
+scripts_in_dir=$(find "${DOTS_BIN_DIR}" -name "executable_dots-*" -printf "%f\n" | sed 's/executable_dots-//' | grep -v '^scripts$' | sort)
+scripts_in_list=$(grep -o '[a-zA-Z0-9-]*:' "${DOTFILES_ROOT}/home/dot_local/lib/dots/dots-scripts.sh" | sed 's/://' | grep -v '^scripts$' | sort)
 
 if ! diff -q <(echo "$scripts_in_dir") <(echo "$scripts_in_list") >/dev/null; then
     echo "❌ dots-scripts.sh is out of sync with actual scripts"
