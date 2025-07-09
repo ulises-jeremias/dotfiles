@@ -18,7 +18,9 @@
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
-SECURITY_LOG="$HOME/.cache/dots/security_audit.log"
+date_str="$(date +%Y-%m-%d)"
+
+SECURITY_LOG="$HOME/.cache/dots/security_audit_${date_str}.log"
 [[ ! -d "$(dirname "$SECURITY_LOG")" ]] && mkdir -p "$(dirname "$SECURITY_LOG")"
 
 check_file_permissions() {
