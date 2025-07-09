@@ -49,7 +49,7 @@ You can visually manage most XFCE4 settings through the built-in **XFCE4 Setting
 1. Open the application menu (click the icon in the panel or press the Super key)
 2. Search for **"Settings Manager"** and click to open
 
-![Settings Manager](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/settings-manager-open.gif?raw=true)
+![Settings Manager](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/settings-manager-open.gif?raw=true)
 
 Once opened, you'll see options like:
 
@@ -59,7 +59,7 @@ Once opened, you'll see options like:
 - Power manager settings
 - Appearance (themes, icons, fonts)
 
-![Settings](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/settings.jpg?raw=true)
+![Settings](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/settings.jpg?raw=true)
 
 Any changes here are written to the configuration files managed by chezmoi and apply globally to all dotfiles.
 

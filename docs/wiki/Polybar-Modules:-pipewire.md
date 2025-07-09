@@ -22,7 +22,7 @@ Displays:
 
 | Muted | 75% | 100% |
 |-------|-----|------|
-| ![](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/pipewire-muted.jpg?raw=true) | ![](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/pipewire-75.jpg?raw=true) | ![](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/pipewire-100.jpg?raw=true) |
+| ![](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/polybar/modules/pipewire-muted.jpg?raw=true) | ![](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/polybar/modules/pipewire-75.jpg?raw=true) | ![](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/polybar/modules/pipewire-100.jpg?raw=true) |
 
 ---
 
@@ -34,7 +34,7 @@ Wraps the `pipewire` module to show a visual bar-style representation of volume.
 
 | Muted | 75% | 100% |
 |-------|-----|------|
-| ![](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/pipewire-muted.jpg?raw=true) | ![](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/pipewire-bar-75.jpg?raw=true) | ![](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/pipewire-bar-100.jpg?raw=true) |
+| ![](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/polybar/modules/pipewire-muted.jpg?raw=true) | ![](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/polybar/modules/pipewire-bar-75.jpg?raw=true) | ![](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/polybar/modules/pipewire-bar-100.jpg?raw=true) |
 
 ---
 

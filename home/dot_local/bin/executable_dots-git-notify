@@ -10,7 +10,7 @@
 set -eu
 
 # Git commit msg format defaults
-declare REPOSITORY="origin/master"
+declare REPOSITORY="origin/main"
 declare FORMAT_NAME="--format=%cn"
 declare FORMAT_WHEN="--format=%cr"
 declare FORMAT_SUMMARY="--format=%s"
@@ -53,8 +53,8 @@ USAGE: ./git-notify [OPTIONS]
  And then use just: "git-notify [OPTIONS]"
 
 OPTIONS:
- -b <BRANCH>:         branch        Specifies the branch to run against (default origin/master)
- -r <REPOSITORY>:     repository    Specify what repository to watch (default origin/master)
+ -b <BRANCH>:         branch        Specifies the branch to run against (default origin/main)
+ -r <REPOSITORY>:     repository    Specify what repository to watch (default origin/main)
  -t <TIME>:           refresh_delay Time to wait inbetween checking, in seconds (default 60)
  -a:                  async         Runs the job in the background (via &)
  -v:                  verbose       Set verbose logging on (adds "[date]: " prefix)
@@ -68,7 +68,7 @@ parse_cmd_args() {
   local args=$@
   # Parses command line options; see help file for options
   local OPTIND opts a
-  branch=$(git_curr_branch || echo "origin/master")
+  branch=$(git_curr_branch || echo "origin/main")
   async=false
   refresh_delay=60
   verbose=false

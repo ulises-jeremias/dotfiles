@@ -3,7 +3,7 @@
   
   [Docs](https://ulises-jeremias.github.io/dotfiles) |
   [Changelog](#) |
-  [Contributing](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CONTRIBUTING.md)
+  [Contributing](https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CONTRIBUTING.md)
 
 </div> <!-- center -->
 
@@ -44,17 +44,17 @@ Most were written from scratch. Some details:
 - **Widgets** 🎨 [Eww](https://github.com/elkowar/eww) with 2 different pre-backed widgets!
 - and many more!
 
-![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen.png?raw=true)
+![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/main/static/screen.png?raw=true)
 
-![Dotfiles Anime Light Theme Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/anime.jpeg?raw=true)
+![Dotfiles Anime Light Theme Overview](https://github.com/ulises-jeremias/dotfiles/blob/main/static/anime.jpeg?raw=true)
 
-![Dotfiles Anime Dark Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/anime-girl-screen.png?raw=true)
+![Dotfiles Anime Dark Overview](https://github.com/ulises-jeremias/dotfiles/blob/main/static/anime-girl-screen.png?raw=true)
 
-![Dotfiles Dark Overview](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screen-2.jpg?raw=true)
+![Dotfiles Dark Overview](https://github.com/ulises-jeremias/dotfiles/blob/main/static/screen-2.jpg?raw=true)
 
-![Nord Two Lines](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-nord-two-lines.png?raw=true)
+![Nord Two Lines](https://github.com/ulises-jeremias/dotfiles/blob/main/static/screenshot-nord-two-lines.png?raw=true)
 
-![Launchpad](https://github.com/ulises-jeremias/dotfiles/blob/master/static/screenshot-launchpad.png?raw=true)
+![Launchpad](https://github.com/ulises-jeremias/dotfiles/blob/main/static/screenshot-launchpad.png?raw=true)
 
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
-[licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/master/LICENSE
+[licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/main/LICENSE

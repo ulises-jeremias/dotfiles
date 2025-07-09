@@ -74,7 +74,7 @@ You can adjust:
 - Mouse behavior
 - Desktops and workspaces
 
-![Openbox Config](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/obconf.jpg?raw=true)
+![Openbox Config](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/obconf.jpg?raw=true)
 
 > ✨ Great for quick changes without editing XML files.
 

@@ -4,7 +4,7 @@ Thank you for considering contributing to Dotfiles! We appreciate your interest 
 
 Before making any changes or submitting a pull request, we recommend discussing your proposed changes with the repository owners. This can be done through creating an issue, sending an email, or any other method of communication that suits you. Engaging in a discussion beforehand helps ensure that your contributions align with the project's goals and guidelines.
 
-Please note that Dotfiles has a [Code of Conduct](https://github.com/ulises-jeremias/dotfiles/blob/master/.github/CODE_OF_CONDUCT.md) that we expect all contributors to adhere to. Kindly follow the code of conduct in all your interactions within the project community.
+Please note that Dotfiles has a [Code of Conduct](https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CODE_OF_CONDUCT.md) that we expect all contributors to adhere to. Kindly follow the code of conduct in all your interactions within the project community.
 
 ## Ways to Contribute
 
@@ -16,7 +16,7 @@ To contribute through a pull request, please follow these steps:
 
 1. Fork the Dotfiles repository to your own GitHub account.
 2. Create a new branch for each feature or improvement you plan to work on.
-3. Submit a pull request from each feature branch to the **master** branch of the main repository.
+3. Submit a pull request from each feature branch to the **main** branch of the main repository.
 
 It's essential to separate new features or improvements into separate feature branches and submit a pull request for each branch. This allows us to review and merge new contributions individually, ensuring better visibility and management of changes.
 

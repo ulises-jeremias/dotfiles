@@ -31,7 +31,7 @@ This prints the current Bluetooth state (e.g., `ON` or `OFF`) and updates as the
 
 Here’s how the Rofi Bluetooth UI looks in action:
 
-![Rofi Bluetooth](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/rofi-bluetooth.gif?raw=true)
+![Rofi Bluetooth](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/polybar/modules/rofi-bluetooth.gif?raw=true)
 
 > [!TIP]
 > You can assign a click action in Polybar to trigger the Rofi UI using `dots rofi-bluetooth`.

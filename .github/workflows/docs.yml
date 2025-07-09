@@ -3,7 +3,7 @@ name: Deploy Docs
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - "docs/wiki/**"
       - ".github/workflows/docs.yml"
@@ -55,7 +55,7 @@ jobs:
           source: wiki
           destination: docs/wiki
           token: ${{ secrets.DOTFILES_GITHUB_TOKEN }}
-          branch: master
+          branch: main
 
   deploy:
     needs:

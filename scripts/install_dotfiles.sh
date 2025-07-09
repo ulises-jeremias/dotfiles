@@ -72,7 +72,7 @@ git_clean() {
 DOTFILES_REPO_HOST=${DOTFILES_REPO_HOST:-"https://github.com"}
 DOTFILES_USER=${DOTFILES_USER:-"ulises-jeremias"}
 DOTFILES_REPO="${DOTFILES_REPO_HOST}/${DOTFILES_USER}/dotfiles"
-DOTFILES_BRANCH=${DOTFILES_BRANCH:-"master"}
+DOTFILES_BRANCH=${DOTFILES_BRANCH:-"main"}
 DOTFILES_DIR="${HOME}/.dotfiles"
 
 if ! command -v git >/dev/null 2>&1; then

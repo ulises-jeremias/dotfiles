@@ -19,7 +19,7 @@ It detects the microphone's mute state and updates its icon accordingly. It refr
 
 | Muted | Unmuted |
 |-------|---------|
-| ![Muted](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/microphone-muted.jpg?raw=true) | ![Unmuted](https://github.com/ulises-jeremias/dotfiles/blob/master/docs/images/polybar/modules/microphone-unmuted.jpg?raw=true) |
+| ![Muted](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/polybar/modules/microphone-muted.jpg?raw=true) | ![Unmuted](https://github.com/ulises-jeremias/dotfiles/blob/main/docs/images/polybar/modules/microphone-unmuted.jpg?raw=true) |
 
 ---
 
