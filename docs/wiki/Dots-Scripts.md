@@ -38,23 +38,31 @@ dots <script>   # Run a specific script (with optional flags)
 - `brightness` – Adjust screen brightness via `xbacklight`, `brightnessctl`, `blight`, or `xrandr`
 - `check-network` – Check if you’re connected to the internet
 - `checkupdates` – Query available package updates
-- `feh-blur` – Blur your wallpaper background with `feh`
-- `git-notify` – Send a notification after a Git commit
-- `microphone` – Mute/unmute or control mic levels
-- `monitor` – Display current monitor name
-- `night-mode` – Toggle night mode for low light environments
-- `openweathermap-detailed` – Show detailed weather info from OpenWeatherMap
+- `config-manager` – Manage configuration snapshots and backups
+- `dependencies` – Check and install required system dependencies
+- `feh-blur` – Blur the background when using feh to set wallpaper
+- `git-notify` – Send notifications when git commits are made
+- `i3-resurrect-rofi` – Manage i3-resurrect workspace profiles via Rofi menu
+- `jgmenu` – Launch jgmenu application launcher
+- `microphone` – Monitor and toggle microphone mute status with visual indicators
+- `monitor` – Get the name of the currently active monitor
+- `next-workspace` – Switch to the next existing i3 workspace
+- `night-mode` – Toggle night mode/blue light filter
+- `performance` – Monitor system performance and run benchmarks
 - `popup-calendar` – Display a calendar in a popup window
-- `rofi-bluetooth` – Manage Bluetooth devices using a Rofi menu
-- `rofi-randr` – Change screen resolution using a Rofi menu
-- `rofi-run` – Launch applications using a Rofi menu
-- `rofi-xrandr` – Extended screen resolution manager using Rofi and charts
-- `screenshooter` – Take screenshots or region captures
-- `spotify` – Display current song info from Spotify
-- `sysupdate` – Run a full system update
-- `toggle` – Toggle the state of specific apps or modules (e.g., Polybar menus)
-- `updates` – Check for software updates
-- `weather` – Display current weather summary
+- `rofi-bluetooth` – Manage Bluetooth device connections via Rofi menu
+- `rofi-randr` – Display resolution management via Rofi menu
+- `rofi-rice-selector` – Select and apply desktop rice themes via Rofi menu
+- `rofi-run` – Enhanced Rofi application and command launcher
+- `rofi-xrandr` – Advanced display configuration with charts via Rofi
+- `screenshooter` – Take screenshots with various options and formats
+- `scripts` – Interactive menu to browse and launch available dots scripts
+- `security-audit` – Run comprehensive security audits and apply security fixes
+- `sysupdate` – Perform comprehensive system updates
+- `toggle` – Toggle state of applications like polybar, compositor, notifications
+- `updates` – Check and display available package updates with notifications
+- `wal-reload` – Reload pywal colorscheme and apply to i3, rofi, eww, betterlockscreen, discord
+- `weather-info` – Display current weather information and forecasts
 
 ---
 

@@ -88,6 +88,45 @@ Use for auditing your local network or spotting unknown open ports.
 
 ---
 
+## 🔍 Automated Security Auditing
+
+- **dots security-audit**: Built-in comprehensive security audit tool
+  - Scans applied configurations for exposed secrets
+  - Checks file permissions across the system
+  - Validates system security settings
+  - Generates detailed security reports
+
+```sh
+# Run complete security audit
+dots security-audit
+
+# Run specific checks
+dots security-audit --permissions  # Check file permissions only
+dots security-audit --secrets      # Scan for exposed secrets only
+
+# Apply automatic security fixes
+dots security-audit --fix
+
+# Generate detailed security report
+dots security-audit --report
+```
+
+**What it checks:**
+
+- SSH key and config permissions
+- Credential file security
+- World-readable sensitive files
+- Applied configuration files for secrets
+- Environment variables and shell history
+- Firewall status and SSH configuration
+- Security tools (fail2ban, AppArmor/SELinux)
+- System integrity and updates
+
+> [!TIP]
+> Run `dots security-audit` monthly or after major configuration changes to maintain good security hygiene.
+
+---
+
 ## 🧪 Tips for Staying Secure
 
 - Use strong, unique passwords + 2FA where possible
