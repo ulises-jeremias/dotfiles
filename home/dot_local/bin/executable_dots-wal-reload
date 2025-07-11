@@ -5,75 +5,381 @@
 ##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
-## executable_dots-wal-reload utility script
+## Enhanced wal-reload utility script with improved reliability and user experience
+## No longer relies on external state files, minimizes dependencies
 
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
 
-# This script is used to reset the wal colorscheme.
-# It will also reset the colorscheme for any application that supports pywal or wal.
-# We will also reload some configurations manually.
+# Global counters for summary
+UPDATED_APPS=()
+FAILED_APPS=()
+SKIPPED_APPS=()
 
-# Check if wal is installed
-if ! command -v wal &> /dev/null; then
-    echo "wal is not installed. Please install it and try again."
-    notify-send "wal is not installed. Please install it and try again."
-    exit 1
-fi
+# Function to show status
+show_status() {
+    echo -e "${CYAN}🎨${NC} $1"
+}
 
-# Check if the ~/.cache/wal directory exists
-if [[ ! -d "${HOME}/.cache/wal" ]]; then
-    echo "The ~/.cache/wal directory does not exist. Please run wal first."
-    notify-send "The ~/.cache/wal directory does not exist. Please run wal first."
-    exit 1
-fi
+# Function to show success
+show_success() {
+    echo -e "${GREEN}✅${NC} $1"
+}
 
-# Reset the colorscheme
-(wal -R -q &> /dev/null) || exit 1
+# Function to show error
+show_error() {
+    echo -e "${RED}❌${NC} $1"
+}
 
-# If i3 is running, reload the i3 configuration
-# TODO: Figure out a better way to reload i3 configuration
-if pgrep "i3" &> /dev/null; then
-    i3-msg reload
-    if [ -x ~/.config/i3/setup-gaps.sh ]; then
-        ~/.config/i3/setup-gaps.sh
+# Function to show warning
+show_warning() {
+    echo -e "${YELLOW}⚠️${NC} $1"
+}
+
+# Function to send notification
+send_notification() {
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send "$1" "$2" -t 3000 -i "$3" 2>/dev/null || true
     fi
-fi
+}
 
-# Reload rofi colors. First, check if rofi is installed
-if ! command -v rofi &> /dev/null; then
-    echo "rofi is not installed. Please install it and try again."
-    notify-send "rofi is not installed. Please install it and try again."
-    exit 1
-fi
-cp ~/.cache/wal/colors-rofi-dark.rasi ~/.config/rofi/colors.rasi
+# Function to check if a command exists and warn if not
+check_command() {
+    local cmd=$1
+    local description=$2
+    local required=${3:-false}
 
-# Reload EWW. First, check if eww is installed
-if ! command -v eww &> /dev/null; then
-    echo "eww is not installed. Please install it and try again."
-    notify-send "eww is not installed. Please install it and try again."
-    exit 1
-fi
-rm -rf "$HOME/.config/eww/dashboard/colors.scss"
-rm -rf "$HOME/.config/eww/powermenu/colors.scss"
-ln -sf "$HOME/.cache/wal/colors.scss" "$HOME/.config/eww/dashboard/colors.scss"
-ln -sf "$HOME/.cache/wal/colors.scss" "$HOME/.config/eww/powermenu/colors.scss"
-eww --config "$HOME/.config/eww/dashboard" reload
-eww --config "$HOME/.config/eww/powermenu" reload
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        if [[ "$required" == "true" ]]; then
+            show_error "$description ($cmd) is not installed and is required!"
+            FAILED_APPS+=("$description")
+            return 1
+        else
+            show_warning "$description ($cmd) is not installed, skipping related updates"
+            SKIPPED_APPS+=("$description")
+            return 1
+        fi
+    fi
+    return 0
+}
 
-# Reload betterlockscreen colors. First, check if betterlockscreen is installed
-if ! command -v betterlockscreen &> /dev/null; then
-    echo "betterlockscreen is not installed. Please install it and try again."
-    notify-send "betterlockscreen is not installed. Please install it and try again."
-    exit 1
-fi
+# Function to safely execute commands with error handling
+safe_execute() {
+    local description=$1
+    shift
 
-betterlockscreen -u ~/.config/wpg/.current
+    show_status "$description..."
 
-# Reload discord colors. First, check if wal-discord is installed
-if ! command -v wal-discord &> /dev/null; then
-    echo "wal-discord is not installed. Please install it and try again."
-    notify-send "wal-discord is not installed. Please install it and try again."
-    exit 1
-fi
-# Generate the style.css file at ~/.cache/wal-discord/style.css
-# and BetterDiscord theme at ~/.config/BetterDiscord/themes/wal-discord.theme.css
-wal-discord && wal-discord -t
+    if "$@" >/dev/null 2>&1; then
+        show_success "$description completed"
+        UPDATED_APPS+=("$description")
+        return 0
+    else
+        show_error "$description failed"
+        FAILED_APPS+=("$description")
+        return 1
+    fi
+}
+
+# Function to reload wal
+reload_wal() {
+    show_status "Reloading pywal colorscheme..."
+
+    if ! check_command wal "pywal" true; then
+        exit 1
+    fi
+
+    # Check if the ~/.cache/wal directory exists
+    if [[ ! -d "${HOME}/.cache/wal" ]]; then
+        show_error "The ~/.cache/wal directory does not exist. Please run wal first."
+        send_notification "❌ Wal Error" "No wal cache found. Run wal first." "dialog-error"
+        exit 1
+    fi
+
+    # Reset the colorscheme
+    if wal -R -q 2>/dev/null; then
+        show_success "Pywal colorscheme reloaded"
+    else
+        show_error "Failed to reload wal colorscheme"
+        exit 1
+    fi
+}
+
+# Function to reload i3 configuration
+reload_i3() {
+    if ! pgrep "i3" >/dev/null 2>&1; then
+        show_warning "i3 is not running, skipping i3 reload"
+        SKIPPED_APPS+=("i3")
+        return 0
+    fi
+
+    show_status "Reloading i3 configuration..."
+
+    if i3-msg reload >/dev/null 2>&1; then
+        show_success "i3 configuration reloaded"
+        UPDATED_APPS+=("i3")
+
+        # Apply gaps if setup script exists
+        if [[ -x ~/.config/i3/setup-gaps.sh ]]; then
+            if safe_execute "Applying i3 gaps" ~/.config/i3/setup-gaps.sh; then
+                show_success "i3 gaps applied"
+            fi
+        fi
+    else
+        show_error "Failed to reload i3 configuration"
+        FAILED_APPS+=("i3")
+    fi
+}
+
+# Function to reload rofi colors
+reload_rofi() {
+    if ! check_command rofi "Rofi"; then
+        return 0
+    fi
+
+    show_status "Updating Rofi colors..."
+
+    local rofi_colors_source="$HOME/.cache/wal/colors-rofi-dark.rasi"
+    local rofi_colors_dest="$HOME/.config/rofi/colors.rasi"
+
+    if [[ -f "$rofi_colors_source" ]]; then
+        if cp "$rofi_colors_source" "$rofi_colors_dest" 2>/dev/null; then
+            show_success "Rofi colors updated"
+            UPDATED_APPS+=("Rofi")
+        else
+            show_error "Failed to copy Rofi colors"
+            FAILED_APPS+=("Rofi")
+        fi
+    else
+        show_warning "Rofi color file not found: $rofi_colors_source"
+        SKIPPED_APPS+=("Rofi")
+    fi
+}
+
+# Function to reload EWW
+reload_eww() {
+    if ! check_command eww "EWW"; then
+        return 0
+    fi
+
+    show_status "Updating EWW colors and reloading widgets..."
+
+    local wal_colors="$HOME/.cache/wal/colors.scss"
+
+    if [[ ! -f "$wal_colors" ]]; then
+        show_warning "Wal SCSS colors not found: $wal_colors"
+        return 0
+    fi
+
+    # Update dashboard colors
+    if [[ -d "$HOME/.config/eww/dashboard" ]]; then
+        rm -f "$HOME/.config/eww/dashboard/colors.scss"
+        if ln -sf "$wal_colors" "$HOME/.config/eww/dashboard/colors.scss" 2>/dev/null; then
+            show_success "EWW dashboard colors linked"
+            safe_execute "Reloading EWW dashboard" eww --config "$HOME/.config/eww/dashboard" reload
+        fi
+    fi
+
+    # Update powermenu colors
+    if [[ -d "$HOME/.config/eww/powermenu" ]]; then
+        rm -f "$HOME/.config/eww/powermenu/colors.scss"
+        if ln -sf "$wal_colors" "$HOME/.config/eww/powermenu/colors.scss" 2>/dev/null; then
+            show_success "EWW powermenu colors linked"
+            safe_execute "Reloading EWW powermenu" eww --config "$HOME/.config/eww/powermenu" reload
+        fi
+    fi
+
+    # Check for other EWW configs
+    for eww_config in "$HOME/.config/eww"/*; do
+        if [[ -d "$eww_config" && -f "$eww_config/eww.yuck" ]]; then
+            local config_name
+            config_name=$(basename "$eww_config")
+            if [[ "$config_name" != "dashboard" && "$config_name" != "powermenu" ]]; then
+                show_status "Found additional EWW config: $config_name"
+                if [[ ! -f "$eww_config/colors.scss" ]]; then
+                    ln -sf "$wal_colors" "$eww_config/colors.scss" 2>/dev/null || true
+                fi
+                safe_execute "Reloading EWW $config_name" eww --config "$eww_config" reload || true
+            fi
+        fi
+    done
+}
+
+# Function to reload betterlockscreen
+reload_betterlockscreen() {
+    if ! check_command betterlockscreen "Betterlockscreen"; then
+        return 0
+    fi
+
+    local current_wallpaper="$HOME/.config/wpg/.current"
+
+    if [[ -f "$current_wallpaper" ]]; then
+        show_status "Updating betterlockscreen with current wallpaper..."
+        if safe_execute "Generating betterlockscreen cache" betterlockscreen -u "$current_wallpaper"; then
+            show_success "Betterlockscreen updated"
+        fi
+    else
+        show_warning "Current wallpaper not found: $current_wallpaper"
+        # Fallback: try to use wal wallpaper
+        local wal_wallpaper
+        wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
+        if [[ -f "$wal_wallpaper" ]]; then
+            safe_execute "Generating betterlockscreen cache (wal fallback)" betterlockscreen -u "$wal_wallpaper"
+        fi
+    fi
+}
+
+# Function to reload Discord theme
+reload_discord() {
+    if ! check_command wal-discord "wal-discord"; then
+        return 0
+    fi
+
+    show_status "Updating Discord theme..."
+
+    # Generate the style.css file and BetterDiscord theme
+    if wal-discord >/dev/null 2>&1 && wal-discord -t >/dev/null 2>&1; then
+        show_success "Discord theme updated"
+    else
+        show_error "Failed to update Discord theme"
+    fi
+}
+
+# Function to reload additional applications
+reload_additional_apps() {
+    show_status "Checking for additional applications to reload..."
+
+    # Reload Alacritty if it's running and config exists
+    if pgrep alacritty >/dev/null && [[ -f "$HOME/.cache/wal/colors-alacritty.yml" ]]; then
+        show_status "Alacritty detected, colors should auto-reload"
+    fi
+
+    # Reload Kitty if it's running
+    if pgrep kitty >/dev/null && command -v kitty >/dev/null 2>&1; then
+        if kitty @ set-colors --all --configured ~/.cache/wal/colors-kitty.conf 2>/dev/null; then
+            show_success "Kitty colors reloaded"
+        fi
+    fi
+
+    # Reload VSCode theme if wal-theme-vscode is available
+    if command -v wal-theme-vscode >/dev/null 2>&1; then
+        safe_execute "Updating VSCode theme" wal-theme-vscode
+    fi
+
+    # Check for and reload polybar if it's running
+    if pgrep polybar >/dev/null; then
+        show_status "Polybar detected, may need manual restart to apply new colors"
+        # Note: Polybar typically needs to be restarted rather than just reloaded
+    fi
+}
+
+# Function to update current rice if applicable
+update_current_rice() {
+    local rice_config="$HOME/.cache/dots/current_rice"
+
+    if [[ -f "$rice_config" ]]; then
+        source "$rice_config"
+        if [[ -n "$CURRENT_RICE" && -f "$HOME/.local/share/dots/rices/$CURRENT_RICE/executable_apply.sh" ]]; then
+            show_status "Current rice detected: $CURRENT_RICE"
+            show_status "You may want to reapply the rice to fully integrate new colors"
+            # Optionally: auto-reapply rice
+            # "$HOME/.local/share/dots/rices/$CURRENT_RICE/executable_apply.sh"
+        fi
+    fi
+}
+
+# Function to show reload summary
+show_summary() {
+    echo ""
+    echo -e "${PURPLE}🎨 Wal Reload Summary 🎨${NC}"
+    echo ""
+    show_success "Pywal colorscheme has been reloaded"
+    echo ""
+
+    if [[ ${#UPDATED_APPS[@]} -gt 0 ]]; then
+        echo -e "${GREEN}✅ Successfully updated (${#UPDATED_APPS[@]}):${NC}"
+        printf '  • %s\n' "${UPDATED_APPS[@]}"
+        echo ""
+    fi
+
+    if [[ ${#SKIPPED_APPS[@]} -gt 0 ]]; then
+        echo -e "${YELLOW}⚠️  Skipped (${#SKIPPED_APPS[@]}):${NC}"
+        printf '  • %s\n' "${SKIPPED_APPS[@]}"
+        echo ""
+    fi
+
+    if [[ ${#FAILED_APPS[@]} -gt 0 ]]; then
+        echo -e "${RED}❌ Failed (${#FAILED_APPS[@]}):${NC}"
+        printf '  • %s\n' "${FAILED_APPS[@]}"
+        echo ""
+    fi
+
+    local total_updated=${#UPDATED_APPS[@]}
+    local total_failed=${#FAILED_APPS[@]}
+    
+    if [[ $total_failed -eq 0 ]]; then
+        echo -e "${GREEN}🎉 All operations completed successfully!${NC}"
+        send_notification "🎨 Wal Reload Complete" "Successfully updated $total_updated applications" "applications-graphics"
+    else
+        echo -e "${YELLOW}⚠️  Completed with $total_failed failures${NC}"
+        send_notification "🎨 Wal Reload Completed" "Updated $total_updated apps, $total_failed failed" "dialog-warning"
+    fi
+
+    echo ""
+    echo -e "${CYAN}💡 Tip:${NC} Some applications may require a restart to fully apply new colors"
+}
+
+# Main function
+main() {
+    echo -e "${PURPLE}🎨 Enhanced Wal Reload Script 🎨${NC}"
+    echo ""
+
+    # Core wal reload
+    reload_wal
+
+    # Reload applications
+    reload_i3
+    reload_rofi
+    reload_eww
+    reload_betterlockscreen
+    reload_discord
+    reload_additional_apps
+
+    # Update rice integration
+    update_current_rice
+
+    # Show summary
+    show_summary
+}
+
+# Parse arguments
+case "${1:-}" in
+    "help"|"-h"|"--help")
+        echo "Enhanced Wal Reload Script"
+        echo ""
+        echo "Usage: $0 [option]"
+        echo ""
+        echo "Options:"
+        echo "  (no args)      - Full reload of wal and all supported applications"
+        echo "  help, -h       - Show this help"
+        echo ""
+        echo "Supported applications:"
+        echo "  • i3 window manager"
+        echo "  • Rofi application launcher"
+        echo "  • EWW widgets (dashboard, powermenu, and custom configs)"
+        echo "  • Betterlockscreen"
+        echo "  • Discord (via wal-discord)"
+        echo "  • Kitty terminal"
+        echo "  • Alacritty terminal"
+        echo "  • VSCode (via wal-theme-vscode)"
+        ;;
+    *)
+        main
+        ;;
+esac

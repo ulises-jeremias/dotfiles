@@ -5,35 +5,312 @@
 ##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
-## Toggle night mode
+## Enhanced night mode toggle with multiple backend support and better features
+## Now detects state from running processes instead of external state files
 
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-DOTS_CACHE_DIR="$HOME/.cache/dots"
-[[ ! -d "$DOTS_CACHE_DIR" ]] && mkdir -p "$DOTS_CACHE_DIR"
-
-NIGHT_MODE_FILE="$DOTS_CACHE_DIR/night_mode"
-[[ ! -f "${NIGHT_MODE_FILE}" ]] && echo "NIGHT_MODE=\"enabled\"" >"${NIGHT_MODE_FILE}"
-
-source "${NIGHT_MODE_FILE}"
-
-night_mode() {
-  for display in $(xrandr | grep " connected" | awk '{print $1}'); do
-    xrandr --output "${display}" --gamma "$1" --brightness "$2"
-  done
+# Detect if night mode is currently active by checking running processes
+is_night_mode_active() {
+    # Check for redshift, gammastep, or wlsunset processes
+    if pgrep -f "redshift|gammastep|wlsunset" >/dev/null 2>&1; then
+        return 0  # Night mode is active
+    fi
+    
+    # For xrandr, we'll assume day mode unless we detect gamma adjustments
+    # This is less reliable but better than external state files
+    return 1  # Night mode is not active
 }
 
-auto_run() {
-  if [[ "${NIGHT_MODE}" = "disabled" ]]; then
-    night_mode 1:0.85:0.6 1.0
-    echo "NIGHT_MODE=\"enabled\"" >"${NIGHT_MODE_FILE}"
-  else
-    night_mode 1:1:1 1.0
-    echo "NIGHT_MODE=\"disabled\"" >"${NIGHT_MODE_FILE}"
-  fi
+# Get the currently active night mode backend
+get_active_backend() {
+    if pgrep redshift >/dev/null 2>&1; then
+        echo "redshift"
+    elif pgrep gammastep >/dev/null 2>&1; then
+        echo "gammastep"
+    elif pgrep wlsunset >/dev/null 2>&1; then
+        echo "wlsunset"
+    else
+        echo "none"
+    fi
 }
 
-case $1 in
-auto) auto_run ;;
-off) night_mode 1:1:1 1.0 ;;
-*) night_mode 1:0.85:0.6 1.0 ;;
+# Function to show status
+show_status() {
+    echo -e "${BLUE}🌙${NC} $1"
+}
+
+# Function to show success
+show_success() {
+    echo -e "${GREEN}✅${NC} $1"
+}
+
+# Function to show error
+show_error() {
+    echo -e "${RED}❌${NC} $1"
+}
+
+# Function to show warning
+show_warning() {
+    echo -e "${YELLOW}⚠️${NC} $1"
+}
+
+# Function to send notification
+send_notification() {
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send "$1" "$2" -t 3000 -i "$3" 2>/dev/null || true
+    fi
+}
+
+# Detect available backends
+detect_backends() {
+    local backends=()
+
+    if command -v redshift >/dev/null 2>&1; then
+        backends+=("redshift")
+    fi
+
+    if command -v gammastep >/dev/null 2>&1; then
+        backends+=("gammastep")
+    fi
+
+    if command -v xrandr >/dev/null 2>&1; then
+        backends+=("xrandr")
+    fi
+
+    if command -v wlsunset >/dev/null 2>&1; then
+        backends+=("wlsunset")
+    fi
+
+    echo "${backends[@]}"
+}
+
+# Function to toggle night mode using redshift
+toggle_redshift() {
+    if pgrep redshift >/dev/null; then
+        pkill redshift
+        show_success "Redshift disabled (day mode)"
+        send_notification "🌞 Day Mode" "Redshift disabled" "weather-clear-symbolic"
+    else
+        redshift -O 4000K >/dev/null 2>&1 &
+        show_success "Redshift enabled (night mode - 4000K)"
+        send_notification "🌙 Night Mode" "Redshift enabled at 4000K" "weather-clear-night-symbolic"
+    fi
+}
+
+# Function to toggle night mode using gammastep
+toggle_gammastep() {
+    if pgrep gammastep >/dev/null; then
+        pkill gammastep
+        show_success "Gammastep disabled (day mode)"
+        send_notification "🌞 Day Mode" "Gammastep disabled" "weather-clear-symbolic"
+    else
+        gammastep -O 4000K >/dev/null 2>&1 &
+        show_success "Gammastep enabled (night mode - 4000K)"
+        send_notification "🌙 Night Mode" "Gammastep enabled at 4000K" "weather-clear-night-symbolic"
+    fi
+}
+
+# Function to toggle night mode using xrandr (fallback)
+toggle_xrandr() {
+    # For xrandr, we detect state by checking if gamma is adjusted
+    # This is a heuristic approach since xrandr doesn't maintain state
+    local current_gamma
+    current_gamma=$(xrandr --verbose | grep -m1 "Gamma:" | awk '{print $2}' | cut -d: -f1)
+    
+    # If gamma is approximately 1.0, assume day mode; otherwise, night mode
+    if [[ "${current_gamma}" == "1.0" ]] || [[ -z "${current_gamma}" ]]; then
+        # Enable night mode
+        for display in $(xrandr | grep " connected" | awk '{print $1}'); do
+            xrandr --output "${display}" --gamma 1:0.85:0.6 --brightness 0.9
+        done
+        show_success "Night mode enabled (xrandr gamma adjustment)"
+        send_notification "🌙 Night Mode" "Gamma adjustment applied" "weather-clear-night-symbolic"
+    else
+        # Disable night mode
+        for display in $(xrandr | grep " connected" | awk '{print $1}'); do
+            xrandr --output "${display}" --gamma 1:1:1 --brightness 1.0
+        done
+        show_success "Day mode enabled (xrandr reset)"
+        send_notification "🌞 Day Mode" "Gamma adjustment removed" "weather-clear-symbolic"
+    fi
+}
+
+# Function to toggle night mode using wlsunset (Wayland)
+toggle_wlsunset() {
+    if pgrep wlsunset >/dev/null; then
+        pkill wlsunset
+        show_success "Wlsunset disabled (day mode)"
+        send_notification "🌞 Day Mode" "Wlsunset disabled" "weather-clear-symbolic"
+    else
+        wlsunset -T 4000 >/dev/null 2>&1 &
+        show_success "Wlsunset enabled (night mode - 4000K)"
+        send_notification "🌙 Night Mode" "Wlsunset enabled at 4000K" "weather-clear-night-symbolic"
+    fi
+}
+
+# Main toggle function
+auto_toggle() {
+    local backends_str
+    backends_str=$(detect_backends)
+    read -ra backends <<< "$backends_str"
+
+    if [[ ${#backends[@]} -eq 0 ]]; then
+        show_error "No supported night mode backends found!"
+        show_warning "Please install one of: redshift, gammastep, wlsunset, or ensure xrandr is available"
+        exit 1
+    fi
+
+    show_status "Available backends: ${backends[*]}"
+
+    # Use the first available backend in order of preference
+    if [[ " ${backends[*]} " =~ " redshift " ]]; then
+        show_status "Using redshift backend"
+        toggle_redshift
+    elif [[ " ${backends[*]} " =~ " gammastep " ]]; then
+        show_status "Using gammastep backend"
+        toggle_gammastep
+    elif [[ " ${backends[*]} " =~ " wlsunset " ]]; then
+        show_status "Using wlsunset backend (Wayland)"
+        toggle_wlsunset
+    elif [[ " ${backends[*]} " =~ " xrandr " ]]; then
+        show_status "Using xrandr backend (fallback)"
+        toggle_xrandr
+    fi
+}
+
+# Force disable night mode
+force_disable() {
+    show_status "Force disabling night mode on all backends..."
+
+    # Kill any running processes
+    pkill redshift 2>/dev/null || true
+    pkill gammastep 2>/dev/null || true
+    pkill wlsunset 2>/dev/null || true
+
+    # Reset xrandr if available
+    if command -v xrandr >/dev/null 2>&1; then
+        for display in $(xrandr | grep " connected" | awk '{print $1}'); do
+            xrandr --output "${display}" --gamma 1:1:1 --brightness 1.0 2>/dev/null || true
+        done
+    fi
+
+    show_success "Night mode disabled on all backends"
+    send_notification "🌞 Day Mode" "Night mode force disabled" "weather-clear-symbolic"
+}
+
+# Force enable night mode
+force_enable() {
+    show_status "Force enabling night mode..."
+    
+    # First disable any running backends
+    pkill redshift 2>/dev/null || true
+    pkill gammastep 2>/dev/null || true
+    pkill wlsunset 2>/dev/null || true
+    
+    # Then enable using the best available backend
+    auto_toggle
+}
+
+# Show current status
+show_current_status() {
+    local active_backend
+    active_backend=$(get_active_backend)
+    
+    if [[ "${active_backend}" != "none" ]]; then
+        echo -e "${GREEN}✅ Night mode is ${YELLOW}ACTIVE${NC} (backend: ${BLUE}${active_backend}${NC})"
+    else
+        echo -e "${BLUE}🌞 Night mode is ${YELLOW}INACTIVE${NC} (day mode)"
+    fi
+
+    local active_backends=()
+    pgrep redshift >/dev/null && active_backends+=("redshift")
+    pgrep gammastep >/dev/null && active_backends+=("gammastep")
+    pgrep wlsunset >/dev/null && active_backends+=("wlsunset")
+
+    if [[ ${#active_backends[@]} -gt 0 ]]; then
+        echo "Active processes: ${active_backends[*]}"
+    else
+        echo "No active night mode processes detected"
+    fi
+    
+    # Show xrandr gamma info if available
+    if command -v xrandr >/dev/null 2>&1; then
+        local gamma_info
+        gamma_info=$(xrandr --verbose 2>/dev/null | grep -m1 "Gamma:" | awk '{print $2}' || echo "N/A")
+        echo "Current gamma (xrandr): ${gamma_info}"
+    fi
+}
+
+# Show help
+show_help() {
+    echo "Enhanced Night Mode Toggle (State-Free)"
+    echo ""
+    echo "Usage: $0 [command]"
+    echo ""
+    echo "Commands:"
+    echo "  auto, toggle    - Toggle night mode (default)"
+    echo "  on, enable      - Force enable night mode"
+    echo "  off, disable    - Force disable night mode"
+    echo "  status          - Show current status"
+    echo "  backends        - List available backends"
+    echo "  help            - Show this help"
+    echo ""
+    echo "Features:"
+    echo "  - Detects state from running processes (no external state files)"
+    echo "  - Automatic backend detection and selection"
+    echo "  - Colored output and desktop notifications"
+    echo "  - Smart toggle behavior based on current state"
+    echo ""
+    echo "Supported backends (in order of preference):"
+    echo "  - redshift     - Best for X11, automatic location detection"
+    echo "  - gammastep    - Good for Wayland, redshift alternative"
+    echo "  - wlsunset     - Wayland-native sunset/sunrise"
+    echo "  - xrandr       - Fallback gamma adjustment"
+}
+
+# Parse command line arguments
+case "${1:-auto}" in
+    "auto"|"toggle"|"")
+        auto_toggle
+        ;;
+    "on"|"enable")
+        if is_night_mode_active; then
+            show_warning "Night mode is already active (backend: $(get_active_backend))"
+            show_current_status
+        else
+            force_enable
+        fi
+        ;;
+    "off"|"disable")
+        if is_night_mode_active; then
+            force_disable
+        else
+            show_warning "Night mode is already inactive"
+            show_current_status
+        fi
+        ;;
+    "status")
+        show_current_status
+        ;;
+    "backends")
+        backends_str=$(detect_backends)
+        echo "Available backends: $backends_str"
+        if is_night_mode_active; then
+            echo "Currently active: $(get_active_backend)"
+        fi
+        ;;
+    "help"|"-h"|"--help")
+        show_help
+        ;;
+    *)
+        show_error "Unknown command: $1"
+        show_help
+        exit 1
+        ;;
 esac
