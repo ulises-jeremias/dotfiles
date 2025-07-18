@@ -13,6 +13,7 @@
     - [Apps Launcher (Rofi)](./Rofi:-Apps-Launcher)
     - [Network Manager](Network-Manager)
     - [Polybar](Polybar)
+      - [😀 Emoji Support](./Polybar:-Emoji-Support)
       - Available Polybar Modules
         - [backlight](./Polybar-Modules:-backlight)
         - [battery](./Polybar-Modules:-battery)
