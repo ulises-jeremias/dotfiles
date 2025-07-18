@@ -13,8 +13,9 @@
     - [Apps Launcher (Rofi)](./Rofi:-Apps-Launcher)
     - [Network Manager](Network-Manager)
     - [Polybar](Polybar)
-      - [⚙️ Configuration Structure](./Polybar:-Configuration-Structure)
-      - [😀 Emoji Support](./Polybar:-Emoji-Support)
+      - [Configuration Structure](./Polybar:-Configuration-Structure)
+      - [Bar Configurations](./Polybar:-Bar-Configurations)
+      - [Emoji Support](./Polybar:-Emoji-Support)
       - Available Polybar Modules
         - [backlight](./Polybar-Modules:-backlight)
         - [battery](./Polybar-Modules:-battery)
@@ -33,7 +34,10 @@
         - [pipewire](./Polybar-Modules:-pipewire)
         - [spotify](./Polybar-Modules:-spotify)
         - [temperature](./Polybar-Modules:-temperature)
-        - [🌤️ weather](./Polybar-Modules:-weather)
+        - [utility-helpers](./Polybar-Modules:-Utility-Helpers)
+        - [weather](./Polybar-Modules:-weather)
+    - [🎨 Rice System](./Rice-System:-Theme-Management)
+    - [🎛️ EWW Widgets](./EWW:-Widgets)
     - [Zsh Shell](Zsh)
       - Customization and Parameters
       - Zsh + Antigen
