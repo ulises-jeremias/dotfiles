@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# Enhanced EWW Dashboard Launch Script
-# Provides robust widget management with comprehensive error handling and logging
+# Universal EWW Widget Manager
+# Provides centralized management for all EWW components
 #
 
 set -euo pipefail
@@ -14,32 +14,23 @@ SCRIPT_NAME="$(basename "$0")"
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 readonly SCRIPT_NAME
 readonly SCRIPT_DIR
-readonly EWW_CONFIG_DIR="$HOME/.config/eww/dashboard"
+readonly EWW_BASE_DIR="$HOME/.config/eww"
 readonly LOG_DIR="$HOME/.cache/eww"
-readonly LOG_FILE="$LOG_DIR/dashboard.log"
-readonly LOCK_FILE="/tmp/eww-dashboard.lock"
+readonly LOG_FILE="$LOG_DIR/manager.log"
+readonly LOCK_FILE="/tmp/eww-manager.lock"
 readonly MAX_RETRIES=3
 readonly RETRY_DELAY=2
 
-# Dashboard widgets list
-readonly DASHBOARD_WIDGETS=(
-    "dashboard-background"
-    "dashboard-profile"
-    "dashboard-system"
-    "dashboard-clock"
-    "dashboard-uptime"
-    "dashboard-music"
-    "dashboard-github"
-    "dashboard-youtube"
-    "dashboard-weather"
-    "dashboard-mail"
-    "dashboard-lock"
-    "dashboard-logout"
-    "dashboard-sleep"
-    "dashboard-reboot"
-    "dashboard-poweroff"
-    "dashboard-folders"
-    "dashboard-placeholder"
+# Available EWW components and their configurations
+declare -A EWW_COMPONENTS=(
+    ["dashboard"]="$EWW_BASE_DIR/dashboard"
+    ["powermenu"]="$EWW_BASE_DIR/powermenu"
+)
+
+# Component widget mappings
+declare -A COMPONENT_WIDGETS=(
+    ["dashboard"]="dashboard-background dashboard-profile dashboard-system dashboard-clock dashboard-uptime dashboard-music dashboard-github dashboard-youtube dashboard-weather dashboard-mail dashboard-lock dashboard-logout dashboard-sleep dashboard-reboot dashboard-poweroff dashboard-folders dashboard-placeholder"
+    ["powermenu"]="powermenu-background powermenu-clock powermenu-uptime powermenu-lock powermenu-logout powermenu-sleep powermenu-reboot powermenu-poweroff powermenu-placeholder"
 )
 
 # =============================================================================
@@ -176,129 +167,186 @@ manage_eww_daemon() {
     esac
 }
 
-# Widget state management
-get_widget_state() {
-    local widget="$1"
-    eww --config "$EWW_CONFIG_DIR" get "$widget" 2>/dev/null || echo "false"
-}
-
-is_widget_open() {
-    local widget="$1"
-    eww --config "$EWW_CONFIG_DIR" windows | grep -q "^$widget" 2>/dev/null
+# Component validation
+validate_component() {
+    local component="$1"
+    
+    if [[ ! -v "EWW_COMPONENTS[$component]" ]]; then
+        error_exit "Unknown component: $component"
+    fi
+    
+    local config_dir="${EWW_COMPONENTS[$component]}"
+    if [[ ! -d "$config_dir" ]]; then
+        log "WARN" "Config directory not found: $config_dir"
+        return 1
+    fi
+    
+    if [[ ! -f "$config_dir/eww.yuck" ]]; then
+        log "WARN" "eww.yuck not found in: $config_dir"
+        return 1
+    fi
+    
+    return 0
 }
 
 # Enhanced widget operations
-widget_operation() {
+component_operation() {
     local operation="$1"
-    shift
+    local component="$2"
+    shift 2
     local widgets=("$@")
     
-    # Validate widgets exist in config
-    for widget in "${widgets[@]}"; do
-        if ! eww --config "$EWW_CONFIG_DIR" windows | grep -q "^$widget" 2>/dev/null; then
-            log "WARN" "Widget '$widget' not found in config"
-        fi
-    done
+    # Validate component
+    if ! validate_component "$component"; then
+        return 1
+    fi
+    
+    local config_dir="${EWW_COMPONENTS[$component]}"
+    
+    # Use all component widgets if none specified
+    if [[ ${#widgets[@]} -eq 0 ]]; then
+        # Convert space-separated string to array
+        IFS=' ' read -ra widgets <<< "${COMPONENT_WIDGETS[$component]:-}"
+    fi
+    
+    if [[ ${#widgets[@]} -eq 0 ]]; then
+        log "WARN" "No widgets specified for component: $component"
+        return 1
+    fi
     
     case "$operation" in
         toggle)
-            log "INFO" "Toggling ${#widgets[@]} widgets"
-            if ! eww --config "$EWW_CONFIG_DIR" open-many --toggle "${widgets[@]}" >/dev/null 2>&1; then
-                log "WARN" "Some widgets may not have toggled successfully: ${widgets[*]}"
+            log "INFO" "Toggling ${#widgets[@]} widgets in $component"
+            if ! eww --config "$config_dir" open-many --toggle "${widgets[@]}" >/dev/null 2>&1; then
+                log "WARN" "Some widgets may not have toggled successfully in $component: ${widgets[*]}"
             fi
             ;;
         open)
-            log "INFO" "Opening ${#widgets[@]} widgets"
+            log "INFO" "Opening ${#widgets[@]} widgets in $component"
             if [[ ${#widgets[@]} -eq 1 ]]; then
-                if ! eww --config "$EWW_CONFIG_DIR" open "${widgets[0]}" >/dev/null 2>&1; then
-                    log "WARN" "Widget may not have opened successfully: ${widgets[0]}"
+                if ! eww --config "$config_dir" open "${widgets[0]}" >/dev/null 2>&1; then
+                    log "WARN" "Widget may not have opened successfully in $component: ${widgets[0]}"
                 fi
             else
-                if ! eww --config "$EWW_CONFIG_DIR" open-many "${widgets[@]}" >/dev/null 2>&1; then
-                    log "WARN" "Some widgets may not have opened successfully: ${widgets[*]}"
+                if ! eww --config "$config_dir" open-many "${widgets[@]}" >/dev/null 2>&1; then
+                    log "WARN" "Some widgets may not have opened successfully in $component: ${widgets[*]}"
                 fi
             fi
             ;;
         close)
-            log "INFO" "Closing ${#widgets[@]} widgets"
+            log "INFO" "Closing ${#widgets[@]} widgets in $component"
             for widget in "${widgets[@]}"; do
-                if ! eww --config "$EWW_CONFIG_DIR" close "$widget" >/dev/null 2>&1; then
-                    log "WARN" "Widget may not have closed successfully: $widget"
+                if ! eww --config "$config_dir" close "$widget" >/dev/null 2>&1; then
+                    log "WARN" "Widget may not have closed successfully in $component: $widget"
                 fi
             done
             ;;
     esac
 }
 
+# Get component status
+get_component_status() {
+    local component="$1"
+    local config_dir="${EWW_COMPONENTS[$component]}"
+    
+    if [[ ! -d "$config_dir" ]]; then
+        echo "❌ Not available"
+        return
+    fi
+    
+    local open_widgets
+    open_widgets="$(eww --config "$config_dir" windows 2>/dev/null || echo "")"
+    local widget_count
+    widget_count="$(echo "${COMPONENT_WIDGETS[$component]:-}" | wc -w)"
+    local open_count
+    open_count="$(echo "$open_widgets" | wc -l)"
+    
+    if [[ -n "$open_widgets" ]]; then
+        echo "✅ Active ($open_count/$widget_count widgets)"
+    else
+        echo "❌ Inactive (0/$widget_count widgets)"
+    fi
+}
+
 # Display help information
 show_help() {
     cat << EOF
-Usage: $SCRIPT_NAME [OPTIONS] [COMMAND] [WIDGETS...]
+Usage: $SCRIPT_NAME [OPTIONS] [COMMAND] [COMPONENT] [WIDGETS...]
 
-Enhanced EWW Dashboard Management Script
+Universal EWW Widget Manager
 
 COMMANDS:
-    toggle          Toggle dashboard widgets (default)
-    open            Open dashboard widgets
-    close           Close dashboard widgets
+    toggle          Toggle component widgets (default)
+    open            Open component widgets
+    close           Close component widgets
     restart         Restart EWW daemon and reopen widgets
-    status          Show widget status
+    status          Show all components status
     daemon          Manage EWW daemon (start|stop|restart)
     cleanup         Clean up orphaned processes and files
+    list            List available components and widgets
+
+COMPONENTS:
+    dashboard       Main dashboard interface
+    powermenu       Power management menu
 
 OPTIONS:
     -h, --help      Show this help message
     -d, --debug     Enable debug logging
     -q, --quiet     Suppress all output except errors
     -f, --force     Force operation even if already running
-    -l, --list      List available widgets
-
-WIDGETS:
-    If no widgets specified, operates on all dashboard widgets.
-    Otherwise, operates only on specified widgets.
+    -a, --all       Operate on all components
 
 EXAMPLES:
-    $SCRIPT_NAME                           # Toggle all dashboard widgets
-    $SCRIPT_NAME open dashboard-clock      # Open only the clock widget
-    $SCRIPT_NAME close dashboard-music     # Close only the music widget
-    $SCRIPT_NAME daemon restart            # Restart the EWW daemon
-    $SCRIPT_NAME status                    # Show status of all widgets
-    $SCRIPT_NAME cleanup                   # Clean up orphaned processes
+    $SCRIPT_NAME toggle dashboard                      # Toggle dashboard
+    $SCRIPT_NAME open powermenu                        # Open powermenu
+    $SCRIPT_NAME close dashboard                       # Close dashboard
+    $SCRIPT_NAME open dashboard dashboard-clock        # Open specific widget
+    $SCRIPT_NAME daemon restart                        # Restart EWW daemon
+    $SCRIPT_NAME status                                # Show all status
+    $SCRIPT_NAME cleanup                               # Clean up processes
 
 LOG FILE: $LOG_FILE
 EOF
 }
 
+# List components and widgets
+list_components() {
+    echo "=== Available EWW Components ==="
+    echo
+    
+    for component in "${!EWW_COMPONENTS[@]}"; do
+        local config_dir="${EWW_COMPONENTS[$component]}"
+        echo "📦 $component"
+        echo "   Config: $config_dir"
+        echo "   Status: $(get_component_status "$component")"
+        echo "   Widgets: ${COMPONENT_WIDGETS[$component]:-none}"
+        echo
+    done
+}
+
 # Status display
 show_status() {
-    echo "=== EWW Dashboard Status ==="
+    echo "=== EWW System Status ==="
     echo
     
     # Daemon status
     if eww ping >/dev/null 2>&1; then
-        echo "Daemon: Running ✅"
+        echo "🔄 Daemon: Running ✅"
     else
-        echo "Daemon: Not running ❌"
+        echo "🔄 Daemon: Not running ❌"
     fi
     
     echo
-    echo "Widget Status:"
+    echo "📦 Components:"
     echo "--------------"
     
-    local open_widgets
-    open_widgets="$(eww --config "$EWW_CONFIG_DIR" windows 2>/dev/null || echo "")"
-    
-    for widget in "${DASHBOARD_WIDGETS[@]}"; do
-        if echo "$open_widgets" | grep -q "^$widget"; then
-            echo "$widget: Open ✅"
-        else
-            echo "$widget: Closed ❌"
-        fi
+    for component in "${!EWW_COMPONENTS[@]}"; do
+        printf "%-12s %s\n" "$component:" "$(get_component_status "$component")"
     done
     
     echo
-    echo "Config Directory: $EWW_CONFIG_DIR"
-    echo "Log File: $LOG_FILE"
+    echo "📁 Base Directory: $EWW_BASE_DIR"
+    echo "📝 Log File: $LOG_FILE"
 }
 
 # Cleanup function
@@ -307,7 +355,7 @@ cleanup_system() {
     
     # Kill orphaned EWW processes
     local orphaned_pids
-    orphaned_pids="$(pgrep -f "eww.*dashboard" | grep -v $$ || true)"
+    orphaned_pids="$(pgrep -f "eww" | grep -v $$ || true)"
     
     if [[ -n "$orphaned_pids" ]]; then
         log "INFO" "Killing orphaned EWW processes: $orphaned_pids"
@@ -333,8 +381,11 @@ main() {
     local debug=false
     local quiet=false
     local force=false
+    local all_components=false
     local command="toggle"
+    local component=""
     local widgets=()
+    local daemon_action="start"
     
     # Parse arguments
     while [[ $# -gt 0 ]]; do
@@ -356,16 +407,15 @@ main() {
                 force=true
                 shift
                 ;;
-            -l|--list)
-                echo "Available widgets:"
-                printf '%s\n' "${DASHBOARD_WIDGETS[@]}"
-                exit 0
+            -a|--all)
+                all_components=true
+                shift
                 ;;
-            toggle|open|close|status|daemon|cleanup)
+            toggle|open|close|restart|cleanup)
                 command="$1"
                 shift
                 ;;
-            restart)
+            status|list|daemon)
                 command="$1"
                 shift
                 ;;
@@ -374,19 +424,19 @@ main() {
                     daemon_action="$1"
                     shift
                 else
-                    log "ERROR" "Unknown command: $1"
-                    show_help
-                    exit 1
+                    error_exit "Unknown command: $1"
                 fi
                 ;;
-            dashboard-*)
+            dashboard|powermenu)
+                component="$1"
+                shift
+                ;;
+            dashboard-*|powermenu-*)
                 widgets+=("$1")
                 shift
                 ;;
             *)
-                log "ERROR" "Unknown option: $1"
-                show_help
-                exit 1
+                error_exit "Unknown option: $1"
                 ;;
         esac
     done
@@ -400,7 +450,7 @@ main() {
     fi
     
     # Acquire lock unless it's a status or list command
-    if [[ "$command" != "status" && "$command" != "cleanup" ]]; then
+    if [[ "$command" != "status" && "$command" != "list" && "$command" != "cleanup" ]]; then
         if [[ "$force" != "true" ]]; then
             acquire_lock
         fi
@@ -408,34 +458,42 @@ main() {
     
     log "INFO" "Starting $SCRIPT_NAME with command: $command"
     
-    # Use all widgets if none specified (except for daemon commands)
-    if [[ ${#widgets[@]} -eq 0 && "$command" != "daemon" && "$command" != "status" && "$command" != "cleanup" ]]; then
-        widgets=("${DASHBOARD_WIDGETS[@]}")
+    # Check EWW installation for most commands
+    if [[ "$command" != "list" ]]; then
+        check_eww_installed
     fi
-    
-    # Check EWW installation
-    check_eww_installed
     
     # Execute command
     case "$command" in
         toggle|open|close)
             manage_eww_daemon "start"
-            widget_operation "$command" "${widgets[@]}"
-            log "INFO" "Operation '$command' completed successfully"
+            
+            if [[ "$all_components" == "true" ]]; then
+                for comp in "${!EWW_COMPONENTS[@]}"; do
+                    if validate_component "$comp"; then
+                        component_operation "$command" "$comp"
+                        log "INFO" "Operation '$command' completed for $comp"
+                    fi
+                done
+            elif [[ -n "$component" ]]; then
+                component_operation "$command" "$component" "${widgets[@]}"
+                log "INFO" "Operation '$command' completed for $component"
+            else
+                error_exit "No component specified. Use -a for all components or specify a component."
+            fi
             ;;
         restart)
             manage_eww_daemon "restart"
-            if [[ ${#widgets[@]} -gt 0 ]]; then
-                sleep 1
-                widget_operation "open" "${widgets[@]}"
-            fi
             log "INFO" "Restart completed successfully"
             ;;
         daemon)
-            manage_eww_daemon "${daemon_action:-start}"
+            manage_eww_daemon "$daemon_action"
             ;;
         status)
             show_status
+            ;;
+        list)
+            list_components
             ;;
         cleanup)
             cleanup_system
