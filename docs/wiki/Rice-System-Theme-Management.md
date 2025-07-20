@@ -21,9 +21,14 @@ The rice system manages:
 
 Your dotfiles include these beautiful rice themes:
 
-- **arcane**: Magical purple and blue mystical theme
 - **flowers**: Vibrant floral-inspired nature theme
-- **gruvbox**: Retro warm colors with vintage aesthetics
+- **gruvbox-anime**: Retro warm colors with anime aesthetics
+- **gruvbox-light**: Light variant of classic gruvbox theme
+- **gruvbox-minimalistic**: Clean and simplified gruvbox aesthetic
+- **gruvbox-mix**: Mixed gruvbox palette with varied earth tones
+- **gruvbox-painting**: Artistic gruvbox with painterly aesthetics
+- **gruvbox-pixelart**: 8-bit inspired gruvbox with pixel art styling
+- **gruvbox-videogame-3d-art**: Modern gaming gruvbox with 3D art elements
 - **landscape-dark**: Dark nature-inspired earth tones
 - **landscape-light**: Light variant with natural colors
 - **machines**: Cyberpunk industrial technology theme
@@ -105,15 +110,15 @@ Each rice is organized in a modular structure:
 
 ```text
 ~/.local/share/dots/rices/
-├── arcane/
+├── flowers/
 │   ├── config.sh              # Polybar configuration
 │   ├── apply.sh               # Theme application script
 │   ├── backgrounds/           # Wallpaper collection
-│   │   ├── arcane-magic-1.jpg
-│   │   ├── arcane-magic-2.jpg
-│   │   └── arcane-wizard.jpg
+│   │   ├── flowers-magic-1.jpg
+│   │   ├── flowers-magic-2.jpg
+│   │   └── flowers-wizard.jpg
 │   └── preview.png           # Rice preview image
-├── gruvbox/
+├── gruvbox-anime/
 │   ├── config.sh
 │   ├── apply.sh
 │   ├── backgrounds/

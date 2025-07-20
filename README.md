@@ -1,253 +1,391 @@
-<div align="justify">
-
 <div align="center">
 
 ```ocaml
-NEVER SKIP / IGNORE / AVOID README
+🚀 NEVER SKIP THE README - YOUR JOURNEY STARTS HERE! 🚀
 ```
 
-<h1>🏠 HorneroConfig - Yet another Dotfiles Framework</h1>
+<h1>🏠 HorneroConfig</h1>
+<h3>✨ The Ultimate Linux Desktop Configuration Framework ✨</h3>
 
-[Docs](https://ulises-jeremias.github.io/dotfiles) |
-[Changelog](#) |
-[Contributing](https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CONTRIBUTING.md)
+**Intelligent • Beautiful • Powerful • Seamless**
 
-</div> <!-- center -->
+[📖 Documentation](https://ulises-jeremias.github.io/dotfiles) •
+[🎨 Gallery](#-gallery) •
+[🚀 Quick Start](#-quick-installation) •
+[🤝 Contributing](CONTRIBUTING.md)
 
-<div align="center">
+---
 
 [![Awesome](https://awesome.re/mentioned-badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
-[![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable)](https://aur.archlinux.org/packages/dots-stable)
-[![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development)](https://aur.archlinux.org/packages/dots-git)
-[![License: MIT][licensebadge]][licenseurl]
+[![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable&style=for-the-badge)](https://aur.archlinux.org/packages/dots-stable)
+[![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development&style=for-the-badge)](https://aur.archlinux.org/packages/dots-git)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+[![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)](https://archlinux.org/)
 
-</div> <!-- center -->
-
-<h1>
-  <a href="#--------">
-    <img alt="" align="right" src="https://badges.pufler.dev/visits/ulises-jeremias/dotfiles?style=flat-square&label=&color=000000&logo=github&logoColor=white&labelColor=000000"/>
-  </a>
-</h1>
-
-### :octocat: ‎ <sup><sub><samp>HI THERE! THANKS FOR DROPPING BY!</samp></sub></sup>
-
-You might be here looking for (Linux) rice reference or to (full?) replicate my personal
-configuration of my favorite Window Managers and several apps as well. ⛄
-
-HorneroConfig is your artisanal toolkit for crafting the perfect digital workspace.
-Named after the industrious hornero bird, renowned for its skillful nest-building,
-our framework empowers you to construct a robust, functional, and personalized computing environment.
-
-Perfectly suited for a wide array of Desktop Environments and Window Managers,
-HorneroConfig thrives across different platforms including [GitHub Codespaces](https://docs.github.com/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account#dotfiles), [Gitpod](https://www.gitpod.io/docs/config-dotfiles), [VS Code Remote - Containers](https://code.visualstudio.com/docs/remote/containers#_personalizing-with-dotfile-repositories), or even Linux distributions that are not Arch Linux.
-
-Backed by the versatile [Chezmoi](https://www.chezmoi.io/), HorneroConfig stands out as a dotfiles manager
-that adapts flexibly to your needs, streamlining machine setup and ensuring consistency across devices.
-Embrace the spirit of the hornero, and let HorneroConfig transform your configurations
-into a harmonious blend of elegance and efficiency.
-
-<div align="center">
-
-```ocaml
-TAP ❲☰❳ TO NAVIGATE THE HARMONY OF CONFIGURATION
-```
+<img alt="" align="right" width="400px" src="./static/collage.png"/>
 
 </div>
 
-<a href="#octocat--hi-there-thanks-for-dropping-by">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" alt="" align="right" width="400px" srcset="./static/collage.png"/>
-    <img alt="" align="right" width="400px" src="./static/collage.png"/>
-  </picture>
-</a>
+---
 
-Most were written from scratch. Some details:
+## 🌟 **What is HorneroConfig?**
 
-- **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
-- **Panel** 🌸 [Polybar](https://polybar.github.io/) which is a fast and easy-to-use status bar!
-- **Application Launcher** 🚀 [Rofi](https://github.com/davatorium/rofi) which is blazing fast!
-- **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
-- **Terminal Emulator** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/) The fast, feature-rich, GPU based terminal emulator!
-- **Shell** 🐚 [Zsh](https://zsh.org) with several post-installation tweaks!
-- **Compositor** 🍧 [Picom](https://github.com/yshui/picom) for that perfection topping with Animations!
-- **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
-- **Widgets** 🎨 [Eww](https://github.com/elkowar/eww) with 2 different pre-backed widgets!
-- and many more!
+**HorneroConfig** is a cutting-edge dotfiles framework that transforms your Linux desktop into a **masterpiece of functionality and beauty**. Named after the industrious hornero bird 🐦, renowned for its skillful nest-building, this framework empowers you to craft the perfect digital workspace.
 
-Managed with [`chezmoi`](https://chezmoi.io), a great dotfiles manager.
+### 🎯 **Why Choose HorneroConfig?**
 
-## Getting started 🚀
+- 🧠 **Smart Color Intelligence** - Revolutionary color system that adapts to any theme
+- 🎨 **Beautiful Rice Themes** - 12+ stunning pre-configured desktop themes
+- ⚡ **One-Command Setup** - From zero to hero in minutes
+- 🔧 **100+ Automation Scripts** - Comprehensive tooling ecosystem
+- 🪟 **Multi-WM Support** - Works with i3, Openbox, XFCE4, and more
+- 🛡️ **Security-First** - Built-in security auditing and hardening
+- 📦 **Zero Maintenance** - Powered by chezmoi for seamless updates
 
-You can use a [convenient script](./scripts/install_dotfiles.sh) to install the dotfiles on any machine with a single command. Simply run the following command in your terminal:
+---
+
+## ✨ **Key Features**
+
+<div align="center">
+
+|    🧠 **Smart Colors**     |   🎨 **Rice System**   |     📊 **Polybar**      |  🎛️ **EWW Widgets**   |
+| :------------------------: | :--------------------: | :---------------------: | :-------------------: |
+| Intelligent color analysis |  12+ beautiful themes  |       20+ modules       | Modern system widgets |
+|  Theme-adaptive palettes   |  One-click switching   | Smart color integration | Dashboard & powermenu |
+|   Semantic color mapping   | Wallpaper coordination |     Profile system      |     Auto-updating     |
+
+| 🪟 **Window Managers** |  🔧 **Automation**   |  🛡️ **Security**  | 📦 **Management**  |
+| :--------------------: | :------------------: | :---------------: | :----------------: |
+|  i3 • Openbox • XFCE4  | 100+ utility scripts | Security auditing |  Chezmoi powered   |
+|  Seamless integration  | Smart notifications  |  Hardening tools  |   Cross-platform   |
+|   Custom keybindings   |  System monitoring   | Privacy features  | Version controlled |
+
+</div>
+
+### 🧠 **Revolutionary Smart Colors System**
+
+Our **game-changing smart colors technology** automatically analyzes your color palette and intelligently selects optimal colors for different concepts:
+
+- **🎯 Semantic Intelligence**: Error, success, warning, info colors that make sense
+- **🎨 Theme Adaptation**: Perfect contrast and readability on any background
+- **⚡ Auto-Application**: Instantly applies to Polybar, EWW, i3, and all scripts
+- **🔄 Live Updates**: Colors refresh automatically when you change wallpapers
+
+---
+
+## 🎨 **Gallery**
+
+<div align="center">
+
+### 🌙 **Dark Theme Showcase**
+
+<img src="./static/screen.png" alt="Dark Theme" width="800px"/>
+
+### ☀️ **Light Theme Excellence**
+
+<img src="./static/screen-2.jpg" alt="Light Theme" width="800px"/>
+
+### 🚀 **Application Launcher**
+
+<img src="./static/screenshot-launchpad.png" alt="Rofi Launcher" width="400px"/> <img src="./static/screenshot-spotlight-dark.png" alt="Spotlight Dark" width="400px"/>
+
+</div>
+
+---
+
+## 🚀 **Quick Installation**
+
+### ⚡ **One-Line Install** (Recommended)
+
+Transform your desktop instantly with a single command:
 
 ```bash
 sh -c "$(wget -qO- "https://github.com/ulises-jeremias/dotfiles/blob/main/scripts/install_dotfiles.sh?raw=true")"
 ```
 
-> [!TIP]
-> We use `wget` here because it comes preinstalled with most Linux distributions. But you can also use `curl`:
+> 💡 **Alternative with curl:**
 >
 > ```bash
 > sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/main/scripts/install_dotfiles.sh?raw=true")"
 > ```
 
-This will install the dotfiles in `~/.dotfiles`.
+### 📦 **Arch Linux Users** (AUR)
+
+```bash
+# Stable release
+yay -S dots-stable
+
+# Development release (latest features)
+yay -S dots-git
+```
+
+### 🛠️ **Advanced Installation**
 
 <details>
-<summary>🌟 Other ways to install the dotfiles</summary>
+<summary>📋 Click to expand advanced installation methods</summary>
 
-### Using Chezmoi
+#### Using Chezmoi (Recommended)
 
-> This is the recommended method to install HorneroConfig. It will set up the latest stable version of HorneroConfig on your system using [Chezmoi](https://www.chezmoi.io/), a robust and adaptable dotfiles manager. With Chezmoi, you can easily manage your configuration files across multiple machines, maintaining consistency and simplifying the setup process.
-
-```sh
+```bash
 chezmoi init --apply ulises-jeremias --source ~/.dotfiles
 ```
 
-This will install the dotfiles in `~/.dotfiles`.
-
-### From source
-
-> Use this for any OS that is not `Arch Linux` or `Arch Linux based distro`.
-> This will install unstable versions of HorneroConfig. You can switch to a stable version by using any existing git tag.
-
-```sh
-git clone https://github.com/ulises-jeremias/dotfiles ~/.dotfiles
-~/.dotfiles/install
-```
-
-The installation script allows you to install all the necessary dependencies to make your dotfiles config work correctly.
-
-### From the Arch-Linux User Repository (AUR)
-
-- Using a helper like [yay](https://github.com/Jguer/yay)
-
-  Install [dots-stable](https://aur.archlinux.org/packages/dots-stable/)
-
-  ```sh
-  yay dots-stable
-  ```
-
-  or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/)
-
-  ```sh
-  yay dots-git
-  ```
-
-- Using `makepkg`
-
-  Install [dots-stable](https://aur.archlinux.org/packages/dots-stable/)
-
-  ```sh
-  git clone https://aur.archlinux.org/dots-stable.git /tmp/dots-stable
-  cd /tmp/dots-stable
-  makepkg -si
-  ```
-
-  or install the rolling release [dots-git](https://aur.archlinux.org/packages/dots-git/)
-
-  ```sh
-  git clone https://aur.archlinux.org/dots-git.git /tmp/dots-git
-  cd /tmp/dots-git
-  makepkg -si
-  ```
-
-</details>
-
-## 🎨 Post install Customization
-
-You can fork this repository and customize it to suit your preferences and workflow. You are encouraged to maintain a separate GitHub repository of configurations for your own dotfiles and keep this repository as a template!
-
-<details>
-<summary>Expand to see the steps to customize your environment!</summary>
-
-We use [Chezmoi](https://www.chezmoi.io/) to manage the dotfiles. Chezmoi is a sophisticated yet easy-to-use command-line tool that helps you manage your dotfiles across multiple machines. It is designed to be secure, flexible, and easy to use.
-
-To customize the dotfiles, follow these steps:
-
-1. Run the command `chezmoi init --source ~/.dotfiles` to initialize Chezmoi.
-
-2. Run the command `chezmoi edit --source ~/.dotfiles` to open the dotfiles directory.
-
-3. Customize the dotfiles to suit your preferences and workflow.
-
-4. Run the command `chezmoi apply --source ~/.dotfiles` to apply the changes.
-
-</details>
-
-Read more about this at [Customization Docs](https://ulises-jeremias.github.io/dotfiles/#Customization).
-
-## 🛡️ Privacy and Security
-
-Although I like making it look as nice as possible, these dotfiles also try to be private and secure!
-
-You can read more about this at [Privacy and Security Docs](https://ulises-jeremias.github.io/dotfiles/#Security).
-
-## 🧪 Testing
-
-We use [Vagrant](https://www.vagrantup.com/) to test the installation of HorneroConfig in different
-Operating Systems and machine architectures.
-
-<details>
-<summary>Expand to learn how to run a testing environment!</summary>
-
-To run the testing environment, just execute the following commands:
-
-```sh
-git clone https://github.com/ulises-jeremias/dotfiles
-cd ./dotfiles
-
-# start the VM
-./bin/play
-
-# provision the VM
-./bin/play --provision
-
-# remove the VM
-./bin/play --remove
-
-# use -h to know more about the available options
-```
-
-</details>
-
-## 🤝 Contributing
-
-Contributions, issues and feature requests are welcome! Check out the [Contributing Guide](./CONTRIBUTING.md) for more details!
-
-### 🔧 Development Setup
-
-To maintain code quality and consistency, this project uses pre-commit hooks. After cloning the repository, set them up:
+#### From Source
 
 ```bash
-# Install pre-commit (if not already installed)
+git clone https://github.com/ulises-jeremias/dotfiles ~/.dotfiles
+~/.dotfiles/install.sh
+```
+
+#### Manual AUR Installation
+
+```bash
+git clone https://aur.archlinux.org/dots-stable.git /tmp/dots-stable
+cd /tmp/dots-stable && makepkg -si
+```
+
+</details>
+
+---
+
+## 🎨 **Rice Themes Collection**
+
+Choose from our curated collection of stunning desktop themes:
+
+<div align="center">
+
+| Theme                           | Style         | Palette                       | Description                     |
+| :------------------------------ | :------------ | :---------------------------- | :------------------------------ |
+| 🌸 **flowers**                  | Nature        | Vibrant florals               | Fresh and energizing            |
+| 🍂 **gruvbox-anime**            | Retro Anime   | Warm earth + anime aesthetics | Classic gruvbox meets anime art |
+| ☀️ **gruvbox-light**            | Retro Light   | Light warm earth tones        | Bright and comfortable gruvbox  |
+| 🔲 **gruvbox-minimalistic**     | Retro Minimal | Clean warm earth tones        | Simplified gruvbox aesthetic    |
+| 🎨 **gruvbox-mix**              | Retro Mixed   | Varied warm earth tones       | Diverse gruvbox palette         |
+| 🖼️ **gruvbox-painting**         | Retro Art     | Artistic warm earth tones     | Painterly gruvbox aesthetic     |
+| 🎮 **gruvbox-pixelart**         | Retro Gaming  | Pixelated warm earth tones    | 8-bit gruvbox nostalgia         |
+| 🎲 **gruvbox-videogame-3d-art** | Gaming        | 3D art warm earth tones       | Modern gaming meets gruvbox     |
+| 🌲 **landscape-dark**           | Nature        | Dark earth tones              | Professional and elegant        |
+| ☀️ **landscape-light**          | Nature        | Light natural colors          | Clean and minimalist            |
+| 🤖 **machines**                 | Cyberpunk     | Industrial grays              | Futuristic and bold             |
+| 🔴 **red-blue**                 | High Contrast | Vibrant contrast              | Energetic and dynamic           |
+| 🌌 **space**                    | Cosmic        | Deep blues & purples          | Mystical and calming            |
+
+</div>
+
+### 🎯 **Quick Theme Switching**
+
+```bash
+# Interactive theme selector
+dots rofi-rice-selector
+
+# Apply specific theme
+dots rice apply gruvbox-anime
+
+# Apply minimalistic theme
+dots rice apply gruvbox-minimalistic
+
+# Apply nature theme
+dots rice apply landscape-dark
+
+# List all available themes
+dots rice list
+```
+
+---
+
+## 🔧 **Core Applications**
+
+<div align="center">
+
+| Component             | Application                                                                        | Description           |
+| :-------------------- | :--------------------------------------------------------------------------------- | :-------------------- |
+| 🪟 **Window Manager** | [i3](https://i3wm.org) • [Openbox](http://openbox.org) • [XFCE](https://xfce.org)  | Flexible WM support   |
+| 📊 **Status Bar**     | [Polybar](https://polybar.github.io)                                               | Beautiful & modular   |
+| 🚀 **App Launcher**   | [Rofi](https://github.com/davatorium/rofi)                                         | Lightning fast        |
+| 🐾 **Terminal**       | [Kitty](https://sw.kovidgoyal.net/kitty)                                           | GPU-accelerated       |
+| 🐚 **Shell**          | [Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k) | Feature-rich          |
+| 🌿 **Notifications**  | [Dunst](https://github.com/dunst-project/dunst)                                    | Minimalist design     |
+| 🍧 **Compositor**     | [Picom](https://github.com/yshui/picom)                                            | Smooth animations     |
+| 🃏 **File Manager**   | [Thunar](https://docs.xfce.org/xfce/thunar/start)                                  | Customized interface  |
+| 🎛️ **Widgets**        | [EWW](https://github.com/elkowar/eww)                                              | Modern system widgets |
+
+</div>
+
+---
+
+## 🛠️ **Powerful Automation**
+
+### 📜 **100+ Built-in Scripts**
+
+Access a comprehensive toolkit through the `dots` command:
+
+```bash
+# Interactive script browser
+dots scripts
+
+# System management
+dots sysupdate          # Comprehensive system updates
+dots backup             # Automated backups with scheduling
+dots security-audit     # Security analysis and hardening
+
+# Theming & visuals
+dots smart-colors       # Intelligent color analysis
+dots wal-reload         # Complete theme refresh
+dots rofi-rice-selector # Visual theme picker
+
+# System monitoring
+dots monitor            # Display management
+dots performance        # System benchmarks
+dots weather-info       # Weather integration
+```
+
+### 🧠 **Smart Color Intelligence**
+
+Experience the future of desktop theming:
+
+```bash
+# Analyze your current palette
+dots smart-colors --analyze
+
+# Export colors for different applications
+dots smart-colors --export --format=polybar
+dots smart-colors --export --format=eww
+dots smart-colors --export --format=i3
+
+# Get optimal color for specific concepts
+dots smart-colors --concept=error --format=hex
+dots smart-colors --concept=success --format=rgb
+```
+
+---
+
+## 🛡️ **Security & Privacy**
+
+### 🔒 **Built-in Security Features**
+
+- **🔍 Security Auditing**: Comprehensive system security analysis
+- **🛡️ Hardening Tools**: Automated security configuration
+- **🔐 Privacy Protection**: Privacy-focused defaults and tools
+- **📊 Security Monitoring**: Continuous security health checks
+
+```bash
+# Run complete security audit
+dots security-audit
+
+# Apply security hardening
+dots security-audit --apply
+
+# Check system security status
+dots security-audit --status
+```
+
+---
+
+## 🧪 **Testing & Development**
+
+### 🎮 **Playground Environment**
+
+Test HorneroConfig safely with our Vagrant-based playground:
+
+```bash
+git clone https://github.com/ulises-jeremias/dotfiles
+cd dotfiles
+
+# Start testing environment
+./bin/play
+
+# Provision with different WMs
+./bin/play --provision i3
+./bin/play --provision openbox
+
+# Clean up
+./bin/play --remove
+```
+
+### 🔧 **Development Setup**
+
+Contribute with confidence using our quality tools:
+
+```bash
+# Install development dependencies
 pip install pre-commit
 
-# Install the git hook scripts
+# Set up git hooks
 pre-commit install
 
-# (Optional) Run against all files
+# Run quality checks
 pre-commit run --all-files
 ```
 
-The pre-commit hooks will automatically:
+---
 
-- Check shell scripts with ShellCheck
-- Format code with shfmt
-- Validate dots scripts follow conventions
-- Check for common issues (trailing whitespace, large files, etc.)
+## 🌍 **Platform Support**
 
-This ensures all contributions maintain the project's quality standards!
+<div align="center">
 
-Bellow you can find a list of all the amazing contributors who have made this project possible:
+| Platform                 | Status              | Notes                          |
+| :----------------------- | :------------------ | :----------------------------- |
+| 🐧 **Arch Linux**        | ✅ **Full Support** | AUR packages available         |
+| 🐧 **Ubuntu/Debian**     | ✅ **Supported**    | Manual dependency installation |
+| 🐧 **Fedora/RHEL**       | ✅ **Supported**    | Manual dependency installation |
+| ☁️ **GitHub Codespaces** | ✅ **Supported**    | Cloud development              |
+| 🐳 **VS Code Remote**    | ✅ **Supported**    | Container development          |
+| 🌐 **Gitpod**            | ✅ **Supported**    | Browser-based development      |
+
+</div>
+
+---
+
+## 📖 **Documentation**
+
+Comprehensive guides for every aspect:
+
+- 🏠 [**Getting Started**](https://ulises-jeremias.github.io/dotfiles/#Home) - Your first steps
+- 🎨 [**Rice System**](https://ulises-jeremias.github.io/dotfiles/#Rice-System-Theme-Management) - Theme management
+- 🧠 [**Smart Colors**](https://ulises-jeremias.github.io/dotfiles/#Smart-Colors-System) - Intelligent theming
+- 📊 [**Polybar Config**](https://ulises-jeremias.github.io/dotfiles/#Polybar-Configuration-Structure) - Status bar setup
+- 🎛️ [**EWW Widgets**](https://ulises-jeremias.github.io/dotfiles/#EWW-Widgets) - Modern widgets
+- 🔧 [**Scripts Guide**](https://ulises-jeremias.github.io/dotfiles/#Dots-Scripts) - Automation tools
+- 🛡️ [**Security**](https://ulises-jeremias.github.io/dotfiles/#Security) - Privacy & security
+
+---
+
+## 🤝 **Contributing**
+
+Join our amazing community! We welcome:
+
+- 🐛 **Bug Reports** - Help us improve
+- ✨ **Feature Requests** - Share your ideas
+- 🎨 **New Rice Themes** - Show your creativity
+- 📚 **Documentation** - Help others learn
+- 🔧 **Code Contributions** - Make it better
+
+### 🌟 **Contributors**
+
+<div align="center">
 
 <a href="https://github.com/ulises-jeremias/dotfiles/contributors">
-  <img src="https://contrib.rocks/image?repo=ulises-jeremias/dotfiles" alt="Contributors">
+  <img src="https://contrib.rocks/image?repo=ulises-jeremias/dotfiles" alt="Contributors" />
 </a>
 
-_Made with [contributors-img](https://contrib.rocks)._
+_Made with ❤️ by our amazing community_
 
-[licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
-[licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/main/LICENSE
+</div>
 
-</div> <!-- justify -->
+---
+
+<div align="center">
+
+### 💝 **Show Your Support**
+
+If HorneroConfig has improved your Linux experience, consider:
+
+⭐ **Star this repository** • 🐦 **Share on social media** • 🤝 **Contribute to the project**
+
+---
+
+**🏠 HorneroConfig - Building the perfect digital nest, one configuration at a time**
+
+_Licensed under [MIT License](LICENSE) • Made with ❤️ for the Linux community_
+
+</div>
