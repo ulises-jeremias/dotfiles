@@ -22,10 +22,24 @@ if [ "${player_status}" != "Playing" ] && [ "${player_status}" != "Paused" ]; th
   exit 0
 fi
 
-# Get theme-adaptive colors from xrdb
-accent_color="$(xrdb -get "color13")"    # purple/accent for titles and controls
-playing_color="$(xrdb -get "color11")"   # yellow/orange for playing status
-paused_color="$(xrdb -get "color10")"    # green for paused status
+# Get theme-adaptive colors from smart colors or fallback to xrdb
+if [[ -n "${SMART_COLOR_ACCENT:-}" ]]; then
+    accent_color="${SMART_COLOR_ACCENT}"
+else
+    accent_color="$(xrdb -get "color13")"
+fi
+
+if [[ -n "${SMART_COLOR_WARNING:-}" ]]; then
+    playing_color="${SMART_COLOR_WARNING}"
+else
+    playing_color="$(xrdb -get "color11")"
+fi
+
+if [[ -n "${SMART_COLOR_SUCCESS:-}" ]]; then
+    paused_color="${SMART_COLOR_SUCCESS}"
+else
+    paused_color="$(xrdb -get "color10")"
+fi
 
 if [[ -n "${title}" ]]; then
   current_song="$(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}')"

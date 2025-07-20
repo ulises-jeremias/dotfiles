@@ -11,9 +11,45 @@
 original_config_file="$HOME/.config/jgmenu/jgmenurc-config"
 target_config_file="$HOME/.config/jgmenu/jgmenurc"
 
-# Function to get color from xrdb
+# Function to get color from smart colors or xrdb fallback
+get_smart_color() {
+    local color_var="$1"
+    local xrdb_fallback="$2"
+
+    # Check if smart colors are available
+    if command -v dots-smart-colors >/dev/null 2>&1; then
+        # Try to get from smart color environment variables first
+        case "$color_var" in
+            "color7"|"foreground")
+                echo "${SMART_COLOR_INFO:-$(xrdb -get "$xrdb_fallback")}"
+                ;;
+            "color9")
+                echo "${SMART_COLOR_ERROR:-$(xrdb -get "$xrdb_fallback")}"
+                ;;
+            "color10")
+                echo "${SMART_COLOR_SUCCESS:-$(xrdb -get "$xrdb_fallback")}"
+                ;;
+            "color11")
+                echo "${SMART_COLOR_WARNING:-$(xrdb -get "$xrdb_fallback")}"
+                ;;
+            "color12")
+                echo "${SMART_COLOR_INFO:-$(xrdb -get "$xrdb_fallback")}"
+                ;;
+            "color13")
+                echo "${SMART_COLOR_ACCENT:-$(xrdb -get "$xrdb_fallback")}"
+                ;;
+            *)
+                xrdb -get "$xrdb_fallback"
+                ;;
+        esac
+    else
+        xrdb -get "$xrdb_fallback"
+    fi
+}
+
+# Function to get color (updated to use smart colors)
 get_xrdb_color() {
-    xrdb -get "$1"
+    get_smart_color "$1" "$1"
 }
 
 # Function to update color in the temporary configuration file

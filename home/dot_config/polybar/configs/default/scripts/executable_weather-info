@@ -3,6 +3,11 @@
 weather_temp=$(dots-weather-info --temp)
 weather_icon=$(dots-weather-info --icon)
 
-foreground="$(xrdb -get "color7")"
+# Use smart colors if available, fallback to xrdb
+if [[ -n "${SMART_COLOR_INFO:-}" ]]; then
+    foreground="${SMART_COLOR_INFO}"
+else
+    foreground="$(xrdb -get "color7")"
+fi
 
 echo " %{F${foreground}}%{T5}$weather_icon%{T-}%{F} $weather_temp"

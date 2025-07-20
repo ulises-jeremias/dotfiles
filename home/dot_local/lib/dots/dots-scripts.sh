@@ -25,7 +25,7 @@ scripts_list=(
     "⬆️ sysupdate: Perform comprehensive system updates"
     "🔄 toggle: Toggle state of applications like polybar, compositor, notifications"
     "🔔 updates: Check and display available package updates with notifications"
-    "🎨 wal-reload: Reload pywal colorscheme and apply to i3, rofi, eww, betterlockscreen, discord"
+    "🎨 wal-reload: Reload pywal colorscheme and apply smart colors to i3, rofi, eww, polybar, betterlockscreen"
     "🌤️ weather-info: Display current weather information and forecasts"
     "⚙️ config-manager: Manage configuration snapshots and backups"
     "📋 dependencies: Check and install required system dependencies"

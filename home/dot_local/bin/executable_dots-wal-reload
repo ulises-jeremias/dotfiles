@@ -251,6 +251,73 @@ reload_discord() {
     fi
 }
 
+# Function to apply smart colors after wal reload
+reload_smart_colors() {
+    if ! command -v dots-smart-colors >/dev/null 2>&1; then
+        show_warning "dots-smart-colors not found, skipping smart color integration"
+        return 0
+    fi
+
+    show_status "Applying smart theme-adaptive colors..."
+
+    # Export smart colors to environment for polybar
+    if eval "$(dots-smart-colors --export 2>/dev/null)"; then
+        show_success "Smart colors exported to environment"
+    else
+        show_warning "Failed to export smart colors to environment"
+        return 0
+    fi
+
+    # Apply smart colors to EWW (replace pywal symlinks with smart-generated colors)
+    local eww_dirs=(
+        "$HOME/.config/eww/dashboard"
+        "$HOME/.config/eww/powermenu"
+    )
+
+    for eww_dir in "${eww_dirs[@]}"; do
+        if [[ -d "$eww_dir" ]]; then
+            local colors_file="$eww_dir/colors.scss"
+
+            # Remove pywal symlink and generate smart colors
+            rm -f "$colors_file"
+            if dots-smart-colors --export --format=eww > "$colors_file" 2>/dev/null; then
+                show_success "Smart colors applied to $(basename "$eww_dir")"
+                # Reload EWW config
+                safe_execute "Reloading EWW $(basename "$eww_dir") with smart colors" eww --config "$eww_dir" reload
+            else
+                show_warning "Failed to generate smart colors for $(basename "$eww_dir"), keeping pywal colors"
+                # Fallback to pywal if smart colors fail
+                local wal_colors="$HOME/.cache/wal/colors.scss"
+                [[ -f "$wal_colors" ]] && ln -sf "$wal_colors" "$colors_file" 2>/dev/null
+            fi
+        fi
+    done
+
+    # Apply smart colors to i3
+    local i3_colors_file="$HOME/.config/i3/colors-smart.conf"
+    if dots-smart-colors --export --format=i3 > "$i3_colors_file" 2>/dev/null; then
+        show_success "Smart colors applied to i3"
+        # Note: i3 will pick up new colors on next reload/restart
+    fi
+
+    # Apply smart colors to polybar and restart if running
+    if pgrep polybar >/dev/null; then
+        show_status "Polybar detected, applying smart colors and restarting..."
+        if command -v dots >/dev/null 2>&1; then
+            # Stop polybar
+            dots toggle polybar >/dev/null 2>&1 || true
+            sleep 1
+            # Start polybar with smart colors environment
+            dots toggle polybar >/dev/null 2>&1 || true
+            show_success "Polybar restarted with smart colors"
+        else
+            show_warning "dots command not found, polybar restart skipped"
+        fi
+    fi
+
+    UPDATED_APPS+=("Smart Colors Integration")
+}
+
 # Function to reload additional applications
 reload_additional_apps() {
     show_status "Checking for additional applications to reload..."
@@ -322,7 +389,7 @@ show_summary() {
 
     local total_updated=${#UPDATED_APPS[@]}
     local total_failed=${#FAILED_APPS[@]}
-    
+
     if [[ $total_failed -eq 0 ]]; then
         echo -e "${GREEN}🎉 All operations completed successfully!${NC}"
         send_notification "🎨 Wal Reload Complete" "Successfully updated $total_updated applications" "applications-graphics"
@@ -351,6 +418,9 @@ main() {
     reload_discord
     reload_additional_apps
 
+    # Apply smart colors after all standard wal operations
+    reload_smart_colors
+
     # Update rice integration
     update_current_rice
 
@@ -361,7 +431,7 @@ main() {
 # Parse arguments
 case "${1:-}" in
     "help"|"-h"|"--help")
-        echo "Enhanced Wal Reload Script"
+        echo "Enhanced Wal Reload Script with Smart Colors Integration"
         echo ""
         echo "Usage: $0 [option]"
         echo ""
@@ -370,14 +440,21 @@ case "${1:-}" in
         echo "  help, -h       - Show this help"
         echo ""
         echo "Supported applications:"
-        echo "  • i3 window manager"
+        echo "  • i3 window manager (with smart color generation)"
         echo "  • Rofi application launcher"
-        echo "  • EWW widgets (dashboard, powermenu, and custom configs)"
+        echo "  • EWW widgets (with smart color enhancement)"
+        echo "  • Polybar (with smart color integration and auto-restart)"
         echo "  • Betterlockscreen"
         echo "  • Discord (via wal-discord)"
         echo "  • Kitty terminal"
         echo "  • Alacritty terminal"
         echo "  • VSCode (via wal-theme-vscode)"
+        echo ""
+        echo "Smart Colors Features:"
+        echo "  • Theme-adaptive color selection for better readability"
+        echo "  • Automatic semantic color mapping (error, success, info, etc.)"
+        echo "  • Enhanced EWW color generation beyond pywal"
+        echo "  • Polybar integration with environment-based smart colors"
         ;;
     *)
         main
