@@ -15,6 +15,7 @@
 ## Options:
 ##     -h, --help                            Show this help message.
 ##     -a, --analyze                         Analyze current palette and show recommendations.
+##     -c, --colors                          Show visual color palette with blocks.
 ##     -e, --export                          Export color variables for shell/polybar.
 ##         --concept=CONCEPT                 Get best color for specific concept (error|warning|success|info|accent|red|green|blue|yellow|cyan|magenta|orange|pink|brown|white|black|gray).
 ##         --format=FORMAT                   Output format: hex, rgb, polybar, eww, scss, i3 (default: hex).
@@ -68,7 +69,182 @@ hex_to_rgb() {
     echo "$r $g $b"
 }
 
-# Calculate euclidean distance between two RGB colors
+# Convert hex color to ANSI escape code for background
+hex_to_ansi_bg() {
+    local hex="$1"
+    local rgb=$(hex_to_rgb "$hex")
+    local r g b
+    read -r r g b <<< "$rgb"
+
+    # Return ANSI 24-bit color escape code for background
+    echo "\033[48;2;${r};${g};${b}m"
+}
+
+# Show color as a visual block in terminal
+show_color_block() {
+    local hex="$1"
+    local label="$2"
+    local width="${3:-8}"
+
+    local ansi_bg=$(hex_to_ansi_bg "$hex")
+    local reset="\033[0m"
+
+    # Create color block with spaces
+    local block=""
+    for ((i=0; i<width; i++)); do
+        block+=" "
+    done
+
+    # Print color block with label
+    printf "${ansi_bg}${block}${reset} %-10s %s\n" "$label" "$hex"
+}
+
+# Show palette as visual color blocks
+show_palette_visual() {
+    echo -e "${BOLD}Visual Color Palette:${NC}"
+    echo
+
+    # Show all base16 colors in a nice layout
+    echo "Base16 Colors:"
+    for i in {0..15}; do
+        local color=$(xrdb -get "color$i" 2>/dev/null)
+        if [[ -n "$color" ]]; then
+            show_color_block "$color" "color$i"
+        fi
+    done
+
+    echo
+    echo "Special Colors:"
+    local bg=$(xrdb -get "background" 2>/dev/null)
+    local fg=$(xrdb -get "foreground" 2>/dev/null)
+
+    [[ -n "$bg" ]] && show_color_block "$bg" "background"
+    [[ -n "$fg" ]] && show_color_block "$fg" "foreground"
+
+    echo
+    echo "Compact Palette View:"
+    # Show all colors in a compact horizontal layout
+    local color_line=""
+    local reset="\033[0m"
+
+    for i in {0..15}; do
+        local color=$(xrdb -get "color$i" 2>/dev/null)
+        if [[ -n "$color" ]]; then
+            local ansi_bg=$(hex_to_ansi_bg "$color")
+            color_line+="${ansi_bg}  ${reset}"
+        fi
+    done
+
+    echo -e "$color_line"
+    echo
+}
+
+# Convert hex color to HSL
+hex_to_hsl() {
+    local hex="$1"
+    # Remove # if present
+    hex="${hex#\#}"
+
+    # Convert to RGB [0-255]
+    local r=$((16#${hex:0:2}))
+    local g=$((16#${hex:2:2}))
+    local b=$((16#${hex:4:2}))
+
+    # Convert RGB to [0-1] range for calculations
+    local r_norm=$(echo "scale=6; $r / 255" | bc)
+    local g_norm=$(echo "scale=6; $g / 255" | bc)
+    local b_norm=$(echo "scale=6; $b / 255" | bc)
+
+    # Find max and min values
+    local max_val=$r_norm
+    local min_val=$r_norm
+    local max_component="r"
+
+    if (( $(echo "$g_norm > $max_val" | bc -l) )); then
+        max_val=$g_norm
+        max_component="g"
+    fi
+    if (( $(echo "$b_norm > $max_val" | bc -l) )); then
+        max_val=$b_norm
+        max_component="b"
+    fi
+
+    if (( $(echo "$g_norm < $min_val" | bc -l) )); then
+        min_val=$g_norm
+    fi
+    if (( $(echo "$b_norm < $min_val" | bc -l) )); then
+        min_val=$b_norm
+    fi
+
+    # Calculate Lightness
+    local lightness=$(echo "scale=6; ($max_val + $min_val) / 2" | bc)
+
+    # Calculate Saturation and Hue
+    local saturation=0
+    local hue=0
+
+    local delta=$(echo "scale=6; $max_val - $min_val" | bc)
+
+    if (( $(echo "$delta != 0" | bc -l) )); then
+        # Calculate Saturation
+        if (( $(echo "$lightness <= 0.5" | bc -l) )); then
+            saturation=$(echo "scale=6; $delta / ($max_val + $min_val)" | bc)
+        else
+            saturation=$(echo "scale=6; $delta / (2 - $max_val - $min_val)" | bc)
+        fi
+
+        # Calculate Hue
+        case "$max_component" in
+            "r")
+                hue=$(echo "scale=6; (($g_norm - $b_norm) / $delta)" | bc)
+                ;;
+            "g")
+                hue=$(echo "scale=6; 2 + (($b_norm - $r_norm) / $delta)" | bc)
+                ;;
+            "b")
+                hue=$(echo "scale=6; 4 + (($r_norm - $g_norm) / $delta)" | bc)
+                ;;
+        esac
+
+        hue=$(echo "scale=6; $hue * 60" | bc)
+
+        # Normalize hue to [0-360]
+        if (( $(echo "$hue < 0" | bc -l) )); then
+            hue=$(echo "scale=6; $hue + 360" | bc)
+        fi
+    fi
+
+    # Convert to output format: H [0-360], S [0-100], L [0-100]
+    local h_out=$(echo "scale=2; $hue" | bc)
+    local s_out=$(echo "scale=2; $saturation * 100" | bc)
+    local l_out=$(echo "scale=2; $lightness * 100" | bc)
+
+    echo "$h_out $s_out $l_out"
+}
+
+# Calculate angular distance between two hues (0-360 degrees)
+hue_distance() {
+    local h1=$1
+    local h2=$2
+
+    # Calculate absolute difference
+    local diff=$(echo "scale=6; $h1 - $h2" | bc)
+    if (( $(echo "$diff < 0" | bc -l) )); then
+        diff=$(echo "scale=6; -1 * $diff" | bc)
+    fi
+
+    # Calculate circular distance (shortest path around the color wheel)
+    local circular_diff=$(echo "scale=6; 360 - $diff" | bc)
+
+    # Return the smaller distance
+    if (( $(echo "$diff <= $circular_diff" | bc -l) )); then
+        echo "$diff"
+    else
+        echo "$circular_diff"
+    fi
+}
+
+# Calculate euclidean distance between two RGB colors (kept for compatibility)
 color_distance_euclidean() {
     local r1=$1 g1=$2 b1=$3
     local r2=$4 g2=$5 b2=$6
@@ -208,7 +384,7 @@ find_best_color_for_concept() {
     esac
 
     local best_color=""
-    local best_distance=999999
+    local best_distance=999.0  # High initial value for composite distance metric
     local best_source=""
 
     # First, try preference order
@@ -221,8 +397,14 @@ find_best_color_for_concept() {
         fi
     done
 
-    # If no preference color found, calculate distances
+    # If no preference color found, calculate perceptual distances
     if [[ -z "$best_color" ]]; then
+        # Get target hue from target RGB
+        local target_hex=$(printf "#%02x%02x%02x" "$target_r" "$target_g" "$target_b")
+        local target_hsl=$(hex_to_hsl "$target_hex")
+        local target_hue target_sat target_light
+        read -r target_hue target_sat target_light <<< "$target_hsl"
+
         while IFS= read -r line; do
             local key="${line%=*}"
             local color="${line#*=}"
@@ -231,14 +413,48 @@ find_best_color_for_concept() {
             [[ "$key" == "background" || "$key" == "foreground" ]] && continue
 
             if [[ -n "$color" ]]; then
-                local rgb=$(hex_to_rgb "$color")
-                local r g b
-                read -r r g b <<< "$rgb"
+                # Get HSL of the current color
+                local color_hsl=$(hex_to_hsl "$color")
+                local color_hue color_sat color_light
+                read -r color_hue color_sat color_light <<< "$color_hsl"
 
-                local distance=$(color_distance_euclidean "$target_r" "$target_g" "$target_b" "$r" "$g" "$b")
+                # Filter out colors with low saturation or extreme lightness
+                # Skip grays and washed-out colors (sat < 20) and very dark/light colors
+                if (( $(echo "$color_sat < 20" | bc -l) )) || \
+                   (( $(echo "$color_light < 20" | bc -l) )) || \
+                   (( $(echo "$color_light > 90" | bc -l) )); then
+                    continue
+                fi
 
-                if [[ "$distance" -lt "$best_distance" ]]; then
-                    best_distance="$distance"
+                # Calculate composite perceptual distance
+                # Hue distance (most important, weight = 1.0)
+                local hue_dist=$(hue_distance "$target_hue" "$color_hue")
+
+                # Saturation penalty (ideal saturation ~80%, weight = 0.3)
+                local ideal_sat=80
+                local sat_penalty=$(echo "scale=6; ($color_sat - $ideal_sat)" | bc)
+                if (( $(echo "$sat_penalty < 0" | bc -l) )); then
+                    sat_penalty=$(echo "scale=6; -1 * $sat_penalty" | bc)
+                fi
+                sat_penalty=$(echo "scale=6; $sat_penalty * 0.3" | bc)
+
+                # Lightness penalty (ideal lightness ~50%, weight = 0.2)
+                local ideal_light=50
+                local light_penalty=$(echo "scale=6; ($color_light - $ideal_light)" | bc)
+                if (( $(echo "$light_penalty < 0" | bc -l) )); then
+                    light_penalty=$(echo "scale=6; -1 * $light_penalty" | bc)
+                fi
+                light_penalty=$(echo "scale=6; $light_penalty * 0.2" | bc)
+
+                # Composite distance: hue_distance + saturation_penalty + lightness_penalty
+                local composite_distance=$(echo "scale=6; $hue_dist + $sat_penalty + $light_penalty" | bc)
+
+                # Convert to integer for comparison (multiply by 1000 to preserve precision)
+                local distance_int=$(echo "scale=0; $composite_distance * 1000" | bc)
+                local best_distance_int=$(echo "scale=0; $best_distance * 1000" | bc)
+
+                if [[ "$distance_int" -lt "$best_distance_int" ]]; then
+                    best_distance="$composite_distance"
                     best_color="$color"
                     best_source="$key"
                 fi
@@ -269,8 +485,11 @@ analyze_palette() {
     show_status "Analyzing current color palette..."
     echo
 
-    # Show current palette
-    echo -e "${BOLD}Current Palette:${NC}"
+    # Show visual palette first
+    show_palette_visual
+
+    # Show current palette (text format)
+    echo -e "${BOLD}Current Palette (Text):${NC}"
     while IFS= read -r line; do
         local key="${line%=*}"
         local color="${line#*=}"
@@ -284,7 +503,7 @@ analyze_palette() {
     local semantic_concepts=("error" "warning" "success" "info" "accent")
     for concept in "${semantic_concepts[@]}"; do
         local recommended_color=$(find_best_color_for_concept "$concept")
-        printf "  %-8s: %s\n" "$concept" "$recommended_color"
+        show_color_block "$recommended_color" "$concept" 6
     done
 
     echo
@@ -294,7 +513,7 @@ analyze_palette() {
     local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink")
     for color in "${basic_colors[@]}"; do
         local recommended_color=$(find_best_color_for_concept "$color")
-        printf "  %-8s: %s\n" "$color" "$recommended_color"
+        show_color_block "$recommended_color" "$color" 6
     done
 
     echo
@@ -478,6 +697,8 @@ main() {
     # Handle options
     if [[ -n "$analyze" ]]; then
         analyze_palette
+    elif [[ -n "$colors" ]]; then
+        show_palette_visual
     elif [[ -n "$export" ]]; then
         case "${format:-shell}" in
             "eww"|"scss")
@@ -493,7 +714,7 @@ main() {
     elif [[ -n "$concept" ]]; then
         find_best_color_for_concept "$concept"
     else
-        # Default: show quick analysis
+        # Default: show quick analysis with visual colors
         show_status "Quick palette analysis (use --analyze for detailed view)"
         echo
 
@@ -501,7 +722,7 @@ main() {
         local semantic_concepts=("error" "warning" "success" "info" "accent")
         for concept in "${semantic_concepts[@]}"; do
             local color=$(find_best_color_for_concept "$concept")
-            printf "  %-8s: %s\n" "$concept" "$color"
+            show_color_block "$color" "$concept" 6
         done
 
         echo
@@ -509,11 +730,28 @@ main() {
         local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta")
         for color in "${basic_colors[@]}"; do
             local color_value=$(find_best_color_for_concept "$color")
-            printf "  %-8s: %s\n" "$color" "$color_value"
+            show_color_block "$color_value" "$color" 6
         done
 
         echo
+        echo -e "${BOLD}Compact Palette:${NC}"
+        # Show current palette in compact view
+        local color_line=""
+        local reset="\033[0m"
+
+        for i in {0..15}; do
+            local palette_color=$(xrdb -get "color$i" 2>/dev/null)
+            if [[ -n "$palette_color" ]]; then
+                local ansi_bg=$(hex_to_ansi_bg "$palette_color")
+                color_line+="${ansi_bg}  ${reset}"
+            fi
+        done
+
+        echo -e "$color_line"
+
+        echo
         show_info "Use 'dots-smart-colors --help' for more options"
+        show_info "Use 'dots-smart-colors --colors' to see full visual palette"
         show_info "Available concepts: error, warning, success, info, accent, red, green, blue, yellow, cyan, magenta, orange, pink, brown, white, black, gray"
     fi
 }
