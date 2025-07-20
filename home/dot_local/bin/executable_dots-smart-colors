@@ -40,7 +40,7 @@ CACHE_DIR="${HOME}/.cache/wal"
 CACHE_FILE="${CACHE_DIR}/smart-colors.cache"
 CACHE_TIMESTAMP_FILE="${CACHE_DIR}/smart-colors.timestamp"
 
-# Function to show status with colored output
+# Status functions
 show_status() {
     echo -e "${CYAN}🎨${NC} $1"
 }
@@ -238,112 +238,9 @@ show_palette_visual() {
     echo
 }
 
-# Convert hex color to HSL
-hex_to_hsl() {
-    local hex="$1"
-    # Remove # if present
-    hex="${hex#\#}"
 
-    # Convert to RGB [0-255]
-    local r=$((16#${hex:0:2}))
-    local g=$((16#${hex:2:2}))
-    local b=$((16#${hex:4:2}))
 
-    # Convert RGB to [0-1] range for calculations
-    local r_norm=$(echo "scale=6; $r / 255" | bc)
-    local g_norm=$(echo "scale=6; $g / 255" | bc)
-    local b_norm=$(echo "scale=6; $b / 255" | bc)
-
-    # Find max and min values
-    local max_val=$r_norm
-    local min_val=$r_norm
-    local max_component="r"
-
-    if (( $(echo "$g_norm > $max_val" | bc -l) )); then
-        max_val=$g_norm
-        max_component="g"
-    fi
-    if (( $(echo "$b_norm > $max_val" | bc -l) )); then
-        max_val=$b_norm
-        max_component="b"
-    fi
-
-    if (( $(echo "$g_norm < $min_val" | bc -l) )); then
-        min_val=$g_norm
-    fi
-    if (( $(echo "$b_norm < $min_val" | bc -l) )); then
-        min_val=$b_norm
-    fi
-
-    # Calculate Lightness
-    local lightness=$(echo "scale=6; ($max_val + $min_val) / 2" | bc)
-
-    # Calculate Saturation and Hue
-    local saturation=0
-    local hue=0
-
-    local delta=$(echo "scale=6; $max_val - $min_val" | bc)
-
-    if (( $(echo "$delta != 0" | bc -l) )); then
-        # Calculate Saturation
-        if (( $(echo "$lightness <= 0.5" | bc -l) )); then
-            saturation=$(echo "scale=6; $delta / ($max_val + $min_val)" | bc)
-        else
-            saturation=$(echo "scale=6; $delta / (2 - $max_val - $min_val)" | bc)
-        fi
-
-        # Calculate Hue
-        case "$max_component" in
-            "r")
-                hue=$(echo "scale=6; (($g_norm - $b_norm) / $delta)" | bc)
-                ;;
-            "g")
-                hue=$(echo "scale=6; 2 + (($b_norm - $r_norm) / $delta)" | bc)
-                ;;
-            "b")
-                hue=$(echo "scale=6; 4 + (($r_norm - $g_norm) / $delta)" | bc)
-                ;;
-        esac
-
-        hue=$(echo "scale=6; $hue * 60" | bc)
-
-        # Normalize hue to [0-360]
-        if (( $(echo "$hue < 0" | bc -l) )); then
-            hue=$(echo "scale=6; $hue + 360" | bc)
-        fi
-    fi
-
-    # Convert to output format: H [0-360], S [0-100], L [0-100]
-    local h_out=$(echo "scale=2; $hue" | bc)
-    local s_out=$(echo "scale=2; $saturation * 100" | bc)
-    local l_out=$(echo "scale=2; $lightness * 100" | bc)
-
-    echo "$h_out $s_out $l_out"
-}
-
-# Calculate angular distance between two hues (0-360 degrees)
-hue_distance() {
-    local h1=$1
-    local h2=$2
-
-    # Calculate absolute difference
-    local diff=$(echo "scale=6; $h1 - $h2" | bc)
-    if (( $(echo "$diff < 0" | bc -l) )); then
-        diff=$(echo "scale=6; -1 * $diff" | bc)
-    fi
-
-    # Calculate circular distance (shortest path around the color wheel)
-    local circular_diff=$(echo "scale=6; 360 - $diff" | bc)
-
-    # Return the smaller distance
-    if (( $(echo "$diff <= $circular_diff" | bc -l) )); then
-        echo "$diff"
-    else
-        echo "$circular_diff"
-    fi
-}
-
-# Calculate euclidean distance between two RGB colors (kept for compatibility)
+# Calculate euclidean distance between two RGB colors
 color_distance_euclidean() {
     local r1=$1 g1=$2 b1=$3
     local r2=$4 g2=$5 b2=$6
@@ -448,146 +345,60 @@ get_reference_color() {
     esac
 }
 
-# Calculate palette characteristics for adaptation
-analyze_palette_characteristics() {
-    local total_sat=0
-    local total_light=0
-    local color_count=0
 
-    # Analyze colors 1-14 (skip 0=black, 15=white usually)
-    for i in {1..14}; do
-        local color=$(xrdb -get "color$i" 2>/dev/null)
-        if [[ -n "$color" ]]; then
-            local hsl=$(hex_to_hsl "$color")
-            local h s l
-            read -r h s l <<< "$hsl"
 
-            total_sat=$(echo "scale=6; $total_sat + $s" | bc)
-            total_light=$(echo "scale=6; $total_light + $l" | bc)
-            ((color_count++))
-        fi
-    done
+# Simple semantic color generation: fixed references + palette harmonization
+get_semantic_color_from_palette() {
+    local concept="$1"
 
-    if [[ $color_count -gt 0 ]]; then
-        local avg_sat=$(echo "scale=2; $total_sat / $color_count" | bc)
-        local avg_light=$(echo "scale=2; $total_light / $color_count" | bc)
-        echo "$avg_sat $avg_light"
-    else
-        echo "70 50"  # Default values
-    fi
+    # Define semantically correct reference colors (always maintain identity)
+    local reference_color=""
+    case "$concept" in
+        "error"|"red"|"danger")
+            reference_color="#cc4444"  # Always reddish
+            ;;
+        "warning"|"orange"|"caution")
+            reference_color="#cc8800"  # Always orange/yellow
+            ;;
+        "success"|"green"|"ok")
+            reference_color="#669944"  # Always greenish
+            ;;
+        "info"|"blue"|"neutral")
+            reference_color="#4488cc"  # Always bluish
+            ;;
+        "accent"|"highlight")
+            reference_color="#8866aa"  # Always purple/distinctive
+            ;;
+        "cyan")
+            reference_color="#4499aa"  # Always cyan
+            ;;
+        "yellow")
+            reference_color="#cccc44"  # Always yellow
+            ;;
+        "magenta"|"purple")
+            reference_color="#cc66aa"  # Always purple/magenta
+            ;;
+        "pink")
+            reference_color="#dd99bb"  # Always pink
+            ;;
+        "brown")
+            reference_color="#996633"  # Always brown
+            ;;
+        *)
+            reference_color="#888888"  # Neutral gray
+            ;;
+    esac
+
+    # Harmonize the reference color with current palette
+    local palette_average=$(get_palette_average)
+    local harmonized=$(blend_colors "$reference_color" "$palette_average" 15)
+
+    echo "${harmonized:-$reference_color}"
 }
 
-# Adapt reference color to palette aesthetics
-adapt_color_to_palette() {
-    local reference_hex="$1"
-    local palette_characteristics="$2"
-    local adaptation_strength="$3"  # 0.0 to 1.0
 
-    local palette_avg_sat palette_avg_light
-    read -r palette_avg_sat palette_avg_light <<< "$palette_characteristics"
 
-    # Get reference color HSL
-    local ref_hsl=$(hex_to_hsl "$reference_hex")
-    local ref_h ref_s ref_l
-    read -r ref_h ref_s ref_l <<< "$ref_hsl"
-
-    # Adapt saturation and lightness towards palette average
-    local adapted_s=$(echo "scale=2; $ref_s + ($palette_avg_sat - $ref_s) * $adaptation_strength" | bc)
-    local adapted_l=$(echo "scale=2; $ref_l + ($palette_avg_light - $ref_l) * $adaptation_strength" | bc)
-
-    # Ensure values stay within bounds
-    if (( $(echo "$adapted_s < 0" | bc -l) )); then adapted_s=0; fi
-    if (( $(echo "$adapted_s > 100" | bc -l) )); then adapted_s=100; fi
-    if (( $(echo "$adapted_l < 10" | bc -l) )); then adapted_l=10; fi
-    if (( $(echo "$adapted_l > 90" | bc -l) )); then adapted_l=90; fi
-
-    # Convert back to hex
-    hsl_to_hex "$ref_h" "$adapted_s" "$adapted_l"
-}
-
-# Convert HSL back to hex (robust simplified version)
-hsl_to_hex() {
-    local h="$1" s="$2" l="$3"
-
-    # Clamp values to safe ranges
-    h=$(echo "scale=0; if ($h < 0) 0 else if ($h >= 360) ($h - 360) else $h" | bc)
-    s=$(echo "scale=0; if ($s < 0) 0 else if ($s > 100) 100 else $s" | bc)
-    l=$(echo "scale=0; if ($l < 0) 0 else if ($l > 100) 100 else $l" | bc)
-
-    # Simple approximation: adjust base color by saturation and lightness
-    local r=255 g=0 b=0  # Start with red
-
-    # Determine base color by hue (simplified sectors)
-    if (( $(echo "$h >= 0 && $h < 60" | bc -l) )); then
-        # Red to Yellow
-        r=255
-        g=$(echo "scale=0; 255 * $h / 60" | bc)
-        b=0
-    elif (( $(echo "$h >= 60 && $h < 120" | bc -l) )); then
-        # Yellow to Green
-        r=$(echo "scale=0; 255 * (120 - $h) / 60" | bc)
-        g=255
-        b=0
-    elif (( $(echo "$h >= 120 && $h < 180" | bc -l) )); then
-        # Green to Cyan
-        r=0
-        g=255
-        b=$(echo "scale=0; 255 * ($h - 120) / 60" | bc)
-    elif (( $(echo "$h >= 180 && $h < 240" | bc -l) )); then
-        # Cyan to Blue
-        r=0
-        g=$(echo "scale=0; 255 * (240 - $h) / 60" | bc)
-        b=255
-    elif (( $(echo "$h >= 240 && $h < 300" | bc -l) )); then
-        # Blue to Magenta
-        r=$(echo "scale=0; 255 * ($h - 240) / 60" | bc)
-        g=0
-        b=255
-    else
-        # Magenta to Red
-        r=255
-        g=0
-        b=$(echo "scale=0; 255 * (360 - $h) / 60" | bc)
-    fi
-
-    # Apply saturation (mix with gray)
-    local gray=$(echo "scale=0; $l * 255 / 100" | bc)
-    local sat_factor=$(echo "scale=6; $s / 100" | bc)
-
-    r=$(echo "scale=0; $r * $sat_factor + $gray * (1 - $sat_factor)" | bc)
-    g=$(echo "scale=0; $g * $sat_factor + $gray * (1 - $sat_factor)" | bc)
-    b=$(echo "scale=0; $b * $sat_factor + $gray * (1 - $sat_factor)" | bc)
-
-    # Apply lightness adjustment
-    local light_factor=$(echo "scale=6; $l / 50" | bc)  # 50 is middle lightness
-    if (( $(echo "$l > 50" | bc -l) )); then
-        # Lighten by mixing with white
-        local white_mix=$(echo "scale=6; ($l - 50) / 50" | bc)
-        r=$(echo "scale=0; $r + (255 - $r) * $white_mix" | bc)
-        g=$(echo "scale=0; $g + (255 - $g) * $white_mix" | bc)
-        b=$(echo "scale=0; $b + (255 - $b) * $white_mix" | bc)
-    elif (( $(echo "$l < 50" | bc -l) )); then
-        # Darken by reducing values
-        local dark_factor=$(echo "scale=6; $l / 50" | bc)
-        r=$(echo "scale=0; $r * $dark_factor" | bc)
-        g=$(echo "scale=0; $g * $dark_factor" | bc)
-        b=$(echo "scale=0; $b * $dark_factor" | bc)
-    fi
-
-    # Ensure integer values and clamp to 0-255
-    r=$(echo "$r" | cut -d. -f1)
-    g=$(echo "$g" | cut -d. -f1)
-    b=$(echo "$b" | cut -d. -f1)
-
-    # Final bounds check
-    if [[ "$r" -lt 0 ]]; then r=0; elif [[ "$r" -gt 255 ]]; then r=255; fi
-    if [[ "$g" -lt 0 ]]; then g=0; elif [[ "$g" -gt 255 ]]; then g=255; fi
-    if [[ "$b" -lt 0 ]]; then b=0; elif [[ "$b" -gt 255 ]]; then b=255; fi
-
-    printf "#%02x%02x%02x" "$r" "$g" "$b"
-}
-
-# Fast lookup table for color adaptation (avoids heavy HSL calculations)
+# Fast lookup table for color adaptation
 get_fast_adapted_color() {
     local concept="$1"
     local palette_has_color="$2"  # "red", "blue", etc. from simple hue check
@@ -654,11 +465,14 @@ get_fast_adapted_color() {
         "brown|orange") echo "#cc6633" ;;
         "brown|*") echo "#996633" ;;
 
-        *) echo "#888888" ;;  # Fallback gray
+                        *)
+            # Semantic fallback: get best color for concept from palette analysis
+            get_semantic_color_from_palette "$concept"
+            ;;
     esac
 }
 
-# Calculate fast palette average (RGB only, no HSL)
+# Calculate palette average
 get_palette_average() {
     local total_r=0 total_g=0 total_b=0
     local color_count=0
@@ -840,31 +654,22 @@ find_best_color_for_concept() {
     local base_color=$(get_fast_adapted_color "$concept" "$dominant_color")
 
     # Harmonize with palette average (15% blend for subtle adaptation)
-    local blend_strength=15
-    local final_color=$(blend_colors "$base_color" "$palette_average" "$blend_strength")
-
-    local best_color="$final_color"
-    local best_source="palette-harmonized"
-
-    [[ -n "$verbose" ]] && show_info "Fast adaptation: $concept (dominant: $dominant_color, avg: $palette_average) → $base_color → $best_color"
+    local final_color=$(blend_colors "$base_color" "$palette_average" 15)
 
     case "${format:-hex}" in
         "hex")
-            echo "$best_color"
+            echo "$final_color"
             ;;
         "rgb")
-            hex_to_rgb "$best_color"
+            hex_to_rgb "$final_color"
             ;;
         "polybar")
-            # For polybar, we can't use xrdb reference since it's adapted
-            echo "$best_color"
+            echo "$final_color"
             ;;
         *)
-            echo "$best_color"
+            echo "$final_color"
             ;;
     esac
-
-    [[ -n "$verbose" ]] && show_info "Best $concept color: $best_color (from $best_source)"
 }
 
 # Analyze complete palette
