@@ -71,6 +71,12 @@ setup_logging() {
 
 # Cleanup function
 cleanup_on_exit() {
+    # Clean up smart color environment variables (semantic + basic)
+    unset SMART_COLOR_ERROR SMART_COLOR_WARNING SMART_COLOR_SUCCESS SMART_COLOR_INFO SMART_COLOR_ACCENT \
+          SMART_COLOR_RED SMART_COLOR_GREEN SMART_COLOR_BLUE SMART_COLOR_YELLOW SMART_COLOR_CYAN \
+          SMART_COLOR_MAGENTA SMART_COLOR_ORANGE SMART_COLOR_PINK SMART_COLOR_BROWN \
+          SMART_COLOR_WHITE SMART_COLOR_BLACK SMART_COLOR_GRAY 2>/dev/null || true
+
     [[ -f "$LOCK_FILE" ]] && rm -f "$LOCK_FILE"
 }
 
@@ -163,6 +169,15 @@ load_polybar_profile() {
 
             # Export the config file path for use in launch_bars
             export POLYBAR_PROFILE_CONFIG_FILE
+
+            # Initialize the profile (this sets up smart colors and other profile-specific configs)
+            if declare -f polybar_profile_init >/dev/null 2>&1; then
+                log_quiet "INFO" "Initializing profile: $profile_name"
+                polybar_profile_init || log_quiet "WARN" "Profile initialization failed for: $profile_name"
+            else
+                log_quiet "DEBUG" "No initialization function found for profile: $profile_name"
+            fi
+
             log_quiet "INFO" "Polybar profile loaded: $profile_name (bars: $(echo "$profile_bars" | tr '\n' ' '), config: ${POLYBAR_PROFILE_CONFIG_FILE:-default})"
             return 0
         else

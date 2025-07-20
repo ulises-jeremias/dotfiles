@@ -1,0 +1,429 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Smart color palette analyzer and theme-adaptive color selector
+## Analyzes your current X resources color palette and suggests the best colors
+## for different semantic concepts (error, warning, success, info, etc.)
+##
+## Usage:
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##     -h, --help                            Show this help message.
+##     -a, --analyze                         Analyze current palette and show recommendations.
+##     -e, --export                          Export color variables for shell/polybar.
+##         --concept=CONCEPT                 Get best color for specific concept (error|warning|success|info|accent|red|green|blue|yellow|cyan|magenta|orange|pink|brown|white|black|gray).
+##         --format=FORMAT                   Output format: hex, rgb, polybar (default: hex).
+##     -v, --verbose                         Show detailed analysis.
+##         --distance-algorithm=ALGO         Color distance algorithm: euclidean, cie76, simple (default: euclidean).
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Function to show status with colored output
+show_status() {
+    echo -e "${CYAN}🎨${NC} $1"
+}
+
+show_success() {
+    echo -e "${GREEN}✅${NC} $1"
+}
+
+show_error() {
+    echo -e "${RED}❌${NC} $1"
+}
+
+show_warning() {
+    echo -e "${YELLOW}⚠️${NC} $1"
+}
+
+show_info() {
+    echo -e "${BLUE}ℹ️${NC} $1"
+}
+
+# Convert hex color to RGB
+hex_to_rgb() {
+    local hex="$1"
+    # Remove # if present
+    hex="${hex#\#}"
+
+    # Convert to RGB
+    local r=$((16#${hex:0:2}))
+    local g=$((16#${hex:2:2}))
+    local b=$((16#${hex:4:2}))
+
+    echo "$r $g $b"
+}
+
+# Calculate euclidean distance between two RGB colors
+color_distance_euclidean() {
+    local r1=$1 g1=$2 b1=$3
+    local r2=$4 g2=$5 b2=$6
+
+    local dr=$((r1 - r2))
+    local dg=$((g1 - g2))
+    local db=$((b1 - b2))
+
+    # Euclidean distance formula: sqrt((r1-r2)² + (g1-g2)² + (b1-b2)²)
+    local distance_squared=$((dr*dr + dg*dg + db*db))
+    echo "$distance_squared"
+}
+
+# Calculate color brightness (perceived luminance)
+color_brightness() {
+    local r=$1 g=$2 b=$3
+    # Using ITU-R BT.709 formula for perceived brightness
+    local brightness=$(echo "scale=2; 0.2126*$r + 0.7152*$g + 0.0722*$b" | bc)
+    echo "$brightness"
+}
+
+# Get color temperature (warm vs cool)
+color_temperature() {
+    local r=$1 g=$2 b=$3
+    # Simple temperature calculation: red-heavy = warm, blue-heavy = cool
+    local temp_score=$(echo "scale=2; ($r - $b) / 255" | bc)
+    echo "$temp_score"
+}
+
+# Get all available colors from xrdb
+get_xrdb_colors() {
+    declare -A colors
+
+    # Get standard colors 0-15
+    for i in {0..15}; do
+        local color=$(xrdb -get "color$i" 2>/dev/null)
+        if [[ -n "$color" ]]; then
+            colors["color$i"]="$color"
+        fi
+    done
+
+    # Get special colors
+    local bg=$(xrdb -get "background" 2>/dev/null)
+    local fg=$(xrdb -get "foreground" 2>/dev/null)
+
+    [[ -n "$bg" ]] && colors["background"]="$bg"
+    [[ -n "$fg" ]] && colors["foreground"]="$fg"
+
+    # Return as key=value pairs
+    for key in "${!colors[@]}"; do
+        echo "$key=${colors[$key]}"
+    done
+}
+
+# Find best color for a specific concept
+find_best_color_for_concept() {
+    local concept="$1"
+    local target_r target_g target_b
+    local preference_order=()
+
+    case "$concept" in
+        "error"|"danger")
+            target_r=255; target_g=0; target_b=0  # Pure red
+            preference_order=(9 1 11 5 13 3)  # bright red, red, yellow, magenta, bright magenta, dark yellow
+            ;;
+        "warning"|"caution")
+            target_r=255; target_g=165; target_b=0  # Orange
+            preference_order=(11 3 9 1 13)  # yellow, dark yellow, bright red, red, bright magenta
+            ;;
+        "success"|"ok")
+            target_r=0; target_g=255; target_b=0  # Pure green
+            preference_order=(10 2 11 6 14)  # bright green, green, yellow, cyan, bright cyan
+            ;;
+        "info"|"neutral")
+            target_r=0; target_g=100; target_b=255  # Blue
+            preference_order=(12 4 6 14 10)  # bright blue, blue, cyan, bright cyan, bright green
+            ;;
+        "accent"|"highlight")
+            target_r=128; target_g=0; target_b=255  # Purple/Violet
+            preference_order=(13 5 14 12 9)  # bright magenta, magenta, bright cyan, bright blue, bright red
+            ;;
+        "red")
+            target_r=255; target_g=0; target_b=0  # Pure red
+            preference_order=(9 1 5 13 11)  # bright red, red, magenta, bright magenta, yellow
+            ;;
+        "green")
+            target_r=0; target_g=255; target_b=0  # Pure green
+            preference_order=(10 2 6 14 11)  # bright green, green, cyan, bright cyan, yellow
+            ;;
+        "blue")
+            target_r=0; target_g=0; target_b=255  # Pure blue
+            preference_order=(12 4 6 14 13)  # bright blue, blue, cyan, bright cyan, bright magenta
+            ;;
+        "yellow")
+            target_r=255; target_g=255; target_b=0  # Pure yellow
+            preference_order=(11 3 10 9 1)  # bright yellow, dark yellow, bright green, bright red, red
+            ;;
+        "cyan")
+            target_r=0; target_g=255; target_b=255  # Pure cyan
+            preference_order=(14 6 12 4 10)  # bright cyan, cyan, bright blue, blue, bright green
+            ;;
+        "magenta"|"purple")
+            target_r=255; target_g=0; target_b=255  # Pure magenta
+            preference_order=(13 5 9 1 12)  # bright magenta, magenta, bright red, red, bright blue
+            ;;
+        "orange")
+            target_r=255; target_g=165; target_b=0  # Orange
+            preference_order=(11 3 9 1 10)  # bright yellow, dark yellow, bright red, red, bright green
+            ;;
+        "pink")
+            target_r=255; target_g=192; target_b=203  # Pink
+            preference_order=(13 5 9 11 1)  # bright magenta, magenta, bright red, bright yellow, red
+            ;;
+        "brown")
+            target_r=165; target_g=42; target_b=42  # Brown
+            preference_order=(1 9 3 11 8)  # red, bright red, dark yellow, bright yellow, dark gray
+            ;;
+        "white")
+            target_r=255; target_g=255; target_b=255  # Pure white
+            preference_order=(15 7 14 6 11)  # bright white, light gray, bright cyan, cyan, bright yellow
+            ;;
+        "black")
+            target_r=0; target_g=0; target_b=0  # Pure black
+            preference_order=(0 8 4 2 1)  # black, dark gray, dark blue, dark green, red
+            ;;
+        "gray"|"grey")
+            target_r=128; target_g=128; target_b=128  # Gray
+            preference_order=(8 7 4 2 6)  # dark gray, light gray, dark blue, dark green, cyan
+            ;;
+        *)
+            show_error "Unknown concept: $concept"
+            echo "Available concepts:"
+            echo "  Semantic: error, warning, success, info, accent"
+            echo "  Colors: red, green, blue, yellow, cyan, magenta, orange, pink, brown, white, black, gray"
+            return 1
+            ;;
+    esac
+
+    local best_color=""
+    local best_distance=999999
+    local best_source=""
+
+    # First, try preference order
+    for color_num in "${preference_order[@]}"; do
+        local color=$(xrdb -get "color$color_num" 2>/dev/null)
+        if [[ -n "$color" && "$color" != "#000000" ]]; then
+            best_color="$color"
+            best_source="color$color_num"
+            break
+        fi
+    done
+
+    # If no preference color found, calculate distances
+    if [[ -z "$best_color" ]]; then
+        while IFS= read -r line; do
+            local key="${line%=*}"
+            local color="${line#*=}"
+
+            # Skip background and foreground for most concepts
+            [[ "$key" == "background" || "$key" == "foreground" ]] && continue
+
+            if [[ -n "$color" ]]; then
+                local rgb=$(hex_to_rgb "$color")
+                local r g b
+                read -r r g b <<< "$rgb"
+
+                local distance=$(color_distance_euclidean "$target_r" "$target_g" "$target_b" "$r" "$g" "$b")
+
+                if [[ "$distance" -lt "$best_distance" ]]; then
+                    best_distance="$distance"
+                    best_color="$color"
+                    best_source="$key"
+                fi
+            fi
+        done < <(get_xrdb_colors)
+    fi
+
+    case "${format:-hex}" in
+        "hex")
+            echo "$best_color"
+            ;;
+        "rgb")
+            hex_to_rgb "$best_color"
+            ;;
+        "polybar")
+            echo "\${xrdb:$best_source}"
+            ;;
+        *)
+            echo "$best_color"
+            ;;
+    esac
+
+    [[ -n "$verbose" ]] && show_info "Best $concept color: $best_color (from $best_source)"
+}
+
+# Analyze complete palette
+analyze_palette() {
+    show_status "Analyzing current color palette..."
+    echo
+
+    # Show current palette
+    echo -e "${BOLD}Current Palette:${NC}"
+    while IFS= read -r line; do
+        local key="${line%=*}"
+        local color="${line#*=}"
+        echo "  $key: $color"
+    done < <(get_xrdb_colors)
+
+    echo
+    echo -e "${BOLD}Semantic Color Recommendations:${NC}"
+
+    # Get recommendations for each concept
+    local semantic_concepts=("error" "warning" "success" "info" "accent")
+    for concept in "${semantic_concepts[@]}"; do
+        local recommended_color=$(find_best_color_for_concept "$concept")
+        printf "  %-8s: %s\n" "$concept" "$recommended_color"
+    done
+
+    echo
+    echo -e "${BOLD}Basic Color Recommendations:${NC}"
+
+    # Get recommendations for basic colors
+    local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink")
+    for color in "${basic_colors[@]}"; do
+        local recommended_color=$(find_best_color_for_concept "$color")
+        printf "  %-8s: %s\n" "$color" "$recommended_color"
+    done
+
+    echo
+    echo -e "${BOLD}Palette Analysis:${NC}"
+
+    # Analyze palette characteristics
+    local warm_colors=0
+    local cool_colors=0
+    local bright_colors=0
+    local dark_colors=0
+
+    while IFS= read -r line; do
+        local color="${line#*=}"
+        [[ "$color" =~ ^#[0-9a-fA-F]{6}$ ]] || continue
+
+        local rgb=$(hex_to_rgb "$color")
+        local r g b
+        read -r r g b <<< "$rgb"
+
+        local brightness=$(color_brightness "$r" "$g" "$b")
+        local temperature=$(color_temperature "$r" "$g" "$b")
+
+        if (( $(echo "$temperature > 0" | bc -l) )); then
+            ((warm_colors++))
+        else
+            ((cool_colors++))
+        fi
+
+        if (( $(echo "$brightness > 128" | bc -l) )); then
+            ((bright_colors++))
+        else
+            ((dark_colors++))
+        fi
+    done < <(get_xrdb_colors)
+
+    echo "  Warm colors: $warm_colors | Cool colors: $cool_colors"
+    echo "  Bright colors: $bright_colors | Dark colors: $dark_colors"
+
+    # Theme type suggestion
+    if [[ "$warm_colors" -gt "$cool_colors" ]]; then
+        echo "  Theme tendency: Warm palette 🔥"
+    else
+        echo "  Theme tendency: Cool palette ❄️"
+    fi
+}
+
+# Export color variables
+export_colors() {
+    show_status "Exporting smart color variables..."
+
+    echo "# Smart color variables generated by dots-smart-colors"
+    echo "# Source this file or copy to your shell/polybar config"
+    echo
+
+    echo "# Semantic colors"
+    local semantic_concepts=("error" "warning" "success" "info" "accent")
+    for concept in "${semantic_concepts[@]}"; do
+        local color=$(find_best_color_for_concept "$concept")
+        echo "export SMART_COLOR_${concept^^}='$color'"
+    done
+
+    echo
+    echo "# Basic colors"
+    local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink" "brown" "white" "black" "gray")
+    for color in "${basic_colors[@]}"; do
+        local color_value=$(find_best_color_for_concept "$color")
+        echo "export SMART_COLOR_${color^^}='$color_value'"
+    done
+
+    echo
+    echo "# Polybar format variables (semantic)"
+    for concept in "${semantic_concepts[@]}"; do
+        local color=$(format="polybar" find_best_color_for_concept "$concept")
+        echo "# smart-$concept = $color"
+    done
+
+    echo
+    echo "# Polybar format variables (basic colors)"
+    for color in "${basic_colors[@]}"; do
+        local color_value=$(format="polybar" find_best_color_for_concept "$color")
+        echo "# smart-$color = $color_value"
+    done
+}
+
+# Main script logic
+main() {
+    # Check dependencies
+    if ! command -v xrdb >/dev/null 2>&1; then
+        show_error "xrdb command not found. Please install X11 utilities."
+        exit 1
+    fi
+
+    if ! command -v bc >/dev/null 2>&1; then
+        show_error "bc command not found. Please install bc for calculations."
+        exit 1
+    fi
+
+    # Handle options
+    if [[ -n "$analyze" ]]; then
+        analyze_palette
+    elif [[ -n "$export" ]]; then
+        export_colors
+    elif [[ -n "$concept" ]]; then
+        find_best_color_for_concept "$concept"
+    else
+        # Default: show quick analysis
+        show_status "Quick palette analysis (use --analyze for detailed view)"
+        echo
+
+        echo -e "${BOLD}Semantic Colors:${NC}"
+        local semantic_concepts=("error" "warning" "success" "info" "accent")
+        for concept in "${semantic_concepts[@]}"; do
+            local color=$(find_best_color_for_concept "$concept")
+            printf "  %-8s: %s\n" "$concept" "$color"
+        done
+
+        echo
+        echo -e "${BOLD}Basic Colors:${NC}"
+        local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta")
+        for color in "${basic_colors[@]}"; do
+            local color_value=$(find_best_color_for_concept "$color")
+            printf "  %-8s: %s\n" "$color" "$color_value"
+        done
+
+        echo
+        show_info "Use 'dots-smart-colors --help' for more options"
+        show_info "Available concepts: error, warning, success, info, accent, red, green, blue, yellow, cyan, magenta, orange, pink, brown, white, black, gray"
+    fi
+}
+
+# Run main function
+main "$@"

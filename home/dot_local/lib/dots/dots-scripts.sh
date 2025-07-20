@@ -21,6 +21,7 @@ scripts_list=(
     "📊 rofi-xrandr: Rofi menu for advanced display configuration with charts"
     "📸 screenshooter: Take screenshots with various options and formats"
     "📜 scripts: Interactive menu to browse and launch available dots scripts"
+    "🎨 smart-colors: Analyze color palettes and suggest optimal semantic colors"
     "⬆️ sysupdate: Perform comprehensive system updates"
     "🔄 toggle: Toggle state of applications like polybar, compositor, notifications"
     "🔔 updates: Check and display available package updates with notifications"
