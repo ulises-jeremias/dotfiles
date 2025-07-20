@@ -23,16 +23,7 @@ readonly MAX_RETRIES=3
 readonly RETRY_DELAY=1
 readonly DEFAULT_TERM="xterm-256color"
 
-# Available Polybar configurations (dynamically detected and from rice configs)
-readonly AVAILABLE_BARS=(
-    "polybar-top"
-    "polybar-bottom"
-    "i3-polybar-top"
-    "i3-polybar-bottom"
-    "i3-polybar-top-1"
-    "i3-polybar-top-2"
-    "i3-polybar-top-3"
-)
+
 
 # =============================================================================
 # Utility Functions
@@ -233,7 +224,7 @@ detect_available_bars() {
     printf '%s\n' "${bars[@]}" | sort -u
 }
 
-# Enhanced process management
+# Enhanced process management with aggressive cleanup
 manage_polybar_processes() {
     local action="${1:-restart}"
 
@@ -242,35 +233,95 @@ manage_polybar_processes() {
             log "INFO" "Stopping Polybar processes..."
 
             if pgrep -u "$UID" -x polybar >/dev/null 2>&1; then
-                local pids
-                pids="$(pgrep -u "$UID" -x polybar)"
-                log "INFO" "Found Polybar processes: $pids"
+                local initial_pids initial_count
+                initial_pids="$(pgrep -u "$UID" -x polybar | tr '\n' ' ')"
+                initial_count="$(pgrep -u "$UID" -x polybar | wc -l)"
+                log "INFO" "Found $initial_count Polybar processes: $initial_pids"
 
-                # Terminate gracefully first
+                # Step 1: Graceful termination with SIGTERM
+                log "INFO" "Step 1: Sending SIGTERM to all polybar processes..."
                 pkill -TERM -u "$UID" -x polybar 2>/dev/null || true
 
                 # Wait for graceful shutdown
                 local retries=0
                 while [[ $retries -lt $MAX_RETRIES ]] && pgrep -u "$UID" -x polybar >/dev/null 2>&1; do
                     ((retries++))
-                    log "INFO" "Waiting for Polybar processes to terminate... ($retries/$MAX_RETRIES)"
+                    local remaining_count
+                    remaining_count="$(pgrep -u "$UID" -x polybar | wc -l)"
+                    log "INFO" "Waiting for graceful termination... ($retries/$MAX_RETRIES) - $remaining_count processes remaining"
                     sleep "$RETRY_DELAY"
                 done
 
-                # Force kill if still running
+                # Step 2: More aggressive termination with SIGKILL
                 if pgrep -u "$UID" -x polybar >/dev/null 2>&1; then
-                    log "WARN" "Force killing remaining Polybar processes"
-                    pkill -KILL -u "$UID" -x polybar 2>/dev/null || true
+                    local remaining_pids remaining_count
+                    remaining_pids="$(pgrep -u "$UID" -x polybar | tr '\n' ' ')"
+                    remaining_count="$(pgrep -u "$UID" -x polybar | wc -l)"
+                    log "WARN" "Step 2: $remaining_count processes still running, force killing with SIGKILL..."
+                    log "WARN" "Remaining PIDs: $remaining_pids"
+
+                    # Use pkill -9 for immediate termination
+                    pkill -9 -u "$UID" -x polybar 2>/dev/null || true
+
+                    # Give a moment for the system to clean up
+                    sleep 1
                 fi
 
-                log "INFO" "All Polybar processes stopped"
+                # Step 3: Final verification and cleanup
+                if pgrep -u "$UID" -x polybar >/dev/null 2>&1; then
+                    local final_pids final_count
+                    final_pids="$(pgrep -u "$UID" -x polybar | tr '\n' ' ')"
+                    final_count="$(pgrep -u "$UID" -x polybar | wc -l)"
+                    log "ERROR" "Step 3: $final_count processes STILL running after SIGKILL: $final_pids"
+
+                    # Last resort: individual kill -9 for each PID
+                    while IFS= read -r pid; do
+                        [[ -n "$pid" ]] && kill -9 "$pid" 2>/dev/null || true
+                    done < <(pgrep -u "$UID" -x polybar)
+
+                    sleep 1
+
+                    # Final check
+                    if pgrep -u "$UID" -x polybar >/dev/null 2>&1; then
+                        final_count="$(pgrep -u "$UID" -x polybar | wc -l)"
+                        log "ERROR" "CRITICAL: $final_count polybar processes are still running and cannot be killed!"
+                    else
+                        log "INFO" "All polybar processes successfully terminated after individual kill -9"
+                    fi
+                else
+                    log "INFO" "All polybar processes successfully stopped"
+                fi
+
+                # Clean up any orphaned polybar-related processes
+                log "INFO" "Cleaning up any orphaned polybar-related processes..."
+                pkill -9 -u "$UID" -f "polybar.*config" 2>/dev/null || true
+
+                # Final verification
+                local final_count
+                final_count="$(pgrep -u "$UID" -x polybar | wc -l || echo 0)"
+                if [[ "$final_count" -eq 0 ]]; then
+                    log "INFO" "Process cleanup completed successfully - no polybar processes remaining"
+                else
+                    log "ERROR" "Process cleanup incomplete - $final_count polybar processes still running"
+                fi
             else
                 log "INFO" "No Polybar processes found"
             fi
             ;;
 
         restart|start)
-            [[ "$action" == "restart" ]] && manage_polybar_processes "stop"
+            # Always ensure clean state before starting
+            if [[ "$action" == "restart" ]]; then
+                manage_polybar_processes "stop"
+            else
+                # Even for 'start', do a quick cleanup of any existing processes
+                local existing_count
+                existing_count="$(pgrep -u "$UID" -x polybar 2>/dev/null | wc -l || echo 0)"
+                if [[ "$existing_count" -gt 0 ]]; then
+                    log "WARN" "Found $existing_count existing polybar processes before start, cleaning up..."
+                    manage_polybar_processes "stop"
+                fi
+            fi
 
             log "INFO" "Starting Polybar bars..."
             ;;
@@ -383,6 +434,7 @@ COMMANDS:
     list            List available bars
     detect          Detect and show all configured bars
     cleanup         Clean up orphaned processes and logs
+    kill            Aggressively kill all polybar processes (pkill -9)
 
 OPTIONS:
     -h, --help      Show this help message
@@ -395,7 +447,7 @@ OPTIONS:
 
 BARS:
     If no bars specified, uses rice-configured bars or defaults.
-    Available bars: ${AVAILABLE_BARS[*]}
+    Available bars are detected dynamically from configuration files.
 
 EXAMPLES:
     $SCRIPT_NAME                           # Start rice-configured bars
@@ -406,6 +458,7 @@ EXAMPLES:
     $SCRIPT_NAME status                    # Show bar status
     $SCRIPT_NAME list                      # List available bars
     $SCRIPT_NAME cleanup                   # Clean up processes
+    $SCRIPT_NAME kill                      # Aggressively kill all polybar processes
 
 LOG FILE: $LOG_FILE
 EOF
@@ -466,29 +519,60 @@ list_bars() {
     else
         echo "   No bars detected in config files"
     fi
-
-    echo
-    echo "📦 Built-in Bars:"
-    printf '   %s\n' "${AVAILABLE_BARS[@]}"
 }
 
-# Cleanup function
+# Cleanup function with aggressive polybar process cleanup
 cleanup_system() {
     log "INFO" "Performing system cleanup..."
 
-    # Kill orphaned Polybar processes
-    local orphaned_pids
-    orphaned_pids="$(pgrep -u "$UID" -x polybar 2>/dev/null | tr '\n' ' ' || true)"
+    # Kill orphaned Polybar processes aggressively
+    local orphaned_count
+    orphaned_count="$(pgrep -u "$UID" -x polybar 2>/dev/null | wc -l || echo 0)"
 
-    if [[ -n "$orphaned_pids" ]]; then
-        log "INFO" "Killing orphaned Polybar processes: $orphaned_pids"
+    if [[ "$orphaned_count" -gt 0 ]]; then
+        local orphaned_pids
+        orphaned_pids="$(pgrep -u "$UID" -x polybar 2>/dev/null | tr '\n' ' ' || true)"
+        log "INFO" "Found $orphaned_count orphaned Polybar processes: $orphaned_pids"
+
+        # First try SIGTERM
+        log "INFO" "Attempting graceful termination of orphaned processes..."
         pkill -TERM -u "$UID" -x polybar 2>/dev/null || true
         sleep 2
-        pkill -KILL -u "$UID" -x polybar 2>/dev/null || true
+
+        # Then use SIGKILL if any remain
+        local remaining_count
+        remaining_count="$(pgrep -u "$UID" -x polybar 2>/dev/null | wc -l || echo 0)"
+        if [[ "$remaining_count" -gt 0 ]]; then
+            log "WARN" "Force killing $remaining_count remaining orphaned processes with SIGKILL..."
+            pkill -9 -u "$UID" -x polybar 2>/dev/null || true
+            sleep 1
+
+            # Individual kill if still needed
+            while IFS= read -r pid; do
+                [[ -n "$pid" ]] && kill -9 "$pid" 2>/dev/null || true
+            done < <(pgrep -u "$UID" -x polybar 2>/dev/null)
+        fi
+
+        # Final verification
+        local final_count
+        final_count="$(pgrep -u "$UID" -x polybar 2>/dev/null | wc -l || echo 0)"
+        if [[ "$final_count" -eq 0 ]]; then
+            log "INFO" "Successfully cleaned up all orphaned polybar processes"
+        else
+            log "ERROR" "Failed to clean up $final_count orphaned polybar processes"
+        fi
+    else
+        log "INFO" "No orphaned polybar processes found"
     fi
 
+    # Clean up any polybar-related processes by command line pattern
+    log "INFO" "Cleaning up polybar-related processes by pattern..."
+    pkill -9 -u "$UID" -f "polybar.*config" 2>/dev/null || true
+    pkill -9 -u "$UID" -f "polybar --config" 2>/dev/null || true
+
     # Remove stale lock files
-    find /tmp -name "polybar-*.lock" -mtime +1 -delete 2>/dev/null || true
+    find /tmp -name "polybar-*.lock" -user "$USER" -mtime +1 -delete 2>/dev/null || true
+    [[ -f "$LOCK_FILE" ]] && rm -f "$LOCK_FILE"
 
     # Clean old log files
     find "$LOG_DIR" -name "*.log.old" -mtime +7 -delete 2>/dev/null || true
@@ -543,7 +627,7 @@ main() {
                 use_rice_config=false
                 shift
                 ;;
-            start|stop|restart|status|list|detect|cleanup)
+            start|stop|restart|status|list|detect|cleanup|kill)
                 command="$1"
                 shift
                 ;;
@@ -567,7 +651,7 @@ main() {
     fi
 
     # Acquire lock unless it's a status or list command
-    if [[ "$command" != "status" && "$command" != "list" && "$command" != "detect" && "$command" != "cleanup" ]]; then
+    if [[ "$command" != "status" && "$command" != "list" && "$command" != "detect" && "$command" != "cleanup" && "$command" != "kill" ]]; then
         if [[ "$force" != "true" ]]; then
             acquire_lock
         fi
@@ -582,7 +666,7 @@ main() {
     fi
 
     # Setup environment and check installation
-    if [[ "$command" != "list" && "$command" != "detect" ]]; then
+    if [[ "$command" != "list" && "$command" != "detect" && "$command" != "kill" ]]; then
         setup_environment
         check_polybar_installed
     fi
@@ -592,7 +676,7 @@ main() {
         if [[ ${#bars[@]} -eq 0 ]]; then
             if [[ "$use_all_bars" == "true" ]]; then
                 mapfile -t bars < <(detect_available_bars)
-                [[ ${#bars[@]} -eq 0 ]] && bars=("${AVAILABLE_BARS[@]}")
+                [[ ${#bars[@]} -eq 0 ]] && bars=("polybar-top" "polybar-bottom")
             elif [[ "$use_rice_config" == "true" ]]; then
                 # Load rice configuration and get bars directly
                 if load_rice_config; then
@@ -658,6 +742,40 @@ main() {
             ;;
         cleanup)
             cleanup_system
+            ;;
+        kill)
+            log "INFO" "Performing aggressive polybar process termination..."
+            local count_before
+            count_before="$(pgrep -u "$UID" -x polybar 2>/dev/null | wc -l || echo 0)"
+
+            if [[ "$count_before" -gt 0 ]]; then
+                log "INFO" "Found $count_before polybar processes, killing with SIGKILL..."
+
+                # Direct pkill -9 approach as you used before
+                pkill -9 -u "$UID" -x polybar 2>/dev/null || true
+
+                # Also kill by pattern to catch any variations
+                pkill -9 -u "$UID" -f "polybar.*config" 2>/dev/null || true
+                pkill -9 -u "$UID" -f "polybar --config" 2>/dev/null || true
+
+                # Individual kill for any remaining
+                while IFS= read -r pid; do
+                    [[ -n "$pid" ]] && kill -9 "$pid" 2>/dev/null || true
+                done < <(pgrep -u "$UID" -x polybar 2>/dev/null)
+
+                sleep 1
+
+                local count_after
+                count_after="$(pgrep -u "$UID" -x polybar 2>/dev/null | wc -l || echo 0)"
+
+                if [[ "$count_after" -eq 0 ]]; then
+                    log "INFO" "Successfully killed all $count_before polybar processes"
+                else
+                    log "ERROR" "Could not kill all processes: $count_after still running"
+                fi
+            else
+                log "INFO" "No polybar processes found to kill"
+            fi
             ;;
         *)
             error_exit "Unknown command: $command"
