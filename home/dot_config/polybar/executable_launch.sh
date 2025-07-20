@@ -324,7 +324,7 @@ launch_bars() {
 
         # Use profile-specific config file if available, otherwise use main config.ini
         local config_file="$POLYBAR_CONFIG_DIR/config.ini"
-        
+
         if [[ -n "${POLYBAR_PROFILE_CONFIG_FILE:-}" && -f "${POLYBAR_PROFILE_CONFIG_FILE:-}" ]]; then
             config_file="$POLYBAR_PROFILE_CONFIG_FILE"
             log "INFO" "Using profile-specific config: $config_file"
