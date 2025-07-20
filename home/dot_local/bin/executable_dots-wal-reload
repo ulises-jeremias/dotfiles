@@ -287,41 +287,6 @@ reload_smart_colors() {
         return 0
     fi
 
-    # Apply smart colors to EWW (the EWW manager restart will pick up new color files)
-    local eww_configs=("$HOME/.config/eww/dashboard" "$HOME/.config/eww/powermenu")
-    local smart_configs=()
-
-    for eww_dir in "${eww_configs[@]}"; do
-        if [[ -d "$eww_dir" ]]; then
-            local colors_file="$eww_dir/colors.scss"
-            local config_name=$(basename "$eww_dir")
-
-            # Remove existing colors and generate smart colors
-            rm -f "$colors_file"
-            if dots-smart-colors --export --format=eww > "$colors_file" 2>/dev/null; then
-                show_success "Smart colors applied to $config_name"
-                smart_configs+=("$config_name")
-            else
-                show_warning "Failed to generate smart colors for $config_name, keeping pywal colors"
-                # Fallback to pywal if smart colors fail
-                local wal_colors="$HOME/.cache/wal/colors.scss"
-                [[ -f "$wal_colors" ]] && ln -sf "$wal_colors" "$colors_file" 2>/dev/null
-            fi
-        fi
-    done
-
-    # EWW will be restarted by the EWW manager (no manual reload needed)
-    if [[ ${#smart_configs[@]} -gt 0 ]]; then
-        show_success "Smart colors ready for EWW (${smart_configs[*]})"
-    fi
-
-    # Apply smart colors to i3
-    local i3_colors_file="$HOME/.config/i3/colors-smart.conf"
-    if dots-smart-colors --export --format=i3 > "$i3_colors_file" 2>/dev/null; then
-        show_success "Smart colors applied to i3"
-        # Note: i3 will pick up new colors on next reload/restart
-    fi
-
     # Apply smart colors to polybar and restart if running
     if pgrep polybar >/dev/null; then
         show_status "Polybar detected, restarting with smart colors..."
