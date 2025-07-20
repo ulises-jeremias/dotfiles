@@ -70,6 +70,23 @@ All changes will be synced to your system.
 
 ---
 
+## 🎨 Theming & Visual Customization
+
+### Smart Colors System
+
+The dotfiles include an **intelligent color system** that automatically optimizes colors for any theme:
+
+- **Semantic Colors**: Error, success, warning, info colors that adapt to any palette
+- **Theme Intelligence**: Automatically selects optimal colors based on wallpaper
+- **Application Integration**: Works with Polybar, EWW, i3, and custom scripts
+- **Automatic Updates**: Colors refresh automatically when changing wallpapers
+
+Learn more: [Smart Colors System](Smart-Colors-System)
+
+### Rice Theme Management
+
+---
+
 ## 🌍 Multi-Machine Consistency
 
 One of the biggest advantages of using Chezmoi is **portable configuration**. You can sync your setup across multiple machines using a private or public GitHub repository.

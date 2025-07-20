@@ -41,28 +41,9 @@ The polybar configuration uses a **modular architecture** split across multiple 
 
 ## 🎨 Color System
 
-### Base16 Color Scheme
+### Smart Color System
 
-Colors are sourced from Xresources using the **base16 color scheme**:
-
-| Color | Purpose |
-|-------|---------|
-| `color0` | Default Background |
-| `color1` | Lighter Background (status bars) |
-| `color2` | Selection Background |
-| `color3` | Comments, Line Highlighting |
-| `color4` | Dark Foreground |
-| `color5` | Default Foreground, Operators |
-| `color8` | Variables, XML Tags |
-| `color9` | Integers, Constants |
-| `color10` | Classes, Search Background |
-| `color11` | Strings, Code |
-| `color12` | Regular Expressions |
-| `color13` | Functions, Methods |
-| `color14` | Keywords, Storage |
-| `color15` | Deprecated elements |
-
-### Available Color Variables
+The configuration now uses an **intelligent color system** that automatically selects optimal colors for different concepts:
 
 ```ini
 [colors]
@@ -73,7 +54,51 @@ secondary = ${xrdb:color2}
 alert = ${xrdb:color3}
 moderate = ${xrdb:color11}
 urgent = ${xrdb:color9}
-blue = #8fa1b3
+
+; Smart theme-adaptive colors (set by dots-smart-colors)
+blue = ${env:SMART_COLOR_BLUE:${xrdb:color12}}
+green = ${env:SMART_COLOR_GREEN:${xrdb:color10}}
+orange = ${env:SMART_COLOR_ORANGE:${xrdb:color11}}
+purple = ${env:SMART_COLOR_MAGENTA:${xrdb:color13}}
+
+; Semantic colors for better theming (using smart colors)
+success = ${env:SMART_COLOR_SUCCESS:${xrdb:color10}}
+warning = ${env:SMART_COLOR_WARNING:${xrdb:color11}}
+error = ${env:SMART_COLOR_ERROR:${xrdb:color9}}
+info = ${env:SMART_COLOR_INFO:${xrdb:color12}}
+accent = ${env:SMART_COLOR_ACCENT:${xrdb:color14}}
+```
+
+#### Color Environment Variables
+
+Smart colors are automatically exported to environment variables:
+
+```bash
+# Automatically set by polybar profile initialization
+SMART_COLOR_ERROR="#ff6b6b"
+SMART_COLOR_SUCCESS="#51cf66"
+SMART_COLOR_WARNING="#ffd43b"
+SMART_COLOR_INFO="#339af0"
+SMART_COLOR_ACCENT="#845ef7"
+```
+
+#### Semantic Color Usage
+
+Use semantic colors in your modules for better theme adaptation:
+
+```ini
+[module/cpu]
+format-prefix-foreground = ${colors.accent}    # Important/active elements
+label-foreground = ${colors.info}              # Informational text
+
+[module/memory]
+format-prefix-foreground = ${colors.info}      # System information
+label-foreground = ${colors.foreground-alt}    # Secondary text
+
+[module/battery]
+ramp-capacity-0-foreground = ${colors.error}   # Critical battery
+ramp-capacity-1-foreground = ${colors.warning} # Low battery
+ramp-capacity-foreground = ${colors.success}   # Normal battery
 ```
 
 ---
@@ -105,7 +130,7 @@ Define specific bar layouts and module arrangements:
 
 - **common-top.conf**: Universal top bar for any window manager
 - **common-bottom.conf**: Universal bottom bar companion
-- **i3-*.conf**: i3 window manager specific configurations
+- **i3-\*.conf**: i3 window manager specific configurations
 
 ### 4. Module Definitions (`modules/`)
 

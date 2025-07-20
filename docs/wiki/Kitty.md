@@ -61,6 +61,20 @@ This tool automatically updates your Kitty config with the selected theme.
 
 ---
 
+## 🎨 Color Integration
+
+### Smart Colors & Pywal Integration
+
+Your Kitty terminal automatically integrates with the **smart colors system**:
+
+- **Automatic Updates**: Colors refresh when you change wallpapers via `wpg`
+- **Smart Adaptation**: Colors are optimized for readability and theme consistency
+- **Pywal Compatibility**: Works seamlessly with existing [`pywal`](https://github.com/dylanaraps/pywal) workflows
+
+The terminal colors are automatically updated through the `wal-reload` script, ensuring perfect theme coordination across your entire desktop environment.
+
+---
+
 ## 🧠 Tips for Customizing Kitty
 
 - Use Nerd Fonts or JetBrainsMono for ligatures and icon support

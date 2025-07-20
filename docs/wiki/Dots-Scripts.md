@@ -58,11 +58,63 @@ dots <script>   # Run a specific script (with optional flags)
 - `screenshooter` – Take screenshots with various options and formats
 - `scripts` – Interactive menu to browse and launch available dots scripts
 - `security-audit` – Run comprehensive security audits and apply security fixes
+- `smart-colors` – **[NEW]** Analyze color palettes and suggest optimal semantic colors
 - `sysupdate` – Perform comprehensive system updates
 - `toggle` – Toggle state of applications like polybar, compositor, notifications
 - `updates` – Check and display available package updates with notifications
-- `wal-reload` – Reload pywal colorscheme and apply to i3, rofi, eww, betterlockscreen, discord
+- `wal-reload` – **[ENHANCED]** Reload pywal colorscheme and apply smart colors to i3, rofi, eww, polybar, betterlockscreen
 - `weather-info` – Display current weather information and forecasts
+
+---
+
+## 🎨 Smart Colors System
+
+### `dots-smart-colors`
+
+**Purpose**: Intelligent color palette analysis and theme-adaptive color selection.
+
+**Usage Examples:**
+
+```bash
+# Quick palette analysis
+dots-smart-colors
+
+# Detailed analysis with recommendations
+dots-smart-colors --analyze
+
+# Get specific semantic color
+dots-smart-colors --concept=error
+dots-smart-colors --concept=success --format=polybar
+
+# Export for different applications
+dots-smart-colors --export                    # Shell variables
+dots-smart-colors --export --format=eww       # EWW SCSS
+dots-smart-colors --export --format=i3        # i3 configuration
+```
+
+**Key Features:**
+
+- **Theme-adaptive**: Colors automatically adjust to any palette
+- **Semantic mapping**: Intelligent error/success/warning color selection
+- **Multiple formats**: Shell, Polybar, EWW, i3 export support
+- **Fallback system**: Always provides valid colors
+
+### Enhanced `dots-wal-reload`
+
+**Purpose**: Complete theme refresh with smart color integration.
+
+**Automatic Integration:**
+When you change wallpapers via `wpg`, the system now:
+
+1. **Generates pywal colors** from wallpaper
+2. **Analyzes palette** with smart colors algorithm
+3. **Applies optimized colors** to all applications:
+   - **EWW**: Enhanced `colors.scss` with semantic variables
+   - **Polybar**: Smart environment variables + auto-restart
+   - **i3**: Generated `colors-smart.conf` file
+   - **Scripts**: Weather, player, jgmenu with smart colors
+
+**No manual configuration needed** - everything happens automatically!
 
 ---
 

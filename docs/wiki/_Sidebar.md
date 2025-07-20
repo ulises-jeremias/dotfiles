@@ -1,52 +1,36 @@
 - [🏠 Home](Home)
-- [💥 Dots Scripts Utility](Dots-Scripts)
-- [🎨 Customization](Customization)
-  - [🪟 Window Managers](Window-Managers)
-    - [XFCE 4](Xfce4)
-    - [i3 WM](i3)
-      - [Autostart Applications](i3#autostart-applications)
-      - [i3 Keybindings](i3#i3-keybindings)
-    - [Openbox](Openbox)
-      - [Openbox Configuration](Openbox#openbox-configuration)
-  - 🖌️ Misc Customization
-    - [Kitty Terminal](Kitty)
-    - [Apps Launcher (Rofi)](Rofi-Apps-Launcher)
-    - [Network Manager](Network-Manager)
-    - [Polybar](Polybar)
-      - [Configuration Structure](Polybar-Configuration-Structure)
-      - [Bar Configurations](Polybar-Bar-Configurations)
-      - [Emoji Support](Polybar-Emoji-Support)
-      - Available Polybar Modules
-        - [backlight](Polybar-Modules-backlight)
-        - [battery](Polybar-Modules-battery)
-        - [bluetooth](Polybar-Modules-bluetooth)
-        - [cpu](Polybar-Modules-cpu)
-        - [date](Polybar-Modules-date)
-        - [filesystem](Polybar-Modules-filesystem)
-        - [github](Polybar-Modules-github)
-        - [i3](Polybar-Modules-i3)
-        - [jgmenu](Polybar-Modules-jgmenu)
-        - [memory](Polybar-Modules-memory)
-        - [microphone](Polybar-Modules-microphone)
-        - [music-player](Polybar-Modules-music-player)
-        - [network](Polybar-Modules-network)
-        - [nightmode](Polybar-Modules-nightmode)
-        - [pipewire](Polybar-Modules-pipewire)
-        - [spotify](Polybar-Modules-spotify)
-        - [temperature](Polybar-Modules-temperature)
-        - [utility-helpers](Polybar-Modules-utility-helpers)
-        - [weather](Polybar-Modules-weather)
-    - [🎨 Rice System](Rice-System-Theme-Management)
-    - [🎛️ EWW Widgets](EWW-Widgets)
-    - [Zsh Shell](Zsh)
-      - Customization and Parameters
-      - Zsh + Antigen
-      - Zsh + Powerlevel10k
-      - Zsh + Oh My Zsh
-- [🖥️ Hardware](Hardware)
-  - [NVIDIA Troubleshooting](Hardware-nvidia-troubleshooting)
-- [🛡️ Privacy and Security](Security)
-- [📁 Dots Backup Tool](Dots-Backup)
-- [⏏️ Dots Eject](Dots-Eject)
-- [🧪 Testing Environment](Testing)
-- [💯 Contributing](CONTRIBUTING)
+- [🎨 Rice System](Rice-System-Theme-Management)
+- [🧠 Smart Colors System](Smart-Colors-System)
+- [⚙️ Customization](Customization)
+
+**🖥️ Desktop Environment**
+
+- [🪟 Window Managers](Window-Managers)
+- [🔷 i3](i3)
+- [📦 Openbox](Openbox)
+- [🐭 Xfce4](Xfce4)
+
+**📊 Polybar**
+
+- [📋 Polybar Overview](Polybar)
+- [🏗️ Configuration Structure](Polybar-Configuration-Structure)
+- [📱 Bar Configurations](Polybar-Bar-Configurations)
+- [😀 Emoji Support](Polybar-Emoji-Support)
+
+**🎛️ EWW Widgets**
+
+- [🔮 EWW Widgets](EWW-Widgets)
+
+**🔧 Scripts & Tools**
+
+- [📜 Dots Scripts](Dots-Scripts)
+- [💾 Backup System](Dots-Backup)
+
+**🔐 Security**
+
+- [🛡️ Security](Security)
+
+**🧪 Development**
+
+- [🤝 Contributing](CONTRIBUTING)
+- [🧪 Testing](Testing)

@@ -32,6 +32,47 @@ Your dotfiles include these beautiful rice themes:
 
 ---
 
+## 🎨 Smart Colors Integration
+
+### Automatic Color Optimization
+
+When you switch rice themes, the system now automatically applies **smart color optimization**:
+
+```bash
+# Theme switching process:
+# 1. Apply rice theme → 2. Generate pywal colors → 3. Apply smart colors → 4. Update applications
+dots rofi-rice-selector
+```
+
+### What Gets Optimized
+
+**🧠 Intelligent Color Selection:**
+
+- **Error colors**: Always red-ish and high contrast
+- **Success colors**: Always green-ish and visible
+- **Warning colors**: Always orange/yellow-ish
+- **Info colors**: Always blue-ish and readable
+- **Accent colors**: Always purple/highlight colors
+
+**🔄 Automatic Application Updates:**
+
+- **EWW widgets**: Enhanced `colors.scss` with semantic variables
+- **Polybar modules**: Smart environment variables
+- **i3 window manager**: Generated `colors-smart.conf`
+- **Scripts**: Weather, player, and other polybar scripts
+
+### Smart Colors vs Pywal
+
+| Feature          | Pywal Only           | Smart Colors           |
+| ---------------- | -------------------- | ---------------------- |
+| Color extraction | ✅ From wallpaper    | ✅ From wallpaper      |
+| Semantic meaning | ❌ Random assignment | ✅ Intelligent mapping |
+| Readability      | ⚠️ Sometimes poor    | ✅ Always optimized    |
+| Theme adaptation | ⚠️ Basic             | ✅ Advanced            |
+| Fallback system  | ❌ None              | ✅ Robust              |
+
+---
+
 ## 🔄 Rice Switching
 
 ### Quick Switch with Rofi

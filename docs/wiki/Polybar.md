@@ -2,10 +2,18 @@
 
 Polybar is a **highly customizable status bar** that provides a sleek and elegant way to display system information such as date, CPU, memory, and more. It's modular, lightweight, and visually beautiful.
 
-This dotfiles setup uses a **profile-based system** that allows different rice themes to use different polybar configurations seamlessly.
+This dotfiles setup uses a **profile-based system** that allows different rice themes to use different polybar configurations seamlessly, with **intelligent color adaptation** powered by the smart colors system.
 
 > [!TIP]
 > Everything in this setup is fully customizable. Whether it's modules, colors, font, spacing, or interaction, you have total control. All configuration files are versioned in your dotfiles using chezmoi.
+
+### Key Features
+
+- **🎨 Smart Color Integration**: Automatic theme-adaptive color selection
+- **📊 Profile System**: Different configurations for different rice themes
+- **🔧 20+ Modules**: Comprehensive system monitoring and controls
+- **🚀 Auto-Launch**: Seamless startup with window manager integration
+- **⚡ Performance**: Optimized for low resource usage
 
 ---
 
@@ -16,10 +24,10 @@ Your Polybar configuration is stored in:
 ```sh
 ~/.config/polybar
 ├── launch.sh              # Enhanced launch script with profile support
-├── profiles/               # Profile definitions
+├── profiles/              # Profile definitions
 │   ├── default.sh         # Default profile (2 bars)
 │   └── minimal.sh         # Minimal profile (1 bar)
-└── configs/                # Configuration files
+└── configs/               # Configuration files
     └── default/
         ├── config.ini     # Main polybar config
         ├── modules.conf   # Module definitions
@@ -100,7 +108,7 @@ The enhanced launch script provides comprehensive polybar management:
 
 # Commands:
 start       # Start polybar with current rice profile
-stop        # Stop all polybar processes  
+stop        # Stop all polybar processes
 restart     # Restart polybar (most common)
 status      # Show current status
 help        # Show help

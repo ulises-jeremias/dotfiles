@@ -31,6 +31,18 @@ that adapts flexibly to your needs, streamlining machine setup and ensuring cons
 Embrace the spirit of the hornero, and let HorneroConfig transform your configurations
 into a harmonious blend of elegance and efficiency.
 
+## ✨ Key Features
+
+- **🎨 Advanced Rice System**: Switch between beautiful desktop themes instantly
+- **🧠 Smart Colors**: Intelligent color adaptation for optimal readability and theme consistency  
+- **📊 Polybar**: Highly customizable status bar with 20+ modules
+- **🎛️ EWW Widgets**: Modern system widgets (dashboard, powermenu, sidebar)
+- **🪟 Multi-WM Support**: Works with i3, Openbox, and XFCE4
+- **📦 Easy Management**: Simple installation and configuration via chezmoi
+- **🔧 100+ Scripts**: Comprehensive automation and utility scripts
+- **🔄 Automatic Theming**: Seamless wallpaper-to-theme integration
+- **🛡️ Security**: Built-in security auditing and hardening tools
+
 Most were written from scratch. Some details:
 
 - **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
