@@ -164,7 +164,11 @@ reload_rofi() {
 
 # Function to reload EWW
 reload_eww() {
-    if ! check_command eww "EWW"; then
+    local eww_manager="$HOME/.config/eww/eww-manager.sh"
+
+    if [[ ! -x "$eww_manager" ]]; then
+        show_warning "EWW manager not found: $eww_manager"
+        SKIPPED_APPS+=("EWW")
         return 0
     fi
 
@@ -177,38 +181,29 @@ reload_eww() {
         return 0
     fi
 
-    # Update dashboard colors
-    if [[ -d "$HOME/.config/eww/dashboard" ]]; then
-        rm -f "$HOME/.config/eww/dashboard/colors.scss"
-        if ln -sf "$wal_colors" "$HOME/.config/eww/dashboard/colors.scss" 2>/dev/null; then
-            show_success "EWW dashboard colors linked"
-            safe_execute "Reloading EWW dashboard" eww --config "$HOME/.config/eww/dashboard" reload
-        fi
-    fi
+    # Update colors for all EWW configs
+    local eww_configs=("$HOME/.config/eww/dashboard" "$HOME/.config/eww/powermenu" "$HOME/.config/eww/sidebar")
+    local updated_configs=()
 
-    # Update powermenu colors
-    if [[ -d "$HOME/.config/eww/powermenu" ]]; then
-        rm -f "$HOME/.config/eww/powermenu/colors.scss"
-        if ln -sf "$wal_colors" "$HOME/.config/eww/powermenu/colors.scss" 2>/dev/null; then
-            show_success "EWW powermenu colors linked"
-            safe_execute "Reloading EWW powermenu" eww --config "$HOME/.config/eww/powermenu" reload
-        fi
-    fi
-
-    # Check for other EWW configs
-    for eww_config in "$HOME/.config/eww"/*; do
-        if [[ -d "$eww_config" && -f "$eww_config/eww.yuck" ]]; then
-            local config_name
-            config_name=$(basename "$eww_config")
-            if [[ "$config_name" != "dashboard" && "$config_name" != "powermenu" ]]; then
-                show_status "Found additional EWW config: $config_name"
-                if [[ ! -f "$eww_config/colors.scss" ]]; then
-                    ln -sf "$wal_colors" "$eww_config/colors.scss" 2>/dev/null || true
-                fi
-                safe_execute "Reloading EWW $config_name" eww --config "$eww_config" reload || true
+    for eww_config in "${eww_configs[@]}"; do
+        if [[ -d "$eww_config" ]]; then
+            local config_name=$(basename "$eww_config")
+            rm -f "$eww_config/colors.scss"
+            if ln -sf "$wal_colors" "$eww_config/colors.scss" 2>/dev/null; then
+                show_success "EWW $config_name colors linked"
+                updated_configs+=("$config_name")
             fi
         fi
     done
+
+    # Use EWW manager to restart all components with new colors
+    if "$eww_manager" restart >/dev/null 2>&1; then
+        show_success "EWW components restarted with new colors"
+        UPDATED_APPS+=("EWW (${updated_configs[*]})")
+    else
+        show_warning "EWW restart failed (colors still updated)"
+        FAILED_APPS+=("EWW restart")
+    fi
 }
 
 # Function to reload betterlockscreen
@@ -217,22 +212,38 @@ reload_betterlockscreen() {
         return 0
     fi
 
-    local current_wallpaper="$HOME/.config/wpg/.current"
+    # Move to background to not block the reload process
+    (
+        local current_wallpaper="$HOME/.config/wpg/.current"
 
-    if [[ -f "$current_wallpaper" ]]; then
-        show_status "Updating betterlockscreen with current wallpaper..."
-        if safe_execute "Generating betterlockscreen cache" betterlockscreen -u "$current_wallpaper"; then
-            show_success "Betterlockscreen updated"
+        if [[ -f "$current_wallpaper" ]]; then
+            show_status "Updating betterlockscreen with current wallpaper (background)..."
+            if betterlockscreen -u "$current_wallpaper" >/dev/null 2>&1; then
+                show_success "Betterlockscreen updated"
+                UPDATED_APPS+=("Betterlockscreen")
+            else
+                show_error "Betterlockscreen update failed"
+                FAILED_APPS+=("Betterlockscreen")
+            fi
+        else
+            show_warning "Current wallpaper not found: $current_wallpaper"
+            # Fallback: try to use wal wallpaper
+            local wal_wallpaper
+            wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
+            if [[ -f "$wal_wallpaper" ]]; then
+                if betterlockscreen -u "$wal_wallpaper" >/dev/null 2>&1; then
+                    show_success "Betterlockscreen updated (wal fallback)"
+                    UPDATED_APPS+=("Betterlockscreen")
+                else
+                    FAILED_APPS+=("Betterlockscreen")
+                fi
+            else
+                SKIPPED_APPS+=("Betterlockscreen")
+            fi
         fi
-    else
-        show_warning "Current wallpaper not found: $current_wallpaper"
-        # Fallback: try to use wal wallpaper
-        local wal_wallpaper
-        wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
-        if [[ -f "$wal_wallpaper" ]]; then
-            safe_execute "Generating betterlockscreen cache (wal fallback)" betterlockscreen -u "$wal_wallpaper"
-        fi
-    fi
+    ) &
+
+    show_status "Betterlockscreen update started in background..."
 }
 
 # Function to reload Discord theme
@@ -276,30 +287,33 @@ reload_smart_colors() {
         return 0
     fi
 
-    # Apply smart colors to EWW (replace pywal symlinks with smart-generated colors)
-    local eww_dirs=(
-        "$HOME/.config/eww/dashboard"
-        "$HOME/.config/eww/powermenu"
-    )
+    # Apply smart colors to EWW (the EWW manager restart will pick up new color files)
+    local eww_configs=("$HOME/.config/eww/dashboard" "$HOME/.config/eww/powermenu")
+    local smart_configs=()
 
-    for eww_dir in "${eww_dirs[@]}"; do
+    for eww_dir in "${eww_configs[@]}"; do
         if [[ -d "$eww_dir" ]]; then
             local colors_file="$eww_dir/colors.scss"
+            local config_name=$(basename "$eww_dir")
 
-            # Remove pywal symlink and generate smart colors
+            # Remove existing colors and generate smart colors
             rm -f "$colors_file"
             if dots-smart-colors --export --format=eww > "$colors_file" 2>/dev/null; then
-                show_success "Smart colors applied to $(basename "$eww_dir")"
-                # Reload EWW config
-                safe_execute "Reloading EWW $(basename "$eww_dir") with smart colors" eww --config "$eww_dir" reload
+                show_success "Smart colors applied to $config_name"
+                smart_configs+=("$config_name")
             else
-                show_warning "Failed to generate smart colors for $(basename "$eww_dir"), keeping pywal colors"
+                show_warning "Failed to generate smart colors for $config_name, keeping pywal colors"
                 # Fallback to pywal if smart colors fail
                 local wal_colors="$HOME/.cache/wal/colors.scss"
                 [[ -f "$wal_colors" ]] && ln -sf "$wal_colors" "$colors_file" 2>/dev/null
             fi
         fi
     done
+
+    # EWW will be restarted by the EWW manager (no manual reload needed)
+    if [[ ${#smart_configs[@]} -gt 0 ]]; then
+        show_success "Smart colors ready for EWW (${smart_configs[*]})"
+    fi
 
     # Apply smart colors to i3
     local i3_colors_file="$HOME/.config/i3/colors-smart.conf"
@@ -310,12 +324,13 @@ reload_smart_colors() {
 
     # Apply smart colors to polybar and restart if running
     if pgrep polybar >/dev/null; then
-        show_status "Polybar detected, applying smart colors and restarting..."
-        if command -v dots >/dev/null 2>&1; then
-            ~/.config/polybar/launch.sh restart >/dev/null 2>&1 || true
+        show_status "Polybar detected, restarting with smart colors..."
+        if ~/.config/polybar/launch.sh restart >/dev/null 2>&1; then
             show_success "Polybar restarted with smart colors"
+            UPDATED_APPS+=("Polybar with smart colors")
         else
-            show_warning "dots command not found, polybar restart skipped"
+            show_warning "Polybar restart failed"
+            FAILED_APPS+=("Polybar restart")
         fi
     fi
 
@@ -343,11 +358,7 @@ reload_additional_apps() {
         safe_execute "Updating VSCode theme" wal-theme-vscode
     fi
 
-    # Check for and reload polybar if it's running
-    if pgrep polybar >/dev/null; then
-        show_status "Polybar detected, may need manual restart to apply new colors"
-        # Note: Polybar typically needs to be restarted rather than just reloaded
-    fi
+    # Note: Polybar smart color integration is handled by the smart colors section
 }
 
 # Function to update current rice if applicable
@@ -356,11 +367,11 @@ update_current_rice() {
 
     if [[ -f "$rice_config" ]]; then
         source "$rice_config"
-        if [[ -n "$CURRENT_RICE" && -f "$HOME/.local/share/dots/rices/$CURRENT_RICE/executable_apply.sh" ]]; then
+        if [[ -n "$CURRENT_RICE" && -f "$HOME/.local/share/dots/rices/$CURRENT_RICE/apply.sh" ]]; then
             show_status "Current rice detected: $CURRENT_RICE"
             show_status "You may want to reapply the rice to fully integrate new colors"
             # Optionally: auto-reapply rice
-            # "$HOME/.local/share/dots/rices/$CURRENT_RICE/executable_apply.sh"
+            # "$HOME/.local/share/dots/rices/$CURRENT_RICE/apply.sh"
         fi
     fi
 }
@@ -414,16 +425,18 @@ main() {
     # Core wal reload
     reload_wal
 
-    # Reload applications
+    # Reload applications (fast operations first)
     reload_i3
     reload_rofi
     reload_eww
-    reload_betterlockscreen
     reload_discord
     reload_additional_apps
 
     # Apply smart colors after all standard wal operations
     reload_smart_colors
+
+    # Move slow operations to the end (background)
+    reload_betterlockscreen
 
     # Update rice integration
     update_current_rice
