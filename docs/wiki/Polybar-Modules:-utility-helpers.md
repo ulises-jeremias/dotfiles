@@ -223,7 +223,7 @@ Provides window switching and management capabilities.
 ```ini
 [module/window_switch]
 type = custom/script
-exec = ~/.config/polybar/scripts/window-switcher
+exec = ~/.config/polybar/configs/default/scripts/window-switcher
 click-left = rofi -show window
 interval = once
 ```

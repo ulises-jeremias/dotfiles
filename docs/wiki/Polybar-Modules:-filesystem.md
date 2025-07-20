@@ -185,13 +185,13 @@ label-critical = %{F#ff5555}%{T5}🚨%{T-}%{F-} %percentage_used%%
 ```ini
 [module/filesystem-smart]
 type = custom/script
-exec = ~/.config/polybar/scripts/filesystem-check
+exec = ~/.config/polybar/configs/default/scripts/filesystem-check
 interval = 30
 
 ; Custom script with emoji warnings
 ```
 
-Example script (`~/.config/polybar/scripts/filesystem-check`):
+Example script (`~/.config/polybar/configs/default/scripts/filesystem-check`):
 
 ```bash
 #!/usr/bin/env bash

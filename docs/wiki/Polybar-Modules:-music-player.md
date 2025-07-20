@@ -26,7 +26,7 @@ The music player system includes multiple modules:
 [module/player]
 type = custom/script
 interval = 1
-exec = ~/.config/polybar/scripts/player
+exec = ~/.config/polybar/configs/default/scripts/player
 ```
 
 ### Visual Display
@@ -66,7 +66,7 @@ exec = ~/.config/polybar/scripts/player
 [module/playing]
 type = custom/script
 interval = 1
-exec = ~/.config/polybar/scripts/player --title
+exec = ~/.config/polybar/configs/default/scripts/player --title
 ```
 
 ### Display Format
@@ -92,13 +92,13 @@ Current Song Title (truncated to 30 chars)
 [module/media-player]
 type = custom/script
 interval = 1
-exec = ~/.config/polybar/scripts/player
+exec = ~/.config/polybar/configs/default/scripts/player
 format = <label>
 
 [module/media-title]
 type = custom/script
 interval = 1
-exec = ~/.config/polybar/scripts/player --title
+exec = ~/.config/polybar/configs/default/scripts/player --title
 format = <label>
 
 ; In bar configuration
@@ -111,13 +111,13 @@ The player script supports various options:
 
 ```bash
 # Show only the title
-~/.config/polybar/scripts/player --title
+~/.config/polybar/configs/default/scripts/player --title
 
 # Show control buttons (default)
-~/.config/polybar/scripts/player
+~/.config/polybar/configs/default/scripts/player
 
 # Get help
-~/.config/polybar/scripts/player --help
+~/.config/polybar/configs/default/scripts/player --help
 ```
 
 ---
@@ -264,18 +264,18 @@ modules-right = player github cpu memory date
 
 - Check if any media player is running: `playerctl status`
 - Verify playerctl is installed: `which playerctl`
-- Test script manually: `~/.config/polybar/scripts/player`
+- Test script manually: `~/.config/polybar/configs/default/scripts/player`
 
 **Controls not working**:
 
 - Test playerctl commands: `playerctl play-pause`
 - Check player MPRIS support: `playerctl -l`
-- Verify script permissions: `chmod +x ~/.config/polybar/scripts/player`
+- Verify script permissions: `chmod +x ~/.config/polybar/configs/default/scripts/player`
 
 **Title not updating**:
 
 - Check update interval (should be 1 second for real-time)
-- Test title command: `~/.config/polybar/scripts/player --title`
+- Test title command: `~/.config/polybar/configs/default/scripts/player --title`
 - Verify metadata availability: `playerctl metadata`
 
 ### Debugging
@@ -286,8 +286,8 @@ playerctl status
 playerctl metadata
 
 # Test script output
-bash -x ~/.config/polybar/scripts/player
-bash -x ~/.config/polybar/scripts/player --title
+bash -x ~/.config/polybar/configs/default/scripts/player
+bash -x ~/.config/polybar/configs/default/scripts/player --title
 
 # Check active MPRIS players
 busctl --user list | grep mpris
@@ -319,7 +319,7 @@ playerctl -p vlc next
 # Combine with volume control
 [module/media-controls]
 type = custom/script
-exec = echo "$(~/.config/polybar/scripts/player) | Vol: $(pamixer --get-volume)%"
+exec = echo "$(~/.config/polybar/configs/default/scripts/player) | Vol: $(pamixer --get-volume)%"
 interval = 1
 ```
 

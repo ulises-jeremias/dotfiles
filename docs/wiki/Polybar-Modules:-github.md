@@ -217,7 +217,7 @@ interval = 10
 
 ; Custom script wrapper for conditional intervals
 type = custom/script
-exec = ~/.config/polybar/scripts/github-smart
+exec = ~/.config/polybar/configs/default/scripts/github-smart
 interval = 30
 ```
 
@@ -225,7 +225,7 @@ Example smart script:
 
 ```bash
 #!/usr/bin/env bash
-# ~/.config/polybar/scripts/github-smart
+# ~/.config/polybar/configs/default/scripts/github-smart
 
 hour=$(date +%H)
 day=$(date +%u)
@@ -328,7 +328,7 @@ polybar-msg action github hook 0
 ```ini
 [module/github-priority]
 type = custom/script
-exec = ~/.config/polybar/scripts/github-priority
+exec = ~/.config/polybar/configs/default/scripts/github-priority
 interval = 30
 ```
 
@@ -336,7 +336,7 @@ Custom script for priority notifications:
 
 ```bash
 #!/usr/bin/env bash
-# ~/.config/polybar/scripts/github-priority
+# ~/.config/polybar/configs/default/scripts/github-priority
 
 token=$(cat ~/.config/credentials/github_access_token_notifications)
 notifications=$(curl -s -H "Authorization: token $token" \
@@ -358,7 +358,7 @@ fi
 ```ini
 [module/github-repo]
 type = custom/script
-exec = ~/.config/polybar/scripts/github-repo-notifications
+exec = ~/.config/polybar/configs/default/scripts/github-repo-notifications
 interval = 60
 ```
 
@@ -367,7 +367,7 @@ interval = 60
 ```ini
 [module/git-github]
 type = custom/script
-exec = ~/.config/polybar/scripts/git-status-with-notifications
+exec = ~/.config/polybar/configs/default/scripts/git-status-with-notifications
 interval = 30
 ```
 

@@ -25,7 +25,7 @@ The weather module provides real-time weather information including:
 ```ini
 [module/weather]
 type = custom/script
-exec = ~/.config/polybar/scripts/weather-info
+exec = ~/.config/polybar/configs/default/scripts/weather-info
 exec-if = ping openweathermap.org -c 1
 interval = 600
 ```
@@ -35,7 +35,7 @@ interval = 600
 | Property | Value | Description |
 |----------|-------|-------------|
 | `type` | `custom/script` | Uses external script for data |
-| `exec` | `~/.config/polybar/scripts/weather-info` | Script path |
+| `exec` | `~/.config/polybar/configs/default/scripts/weather-info` | Script path |
 | `exec-if` | `ping openweathermap.org -c 1` | Check connectivity first |
 | `interval` | `600` | Update every 10 minutes |
 
@@ -62,7 +62,7 @@ You can customize the appearance by modifying the script or adding format option
 ```ini
 [module/weather-custom]
 type = custom/script
-exec = ~/.config/polybar/scripts/weather-info
+exec = ~/.config/polybar/configs/default/scripts/weather-info
 interval = 600
 format = <label>
 format-prefix = "Weather: "
@@ -145,7 +145,7 @@ modules-right = weather date
 ```ini
 [module/weather-styled]
 type = custom/script
-exec = ~/.config/polybar/scripts/weather-info
+exec = ~/.config/polybar/configs/default/scripts/weather-info
 interval = 600
 format = %{T6}🌤️%{T-} <label>
 format-background = ${colors.background-alt}
@@ -169,12 +169,12 @@ modules-center = weather
 
 - Check internet connection: `ping openweathermap.org`
 - Verify API key configuration
-- Check script permissions: `chmod +x ~/.config/polybar/scripts/weather-info`
+- Check script permissions: `chmod +x ~/.config/polybar/configs/default/scripts/weather-info`
 
 **Weather data is outdated**:
 
 - Check the update interval (default: 10 minutes)
-- Manually test the script: `~/.config/polybar/scripts/weather-info`
+- Manually test the script: `~/.config/polybar/configs/default/scripts/weather-info`
 - Verify network connectivity
 
 **Script errors**:
@@ -185,7 +185,7 @@ dots-weather-info --temp
 dots-weather-info --icon
 
 # Check script output
-bash -x ~/.config/polybar/scripts/weather-info
+bash -x ~/.config/polybar/configs/default/scripts/weather-info
 ```
 
 ### Performance Optimization
@@ -214,7 +214,7 @@ Create a custom weather display script:
 
 ```bash
 #!/usr/bin/env bash
-# ~/.config/polybar/scripts/weather-custom
+# ~/.config/polybar/configs/default/scripts/weather-custom
 
 temp=$(dots-weather-info --temp)
 condition=$(dots-weather-info --condition)
@@ -240,7 +240,7 @@ hour=$(date +%H)
 
 # Only show weather between 6 AM and 10 PM
 if [ "$hour" -ge 6 ] && [ "$hour" -le 22 ]; then
-    ~/.config/polybar/scripts/weather-info
+    ~/.config/polybar/configs/default/scripts/weather-info
 fi
 ```
 

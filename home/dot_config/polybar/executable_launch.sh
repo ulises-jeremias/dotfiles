@@ -15,6 +15,7 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 readonly SCRIPT_NAME
 readonly SCRIPT_DIR
 readonly POLYBAR_CONFIG_DIR="$HOME/.config/polybar"
+readonly POLYBAR_PROFILES_DIR="$POLYBAR_CONFIG_DIR/profiles"
 readonly LOG_DIR="$HOME/.cache/polybar"
 readonly LOG_FILE="$LOG_DIR/polybar.log"
 readonly LOCK_FILE="/tmp/polybar-launch.lock"
@@ -130,30 +131,85 @@ load_rice_config() {
     return 0
 }
 
-get_configured_bars() {
-    local bars=()
+# Load polybar profile based on rice configuration
+load_polybar_profile() {
+    local profile_name="${1:-default}"
 
-    # Try to source rice configuration only once and cache result
-    if [[ -z "${CACHED_RICE_BARS:-}" ]]; then
-        if load_rice_config; then
-            # Source in a subshell to avoid environment pollution
-            local rice_bars
-            rice_bars="$(source "$RICE_CONFIG_LOADER" 2>/dev/null && printf '%s\n' "${POLYBARS[@]}" 2>/dev/null || echo "")"
+    # Clear any previously cached profile data
+    unset CACHED_POLYBAR_PROFILE_BARS POLYBAR_PROFILE_BARS POLYBAR_PROFILE_CONFIG_FILE
 
-            if [[ -n "$rice_bars" ]]; then
-                CACHED_RICE_BARS="$rice_bars"
-                # Log to file only to avoid output capture
-                log_quiet "INFO" "Loaded rice-configured bars: $(echo "$rice_bars" | tr '\n' ' ')"
-            else
-                log_quiet "WARN" "No POLYBARS defined in rice configuration"
-                CACHED_RICE_BARS="polybar-top polybar-bottom"
-            fi
-        else
-            CACHED_RICE_BARS="polybar-top polybar-bottom"
+    local profile_file="$POLYBAR_PROFILES_DIR/${profile_name}.sh"
+
+    if [[ ! -f "$profile_file" ]]; then
+        log_quiet "WARN" "Polybar profile not found: $profile_file, falling back to default"
+        profile_name="default"
+        profile_file="$POLYBAR_PROFILES_DIR/default.sh"
+
+        if [[ ! -f "$profile_file" ]]; then
+            log_quiet "ERROR" "Default polybar profile not found: $profile_file"
+            return 1
         fi
     fi
 
-    echo "$CACHED_RICE_BARS"
+    log_quiet "INFO" "Loading polybar profile: $profile_name"
+
+    # Source the profile to get all variables
+    if source "$profile_file" 2>/dev/null; then
+        # Cache the bars and config file from the profile
+        local profile_bars profile_config_file
+        profile_bars="$(printf '%s\n' "${POLYBAR_PROFILE_BARS[@]}" 2>/dev/null || echo "")"
+        profile_config_file="${POLYBAR_PROFILE_CONFIG_FILE:-}"
+
+        if [[ -n "$profile_bars" ]]; then
+            CACHED_POLYBAR_PROFILE_BARS="$profile_bars"
+
+            # Use the config file from profile, or provide a fallback
+            if [[ -n "$profile_config_file" ]]; then
+                POLYBAR_PROFILE_CONFIG_FILE="$profile_config_file"
+            else
+                POLYBAR_PROFILE_CONFIG_FILE="$POLYBAR_CONFIG_DIR/configs/${profile_name}/config.ini"
+            fi
+
+            # Export the config file path for use in launch_bars
+            export POLYBAR_PROFILE_CONFIG_FILE
+            log_quiet "INFO" "Polybar profile loaded: $profile_name (bars: $(echo "$profile_bars" | tr '\n' ' '), config: ${POLYBAR_PROFILE_CONFIG_FILE:-default})"
+            return 0
+        else
+            log_quiet "ERROR" "No bars defined in polybar profile: $profile_file"
+            return 1
+        fi
+    else
+        log_quiet "ERROR" "Failed to source polybar profile: $profile_file"
+        return 1
+    fi
+}
+
+get_configured_bars() {
+    local bars=()
+
+    # Check if we have cached bars from loaded profile
+    if [[ -n "${CACHED_POLYBAR_PROFILE_BARS:-}" ]]; then
+        echo "$CACHED_POLYBAR_PROFILE_BARS"
+        return 0
+    fi
+
+    # Try to source rice configuration and load polybar profile
+    if load_rice_config; then
+        # Get the polybar profile name from rice config
+        local profile_name
+        profile_name="$(source "$RICE_CONFIG_LOADER" 2>/dev/null && echo "${POLYBAR_PROFILE:-default}" || echo "default")"
+
+        # Load the polybar profile
+        if load_polybar_profile "$profile_name"; then
+            echo "$CACHED_POLYBAR_PROFILE_BARS"
+        else
+            log_quiet "WARN" "Failed to load profile '$profile_name', using default bars"
+            echo "polybar-top polybar-bottom"
+        fi
+    else
+        # Ultimate fallback when no rice config is available
+        echo "polybar-top polybar-bottom"
+    fi
 }
 
 # Detect available bars from config files
@@ -266,8 +322,18 @@ launch_bars() {
         # Launch the bar with proper logging (skip validation as config.ini includes all bars)
         local bar_log_file="$LOG_DIR/${bar}.log"
 
-        # Always use the main config.ini file
-        polybar --reload "$bar" >"$bar_log_file" 2>&1 &
+        # Use profile-specific config file if available, otherwise use main config.ini
+        local config_file="$POLYBAR_CONFIG_DIR/config.ini"
+        
+        if [[ -n "${POLYBAR_PROFILE_CONFIG_FILE:-}" && -f "${POLYBAR_PROFILE_CONFIG_FILE:-}" ]]; then
+            config_file="$POLYBAR_PROFILE_CONFIG_FILE"
+            log "INFO" "Using profile-specific config: $config_file"
+        else
+            log "INFO" "Using default config: $config_file (profile config not found or empty)"
+        fi
+
+        # Launch polybar with the appropriate config file
+        polybar --config="$config_file" --reload "$bar" >"$bar_log_file" 2>&1 &
         local pid=$!
 
         # Give the process a moment to start
@@ -367,7 +433,7 @@ show_status() {
     echo "-------------------"
 
     # Clear cache before showing status
-    unset CACHED_RICE_BARS
+    unset CACHED_POLYBAR_PROFILE_BARS
     local configured_bars_string
     configured_bars_string="$(get_configured_bars)"
 
@@ -511,8 +577,8 @@ main() {
 
     # Clear cache for fresh runs
     if [[ "$debug" == "true" ]]; then
-        unset CACHED_RICE_BARS
-        log "DEBUG" "Cleared rice configuration cache"
+        unset CACHED_POLYBAR_PROFILE_BARS
+        log "DEBUG" "Cleared polybar profile cache"
     fi
 
     # Setup environment and check installation
@@ -528,10 +594,24 @@ main() {
                 mapfile -t bars < <(detect_available_bars)
                 [[ ${#bars[@]} -eq 0 ]] && bars=("${AVAILABLE_BARS[@]}")
             elif [[ "$use_rice_config" == "true" ]]; then
-                # Get bars from cached rice configuration
-                local rice_bars_string
-                rice_bars_string="$(get_configured_bars)"
-                mapfile -t bars <<< "$rice_bars_string"
+                # Load rice configuration and get bars directly
+                if load_rice_config; then
+                    # Get the polybar profile name from rice config
+                    local profile_name
+                    profile_name="$(source "$RICE_CONFIG_LOADER" 2>/dev/null && echo "${POLYBAR_PROFILE:-default}" || echo "default")"
+
+                    # Load the polybar profile (this sets POLYBAR_PROFILE_CONFIG_FILE)
+                    if load_polybar_profile "$profile_name"; then
+                        local rice_bars_string="$CACHED_POLYBAR_PROFILE_BARS"
+                        mapfile -t bars <<< "$rice_bars_string"
+                    else
+                        log "WARN" "Failed to load profile '$profile_name', using default bars"
+                        bars=("polybar-top" "polybar-bottom")
+                    fi
+                else
+                    # Ultimate fallback
+                    bars=("polybar-top" "polybar-bottom")
+                fi
             else
                 bars=("polybar-top" "polybar-bottom")
             fi

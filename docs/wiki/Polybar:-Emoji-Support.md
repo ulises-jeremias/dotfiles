@@ -81,12 +81,12 @@ Create enhanced scripts for existing modules:
 ```ini
 [module/battery-emoji]
 type = custom/script
-exec = ~/.config/polybar/scripts/battery-emoji
+exec = ~/.config/polybar/configs/default/scripts/battery-emoji
 interval = 60
 
 [module/volume-emoji]
 type = custom/script
-exec = ~/.config/polybar/scripts/volume-emoji
+exec = ~/.config/polybar/configs/default/scripts/volume-emoji
 interval = 1
 click-left = pamixer --toggle-mute
 ```
