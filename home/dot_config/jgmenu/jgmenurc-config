@@ -48,17 +48,19 @@ icon_theme_fallback  = xtg
 #arrow_string        = ▸
 #arrow_width         = 15
 
-color_menu_bg        = #1C2023 98
-color_menu_fg        = #A4A4A4 100
-#color_menu_border   = #1C2023 8
+# Smart colors - will be replaced by dots-jgmenu script
+# Uses dots-smart-colors for theme-adaptive color selection
+color_menu_bg        = SMART_BACKGROUND 98
+color_menu_fg        = SMART_FOREGROUND 100
+#color_menu_border   = SMART_BACKGROUND 8
 
-color_norm_bg        = #1C2023 0
-color_norm_fg        = #A4A4A4 100
+color_norm_bg        = SMART_BACKGROUND 0
+color_norm_fg        = SMART_FOREGROUND 100
 
-color_sel_bg         = #8fa1b3 60
-color_sel_fg         = #A4A4A4 100
-#color_sel_border    = #1C2023 8
+color_sel_bg         = SMART_ACCENT 60
+color_sel_fg         = SMART_FOREGROUND 100
+#color_sel_border    = SMART_ACCENT 8
 
-color_sep_fg         = #919BA0 40
+color_sep_fg         = SMART_INFO 40
 
 #csv_name_format     = %n (%g)

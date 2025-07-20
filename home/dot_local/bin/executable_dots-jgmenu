@@ -11,53 +11,64 @@
 original_config_file="$HOME/.config/jgmenu/jgmenurc-config"
 target_config_file="$HOME/.config/jgmenu/jgmenurc"
 
-# Function to get color from smart colors or xrdb fallback
+# Function to get smart colors with proper fallbacks
 get_smart_color() {
-    local color_var="$1"
-    local xrdb_fallback="$2"
+    local concept="$1"
+    local fallback_xrdb="${2:-background}"
 
-    # Check if smart colors are available
+    # Load smart colors if available
     if command -v dots-smart-colors >/dev/null 2>&1; then
-        # Try to get from smart color environment variables first
-        case "$color_var" in
-            "color7"|"foreground")
-                echo "${SMART_COLOR_INFO:-$(xrdb -get "$xrdb_fallback")}"
+        # Get smart color directly from the script
+        case "$concept" in
+            "SMART_BACKGROUND")
+                dots-smart-colors --concept=black 2>/dev/null || xrdb -get "background" 2>/dev/null || echo "#1b1f26"
                 ;;
-            "color9")
-                echo "${SMART_COLOR_ERROR:-$(xrdb -get "$xrdb_fallback")}"
+            "SMART_FOREGROUND")
+                dots-smart-colors --concept=white 2>/dev/null || xrdb -get "foreground" 2>/dev/null || echo "#ffffff"
                 ;;
-            "color10")
-                echo "${SMART_COLOR_SUCCESS:-$(xrdb -get "$xrdb_fallback")}"
+            "SMART_ACCENT")
+                dots-smart-colors --concept=accent 2>/dev/null || xrdb -get "color13" 2>/dev/null || echo "#8fa1b3"
                 ;;
-            "color11")
-                echo "${SMART_COLOR_WARNING:-$(xrdb -get "$xrdb_fallback")}"
+            "SMART_INFO")
+                dots-smart-colors --concept=info 2>/dev/null || xrdb -get "color12" 2>/dev/null || echo "#919ba0"
                 ;;
-            "color12")
-                echo "${SMART_COLOR_INFO:-$(xrdb -get "$xrdb_fallback")}"
+            "SMART_ERROR")
+                dots-smart-colors --concept=error 2>/dev/null || xrdb -get "color9" 2>/dev/null || echo "#ff6666"
                 ;;
-            "color13")
-                echo "${SMART_COLOR_ACCENT:-$(xrdb -get "$xrdb_fallback")}"
+            "SMART_SUCCESS")
+                dots-smart-colors --concept=success 2>/dev/null || xrdb -get "color10" 2>/dev/null || echo "#66ff66"
+                ;;
+            "SMART_WARNING")
+                dots-smart-colors --concept=warning 2>/dev/null || xrdb -get "color11" 2>/dev/null || echo "#ffff66"
                 ;;
             *)
-                xrdb -get "$xrdb_fallback"
+                xrdb -get "$fallback_xrdb" 2>/dev/null || echo "#ffffff"
                 ;;
         esac
     else
-        xrdb -get "$xrdb_fallback"
+        # Fallback to xrdb colors
+        xrdb -get "$fallback_xrdb" 2>/dev/null || echo "#ffffff"
     fi
 }
 
-# Function to get color (updated to use smart colors)
+# Function to get color (legacy wrapper)
 get_xrdb_color() {
-    get_smart_color "$1" "$1"
+    get_smart_color "SMART_FOREGROUND" "$1"
 }
 
-# Function to update color in the temporary configuration file
+# Function to update color placeholders with smart colors
 update_color() {
     local color_name="$1"
-    local color_value="$2"
-    [ -z "$color_value" ] && return # Skip if color_value is empty
-    sed -i "s/^$color_name.*=.*/$color_name=$color_value/" "$target_config_file"
+    local smart_placeholder="$2"
+    local opacity_transparency="${3:-100}"
+
+    [ -z "$smart_placeholder" ] && return # Skip if placeholder is empty
+
+    # Get the smart color for this placeholder
+    local color_value=$(get_smart_color "$smart_placeholder")
+
+    # Update the color in the config file, preserving opacity/transparency
+    sed -i "s|^$color_name.*= SMART_.*|$color_name = $color_value $opacity_transparency|" "$target_config_file"
 }
 
 # Ensure the original configuration file exists
@@ -70,14 +81,14 @@ fi
 # Copy the original configuration file to the temporary location
 cp "$original_config_file" "$target_config_file"
 
-# Fetch colors from xrdb and update the temporary configuration file
-update_color "color_menu_bg" "$(get_xrdb_color "color8") 92"
-update_color "color_menu_fg" "$(get_xrdb_color "foreground")"
-update_color "color_norm_bg" "$(get_xrdb_color "color8") 0"
-update_color "color_norm_fg" "$(get_xrdb_color "color7")"
-update_color "color_sel_bg" "$(get_xrdb_color "color9") 60"
-update_color "color_sel_fg" "$(get_xrdb_color "foreground")"
-update_color "color_sep_fg" "$(get_xrdb_color "background") 40"
+# Replace smart color placeholders with actual colors from dots-smart-colors
+update_color "color_menu_bg" "SMART_BACKGROUND" "98"
+update_color "color_menu_fg" "SMART_FOREGROUND" "100"
+update_color "color_norm_bg" "SMART_BACKGROUND" "0"
+update_color "color_norm_fg" "SMART_FOREGROUND" "100"
+update_color "color_sel_bg" "SMART_ACCENT" "60"
+update_color "color_sel_fg" "SMART_FOREGROUND" "100"
+update_color "color_sep_fg" "SMART_INFO" "40"
 
 # Set JGMENU_CONFIG to point to the temporary configuration file
 export JGMENU_CONFIG="$target_config_file"
