@@ -19,6 +19,7 @@
 ##     -e, --export                          Export color variables for shell/polybar.
 ##         --concept=CONCEPT                 Get best color for specific concept (error|warning|success|info|accent|red|green|blue|yellow|cyan|magenta|orange|pink|brown|white|black|gray).
 ##         --format=FORMAT                   Output format: hex, rgb, polybar, eww, scss, i3 (default: hex).
+##         --cache                           Force regenerate color cache for faster lookups.
 ##     -v, --verbose                         Show detailed analysis.
 ##         --distance-algorithm=ALGO         Color distance algorithm: euclidean, cie76, simple (default: euclidean).
 
@@ -33,6 +34,11 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m' # No Color
+
+# Cache configuration
+CACHE_DIR="${HOME}/.cache/wal"
+CACHE_FILE="${CACHE_DIR}/smart-colors.cache"
+CACHE_TIMESTAMP_FILE="${CACHE_DIR}/smart-colors.timestamp"
 
 # Function to show status with colored output
 show_status() {
@@ -53,6 +59,99 @@ show_warning() {
 
 show_info() {
     echo -e "${BLUE}ℹ️${NC} $1"
+}
+
+# Check if cache is valid (newer than wal colors)
+is_cache_valid() {
+    local wal_colors_file="${CACHE_DIR}/colors"
+
+    # Check if cache files exist
+    [[ -f "$CACHE_FILE" && -f "$CACHE_TIMESTAMP_FILE" ]] || return 1
+
+    # Check if wal colors exist
+    [[ -f "$wal_colors_file" ]] || return 1
+
+    # Compare timestamps
+    local cache_time=$(stat -c %Y "$CACHE_TIMESTAMP_FILE" 2>/dev/null || echo "0")
+    local wal_time=$(stat -c %Y "$wal_colors_file" 2>/dev/null || echo "0")
+
+    [[ "$cache_time" -ge "$wal_time" ]]
+}
+
+# Read color from cache
+read_from_cache() {
+    local concept="$1"
+    local format="${2:-hex}"
+
+    if [[ ! -f "$CACHE_FILE" ]]; then
+        return 1
+    fi
+
+    # Cache format: concept:format:color
+    local cache_key="${concept}:${format}"
+    local cached_color=$(grep "^${cache_key}:" "$CACHE_FILE" 2>/dev/null | cut -d: -f3)
+
+    if [[ -n "$cached_color" ]]; then
+        echo "$cached_color"
+        return 0
+    fi
+
+    return 1
+}
+
+# Generate complete cache for all concepts and formats
+generate_cache() {
+    show_status "Generating smart colors cache..."
+
+    # Ensure cache directory exists
+    mkdir -p "$CACHE_DIR"
+
+    # Temporarily disable cache to force fresh calculation
+    local temp_cache="$CACHE_FILE.tmp"
+    > "$temp_cache"
+
+    # All concepts to cache
+    local concepts=("error" "warning" "success" "info" "accent" "red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink" "brown" "white" "black" "gray")
+    local formats=("hex" "rgb")
+
+    local total_concepts=${#concepts[@]}
+    local current=0
+
+    for concept in "${concepts[@]}"; do
+        ((current++))
+        [[ -n "$verbose" ]] && show_status "Caching $concept ($current/$total_concepts)..."
+
+        # Get the color using the normal calculation (bypass cache)
+        CACHE_FILE="/dev/null"  # Temporarily disable cache reading
+
+        for format in "${formats[@]}"; do
+            # Calculate color with current format
+            format="$format" verbose="" # Disable verbose for cache generation
+            local color=$(find_best_color_for_concept "$concept" 2>/dev/null)
+
+            if [[ -n "$color" ]]; then
+                echo "${concept}:${format}:${color}" >> "$temp_cache"
+            fi
+        done
+
+        # Restore cache file
+        CACHE_FILE="${CACHE_DIR}/smart-colors.cache"
+    done
+
+    # Move temp cache to final location
+    mv "$temp_cache" "$CACHE_FILE"
+
+    # Update timestamp
+    touch "$CACHE_TIMESTAMP_FILE"
+
+    show_success "Smart colors cache generated (${#concepts[@]} concepts)"
+}
+
+# Force cache regeneration
+regenerate_cache() {
+    show_status "Forcing cache regeneration..."
+    rm -f "$CACHE_FILE" "$CACHE_TIMESTAMP_FILE"
+    generate_cache
 }
 
 # Convert hex color to RGB
@@ -299,81 +398,399 @@ get_xrdb_colors() {
     done
 }
 
-# Find best color for a specific concept
-find_best_color_for_concept() {
+# Define reference colors for each concept (ideal base colors)
+get_reference_color() {
     local concept="$1"
-    local target_r target_g target_b
-    local preference_order=()
 
     case "$concept" in
-        "error"|"danger")
-            target_r=255; target_g=0; target_b=0  # Pure red
-            preference_order=(9 1 11 5 13 3)  # bright red, red, yellow, magenta, bright magenta, dark yellow
+        "error"|"danger"|"red")
+            echo "#ff0000"  # Pure red
             ;;
-        "warning"|"caution")
-            target_r=255; target_g=165; target_b=0  # Orange
-            preference_order=(11 3 9 1 13)  # yellow, dark yellow, bright red, red, bright magenta
-            ;;
-        "success"|"ok")
-            target_r=0; target_g=255; target_b=0  # Pure green
-            preference_order=(10 2 11 6 14)  # bright green, green, yellow, cyan, bright cyan
-            ;;
-        "info"|"neutral")
-            target_r=0; target_g=100; target_b=255  # Blue
-            preference_order=(12 4 6 14 10)  # bright blue, blue, cyan, bright cyan, bright green
-            ;;
-        "accent"|"highlight")
-            target_r=128; target_g=0; target_b=255  # Purple/Violet
-            preference_order=(13 5 14 12 9)  # bright magenta, magenta, bright cyan, bright blue, bright red
-            ;;
-        "red")
-            target_r=255; target_g=0; target_b=0  # Pure red
-            preference_order=(9 1 5 13 11)  # bright red, red, magenta, bright magenta, yellow
-            ;;
-        "green")
-            target_r=0; target_g=255; target_b=0  # Pure green
-            preference_order=(10 2 6 14 11)  # bright green, green, cyan, bright cyan, yellow
-            ;;
-        "blue")
-            target_r=0; target_g=0; target_b=255  # Pure blue
-            preference_order=(12 4 6 14 13)  # bright blue, blue, cyan, bright cyan, bright magenta
+        "warning"|"caution"|"orange")
+            echo "#ff9900"  # Orange
             ;;
         "yellow")
-            target_r=255; target_g=255; target_b=0  # Pure yellow
-            preference_order=(11 3 10 9 1)  # bright yellow, dark yellow, bright green, bright red, red
+            echo "#ffff00"  # Pure yellow
+            ;;
+        "success"|"ok"|"green")
+            echo "#00ff00"  # Pure green
+            ;;
+        "info"|"neutral"|"blue")
+            echo "#0066ff"  # Bright blue
             ;;
         "cyan")
-            target_r=0; target_g=255; target_b=255  # Pure cyan
-            preference_order=(14 6 12 4 10)  # bright cyan, cyan, bright blue, blue, bright green
+            echo "#00ffff"  # Pure cyan
             ;;
         "magenta"|"purple")
-            target_r=255; target_g=0; target_b=255  # Pure magenta
-            preference_order=(13 5 9 1 12)  # bright magenta, magenta, bright red, red, bright blue
-            ;;
-        "orange")
-            target_r=255; target_g=165; target_b=0  # Orange
-            preference_order=(11 3 9 1 10)  # bright yellow, dark yellow, bright red, red, bright green
+            echo "#ff00ff"  # Pure magenta
             ;;
         "pink")
-            target_r=255; target_g=192; target_b=203  # Pink
-            preference_order=(13 5 9 11 1)  # bright magenta, magenta, bright red, bright yellow, red
+            echo "#ff77aa"  # Pink
+            ;;
+        "accent"|"highlight")
+            echo "#8800ff"  # Purple/Violet
             ;;
         "brown")
-            target_r=165; target_g=42; target_b=42  # Brown
-            preference_order=(1 9 3 11 8)  # red, bright red, dark yellow, bright yellow, dark gray
+            echo "#8b4513"  # Saddle brown
             ;;
         "white")
-            target_r=255; target_g=255; target_b=255  # Pure white
-            preference_order=(15 7 14 6 11)  # bright white, light gray, bright cyan, cyan, bright yellow
+            echo "#ffffff"  # Pure white
             ;;
         "black")
-            target_r=0; target_g=0; target_b=0  # Pure black
-            preference_order=(0 8 4 2 1)  # black, dark gray, dark blue, dark green, red
+            echo "#000000"  # Pure black
             ;;
         "gray"|"grey")
-            target_r=128; target_g=128; target_b=128  # Gray
-            preference_order=(8 7 4 2 6)  # dark gray, light gray, dark blue, dark green, cyan
+            echo "#808080"  # Gray
             ;;
+        *)
+            echo "#ff0000"  # Default to red
+            ;;
+    esac
+}
+
+# Calculate palette characteristics for adaptation
+analyze_palette_characteristics() {
+    local total_sat=0
+    local total_light=0
+    local color_count=0
+
+    # Analyze colors 1-14 (skip 0=black, 15=white usually)
+    for i in {1..14}; do
+        local color=$(xrdb -get "color$i" 2>/dev/null)
+        if [[ -n "$color" ]]; then
+            local hsl=$(hex_to_hsl "$color")
+            local h s l
+            read -r h s l <<< "$hsl"
+
+            total_sat=$(echo "scale=6; $total_sat + $s" | bc)
+            total_light=$(echo "scale=6; $total_light + $l" | bc)
+            ((color_count++))
+        fi
+    done
+
+    if [[ $color_count -gt 0 ]]; then
+        local avg_sat=$(echo "scale=2; $total_sat / $color_count" | bc)
+        local avg_light=$(echo "scale=2; $total_light / $color_count" | bc)
+        echo "$avg_sat $avg_light"
+    else
+        echo "70 50"  # Default values
+    fi
+}
+
+# Adapt reference color to palette aesthetics
+adapt_color_to_palette() {
+    local reference_hex="$1"
+    local palette_characteristics="$2"
+    local adaptation_strength="$3"  # 0.0 to 1.0
+
+    local palette_avg_sat palette_avg_light
+    read -r palette_avg_sat palette_avg_light <<< "$palette_characteristics"
+
+    # Get reference color HSL
+    local ref_hsl=$(hex_to_hsl "$reference_hex")
+    local ref_h ref_s ref_l
+    read -r ref_h ref_s ref_l <<< "$ref_hsl"
+
+    # Adapt saturation and lightness towards palette average
+    local adapted_s=$(echo "scale=2; $ref_s + ($palette_avg_sat - $ref_s) * $adaptation_strength" | bc)
+    local adapted_l=$(echo "scale=2; $ref_l + ($palette_avg_light - $ref_l) * $adaptation_strength" | bc)
+
+    # Ensure values stay within bounds
+    if (( $(echo "$adapted_s < 0" | bc -l) )); then adapted_s=0; fi
+    if (( $(echo "$adapted_s > 100" | bc -l) )); then adapted_s=100; fi
+    if (( $(echo "$adapted_l < 10" | bc -l) )); then adapted_l=10; fi
+    if (( $(echo "$adapted_l > 90" | bc -l) )); then adapted_l=90; fi
+
+    # Convert back to hex
+    hsl_to_hex "$ref_h" "$adapted_s" "$adapted_l"
+}
+
+# Convert HSL back to hex (robust simplified version)
+hsl_to_hex() {
+    local h="$1" s="$2" l="$3"
+
+    # Clamp values to safe ranges
+    h=$(echo "scale=0; if ($h < 0) 0 else if ($h >= 360) ($h - 360) else $h" | bc)
+    s=$(echo "scale=0; if ($s < 0) 0 else if ($s > 100) 100 else $s" | bc)
+    l=$(echo "scale=0; if ($l < 0) 0 else if ($l > 100) 100 else $l" | bc)
+
+    # Simple approximation: adjust base color by saturation and lightness
+    local r=255 g=0 b=0  # Start with red
+
+    # Determine base color by hue (simplified sectors)
+    if (( $(echo "$h >= 0 && $h < 60" | bc -l) )); then
+        # Red to Yellow
+        r=255
+        g=$(echo "scale=0; 255 * $h / 60" | bc)
+        b=0
+    elif (( $(echo "$h >= 60 && $h < 120" | bc -l) )); then
+        # Yellow to Green
+        r=$(echo "scale=0; 255 * (120 - $h) / 60" | bc)
+        g=255
+        b=0
+    elif (( $(echo "$h >= 120 && $h < 180" | bc -l) )); then
+        # Green to Cyan
+        r=0
+        g=255
+        b=$(echo "scale=0; 255 * ($h - 120) / 60" | bc)
+    elif (( $(echo "$h >= 180 && $h < 240" | bc -l) )); then
+        # Cyan to Blue
+        r=0
+        g=$(echo "scale=0; 255 * (240 - $h) / 60" | bc)
+        b=255
+    elif (( $(echo "$h >= 240 && $h < 300" | bc -l) )); then
+        # Blue to Magenta
+        r=$(echo "scale=0; 255 * ($h - 240) / 60" | bc)
+        g=0
+        b=255
+    else
+        # Magenta to Red
+        r=255
+        g=0
+        b=$(echo "scale=0; 255 * (360 - $h) / 60" | bc)
+    fi
+
+    # Apply saturation (mix with gray)
+    local gray=$(echo "scale=0; $l * 255 / 100" | bc)
+    local sat_factor=$(echo "scale=6; $s / 100" | bc)
+
+    r=$(echo "scale=0; $r * $sat_factor + $gray * (1 - $sat_factor)" | bc)
+    g=$(echo "scale=0; $g * $sat_factor + $gray * (1 - $sat_factor)" | bc)
+    b=$(echo "scale=0; $b * $sat_factor + $gray * (1 - $sat_factor)" | bc)
+
+    # Apply lightness adjustment
+    local light_factor=$(echo "scale=6; $l / 50" | bc)  # 50 is middle lightness
+    if (( $(echo "$l > 50" | bc -l) )); then
+        # Lighten by mixing with white
+        local white_mix=$(echo "scale=6; ($l - 50) / 50" | bc)
+        r=$(echo "scale=0; $r + (255 - $r) * $white_mix" | bc)
+        g=$(echo "scale=0; $g + (255 - $g) * $white_mix" | bc)
+        b=$(echo "scale=0; $b + (255 - $b) * $white_mix" | bc)
+    elif (( $(echo "$l < 50" | bc -l) )); then
+        # Darken by reducing values
+        local dark_factor=$(echo "scale=6; $l / 50" | bc)
+        r=$(echo "scale=0; $r * $dark_factor" | bc)
+        g=$(echo "scale=0; $g * $dark_factor" | bc)
+        b=$(echo "scale=0; $b * $dark_factor" | bc)
+    fi
+
+    # Ensure integer values and clamp to 0-255
+    r=$(echo "$r" | cut -d. -f1)
+    g=$(echo "$g" | cut -d. -f1)
+    b=$(echo "$b" | cut -d. -f1)
+
+    # Final bounds check
+    if [[ "$r" -lt 0 ]]; then r=0; elif [[ "$r" -gt 255 ]]; then r=255; fi
+    if [[ "$g" -lt 0 ]]; then g=0; elif [[ "$g" -gt 255 ]]; then g=255; fi
+    if [[ "$b" -lt 0 ]]; then b=0; elif [[ "$b" -gt 255 ]]; then b=255; fi
+
+    printf "#%02x%02x%02x" "$r" "$g" "$b"
+}
+
+# Fast lookup table for color adaptation (avoids heavy HSL calculations)
+get_fast_adapted_color() {
+    local concept="$1"
+    local palette_has_color="$2"  # "red", "blue", etc. from simple hue check
+
+        # Quick adaptation table based on palette dominant color
+    case "$concept|$palette_has_color" in
+        # ERROR/RED concept
+        "error|red"|"red|red") echo "#ff0000" ;;
+        "error|orange"|"red|orange") echo "#ff3300" ;;
+        "error|pink"|"red|pink") echo "#ff6666" ;;
+        "error|purple"|"red|purple") echo "#ff4488" ;;
+        "error|*") echo "#cc4444" ;;
+
+        # WARNING/ORANGE concept
+        "warning|orange"|"orange|orange") echo "#ff9900" ;;
+        "warning|yellow"|"orange|yellow") echo "#ffcc00" ;;
+        "warning|red"|"orange|red") echo "#ff6600" ;;
+        "warning|pink"|"orange|pink") echo "#ff8844" ;;
+        "warning|*") echo "#cc8800" ;;
+
+        # SUCCESS/GREEN concept
+        "success|green"|"green|green") echo "#00ff00" ;;
+        "success|cyan"|"green|cyan") echo "#00cc66" ;;
+        "success|blue"|"green|blue") echo "#0099aa" ;;
+        "success|orange"|"green|orange") echo "#88cc44" ;;
+        "success|*") echo "#669944" ;;
+
+        # INFO/BLUE concept
+        "info|blue"|"blue|blue") echo "#0066ff" ;;
+        "info|cyan"|"blue|cyan") echo "#0099cc" ;;
+        "info|purple"|"blue|purple") echo "#6666cc" ;;
+        "info|orange"|"blue|orange") echo "#4488cc" ;;
+        "info|*") echo "#4488cc" ;;
+
+        # ACCENT concept
+        "accent|purple"|"highlight|purple") echo "#aa66ff" ;;
+        "accent|pink"|"highlight|pink") echo "#ff66aa" ;;
+        "accent|orange"|"highlight|orange") echo "#ff8833" ;;
+        "accent|*") echo "#8866aa" ;;
+
+        # BASIC COLORS
+        "yellow|yellow") echo "#ffff00" ;;
+        "yellow|orange") echo "#ffcc00" ;;
+        "yellow|red") echo "#ffaa00" ;;
+        "yellow|*") echo "#cccc44" ;;
+
+        "cyan|cyan") echo "#00ffff" ;;
+        "cyan|blue") echo "#0099cc" ;;
+        "cyan|green") echo "#00ccaa" ;;
+        "cyan|*") echo "#4499aa" ;;
+
+        "magenta|purple"|"purple|purple") echo "#ff00ff" ;;
+        "magenta|pink"|"purple|pink") echo "#ff66cc" ;;
+        "magenta|orange"|"purple|orange") echo "#ff6699" ;;
+        "magenta|*") echo "#cc66aa" ;;
+
+        "pink|pink") echo "#ff88cc" ;;
+        "pink|purple") echo "#ff66aa" ;;
+        "pink|orange") echo "#ffaa88" ;;
+        "pink|red") echo "#ff8899" ;;
+        "pink|*") echo "#dd99bb" ;;
+
+        "brown|red") echo "#aa4422" ;;
+        "brown|orange") echo "#cc6633" ;;
+        "brown|*") echo "#996633" ;;
+
+        *) echo "#888888" ;;  # Fallback gray
+    esac
+}
+
+# Calculate fast palette average (RGB only, no HSL)
+get_palette_average() {
+    local total_r=0 total_g=0 total_b=0
+    local color_count=0
+
+    # Sample key colors from palette
+    for i in {1..14}; do
+        local color=$(xrdb -get "color$i" 2>/dev/null)
+        if [[ -n "$color" ]]; then
+            local hex="${color#\#}"
+            local r=$((16#${hex:0:2}))
+            local g=$((16#${hex:2:2}))
+            local b=$((16#${hex:4:2}))
+
+            total_r=$((total_r + r))
+            total_g=$((total_g + g))
+            total_b=$((total_b + b))
+            ((color_count++))
+        fi
+    done
+
+    if [[ $color_count -gt 0 ]]; then
+        local avg_r=$((total_r / color_count))
+        local avg_g=$((total_g / color_count))
+        local avg_b=$((total_b / color_count))
+        printf "#%02x%02x%02x" "$avg_r" "$avg_g" "$avg_b"
+    else
+        echo "#808080"  # Fallback gray
+    fi
+}
+
+# Fast color blending (no float arithmetic)
+blend_colors() {
+    local color1="$1"    # Base color (from lookup)
+    local color2="$2"    # Palette average
+    local blend_percent="$3"  # 0-100, how much of color2 to mix in
+
+    # Extract RGB from both colors
+    local hex1="${color1#\#}"
+    local r1=$((16#${hex1:0:2}))
+    local g1=$((16#${hex1:2:2}))
+    local b1=$((16#${hex1:4:2}))
+
+    local hex2="${color2#\#}"
+    local r2=$((16#${hex2:0:2}))
+    local g2=$((16#${hex2:2:2}))
+    local b2=$((16#${hex2:4:2}))
+
+    # Simple linear interpolation
+    local inv_percent=$((100 - blend_percent))
+    local result_r=$(((r1 * inv_percent + r2 * blend_percent) / 100))
+    local result_g=$(((g1 * inv_percent + g2 * blend_percent) / 100))
+    local result_b=$(((b1 * inv_percent + b2 * blend_percent) / 100))
+
+    # Clamp to 0-255 range
+    if [[ $result_r -gt 255 ]]; then result_r=255; elif [[ $result_r -lt 0 ]]; then result_r=0; fi
+    if [[ $result_g -gt 255 ]]; then result_g=255; elif [[ $result_g -lt 0 ]]; then result_g=0; fi
+    if [[ $result_b -gt 255 ]]; then result_b=255; elif [[ $result_b -lt 0 ]]; then result_b=0; fi
+
+    printf "#%02x%02x%02x" "$result_r" "$result_g" "$result_b"
+}
+
+# Fast dominant color detection (no HSL conversion needed)
+get_palette_dominant_color() {
+    local brightest_color=""
+    local brightest_value=0
+
+    # Check bright colors (9-14) for dominant hue
+    for i in {9..14}; do
+        local color=$(xrdb -get "color$i" 2>/dev/null)
+        if [[ -n "$color" ]]; then
+            # Quick RGB extraction
+            local hex="${color#\#}"
+            local r=$((16#${hex:0:2}))
+            local g=$((16#${hex:2:2}))
+            local b=$((16#${hex:4:2}))
+
+            # Simple brightness
+            local brightness=$((r + g + b))
+            if [[ $brightness -gt $brightest_value ]]; then
+                brightest_value=$brightness
+                brightest_color="$color"
+            fi
+        fi
+    done
+
+    # Quick hue classification without HSL conversion
+    if [[ -n "$brightest_color" ]]; then
+        local hex="${brightest_color#\#}"
+        local r=$((16#${hex:0:2}))
+        local g=$((16#${hex:2:2}))
+        local b=$((16#${hex:4:2}))
+
+        # Simple hue detection based on RGB dominance
+        if [[ $r -gt $g && $r -gt $b ]]; then
+            if [[ $g -gt 100 ]]; then
+                echo "orange"
+            elif [[ $b -gt 100 ]]; then
+                echo "purple"
+            else
+                echo "red"
+            fi
+        elif [[ $g -gt $r && $g -gt $b ]]; then
+            if [[ $r -gt 100 ]]; then
+                echo "yellow"
+            elif [[ $b -gt 100 ]]; then
+                echo "cyan"
+            else
+                echo "green"
+            fi
+        elif [[ $b -gt $r && $b -gt $g ]]; then
+            if [[ $r -gt 100 ]]; then
+                echo "purple"
+            elif [[ $g -gt 100 ]]; then
+                echo "cyan"
+            else
+                echo "blue"
+            fi
+        else
+            echo "gray"
+        fi
+    else
+        echo "unknown"
+    fi
+}
+
+# Find best color for a specific concept (FAST VERSION with CACHE)
+find_best_color_for_concept() {
+    local concept="$1"
+
+    # Validate concept
+    case "$concept" in
+        "error"|"danger"|"red"|"warning"|"caution"|"orange"|"yellow"|"success"|"ok"|"green"|"info"|"neutral"|"blue"|"cyan"|"magenta"|"purple"|"pink"|"accent"|"highlight"|"brown"|"white"|"black"|"gray"|"grey") ;;
         *)
             show_error "Unknown concept: $concept"
             echo "Available concepts:"
@@ -383,84 +800,53 @@ find_best_color_for_concept() {
             ;;
     esac
 
-    local best_color=""
-    local best_distance=999.0  # High initial value for composite distance metric
-    local best_source=""
-
-    # First, try preference order
-    for color_num in "${preference_order[@]}"; do
-        local color=$(xrdb -get "color$color_num" 2>/dev/null)
-        if [[ -n "$color" && "$color" != "#000000" ]]; then
-            best_color="$color"
-            best_source="color$color_num"
-            break
+    # Try cache first (skip if we're currently generating cache)
+    if [[ "$CACHE_FILE" != "/dev/null" ]] && is_cache_valid; then
+        local cached_color=$(read_from_cache "$concept" "${format:-hex}")
+        if [[ -n "$cached_color" ]]; then
+            echo "$cached_color"
+            [[ -n "$verbose" ]] && show_info "Using cached color for $concept: $cached_color"
+            return 0
         fi
-    done
-
-    # If no preference color found, calculate perceptual distances
-    if [[ -z "$best_color" ]]; then
-        # Get target hue from target RGB
-        local target_hex=$(printf "#%02x%02x%02x" "$target_r" "$target_g" "$target_b")
-        local target_hsl=$(hex_to_hsl "$target_hex")
-        local target_hue target_sat target_light
-        read -r target_hue target_sat target_light <<< "$target_hsl"
-
-        while IFS= read -r line; do
-            local key="${line%=*}"
-            local color="${line#*=}"
-
-            # Skip background and foreground for most concepts
-            [[ "$key" == "background" || "$key" == "foreground" ]] && continue
-
-            if [[ -n "$color" ]]; then
-                # Get HSL of the current color
-                local color_hsl=$(hex_to_hsl "$color")
-                local color_hue color_sat color_light
-                read -r color_hue color_sat color_light <<< "$color_hsl"
-
-                # Filter out colors with low saturation or extreme lightness
-                # Skip grays and washed-out colors (sat < 20) and very dark/light colors
-                if (( $(echo "$color_sat < 20" | bc -l) )) || \
-                   (( $(echo "$color_light < 20" | bc -l) )) || \
-                   (( $(echo "$color_light > 90" | bc -l) )); then
-                    continue
-                fi
-
-                # Calculate composite perceptual distance
-                # Hue distance (most important, weight = 1.0)
-                local hue_dist=$(hue_distance "$target_hue" "$color_hue")
-
-                # Saturation penalty (ideal saturation ~80%, weight = 0.3)
-                local ideal_sat=80
-                local sat_penalty=$(echo "scale=6; ($color_sat - $ideal_sat)" | bc)
-                if (( $(echo "$sat_penalty < 0" | bc -l) )); then
-                    sat_penalty=$(echo "scale=6; -1 * $sat_penalty" | bc)
-                fi
-                sat_penalty=$(echo "scale=6; $sat_penalty * 0.3" | bc)
-
-                # Lightness penalty (ideal lightness ~50%, weight = 0.2)
-                local ideal_light=50
-                local light_penalty=$(echo "scale=6; ($color_light - $ideal_light)" | bc)
-                if (( $(echo "$light_penalty < 0" | bc -l) )); then
-                    light_penalty=$(echo "scale=6; -1 * $light_penalty" | bc)
-                fi
-                light_penalty=$(echo "scale=6; $light_penalty * 0.2" | bc)
-
-                # Composite distance: hue_distance + saturation_penalty + lightness_penalty
-                local composite_distance=$(echo "scale=6; $hue_dist + $sat_penalty + $light_penalty" | bc)
-
-                # Convert to integer for comparison (multiply by 1000 to preserve precision)
-                local distance_int=$(echo "scale=0; $composite_distance * 1000" | bc)
-                local best_distance_int=$(echo "scale=0; $best_distance * 1000" | bc)
-
-                if [[ "$distance_int" -lt "$best_distance_int" ]]; then
-                    best_distance="$composite_distance"
-                    best_color="$color"
-                    best_source="$key"
-                fi
-            fi
-        done < <(get_xrdb_colors)
     fi
+
+    # For black/white/gray, use palette directly
+    case "$concept" in
+        "black")
+            local bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
+            echo "$bg"
+            [[ -n "$verbose" ]] && show_info "Using background color for black: $bg"
+            return 0
+            ;;
+        "white")
+            local fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
+            echo "$fg"
+            [[ -n "$verbose" ]] && show_info "Using foreground color for white: $fg"
+            return 0
+            ;;
+        "gray"|"grey")
+            local gray=$(xrdb -get "color8" 2>/dev/null || echo "#808080")
+            echo "$gray"
+            [[ -n "$verbose" ]] && show_info "Using color8 for gray: $gray"
+            return 0
+            ;;
+    esac
+
+        # Fast palette analysis
+    local dominant_color=$(get_palette_dominant_color)
+    local palette_average=$(get_palette_average)
+
+    # Get base color from lookup table
+    local base_color=$(get_fast_adapted_color "$concept" "$dominant_color")
+
+    # Harmonize with palette average (15% blend for subtle adaptation)
+    local blend_strength=15
+    local final_color=$(blend_colors "$base_color" "$palette_average" "$blend_strength")
+
+    local best_color="$final_color"
+    local best_source="palette-harmonized"
+
+    [[ -n "$verbose" ]] && show_info "Fast adaptation: $concept (dominant: $dominant_color, avg: $palette_average) → $base_color → $best_color"
 
     case "${format:-hex}" in
         "hex")
@@ -470,7 +856,8 @@ find_best_color_for_concept() {
             hex_to_rgb "$best_color"
             ;;
         "polybar")
-            echo "\${xrdb:$best_source}"
+            # For polybar, we can't use xrdb reference since it's adapted
+            echo "$best_color"
             ;;
         *)
             echo "$best_color"
@@ -695,7 +1082,9 @@ main() {
     fi
 
     # Handle options
-    if [[ -n "$analyze" ]]; then
+    if [[ -n "$cache" ]]; then
+        regenerate_cache
+    elif [[ -n "$analyze" ]]; then
         analyze_palette
     elif [[ -n "$colors" ]]; then
         show_palette_visual
@@ -714,6 +1103,12 @@ main() {
     elif [[ -n "$concept" ]]; then
         find_best_color_for_concept "$concept"
     else
+        # Auto-generate cache if it doesn't exist or is invalid
+        if ! is_cache_valid; then
+            [[ -n "$verbose" ]] && show_status "Cache is invalid or missing, generating..."
+            generate_cache
+        fi
+
         # Default: show quick analysis with visual colors
         show_status "Quick palette analysis (use --analyze for detailed view)"
         echo

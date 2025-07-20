@@ -260,6 +260,14 @@ reload_smart_colors() {
 
     show_status "Applying smart theme-adaptive colors..."
 
+    # Regenerate smart colors cache for fast subsequent lookups
+    show_status "Regenerating smart colors cache for optimal performance..."
+    if dots-smart-colors --cache >/dev/null 2>&1; then
+        show_success "Smart colors cache regenerated"
+    else
+        show_warning "Failed to regenerate smart colors cache, continuing without cache"
+    fi
+
     # Export smart colors to environment for polybar
     if eval "$(dots-smart-colors --export 2>/dev/null)"; then
         show_success "Smart colors exported to environment"
@@ -304,11 +312,7 @@ reload_smart_colors() {
     if pgrep polybar >/dev/null; then
         show_status "Polybar detected, applying smart colors and restarting..."
         if command -v dots >/dev/null 2>&1; then
-            # Stop polybar
-            dots toggle polybar >/dev/null 2>&1 || true
-            sleep 1
-            # Start polybar with smart colors environment
-            dots toggle polybar >/dev/null 2>&1 || true
+            ~/.config/polybar/launch.sh restart >/dev/null 2>&1 || true
             show_success "Polybar restarted with smart colors"
         else
             show_warning "dots command not found, polybar restart skipped"
