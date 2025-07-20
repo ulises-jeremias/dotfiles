@@ -1,6 +1,6 @@
 # 📶 Polybar Module: Rofi Bluetooth
 
-The **Rofi Bluetooth module** is a custom implementation built on top of the [`internal/script`](https://github.com/polybar/polybar/wiki/Module:-script) module. It provides real-time display of your Bluetooth status and offers a clean Rofi-powered interface for managing devices.
+The **Rofi Bluetooth module** is a custom implementation built on top of the [`internal/script`](https://github.com/polybar/polybar/wiki/Module-script) module. It provides real-time display of your Bluetooth status and offers a clean Rofi-powered interface for managing devices.
 
 > [!TIP]
 > This module integrates seamlessly with the `dots rofi-bluetooth` script and updates dynamically based on your Bluetooth state.
@@ -50,7 +50,7 @@ click-left = dots rofi-bluetooth
 interval = 5
 ```
 
-Refer to the [Polybar script module documentation](https://github.com/polybar/polybar/wiki/Module:-script) for all available options.
+Refer to the [Polybar script module documentation](https://github.com/polybar/polybar/wiki/Module-script) for all available options.
 
 ---
 

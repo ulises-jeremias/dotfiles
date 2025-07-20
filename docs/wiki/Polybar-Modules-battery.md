@@ -29,7 +29,7 @@ You can configure the battery module in your `config.ini` file or equivalent. Co
 - `format-full`: Format for full battery
 - `format-low`: Format and style when battery level is low (can be used to trigger warnings)
 
-For a full list of configuration options, refer to the [Polybar battery module documentation](https://github.com/polybar/polybar/wiki/Module:-battery).
+For a full list of configuration options, refer to the [Polybar battery module documentation](https://github.com/polybar/polybar/wiki/Module-battery).
 
 ---
 

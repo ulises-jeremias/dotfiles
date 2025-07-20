@@ -11,7 +11,7 @@ The **PipeWire Volume module** shows the current volume level and mute state of 
 
 ### 1. `pipewire`
 
-A minimalist wrapper around the [`internal/pipewire`](https://github.com/polybar/polybar/wiki/Module:-pipewire) module.
+A minimalist wrapper around the [`internal/pipewire`](https://github.com/polybar/polybar/wiki/Module-pipewire) module.
 
 Displays:
 
