@@ -68,7 +68,7 @@ error_exit() {
 # Setup logging directory
 setup_logging() {
     mkdir -p "$LOG_DIR"
-    
+
     # Rotate log if it gets too large (>1MB)
     if [[ -f "$LOG_FILE" ]] && [[ $(stat -f%z "$LOG_FILE" 2>/dev/null || stat -c%s "$LOG_FILE" 2>/dev/null || echo 0) -gt 1048576 ]]; then
         mv "$LOG_FILE" "${LOG_FILE}.old"
@@ -93,7 +93,7 @@ acquire_lock() {
             rm -f "$LOCK_FILE"
         fi
     fi
-    
+
     echo $$ > "$LOCK_FILE"
     trap cleanup_on_exit EXIT
 }
@@ -103,7 +103,7 @@ check_eww_installed() {
     if ! command -v eww >/dev/null 2>&1; then
         error_exit "EWW is not installed or not in PATH"
     fi
-    
+
     local eww_version
     eww_version="$(eww --version 2>/dev/null | head -n1 || echo "unknown")"
     log "INFO" "EWW version: $eww_version"
@@ -113,61 +113,61 @@ check_eww_installed() {
 manage_eww_daemon() {
     local action="${1:-start}"
     local retries=0
-    
+
     case "$action" in
         start)
             log "INFO" "Starting EWW daemon..."
-            
+
             # Check if daemon is already running
             if eww ping >/dev/null 2>&1; then
                 log "INFO" "EWW daemon already running"
                 return 0
             fi
-            
+
             # Start daemon with retries
             while [[ $retries -lt $MAX_RETRIES ]]; do
                 eww daemon 2>/dev/null &
                 local daemon_pid=$!
-                
+
                 # Wait for daemon to be ready
                 sleep "$RETRY_DELAY"
-                
+
                 if eww ping >/dev/null 2>&1; then
                     log "INFO" "EWW daemon started successfully (PID: $daemon_pid)"
                     return 0
                 fi
-                
+
                 ((retries++))
                 log "WARN" "Daemon start attempt $retries failed, retrying..."
-                
+
                 # Kill the failed daemon process
                 kill "$daemon_pid" 2>/dev/null || true
                 wait "$daemon_pid" 2>/dev/null || true
-                
+
                 sleep "$RETRY_DELAY"
             done
-            
+
             error_exit "Failed to start EWW daemon after $MAX_RETRIES attempts"
             ;;
-            
+
         restart)
             log "INFO" "Restarting EWW daemon..."
             manage_eww_daemon "stop"
             sleep 1
             manage_eww_daemon "start"
             ;;
-            
+
         stop)
             if eww ping >/dev/null 2>&1; then
                 log "INFO" "Stopping EWW daemon..."
                 eww kill
                 sleep 1
-                
+
                 if eww ping >/dev/null 2>&1; then
                     log "WARN" "Daemon still running, forcing kill..."
                     pkill -f "eww daemon" || true
                 fi
-                
+
                 log "INFO" "EWW daemon stopped"
             else
                 log "INFO" "EWW daemon not running"
@@ -192,14 +192,14 @@ widget_operation() {
     local operation="$1"
     shift
     local widgets=("$@")
-    
+
     # Validate widgets exist in config
     for widget in "${widgets[@]}"; do
         if ! eww --config "$EWW_CONFIG_DIR" windows | grep -q "^$widget" 2>/dev/null; then
             log "WARN" "Widget '$widget' not found in config"
         fi
     done
-    
+
     case "$operation" in
         toggle)
             log "INFO" "Toggling ${#widgets[@]} widgets"
@@ -273,21 +273,21 @@ EOF
 show_status() {
     echo "=== EWW Dashboard Status ==="
     echo
-    
+
     # Daemon status
     if eww ping >/dev/null 2>&1; then
         echo "Daemon: Running ✅"
     else
         echo "Daemon: Not running ❌"
     fi
-    
+
     echo
     echo "Widget Status:"
     echo "--------------"
-    
+
     local open_widgets
     open_widgets="$(eww --config "$EWW_CONFIG_DIR" windows 2>/dev/null || echo "")"
-    
+
     for widget in "${DASHBOARD_WIDGETS[@]}"; do
         if echo "$open_widgets" | grep -q "^$widget"; then
             echo "$widget: Open ✅"
@@ -295,7 +295,7 @@ show_status() {
             echo "$widget: Closed ❌"
         fi
     done
-    
+
     echo
     echo "Config Directory: $EWW_CONFIG_DIR"
     echo "Log File: $LOG_FILE"
@@ -304,24 +304,24 @@ show_status() {
 # Cleanup function
 cleanup_system() {
     log "INFO" "Performing system cleanup..."
-    
+
     # Kill orphaned EWW processes
     local orphaned_pids
     orphaned_pids="$(pgrep -f "eww.*dashboard" | grep -v $$ || true)"
-    
+
     if [[ -n "$orphaned_pids" ]]; then
         log "INFO" "Killing orphaned EWW processes: $orphaned_pids"
         echo "$orphaned_pids" | xargs kill -TERM 2>/dev/null || true
         sleep 2
         echo "$orphaned_pids" | xargs kill -KILL 2>/dev/null || true
     fi
-    
+
     # Remove stale lock files
     find /tmp -name "eww-*.lock" -mtime +1 -delete 2>/dev/null || true
-    
+
     # Clean old log files
     find "$LOG_DIR" -name "*.log.old" -mtime +7 -delete 2>/dev/null || true
-    
+
     log "INFO" "Cleanup completed"
 }
 
@@ -335,7 +335,7 @@ main() {
     local force=false
     local command="toggle"
     local widgets=()
-    
+
     # Parse arguments
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -390,32 +390,32 @@ main() {
                 ;;
         esac
     done
-    
+
     # Setup logging
     setup_logging
-    
+
     # Quiet mode setup
     if [[ "$quiet" == "true" ]]; then
         exec 1>/dev/null
     fi
-    
+
     # Acquire lock unless it's a status or list command
     if [[ "$command" != "status" && "$command" != "cleanup" ]]; then
         if [[ "$force" != "true" ]]; then
             acquire_lock
         fi
     fi
-    
+
     log "INFO" "Starting $SCRIPT_NAME with command: $command"
-    
+
     # Use all widgets if none specified (except for daemon commands)
     if [[ ${#widgets[@]} -eq 0 && "$command" != "daemon" && "$command" != "status" && "$command" != "cleanup" ]]; then
         widgets=("${DASHBOARD_WIDGETS[@]}")
     fi
-    
+
     # Check EWW installation
     check_eww_installed
-    
+
     # Execute command
     case "$command" in
         toggle|open|close)
@@ -444,7 +444,7 @@ main() {
             error_exit "Unknown command: $command"
             ;;
     esac
-    
+
     log "INFO" "$SCRIPT_NAME completed successfully"
 }
 

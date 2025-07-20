@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Enhanced EWW Powermenu Launch Script
+# Enhanced EWW Sidebar Launch Script
 # Provides robust widget management with comprehensive error handling and logging
 #
 
@@ -10,28 +10,25 @@ set -euo pipefail
 # Configuration & Constants
 # =============================================================================
 
-SCRIPT_NAME="$(basename "$0")"
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 readonly SCRIPT_NAME
 readonly SCRIPT_DIR
-readonly EWW_CONFIG_DIR="$HOME/.config/eww/powermenu"
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+readonly EWW_CONFIG_DIR="$HOME/.config/eww/sidebar"
 readonly LOG_DIR="$HOME/.cache/eww"
-readonly LOG_FILE="$LOG_DIR/powermenu.log"
-readonly LOCK_FILE="/tmp/eww-powermenu.lock"
+readonly LOG_FILE="$LOG_DIR/sidebar.log"
+readonly LOCK_FILE="/tmp/eww-sidebar.lock"
 readonly MAX_RETRIES=3
 readonly RETRY_DELAY=2
 
-# Powermenu widgets list
-readonly POWERMENU_WIDGETS=(
-    "powermenu-background"
-    "powermenu-clock"
-    "powermenu-uptime"
-    "powermenu-lock"
-    "powermenu-logout"
-    "powermenu-sleep"
-    "powermenu-reboot"
-    "powermenu-poweroff"
-    "powermenu-placeholder"
+# Sidebar widgets list (customize based on your actual sidebar widgets)
+readonly SIDEBAR_WIDGETS=(
+    "sidebar-main"
+    "sidebar-toggle"
+    "sidebar-calendar"
+    "sidebar-weather"
+    "sidebar-system-info"
+    "sidebar-shortcuts"
 )
 
 # =============================================================================
@@ -71,6 +68,19 @@ setup_logging() {
 # Cleanup function
 cleanup_on_exit() {
     [[ -f "$LOCK_FILE" ]] && rm -f "$LOCK_FILE"
+}
+
+# Check if sidebar config exists
+check_sidebar_config() {
+    if [[ ! -d "$EWW_CONFIG_DIR" ]]; then
+        error_exit "Sidebar config directory not found: $EWW_CONFIG_DIR"
+    fi
+
+    if [[ ! -f "$EWW_CONFIG_DIR/eww.yuck" ]]; then
+        log "WARN" "No eww.yuck found in $EWW_CONFIG_DIR"
+        log "INFO" "Sidebar component appears to be under development"
+        exit 0
+    fi
 }
 
 # Lock management
@@ -175,38 +185,33 @@ widget_operation() {
     local widgets=("$@")
 
     # Validate widgets exist in config
+    local available_widgets
+    available_widgets="$(eww --config "$EWW_CONFIG_DIR" windows 2>/dev/null || echo "")"
+
     for widget in "${widgets[@]}"; do
-        if ! eww --config "$EWW_CONFIG_DIR" windows | grep -q "^$widget" 2>/dev/null; then
+        if ! echo "$available_widgets" | grep -q "^$widget" 2>/dev/null; then
             log "WARN" "Widget '$widget' not found in config"
         fi
     done
 
     case "$operation" in
         toggle)
-            log "INFO" "Toggling ${#widgets[@]} powermenu widgets"
-            if ! eww --config "$EWW_CONFIG_DIR" open-many --toggle "${widgets[@]}" >/dev/null 2>&1; then
-                log "WARN" "Some widgets may not have toggled successfully: ${widgets[*]}"
-            fi
+            log "INFO" "Toggling ${#widgets[@]} sidebar widgets"
+            eww --config "$EWW_CONFIG_DIR" open-many --toggle "${widgets[@]}" 2>/dev/null || {
+                error_exit "Failed to toggle widgets: ${widgets[*]}"
+            }
             ;;
         open)
-            log "INFO" "Opening ${#widgets[@]} powermenu widgets"
-            if [[ ${#widgets[@]} -eq 1 ]]; then
-                if ! eww --config "$EWW_CONFIG_DIR" open "${widgets[0]}" >/dev/null 2>&1; then
-                    log "WARN" "Widget may not have opened successfully: ${widgets[0]}"
-                fi
-            else
-                if ! eww --config "$EWW_CONFIG_DIR" open-many "${widgets[@]}" >/dev/null 2>&1; then
-                    log "WARN" "Some widgets may not have opened successfully: ${widgets[*]}"
-                fi
-            fi
+            log "INFO" "Opening ${#widgets[@]} sidebar widgets"
+            eww --config "$EWW_CONFIG_DIR" open-many "${widgets[@]}" 2>/dev/null || {
+                error_exit "Failed to open widgets: ${widgets[*]}"
+            }
             ;;
         close)
-            log "INFO" "Closing ${#widgets[@]} powermenu widgets"
-            for widget in "${widgets[@]}"; do
-                if ! eww --config "$EWW_CONFIG_DIR" close "$widget" >/dev/null 2>&1; then
-                    log "WARN" "Widget may not have closed successfully: $widget"
-                fi
-            done
+            log "INFO" "Closing ${#widgets[@]} sidebar widgets"
+            eww --config "$EWW_CONFIG_DIR" close-many "${widgets[@]}" 2>/dev/null || {
+                error_exit "Failed to close widgets: ${widgets[*]}"
+            }
             ;;
     esac
 }
@@ -216,12 +221,12 @@ show_help() {
     cat << EOF
 Usage: $SCRIPT_NAME [OPTIONS] [COMMAND] [WIDGETS...]
 
-Enhanced EWW Powermenu Management Script
+Enhanced EWW Sidebar Management Script
 
 COMMANDS:
-    toggle          Toggle powermenu widgets (default)
-    open            Open powermenu widgets
-    close           Close powermenu widgets
+    toggle          Toggle sidebar widgets (default)
+    open            Open sidebar widgets
+    close           Close sidebar widgets
     restart         Restart EWW daemon and reopen widgets
     status          Show widget status
     daemon          Manage EWW daemon (start|stop|restart)
@@ -235,16 +240,16 @@ OPTIONS:
     -l, --list      List available widgets
 
 WIDGETS:
-    If no widgets specified, operates on all powermenu widgets.
+    If no widgets specified, operates on all sidebar widgets.
     Otherwise, operates only on specified widgets.
 
 EXAMPLES:
-    $SCRIPT_NAME                               # Toggle all powermenu widgets
-    $SCRIPT_NAME open powermenu-clock          # Open only the clock widget
-    $SCRIPT_NAME close powermenu-background    # Close only the background widget
-    $SCRIPT_NAME daemon restart                # Restart the EWW daemon
-    $SCRIPT_NAME status                        # Show status of all widgets
-    $SCRIPT_NAME cleanup                       # Clean up orphaned processes
+    $SCRIPT_NAME                             # Toggle all sidebar widgets
+    $SCRIPT_NAME open sidebar-main           # Open only the main widget
+    $SCRIPT_NAME close sidebar-calendar      # Close only the calendar widget
+    $SCRIPT_NAME daemon restart              # Restart the EWW daemon
+    $SCRIPT_NAME status                      # Show status of all widgets
+    $SCRIPT_NAME cleanup                     # Clean up orphaned processes
 
 LOG FILE: $LOG_FILE
 EOF
@@ -252,8 +257,16 @@ EOF
 
 # Status display
 show_status() {
-    echo "=== EWW Powermenu Status ==="
+    echo "=== EWW Sidebar Status ==="
     echo
+
+    # Check if config exists
+    if [[ ! -f "$EWW_CONFIG_DIR/eww.yuck" ]]; then
+        echo "Status: Not configured ⚙️"
+        echo "The sidebar component is available but not yet configured."
+        echo "Please create $EWW_CONFIG_DIR/eww.yuck to get started."
+        return
+    fi
 
     # Daemon status
     if eww ping >/dev/null 2>&1; then
@@ -269,7 +282,7 @@ show_status() {
     local open_widgets
     open_widgets="$(eww --config "$EWW_CONFIG_DIR" windows 2>/dev/null || echo "")"
 
-    for widget in "${POWERMENU_WIDGETS[@]}"; do
+    for widget in "${SIDEBAR_WIDGETS[@]}"; do
         if echo "$open_widgets" | grep -q "^$widget"; then
             echo "$widget: Open ✅"
         else
@@ -288,7 +301,7 @@ cleanup_system() {
 
     # Kill orphaned EWW processes
     local orphaned_pids
-    orphaned_pids="$(pgrep -f "eww.*powermenu" | grep -v $$ || true)"
+    orphaned_pids="$(pgrep -f "eww.*sidebar" | grep -v $$ || true)"
 
     if [[ -n "$orphaned_pids" ]]; then
         log "INFO" "Killing orphaned EWW processes: $orphaned_pids"
@@ -340,7 +353,7 @@ main() {
                 ;;
             -l|--list)
                 echo "Available widgets:"
-                printf '%s\n' "${POWERMENU_WIDGETS[@]}"
+                printf '%s\n' "${SIDEBAR_WIDGETS[@]}"
                 exit 0
                 ;;
             toggle|open|close|status|daemon|cleanup)
@@ -356,19 +369,15 @@ main() {
                     daemon_action="$1"
                     shift
                 else
-                    log "ERROR" "Unknown command: $1"
-                    show_help
-                    exit 1
+                    error_exit "Unknown command: $1"
                 fi
                 ;;
-            powermenu-*)
+            sidebar-*)
                 widgets+=("$1")
                 shift
                 ;;
             *)
-                log "ERROR" "Unknown option: $1"
-                show_help
-                exit 1
+                error_exit "Unknown option: $1"
                 ;;
         esac
     done
@@ -381,7 +390,12 @@ main() {
         exec 1>/dev/null
     fi
 
-    # Acquire lock unless it's a status or list command
+    # Check sidebar config for non-status commands
+    if [[ "$command" != "status" ]]; then
+        check_sidebar_config
+    fi
+
+    # Acquire lock unless it's a status command
     if [[ "$command" != "status" && "$command" != "cleanup" ]]; then
         if [[ "$force" != "true" ]]; then
             acquire_lock
@@ -392,11 +406,13 @@ main() {
 
     # Use all widgets if none specified (except for daemon commands)
     if [[ ${#widgets[@]} -eq 0 && "$command" != "daemon" && "$command" != "status" && "$command" != "cleanup" ]]; then
-        widgets=("${POWERMENU_WIDGETS[@]}")
+        widgets=("${SIDEBAR_WIDGETS[@]}")
     fi
 
     # Check EWW installation
-    check_eww_installed
+    if [[ "$command" != "status" ]]; then
+        check_eww_installed
+    fi
 
     # Execute command
     case "$command" in
