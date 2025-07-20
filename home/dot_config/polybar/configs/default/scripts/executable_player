@@ -22,23 +22,27 @@ if [ "${player_status}" != "Playing" ] && [ "${player_status}" != "Paused" ]; th
   exit 0
 fi
 
+# Get theme-adaptive colors from xrdb
+accent_color="$(xrdb -get "color13")"    # purple/accent for titles and controls
+playing_color="$(xrdb -get "color11")"   # yellow/orange for playing status
+paused_color="$(xrdb -get "color10")"    # green for paused status
 
 if [[ -n "${title}" ]]; then
   current_song="$(playerctl metadata -s --format '{{trunc(title, 30)}}' | awk 'NR==1 {print; exit}')"
-  echo "%{T1}%{F#b48ead}${current_song}%{F}%{T-}"
+  echo "%{T1}%{F${accent_color}}${current_song}%{F}%{T-}"
   exit 0
 fi
 
 status_label=""
 if [ "${player_status}" = "Playing" ]; then
-  status_label="%{F#ebcb8b}󰏥%{F}"
+  status_label="%{F${playing_color}}󰏥%{F}"
 elif [ "${player_status}" = "Paused" ]; then
-  status_label="%{F#a3be8c}󰐌%{F}"
+  status_label="%{F${paused_color}}󰐌%{F}"
 fi
 
 # Set the labels for the buttons
-prev_label="%{T4}%{A1:playerctl prev:}%{F#b48ead}󰒮%{F}%{A}%{T-}"
+prev_label="%{T4}%{A1:playerctl prev:}%{F${accent_color}}󰒮%{F}%{A}%{T-}"
 play_pause_label="%{T5}%{A1:playerctl play-pause:}${status_label}%{A}%{T-}"
-next_label="%{T4}%{A1:playerctl next:}%{F#b48ead}󰒭%{F}%{A}%{T-}"
+next_label="%{T4}%{A1:playerctl next:}%{F${accent_color}}󰒭%{F}%{A}%{T-}"
 
 echo "${prev_label} ${play_pause_label} ${next_label}"
