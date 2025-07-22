@@ -20,29 +20,29 @@ get_smart_color() {
     local smart_colors_file="$HOME/.cache/dots/smart-colors/colors.sh"
     if [[ -f "$smart_colors_file" ]]; then
         source "$smart_colors_file"
-        
+
         # Map concepts to shell variables
         case "$concept" in
-            "SMART_BACKGROUND")
-                echo "${smart_color_black:-$(xrdb -get "background" 2>/dev/null || echo "#1b1f26")}"
+            "BACKGROUND")
+                echo "${color_black:-$(xrdb -get "background" 2>/dev/null || echo "#1b1f26")}"
                 ;;
-            "SMART_FOREGROUND")
-                echo "${smart_color_white:-$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")}"
+            "FOREGROUND")
+                echo "${color_white:-$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")}"
                 ;;
-            "SMART_ACCENT")
-                echo "${smart_color_accent:-$(xrdb -get "color13" 2>/dev/null || echo "#8fa1b3")}"
+            "ACCENT")
+                echo "${color_accent:-$(xrdb -get "color13" 2>/dev/null || echo "#8fa1b3")}"
                 ;;
-            "SMART_INFO")
-                echo "${smart_color_info:-$(xrdb -get "color12" 2>/dev/null || echo "#919ba0")}"
+            "INFO")
+                echo "${color_info:-$(xrdb -get "color12" 2>/dev/null || echo "#919ba0")}"
                 ;;
-            "SMART_ERROR")
-                echo "${smart_color_error:-$(xrdb -get "color9" 2>/dev/null || echo "#ff6666")}"
+            "ERROR")
+                echo "${color_error:-$(xrdb -get "color9" 2>/dev/null || echo "#ff6666")}"
                 ;;
-            "SMART_SUCCESS")
-                echo "${smart_color_success:-$(xrdb -get "color10" 2>/dev/null || echo "#66ff66")}"
+            "SUCCESS")
+                echo "${color_success:-$(xrdb -get "color10" 2>/dev/null || echo "#66ff66")}"
                 ;;
-            "SMART_WARNING")
-                echo "${smart_color_warning:-$(xrdb -get "color11" 2>/dev/null || echo "#ffff66")}"
+            "WARNING")
+                echo "${color_warning:-$(xrdb -get "color11" 2>/dev/null || echo "#ffff66")}"
                 ;;
             *)
                 xrdb -get "$fallback_xrdb" 2>/dev/null || echo "#ffffff"
@@ -85,13 +85,13 @@ fi
 cp "$original_config_file" "$target_config_file"
 
 # Replace smart color placeholders with actual colors from dots-smart-colors
-update_color "color_menu_bg" "SMART_BACKGROUND" "98"
-update_color "color_menu_fg" "SMART_FOREGROUND" "100"
-update_color "color_norm_bg" "SMART_BACKGROUND" "0"
-update_color "color_norm_fg" "SMART_FOREGROUND" "100"
-update_color "color_sel_bg" "SMART_ACCENT" "60"
-update_color "color_sel_fg" "SMART_FOREGROUND" "100"
-update_color "color_sep_fg" "SMART_INFO" "40"
+update_color "color_menu_bg" "BACKGROUND" "98"
+update_color "color_menu_fg" "FOREGROUND" "100"
+update_color "color_norm_bg" "BACKGROUND" "0"
+update_color "color_norm_fg" "FOREGROUND" "100"
+update_color "color_sel_bg" "ACCENT" "60"
+update_color "color_sel_fg" "FOREGROUND" "100"
+update_color "color_sep_fg" "INFO" "40"
 
 # Set JGMENU_CONFIG to point to the temporary configuration file
 export JGMENU_CONFIG="$target_config_file"

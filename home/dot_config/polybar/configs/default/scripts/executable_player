@@ -23,20 +23,20 @@ if [ "${player_status}" != "Playing" ] && [ "${player_status}" != "Paused" ]; th
 fi
 
 # Get theme-adaptive colors from smart colors or fallback to xrdb
-if [[ -n "${SMART_COLOR_ACCENT:-}" ]]; then
-    accent_color="${SMART_COLOR_ACCENT}"
+if [[ -n "${COLOR_ACCENT:-}" ]]; then
+    accent_color="${COLOR_ACCENT}"
 else
     accent_color="$(xrdb -get "color13")"
 fi
 
-if [[ -n "${SMART_COLOR_WARNING:-}" ]]; then
-    playing_color="${SMART_COLOR_WARNING}"
+if [[ -n "${COLOR_WARNING:-}" ]]; then
+    playing_color="${COLOR_WARNING}"
 else
     playing_color="$(xrdb -get "color11")"
 fi
 
-if [[ -n "${SMART_COLOR_SUCCESS:-}" ]]; then
-    paused_color="${SMART_COLOR_SUCCESS}"
+if [[ -n "${COLOR_SUCCESS:-}" ]]; then
+    paused_color="${COLOR_SUCCESS}"
 else
     paused_color="$(xrdb -get "color10")"
 fi

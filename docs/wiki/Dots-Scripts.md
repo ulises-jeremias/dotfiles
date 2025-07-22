@@ -100,6 +100,7 @@ dots-smart-colors --export --format=i3        # i3 configuration
 - **Semantic mapping**: Intelligent error/success/warning color selection
 - **Multiple formats**: Shell, Polybar, EWW, i3 export support
 - **Fallback system**: Always provides valid colors
+- **Simple variables**: Clean COLOR_ERROR, COLOR_SUCCESS format (no SMART_ prefix)
 
 ### Enhanced `dots-wal-reload`
 

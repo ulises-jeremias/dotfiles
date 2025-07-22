@@ -57,17 +57,17 @@ moderate = ${xrdb:color11}
 urgent = ${xrdb:color9}
 
 ; Smart theme-adaptive colors (set by dots-smart-colors)
-blue = ${env:SMART_COLOR_BLUE:${xrdb:color12}}
-green = ${env:SMART_COLOR_GREEN:${xrdb:color10}}
-orange = ${env:SMART_COLOR_ORANGE:${xrdb:color11}}
-purple = ${env:SMART_COLOR_MAGENTA:${xrdb:color13}}
+blue = ${env:COLOR_BLUE:${xrdb:color12}}
+green = ${env:COLOR_GREEN:${xrdb:color10}}
+orange = ${env:COLOR_ORANGE:${xrdb:color11}}
+purple = ${env:COLOR_MAGENTA:${xrdb:color13}}
 
 ; Semantic colors for better theming (using smart colors)
-success = ${env:SMART_COLOR_SUCCESS:${xrdb:color10}}
-warning = ${env:SMART_COLOR_WARNING:${xrdb:color11}}
-error = ${env:SMART_COLOR_ERROR:${xrdb:color9}}
-info = ${env:SMART_COLOR_INFO:${xrdb:color12}}
-accent = ${env:SMART_COLOR_ACCENT:${xrdb:color14}}
+success = ${env:COLOR_SUCCESS:${xrdb:color10}}
+warning = ${env:COLOR_WARNING:${xrdb:color11}}
+error = ${env:COLOR_ERROR:${xrdb:color9}}
+info = ${env:COLOR_INFO:${xrdb:color12}}
+accent = ${env:COLOR_ACCENT:${xrdb:color14}}
 ```
 
 #### Color Environment Variables
@@ -76,11 +76,11 @@ Smart colors are automatically exported to environment variables:
 
 ```bash
 # Automatically set by polybar profile initialization
-SMART_COLOR_ERROR="#ff6b6b"
-SMART_COLOR_SUCCESS="#51cf66"
-SMART_COLOR_WARNING="#ffd43b"
-SMART_COLOR_INFO="#339af0"
-SMART_COLOR_ACCENT="#845ef7"
+COLOR_ERROR="#ff6b6b"
+COLOR_SUCCESS="#51cf66"
+COLOR_WARNING="#ffd43b"
+COLOR_INFO="#339af0"
+COLOR_ACCENT="#845ef7"
 ```
 
 #### Semantic Color Usage

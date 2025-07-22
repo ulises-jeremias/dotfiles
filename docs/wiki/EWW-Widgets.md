@@ -156,16 +156,16 @@ $color0: #1e1e2e;
 // ... all Base16 colors
 
 /* Smart semantic colors (theme-adaptive) */
-$smart-error: #f38ba8; // Always optimal error color
-$smart-warning: #f9e2af; // Always optimal warning color
-$smart-success: #a6e3a1; // Always optimal success color
-$smart-info: #89b4fa; // Always optimal info color
-$smart-accent: #cba6f7; // Always optimal accent color
+$error: #f38ba8; // Always optimal error color
+$warning: #f9e2af; // Always optimal warning color
+$success: #a6e3a1; // Always optimal success color
+$info: #89b4fa; // Always optimal info color
+$accent: #cba6f7; // Always optimal accent color
 
 /* Smart basic colors */
-$smart-red: #f38ba8;
-$smart-green: #a6e3a1;
-$smart-blue: #89b4fa;
+$red: #f38ba8;
+$green: #a6e3a1;
+$blue: #89b4fa;
 // ... additional smart colors
 ```
 
@@ -175,16 +175,16 @@ $smart-blue: #89b4fa;
 
 ```scss
 .btn_lock {
-  color: $smart-info; // Always readable blue-ish
+  color: $info; // Always readable blue-ish
 }
 .btn_logout {
-  color: $smart-warning; // Always attention-getting orange-ish
+  color: $warning; // Always attention-getting orange-ish
 }
 .btn_reboot {
-  color: $smart-accent; // Always distinct accent color
+  color: $accent; // Always distinct accent color
 }
 .btn_poweroff {
-  color: $smart-error; // Always alarming red-ish
+  color: $error; // Always alarming red-ish
 }
 ```
 
@@ -192,16 +192,16 @@ $smart-blue: #89b4fa;
 
 ```scss
 .cpu-usage {
-  color: $smart-accent; // Important system info
+  color: $accent; // Important system info
 }
 .memory-critical {
-  color: $smart-error; // Critical alerts
+  color: $error; // Critical alerts
 }
 .battery-good {
-  color: $smart-success; // Positive status
+  color: $success; // Positive status
 }
 .network-info {
-  color: $smart-info; // Neutral information
+  color: $info; // Neutral information
 }
 ```
 
@@ -242,9 +242,9 @@ Smart colors automatically adapt to different theme types:
 **Use semantic colors for meaning:**
 ```scss
 // ✅ Good: Semantic meaning
-.error-message { color: $smart-error; }
-.success-badge { color: $smart-success; }
-.info-text { color: $smart-info; }
+.error-message { color: $error; }
+.success-badge { color: $success; }
+.info-text { color: $info; }
 
 // ❌ Avoid: Hardcoded colors
 .error-message { color: #ff0000; }
@@ -255,7 +255,7 @@ Smart colors automatically adapt to different theme types:
 ```scss
 // Smart color with Base16 fallback
 .custom-element {
-  color: $smart-accent;
+  color: $accent;
   background-color: $color1; // Base16 fallback
 }
 ```

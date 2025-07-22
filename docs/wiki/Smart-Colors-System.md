@@ -176,11 +176,11 @@ $background: #b0d5d8;
 $foreground: #52758A;  // Optimized for light themes!
 
 // Smart semantic colors (theme-adaptive)
-$smart-error: #b84b49;
-$smart-success: #0abf66;
-$smart-warning: #b8850f;
-$smart-info: #0a94bd;
-$smart-accent: #7e68a0;
+$error: #b84b49;
+$success: #0abf66;
+$warning: #b8850f;
+$info: #0a94bd;
+$accent: #7e68a0;
 ```
 
 **Usage**: `@import "smart-colors.scss";` in EWW stylesheets
@@ -188,11 +188,11 @@ $smart-accent: #7e68a0;
 #### 3. **`colors.sh`** - Shell Scripts
 ```bash
 # Shell variables for scripts
-smart_color_error='#b84b49'
-smart_color_success='#0abf66'
-smart_color_warning='#b8850f'
-smart_color_info='#0a94bd'
-smart_color_accent='#7e68a0'
+color_error='#b84b49'
+color_success='#0abf66'
+color_warning='#b8850f'
+color_info='#0a94bd'
+color_accent='#7e68a0'
 ```
 
 **Usage**: `source ~/.cache/dots/smart-colors/colors.sh` in shell scripts
@@ -200,11 +200,11 @@ smart_color_accent='#7e68a0'
 #### 4. **`colors.env`** - Environment Variables
 ```bash
 # Export-ready environment variables
-export SMART_COLOR_ERROR='#b84b49'
-export SMART_COLOR_SUCCESS='#0abf66'
-export SMART_COLOR_WARNING='#b8850f'
-export SMART_COLOR_INFO='#0a94bd'
-export SMART_COLOR_ACCENT='#7e68a0'
+export COLOR_ERROR='#b84b49'
+export COLOR_SUCCESS='#0abf66'
+export COLOR_WARNING='#b8850f'
+export COLOR_INFO='#0a94bd'
+export COLOR_ACCENT='#7e68a0'
 ```
 
 **Usage**: `source ~/.cache/dots/smart-colors/colors.env` to load into environment
@@ -302,7 +302,7 @@ graph LR
 **EWW Widgets:**
 
 - Replaces pywal symlinks with smart-generated `colors.scss`
-- Includes semantic variables (`$smart-error`, `$smart-success`)
+- Includes semantic variables (`$error`, `$success`)
 - Maintains compatibility with existing configs
 
 **Polybar:**
@@ -342,15 +342,15 @@ format-warn-foreground = ${colors.warning}     # Smart warning color
 @import "colors.scss";
 
 .error-button {
-  background-color: $smart-error; // Always optimal error color
+  background-color: $error; // Always optimal error color
 }
 
 .success-message {
-  color: $smart-success; // Always optimal success color
+  color: $success; // Always optimal success color
 }
 
 .info-text {
-  color: $smart-info; // Always optimal info color
+  color: $info; // Always optimal info color
 }
 ```
 
@@ -361,8 +361,8 @@ format-warn-foreground = ${colors.warning}     # Smart warning color
 # Load smart colors
 eval "$(dots-smart-colors --export)"
 
-echo -e "\\033[${SMART_COLOR_ERROR}mError message\\033[0m"
-echo -e "\\033[${SMART_COLOR_SUCCESS}mSuccess message\\033[0m"
+echo -e "\\033[${COLOR_ERROR}mError message\\033[0m"
+echo -e "\\033[${COLOR_SUCCESS}mSuccess message\\033[0m"
 ```
 
 ### i3 Configuration
