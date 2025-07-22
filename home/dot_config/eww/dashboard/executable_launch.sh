@@ -1,10 +1,48 @@
 #!/usr/bin/env bash
-#
-# Enhanced EWW Dashboard Launch Script
-# Provides robust widget management with comprehensive error handling and logging
-#
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Enhanced EWW Dashboard Launch Script
+## Provides robust widget management with comprehensive error handling and logging
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Usage:
+##     @script.name [OPTIONS] [COMMAND] [WIDGETS...]
+##
+## Commands:
+##     toggle          Toggle dashboard widgets (default)
+##     open            Open dashboard widgets
+##     close           Close dashboard widgets
+##     restart         Restart EWW daemon and reopen widgets
+##     status          Show widget status
+##     daemon          Manage EWW daemon (start|stop|restart)
+##     cleanup         Clean up orphaned processes and files
+##
+## Options:
+##     -h, --help      Show this help message.
+##     -d, --debug     Enable debug logging.
+##     -q, --quiet     Suppress all output except errors.
+##     -f, --force     Force operation even if already running.
+##     -l, --list      List available widgets.
+##
+## Widgets:
+##     If no widgets specified, operates on all dashboard widgets.
+##     Otherwise, operates only on specified widgets.
+##
+## Examples:
+##     @script.name                           # Toggle all dashboard widgets
+##     @script.name open dashboard-clock      # Open only the clock widget
+##     @script.name close dashboard-music     # Close only the music widget
+##     @script.name daemon restart            # Restart the EWW daemon
+##     @script.name status                    # Show status of all widgets
+##     @script.name cleanup                   # Clean up orphaned processes
 
 set -euo pipefail
+
+# Source EasyOptions for argument parsing
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 # =============================================================================
 # Configuration & Constants
@@ -53,7 +91,13 @@ log() {
     local message="$*"
     local timestamp
     timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
-    echo "[$timestamp] [$level] $message" | tee -a "$LOG_FILE"
+
+    # Only log to file if not in quiet mode, but always log errors to stderr
+    if [[ "${quiet:-}" != "yes" ]] || [[ "$level" == "ERROR" ]]; then
+        echo "[$timestamp] [$level] $message" | tee -a "$LOG_FILE"
+    else
+        echo "[$timestamp] [$level] $message" >> "$LOG_FILE"
+    fi
 }
 
 # Error handling
@@ -176,17 +220,6 @@ manage_eww_daemon() {
     esac
 }
 
-# Widget state management
-get_widget_state() {
-    local widget="$1"
-    eww --config "$EWW_CONFIG_DIR" get "$widget" 2>/dev/null || echo "false"
-}
-
-is_widget_open() {
-    local widget="$1"
-    eww --config "$EWW_CONFIG_DIR" windows | grep -q "^$widget" 2>/dev/null
-}
-
 # Enhanced widget operations
 widget_operation() {
     local operation="$1"
@@ -202,13 +235,13 @@ widget_operation() {
 
     case "$operation" in
         toggle)
-            log "INFO" "Toggling ${#widgets[@]} widgets"
+            log "INFO" "Toggling ${#widgets[@]} dashboard widgets"
             if ! eww --config "$EWW_CONFIG_DIR" open-many --toggle "${widgets[@]}" >/dev/null 2>&1; then
                 log "WARN" "Some widgets may not have toggled successfully: ${widgets[*]}"
             fi
             ;;
         open)
-            log "INFO" "Opening ${#widgets[@]} widgets"
+            log "INFO" "Opening ${#widgets[@]} dashboard widgets"
             if [[ ${#widgets[@]} -eq 1 ]]; then
                 if ! eww --config "$EWW_CONFIG_DIR" open "${widgets[0]}" >/dev/null 2>&1; then
                     log "WARN" "Widget may not have opened successfully: ${widgets[0]}"
@@ -220,7 +253,7 @@ widget_operation() {
             fi
             ;;
         close)
-            log "INFO" "Closing ${#widgets[@]} widgets"
+            log "INFO" "Closing ${#widgets[@]} dashboard widgets"
             for widget in "${widgets[@]}"; do
                 if ! eww --config "$EWW_CONFIG_DIR" close "$widget" >/dev/null 2>&1; then
                     log "WARN" "Widget may not have closed successfully: $widget"
@@ -228,45 +261,6 @@ widget_operation() {
             done
             ;;
     esac
-}
-
-# Display help information
-show_help() {
-    cat << EOF
-Usage: $SCRIPT_NAME [OPTIONS] [COMMAND] [WIDGETS...]
-
-Enhanced EWW Dashboard Management Script
-
-COMMANDS:
-    toggle          Toggle dashboard widgets (default)
-    open            Open dashboard widgets
-    close           Close dashboard widgets
-    restart         Restart EWW daemon and reopen widgets
-    status          Show widget status
-    daemon          Manage EWW daemon (start|stop|restart)
-    cleanup         Clean up orphaned processes and files
-
-OPTIONS:
-    -h, --help      Show this help message
-    -d, --debug     Enable debug logging
-    -q, --quiet     Suppress all output except errors
-    -f, --force     Force operation even if already running
-    -l, --list      List available widgets
-
-WIDGETS:
-    If no widgets specified, operates on all dashboard widgets.
-    Otherwise, operates only on specified widgets.
-
-EXAMPLES:
-    $SCRIPT_NAME                           # Toggle all dashboard widgets
-    $SCRIPT_NAME open dashboard-clock      # Open only the clock widget
-    $SCRIPT_NAME close dashboard-music     # Close only the music widget
-    $SCRIPT_NAME daemon restart            # Restart the EWW daemon
-    $SCRIPT_NAME status                    # Show status of all widgets
-    $SCRIPT_NAME cleanup                   # Clean up orphaned processes
-
-LOG FILE: $LOG_FILE
-EOF
 }
 
 # Status display
@@ -301,28 +295,29 @@ show_status() {
     echo "Log File: $LOG_FILE"
 }
 
+# List available widgets
+list_widgets() {
+    echo "Available widgets:"
+    printf '%s\n' "${DASHBOARD_WIDGETS[@]}"
+}
+
 # Cleanup function
 cleanup_system() {
-    log "INFO" "Performing system cleanup..."
+    log "INFO" "Starting system cleanup..."
 
-    # Kill orphaned EWW processes
-    local orphaned_pids
-    orphaned_pids="$(pgrep -f "eww.*dashboard" | grep -v $$ || true)"
-
-    if [[ -n "$orphaned_pids" ]]; then
-        log "INFO" "Killing orphaned EWW processes: $orphaned_pids"
-        echo "$orphaned_pids" | xargs kill -TERM 2>/dev/null || true
-        sleep 2
-        echo "$orphaned_pids" | xargs kill -KILL 2>/dev/null || true
+    # Kill any orphaned eww processes
+    if pgrep -f "eww" >/dev/null; then
+        log "INFO" "Killing orphaned EWW processes..."
+        pkill -f "eww" || true
     fi
 
-    # Remove stale lock files
-    find /tmp -name "eww-*.lock" -mtime +1 -delete 2>/dev/null || true
+    # Remove lock files
+    rm -f /tmp/eww-*.lock 2>/dev/null || true
 
-    # Clean old log files
+    # Clean old logs (older than 7 days)
     find "$LOG_DIR" -name "*.log.old" -mtime +7 -delete 2>/dev/null || true
 
-    log "INFO" "Cleanup completed"
+    log "INFO" "System cleanup completed"
 }
 
 # =============================================================================
@@ -330,78 +325,59 @@ cleanup_system() {
 # =============================================================================
 
 main() {
-    local debug=false
-    local quiet=false
-    local force=false
+    # Setup logging first
+    setup_logging
+
+    # Parse command from arguments
     local command="toggle"
+    local daemon_action="start"
     local widgets=()
 
-    # Parse arguments
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -h|--help)
-                show_help
-                exit 0
-                ;;
-            -d|--debug)
-                debug=true
-                set -x
-                shift
-                ;;
-            -q|--quiet)
-                quiet=true
-                shift
-                ;;
-            -f|--force)
-                force=true
-                shift
-                ;;
-            -l|--list)
-                echo "Available widgets:"
-                printf '%s\n' "${DASHBOARD_WIDGETS[@]}"
-                exit 0
-                ;;
-            toggle|open|close|status|daemon|cleanup)
-                command="$1"
-                shift
-                ;;
-            restart)
-                command="$1"
-                shift
+    # Process positional arguments for commands and widgets
+    for arg in "${arguments[@]:-}"; do
+        # Skip empty arguments
+        [[ -z "$arg" ]] && continue
+
+        case "$arg" in
+            toggle|open|close|restart|status|daemon|cleanup)
+                command="$arg"
                 ;;
             start|stop)
                 if [[ "$command" == "daemon" ]]; then
-                    daemon_action="$1"
-                    shift
+                    daemon_action="$arg"
                 else
-                    log "ERROR" "Unknown command: $1"
-                    show_help
-                    exit 1
+                    error_exit "Invalid argument: $arg"
                 fi
                 ;;
             dashboard-*)
-                widgets+=("$1")
-                shift
+                widgets+=("$arg")
                 ;;
             *)
-                log "ERROR" "Unknown option: $1"
-                show_help
-                exit 1
+                error_exit "Unknown argument: $arg"
                 ;;
         esac
     done
 
-    # Setup logging
-    setup_logging
+    # Handle list option
+    if [[ "${list:-}" == "yes" ]]; then
+        list_widgets
+        exit 0
+    fi
 
-    # Quiet mode setup
-    if [[ "$quiet" == "true" ]]; then
+    # Enable debug mode if requested
+    if [[ "${debug:-}" == "yes" ]]; then
+        set -x
+        log "INFO" "Debug mode enabled"
+    fi
+
+    # Quiet mode setup - redirect stdout to null but keep stderr
+    if [[ "${quiet:-}" == "yes" ]]; then
         exec 1>/dev/null
     fi
 
     # Acquire lock unless it's a status or list command
     if [[ "$command" != "status" && "$command" != "cleanup" ]]; then
-        if [[ "$force" != "true" ]]; then
+        if [[ "${force:-}" != "yes" ]]; then
             acquire_lock
         fi
     fi
@@ -432,7 +408,7 @@ main() {
             log "INFO" "Restart completed successfully"
             ;;
         daemon)
-            manage_eww_daemon "${daemon_action:-start}"
+            manage_eww_daemon "$daemon_action"
             ;;
         status)
             show_status
