@@ -1134,7 +1134,9 @@ Instead of hardcoded colors that may not work well with all themes, smart colors
 <h2 id="-how-it-works">🧠 How It Works</h2>
 <h3 id="color-analysis-algorithm">Color Analysis Algorithm</h3>
 <pre class="hljs"><span class="hljs-comment"># Analyze your current palette</span>
-dots-smart-colors --analyze</pre><p>The system uses <strong>euclidean distance calculations</strong> in RGB color space to find the closest available color to ideal target colors:</p>
+dots-smart-colors --analyze</pre><p>The system uses <strong>advanced color analysis</strong> that combines multiple approaches:</p>
+<ul>
+<li><p><strong>Euclidean distance calculations</strong> in RGB color space to find the closest available color to ideal target colors:</p>
 <ul>
 <li><strong>Error/Danger</strong>: Targets pure red (255,0,0)</li>
 <li><strong>Warning</strong>: Targets orange (255,165,0)</li>
@@ -1142,12 +1144,31 @@ dots-smart-colors --analyze</pre><p>The system uses <strong>euclidean distance c
 <li><strong>Info</strong>: Targets blue (0,100,255)</li>
 <li><strong>Accent</strong>: Targets purple/violet (128,0,255)</li>
 </ul>
+</li>
+<li><p><strong>🆕 Light/Dark Theme Detection</strong>: Automatically detects theme brightness and optimizes colors accordingly</p>
+</li>
+<li><strong>🆕 Foreground Optimization</strong>: Smart foreground selection for optimal readability in light themes</li>
+</ul>
 <h3 id="smart-selection-process">Smart Selection Process</h3>
 <ol>
+<li><strong>Theme Detection</strong>: Analyzes background luminance to determine if theme is light (&gt;128/255) or dark</li>
+<li><strong>Foreground Optimization</strong>: <ul>
+<li><strong>Light themes</strong>: Uses softer foreground colors (e.g., <code>color5</code>) instead of harsh black</li>
+<li><strong>Dark themes</strong>: Maintains standard foreground colors for optimal contrast</li>
+</ul>
+</li>
 <li><strong>Preference-based selection</strong>: Uses predefined color preferences based on Base16 standards</li>
 <li><strong>Distance calculation</strong>: If preferences fail, calculates color distances to find best match</li>
 <li><strong>Fallback system</strong>: Always provides a valid color even in limited palettes</li>
 </ol>
+<h3 id="-advanced-features">🔍 Advanced Features</h3>
+<p><strong>Automatic Theme Adaptation:</strong></p>
+<ul>
+<li><strong>Light Theme Detection</strong>: Background luminance &gt; 128/255 triggers light theme optimizations</li>
+<li><strong>Smart Foreground</strong>: Light themes use <code>color5</code> or <code>color7</code> instead of pure black for better readability</li>
+<li><strong>Contrast Optimization</strong>: Ensures optimal text-to-background contrast ratios</li>
+<li><strong>Semantic Consistency</strong>: Colors maintain their semantic meaning across all theme types</li>
+</ul>
 <hr>
 <h2 id="-available-tools">🚀 Available Tools</h2>
 <h3 id="dots-smart-colors-command"><code>dots-smart-colors</code> Command</h3>
@@ -1181,6 +1202,127 @@ dots-smart-colors --<span class="hljs-built_in">export</span> --format=i3 &gt; ~
 <li><code>red</code>, <code>green</code>, <code>blue</code>, <code>yellow</code>, <code>cyan</code>, <code>magenta</code>, <code>orange</code>, <code>pink</code>, <code>brown</code>, <code>white</code>, <code>black</code>, <code>gray</code></li>
 </ul>
 <hr>
+<h2 id="-centralized-cache-system-generate-">🗂️ Centralized Cache System (<code>--generate</code>)</h2>
+<h3 id="the-generate-flag">The <code>--generate</code> Flag</h3>
+<p>The <code>--generate</code> flag is the <strong>core command</strong> that creates all smart color files in a centralized cache directory:</p>
+<pre class="hljs"><span class="hljs-comment"># Generate all smart color files at once</span>
+dots-smart-colors --generate</pre><p>This single command analyzes your current palette and generates <strong>5 specialized files</strong> that different applications can use immediately.</p>
+<h3 id="cache-directory-structure">Cache Directory Structure</h3>
+<p>All generated files are stored in <code>~/.cache/dots/smart-colors/</code>:</p>
+<pre class="hljs">~/.cache/dots/smart-colors/
+├── colors-i3.conf          # i3 window manager color configuration
+├── colors-eww.scss         # EWW widgets SCSS variables  
+├── colors.sh               # Shell script variables
+├── colors.env              # Environment variables (export format)
+└── colors-polybar.conf     # Polybar color configuration</pre><h3 id="generated-files-explained">Generated Files Explained</h3>
+<h4 id="1-colors-i3-conf-i3-window-manager">1. <strong><code>colors-i3.conf</code></strong> - i3 Window Manager</h4>
+<pre class="hljs"><span class="hljs-comment"># i3 color scheme using Base16 + Smart Colors</span>
+client.focused          <span class="hljs-comment">#7e68a0  #7e68a0  #b0d5d8  #0a94bd    #7e68a0</span>
+client.focused_inactive <span class="hljs-comment">#348C9E  #348C9E  #52758A  #348C9E    #348C9E</span>
+client.unfocused        <span class="hljs-comment">#348C9E  #b0d5d8  #52758A  #348C9E    #348C9E</span>
+client.urgent           <span class="hljs-comment">#b84b49  #b84b49  #b0d5d8  #b84b49    #b84b49</span></pre><p><strong>Usage</strong>: Include in i3 config with <code>include ~/.config/i3/colors-smart.conf</code></p>
+<h4 id="2-colors-eww-scss-eww-widgets">2. <strong><code>colors-eww.scss</code></strong> - EWW Widgets</h4>
+<pre class="hljs"><span class="hljs-comment">// Enhanced colors with smart semantic variables</span>
+<span class="hljs-variable">$background</span>: <span class="hljs-number">#b0d5d8</span>;
+<span class="hljs-variable">$foreground</span>: <span class="hljs-number">#52758A</span>;  <span class="hljs-comment">// Optimized for light themes!</span>
+
+<span class="hljs-comment">// Smart semantic colors (theme-adaptive)</span>
+<span class="hljs-variable">$smart-error</span>: <span class="hljs-number">#b84b49</span>;
+<span class="hljs-variable">$smart-success</span>: <span class="hljs-number">#0abf66</span>;
+<span class="hljs-variable">$smart-warning</span>: <span class="hljs-number">#b8850f</span>;
+<span class="hljs-variable">$smart-info</span>: <span class="hljs-number">#0a94bd</span>;
+<span class="hljs-variable">$smart-accent</span>: <span class="hljs-number">#7e68a0</span>;</pre><p><strong>Usage</strong>: <code>@import &quot;smart-colors.scss&quot;;</code> in EWW stylesheets</p>
+<h4 id="3-colors-sh-shell-scripts">3. <strong><code>colors.sh</code></strong> - Shell Scripts</h4>
+<pre class="hljs"><span class="hljs-comment"># Shell variables for scripts</span>
+smart_color_error=<span class="hljs-string">&#x27;#b84b49&#x27;</span>
+smart_color_success=<span class="hljs-string">&#x27;#0abf66&#x27;</span>
+smart_color_warning=<span class="hljs-string">&#x27;#b8850f&#x27;</span>
+smart_color_info=<span class="hljs-string">&#x27;#0a94bd&#x27;</span>
+smart_color_accent=<span class="hljs-string">&#x27;#7e68a0&#x27;</span></pre><p><strong>Usage</strong>: <code>source ~/.cache/dots/smart-colors/colors.sh</code> in shell scripts</p>
+<h4 id="4-colors-env-environment-variables">4. <strong><code>colors.env</code></strong> - Environment Variables</h4>
+<pre class="hljs"><span class="hljs-comment"># Export-ready environment variables</span>
+<span class="hljs-built_in">export</span> SMART_COLOR_ERROR=<span class="hljs-string">&#x27;#b84b49&#x27;</span>
+<span class="hljs-built_in">export</span> SMART_COLOR_SUCCESS=<span class="hljs-string">&#x27;#0abf66&#x27;</span>
+<span class="hljs-built_in">export</span> SMART_COLOR_WARNING=<span class="hljs-string">&#x27;#b8850f&#x27;</span>
+<span class="hljs-built_in">export</span> SMART_COLOR_INFO=<span class="hljs-string">&#x27;#0a94bd&#x27;</span>
+<span class="hljs-built_in">export</span> SMART_COLOR_ACCENT=<span class="hljs-string">&#x27;#7e68a0&#x27;</span></pre><p><strong>Usage</strong>: <code>source ~/.cache/dots/smart-colors/colors.env</code> to load into environment</p>
+<h4 id="5-colors-polybar-conf-polybar-status-bar">5. <strong><code>colors-polybar.conf</code></strong> - Polybar Status Bar</h4>
+<pre class="hljs"><span class="hljs-section">[colors]</span>
+background = <span class="hljs-comment">#b0d5d8</span>
+foreground = <span class="hljs-comment">#52758A  ; Optimized for light themes</span>
+primary = <span class="hljs-comment">#348C9E</span>
+
+<span class="hljs-comment">; Smart semantic colors</span>
+success = <span class="hljs-comment">#0abf66</span>
+warning = <span class="hljs-comment">#b8850f</span>
+error = <span class="hljs-comment">#b84b49</span>
+info = <span class="hljs-comment">#0a94bd</span>
+accent = <span class="hljs-comment">#7e68a0</span></pre><p><strong>Usage</strong>: <code>include-file = ~/.cache/dots/smart-colors/colors-polybar.conf</code></p>
+<h3 id="-automatic-workflow">🔄 Automatic Workflow</h3>
+<p>The centralized cache system works seamlessly with the dotfiles workflow:</p>
+<pre class="hljs">graph LR
+    <span class="hljs-selector-tag">A</span><span class="hljs-selector-attr">[Wallpaper Change]</span> --&gt; <span class="hljs-selector-tag">B</span><span class="hljs-selector-attr">[wpg/pywal]</span>
+    <span class="hljs-selector-tag">B</span> --&gt; C<span class="hljs-selector-attr">[dots-wal-reload]</span>
+    C --&gt; D<span class="hljs-selector-attr">[dots-smart-colors --generate]</span>
+    D --&gt; E<span class="hljs-selector-attr">[Cache Updated]</span>
+    E --&gt; F<span class="hljs-selector-attr">[Applications Reload]</span>
+    F --&gt; G<span class="hljs-selector-attr">[Colors Applied]</span></pre><p><strong>Key Benefits:</strong></p>
+<ol>
+<li><strong>Single Source of Truth</strong>: All applications use the same optimized colors</li>
+<li><strong>Performance</strong>: Generated once, used everywhere - no repeated calculations</li>
+<li><strong>Consistency</strong>: Colors are guaranteed to be semantically correct across all apps</li>
+<li><strong>Automatic Updates</strong>: Cache refreshes whenever wallpaper changes</li>
+</ol>
+<h3 id="-application-integration">📱 Application Integration</h3>
+<p>Each application type uses its preferred format:</p>
+<table>
+<thead>
+<tr>
+<th>Application</th>
+<th>File Used</th>
+<th>Integration Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>i3 WM</strong></td>
+<td><code>colors-i3.conf</code></td>
+<td>Include directive in i3 config</td>
+</tr>
+<tr>
+<td><strong>EWW Widgets</strong></td>
+<td><code>colors-eww.scss</code></td>
+<td>SCSS import in stylesheets</td>
+</tr>
+<tr>
+<td><strong>Polybar</strong></td>
+<td><code>colors-polybar.conf</code></td>
+<td>Include directive in polybar config</td>
+</tr>
+<tr>
+<td><strong>Shell Scripts</strong></td>
+<td><code>colors.sh</code> or <code>colors.env</code></td>
+<td>Source in scripts or profiles</td>
+</tr>
+<tr>
+<td><strong>Custom Apps</strong></td>
+<td>Any format</td>
+<td>Choose the most appropriate format</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-manual-cache-management">🔧 Manual Cache Management</h3>
+<pre class="hljs"><span class="hljs-comment"># Generate/refresh cache manually</span>
+dots-smart-colors --generate
+
+<span class="hljs-comment"># Check cache status</span>
+ls -la ~/.cache/dots/smart-colors/
+
+<span class="hljs-comment"># View specific file</span>
+cat ~/.cache/dots/smart-colors/colors-polybar.conf
+
+<span class="hljs-comment"># Clear cache (will be regenerated automatically)</span>
+rm -rf ~/.cache/dots/smart-colors/</pre><hr>
 <h2 id="-automatic-integration">🔄 Automatic Integration</h2>
 <h3 id="wal-reload-integration">Wal-Reload Integration</h3>
 <p>Smart colors are <strong>automatically applied</strong> when you change wallpapers via <code>wpg</code>:</p>
@@ -1257,10 +1399,26 @@ client.urgent           $smart_error   $smart_error   $background     $smart_err
 <span class="hljs-built_in">export</span> POLYBAR_THEME_SUCCESS=<span class="hljs-string">&quot;#00ff00&quot;</span>     <span class="hljs-comment"># Force specific success color</span></pre><h3 id="custom-color-mappings">Custom Color Mappings</h3>
 <p>Smart colors work with any Base16-compatible color scheme and automatically adapt to:</p>
 <ul>
-<li><strong>Dark themes</strong>: Prioritizes lighter colors for text</li>
-<li><strong>Light themes</strong>: Prioritizes darker colors for text</li>
-<li><strong>High contrast themes</strong>: Maximizes color differences</li>
+<li><strong>Dark themes</strong>: Prioritizes lighter colors for text, darker colors for backgrounds</li>
+<li><strong>Light themes</strong>: Prioritizes darker colors for text, lighter colors for backgrounds  </li>
+<li><strong>🆕 Light theme foreground optimization</strong>: Automatically selects softer foreground colors (like <code>color5</code>) instead of harsh black (<code>#000000</code>) for better readability</li>
+<li><strong>High contrast themes</strong>: Maximizes color differences for accessibility</li>
 <li><strong>Limited palettes</strong>: Finds best available approximations</li>
+</ul>
+<h3 id="light-theme-intelligence">Light Theme Intelligence</h3>
+<p>The system now includes <strong>advanced light theme detection</strong>:</p>
+<pre class="hljs"><span class="hljs-comment"># The system automatically detects light themes based on background luminance</span>
+<span class="hljs-comment"># Light themes (background luminance &gt; 128/255) get optimized foreground colors</span>
+
+<span class="hljs-comment"># Example optimizations for light themes:</span>
+<span class="hljs-comment"># - Background: #f0f0f0 (light)</span>
+<span class="hljs-comment"># - Original foreground: #000000 (harsh black)  </span>
+<span class="hljs-comment"># - Optimized foreground: #52758A (softer, more readable)</span></pre><p><strong>Benefits of Light Theme Optimization:</strong></p>
+<ul>
+<li><strong>Reduced eye strain</strong>: Softer foreground colors in light themes</li>
+<li><strong>Better readability</strong>: Optimal contrast without being harsh</li>
+<li><strong>Consistent experience</strong>: Semantic colors work perfectly in both light and dark themes</li>
+<li><strong>Automatic detection</strong>: No manual configuration needed</li>
 </ul>
 <hr>
 <h2 id="-troubleshooting">🐛 Troubleshooting</h2>
@@ -1282,12 +1440,24 @@ ls -la ~/.config/eww/dashboard/colors.scss
 
 <span class="hljs-comment"># Manually regenerate</span>
 dots-smart-colors --<span class="hljs-built_in">export</span> --format=eww &gt; ~/.config/eww/dashboard/colors.scss
-eww reload</pre><h3 id="debug-mode">Debug Mode</h3>
+eww reload</pre><p><strong>Cache issues:</strong></p>
+<pre class="hljs"><span class="hljs-comment"># Check cache directory exists and has files</span>
+ls -la ~/.cache/dots/smart-colors/
+
+<span class="hljs-comment"># Regenerate cache manually</span>
+dots-smart-colors --generate
+
+<span class="hljs-comment"># Check permissions</span>
+chmod -R 755 ~/.cache/dots/smart-colors/</pre><h3 id="debug-mode">Debug Mode</h3>
 <pre class="hljs"><span class="hljs-comment"># Verbose analysis</span>
 dots-smart-colors --analyze --verbose
 
 <span class="hljs-comment"># Check what would be applied without changing anything</span>
-dots-wal-reload --dry-run  <span class="hljs-comment"># (if implemented)</span></pre><hr>
+dots-wal-reload --dry-run  <span class="hljs-comment"># (if implemented)</span>
+
+<span class="hljs-comment"># Test individual color concepts</span>
+dots-smart-colors --concept=error
+dots-smart-colors --concept=success</pre><hr>
 <h2 id="-related-documentation">📚 Related Documentation</h2>
 <ul>
 <li><a href="#Rice-System-Theme-Management">Rice System Theme Management</a> - Complete theme switching</li>
@@ -1730,7 +1900,8 @@ Everything in this setup is fully customizable. Whether it&#39;s modules, colors
     └── default/
         ├── config.ini     <span class="hljs-comment"># Main polybar config</span>
         ├── modules.conf   <span class="hljs-comment"># Module definitions</span>
-        └── bars/          <span class="hljs-comment"># Bar configurations</span></pre><p>To edit it:</p>
+        ├── bars.conf      <span class="hljs-comment"># Bar configurations (centralized)</span>
+        └── bars/          <span class="hljs-comment"># Individual bar configurations</span></pre><p>To edit it:</p>
 <pre class="hljs">chezmoi edit ~/.config/polybar --<span class="hljs-built_in">source</span> ~/.dotfiles</pre><p>Apply changes with:</p>
 <pre class="hljs">chezmoi apply</pre><hr>
 <h2 id="-profile-system">🎯 Profile System</h2>
@@ -1855,7 +2026,8 @@ The modular configuration structure allows you to easily enable/disable modules 
 <pre class="hljs">~/.config/polybar/
 ├── config.ini              # Main entry point (symlinks to master.conf)
 ├── master.conf              # Core configuration and color scheme
-├── modules.conf             # Module includes registry
+├── modules.conf             # Module includes registry  
+├── bars.conf                # Bar configurations registry (centralized)
 ├── launch.sh                # Polybar startup script
 ├── bars/                    # Bar layout configurations
 │   ├── common-top.conf      # Universal top bar layout
@@ -1932,14 +2104,27 @@ SMART_COLOR_ACCENT=<span class="hljs-string">&quot;#845ef7&quot;</span></pre><h4
 <pre class="hljs"><span class="hljs-attr">include-file</span> = ~/.config/polybar/modules/audio.conf
 <span class="hljs-attr">include-file</span> = ~/.config/polybar/modules/bluetooth.conf
 <span class="hljs-attr">include-file</span> = ~/.config/polybar/modules/datetime.conf
-<span class="hljs-comment"># ... additional modules</span></pre><h3 id="3-bar-configurations-bars-">3. Bar Configurations (<code>bars/</code>)</h3>
+<span class="hljs-comment"># ... additional modules</span></pre><h3 id="3-bar-registry-bars-conf-">3. Bar Registry (<code>bars.conf</code>) ✨</h3>
+<p><strong>New centralized system</strong> that includes all bar configurations:</p>
+<pre class="hljs"><span class="hljs-comment">; ========================================</span>
+<span class="hljs-comment">; Polybar Bars Configuration</span>
+<span class="hljs-comment">; ========================================</span>
+
+<span class="hljs-comment">; Common bars (base configurations)</span>
+<span class="hljs-attr">include-file</span> = ~/.config/polybar/configs/default/bars/common-top.conf
+<span class="hljs-attr">include-file</span> = ~/.config/polybar/configs/default/bars/common-bottom.conf
+
+<span class="hljs-comment">; i3 Window Manager specific bars</span>
+<span class="hljs-attr">include-file</span> = ~/.config/polybar/configs/default/bars/i3-top.conf
+<span class="hljs-attr">include-file</span> = ~/.config/polybar/configs/default/bars/i3-top-multipart.conf
+<span class="hljs-attr">include-file</span> = ~/.config/polybar/configs/default/bars/i3-bottom.conf</pre><h3 id="4-bar-configurations-bars-">4. Bar Configurations (<code>bars/</code>)</h3>
 <p>Define specific bar layouts and module arrangements:</p>
 <ul>
 <li><strong>common-top.conf</strong>: Universal top bar for any window manager</li>
 <li><strong>common-bottom.conf</strong>: Universal bottom bar companion</li>
 <li><strong>i3-*.conf</strong>: i3 window manager specific configurations</li>
 </ul>
-<h3 id="4-module-definitions-modules-">4. Module Definitions (<code>modules/</code>)</h3>
+<h3 id="5-module-definitions-modules-">5. Module Definitions (<code>modules/</code>)</h3>
 <p>Individual module configurations grouped by functionality:</p>
 <ul>
 <li><strong>resources.conf</strong>: CPU, memory, battery, filesystem</li>
@@ -3012,6 +3197,8 @@ dots-smart-colors --<span class="hljs-built_in">export</span>                   
 dots-smart-colors --<span class="hljs-built_in">export</span> --format=eww       <span class="hljs-comment"># EWW SCSS</span>
 dots-smart-colors --<span class="hljs-built_in">export</span> --format=i3        <span class="hljs-comment"># i3 configuration</span></pre><p><strong>Key Features:</strong></p>
 <ul>
+<li><strong>🆕 Light/Dark Theme Detection</strong>: Automatically detects theme brightness and optimizes colors accordingly</li>
+<li><strong>🆕 Smart Foreground Optimization</strong>: Light themes get softer foreground colors for better readability</li>
 <li><strong>Theme-adaptive</strong>: Colors automatically adjust to any palette</li>
 <li><strong>Semantic mapping</strong>: Intelligent error/success/warning color selection</li>
 <li><strong>Multiple formats</strong>: Shell, Polybar, EWW, i3 export support</li>
