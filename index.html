@@ -1227,25 +1227,25 @@ client.urgent           <span class="hljs-comment">#b84b49  #b84b49  #b0d5d8  #b
 <span class="hljs-variable">$foreground</span>: <span class="hljs-number">#52758A</span>;  <span class="hljs-comment">// Optimized for light themes!</span>
 
 <span class="hljs-comment">// Smart semantic colors (theme-adaptive)</span>
-<span class="hljs-variable">$smart-error</span>: <span class="hljs-number">#b84b49</span>;
-<span class="hljs-variable">$smart-success</span>: <span class="hljs-number">#0abf66</span>;
-<span class="hljs-variable">$smart-warning</span>: <span class="hljs-number">#b8850f</span>;
-<span class="hljs-variable">$smart-info</span>: <span class="hljs-number">#0a94bd</span>;
-<span class="hljs-variable">$smart-accent</span>: <span class="hljs-number">#7e68a0</span>;</pre><p><strong>Usage</strong>: <code>@import &quot;smart-colors.scss&quot;;</code> in EWW stylesheets</p>
+<span class="hljs-variable">$error</span>: <span class="hljs-number">#b84b49</span>;
+<span class="hljs-variable">$success</span>: <span class="hljs-number">#0abf66</span>;
+<span class="hljs-variable">$warning</span>: <span class="hljs-number">#b8850f</span>;
+<span class="hljs-variable">$info</span>: <span class="hljs-number">#0a94bd</span>;
+<span class="hljs-variable">$accent</span>: <span class="hljs-number">#7e68a0</span>;</pre><p><strong>Usage</strong>: <code>@import &quot;smart-colors.scss&quot;;</code> in EWW stylesheets</p>
 <h4 id="3-colors-sh-shell-scripts">3. <strong><code>colors.sh</code></strong> - Shell Scripts</h4>
 <pre class="hljs"><span class="hljs-comment"># Shell variables for scripts</span>
-smart_color_error=<span class="hljs-string">&#x27;#b84b49&#x27;</span>
-smart_color_success=<span class="hljs-string">&#x27;#0abf66&#x27;</span>
-smart_color_warning=<span class="hljs-string">&#x27;#b8850f&#x27;</span>
-smart_color_info=<span class="hljs-string">&#x27;#0a94bd&#x27;</span>
-smart_color_accent=<span class="hljs-string">&#x27;#7e68a0&#x27;</span></pre><p><strong>Usage</strong>: <code>source ~/.cache/dots/smart-colors/colors.sh</code> in shell scripts</p>
+color_error=<span class="hljs-string">&#x27;#b84b49&#x27;</span>
+color_success=<span class="hljs-string">&#x27;#0abf66&#x27;</span>
+color_warning=<span class="hljs-string">&#x27;#b8850f&#x27;</span>
+color_info=<span class="hljs-string">&#x27;#0a94bd&#x27;</span>
+color_accent=<span class="hljs-string">&#x27;#7e68a0&#x27;</span></pre><p><strong>Usage</strong>: <code>source ~/.cache/dots/smart-colors/colors.sh</code> in shell scripts</p>
 <h4 id="4-colors-env-environment-variables">4. <strong><code>colors.env</code></strong> - Environment Variables</h4>
 <pre class="hljs"><span class="hljs-comment"># Export-ready environment variables</span>
-<span class="hljs-built_in">export</span> SMART_COLOR_ERROR=<span class="hljs-string">&#x27;#b84b49&#x27;</span>
-<span class="hljs-built_in">export</span> SMART_COLOR_SUCCESS=<span class="hljs-string">&#x27;#0abf66&#x27;</span>
-<span class="hljs-built_in">export</span> SMART_COLOR_WARNING=<span class="hljs-string">&#x27;#b8850f&#x27;</span>
-<span class="hljs-built_in">export</span> SMART_COLOR_INFO=<span class="hljs-string">&#x27;#0a94bd&#x27;</span>
-<span class="hljs-built_in">export</span> SMART_COLOR_ACCENT=<span class="hljs-string">&#x27;#7e68a0&#x27;</span></pre><p><strong>Usage</strong>: <code>source ~/.cache/dots/smart-colors/colors.env</code> to load into environment</p>
+<span class="hljs-built_in">export</span> COLOR_ERROR=<span class="hljs-string">&#x27;#b84b49&#x27;</span>
+<span class="hljs-built_in">export</span> COLOR_SUCCESS=<span class="hljs-string">&#x27;#0abf66&#x27;</span>
+<span class="hljs-built_in">export</span> COLOR_WARNING=<span class="hljs-string">&#x27;#b8850f&#x27;</span>
+<span class="hljs-built_in">export</span> COLOR_INFO=<span class="hljs-string">&#x27;#0a94bd&#x27;</span>
+<span class="hljs-built_in">export</span> COLOR_ACCENT=<span class="hljs-string">&#x27;#7e68a0&#x27;</span></pre><p><strong>Usage</strong>: <code>source ~/.cache/dots/smart-colors/colors.env</code> to load into environment</p>
 <h4 id="5-colors-polybar-conf-polybar-status-bar">5. <strong><code>colors-polybar.conf</code></strong> - Polybar Status Bar</h4>
 <pre class="hljs"><span class="hljs-section">[colors]</span>
 background = <span class="hljs-comment">#b0d5d8</span>
@@ -1339,7 +1339,7 @@ rm -rf ~/.cache/dots/smart-colors/</pre><hr>
 <p><strong>EWW Widgets:</strong></p>
 <ul>
 <li>Replaces pywal symlinks with smart-generated <code>colors.scss</code></li>
-<li>Includes semantic variables (<code>$smart-error</code>, <code>$smart-success</code>)</li>
+<li>Includes semantic variables (<code>$error</code>, <code>$success</code>)</li>
 <li>Maintains compatibility with existing configs</li>
 </ul>
 <p><strong>Polybar:</strong></p>
@@ -1370,22 +1370,22 @@ rm -rf ~/.cache/dots/smart-colors/</pre><hr>
 <pre class="hljs"><span class="hljs-keyword">@import</span> <span class="hljs-string">&quot;colors.scss&quot;</span>;
 
 <span class="hljs-selector-class">.error-button</span> {
-  <span class="hljs-attribute">background-color</span>: <span class="hljs-variable">$smart-error</span>; <span class="hljs-comment">// Always optimal error color</span>
+  <span class="hljs-attribute">background-color</span>: <span class="hljs-variable">$error</span>; <span class="hljs-comment">// Always optimal error color</span>
 }
 
 <span class="hljs-selector-class">.success-message</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-success</span>; <span class="hljs-comment">// Always optimal success color</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$success</span>; <span class="hljs-comment">// Always optimal success color</span>
 }
 
 <span class="hljs-selector-class">.info-text</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-info</span>; <span class="hljs-comment">// Always optimal info color</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$info</span>; <span class="hljs-comment">// Always optimal info color</span>
 }</pre><h3 id="shell-scripts">Shell Scripts</h3>
 <pre class="hljs"><span class="hljs-meta">#!/bin/bash</span>
 <span class="hljs-comment"># Load smart colors</span>
 <span class="hljs-built_in">eval</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(dots-smart-colors --export)</span>&quot;</span>
 
-<span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;\\033[<span class="hljs-variable">${SMART_COLOR_ERROR}</span>mError message\\033[0m&quot;</span>
-<span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;\\033[<span class="hljs-variable">${SMART_COLOR_SUCCESS}</span>mSuccess message\\033[0m&quot;</span></pre><h3 id="i3-configuration">i3 Configuration</h3>
+<span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;\\033[<span class="hljs-variable">${COLOR_ERROR}</span>mError message\\033[0m&quot;</span>
+<span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;\\033[<span class="hljs-variable">${COLOR_SUCCESS}</span>mSuccess message\\033[0m&quot;</span></pre><h3 id="i3-configuration">i3 Configuration</h3>
 <pre class="hljs"><span class="hljs-comment"># Include smart colors</span>
 include ~/.config/i3/colors-smart.conf
 
@@ -2060,24 +2060,24 @@ The modular configuration structure allows you to easily enable/disable modules 
 <span class="hljs-attr">urgent</span> = <span class="hljs-variable">${xrdb:color9}</span>
 
 <span class="hljs-comment">; Smart theme-adaptive colors (set by dots-smart-colors)</span>
-<span class="hljs-attr">blue</span> = <span class="hljs-variable">${env:SMART_COLOR_BLUE:${xrdb:color12}</span>}
-<span class="hljs-attr">green</span> = <span class="hljs-variable">${env:SMART_COLOR_GREEN:${xrdb:color10}</span>}
-<span class="hljs-attr">orange</span> = <span class="hljs-variable">${env:SMART_COLOR_ORANGE:${xrdb:color11}</span>}
-<span class="hljs-attr">purple</span> = <span class="hljs-variable">${env:SMART_COLOR_MAGENTA:${xrdb:color13}</span>}
+<span class="hljs-attr">blue</span> = <span class="hljs-variable">${env:COLOR_BLUE:${xrdb:color12}</span>}
+<span class="hljs-attr">green</span> = <span class="hljs-variable">${env:COLOR_GREEN:${xrdb:color10}</span>}
+<span class="hljs-attr">orange</span> = <span class="hljs-variable">${env:COLOR_ORANGE:${xrdb:color11}</span>}
+<span class="hljs-attr">purple</span> = <span class="hljs-variable">${env:COLOR_MAGENTA:${xrdb:color13}</span>}
 
 <span class="hljs-comment">; Semantic colors for better theming (using smart colors)</span>
-<span class="hljs-attr">success</span> = <span class="hljs-variable">${env:SMART_COLOR_SUCCESS:${xrdb:color10}</span>}
-<span class="hljs-attr">warning</span> = <span class="hljs-variable">${env:SMART_COLOR_WARNING:${xrdb:color11}</span>}
-<span class="hljs-attr">error</span> = <span class="hljs-variable">${env:SMART_COLOR_ERROR:${xrdb:color9}</span>}
-<span class="hljs-attr">info</span> = <span class="hljs-variable">${env:SMART_COLOR_INFO:${xrdb:color12}</span>}
-<span class="hljs-attr">accent</span> = <span class="hljs-variable">${env:SMART_COLOR_ACCENT:${xrdb:color14}</span>}</pre><h4 id="color-environment-variables">Color Environment Variables</h4>
+<span class="hljs-attr">success</span> = <span class="hljs-variable">${env:COLOR_SUCCESS:${xrdb:color10}</span>}
+<span class="hljs-attr">warning</span> = <span class="hljs-variable">${env:COLOR_WARNING:${xrdb:color11}</span>}
+<span class="hljs-attr">error</span> = <span class="hljs-variable">${env:COLOR_ERROR:${xrdb:color9}</span>}
+<span class="hljs-attr">info</span> = <span class="hljs-variable">${env:COLOR_INFO:${xrdb:color12}</span>}
+<span class="hljs-attr">accent</span> = <span class="hljs-variable">${env:COLOR_ACCENT:${xrdb:color14}</span>}</pre><h4 id="color-environment-variables">Color Environment Variables</h4>
 <p>Smart colors are automatically exported to environment variables:</p>
 <pre class="hljs"><span class="hljs-comment"># Automatically set by polybar profile initialization</span>
-SMART_COLOR_ERROR=<span class="hljs-string">&quot;#ff6b6b&quot;</span>
-SMART_COLOR_SUCCESS=<span class="hljs-string">&quot;#51cf66&quot;</span>
-SMART_COLOR_WARNING=<span class="hljs-string">&quot;#ffd43b&quot;</span>
-SMART_COLOR_INFO=<span class="hljs-string">&quot;#339af0&quot;</span>
-SMART_COLOR_ACCENT=<span class="hljs-string">&quot;#845ef7&quot;</span></pre><h4 id="semantic-color-usage">Semantic Color Usage</h4>
+COLOR_ERROR=<span class="hljs-string">&quot;#ff6b6b&quot;</span>
+COLOR_SUCCESS=<span class="hljs-string">&quot;#51cf66&quot;</span>
+COLOR_WARNING=<span class="hljs-string">&quot;#ffd43b&quot;</span>
+COLOR_INFO=<span class="hljs-string">&quot;#339af0&quot;</span>
+COLOR_ACCENT=<span class="hljs-string">&quot;#845ef7&quot;</span></pre><h4 id="semantic-color-usage">Semantic Color Usage</h4>
 <p>Use semantic colors in your modules for better theme adaptation:</p>
 <pre class="hljs"><span class="hljs-section">[module/cpu]</span>
 <span class="hljs-attr">format-prefix-foreground</span> = <span class="hljs-variable">${colors.accent}</span>    <span class="hljs-comment"># Important/active elements</span>
@@ -2892,41 +2892,41 @@ dots eww-dashboard</pre><h3 id="dashboard-layout">Dashboard Layout</h3>
 <span class="hljs-comment">// ... all Base16 colors</span>
 
 <span class="hljs-comment">/* Smart semantic colors (theme-adaptive) */</span>
-<span class="hljs-variable">$smart-error</span>: <span class="hljs-number">#f38ba8</span>; <span class="hljs-comment">// Always optimal error color</span>
-<span class="hljs-variable">$smart-warning</span>: <span class="hljs-number">#f9e2af</span>; <span class="hljs-comment">// Always optimal warning color</span>
-<span class="hljs-variable">$smart-success</span>: <span class="hljs-number">#a6e3a1</span>; <span class="hljs-comment">// Always optimal success color</span>
-<span class="hljs-variable">$smart-info</span>: <span class="hljs-number">#89b4fa</span>; <span class="hljs-comment">// Always optimal info color</span>
-<span class="hljs-variable">$smart-accent</span>: <span class="hljs-number">#cba6f7</span>; <span class="hljs-comment">// Always optimal accent color</span>
+<span class="hljs-variable">$error</span>: <span class="hljs-number">#f38ba8</span>; <span class="hljs-comment">// Always optimal error color</span>
+<span class="hljs-variable">$warning</span>: <span class="hljs-number">#f9e2af</span>; <span class="hljs-comment">// Always optimal warning color</span>
+<span class="hljs-variable">$success</span>: <span class="hljs-number">#a6e3a1</span>; <span class="hljs-comment">// Always optimal success color</span>
+<span class="hljs-variable">$info</span>: <span class="hljs-number">#89b4fa</span>; <span class="hljs-comment">// Always optimal info color</span>
+<span class="hljs-variable">$accent</span>: <span class="hljs-number">#cba6f7</span>; <span class="hljs-comment">// Always optimal accent color</span>
 
 <span class="hljs-comment">/* Smart basic colors */</span>
-<span class="hljs-variable">$smart-red</span>: <span class="hljs-number">#f38ba8</span>;
-<span class="hljs-variable">$smart-green</span>: <span class="hljs-number">#a6e3a1</span>;
-<span class="hljs-variable">$smart-blue</span>: <span class="hljs-number">#89b4fa</span>;
+<span class="hljs-variable">$red</span>: <span class="hljs-number">#f38ba8</span>;
+<span class="hljs-variable">$green</span>: <span class="hljs-number">#a6e3a1</span>;
+<span class="hljs-variable">$blue</span>: <span class="hljs-number">#89b4fa</span>;
 <span class="hljs-comment">// ... additional smart colors</span></pre><h3 id="using-smart-colors-in-widgets">Using Smart Colors in Widgets</h3>
 <p><strong>Power Menu Buttons:</strong></p>
 <pre class="hljs"><span class="hljs-selector-class">.btn_lock</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-info</span>; <span class="hljs-comment">// Always readable blue-ish</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$info</span>; <span class="hljs-comment">// Always readable blue-ish</span>
 }
 <span class="hljs-selector-class">.btn_logout</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-warning</span>; <span class="hljs-comment">// Always attention-getting orange-ish</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$warning</span>; <span class="hljs-comment">// Always attention-getting orange-ish</span>
 }
 <span class="hljs-selector-class">.btn_reboot</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-accent</span>; <span class="hljs-comment">// Always distinct accent color</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$accent</span>; <span class="hljs-comment">// Always distinct accent color</span>
 }
 <span class="hljs-selector-class">.btn_poweroff</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-error</span>; <span class="hljs-comment">// Always alarming red-ish</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$error</span>; <span class="hljs-comment">// Always alarming red-ish</span>
 }</pre><p><strong>Dashboard Elements:</strong></p>
 <pre class="hljs"><span class="hljs-selector-class">.cpu-usage</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-accent</span>; <span class="hljs-comment">// Important system info</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$accent</span>; <span class="hljs-comment">// Important system info</span>
 }
 <span class="hljs-selector-class">.memory-critical</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-error</span>; <span class="hljs-comment">// Critical alerts</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$error</span>; <span class="hljs-comment">// Critical alerts</span>
 }
 <span class="hljs-selector-class">.battery-good</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-success</span>; <span class="hljs-comment">// Positive status</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$success</span>; <span class="hljs-comment">// Positive status</span>
 }
 <span class="hljs-selector-class">.network-info</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-info</span>; <span class="hljs-comment">// Neutral information</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$info</span>; <span class="hljs-comment">// Neutral information</span>
 }</pre><h3 id="color-sources-and-priority">Color Sources and Priority</h3>
 <ol>
 <li><strong>Smart Colors</strong> (Primary): Generated by <code>dots-smart-colors</code></li>
@@ -2970,16 +2970,16 @@ wpg → wal-reload → pywal → smart-colors → EWW color generation → EWW r
 <h3 id="best-practices">Best Practices</h3>
 <p><strong>Use semantic colors for meaning:</strong></p>
 <pre class="hljs"><span class="hljs-comment">// ✅ Good: Semantic meaning</span>
-<span class="hljs-selector-class">.error-message</span> { <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-error</span>; }
-<span class="hljs-selector-class">.success-badge</span> { <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-success</span>; }
-<span class="hljs-selector-class">.info-text</span> { <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-info</span>; }
+<span class="hljs-selector-class">.error-message</span> { <span class="hljs-attribute">color</span>: <span class="hljs-variable">$error</span>; }
+<span class="hljs-selector-class">.success-badge</span> { <span class="hljs-attribute">color</span>: <span class="hljs-variable">$success</span>; }
+<span class="hljs-selector-class">.info-text</span> { <span class="hljs-attribute">color</span>: <span class="hljs-variable">$info</span>; }
 
 <span class="hljs-comment">// ❌ Avoid: Hardcoded colors</span>
 <span class="hljs-selector-class">.error-message</span> { <span class="hljs-attribute">color</span>: <span class="hljs-number">#ff0000</span>; }
 <span class="hljs-selector-class">.success-badge</span> { <span class="hljs-attribute">color</span>: <span class="hljs-number">#00ff00</span>; }</pre><p><strong>Fallback to Base16 when needed:</strong></p>
 <pre class="hljs"><span class="hljs-comment">// Smart color with Base16 fallback</span>
 <span class="hljs-selector-class">.custom-element</span> {
-  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$smart-accent</span>;
+  <span class="hljs-attribute">color</span>: <span class="hljs-variable">$accent</span>;
   <span class="hljs-attribute">background-color</span>: <span class="hljs-variable">$color1</span>; <span class="hljs-comment">// Base16 fallback</span>
 }</pre><h3 id="color-sources">Color Sources</h3>
 <p>Colors are sourced from:</p>
@@ -3203,6 +3203,7 @@ dots-smart-colors --<span class="hljs-built_in">export</span> --format=i3       
 <li><strong>Semantic mapping</strong>: Intelligent error/success/warning color selection</li>
 <li><strong>Multiple formats</strong>: Shell, Polybar, EWW, i3 export support</li>
 <li><strong>Fallback system</strong>: Always provides valid colors</li>
+<li><strong>Simple variables</strong>: Clean COLOR_ERROR, COLOR_SUCCESS format (no SMART_ prefix)</li>
 </ul>
 <h3 id="enhanced-dots-wal-reload">Enhanced <code>dots-wal-reload</code></h3>
 <p><strong>Purpose</strong>: Complete theme refresh with smart color integration.</p>
