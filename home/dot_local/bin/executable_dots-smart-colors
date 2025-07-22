@@ -137,13 +137,13 @@ generate_cache() {
         # Get the color using the normal calculation (bypass cache)
         CACHE_FILE="/dev/null"  # Temporarily disable cache reading
 
-        for format in "${formats[@]}"; do
-            # Calculate color with current format
-            format="$format" verbose="" # Disable verbose for cache generation
-            local color=$(find_best_color_for_concept "$concept" 2>/dev/null)
+        for format_type in "${formats[@]}"; do
+            # Calculate color with current format (use local variable to avoid conflicts)
+            local color
+            color=$(format="$format_type" find_best_color_for_concept "$concept" 2>/dev/null)
 
             if [[ -n "$color" ]]; then
-                echo "${concept}:${format}:${color}" >> "$temp_cache"
+                echo "${concept}:${format_type}:${color}" >> "$temp_cache"
             fi
         done
 
@@ -1163,7 +1163,11 @@ main() {
         show_info "Use 'dots-smart-colors --colors' to see full visual palette"
         show_info "Available concepts: error, warning, success, info, accent, red, green, blue, yellow, cyan, magenta, orange, pink, brown, white, black, gray"
     fi
+    
+    # Ensure successful exit
+    return 0
 }
 
 # Run main function
 main "$@"
+exit 0
