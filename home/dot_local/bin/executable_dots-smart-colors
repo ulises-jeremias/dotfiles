@@ -3,8 +3,6 @@
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
-## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
-##
 ## Smart color palette analyzer and theme-adaptive color selector
 ## Analyzes your current X resources color palette and suggests the best colors
 ## for different semantic concepts (error, warning, success, info, etc.)
@@ -19,590 +17,82 @@
 ##     -e, --export                          Export color variables for shell/polybar.
 ##         --concept=CONCEPT                 Get best color for specific concept (error|warning|success|info|accent|red|green|blue|yellow|cyan|magenta|orange|pink|brown|white|black|gray).
 ##         --format=FORMAT                   Output format: hex, rgb, polybar, eww, scss, i3, files (default: hex).
-##         --cache                           Force regenerate color cache and generate all color files.
 ##         --generate                        Generate all smart color files in ~/.cache/dots/smart-colors/.
 ##     -v, --verbose                         Show detailed analysis.
-##         --distance-algorithm=ALGO         Color distance algorithm: euclidean, cie76, simple (default: euclidean).
 
-source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit 1
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-BOLD='\033[1m'
-NC='\033[0m' # No Color
+# Output colors
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly CYAN='\033[0;36m'
+readonly BOLD='\033[1m'
+readonly NC='\033[0m'
 
-# Cache configuration
-CACHE_DIR="${HOME}/.cache/dots"
-CACHE_FILE="${CACHE_DIR}/smart-colors.cache"
-CACHE_TIMESTAMP_FILE="${CACHE_DIR}/smart-colors.timestamp"
-
-# Smart colors output files (centralized like wal)
-SMART_COLORS_DIR="${CACHE_DIR}/smart-colors"
-I3_COLORS_FILE="${SMART_COLORS_DIR}/colors-i3.conf"
-EWW_COLORS_FILE="${SMART_COLORS_DIR}/colors-eww.scss"
-SHELL_COLORS_FILE="${SMART_COLORS_DIR}/colors.sh"
-ENV_COLORS_FILE="${SMART_COLORS_DIR}/colors.env"
+# File paths
+readonly CACHE_DIR="${HOME}/.cache/dots"
+readonly SMART_COLORS_DIR="${CACHE_DIR}/smart-colors"
+readonly I3_COLORS_FILE="${SMART_COLORS_DIR}/colors-i3.conf"
+readonly EWW_COLORS_FILE="${SMART_COLORS_DIR}/colors-eww.scss"
+readonly SHELL_COLORS_FILE="${SMART_COLORS_DIR}/colors.sh"
+readonly ENV_COLORS_FILE="${SMART_COLORS_DIR}/colors.env"
 
 # Status functions
-show_status() {
-    echo -e "${CYAN}🎨${NC} $1"
-}
+show_status() { echo -e "${CYAN}🎨${NC} $1"; }
+show_success() { echo -e "${GREEN}✅${NC} $1"; }
+show_error() { echo -e "${RED}❌${NC} $1"; }
+show_info() { echo -e "${BLUE}ℹ️${NC} $1"; }
 
-show_success() {
-    echo -e "${GREEN}✅${NC} $1"
-}
-
-show_error() {
-    echo -e "${RED}❌${NC} $1"
-}
-
-show_warning() {
-    echo -e "${YELLOW}⚠️${NC} $1"
-}
-
-show_info() {
-    echo -e "${BLUE}ℹ️${NC} $1"
-}
-
-# Check if cache is valid (newer than wal colors)
-is_cache_valid() {
-    local wal_colors_file="${HOME}/.cache/wal/colors"
-
-    # Check if cache files exist
-    [[ -f "$CACHE_FILE" && -f "$CACHE_TIMESTAMP_FILE" ]] || return 1
-
-    # Check if wal colors exist (if wal is being used)
-    if [[ -f "$wal_colors_file" ]]; then
-        # Compare timestamps with wal
-        local cache_time=$(stat -c %Y "$CACHE_TIMESTAMP_FILE" 2>/dev/null || echo "0")
-        local wal_time=$(stat -c %Y "$wal_colors_file" 2>/dev/null || echo "0")
-
-        [[ "$cache_time" -ge "$wal_time" ]] || return 1
-    fi
-
-    # Check if smart color files exist and are newer than cache
-    [[ -f "$I3_COLORS_FILE" && -f "$EWW_COLORS_FILE" ]] || return 1
-
-    return 0
-}
-
-# Read color from cache
-read_from_cache() {
-    local concept="$1"
-    local format="${2:-hex}"
-
-    if [[ ! -f "$CACHE_FILE" ]]; then
-        return 1
-    fi
-
-    # Cache format: concept:format:color
-    local cache_key="${concept}:${format}"
-    local cached_color=$(grep "^${cache_key}:" "$CACHE_FILE" 2>/dev/null | cut -d: -f3)
-
-    if [[ -n "$cached_color" ]]; then
-        echo "$cached_color"
-        return 0
-    fi
-
-    return 1
-}
-
-# Generate complete cache for all concepts and formats
-generate_cache() {
-    show_status "Generating smart colors cache..."
-
-    # Ensure cache directory exists
-    mkdir -p "$CACHE_DIR"
-
-    # Temporarily disable cache to force fresh calculation
-    local temp_cache="$CACHE_FILE.tmp"
-    > "$temp_cache"
-
-    # All concepts to cache
-    local concepts=("error" "warning" "success" "info" "accent" "red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink" "brown" "white" "black" "gray")
-    local formats=("hex" "rgb")
-
-    local total_concepts=${#concepts[@]}
-    local current=0
-
-    for concept in "${concepts[@]}"; do
-        ((current++))
-        [[ -n "$verbose" ]] && show_status "Caching $concept ($current/$total_concepts)..."
-
-        # Get the color using the normal calculation (bypass cache)
-        CACHE_FILE="/dev/null"  # Temporarily disable cache reading
-
-        for format_type in "${formats[@]}"; do
-            # Calculate color with current format (use local variable to avoid conflicts)
-            local color
-            color=$(format="$format_type" find_best_color_for_concept "$concept" 2>/dev/null)
-
-            if [[ -n "$color" ]]; then
-                echo "${concept}:${format_type}:${color}" >> "$temp_cache"
-            fi
-        done
-
-        # Restore cache file
-        CACHE_FILE="${CACHE_DIR}/smart-colors.cache"
-    done
-
-    # Move temp cache to final location
-    mv "$temp_cache" "$CACHE_FILE"
-
-    # Update timestamp
-    touch "$CACHE_TIMESTAMP_FILE"
-
-    show_success "Smart colors cache generated (${#concepts[@]} concepts)"
-}
-
-# Force cache regeneration
-regenerate_cache() {
-    show_status "Forcing cache regeneration..."
-    rm -f "$CACHE_FILE" "$CACHE_TIMESTAMP_FILE"
-    generate_cache
-}
-
-# Convert hex color to RGB
+# Convert hex to RGB values
 hex_to_rgb() {
-    local hex="$1"
-    # Remove # if present
-    hex="${hex#\#}"
-
-    # Convert to RGB
-    local r=$((16#${hex:0:2}))
-    local g=$((16#${hex:2:2}))
-    local b=$((16#${hex:4:2}))
-
-    echo "$r $g $b"
+    local hex="${1#\#}"
+    echo $((16#${hex:0:2})) $((16#${hex:2:2})) $((16#${hex:4:2}))
 }
 
-# Convert hex color to ANSI escape code for background
+# Convert hex to ANSI background color for terminal display
 hex_to_ansi_bg() {
-    local hex="$1"
-    local rgb=$(hex_to_rgb "$hex")
-    local r g b
-    read -r r g b <<< "$rgb"
-
-    # Return ANSI 24-bit color escape code for background
-    echo "\033[48;2;${r};${g};${b}m"
+    local rgb; rgb=$(hex_to_rgb "$1")
+    echo "\033[48;2;${rgb// /;}m"
 }
 
-# Show color as a visual block in terminal
+# Show color block in terminal
 show_color_block() {
-    local hex="$1"
-    local label="$2"
-    local width="${3:-8}"
-
-    local ansi_bg=$(hex_to_ansi_bg "$hex")
-    local reset="\033[0m"
-
-    # Create color block with spaces
-    local block=""
-    for ((i=0; i<width; i++)); do
-        block+=" "
-    done
-
-    # Print color block with label
-    printf "${ansi_bg}${block}${reset} %-10s %s\n" "$label" "$hex"
+    local hex="$1" label="$2" width="${3:-8}"
+    local ansi_bg; ansi_bg=$(hex_to_ansi_bg "$hex")
+    local spaces; printf -v spaces "%*s" "$width" ""
+    printf "${ansi_bg}${spaces}${NC} %-10s %s\n" "$label" "$hex"
 }
 
-# Show palette as visual color blocks
-show_palette_visual() {
-    echo -e "${BOLD}Visual Color Palette:${NC}"
-    echo
-
-    # Show all base16 colors in a nice layout
-    echo "Base16 Colors:"
-    for i in {0..15}; do
-        local color=$(xrdb -get "color$i" 2>/dev/null)
-        if [[ -n "$color" ]]; then
-            show_color_block "$color" "color$i"
-        fi
-    done
-
-    echo
-    echo "Special Colors:"
-    local bg=$(xrdb -get "background" 2>/dev/null)
-    local fg=$(xrdb -get "foreground" 2>/dev/null)
-
-    [[ -n "$bg" ]] && show_color_block "$bg" "background"
-    [[ -n "$fg" ]] && show_color_block "$fg" "foreground"
-
-    echo
-    echo "Compact Palette View:"
-    # Show all colors in a compact horizontal layout
-    local color_line=""
-    local reset="\033[0m"
-
-    for i in {0..15}; do
-        local color=$(xrdb -get "color$i" 2>/dev/null)
-        if [[ -n "$color" ]]; then
-            local ansi_bg=$(hex_to_ansi_bg "$color")
-            color_line+="${ansi_bg}  ${reset}"
-        fi
-    done
-
-    echo -e "$color_line"
-    echo
-}
-
-
-
-# Calculate euclidean distance between two RGB colors
-color_distance_euclidean() {
-    local r1=$1 g1=$2 b1=$3
-    local r2=$4 g2=$5 b2=$6
-
-    local dr=$((r1 - r2))
-    local dg=$((g1 - g2))
-    local db=$((b1 - b2))
-
-    # Euclidean distance formula: sqrt((r1-r2)² + (g1-g2)² + (b1-b2)²)
-    local distance_squared=$((dr*dr + dg*dg + db*db))
-    echo "$distance_squared"
-}
-
-# Calculate color brightness (perceived luminance)
-color_brightness() {
-    local r=$1 g=$2 b=$3
-    # Using ITU-R BT.709 formula for perceived brightness
-    local brightness=$(echo "scale=2; 0.2126*$r + 0.7152*$g + 0.0722*$b" | bc)
-    echo "$brightness"
-}
-
-# Get color temperature (warm vs cool)
-color_temperature() {
-    local r=$1 g=$2 b=$3
-    # Simple temperature calculation: red-heavy = warm, blue-heavy = cool
-    local temp_score=$(echo "scale=2; ($r - $b) / 255" | bc)
-    echo "$temp_score"
-}
-
-# Get all available colors from xrdb
-get_xrdb_colors() {
-    declare -A colors
-
-    # Get standard colors 0-15
-    for i in {0..15}; do
-        local color=$(xrdb -get "color$i" 2>/dev/null)
-        if [[ -n "$color" ]]; then
-            colors["color$i"]="$color"
-        fi
-    done
-
-    # Get special colors
-    local bg=$(xrdb -get "background" 2>/dev/null)
-    local fg=$(xrdb -get "foreground" 2>/dev/null)
-
-    [[ -n "$bg" ]] && colors["background"]="$bg"
-    [[ -n "$fg" ]] && colors["foreground"]="$fg"
-
-    # Return as key=value pairs
-    for key in "${!colors[@]}"; do
-        echo "$key=${colors[$key]}"
-    done
-}
-
-# Define reference colors for each concept (ideal base colors)
-get_reference_color() {
-    local concept="$1"
-
-    case "$concept" in
-        "error"|"danger"|"red")
-            echo "#ff0000"  # Pure red
-            ;;
-        "warning"|"caution"|"orange")
-            echo "#ff9900"  # Orange
-            ;;
-        "yellow")
-            echo "#ffff00"  # Pure yellow
-            ;;
-        "success"|"ok"|"green")
-            echo "#00ff00"  # Pure green
-            ;;
-        "info"|"neutral"|"blue")
-            echo "#0066ff"  # Bright blue
-            ;;
-        "cyan")
-            echo "#00ffff"  # Pure cyan
-            ;;
-        "magenta"|"purple")
-            echo "#ff00ff"  # Pure magenta
-            ;;
-        "pink")
-            echo "#ff77aa"  # Pink
-            ;;
-        "accent"|"highlight")
-            echo "#8800ff"  # Purple/Violet
-            ;;
-        "brown")
-            echo "#8b4513"  # Saddle brown
-            ;;
-        "white")
-            echo "#ffffff"  # Pure white
-            ;;
-        "black")
-            echo "#000000"  # Pure black
-            ;;
-        "gray"|"grey")
-            echo "#808080"  # Gray
-            ;;
-        *)
-            echo "#ff0000"  # Default to red
-            ;;
-    esac
-}
-
-
-
-# Simple semantic color generation: fixed references + palette harmonization
-get_semantic_color_from_palette() {
-    local concept="$1"
-
-    # Define semantically correct reference colors (always maintain identity)
-    local reference_color=""
-    case "$concept" in
-        "error"|"red"|"danger")
-            reference_color="#cc4444"  # Always reddish
-            ;;
-        "warning"|"orange"|"caution")
-            reference_color="#cc8800"  # Always orange/yellow
-            ;;
-        "success"|"green"|"ok")
-            reference_color="#669944"  # Always greenish
-            ;;
-        "info"|"blue"|"neutral")
-            reference_color="#4488cc"  # Always bluish
-            ;;
-        "accent"|"highlight")
-            reference_color="#8866aa"  # Always purple/distinctive
-            ;;
-        "cyan")
-            reference_color="#4499aa"  # Always cyan
-            ;;
-        "yellow")
-            reference_color="#cccc44"  # Always yellow
-            ;;
-        "magenta"|"purple")
-            reference_color="#cc66aa"  # Always purple/magenta
-            ;;
-        "pink")
-            reference_color="#dd99bb"  # Always pink
-            ;;
-        "brown")
-            reference_color="#996633"  # Always brown
-            ;;
-        *)
-            reference_color="#888888"  # Neutral gray
-            ;;
-    esac
-
-    # Harmonize the reference color with current palette
-    local palette_average=$(get_palette_average)
-    local harmonized=$(blend_colors "$reference_color" "$palette_average" 15)
-
-    echo "${harmonized:-$reference_color}"
-}
-
-
-
-# Fast lookup table for color adaptation
-get_fast_adapted_color() {
-    local concept="$1"
-    local palette_has_color="$2"  # "red", "blue", etc. from simple hue check
-
-        # Quick adaptation table based on palette dominant color
-    case "$concept|$palette_has_color" in
-        # ERROR/RED concept
-        "error|red"|"red|red") echo "#ff0000" ;;
-        "error|orange"|"red|orange") echo "#ff3300" ;;
-        "error|pink"|"red|pink") echo "#ff6666" ;;
-        "error|purple"|"red|purple") echo "#ff4488" ;;
-        "error|*") echo "#cc4444" ;;
-
-        # WARNING/ORANGE concept
-        "warning|orange"|"orange|orange") echo "#ff9900" ;;
-        "warning|yellow"|"orange|yellow") echo "#ffcc00" ;;
-        "warning|red"|"orange|red") echo "#ff6600" ;;
-        "warning|pink"|"orange|pink") echo "#ff8844" ;;
-        "warning|*") echo "#cc8800" ;;
-
-        # SUCCESS/GREEN concept
-        "success|green"|"green|green") echo "#00ff00" ;;
-        "success|cyan"|"green|cyan") echo "#00cc66" ;;
-        "success|blue"|"green|blue") echo "#0099aa" ;;
-        "success|orange"|"green|orange") echo "#88cc44" ;;
-        "success|*") echo "#669944" ;;
-
-        # INFO/BLUE concept
-        "info|blue"|"blue|blue") echo "#0066ff" ;;
-        "info|cyan"|"blue|cyan") echo "#0099cc" ;;
-        "info|purple"|"blue|purple") echo "#6666cc" ;;
-        "info|orange"|"blue|orange") echo "#4488cc" ;;
-        "info|*") echo "#4488cc" ;;
-
-        # ACCENT concept
-        "accent|purple"|"highlight|purple") echo "#aa66ff" ;;
-        "accent|pink"|"highlight|pink") echo "#ff66aa" ;;
-        "accent|orange"|"highlight|orange") echo "#ff8833" ;;
-        "accent|*") echo "#8866aa" ;;
-
-        # BASIC COLORS
-        "yellow|yellow") echo "#ffff00" ;;
-        "yellow|orange") echo "#ffcc00" ;;
-        "yellow|red") echo "#ffaa00" ;;
-        "yellow|*") echo "#cccc44" ;;
-
-        "cyan|cyan") echo "#00ffff" ;;
-        "cyan|blue") echo "#0099cc" ;;
-        "cyan|green") echo "#00ccaa" ;;
-        "cyan|*") echo "#4499aa" ;;
-
-        "magenta|purple"|"purple|purple") echo "#ff00ff" ;;
-        "magenta|pink"|"purple|pink") echo "#ff66cc" ;;
-        "magenta|orange"|"purple|orange") echo "#ff6699" ;;
-        "magenta|*") echo "#cc66aa" ;;
-
-        "pink|pink") echo "#ff88cc" ;;
-        "pink|purple") echo "#ff66aa" ;;
-        "pink|orange") echo "#ffaa88" ;;
-        "pink|red") echo "#ff8899" ;;
-        "pink|*") echo "#dd99bb" ;;
-
-        "brown|red") echo "#aa4422" ;;
-        "brown|orange") echo "#cc6633" ;;
-        "brown|*") echo "#996633" ;;
-
-                        *)
-            # Semantic fallback: get best color for concept from palette analysis
-            get_semantic_color_from_palette "$concept"
-            ;;
-    esac
-}
-
-# Calculate palette average
-get_palette_average() {
-    local total_r=0 total_g=0 total_b=0
-    local color_count=0
-
-    # Sample key colors from palette
-    for i in {1..14}; do
-        local color=$(xrdb -get "color$i" 2>/dev/null)
-        if [[ -n "$color" ]]; then
-            local hex="${color#\#}"
-            local r=$((16#${hex:0:2}))
-            local g=$((16#${hex:2:2}))
-            local b=$((16#${hex:4:2}))
-
-            total_r=$((total_r + r))
-            total_g=$((total_g + g))
-            total_b=$((total_b + b))
-            ((color_count++))
-        fi
-    done
-
-    if [[ $color_count -gt 0 ]]; then
-        local avg_r=$((total_r / color_count))
-        local avg_g=$((total_g / color_count))
-        local avg_b=$((total_b / color_count))
-        printf "#%02x%02x%02x" "$avg_r" "$avg_g" "$avg_b"
-    else
-        echo "#808080"  # Fallback gray
-    fi
-}
-
-# Fast color blending (no float arithmetic)
-blend_colors() {
-    local color1="$1"    # Base color (from lookup)
-    local color2="$2"    # Palette average
-    local blend_percent="$3"  # 0-100, how much of color2 to mix in
-
-    # Extract RGB from both colors
-    local hex1="${color1#\#}"
-    local r1=$((16#${hex1:0:2}))
-    local g1=$((16#${hex1:2:2}))
-    local b1=$((16#${hex1:4:2}))
-
-    local hex2="${color2#\#}"
-    local r2=$((16#${hex2:0:2}))
-    local g2=$((16#${hex2:2:2}))
-    local b2=$((16#${hex2:4:2}))
-
-    # Simple linear interpolation
-    local inv_percent=$((100 - blend_percent))
-    local result_r=$(((r1 * inv_percent + r2 * blend_percent) / 100))
-    local result_g=$(((g1 * inv_percent + g2 * blend_percent) / 100))
-    local result_b=$(((b1 * inv_percent + b2 * blend_percent) / 100))
-
-    # Clamp to 0-255 range
-    if [[ $result_r -gt 255 ]]; then result_r=255; elif [[ $result_r -lt 0 ]]; then result_r=0; fi
-    if [[ $result_g -gt 255 ]]; then result_g=255; elif [[ $result_g -lt 0 ]]; then result_g=0; fi
-    if [[ $result_b -gt 255 ]]; then result_b=255; elif [[ $result_b -lt 0 ]]; then result_b=0; fi
-
-    printf "#%02x%02x%02x" "$result_r" "$result_g" "$result_b"
-}
-
-# Fast dominant color detection (no HSL conversion needed)
+# Detect palette's dominant color tendency
 get_palette_dominant_color() {
-    local brightest_color=""
-    local brightest_value=0
+    local brightest_color="" brightest_value=0
 
     # Check bright colors (9-14) for dominant hue
     for i in {9..14}; do
-        local color=$(xrdb -get "color$i" 2>/dev/null)
-        if [[ -n "$color" ]]; then
-            # Quick RGB extraction
-            local hex="${color#\#}"
-            local r=$((16#${hex:0:2}))
-            local g=$((16#${hex:2:2}))
-            local b=$((16#${hex:4:2}))
+        local color; color=$(xrdb -get "color$i" 2>/dev/null) || continue
+        local hex="${color#\#}"
+        local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+        local brightness=$((r + g + b))
 
-            # Simple brightness
-            local brightness=$((r + g + b))
-            if [[ $brightness -gt $brightest_value ]]; then
-                brightest_value=$brightness
-                brightest_color="$color"
-            fi
+        if [[ $brightness -gt $brightest_value ]]; then
+            brightest_value=$brightness
+            brightest_color="$color"
         fi
     done
 
-    # Quick hue classification without HSL conversion
+    # Classify hue based on RGB dominance
     if [[ -n "$brightest_color" ]]; then
         local hex="${brightest_color#\#}"
-        local r=$((16#${hex:0:2}))
-        local g=$((16#${hex:2:2}))
-        local b=$((16#${hex:4:2}))
+        local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
 
-        # Simple hue detection based on RGB dominance
         if [[ $r -gt $g && $r -gt $b ]]; then
-            if [[ $g -gt 100 ]]; then
-                echo "orange"
-            elif [[ $b -gt 100 ]]; then
-                echo "purple"
-            else
-                echo "red"
-            fi
+            [[ $g -gt 100 ]] && echo "orange" || [[ $b -gt 100 ]] && echo "purple" || echo "red"
         elif [[ $g -gt $r && $g -gt $b ]]; then
-            if [[ $r -gt 100 ]]; then
-                echo "yellow"
-            elif [[ $b -gt 100 ]]; then
-                echo "cyan"
-            else
-                echo "green"
-            fi
+            [[ $r -gt 100 ]] && echo "yellow" || [[ $b -gt 100 ]] && echo "cyan" || echo "green"
         elif [[ $b -gt $r && $b -gt $g ]]; then
-            if [[ $r -gt 100 ]]; then
-                echo "purple"
-            elif [[ $g -gt 100 ]]; then
-                echo "cyan"
-            else
-                echo "blue"
-            fi
+            [[ $r -gt 100 ]] && echo "purple" || [[ $g -gt 100 ]] && echo "cyan" || echo "blue"
         else
             echo "gray"
         fi
@@ -611,314 +101,227 @@ get_palette_dominant_color() {
     fi
 }
 
-# Find best color for a specific concept (FAST VERSION with CACHE)
+# Get palette average color for harmonization
+get_palette_average() {
+    local total_r=0 total_g=0 total_b=0 color_count=0
+
+    for i in {1..14}; do
+        local color; color=$(xrdb -get "color$i" 2>/dev/null) || continue
+        local hex="${color#\#}"
+        local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+
+        total_r=$((total_r + r))
+        total_g=$((total_g + g))
+        total_b=$((total_b + b))
+        ((color_count++))
+    done
+
+    if [[ $color_count -gt 0 ]]; then
+        local avg_r=$((total_r / color_count))
+        local avg_g=$((total_g / color_count))
+        local avg_b=$((total_b / color_count))
+        printf "#%02x%02x%02x" "$avg_r" "$avg_g" "$avg_b"
+    else
+        echo "#808080"
+    fi
+}
+
+# Blend two colors with specified percentage
+blend_colors() {
+    local color1="$1" color2="$2" blend_percent="$3"
+
+    local hex1="${color1#\#}" hex2="${color2#\#}"
+    local r1=$((16#${hex1:0:2})) g1=$((16#${hex1:2:2})) b1=$((16#${hex1:4:2}))
+    local r2=$((16#${hex2:0:2})) g2=$((16#${hex2:2:2})) b2=$((16#${hex2:4:2}))
+
+    local inv_percent=$((100 - blend_percent))
+    local result_r=$(((r1 * inv_percent + r2 * blend_percent) / 100))
+    local result_g=$(((g1 * inv_percent + g2 * blend_percent) / 100))
+    local result_b=$(((b1 * inv_percent + b2 * blend_percent) / 100))
+
+    # Clamp to 0-255
+    [[ $result_r -gt 255 ]] && result_r=255 || [[ $result_r -lt 0 ]] && result_r=0
+    [[ $result_g -gt 255 ]] && result_g=255 || [[ $result_g -lt 0 ]] && result_g=0
+    [[ $result_b -gt 255 ]] && result_b=255 || [[ $result_b -lt 0 ]] && result_b=0
+
+    printf "#%02x%02x%02x" "$result_r" "$result_g" "$result_b"
+}
+
+# CORE FUNCTION: Semantic color lookup table with palette adaptation
+get_smart_color() {
+    local concept="$1" palette_dominant="$2"
+
+    # Handle neutrals separately (don't need palette adaptation)
+    case "$concept" in
+        white) xrdb -get "foreground" 2>/dev/null || echo "#ffffff"; return ;;
+        black) xrdb -get "background" 2>/dev/null || echo "#000000"; return ;;
+        gray|grey) xrdb -get "color8" 2>/dev/null || echo "#808080"; return ;;
+    esac
+
+    # Lookup table: concept|palette_tendency -> semantically correct color
+    case "$concept|$palette_dominant" in
+        # ERROR (always reddish)
+        "error|red") echo "#ff4444" ;;
+        "error|orange") echo "#ff3300" ;;
+        "error|purple") echo "#ff4488" ;;
+        "error|"*) echo "#cc4444" ;;
+
+        # WARNING (always orange/yellow)
+        "warning|orange") echo "#ff9900" ;;
+        "warning|yellow") echo "#ffcc00" ;;
+        "warning|red") echo "#ff6600" ;;
+        "warning|"*) echo "#cc8800" ;;
+
+        # SUCCESS (always greenish)
+        "success|green") echo "#44aa44" ;;
+        "success|cyan") echo "#00cc66" ;;
+        "success|blue") echo "#0099aa" ;;
+        "success|"*) echo "#669944" ;;
+
+        # INFO (always bluish)
+        "info|blue") echo "#4488ff" ;;
+        "info|cyan") echo "#0099cc" ;;
+        "info|purple") echo "#6666cc" ;;
+        "info|"*) echo "#4488cc" ;;
+
+        # ACCENT (distinctive highlight)
+        "accent|purple") echo "#aa66ff" ;;
+        "accent|pink") echo "#ff66aa" ;;
+        "accent|orange") echo "#ff8833" ;;
+        "accent|"*) echo "#8866aa" ;;
+
+        # BASIC COLORS (maintain identity, different from semantic overlap)
+        "red|red") echo "#ee3333" ;;
+        "red|orange") echo "#ff2200" ;;
+        "red|"*) echo "#bb3333" ;;
+
+        "green|green") echo "#33aa33" ;;
+        "green|cyan") echo "#00bb55" ;;
+        "green|"*) echo "#558833" ;;
+
+        "blue|blue") echo "#3377ee" ;;
+        "blue|cyan") echo "#0088bb" ;;
+        "blue|"*) echo "#3377bb" ;;
+
+        "yellow|yellow") echo "#ffdd00" ;;
+        "yellow|orange") echo "#ffcc00" ;;
+        "yellow|"*) echo "#bbbb33" ;;
+
+        "cyan|cyan") echo "#00dddd" ;;
+        "cyan|blue") echo "#0099cc" ;;
+        "cyan|"*) echo "#4499aa" ;;
+
+        "magenta|purple"|"purple|purple") echo "#dd44dd" ;;
+        "magenta|pink"|"purple|pink") echo "#ff66cc" ;;
+        "magenta|"*|"purple|"*) echo "#bb55aa" ;;
+
+        "orange|orange") echo "#ff7700" ;;
+        "orange|red") echo "#ff5500" ;;
+        "orange|"*) echo "#bb7700" ;;
+
+        "pink|pink") echo "#ff88cc" ;;
+        "pink|purple") echo "#ff66aa" ;;
+        "pink|"*) echo "#dd99bb" ;;
+
+        "brown|red") echo "#aa4422" ;;
+        "brown|orange") echo "#cc6633" ;;
+        "brown|"*) echo "#996633" ;;
+
+        # FALLBACKS
+        *) echo "#888888" ;;
+    esac
+}
+
+# Main function: Find best color for concept
 find_best_color_for_concept() {
     local concept="$1"
 
     # Validate concept
     case "$concept" in
-        "error"|"danger"|"red"|"warning"|"caution"|"orange"|"yellow"|"success"|"ok"|"green"|"info"|"neutral"|"blue"|"cyan"|"magenta"|"purple"|"pink"|"accent"|"highlight"|"brown"|"white"|"black"|"gray"|"grey") ;;
+        error|warning|success|info|accent|red|green|blue|yellow|cyan|magenta|purple|orange|pink|brown|white|black|gray|grey) ;;
         *)
             show_error "Unknown concept: $concept"
-            echo "Available concepts:"
-            echo "  Semantic: error, warning, success, info, accent"
-            echo "  Colors: red, green, blue, yellow, cyan, magenta, orange, pink, brown, white, black, gray"
             return 1
             ;;
     esac
 
-    # Try cache first (skip if we're currently generating cache)
-    if [[ "$CACHE_FILE" != "/dev/null" ]] && is_cache_valid; then
-        local cached_color=$(read_from_cache "$concept" "${format:-hex}")
-        if [[ -n "$cached_color" ]]; then
-            echo "$cached_color"
-            [[ -n "$verbose" ]] && show_info "Using cached color for $concept: $cached_color"
-            return 0
-        fi
-    fi
-
-    # For black/white/gray, use palette directly
+    # Handle neutrals directly
     case "$concept" in
-        "black")
-            local bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
-            echo "$bg"
-            [[ -n "$verbose" ]] && show_info "Using background color for black: $bg"
-            return 0
-            ;;
-        "white")
-            local fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
-            echo "$fg"
-            [[ -n "$verbose" ]] && show_info "Using foreground color for white: $fg"
-            return 0
-            ;;
-        "gray"|"grey")
-            local gray=$(xrdb -get "color8" 2>/dev/null || echo "#808080")
-            echo "$gray"
-            [[ -n "$verbose" ]] && show_info "Using color8 for gray: $gray"
+        white|black|gray|grey)
+            get_smart_color "$concept"
             return 0
             ;;
     esac
 
-        # Fast palette analysis
-    local dominant_color=$(get_palette_dominant_color)
-    local palette_average=$(get_palette_average)
+    # Get palette characteristics
+    local dominant_color; dominant_color=$(get_palette_dominant_color)
+    local palette_average; palette_average=$(get_palette_average)
 
-    # Get base color from lookup table
-    local base_color=$(get_fast_adapted_color "$concept" "$dominant_color")
+    # Get base semantic color
+    local base_color; base_color=$(get_smart_color "$concept" "$dominant_color")
 
-    # Harmonize with palette average (15% blend for subtle adaptation)
-    local final_color=$(blend_colors "$base_color" "$palette_average" 15)
+    # Harmonize with palette (subtle 15% blend)
+    local final_color; final_color=$(blend_colors "$base_color" "$palette_average" 15)
 
+    # Format output
     case "${format:-hex}" in
-        "hex")
-            echo "$final_color"
-            ;;
-        "rgb")
-            hex_to_rgb "$final_color"
-            ;;
-        "polybar")
-            echo "$final_color"
-            ;;
-        *)
-            echo "$final_color"
-            ;;
+        hex) echo "$final_color" ;;
+        rgb) hex_to_rgb "$final_color" ;;
+        *) echo "$final_color" ;;
     esac
 }
 
-# Analyze complete palette
-analyze_palette() {
-    show_status "Analyzing current color palette..."
-    echo
+# Show visual palette
+show_palette_visual() {
+    echo -e "${BOLD}Current Palette:${NC}"
 
-    # Show visual palette first
-    show_palette_visual
-
-    # Show current palette (text format)
-    echo -e "${BOLD}Current Palette (Text):${NC}"
-    while IFS= read -r line; do
-        local key="${line%=*}"
-        local color="${line#*=}"
-        echo "  $key: $color"
-    done < <(get_xrdb_colors)
-
-    echo
-    echo -e "${BOLD}Semantic Color Recommendations:${NC}"
-
-    # Get recommendations for each concept
-    local semantic_concepts=("error" "warning" "success" "info" "accent")
-    for concept in "${semantic_concepts[@]}"; do
-        local recommended_color=$(find_best_color_for_concept "$concept")
-        show_color_block "$recommended_color" "$concept" 6
-    done
-
-    echo
-    echo -e "${BOLD}Basic Color Recommendations:${NC}"
-
-    # Get recommendations for basic colors
-    local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink")
-    for color in "${basic_colors[@]}"; do
-        local recommended_color=$(find_best_color_for_concept "$color")
-        show_color_block "$recommended_color" "$color" 6
-    done
-
-    echo
-    echo -e "${BOLD}Palette Analysis:${NC}"
-
-    # Analyze palette characteristics
-    local warm_colors=0
-    local cool_colors=0
-    local bright_colors=0
-    local dark_colors=0
-
-    while IFS= read -r line; do
-        local color="${line#*=}"
-        [[ "$color" =~ ^#[0-9a-fA-F]{6}$ ]] || continue
-
-        local rgb=$(hex_to_rgb "$color")
-        local r g b
-        read -r r g b <<< "$rgb"
-
-        local brightness=$(color_brightness "$r" "$g" "$b")
-        local temperature=$(color_temperature "$r" "$g" "$b")
-
-        if (( $(echo "$temperature > 0" | bc -l) )); then
-            ((warm_colors++))
-        else
-            ((cool_colors++))
-        fi
-
-        if (( $(echo "$brightness > 128" | bc -l) )); then
-            ((bright_colors++))
-        else
-            ((dark_colors++))
-        fi
-    done < <(get_xrdb_colors)
-
-    echo "  Warm colors: $warm_colors | Cool colors: $cool_colors"
-    echo "  Bright colors: $bright_colors | Dark colors: $dark_colors"
-
-    # Theme type suggestion
-    if [[ "$warm_colors" -gt "$cool_colors" ]]; then
-        echo "  Theme tendency: Warm palette 🔥"
-    else
-        echo "  Theme tendency: Cool palette ❄️"
-    fi
-}
-
-# Export color variables
-export_colors() {
-    # Don't show status when outputting eval-able code
-    # show_status "Exporting smart color variables..."
-
-    echo "# Smart color variables generated by dots-smart-colors"
-    echo "# Source this file or copy to your shell/polybar config"
-    echo
-
-    echo "# Semantic colors"
-    local semantic_concepts=("error" "warning" "success" "info" "accent")
-    for concept in "${semantic_concepts[@]}"; do
-        local color=$(find_best_color_for_concept "$concept")
-        echo "export SMART_COLOR_${concept^^}='$color'"
-    done
-
-    echo
-    echo "# Basic colors"
-    local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink" "brown" "white" "black" "gray")
-    for color in "${basic_colors[@]}"; do
-        local color_value=$(find_best_color_for_concept "$color")
-        echo "export SMART_COLOR_${color^^}='$color_value'"
-    done
-
-    echo
-    echo "# Polybar format variables (semantic)"
-    for concept in "${semantic_concepts[@]}"; do
-        local color=$(format="polybar" find_best_color_for_concept "$concept")
-        echo "# smart-$concept = $color"
-    done
-
-    echo
-    echo "# Polybar format variables (basic colors)"
-    for color in "${basic_colors[@]}"; do
-        local color_value=$(format="polybar" find_best_color_for_concept "$color")
-        echo "# smart-$color = $color_value"
-    done
-}
-
-# Export EWW SCSS color variables
-export_eww_scss() {
-    # Don't show status when outputting eval-able code
-    # show_status "Generating EWW SCSS color variables..."
-
-    echo "/* EWW SCSS color variables generated by dots-smart-colors */"
-    echo "/* Auto-generated - do not edit manually */"
-    echo
-
-    # Export base colors from xrdb
-    echo "/* Base colors from X resources */"
-    local bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
-    local fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
-
-    echo "\$background: $bg;"
-    echo "\$foreground: $fg;"
-    echo
-
-    # Export all base16 colors
-    echo "/* Base16 color palette */"
+    # Base16 colors
     for i in {0..15}; do
-        local color=$(xrdb -get "color$i" 2>/dev/null || echo "#000000")
-        echo "\$color$i: $color;"
+        local color; color=$(xrdb -get "color$i" 2>/dev/null) || continue
+        show_color_block "$color" "color$i"
     done
 
     echo
-    echo "/* Smart semantic colors (theme-adaptive) */"
-    local semantic_concepts=("error" "warning" "success" "info" "accent")
-    for concept in "${semantic_concepts[@]}"; do
-        local color=$(find_best_color_for_concept "$concept")
-        echo "\$smart-$concept: $color;"
+    echo -e "${BOLD}Smart Semantic Colors:${NC}"
+    local concepts=(error warning success info accent)
+    for concept in "${concepts[@]}"; do
+        local color; color=$(find_best_color_for_concept "$concept")
+        show_color_block "$color" "$concept"
     done
 
     echo
-    echo "/* Smart basic colors (theme-adaptive) */"
-    local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink")
+    echo -e "${BOLD}Smart Basic Colors:${NC}"
+    local basic_colors=(red green blue yellow cyan magenta orange pink)
     for color in "${basic_colors[@]}"; do
-        local color_value=$(find_best_color_for_concept "$color")
-        echo "\$smart-$color: $color_value;"
+        local color_value; color_value=$(find_best_color_for_concept "$color")
+        show_color_block "$color_value" "$color"
     done
 
     echo
-    echo "/* Compatibility aliases for existing EWW configs */"
-    echo "\$wallpaper: url('\$HOME/.cache/wal/wallpaper');"
 }
 
-# Generate all smart color files (centralized like wal)
-generate_all_smart_color_files() {
+# Generate file outputs
+generate_smart_color_files() {
     show_status "Generating smart color files..."
-
-    # Ensure smart colors directory exists
     mkdir -p "$SMART_COLORS_DIR"
 
-    # Generate all formats
-    generate_i3_colors_file
-    generate_eww_colors_file
-    generate_shell_colors_file
-    generate_env_colors_file
+    # Generate smart colors
+    local error_color; error_color=$(format="hex" find_best_color_for_concept "error")
+    local warning_color; warning_color=$(format="hex" find_best_color_for_concept "warning")
+    local success_color; success_color=$(format="hex" find_best_color_for_concept "success")
+    local info_color; info_color=$(format="hex" find_best_color_for_concept "info")
+    local accent_color; accent_color=$(format="hex" find_best_color_for_concept "accent")
 
-    show_success "Smart color files generated in $SMART_COLORS_DIR"
-}
-
-# Generate i3 colors file (following user's specified format)
-generate_i3_colors_file() {
-    cat > "${I3_COLORS_FILE}" << EOF
-# Color palette generated by dots-smart-colors
-# Based on current X resources and smart color analysis
-# Auto-generated - do not edit manually
-#
-# NOTE: Values are direct color codes (not variables) because i3 cannot
-# expand variables defined in included files
-
-EOF
-
-    # Get all color values first to avoid multiple calls
+    # Get palette colors
+    local bg; bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
+    local fg; fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
+    local cursor; cursor=$(xrdb -get "cursor" 2>/dev/null || echo "$fg")
     local base_colors=()
     for i in {0..15}; do
         base_colors[i]=$(xrdb -get "color$i" 2>/dev/null || echo "#000000")
     done
 
-    # Special colors
-    local bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
-    local fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
-
-    # Smart semantic colors
-    local smart_error=$(format="hex" find_best_color_for_concept "error")
-    local smart_warning=$(format="hex" find_best_color_for_concept "warning")
-    local smart_success=$(format="hex" find_best_color_for_concept "success")
-    local smart_info=$(format="hex" find_best_color_for_concept "info")
-    local smart_accent=$(format="hex" find_best_color_for_concept "accent")
-
-    cat >> "${I3_COLORS_FILE}" << EOF
-# Enhanced i3 color scheme using Base16 + Smart Colors
-# Property Name         Border          BG              Text        Indicator       Child Border
-client.focused          ${smart_accent}  ${smart_accent}  ${base_colors[0]}  ${smart_info}    ${smart_accent}
-client.focused_inactive ${base_colors[1]} ${base_colors[1]} ${base_colors[5]} ${base_colors[1]} ${base_colors[1]}
-client.unfocused        ${base_colors[1]} ${bg}            ${base_colors[5]} ${base_colors[1]} ${base_colors[1]}
-client.urgent           ${smart_error}   ${smart_error}   ${base_colors[0]} ${smart_error}   ${smart_error}
-client.placeholder      ${bg}            ${bg}            ${base_colors[5]} ${bg}            ${bg}
-client.background       ${base_colors[7]}
-
-# Smart color reference (for documentation)
-# error=${smart_error}
-# warning=${smart_warning}
-# success=${smart_success}
-# info=${smart_info}
-# accent=${smart_accent}
-EOF
-
-    [[ -n "$verbose" ]] && show_info "Generated i3 colors: ${I3_COLORS_FILE}"
-}
-
-# Generate EWW colors file (following user's specified format)
-generate_eww_colors_file() {
-    # Get wallpaper path from wal or wpg
+    # Get wallpaper path
     local wallpaper_path=""
     if [[ -f ~/.cache/wal/wal ]]; then
         wallpaper_path=$(cat ~/.cache/wal/wal)
@@ -927,20 +330,39 @@ generate_eww_colors_file() {
     fi
     [[ -z "$wallpaper_path" ]] && wallpaper_path="/home/$(whoami)/.wallpaper"
 
+    # Generate i3 colors file
+    cat > "$I3_COLORS_FILE" << EOF
+# Color palette generated by dots-smart-colors
+# Based on current X resources and smart color analysis
+# Auto-generated - do not edit manually
+#
+# NOTE: Values are direct color codes (not variables) because i3 cannot
+# expand variables defined in included files
+
+# Enhanced i3 color scheme using Base16 + Smart Colors
+# Property Name         Border          BG              Text        Indicator       Child Border
+client.focused          $accent_color  $accent_color  ${base_colors[0]}  $info_color    $accent_color
+client.focused_inactive ${base_colors[1]} ${base_colors[1]} ${base_colors[5]} ${base_colors[1]} ${base_colors[1]}
+client.unfocused        ${base_colors[1]} $bg ${base_colors[5]} ${base_colors[1]} ${base_colors[1]}
+client.urgent           $error_color   $error_color   ${base_colors[0]} $error_color   $error_color
+client.placeholder      $bg            $bg            ${base_colors[5]} $bg            $bg
+client.background       ${base_colors[7]}
+
+# Smart color reference (for documentation)
+# error=$error_color
+# warning=$warning_color
+# success=$success_color
+# info=$info_color
+# accent=$accent_color
+EOF
+
+    # Generate EWW colors file
     cat > "$EWW_COLORS_FILE" << EOF
 // SCSS Variables
 // Generated by 'dots-smart-colors'
 \$wallpaper: "$wallpaper_path";
 
 // Special
-EOF
-
-    # Special colors
-    local bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
-    local fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
-    local cursor=$(xrdb -get "cursor" 2>/dev/null || echo "$fg")
-
-    cat >> "$EWW_COLORS_FILE" << EOF
 \$background: $bg;
 \$foreground: $fg;
 \$cursor: $cursor;
@@ -948,226 +370,136 @@ EOF
 // Colors
 EOF
 
-    # Base16 colors
     for i in {0..15}; do
-        local color=$(xrdb -get "color$i" 2>/dev/null || echo "#000000")
-        echo "\$color$i: $color;" >> "$EWW_COLORS_FILE"
+        echo "\$color$i: ${base_colors[i]};" >> "$EWW_COLORS_FILE"
     done
 
     cat >> "$EWW_COLORS_FILE" << EOF
 
 // Smart semantic colors (theme-adaptive)
-EOF
-
-    # Smart semantic colors
-    local concepts=("error" "warning" "success" "info" "accent")
-    for concept in "${concepts[@]}"; do
-        local color=$(format="hex" find_best_color_for_concept "$concept")
-        echo "\$smart-$concept: $color;" >> "$EWW_COLORS_FILE"
-    done
-
-    cat >> "$EWW_COLORS_FILE" << EOF
+\$smart-error: $error_color;
+\$smart-warning: $warning_color;
+\$smart-success: $success_color;
+\$smart-info: $info_color;
+\$smart-accent: $accent_color;
 
 // Smart basic colors (theme-adaptive)
 EOF
 
-    # Smart basic colors
-    local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink")
+    local basic_colors=(red green blue yellow cyan magenta orange pink)
     for color in "${basic_colors[@]}"; do
-        local color_value=$(format="hex" find_best_color_for_concept "$color")
+        local color_value; color_value=$(format="hex" find_best_color_for_concept "$color")
         echo "\$smart-$color: $color_value;" >> "$EWW_COLORS_FILE"
     done
 
-    [[ -n "$verbose" ]] && show_info "Generated EWW colors: $EWW_COLORS_FILE"
-}
-
-# Generate shell colors file
-generate_shell_colors_file() {
+    # Generate shell colors file
     cat > "$SHELL_COLORS_FILE" << EOF
 # Shell variables
 # Generated by 'dots-smart-colors'
 
 # Smart semantic colors
-EOF
-
-    local concepts=("error" "warning" "success" "info" "accent")
-    for concept in "${concepts[@]}"; do
-        local color=$(format="hex" find_best_color_for_concept "$concept")
-        echo "smart_color_${concept}='$color'" >> "$SHELL_COLORS_FILE"
-    done
-
-    cat >> "$SHELL_COLORS_FILE" << EOF
+smart_color_error='$error_color'
+smart_color_warning='$warning_color'
+smart_color_success='$success_color'
+smart_color_info='$info_color'
+smart_color_accent='$accent_color'
 
 # Smart basic colors
 EOF
 
-    local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink" "brown" "white" "black" "gray")
     for color in "${basic_colors[@]}"; do
-        local color_value=$(format="hex" find_best_color_for_concept "$color")
+        local color_value; color_value=$(format="hex" find_best_color_for_concept "$color")
         echo "smart_color_${color}='$color_value'" >> "$SHELL_COLORS_FILE"
     done
 
-    [[ -n "$verbose" ]] && show_info "Generated shell colors: $SHELL_COLORS_FILE"
-}
-
-# Generate environment variables file (for export)
-generate_env_colors_file() {
+    # Generate environment colors file
     cat > "$ENV_COLORS_FILE" << EOF
 # Environment variables for smart colors
 # Generated by 'dots-smart-colors'
 # Source this file: source $ENV_COLORS_FILE
 
+# Smart semantic colors
+export SMART_COLOR_ERROR='$error_color'
+export SMART_COLOR_WARNING='$warning_color'
+export SMART_COLOR_SUCCESS='$success_color'
+export SMART_COLOR_INFO='$info_color'
+export SMART_COLOR_ACCENT='$accent_color'
+
+# Smart basic colors
 EOF
 
-    echo "# Smart semantic colors" >> "$ENV_COLORS_FILE"
-    local concepts=("error" "warning" "success" "info" "accent")
-    for concept in "${concepts[@]}"; do
-        local color=$(format="hex" find_best_color_for_concept "$concept")
-        echo "export SMART_COLOR_${concept^^}='$color'" >> "$ENV_COLORS_FILE"
-    done
-
-    echo >> "$ENV_COLORS_FILE"
-    echo "# Smart basic colors" >> "$ENV_COLORS_FILE"
-    local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta" "orange" "pink" "brown" "white" "black" "gray")
-    for color in "${basic_colors[@]}"; do
-        local color_value=$(format="hex" find_best_color_for_concept "$color")
+    local extended_colors=(red green blue yellow cyan magenta orange pink brown white black gray)
+    for color in "${extended_colors[@]}"; do
+        local color_value; color_value=$(format="hex" find_best_color_for_concept "$color")
         echo "export SMART_COLOR_${color^^}='$color_value'" >> "$ENV_COLORS_FILE"
     done
 
-    [[ -n "$verbose" ]] && show_info "Generated environment colors: $ENV_COLORS_FILE"
-}
-
-# Create symbolic links for easy access
-create_smart_color_links() {
-    show_status "Creating smart color symbolic links..."
-
-    # Create links in i3 config directory
-    local i3_config_dir="$HOME/.config/i3/config.d"
-    mkdir -p "$i3_config_dir"
-    ln -sf "$I3_COLORS_FILE" "$i3_config_dir/smart-colors.conf" 2>/dev/null || true
-
-    # Create links in EWW directories
-    local eww_dirs=("$HOME/.config/eww/dashboard" "$HOME/.config/eww/powermenu")
-    for eww_dir in "${eww_dirs[@]}"; do
-        if [[ -d "$eww_dir" ]]; then
-            ln -sf "$EWW_COLORS_FILE" "$eww_dir/smart-colors.scss" 2>/dev/null || true
-        fi
-    done
-
-    [[ -n "$verbose" ]] && show_info "Created symbolic links for easy access"
-}
-
-# Export i3 color variables (backward compatibility)
-export_i3_colors() {
-    generate_i3_colors_file
-    cat "$I3_COLORS_FILE"
+    show_success "Smart color files generated in $SMART_COLORS_DIR"
 }
 
 # Main script logic
 main() {
     # Check dependencies
-    if ! command -v xrdb >/dev/null 2>&1; then
-        show_error "xrdb command not found. Please install X11 utilities."
-        exit 1
-    fi
-
-    if ! command -v bc >/dev/null 2>&1; then
-        show_error "bc command not found. Please install bc for calculations."
-        exit 1
-    fi
+    command -v xrdb >/dev/null 2>&1 || { show_error "xrdb not found"; exit 1; }
 
     # Handle options
-    if [[ -n "$cache" ]]; then
-        regenerate_cache
-        # Auto-generate all files after cache regeneration
-        generate_all_smart_color_files
-        create_smart_color_links
-    elif [[ -n "$analyze" ]]; then
-        analyze_palette
+    if [[ -n "$analyze" ]]; then
+        show_palette_visual
     elif [[ -n "$colors" ]]; then
         show_palette_visual
     elif [[ -n "$export" ]]; then
         case "${format:-shell}" in
-            "eww"|"scss")
-                export_eww_scss
-                ;;
-            "i3")
-                export_i3_colors
-                ;;
-            "files")
-                # Generate all centralized files
-                generate_all_smart_color_files
-                create_smart_color_links
-                ;;
+            files) generate_smart_color_files ;;
             *)
-                export_colors
+                local concepts=(error warning success info accent red green blue yellow cyan magenta orange pink brown white black gray)
+                echo "# Smart color variables generated by dots-smart-colors"
+                echo "# Source this file or copy to your shell/polybar config"
+                echo
+
+                echo "# Semantic colors"
+                for concept in error warning success info accent; do
+                    local color; color=$(find_best_color_for_concept "$concept")
+                    echo "export SMART_COLOR_${concept^^}='$color'"
+                done
+
+                echo
+                echo "# Basic colors"
+                for concept in red green blue yellow cyan magenta orange pink brown white black gray; do
+                    local color; color=$(find_best_color_for_concept "$concept")
+                    echo "export SMART_COLOR_${concept^^}='$color'"
+                done
+
+                echo
+                echo "# Polybar format variables (semantic)"
+                for concept in error warning success info accent; do
+                    local color; color=$(format="polybar" find_best_color_for_concept "$concept")
+                    echo "# smart-$concept = $color"
+                done
+
+                echo
+                echo "# Polybar format variables (basic colors)"
+                for concept in red green blue yellow cyan magenta orange pink; do
+                    local color; color=$(format="polybar" find_best_color_for_concept "$concept")
+                    echo "# smart-$concept = $color"
+                done
                 ;;
         esac
     elif [[ -n "$concept" ]]; then
         find_best_color_for_concept "$concept"
     elif [[ -n "$generate" ]]; then
-        # Generate all smart color files
-        if ! is_cache_valid; then
-            [[ -n "$verbose" ]] && show_status "Cache is invalid, regenerating..."
-            generate_cache
-        fi
-        generate_all_smart_color_files
-        create_smart_color_links
+        generate_smart_color_files
     else
-        # Auto-generate cache if it doesn't exist or is invalid
-        if ! is_cache_valid; then
-            [[ -n "$verbose" ]] && show_status "Cache is invalid or missing, generating..."
-            generate_cache
-            # Auto-generate all files after cache generation
-            generate_all_smart_color_files
-            create_smart_color_links
-        fi
-
-        # Default: show quick analysis with visual colors
-        show_status "Quick palette analysis (use --analyze for detailed view)"
-        echo
-
-        echo -e "${BOLD}Semantic Colors:${NC}"
-        local semantic_concepts=("error" "warning" "success" "info" "accent")
-        for concept in "${semantic_concepts[@]}"; do
-            local color=$(find_best_color_for_concept "$concept")
-            show_color_block "$color" "$concept" 6
+        # Default: show quick palette
+        echo -e "${BOLD}Smart Colors Preview:${NC}"
+        local concepts=(error warning success info accent)
+        for concept in "${concepts[@]}"; do
+            local color; color=$(find_best_color_for_concept "$concept")
+            show_color_block "$color" "$concept"
         done
-
         echo
-        echo -e "${BOLD}Basic Colors:${NC}"
-        local basic_colors=("red" "green" "blue" "yellow" "cyan" "magenta")
-        for color in "${basic_colors[@]}"; do
-            local color_value=$(find_best_color_for_concept "$color")
-            show_color_block "$color_value" "$color" 6
-        done
-
-        echo
-        echo -e "${BOLD}Compact Palette:${NC}"
-        # Show current palette in compact view
-        local color_line=""
-        local reset="\033[0m"
-
-        for i in {0..15}; do
-            local palette_color=$(xrdb -get "color$i" 2>/dev/null)
-            if [[ -n "$palette_color" ]]; then
-                local ansi_bg=$(hex_to_ansi_bg "$palette_color")
-                color_line+="${ansi_bg}  ${reset}"
-            fi
-        done
-
-        echo -e "$color_line"
-
-        echo
-        show_info "Use 'dots-smart-colors --help' for more options"
-        show_info "Use 'dots-smart-colors --colors' to see full visual palette"
-        show_info "Available concepts: error, warning, success, info, accent, red, green, blue, yellow, cyan, magenta, orange, pink, brown, white, black, gray"
+        show_info "Use --help for more options"
     fi
-    
-    # Ensure successful exit
-    return 0
 }
 
 # Run main function
 main "$@"
-exit 0
