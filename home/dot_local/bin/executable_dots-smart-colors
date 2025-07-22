@@ -52,6 +52,51 @@ hex_to_rgb() {
     echo $((16#${hex:0:2})) $((16#${hex:2:2})) $((16#${hex:4:2}))
 }
 
+# Calculate luminance of a color (0-255 scale)
+calculate_luminance() {
+    local color="$1"
+    local hex="${color#\#}"
+    local r=$((16#${hex:0:2}))
+    local g=$((16#${hex:2:2}))
+    local b=$((16#${hex:4:2}))
+
+    # Calculate relative luminance using standard formula
+    # Using simplified integer math for performance
+    echo $(((r * 299 + g * 587 + b * 114) / 1000))
+}
+
+# Detect if current theme is light or dark based on background
+is_light_theme() {
+    local bg_color; bg_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
+    local luminance; luminance=$(calculate_luminance "$bg_color")
+
+    # Threshold: >128 is considered light theme (out of 255)
+    [[ $luminance -gt 128 ]]
+}
+
+# Get optimal foreground color for current theme
+get_optimal_foreground() {
+    local original_fg; original_fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
+
+    if is_light_theme; then
+        # In light themes, use a softer foreground instead of pure black
+        local color5; color5=$(xrdb -get "color5" 2>/dev/null || echo "#52758A")
+        local color7; color7=$(xrdb -get "color7" 2>/dev/null || echo "#0f1415")
+
+        # Prefer color5 if available, fallback to color7, then original foreground
+        if [[ -n "$color5" && "$color5" != "#000000" ]]; then
+            echo "$color5"
+        elif [[ -n "$color7" && "$color7" != "#000000" ]]; then
+            echo "$color7"
+        else
+            echo "$original_fg"
+        fi
+    else
+        # In dark themes, use original foreground
+        echo "$original_fg"
+    fi
+}
+
 # Convert hex to ANSI background color for terminal display
 hex_to_ansi_bg() {
     local rgb; rgb=$(hex_to_rgb "$1")
@@ -315,7 +360,7 @@ generate_smart_color_files() {
 
     # Get palette colors
     local bg; bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
-    local fg; fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
+    local fg; fg=$(get_optimal_foreground)
     local cursor
     cursor=$(xrdb -get "cursor" 2>/dev/null)
     if [[ -z "$cursor" ]]; then
@@ -472,7 +517,7 @@ alert = $error_color
 moderate = $warning_color
 urgent = $error_color
 
-; Theme colors using smart basic colors  
+; Theme colors using smart basic colors
 trim = $info_color
 blue = $blue_color
 green = $green_color
