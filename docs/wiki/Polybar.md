@@ -31,7 +31,8 @@ Your Polybar configuration is stored in:
     └── default/
         ├── config.ini     # Main polybar config
         ├── modules.conf   # Module definitions
-        └── bars/          # Bar configurations
+        ├── bars.conf      # Bar configurations (centralized)
+        └── bars/          # Individual bar configurations
 ```
 
 To edit it:

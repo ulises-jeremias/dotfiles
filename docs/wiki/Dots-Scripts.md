@@ -94,6 +94,8 @@ dots-smart-colors --export --format=i3        # i3 configuration
 
 **Key Features:**
 
+- **🆕 Light/Dark Theme Detection**: Automatically detects theme brightness and optimizes colors accordingly
+- **🆕 Smart Foreground Optimization**: Light themes get softer foreground colors for better readability
 - **Theme-adaptive**: Colors automatically adjust to any palette
 - **Semantic mapping**: Intelligent error/success/warning color selection
 - **Multiple formats**: Shell, Polybar, EWW, i3 export support

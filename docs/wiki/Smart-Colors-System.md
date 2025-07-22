@@ -36,19 +36,35 @@ Smart colors automatically solve these issues by:
 dots-smart-colors --analyze
 ```
 
-The system uses **euclidean distance calculations** in RGB color space to find the closest available color to ideal target colors:
+The system uses **advanced color analysis** that combines multiple approaches:
 
-- **Error/Danger**: Targets pure red (255,0,0)
-- **Warning**: Targets orange (255,165,0)
-- **Success**: Targets green (0,255,0)
-- **Info**: Targets blue (0,100,255)
-- **Accent**: Targets purple/violet (128,0,255)
+- **Euclidean distance calculations** in RGB color space to find the closest available color to ideal target colors:
+  - **Error/Danger**: Targets pure red (255,0,0)
+  - **Warning**: Targets orange (255,165,0)
+  - **Success**: Targets green (0,255,0)
+  - **Info**: Targets blue (0,100,255)
+  - **Accent**: Targets purple/violet (128,0,255)
+
+- **🆕 Light/Dark Theme Detection**: Automatically detects theme brightness and optimizes colors accordingly
+- **🆕 Foreground Optimization**: Smart foreground selection for optimal readability in light themes
 
 ### Smart Selection Process
 
-1. **Preference-based selection**: Uses predefined color preferences based on Base16 standards
-2. **Distance calculation**: If preferences fail, calculates color distances to find best match
-3. **Fallback system**: Always provides a valid color even in limited palettes
+1. **Theme Detection**: Analyzes background luminance to determine if theme is light (>128/255) or dark
+2. **Foreground Optimization**: 
+   - **Light themes**: Uses softer foreground colors (e.g., `color5`) instead of harsh black
+   - **Dark themes**: Maintains standard foreground colors for optimal contrast
+3. **Preference-based selection**: Uses predefined color preferences based on Base16 standards
+4. **Distance calculation**: If preferences fail, calculates color distances to find best match
+5. **Fallback system**: Always provides a valid color even in limited palettes
+
+### 🔍 Advanced Features
+
+**Automatic Theme Adaptation:**
+- **Light Theme Detection**: Background luminance > 128/255 triggers light theme optimizations
+- **Smart Foreground**: Light themes use `color5` or `color7` instead of pure black for better readability
+- **Contrast Optimization**: Ensures optimal text-to-background contrast ratios
+- **Semantic Consistency**: Colors maintain their semantic meaning across all theme types
 
 ---
 
@@ -111,6 +127,153 @@ dots-smart-colors --export --format=i3 > ~/.config/i3/colors-smart.conf
 **Basic Colors:**
 
 - `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`, `orange`, `pink`, `brown`, `white`, `black`, `gray`
+
+---
+
+## 🗂️ Centralized Cache System (`--generate`)
+
+### The `--generate` Flag
+
+The `--generate` flag is the **core command** that creates all smart color files in a centralized cache directory:
+
+```bash
+# Generate all smart color files at once
+dots-smart-colors --generate
+```
+
+This single command analyzes your current palette and generates **5 specialized files** that different applications can use immediately.
+
+### Cache Directory Structure
+
+All generated files are stored in `~/.cache/dots/smart-colors/`:
+
+```text
+~/.cache/dots/smart-colors/
+├── colors-i3.conf          # i3 window manager color configuration
+├── colors-eww.scss         # EWW widgets SCSS variables  
+├── colors.sh               # Shell script variables
+├── colors.env              # Environment variables (export format)
+└── colors-polybar.conf     # Polybar color configuration
+```
+
+### Generated Files Explained
+
+#### 1. **`colors-i3.conf`** - i3 Window Manager
+```ini
+# i3 color scheme using Base16 + Smart Colors
+client.focused          #7e68a0  #7e68a0  #b0d5d8  #0a94bd    #7e68a0
+client.focused_inactive #348C9E  #348C9E  #52758A  #348C9E    #348C9E
+client.unfocused        #348C9E  #b0d5d8  #52758A  #348C9E    #348C9E
+client.urgent           #b84b49  #b84b49  #b0d5d8  #b84b49    #b84b49
+```
+
+**Usage**: Include in i3 config with `include ~/.config/i3/colors-smart.conf`
+
+#### 2. **`colors-eww.scss`** - EWW Widgets
+```scss
+// Enhanced colors with smart semantic variables
+$background: #b0d5d8;
+$foreground: #52758A;  // Optimized for light themes!
+
+// Smart semantic colors (theme-adaptive)
+$smart-error: #b84b49;
+$smart-success: #0abf66;
+$smart-warning: #b8850f;
+$smart-info: #0a94bd;
+$smart-accent: #7e68a0;
+```
+
+**Usage**: `@import "smart-colors.scss";` in EWW stylesheets
+
+#### 3. **`colors.sh`** - Shell Scripts
+```bash
+# Shell variables for scripts
+smart_color_error='#b84b49'
+smart_color_success='#0abf66'
+smart_color_warning='#b8850f'
+smart_color_info='#0a94bd'
+smart_color_accent='#7e68a0'
+```
+
+**Usage**: `source ~/.cache/dots/smart-colors/colors.sh` in shell scripts
+
+#### 4. **`colors.env`** - Environment Variables
+```bash
+# Export-ready environment variables
+export SMART_COLOR_ERROR='#b84b49'
+export SMART_COLOR_SUCCESS='#0abf66'
+export SMART_COLOR_WARNING='#b8850f'
+export SMART_COLOR_INFO='#0a94bd'
+export SMART_COLOR_ACCENT='#7e68a0'
+```
+
+**Usage**: `source ~/.cache/dots/smart-colors/colors.env` to load into environment
+
+#### 5. **`colors-polybar.conf`** - Polybar Status Bar
+```ini
+[colors]
+background = #b0d5d8
+foreground = #52758A  ; Optimized for light themes
+primary = #348C9E
+
+; Smart semantic colors
+success = #0abf66
+warning = #b8850f
+error = #b84b49
+info = #0a94bd
+accent = #7e68a0
+```
+
+**Usage**: `include-file = ~/.cache/dots/smart-colors/colors-polybar.conf`
+
+### 🔄 Automatic Workflow
+
+The centralized cache system works seamlessly with the dotfiles workflow:
+
+```mermaid
+graph LR
+    A[Wallpaper Change] --> B[wpg/pywal]
+    B --> C[dots-wal-reload]
+    C --> D[dots-smart-colors --generate]
+    D --> E[Cache Updated]
+    E --> F[Applications Reload]
+    F --> G[Colors Applied]
+```
+
+**Key Benefits:**
+
+1. **Single Source of Truth**: All applications use the same optimized colors
+2. **Performance**: Generated once, used everywhere - no repeated calculations
+3. **Consistency**: Colors are guaranteed to be semantically correct across all apps
+4. **Automatic Updates**: Cache refreshes whenever wallpaper changes
+
+### 📱 Application Integration
+
+Each application type uses its preferred format:
+
+| Application | File Used | Integration Method |
+|-------------|-----------|-------------------|
+| **i3 WM** | `colors-i3.conf` | Include directive in i3 config |
+| **EWW Widgets** | `colors-eww.scss` | SCSS import in stylesheets |
+| **Polybar** | `colors-polybar.conf` | Include directive in polybar config |
+| **Shell Scripts** | `colors.sh` or `colors.env` | Source in scripts or profiles |
+| **Custom Apps** | Any format | Choose the most appropriate format |
+
+### 🔧 Manual Cache Management
+
+```bash
+# Generate/refresh cache manually
+dots-smart-colors --generate
+
+# Check cache status
+ls -la ~/.cache/dots/smart-colors/
+
+# View specific file
+cat ~/.cache/dots/smart-colors/colors-polybar.conf
+
+# Clear cache (will be regenerated automatically)
+rm -rf ~/.cache/dots/smart-colors/
+```
 
 ---
 
@@ -230,10 +393,31 @@ export POLYBAR_THEME_SUCCESS="#00ff00"     # Force specific success color
 
 Smart colors work with any Base16-compatible color scheme and automatically adapt to:
 
-- **Dark themes**: Prioritizes lighter colors for text
-- **Light themes**: Prioritizes darker colors for text
-- **High contrast themes**: Maximizes color differences
+- **Dark themes**: Prioritizes lighter colors for text, darker colors for backgrounds
+- **Light themes**: Prioritizes darker colors for text, lighter colors for backgrounds  
+- **🆕 Light theme foreground optimization**: Automatically selects softer foreground colors (like `color5`) instead of harsh black (`#000000`) for better readability
+- **High contrast themes**: Maximizes color differences for accessibility
 - **Limited palettes**: Finds best available approximations
+
+### Light Theme Intelligence
+
+The system now includes **advanced light theme detection**:
+
+```bash
+# The system automatically detects light themes based on background luminance
+# Light themes (background luminance > 128/255) get optimized foreground colors
+
+# Example optimizations for light themes:
+# - Background: #f0f0f0 (light)
+# - Original foreground: #000000 (harsh black)  
+# - Optimized foreground: #52758A (softer, more readable)
+```
+
+**Benefits of Light Theme Optimization:**
+- **Reduced eye strain**: Softer foreground colors in light themes
+- **Better readability**: Optimal contrast without being harsh
+- **Consistent experience**: Semantic colors work perfectly in both light and dark themes
+- **Automatic detection**: No manual configuration needed
 
 ---
 
@@ -273,6 +457,19 @@ dots-smart-colors --export --format=eww > ~/.config/eww/dashboard/colors.scss
 eww reload
 ```
 
+**Cache issues:**
+
+```bash
+# Check cache directory exists and has files
+ls -la ~/.cache/dots/smart-colors/
+
+# Regenerate cache manually
+dots-smart-colors --generate
+
+# Check permissions
+chmod -R 755 ~/.cache/dots/smart-colors/
+```
+
 ### Debug Mode
 
 ```bash
@@ -281,6 +478,10 @@ dots-smart-colors --analyze --verbose
 
 # Check what would be applied without changing anything
 dots-wal-reload --dry-run  # (if implemented)
+
+# Test individual color concepts
+dots-smart-colors --concept=error
+dots-smart-colors --concept=success
 ```
 
 ---

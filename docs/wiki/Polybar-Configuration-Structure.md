@@ -15,7 +15,8 @@ The polybar configuration uses a **modular architecture** split across multiple 
 ~/.config/polybar/
 ├── config.ini              # Main entry point (symlinks to master.conf)
 ├── master.conf              # Core configuration and color scheme
-├── modules.conf             # Module includes registry
+├── modules.conf             # Module includes registry  
+├── bars.conf                # Bar configurations registry (centralized)
 ├── launch.sh                # Polybar startup script
 ├── bars/                    # Bar layout configurations
 │   ├── common-top.conf      # Universal top bar layout
@@ -124,7 +125,26 @@ include-file = ~/.config/polybar/modules/datetime.conf
 # ... additional modules
 ```
 
-### 3. Bar Configurations (`bars/`)
+### 3. Bar Registry (`bars.conf`) ✨
+
+**New centralized system** that includes all bar configurations:
+
+```ini
+; ========================================
+; Polybar Bars Configuration
+; ========================================
+
+; Common bars (base configurations)
+include-file = ~/.config/polybar/configs/default/bars/common-top.conf
+include-file = ~/.config/polybar/configs/default/bars/common-bottom.conf
+
+; i3 Window Manager specific bars
+include-file = ~/.config/polybar/configs/default/bars/i3-top.conf
+include-file = ~/.config/polybar/configs/default/bars/i3-top-multipart.conf
+include-file = ~/.config/polybar/configs/default/bars/i3-bottom.conf
+```
+
+### 4. Bar Configurations (`bars/`)
 
 Define specific bar layouts and module arrangements:
 
@@ -132,7 +152,7 @@ Define specific bar layouts and module arrangements:
 - **common-bottom.conf**: Universal bottom bar companion
 - **i3-\*.conf**: i3 window manager specific configurations
 
-### 4. Module Definitions (`modules/`)
+### 5. Module Definitions (`modules/`)
 
 Individual module configurations grouped by functionality:
 
