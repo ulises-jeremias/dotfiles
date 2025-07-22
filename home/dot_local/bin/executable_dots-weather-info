@@ -43,10 +43,11 @@ fi
 ## Get data
 get_weather_data() {
 	if [ -z "$CITY_ID" ]; then
-		location=$(curl -sf "https://location.services.mozilla.com/v1/geolocate?key=geoclue")
+		# Use ip-api.com instead of deprecated Mozilla service
+		location=$(curl -sf "http://ip-api.com/json/")
 		if [ -n "$location" ]; then
-			latitude=$(echo "$location" | jq ".location.lat")
-			longitude=$(echo "$location" | jq ".location.lng")
+			latitude=$(echo "$location" | jq ".lat")
+			longitude=$(echo "$location" | jq ".lon")
 			weather="$(curl -sf "http://api.openweathermap.org/data/2.5/weather?APPID=$KEY&lat=$latitude&lon=$longitude&units=$UNIT")"
 		fi
 	else
