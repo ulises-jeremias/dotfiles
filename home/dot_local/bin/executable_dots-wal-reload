@@ -275,6 +275,9 @@ reload_smart_colors() {
     show_status "Generating smart color files for all applications..."
     if dots-smart-colors --generate >/dev/null 2>&1; then
         show_success "Smart color files generated successfully"
+        
+        # Create symbolic links for easy access
+        create_smart_color_links
     else
         show_warning "Failed to generate smart color files, falling back to basic export"
         # Fallback to old method
@@ -295,6 +298,34 @@ reload_smart_colors() {
     apply_smart_colors_to_apps
 
     UPDATED_APPS+=("Smart Colors Integration")
+}
+
+# Function to create symbolic links for smart color files
+create_smart_color_links() {
+    show_status "Creating smart color symbolic links..."
+
+    # Create links in i3 config directory
+    local i3_config_dir="$HOME/.config/i3/config.d"
+    if [[ -d "$i3_config_dir" ]]; then
+        ln -sf "$HOME/.cache/dots/smart-colors/colors-i3.conf" "$i3_config_dir/smart-colors.conf" 2>/dev/null || true
+    fi
+
+    # Create links in EWW directories
+    local eww_dirs=("$HOME/.config/eww/dashboard" "$HOME/.config/eww/powermenu")
+    for eww_dir in "${eww_dirs[@]}"; do
+        if [[ -d "$eww_dir" ]]; then
+            ln -sf "$HOME/.cache/dots/smart-colors/colors-eww.scss" "$eww_dir/smart-colors.scss" 2>/dev/null || true
+        fi
+    done
+
+    # Create links in polybar config directories
+    local polybar_configs=("$HOME/.config/polybar/configs/default")
+    for config_dir in "${polybar_configs[@]}"; do
+        if [[ -d "$config_dir" ]]; then
+            ln -sf "$HOME/.cache/dots/smart-colors/colors-polybar.conf" "$config_dir/colors.conf" 2>/dev/null || true
+            show_success "Polybar colors linked to $config_dir/colors.conf"
+        fi
+    done
 }
 
 # Apply smart colors to running applications

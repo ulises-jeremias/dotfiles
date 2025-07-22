@@ -16,37 +16,40 @@ get_smart_color() {
     local concept="$1"
     local fallback_xrdb="${2:-background}"
 
-    # Load smart colors if available
-    if command -v dots-smart-colors >/dev/null 2>&1; then
-        # Get smart color directly from the script
+    # Load smart colors from shell variables file if available
+    local smart_colors_file="$HOME/.cache/dots/smart-colors/colors.sh"
+    if [[ -f "$smart_colors_file" ]]; then
+        source "$smart_colors_file"
+        
+        # Map concepts to shell variables
         case "$concept" in
             "SMART_BACKGROUND")
-                dots-smart-colors --concept=black 2>/dev/null || xrdb -get "background" 2>/dev/null || echo "#1b1f26"
+                echo "${smart_color_black:-$(xrdb -get "background" 2>/dev/null || echo "#1b1f26")}"
                 ;;
             "SMART_FOREGROUND")
-                dots-smart-colors --concept=white 2>/dev/null || xrdb -get "foreground" 2>/dev/null || echo "#ffffff"
+                echo "${smart_color_white:-$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")}"
                 ;;
             "SMART_ACCENT")
-                dots-smart-colors --concept=accent 2>/dev/null || xrdb -get "color13" 2>/dev/null || echo "#8fa1b3"
+                echo "${smart_color_accent:-$(xrdb -get "color13" 2>/dev/null || echo "#8fa1b3")}"
                 ;;
             "SMART_INFO")
-                dots-smart-colors --concept=info 2>/dev/null || xrdb -get "color12" 2>/dev/null || echo "#919ba0"
+                echo "${smart_color_info:-$(xrdb -get "color12" 2>/dev/null || echo "#919ba0")}"
                 ;;
             "SMART_ERROR")
-                dots-smart-colors --concept=error 2>/dev/null || xrdb -get "color9" 2>/dev/null || echo "#ff6666"
+                echo "${smart_color_error:-$(xrdb -get "color9" 2>/dev/null || echo "#ff6666")}"
                 ;;
             "SMART_SUCCESS")
-                dots-smart-colors --concept=success 2>/dev/null || xrdb -get "color10" 2>/dev/null || echo "#66ff66"
+                echo "${smart_color_success:-$(xrdb -get "color10" 2>/dev/null || echo "#66ff66")}"
                 ;;
             "SMART_WARNING")
-                dots-smart-colors --concept=warning 2>/dev/null || xrdb -get "color11" 2>/dev/null || echo "#ffff66"
+                echo "${smart_color_warning:-$(xrdb -get "color11" 2>/dev/null || echo "#ffff66")}"
                 ;;
             *)
                 xrdb -get "$fallback_xrdb" 2>/dev/null || echo "#ffffff"
                 ;;
         esac
     else
-        # Fallback to xrdb colors
+        # Fallback to xrdb colors if smart colors file doesn't exist
         xrdb -get "$fallback_xrdb" 2>/dev/null || echo "#ffffff"
     fi
 }
