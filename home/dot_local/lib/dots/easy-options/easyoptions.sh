@@ -68,10 +68,14 @@ parse_documentation() {
 
 parse_options() {
 
-    local short_option_vars
-    local short_options
-    local documentation
-    local next_is_value
+    # Set default behavior if not already defined
+    [[ -z "${NO_HELP:-}" ]] && NO_HELP=""
+    [[ -z "${NO_CHECK:-}" ]] && NO_CHECK=""
+
+    local short_option_vars=()
+    local short_options=""
+    local documentation=""
+    local next_is_value=""
     local argument
 
     local option
@@ -102,6 +106,16 @@ parse_options() {
 
     options+=(h=help)
     arguments=()
+
+    # Initialize all option variables to prevent unbound variable errors
+    for option in "${options[@]}"; do
+        option_var=${option#*=}
+        option_name=${option%=$option_var}
+        # Convert dashes to underscores in variable names
+        var_name=$(echo "$option_var" | tr "-" "_")
+        # Initialize variable if not already set
+        eval "[[ -z \"\${${var_name}:-}\" ]] && ${var_name}=\"\""
+    done
 
     # Prepare known options
     for option in "${options[@]}"; do

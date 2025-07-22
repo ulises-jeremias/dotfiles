@@ -1,10 +1,51 @@
 #!/usr/bin/env bash
-#
-# Enhanced Polybar Launch Script
-# Provides robust bar management with comprehensive error handling and logging
-#
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Enhanced Polybar Launch Script
+## Provides robust bar management with comprehensive error handling and logging
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Usage:
+##     @script.name [OPTIONS] [COMMAND] [BARS...]
+##
+## Commands:
+##     start           Start Polybar bars (default)
+##     stop            Stop all Polybar processes
+##     restart         Restart Polybar (stop then start)
+##     status          Show Polybar status
+##     list            List available bars
+##     detect          Detect and show all configured bars
+##     cleanup         Clean up orphaned processes and logs
+##     kill            Aggressively kill all polybar processes (pkill -9)
+##
+## Options:
+##     -h, --help      Show this help message
+##     -d, --debug     Enable debug logging
+##     -q, --quiet     Suppress all output except errors
+##     -f, --force     Force operation even if already running
+##     -r, --reload    Reload bars (same as restart)
+##         --rice      Use rice-configured bars
+##         --all       Use all detected bars
+##
+## Examples:
+##     @script.name                           # Start rice-configured bars
+##     @script.name start polybar-top         # Start specific bar
+##     @script.name restart                   # Restart all configured bars
+##     @script.name --all restart             # Restart all available bars
+##     @script.name stop                      # Stop all bars
+##     @script.name status                    # Show bar status
+##     @script.name list                      # List available bars
+##     @script.name cleanup                   # Clean up processes
+##     @script.name kill                      # Aggressively kill all polybar processes
+##
 
 set -euo pipefail
+
+# Source EasyOptions for argument parsing
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 # =============================================================================
 # Configuration & Constants
@@ -22,8 +63,6 @@ readonly LOCK_FILE="/tmp/polybar-launch.lock"
 readonly MAX_RETRIES=3
 readonly RETRY_DELAY=1
 readonly DEFAULT_TERM="xterm-256color"
-
-
 
 # =============================================================================
 # Utility Functions
@@ -284,7 +323,7 @@ manage_polybar_processes() {
             fi
             ;;
 
-        restart|start)
+        start|restart)
             # Always ensure clean state before starting
             if [[ "$action" == "restart" ]]; then
                 manage_polybar_processes "stop"
@@ -392,51 +431,6 @@ launch_bars() {
     fi
 
     return 0
-}
-
-# Display help information
-show_help() {
-    cat << EOF
-Usage: $SCRIPT_NAME [OPTIONS] [COMMAND] [BARS...]
-
-Enhanced Polybar Management Script
-
-COMMANDS:
-    start           Start Polybar bars (default)
-    stop            Stop all Polybar processes
-    restart         Restart Polybar (stop then start)
-    status          Show Polybar status
-    list            List available bars
-    detect          Detect and show all configured bars
-    cleanup         Clean up orphaned processes and logs
-    kill            Aggressively kill all polybar processes (pkill -9)
-
-OPTIONS:
-    -h, --help      Show this help message
-    -d, --debug     Enable debug logging
-    -q, --quiet     Suppress all output except errors
-    -f, --force     Force operation even if already running
-    -r, --reload    Reload bars (same as restart)
-    --rice          Use rice-configured bars
-    --all           Use all detected bars
-
-BARS:
-    If no bars specified, uses rice-configured bars or defaults.
-    Available bars are detected dynamically from configuration files.
-
-EXAMPLES:
-    $SCRIPT_NAME                           # Start rice-configured bars
-    $SCRIPT_NAME start polybar-top         # Start specific bar
-    $SCRIPT_NAME restart                   # Restart all configured bars
-    $SCRIPT_NAME --all restart             # Restart all available bars
-    $SCRIPT_NAME stop                      # Stop all bars
-    $SCRIPT_NAME status                    # Show bar status
-    $SCRIPT_NAME list                      # List available bars
-    $SCRIPT_NAME cleanup                   # Clean up processes
-    $SCRIPT_NAME kill                      # Aggressively kill all polybar processes
-
-LOG FILE: $LOG_FILE
-EOF
 }
 
 # Status display
@@ -561,73 +555,55 @@ cleanup_system() {
 # =============================================================================
 
 main() {
-    local debug=false
-    local quiet=false
-    local force=false
-    local use_rice_config=true
-    local use_all_bars=false
+    # Parse command from arguments (first positional argument that matches a command)
     local command="start"
     local bars=()
+    local use_rice_config=true
+    local use_all_bars=false
 
-    # Parse arguments
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -h|--help)
-                show_help
-                exit 0
-                ;;
-            -d|--debug)
-                debug=true
-                set -x
-                shift
-                ;;
-            -q|--quiet)
-                quiet=true
-                shift
-                ;;
-            -f|--force)
-                force=true
-                shift
-                ;;
-            -r|--reload)
-                command="restart"
-                shift
-                ;;
-            --rice)
-                use_rice_config=true
-                shift
-                ;;
-            --all)
-                use_all_bars=true
-                use_rice_config=false
-                shift
-                ;;
+    # Process arguments to extract command and bars
+    for arg in "${arguments[@]}"; do
+        case "$arg" in
             start|stop|restart|status|list|detect|cleanup|kill)
-                command="$1"
-                shift
+                command="$arg"
                 ;;
             polybar-*|i3-polybar-*)
-                bars+=("$1")
+                bars+=("$arg")
                 use_rice_config=false
-                shift
-                ;;
-            *)
-                error_exit "Unknown option: $1"
                 ;;
         esac
     done
+
+    # Handle options from EasyOptions
+    if [[ -n "${reload:-}" ]]; then
+        command="restart"
+    fi
+
+    if [[ -n "${all:-}" ]]; then
+        use_all_bars=true
+        use_rice_config=false
+    fi
+
+    if [[ -n "${rice:-}" ]]; then
+        use_rice_config=true
+    fi
 
     # Setup logging
     setup_logging
 
     # Quiet mode setup
-    if [[ "$quiet" == "true" ]]; then
+    if [[ -n "${quiet:-}" ]]; then
         exec 1>/dev/null
+    fi
+
+    # Debug mode setup
+    if [[ -n "${debug:-}" ]]; then
+        set -x
     fi
 
     # Acquire lock unless it's a status or list command
     if [[ "$command" != "status" && "$command" != "list" && "$command" != "detect" && "$command" != "cleanup" && "$command" != "kill" ]]; then
-        if [[ "$force" != "true" ]]; then
+        if [[ -z "${force:-}" ]]; then
             acquire_lock
         fi
     fi
@@ -635,7 +611,7 @@ main() {
     log "INFO" "Starting $SCRIPT_NAME with command: $command"
 
     # Clear cache for fresh runs
-    if [[ "$debug" == "true" ]]; then
+    if [[ -n "${debug:-}" ]]; then
         unset CACHED_POLYBAR_PROFILE_BARS
         log "DEBUG" "Cleared polybar profile cache"
     fi
