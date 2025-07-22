@@ -25,17 +25,36 @@ export POLYBAR_PROFILE_THEME="default"
 
 # Setup smart colors function
 setup_smart_colors() {
-    # Check if dots-smart-colors is available
-    if command -v dots-smart-colors >/dev/null 2>&1; then
-        log_quiet "INFO" "Configuring smart theme-adaptive colors..."
+    local smart_colors_env="$HOME/.cache/dots/smart-colors/colors.env"
 
-        # Export smart color variables using dots-smart-colors
+    # First, try to load from centralized smart colors file
+    if [[ -f "$smart_colors_env" ]]; then
+        log_quiet "INFO" "Loading smart colors from centralized cache..."
+        source "$smart_colors_env" 2>/dev/null && {
+            log_quiet "INFO" "Smart colors loaded: error=${SMART_COLOR_ERROR:-fallback}, success=${SMART_COLOR_SUCCESS:-fallback}, warning=${SMART_COLOR_WARNING:-fallback}"
+            return 0
+        }
+    fi
+
+    # Fallback to generating smart colors if cache doesn't exist
+    if command -v dots-smart-colors >/dev/null 2>&1; then
+        log_quiet "INFO" "Smart colors cache not found, generating..."
+
+        # Generate all smart color files and load environment
+        if dots-smart-colors --generate >/dev/null 2>&1 && [[ -f "$smart_colors_env" ]]; then
+            source "$smart_colors_env" 2>/dev/null && {
+                log_quiet "INFO" "Smart colors generated and loaded successfully"
+                return 0
+            }
+        fi
+
+        # Last resort: old export method
         eval "$(dots-smart-colors --export 2>/dev/null)" || {
             log_quiet "WARN" "Failed to generate smart colors, using fallbacks"
             return 1
         }
 
-        log_quiet "INFO" "Smart colors configured: error=${SMART_COLOR_ERROR:-fallback}, success=${SMART_COLOR_SUCCESS:-fallback}, warning=${SMART_COLOR_WARNING:-fallback}"
+        log_quiet "INFO" "Smart colors configured via export (fallback mode)"
         return 0
     else
         log_quiet "WARN" "dots-smart-colors not found, skipping smart color setup"
