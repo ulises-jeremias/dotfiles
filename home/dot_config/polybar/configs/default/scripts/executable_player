@@ -23,10 +23,10 @@ if [ "${player_status}" != "Playing" ] && [ "${player_status}" != "Paused" ]; th
 fi
 
 # Get theme-adaptive colors from smart colors or fallback to xrdb
-if [[ -n "${COLOR_ACCENT:-}" ]]; then
-    accent_color="${COLOR_ACCENT}"
+if [[ -n "${COLOR_FOREGROUND_ALT:-}" ]]; then
+    accent_color="${COLOR_FOREGROUND_ALT}"
 else
-    accent_color="$(xrdb -get "color13")"
+    accent_color="$(xrdb -get "color5")"
 fi
 
 if [[ -n "${COLOR_WARNING:-}" ]]; then
