@@ -166,8 +166,15 @@ bindsym $Mod+Shift+c reload
 bindsym $Mod+space floating toggle
 bindsym $Mod+Shift+space focus mode_toggle
 
+# Smart floating: toggle floating + center + resize to comfortable size
+bindsym $Mod+Shift+f exec --no-startup-id ~/.config/i3/smart-float.sh
+
 # Use Mouse+$mod to drag floating windows
 floating_modifier  $mod
+
+# Default floating window size (when windows become floating)
+floating_minimum_size 400 x 300
+floating_maximum_size 1400 x 900
 
 bindsym $Mod+Shift+z move scratchpad
 bindsym $Mod+z scratchpad show
