@@ -29,29 +29,48 @@ Smart colors automatically solve these issues by:
 
 ## 🧠 How It Works
 
-### Color Analysis Algorithm
+### 🆕 **Enhanced Theme-Adaptive Color Analysis**
 
 ```bash
-# Analyze your current palette
-dots-smart-colors --analyze
+# Analyze your current palette with new theme-adaptive features
+dots-smart-colors --analyze --colors
 ```
 
-The system uses **advanced color analysis** that combines multiple approaches:
+The system now uses **revolutionary dual-mode color analysis** that automatically detects your theme type and adapts all colors accordingly:
 
-- **Euclidean distance calculations** in RGB color space to find the closest available color to ideal target colors:
-  - **Error/Danger**: Targets pure red (255,0,0)
-  - **Warning**: Targets orange (255,165,0)
-  - **Success**: Targets green (0,255,0)
-  - **Info**: Targets blue (0,100,255)
-  - **Accent**: Targets purple/violet (128,0,255)
+#### **🌙 Dark Theme Optimization:**
 
-- **🆕 Light/Dark Theme Detection**: Automatically detects theme brightness and optimizes colors accordingly
-- **🆕 Foreground Optimization**: Smart foreground selection for optimal readability in light themes
+- **Brighter, more saturated colors** for better contrast on dark backgrounds
+- **Enhanced visibility** with optimized luminance levels
+- **Example**: `info` uses bright cyan `#00dddd` instead of muted blue
+
+#### **☀️ Light Theme Optimization:**
+
+- **Darker, more subdued colors** for comfortable reading on light backgrounds
+- **Reduced saturation** to prevent visual strain
+- **Example**: `info` uses deep blue `#0066cc` instead of bright cyan
+
+#### **Intelligent Color Mapping:**
+
+- **Error/Danger**: Dark themes → `#ff5555`, Light themes → `#cc0000`
+- **Warning**: Dark themes → `#ffaa00`, Light themes → `#cc6600`
+- **Success**: Dark themes → `#55dd55`, Light themes → `#008800`
+- **Info**: Dark themes → `#00dddd`, Light themes → `#0066cc`
+- **Accent**: Dark themes → `#bb77ff`, Light themes → `#663399`
+
+#### **🆕 Background & Foreground Variants:**
+
+Four new smart concepts for better UI consistency:
+
+- **`background`**: Primary background color
+- **`background-alt`**: Secondary/accent background (usually color1)
+- **`foreground`**: Primary text color (theme-optimized)
+- **`foreground-alt`**: Secondary text color (usually color5 for subtle elements)
 
 ### Smart Selection Process
 
 1. **Theme Detection**: Analyzes background luminance to determine if theme is light (>128/255) or dark
-2. **Foreground Optimization**: 
+2. **Foreground Optimization**:
    - **Light themes**: Uses softer foreground colors (e.g., `color5`) instead of harsh black
    - **Dark themes**: Maintains standard foreground colors for optimal contrast
 3. **Preference-based selection**: Uses predefined color preferences based on Base16 standards
@@ -61,6 +80,7 @@ The system uses **advanced color analysis** that combines multiple approaches:
 ### 🔍 Advanced Features
 
 **Automatic Theme Adaptation:**
+
 - **Light Theme Detection**: Background luminance > 128/255 triggers light theme optimizations
 - **Smart Foreground**: Light themes use `color5` or `color7` instead of pure black for better readability
 - **Contrast Optimization**: Ensures optimal text-to-background contrast ratios
@@ -120,11 +140,15 @@ dots-smart-colors --export --format=i3 > ~/.config/i3/colors-smart.conf
 
 #### Supported Concepts
 
-**Semantic Colors:**
+**🆕 Background & Foreground Variants:**
+
+- `background`, `background-alt`, `foreground`, `foreground-alt`
+
+**Semantic Colors (Theme-Adaptive):**
 
 - `error`, `warning`, `success`, `info`, `accent`
 
-**Basic Colors:**
+**Basic Colors (Theme-Adaptive):**
 
 - `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`, `orange`, `pink`, `brown`, `white`, `black`, `gray`
 
@@ -150,7 +174,7 @@ All generated files are stored in `~/.cache/dots/smart-colors/`:
 ```text
 ~/.cache/dots/smart-colors/
 ├── colors-i3.conf          # i3 window manager color configuration
-├── colors-eww.scss         # EWW widgets SCSS variables  
+├── colors-eww.scss         # EWW widgets SCSS variables
 ├── colors.sh               # Shell script variables
 ├── colors.env              # Environment variables (export format)
 └── colors-polybar.conf     # Polybar color configuration
@@ -159,6 +183,7 @@ All generated files are stored in `~/.cache/dots/smart-colors/`:
 ### Generated Files Explained
 
 #### 1. **`colors-i3.conf`** - i3 Window Manager
+
 ```ini
 # i3 color scheme using Base16 + Smart Colors
 client.focused          #7e68a0  #7e68a0  #b0d5d8  #0a94bd    #7e68a0
@@ -170,10 +195,11 @@ client.urgent           #b84b49  #b84b49  #b0d5d8  #b84b49    #b84b49
 **Usage**: Include in i3 config with `include ~/.config/i3/colors-smart.conf`
 
 #### 2. **`colors-eww.scss`** - EWW Widgets
+
 ```scss
 // Enhanced colors with smart semantic variables
 $background: #b0d5d8;
-$foreground: #52758A;  // Optimized for light themes!
+$foreground: #52758a; // Optimized for light themes!
 
 // Smart semantic colors (theme-adaptive)
 $error: #b84b49;
@@ -186,6 +212,7 @@ $accent: #7e68a0;
 **Usage**: `@import "smart-colors.scss";` in EWW stylesheets
 
 #### 3. **`colors.sh`** - Shell Scripts
+
 ```bash
 # Shell variables for scripts
 color_error='#b84b49'
@@ -198,6 +225,7 @@ color_accent='#7e68a0'
 **Usage**: `source ~/.cache/dots/smart-colors/colors.sh` in shell scripts
 
 #### 4. **`colors.env`** - Environment Variables
+
 ```bash
 # Export-ready environment variables
 export COLOR_ERROR='#b84b49'
@@ -210,6 +238,7 @@ export COLOR_ACCENT='#7e68a0'
 **Usage**: `source ~/.cache/dots/smart-colors/colors.env` to load into environment
 
 #### 5. **`colors-polybar.conf`** - Polybar Status Bar
+
 ```ini
 [colors]
 background = #b0d5d8
@@ -251,13 +280,13 @@ graph LR
 
 Each application type uses its preferred format:
 
-| Application | File Used | Integration Method |
-|-------------|-----------|-------------------|
-| **i3 WM** | `colors-i3.conf` | Include directive in i3 config |
-| **EWW Widgets** | `colors-eww.scss` | SCSS import in stylesheets |
-| **Polybar** | `colors-polybar.conf` | Include directive in polybar config |
-| **Shell Scripts** | `colors.sh` or `colors.env` | Source in scripts or profiles |
-| **Custom Apps** | Any format | Choose the most appropriate format |
+| Application       | File Used                   | Integration Method                  |
+| ----------------- | --------------------------- | ----------------------------------- |
+| **i3 WM**         | `colors-i3.conf`            | Include directive in i3 config      |
+| **EWW Widgets**   | `colors-eww.scss`           | SCSS import in stylesheets          |
+| **Polybar**       | `colors-polybar.conf`       | Include directive in polybar config |
+| **Shell Scripts** | `colors.sh` or `colors.env` | Source in scripts or profiles       |
+| **Custom Apps**   | Any format                  | Choose the most appropriate format  |
 
 ### 🔧 Manual Cache Management
 
@@ -394,7 +423,7 @@ export POLYBAR_THEME_SUCCESS="#00ff00"     # Force specific success color
 Smart colors work with any Base16-compatible color scheme and automatically adapt to:
 
 - **Dark themes**: Prioritizes lighter colors for text, darker colors for backgrounds
-- **Light themes**: Prioritizes darker colors for text, lighter colors for backgrounds  
+- **Light themes**: Prioritizes darker colors for text, lighter colors for backgrounds
 - **🆕 Light theme foreground optimization**: Automatically selects softer foreground colors (like `color5`) instead of harsh black (`#000000`) for better readability
 - **High contrast themes**: Maximizes color differences for accessibility
 - **Limited palettes**: Finds best available approximations
@@ -409,11 +438,12 @@ The system now includes **advanced light theme detection**:
 
 # Example optimizations for light themes:
 # - Background: #f0f0f0 (light)
-# - Original foreground: #000000 (harsh black)  
+# - Original foreground: #000000 (harsh black)
 # - Optimized foreground: #52758A (softer, more readable)
 ```
 
 **Benefits of Light Theme Optimization:**
+
 - **Reduced eye strain**: Softer foreground colors in light themes
 - **Better readability**: Optimal contrast without being harsh
 - **Consistent experience**: Semantic colors work perfectly in both light and dark themes

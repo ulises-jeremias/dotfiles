@@ -83,24 +83,39 @@ COLOR_INFO="#339af0"
 COLOR_ACCENT="#845ef7"
 ```
 
-#### Semantic Color Usage
+#### 🆕 **Optimized Semantic Color Usage**
 
-Use semantic colors in your modules for better theme adaptation:
+**2025 Update**: All polybar modules have been optimized to use **theme-adaptive smart colors** for better visual consistency and reduced eye strain:
 
 ```ini
+# ✅ OPTIMIZED: Use foreground-alt for subtle icons
 [module/cpu]
-format-prefix-foreground = ${colors.accent}    # Important/active elements
-label-foreground = ${colors.info}              # Informational text
+format-prefix-foreground = ${colors.foreground-alt}  # Subtle, consistent
+label-foreground = ${colors.foreground-alt}          # Secondary text
 
-[module/memory]
-format-prefix-foreground = ${colors.info}      # System information
-label-foreground = ${colors.foreground-alt}    # Secondary text
+[module/jgmenu]
+label-foreground = ${colors.foreground-alt}          # Menu icon (was accent)
 
+[module/github]
+label-foreground = ${colors.foreground-alt}          # Notifications (was info)
+
+# ✅ SEMANTIC: Use semantic colors for meaningful states
 [module/battery]
-ramp-capacity-0-foreground = ${colors.error}   # Critical battery
-ramp-capacity-1-foreground = ${colors.warning} # Low battery
-ramp-capacity-foreground = ${colors.success}   # Normal battery
+ramp-capacity-0-foreground = ${colors.error}         # Critical battery
+ramp-capacity-1-foreground = ${colors.warning}       # Low battery
+ramp-capacity-foreground = ${colors.success}         # Normal battery
+
+[module/i3]
+label-focused-underline = ${colors.info}             # Active workspace (was accent)
+label-unfocused-foreground = ${colors.foreground-alt} # Inactive workspaces
 ```
+
+#### **🎨 Smart Color Philosophy**
+
+- **`foreground-alt`**: For icons, subtle elements, secondary text
+- **`accent`**: Reserved for truly important highlights only
+- **`info`**: For informational elements and active states
+- **Semantic colors**: Used appropriately for their meaning (error=red, success=green, etc.)
 
 ---
 
