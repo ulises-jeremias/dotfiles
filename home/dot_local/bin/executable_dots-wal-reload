@@ -196,13 +196,13 @@ reload_eww() {
         fi
     done
 
-    # Use EWW manager to restart all components with new colors
-    if "$eww_manager" restart >/dev/null 2>&1; then
-        show_success "EWW components restarted with new colors"
-        UPDATED_APPS+=("EWW (${updated_configs[*]})")
+    # Restart the EWW daemon to apply new colors to all components
+    if "$eww_manager" daemon restart >/dev/null 2>&1; then
+        show_success "EWW daemon restarted with new colors"
+        UPDATED_APPS+=("EWW daemon (${updated_configs[*]})")
     else
-        show_warning "EWW restart failed (colors still updated)"
-        FAILED_APPS+=("EWW restart")
+        show_warning "EWW daemon restart failed (colors still updated)"
+        FAILED_APPS+=("EWW daemon restart")
     fi
 }
 
@@ -275,7 +275,7 @@ reload_smart_colors() {
     show_status "Generating smart color files for all applications..."
     if dots-smart-colors --generate >/dev/null 2>&1; then
         show_success "Smart color files generated successfully"
-        
+
         # Create symbolic links for easy access
         create_smart_color_links
     else
