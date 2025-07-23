@@ -193,7 +193,7 @@ blend_colors() {
     printf "#%02x%02x%02x" "$result_r" "$result_g" "$result_b"
 }
 
-# CORE FUNCTION: Semantic color lookup table with palette adaptation
+# CORE FUNCTION: Semantic color lookup table with palette adaptation and theme awareness
 get_smart_color() {
     local concept="$1" palette_dominant="$2"
 
@@ -204,76 +204,147 @@ get_smart_color() {
         gray|grey) xrdb -get "color8" 2>/dev/null || echo "#808080"; return ;;
     esac
 
-    # Lookup table: concept|palette_tendency -> semantically correct color
-    case "$concept|$palette_dominant" in
-        # ERROR (always reddish)
-        "error|red") echo "#ff4444" ;;
-        "error|orange") echo "#ff3300" ;;
-        "error|purple") echo "#ff4488" ;;
-        "error|"*) echo "#cc4444" ;;
+    # Detect if current theme is light or dark for adaptive color selection
+    local theme_type
+    if is_light_theme; then
+        theme_type="light"
+    else
+        theme_type="dark"
+    fi
 
-        # WARNING (always orange/yellow)
-        "warning|orange") echo "#ff9900" ;;
-        "warning|yellow") echo "#ffcc00" ;;
-        "warning|red") echo "#ff6600" ;;
-        "warning|"*) echo "#cc8800" ;;
+    # Enhanced lookup table: concept|theme|palette_tendency -> semantically correct color
+    case "$concept|$theme_type|$palette_dominant" in
+        # ERROR (always reddish) - Theme adaptive
+        "error|dark|red") echo "#ff5555" ;;
+        "error|dark|orange") echo "#ff4444" ;;
+        "error|dark|purple") echo "#ff5588" ;;
+        "error|dark|"*) echo "#dd4444" ;;
 
-        # SUCCESS (always greenish)
-        "success|green") echo "#44aa44" ;;
-        "success|cyan") echo "#00cc66" ;;
-        "success|blue") echo "#0099aa" ;;
-        "success|"*) echo "#669944" ;;
+        "error|light|red") echo "#cc0000" ;;
+        "error|light|orange") echo "#bb2200" ;;
+        "error|light|purple") echo "#cc2244" ;;
+        "error|light|"*) echo "#aa2222" ;;
 
-        # INFO (always bluish)
-        "info|blue") echo "#4488ff" ;;
-        "info|cyan") echo "#0099cc" ;;
-        "info|purple") echo "#6666cc" ;;
-        "info|"*) echo "#4488cc" ;;
+        # WARNING (always orange/yellow) - Theme adaptive
+        "warning|dark|orange") echo "#ffaa00" ;;
+        "warning|dark|yellow") echo "#ffdd00" ;;
+        "warning|dark|red") echo "#ff7700" ;;
+        "warning|dark|"*) echo "#dd9900" ;;
 
-        # ACCENT (distinctive highlight)
-        "accent|purple") echo "#aa66ff" ;;
-        "accent|pink") echo "#ff66aa" ;;
-        "accent|orange") echo "#ff8833" ;;
-        "accent|"*) echo "#8866aa" ;;
+        "warning|light|orange") echo "#cc6600" ;;
+        "warning|light|yellow") echo "#bb8800" ;;
+        "warning|light|red") echo "#cc5500" ;;
+        "warning|light|"*) echo "#996600" ;;
 
-        # BASIC COLORS (maintain identity, different from semantic overlap)
-        "red|red") echo "#ee3333" ;;
-        "red|orange") echo "#ff2200" ;;
-        "red|"*) echo "#bb3333" ;;
+        # SUCCESS (always greenish) - Theme adaptive
+        "success|dark|green") echo "#55dd55" ;;
+        "success|dark|cyan") echo "#00dd77" ;;
+        "success|dark|blue") echo "#00aacc" ;;
+        "success|dark|"*) echo "#77bb55" ;;
 
-        "green|green") echo "#33aa33" ;;
-        "green|cyan") echo "#00bb55" ;;
-        "green|"*) echo "#558833" ;;
+        "success|light|green") echo "#008800" ;;
+        "success|light|cyan") echo "#006644" ;;
+        "success|light|blue") echo "#005577" ;;
+        "success|light|"*) echo "#447733" ;;
 
-        "blue|blue") echo "#3377ee" ;;
-        "blue|cyan") echo "#0088bb" ;;
-        "blue|"*) echo "#3377bb" ;;
+        # INFO (bluish/cyan) - Theme adaptive for better contrast
+        "info|dark|blue") echo "#55aaff" ;;
+        "info|dark|cyan") echo "#00dddd" ;;
+        "info|dark|purple") echo "#7777dd" ;;
+        "info|dark|"*) echo "#5599dd" ;;
 
-        "yellow|yellow") echo "#ffdd00" ;;
-        "yellow|orange") echo "#ffcc00" ;;
-        "yellow|"*) echo "#bbbb33" ;;
+        "info|light|blue") echo "#0066cc" ;;
+        "info|light|cyan") echo "#006699" ;;
+        "info|light|purple") echo "#444499" ;;
+        "info|light|"*) echo "#336699" ;;
 
-        "cyan|cyan") echo "#00dddd" ;;
-        "cyan|blue") echo "#0099cc" ;;
-        "cyan|"*) echo "#4499aa" ;;
+        # ACCENT (distinctive highlight) - Theme adaptive
+        "accent|dark|purple") echo "#bb77ff" ;;
+        "accent|dark|pink") echo "#ff77bb" ;;
+        "accent|dark|orange") echo "#ff9944" ;;
+        "accent|dark|"*) echo "#9977bb" ;;
 
-        "magenta|purple"|"purple|purple") echo "#dd44dd" ;;
-        "magenta|pink"|"purple|pink") echo "#ff66cc" ;;
-        "magenta|"*|"purple|"*) echo "#bb55aa" ;;
+        "accent|light|purple") echo "#663399" ;;
+        "accent|light|pink") echo "#cc4477" ;;
+        "accent|light|orange") echo "#cc5522" ;;
+        "accent|light|"*) echo "#554477" ;;
 
-        "orange|orange") echo "#ff7700" ;;
-        "orange|red") echo "#ff5500" ;;
-        "orange|"*) echo "#bb7700" ;;
+        # BASIC COLORS (maintain identity) - Theme adaptive
+        "red|dark|red") echo "#ff4444" ;;
+        "red|dark|orange") echo "#ff3300" ;;
+        "red|dark|"*) echo "#cc3333" ;;
 
-        "pink|pink") echo "#ff88cc" ;;
-        "pink|purple") echo "#ff66aa" ;;
-        "pink|"*) echo "#dd99bb" ;;
+        "red|light|red") echo "#cc0000" ;;
+        "red|light|orange") echo "#bb1100" ;;
+        "red|light|"*) echo "#881111" ;;
 
-        "brown|red") echo "#aa4422" ;;
-        "brown|orange") echo "#cc6633" ;;
-        "brown|"*) echo "#996633" ;;
+        "green|dark|green") echo "#44cc44" ;;
+        "green|dark|cyan") echo "#00cc66" ;;
+        "green|dark|"*) echo "#669944" ;;
 
-        # FALLBACKS
+        "green|light|green") echo "#008800" ;;
+        "green|light|cyan") echo "#006644" ;;
+        "green|light|"*) echo "#446622" ;;
+
+        "blue|dark|blue") echo "#4488ff" ;;
+        "blue|dark|cyan") echo "#0099dd" ;;
+        "blue|dark|"*) echo "#4488cc" ;;
+
+        "blue|light|blue") echo "#0066cc" ;;
+        "blue|light|cyan") echo "#005588" ;;
+        "blue|light|"*) echo "#224499" ;;
+
+        "yellow|dark|yellow") echo "#ffee00" ;;
+        "yellow|dark|orange") echo "#ffdd00" ;;
+        "yellow|dark|"*) echo "#cccc44" ;;
+
+        "yellow|light|yellow") echo "#cc9900" ;;
+        "yellow|light|orange") echo "#bb8800" ;;
+        "yellow|light|"*) echo "#887744" ;;
+
+        "cyan|dark|cyan") echo "#00ffff" ;;
+        "cyan|dark|blue") echo "#00aadd" ;;
+        "cyan|dark|"*) echo "#55aacc" ;;
+
+        "cyan|light|cyan") echo "#008899" ;;
+        "cyan|light|blue") echo "#006677" ;;
+        "cyan|light|"*) echo "#335566" ;;
+
+        "magenta|dark|purple"|"purple|dark|purple") echo "#ee55ee" ;;
+        "magenta|dark|pink"|"purple|dark|pink") echo "#ff77dd" ;;
+        "magenta|dark|"*|"purple|dark|"*) echo "#cc66bb" ;;
+
+        "magenta|light|purple"|"purple|light|purple") echo "#883388" ;;
+        "magenta|light|pink"|"purple|light|pink") echo "#aa3377" ;;
+        "magenta|light|"*|"purple|light|"*) echo "#663355" ;;
+
+        "orange|dark|orange") echo "#ff8800" ;;
+        "orange|dark|red") echo "#ff6600" ;;
+        "orange|dark|"*) echo "#cc8800" ;;
+
+        "orange|light|orange") echo "#cc5500" ;;
+        "orange|light|red") echo "#bb4400" ;;
+        "orange|light|"*) echo "#885522" ;;
+
+        "pink|dark|pink") echo "#ff99dd" ;;
+        "pink|dark|purple") echo "#ff77cc" ;;
+        "pink|dark|"*) echo "#dd99cc" ;;
+
+        "pink|light|pink") echo "#cc5588" ;;
+        "pink|light|purple") echo "#bb4477" ;;
+        "pink|light|"*) echo "#884466" ;;
+
+        "brown|dark|red") echo "#bb5533" ;;
+        "brown|dark|orange") echo "#dd7744" ;;
+        "brown|dark|"*) echo "#aa7744" ;;
+
+        "brown|light|red") echo "#773311" ;;
+        "brown|light|orange") echo "#884422" ;;
+        "brown|light|"*) echo "#664422" ;;
+
+        # FALLBACKS - Theme adaptive
+        "dark|"*) echo "#999999" ;;
+        "light|"*) echo "#666666" ;;
         *) echo "#888888" ;;
     esac
 }
