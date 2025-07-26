@@ -17,21 +17,9 @@
 ---
 
 <div align="center">
-  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin: 20px 0; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
-    <h2 style="color: white; margin: 0; font-size: 24px;">🎉 NEW: Template Repository Available!</h2>
-    <p style="color: #f0f8ff; margin: 10px 0; font-size: 16px;">
-      Want to use this powerful framework for your own dotfiles?
-    </p>
-    <p style="color: #ffffff; margin: 10px 0; font-size: 18px; font-weight: bold;">
-      ✨ Get the reusable template version ✨
-    </p>
-    <a href="https://github.com/ulises-jeremias/dotfiles-template" style="display: inline-block; background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px; transition: all 0.3s ease;">
-      🚀 Use Template Repository
-    </a>
-    <p style="color: #e6f3ff; margin: 10px 0; font-size: 14px;">
-      Pre-sanitized • Ready to fork • Easy to customize • Regularly updated
-    </p>
-  </div>
+  <a href="https://github.com/ulises-jeremias/dotfiles-template">
+    <img src="./static/template-banner.svg" alt="Template Repository Available - Click to use HorneroConfig Template" width="800"/>
+  </a>
 </div>
 
 ---
