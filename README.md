@@ -14,15 +14,11 @@
 [🚀 Quick Start](#-quick-installation) •
 [🤝 Contributing](CONTRIBUTING.md)
 
----
-
 <div align="center">
   <a href="https://github.com/ulises-jeremias/dotfiles-template">
     <img src="./static/template-banner.svg" alt="Template Repository Available - Click to use HorneroConfig Template" width="800"/>
   </a>
 </div>
-
----
 
 [![Awesome](https://awesome.re/mentioned-badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
 [![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable&style=for-the-badge)](https://aur.archlinux.org/packages/dots-stable)
@@ -30,13 +26,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)](https://archlinux.org/)
 
-<img alt="" align="right" width="400px" src="./static/collage.png"/>
-
 </div>
 
----
-
 ## 🌟 **What is HorneroConfig?**
+
+<img alt="" align="right" width="400px" src="./static/collage.png"/>
 
 **HorneroConfig** is a cutting-edge dotfiles framework that transforms your Linux desktop into a **masterpiece of functionality and beauty**. Named after the industrious hornero bird 🐦, renowned for its skillful nest-building, this framework empowers you to craft the perfect digital workspace.
 
@@ -49,8 +43,6 @@
 - 🪟 **Multi-WM Support** - Works with i3, Openbox, XFCE4, and more
 - 🛡️ **Security-First** - Built-in security auditing and hardening
 - 📦 **Zero Maintenance** - Powered by chezmoi for seamless updates
-
----
 
 ## ✨ **Key Features**
 
@@ -79,8 +71,6 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 - **⚡ Auto-Application**: Instantly applies to Polybar, EWW, i3, and all scripts
 - **🔄 Live Updates**: Colors refresh automatically when you change wallpapers
 
----
-
 ## 🎨 **Gallery**
 
 <div align="center">
@@ -98,8 +88,6 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 <img src="./static/screenshot-launchpad.png" alt="Rofi Launcher" width="400px"/> <img src="./static/screenshot-spotlight-dark.png" alt="Spotlight Dark" width="400px"/>
 
 </div>
-
----
 
 ## 🚀 **Quick Installation**
 
@@ -154,8 +142,6 @@ cd /tmp/dots-stable && makepkg -si
 
 </details>
 
----
-
 ## 🎨 **Rice Themes Collection**
 
 Choose from our curated collection of stunning desktop themes:
@@ -199,8 +185,6 @@ dots rice apply landscape-dark
 dots rice list
 ```
 
----
-
 ## 🔧 **Core Applications**
 
 <div align="center">
@@ -218,8 +202,6 @@ dots rice list
 | 🎛️ **Widgets**        | [EWW](https://github.com/elkowar/eww)                                              | Modern system widgets |
 
 </div>
-
----
 
 ## 🛠️ **Powerful Automation**
 
@@ -265,8 +247,6 @@ dots smart-colors --concept=error --format=hex
 dots smart-colors --concept=success --format=rgb
 ```
 
----
-
 ## 🛡️ **Security & Privacy**
 
 ### 🔒 **Built-in Security Features**
@@ -286,8 +266,6 @@ dots security-audit --apply
 # Check system security status
 dots security-audit --status
 ```
-
----
 
 ## 🧪 **Testing & Development**
 
@@ -325,8 +303,6 @@ pre-commit install
 pre-commit run --all-files
 ```
 
----
-
 ## 🌍 **Platform Support**
 
 <div align="center">
@@ -342,8 +318,6 @@ pre-commit run --all-files
 
 </div>
 
----
-
 ## 📖 **Documentation**
 
 Comprehensive guides for every aspect:
@@ -355,8 +329,6 @@ Comprehensive guides for every aspect:
 - 🎛️ [**EWW Widgets**](https://ulises-jeremias.github.io/dotfiles/#EWW-Widgets) - Modern widgets
 - 🔧 [**Scripts Guide**](https://ulises-jeremias.github.io/dotfiles/#Dots-Scripts) - Automation tools
 - 🛡️ [**Security**](https://ulises-jeremias.github.io/dotfiles/#Security) - Privacy & security
-
----
 
 ## 🤝 **Contributing**
 
@@ -380,8 +352,6 @@ _Made with ❤️ by our amazing community_
 
 </div>
 
----
-
 <div align="center">
 
 ### 💝 **Show Your Support**
@@ -389,8 +359,6 @@ _Made with ❤️ by our amazing community_
 If HorneroConfig has improved your Linux experience, consider:
 
 ⭐ **Star this repository** • 🐦 **Share on social media** • 🤝 **Contribute to the project**
-
----
 
 **🏠 HorneroConfig - Building the perfect digital nest, one configuration at a time**
 
