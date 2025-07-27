@@ -4,8 +4,6 @@ include config.d/autostart.conf
 include config.d/colors.conf
 include config.d/windows-control.conf
 
-# Documentation: https://i3wm.org/docs/userguide.html
-
 # font
 # TODO: Figure out if this font is used anywhere
 font pango:monospace 0
@@ -170,10 +168,9 @@ bindsym $Mod+Shift+space focus mode_toggle
 bindsym $Mod+Shift+f exec --no-startup-id ~/.config/i3/smart-float.sh
 
 # Use Mouse+$mod to drag floating windows
-floating_modifier  $mod
+floating_modifier $mod
 
 # Default floating window size (when windows become floating)
-floating_minimum_size 400 x 300
 floating_maximum_size 1400 x 900
 
 bindsym $Mod+Shift+z move scratchpad

@@ -16,10 +16,12 @@ else
     sleep 0.1  # Small delay to ensure floating mode is applied
 
     # Get screen dimensions
-    eval $(xdotool getdisplaygeometry --shell)
+    eval "$(xdotool getdisplaygeometry --shell)"
 
     # Calculate comfortable size (70% of screen width, 65% of screen height)
+    # shellcheck disable=SC2153
     width=$((WIDTH * 70 / 100))
+    # shellcheck disable=SC2153
     height=$((HEIGHT * 65 / 100))
 
     # Ensure minimum and maximum sizes
