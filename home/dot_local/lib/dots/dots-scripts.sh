@@ -7,6 +7,7 @@ scripts_list=(
     "📦 checkupdates: Check for available system package updates"
     "🖼️ feh-blur: Blur the background when using feh to set wallpaper"
     "📨 git-notify: Send notifications when git commits are made"
+    "🎨 gtk-theme: Intelligent GTK theme management with rice integration and auto-detection"
     "💾 i3-resurrect-rofi: Rofi menu to manage i3-resurrect workspace profiles"
     "📋 jgmenu: Launch jgmenu application launcher"
     "🎤 microphone: Monitor and toggle microphone mute status with visual indicators"

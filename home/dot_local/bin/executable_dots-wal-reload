@@ -408,6 +408,28 @@ reload_additional_apps() {
     # Note: Polybar smart color integration is handled by the smart colors section
 }
 
+# Function to reload GTK themes
+reload_gtk_themes() {
+    show_status "Updating GTK themes to match wallpaper..."
+    
+    # Source GTK theme manager
+    if [[ -f "$HOME/.local/lib/dots/gtk-theme-manager.sh" ]]; then
+        source "$HOME/.local/lib/dots/gtk-theme-manager.sh"
+        
+        # Apply GTK theme based on current rice (if any) or wallpaper
+        if apply_rice_gtk_theme 2>/dev/null; then
+            show_success "GTK themes updated automatically"
+            UPDATED_APPS+=("GTK themes (automatic)")
+        else
+            show_warning "GTK theme update failed, keeping current theme"
+            FAILED_APPS+=("GTK themes")
+        fi
+    else
+        show_warning "GTK theme manager not found, skipping GTK theme update"
+        SKIPPED_APPS+=("GTK themes")
+    fi
+}
+
 # Function to update current rice if applicable
 update_current_rice() {
     local rice_config="$HOME/.cache/dots/current_rice"
@@ -478,6 +500,9 @@ main() {
     reload_eww
     reload_discord
     reload_additional_apps
+
+    # Apply GTK themes to match wallpaper
+    reload_gtk_themes
 
     # Apply smart colors after all standard wal operations
     reload_smart_colors

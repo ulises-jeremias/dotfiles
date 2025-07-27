@@ -42,6 +42,7 @@ dots <script>   # Run a specific script (with optional flags)
 - `dependencies` – Check and install required system dependencies
 - `feh-blur` – Blur the background when using feh to set wallpaper
 - `git-notify` – Send notifications when git commits are made
+- `gtk-theme` – **[NEW]** Intelligent GTK theme management with rice integration and auto-detection
 - `i3-resurrect-rofi` – Manage i3-resurrect workspace profiles via Rofi menu
 - `jgmenu` – Launch jgmenu application launcher
 - `microphone` – Monitor and toggle microphone mute status with visual indicators
@@ -100,7 +101,7 @@ dots-smart-colors --export --format=i3        # i3 configuration
 - **Semantic mapping**: Intelligent error/success/warning color selection
 - **Multiple formats**: Shell, Polybar, EWW, i3 export support
 - **Fallback system**: Always provides valid colors
-- **Simple variables**: Clean COLOR_ERROR, COLOR_SUCCESS format (no SMART_ prefix)
+- **Simple variables**: Clean COLOR*ERROR, COLOR_SUCCESS format (no SMART* prefix)
 
 ### Enhanced `dots-wal-reload`
 
@@ -118,6 +119,60 @@ When you change wallpapers via `wpg`, the system now:
    - **Scripts**: Weather, player, jgmenu with smart colors
 
 **No manual configuration needed** - everything happens automatically!
+
+### Enhanced `dots-gtk-theme`
+
+**Purpose**: Intelligent GTK theme management integrated with the rice system.
+
+**Core Features:**
+
+- **🎨 Rice Integration**: Automatically applies GTK themes based on rice configuration
+- **🤖 Smart Detection**: Analyzes wallpaper brightness to suggest optimal themes
+- **🔄 Auto-Application**: Integrated with `dots-wal-reload` for seamless theme switching
+- **📋 Theme Management**: List, apply, and analyze installed GTK themes
+
+**Usage Examples:**
+
+```bash
+# List all installed GTK themes
+dots gtk-theme list
+
+# Show current theme
+dots gtk-theme current
+
+# Apply specific theme
+dots gtk-theme apply Orchis-Dark-Compact
+
+# Auto-detect optimal theme for current wallpaper
+dots gtk-theme auto
+
+# Apply GTK theme for specific rice
+dots gtk-theme rice space
+
+# Analyze wallpaper and suggest theme
+dots gtk-theme detect ~/Pictures/wallpaper.jpg
+```
+
+**Automatic Integration:**
+When you switch rice themes or change wallpapers:
+
+1. **Rice Configuration**: Each rice can specify preferred GTK theme
+2. **Smart Analysis**: System analyzes wallpaper brightness and colors
+3. **Theme Selection**: Automatically chooses light/dark theme variants
+4. **Live Application**: GTK theme updates immediately for all applications
+
+**Rice Configuration Support:**
+
+```bash
+# In rice config.sh files:
+GTK_THEME="Orchis-Dark-Compact"    # Specific theme
+ICON_THEME="Numix-Circle"          # Icon theme
+PREFER_DARK_THEME="true"           # Dark preference
+
+# Or use auto-detection:
+GTK_THEME="auto"                   # Auto-detect based on wallpaper
+PREFER_DARK_THEME="auto"           # Auto-detect light/dark preference
+```
 
 ---
 

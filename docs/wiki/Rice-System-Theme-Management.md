@@ -64,6 +64,7 @@ dots rofi-rice-selector
 - **EWW widgets**: Enhanced `colors.scss` with semantic variables
 - **Polybar modules**: Smart environment variables
 - **i3 window manager**: Generated `colors-smart.conf`
+- **GTK applications**: Automatic theme coordination with brightness detection
 - **Scripts**: Weather, player, and other polybar scripts
 
 ### Smart Colors vs Pywal
@@ -75,6 +76,70 @@ dots rofi-rice-selector
 | Readability      | ⚠️ Sometimes poor    | ✅ Always optimized    |
 | Theme adaptation | ⚠️ Basic             | ✅ Advanced            |
 | Fallback system  | ❌ None              | ✅ Robust              |
+
+---
+
+## 🎨 GTK Theme Integration
+
+### Automatic GTK Theme Management
+
+When you switch rice themes, the system now automatically applies **GTK theme coordination**:
+
+```bash
+# Complete theme switching process:
+# 1. Apply rice theme → 2. Generate pywal colors → 3. Apply GTK theme → 4. Apply smart colors → 5. Update all applications
+dots rofi-rice-selector
+```
+
+### What Gets Coordinated
+
+**🎯 Intelligent GTK Selection:**
+
+- **Theme brightness**: Automatically detects wallpaper brightness for optimal light/dark theme selection
+- **Rice preferences**: Each rice can specify preferred GTK themes or use auto-detection
+- **Icon coordination**: Icon themes automatically coordinate with the overall aesthetic
+- **Application consistency**: All GTK applications instantly adopt the new theme
+
+**🔄 Automatic GTK Updates:**
+
+- **GTK2/GTK3**: Both GTK versions updated simultaneously
+- **gsettings**: GNOME settings updated for running applications
+- **XFCE integration**: Automatic XFCE4 theme coordination when running
+- **Live updates**: Running applications reload themes without restart
+
+### Rice GTK Configuration
+
+Each rice can specify GTK preferences in its `config.sh`:
+
+```bash
+# Explicit theme specification
+GTK_THEME="Orchis-Dark-Compact"    # Specific theme name
+ICON_THEME="Numix-Circle"          # Icon theme
+PREFER_DARK_THEME="true"           # Dark preference
+
+# Auto-detection (recommended)
+GTK_THEME="auto"                   # Auto-detect based on wallpaper
+PREFER_DARK_THEME="auto"           # Auto-detect light/dark preference
+```
+
+### Manual GTK Management
+
+```bash
+# List available GTK themes
+dots gtk-theme list
+
+# Show current theme
+dots gtk-theme current
+
+# Apply specific theme
+dots gtk-theme apply Orchis-Light-Compact
+
+# Auto-detect optimal theme
+dots gtk-theme auto
+
+# Apply GTK theme for specific rice
+dots gtk-theme rice space
+```
 
 ---
 
@@ -407,6 +472,7 @@ done
 ### Works With
 
 - ✅ **All window managers** (i3, Openbox, XFCE4)
+- ✅ **GTK applications** with automatic theme coordination
 - ✅ **Multiple monitors** with per-monitor wallpapers
 - ✅ **Different screen resolutions**
 - ✅ **Various image formats** (JPG, PNG, WebP)
@@ -416,6 +482,7 @@ done
 - **Polybar configurations** for status bar theming
 - **EWW widgets** for dashboard coordination
 - **Rofi launchers** for unified visual experience
+- **GTK applications** for complete theme consistency
 - **Terminal themes** for complete coordination
 
 ---
