@@ -222,32 +222,63 @@ detect_optimal_gtk_theme() {
     local detected_theme="Orchis-Light-Compact"  # Default
     local prefer_dark="false"
     
-    # If smart colors are available, use them to detect theme preference
-    if command -v dots-smart-colors >/dev/null 2>&1 && [[ -f "$wallpaper_path" ]]; then
-        log "INFO" "Analyzing wallpaper for optimal theme selection"
+    # First, try to use pywal's background color to determine if theme should be dark or light
+    if [[ -f "$HOME/.cache/wal/colors" ]]; then
+        log "INFO" "Analyzing pywal colors for optimal theme selection"
         
-        # Get wallpaper brightness analysis
-        local brightness_info
-        brightness_info=$(dots-smart-colors analyze "$wallpaper_path" 2>/dev/null | grep -E "(dark|light|bright)" || echo "")
+        # Read background color from pywal
+        local bg_color
+        bg_color=$(head -n 1 "$HOME/.cache/wal/colors" | tr -d '#')
         
-        if [[ "$brightness_info" =~ dark ]] || [[ "$brightness_info" =~ "low brightness" ]]; then
-            # Dark wallpaper -> suggest dark theme
-            local dark_themes=(
-                "Orchis-Dark-Compact"
-                "Arc-Dark"
-                "Adwaita-dark"
-                "Breeze-Dark"
-            )
+        if [[ -n "$bg_color" ]]; then
+            # Convert hex to RGB and calculate brightness
+            local r=$((16#${bg_color:0:2}))
+            local g=$((16#${bg_color:2:2}))
+            local b=$((16#${bg_color:4:2}))
+            local brightness=$((r + g + b))
             
-            for theme in "${dark_themes[@]}"; do
-                if is_gtk_theme_installed "$theme"; then
-                    detected_theme="$theme"
-                    prefer_dark="true"
-                    break
-                fi
-            done
-        else
-            # Light wallpaper -> suggest light theme
+            # If background is dark (low brightness), suggest dark theme
+            if [[ $brightness -lt 384 ]]; then  # 384 = 128 * 3 (threshold for dark)
+                log "INFO" "Dark background detected (brightness: $brightness), suggesting dark theme"
+                local dark_themes=(
+                    "Orchis-Dark-Compact"
+                    "Arc-Dark"
+                    "Adwaita-dark"
+                    "Breeze-Dark"
+                )
+                
+                for theme in "${dark_themes[@]}"; do
+                    if is_gtk_theme_installed "$theme"; then
+                        detected_theme="$theme"
+                        prefer_dark="true"
+                        break
+                    fi
+                done
+            else
+                log "INFO" "Light background detected (brightness: $brightness), suggesting light theme"
+                local light_themes=(
+                    "Orchis-Light-Compact"
+                    "Arc"
+                    "Adwaita"
+                    "Breeze"
+                )
+                
+                for theme in "${light_themes[@]}"; do
+                    if is_gtk_theme_installed "$theme"; then
+                        detected_theme="$theme"
+                        prefer_dark="false"
+                        break
+                    fi
+                done
+            fi
+        fi
+    elif command -v dots-smart-colors >/dev/null 2>&1; then
+        # Fallback: use smart-colors to analyze current theme
+        log "INFO" "Using smart-colors to analyze current theme"
+        
+        # Check if current theme is light or dark using smart-colors logic
+        if dots-smart-colors --analyze 2>/dev/null | grep -q "light theme\|bright"; then
+            log "INFO" "Light theme detected, suggesting light GTK theme"
             local light_themes=(
                 "Orchis-Light-Compact"
                 "Arc"
@@ -262,7 +293,25 @@ detect_optimal_gtk_theme() {
                     break
                 fi
             done
+        else
+            log "INFO" "Dark theme detected, suggesting dark GTK theme"
+            local dark_themes=(
+                "Orchis-Dark-Compact"
+                "Arc-Dark"
+                "Adwaita-dark"
+                "Breeze-Dark"
+            )
+            
+            for theme in "${dark_themes[@]}"; do
+                if is_gtk_theme_installed "$theme"; then
+                    detected_theme="$theme"
+                    prefer_dark="true"
+                    break
+                fi
+            done
         fi
+    else
+        log "WARN" "No color analysis available, using default light theme"
     fi
     
     log "INFO" "Detected optimal theme: $detected_theme (dark: $prefer_dark)"

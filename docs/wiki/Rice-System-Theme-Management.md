@@ -165,7 +165,9 @@ The rofi rice selector provides:
 - **Current theme highlighting**
 - **Background image selection** for chosen rice
 - **Instant preview** of color schemes
-- **Easy keyboard navigation**---
+- **Easy keyboard navigation**
+
+---
 
 ## 🏗️ Rice Architecture
 
