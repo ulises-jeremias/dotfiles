@@ -4,8 +4,9 @@
 ## Licensed under MIT.
 ##
 ## Smart color palette analyzer and theme-adaptive color selector
-## Analyzes your current X resources color palette and suggests the best colors
-## for different semantic concepts (error, warning, success, info, etc.)
+## Analyzes your current X resources color palette and intelligently selects optimal colors
+## for different semantic concepts (error, warning, success, info, etc.) with enhanced contrast
+## and Material Design inspired choices that adapt beautifully to light and dark themes.
 ##
 ## Usage:
 ##     @script.name [OPTION] ARGUMENTS...
@@ -172,6 +173,59 @@ get_palette_average() {
     fi
 }
 
+# Enhanced color blending for better harmony and contrast
+enhance_color_contrast() {
+    local color="$1" concept="$2"
+    local bg_color; bg_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
+    local bg_luminance; bg_luminance=$(calculate_luminance "$bg_color")
+    
+    # For light themes, ensure colors are dark enough for good contrast
+    if is_light_theme; then
+        # Ensure minimum contrast ratio for readability
+        local color_luminance; color_luminance=$(calculate_luminance "$color")
+        
+        # If color is too light for a light theme, darken it
+        if [[ $color_luminance -gt 180 ]]; then
+            # Darken the color by reducing RGB values
+            local hex="${color#\#}"
+            local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+            
+            # Reduce brightness by 30-40% for better contrast
+            r=$(( (r * 60) / 100 ))
+            g=$(( (g * 60) / 100 ))
+            b=$(( (b * 60) / 100 ))
+            
+            printf "#%02x%02x%02x" "$r" "$g" "$b"
+        else
+            echo "$color"
+        fi
+    else
+        # For dark themes, ensure colors are bright enough
+        local color_luminance; color_luminance=$(calculate_luminance "$color")
+        
+        # If color is too dark for a dark theme, brighten it slightly
+        if [[ $color_luminance -lt 80 ]]; then
+            # Brighten the color
+            local hex="${color#\#}"
+            local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+            
+            # Increase brightness by 20-30%
+            r=$(( (r * 130) / 100 ))
+            g=$(( (g * 130) / 100 ))
+            b=$(( (b * 130) / 100 ))
+            
+            # Clamp to max 255
+            [[ $r -gt 255 ]] && r=255
+            [[ $g -gt 255 ]] && g=255
+            [[ $b -gt 255 ]] && b=255
+            
+            printf "#%02x%02x%02x" "$r" "$g" "$b"
+        else
+            echo "$color"
+        fi
+    fi
+}
+
 # Blend two colors with specified percentage
 blend_colors() {
     local color1="$1" color2="$2" blend_percent="$3"
@@ -213,139 +267,140 @@ get_smart_color() {
     fi
 
     # Enhanced lookup table: concept|theme|palette_tendency -> semantically correct color
+    # NEW: Better contrast ratios and more beautiful color selections
     case "$concept|$theme_type|$palette_dominant" in
-        # ERROR (always reddish) - Theme adaptive
-        "error|dark|red") echo "#ff5555" ;;
-        "error|dark|orange") echo "#ff4444" ;;
-        "error|dark|purple") echo "#ff5588" ;;
-        "error|dark|"*) echo "#dd4444" ;;
+        # ERROR (always reddish) - Enhanced contrast for better readability
+        "error|dark|red") echo "#ff6b6b" ;;        # More vibrant red for dark themes
+        "error|dark|orange") echo "#ff5722" ;;     # Orange-red blend
+        "error|dark|purple") echo "#e91e63" ;;     # Pink-red for purple themes
+        "error|dark|"*) echo "#f44336" ;;          # Material red default
 
-        "error|light|red") echo "#cc0000" ;;
-        "error|light|orange") echo "#bb2200" ;;
-        "error|light|purple") echo "#cc2244" ;;
-        "error|light|"*) echo "#aa2222" ;;
+        "error|light|red") echo "#d32f2f" ;;       # Darker red for light themes
+        "error|light|orange") echo "#bf360c" ;;    # Deep orange-red
+        "error|light|purple") echo "#ad1457" ;;    # Deep pink-red
+        "error|light|"*) echo "#c62828" ;;         # Darker material red
 
-        # WARNING (always orange/yellow) - Theme adaptive
-        "warning|dark|orange") echo "#ffaa00" ;;
-        "warning|dark|yellow") echo "#ffdd00" ;;
-        "warning|dark|red") echo "#ff7700" ;;
-        "warning|dark|"*) echo "#dd9900" ;;
+        # WARNING (always orange/yellow) - Better harmony with backgrounds
+        "warning|dark|orange") echo "#ff9800" ;;   # Vibrant orange
+        "warning|dark|yellow") echo "#ffc107" ;;   # Amber for visibility
+        "warning|dark|red") echo "#ff7043" ;;      # Orange-red warning
+        "warning|dark|"*) echo "#ff8f00" ;;        # Golden orange
 
-        "warning|light|orange") echo "#cc6600" ;;
-        "warning|light|yellow") echo "#bb8800" ;;
-        "warning|light|red") echo "#cc5500" ;;
-        "warning|light|"*) echo "#996600" ;;
+        "warning|light|orange") echo "#ef6c00" ;;  # Deep orange
+        "warning|light|yellow") echo "#f57f17" ;;  # Dark amber
+        "warning|light|red") echo "#d84315" ;;     # Deep orange-red
+        "warning|light|"*) echo "#e65100" ;;       # Dark orange
 
-        # SUCCESS (always greenish) - Theme adaptive
-        "success|dark|green") echo "#55dd55" ;;
-        "success|dark|cyan") echo "#00dd77" ;;
-        "success|dark|blue") echo "#00aacc" ;;
-        "success|dark|"*) echo "#77bb55" ;;
+        # SUCCESS (always greenish) - Enhanced natural greens
+        "success|dark|green") echo "#4caf50" ;;    # Material green
+        "success|dark|cyan") echo "#00bcd4" ;;     # Cyan-green for freshness
+        "success|dark|blue") echo "#2196f3" ;;     # Blue-green alternative
+        "success|dark|"*) echo "#8bc34a" ;;        # Light green default
 
-        "success|light|green") echo "#008800" ;;
-        "success|light|cyan") echo "#006644" ;;
-        "success|light|blue") echo "#005577" ;;
-        "success|light|"*) echo "#447733" ;;
+        "success|light|green") echo "#2e7d32" ;;   # Dark forest green
+        "success|light|cyan") echo "#00838f" ;;    # Dark cyan-green
+        "success|light|blue") echo "#1565c0" ;;    # Dark blue alternative
+        "success|light|"*) echo "#689f38" ;;       # Olive green
 
-        # INFO (bluish/cyan) - Theme adaptive for better contrast
-        "info|dark|blue") echo "#55aaff" ;;
-        "info|dark|cyan") echo "#00dddd" ;;
-        "info|dark|purple") echo "#7777dd" ;;
-        "info|dark|"*) echo "#5599dd" ;;
+        # INFO (bluish/cyan) - Better contrast and readability
+        "info|dark|blue") echo "#2196f3" ;;        # Material blue
+        "info|dark|cyan") echo "#00bcd4" ;;        # Bright cyan
+        "info|dark|purple") echo "#9c27b0" ;;      # Purple-blue
+        "info|dark|"*) echo "#03a9f4" ;;           # Light blue default
 
-        "info|light|blue") echo "#0066cc" ;;
-        "info|light|cyan") echo "#006699" ;;
-        "info|light|purple") echo "#444499" ;;
-        "info|light|"*) echo "#336699" ;;
+        "info|light|blue") echo "#1976d2" ;;       # Dark blue
+        "info|light|cyan") echo "#0097a7" ;;       # Dark cyan
+        "info|light|purple") echo "#7b1fa2" ;;     # Dark purple
+        "info|light|"*) echo "#0288d1" ;;          # Medium blue
 
-        # ACCENT (distinctive highlight) - Theme adaptive
-        "accent|dark|purple") echo "#bb77ff" ;;
-        "accent|dark|pink") echo "#ff77bb" ;;
-        "accent|dark|orange") echo "#ff9944" ;;
-        "accent|dark|"*) echo "#9977bb" ;;
+        # ACCENT (distinctive highlight) - More vibrant and theme-adaptive
+        "accent|dark|purple") echo "#9c27b0" ;;    # Vibrant purple
+        "accent|dark|pink") echo "#e91e63" ;;      # Material pink
+        "accent|dark|orange") echo "#ff5722" ;;    # Deep orange
+        "accent|dark|"*) echo "#673ab7" ;;         # Deep purple default
 
-        "accent|light|purple") echo "#663399" ;;
-        "accent|light|pink") echo "#cc4477" ;;
-        "accent|light|orange") echo "#cc5522" ;;
-        "accent|light|"*) echo "#554477" ;;
+        "accent|light|purple") echo "#6a1b9a" ;;   # Dark purple
+        "accent|light|pink") echo "#c2185b" ;;     # Dark pink
+        "accent|light|orange") echo "#d84315" ;;   # Dark orange
+        "accent|light|"*) echo "#512da8" ;;        # Dark purple
 
-        # BASIC COLORS (maintain identity) - Theme adaptive
-        "red|dark|red") echo "#ff4444" ;;
-        "red|dark|orange") echo "#ff3300" ;;
-        "red|dark|"*) echo "#cc3333" ;;
+        # BASIC COLORS (maintain identity) - Better theme adaptation
+        "red|dark|red") echo "#f44336" ;;          # Material red
+        "red|dark|orange") echo "#ff5722" ;;       # Orange-red
+        "red|dark|"*) echo "#e53935" ;;            # Bright red
 
-        "red|light|red") echo "#cc0000" ;;
-        "red|light|orange") echo "#bb1100" ;;
-        "red|light|"*) echo "#881111" ;;
+        "red|light|red") echo "#d32f2f" ;;         # Dark red
+        "red|light|orange") echo "#bf360c" ;;      # Dark orange-red
+        "red|light|"*) echo "#c62828" ;;           # Deep red
 
-        "green|dark|green") echo "#44cc44" ;;
-        "green|dark|cyan") echo "#00cc66" ;;
-        "green|dark|"*) echo "#669944" ;;
+        "green|dark|green") echo "#4caf50" ;;      # Material green
+        "green|dark|cyan") echo "#26a69a" ;;       # Teal green
+        "green|dark|"*) echo "#66bb6a" ;;          # Light green
 
-        "green|light|green") echo "#008800" ;;
-        "green|light|cyan") echo "#006644" ;;
-        "green|light|"*) echo "#446622" ;;
+        "green|light|green") echo "#388e3c" ;;     # Dark green
+        "green|light|cyan") echo "#00695c" ;;      # Dark teal
+        "green|light|"*) echo "#2e7d32" ;;         # Forest green
 
-        "blue|dark|blue") echo "#4488ff" ;;
-        "blue|dark|cyan") echo "#0099dd" ;;
-        "blue|dark|"*) echo "#4488cc" ;;
+        "blue|dark|blue") echo "#2196f3" ;;        # Material blue
+        "blue|dark|cyan") echo "#00bcd4" ;;        # Cyan-blue
+        "blue|dark|"*) echo "#42a5f5" ;;           # Light blue
 
-        "blue|light|blue") echo "#0066cc" ;;
-        "blue|light|cyan") echo "#005588" ;;
-        "blue|light|"*) echo "#224499" ;;
+        "blue|light|blue") echo "#1976d2" ;;       # Dark blue
+        "blue|light|cyan") echo "#0097a7" ;;       # Dark cyan
+        "blue|light|"*) echo "#1565c0" ;;          # Deep blue
 
-        "yellow|dark|yellow") echo "#ffee00" ;;
-        "yellow|dark|orange") echo "#ffdd00" ;;
-        "yellow|dark|"*) echo "#cccc44" ;;
+        "yellow|dark|yellow") echo "#ffeb3b" ;;    # Bright yellow
+        "yellow|dark|orange") echo "#ffc107" ;;    # Amber
+        "yellow|dark|"*) echo "#ffca28" ;;         # Golden yellow
 
-        "yellow|light|yellow") echo "#cc9900" ;;
-        "yellow|light|orange") echo "#bb8800" ;;
-        "yellow|light|"*) echo "#887744" ;;
+        "yellow|light|yellow") echo "#f57f17" ;;   # Dark yellow
+        "yellow|light|orange") echo "#ef6c00" ;;   # Dark amber
+        "yellow|light|"*) echo "#f9a825" ;;        # Dark golden
 
-        "cyan|dark|cyan") echo "#00ffff" ;;
-        "cyan|dark|blue") echo "#00aadd" ;;
-        "cyan|dark|"*) echo "#55aacc" ;;
+        "cyan|dark|cyan") echo "#00bcd4" ;;        # Material cyan
+        "cyan|dark|blue") echo "#03a9f4" ;;        # Cyan-blue
+        "cyan|dark|"*) echo "#26c6da" ;;           # Light cyan
 
-        "cyan|light|cyan") echo "#008899" ;;
-        "cyan|light|blue") echo "#006677" ;;
-        "cyan|light|"*) echo "#335566" ;;
+        "cyan|light|cyan") echo "#00838f" ;;       # Dark cyan
+        "cyan|light|blue") echo "#0277bd" ;;       # Dark cyan-blue
+        "cyan|light|"*) echo "#00695c" ;;          # Teal
 
-        "magenta|dark|purple"|"purple|dark|purple") echo "#ee55ee" ;;
-        "magenta|dark|pink"|"purple|dark|pink") echo "#ff77dd" ;;
-        "magenta|dark|"*|"purple|dark|"*) echo "#cc66bb" ;;
+        "magenta|dark|purple"|"purple|dark|purple") echo "#9c27b0" ;;  # Material purple
+        "magenta|dark|pink"|"purple|dark|pink") echo "#e91e63" ;;      # Material pink
+        "magenta|dark|"*|"purple|dark|"*) echo "#ab47bc" ;;            # Light purple
 
-        "magenta|light|purple"|"purple|light|purple") echo "#883388" ;;
-        "magenta|light|pink"|"purple|light|pink") echo "#aa3377" ;;
-        "magenta|light|"*|"purple|light|"*) echo "#663355" ;;
+        "magenta|light|purple"|"purple|light|purple") echo "#7b1fa2" ;; # Dark purple
+        "magenta|light|pink"|"purple|light|pink") echo "#ad1457" ;;     # Dark pink
+        "magenta|light|"*|"purple|light|"*) echo "#8e24aa" ;;          # Medium purple
 
-        "orange|dark|orange") echo "#ff8800" ;;
-        "orange|dark|red") echo "#ff6600" ;;
-        "orange|dark|"*) echo "#cc8800" ;;
+        "orange|dark|orange") echo "#ff9800" ;;    # Material orange
+        "orange|dark|red") echo "#ff5722" ;;       # Deep orange
+        "orange|dark|"*) echo "#ffb74d" ;;         # Light orange
 
-        "orange|light|orange") echo "#cc5500" ;;
-        "orange|light|red") echo "#bb4400" ;;
-        "orange|light|"*) echo "#885522" ;;
+        "orange|light|orange") echo "#f57c00" ;;   # Dark orange
+        "orange|light|red") echo "#d84315" ;;      # Dark deep orange
+        "orange|light|"*) echo "#ef6c00" ;;        # Medium orange
 
-        "pink|dark|pink") echo "#ff99dd" ;;
-        "pink|dark|purple") echo "#ff77cc" ;;
-        "pink|dark|"*) echo "#dd99cc" ;;
+        "pink|dark|pink") echo "#e91e63" ;;        # Material pink
+        "pink|dark|purple") echo "#9c27b0" ;;      # Pink-purple
+        "pink|dark|"*) echo "#f06292" ;;           # Light pink
 
-        "pink|light|pink") echo "#cc5588" ;;
-        "pink|light|purple") echo "#bb4477" ;;
-        "pink|light|"*) echo "#884466" ;;
+        "pink|light|pink") echo "#c2185b" ;;       # Dark pink
+        "pink|light|purple") echo "#7b1fa2" ;;     # Dark pink-purple
+        "pink|light|"*) echo "#ad1457" ;;          # Deep pink
 
-        "brown|dark|red") echo "#bb5533" ;;
-        "brown|dark|orange") echo "#dd7744" ;;
-        "brown|dark|"*) echo "#aa7744" ;;
+        "brown|dark|red") echo "#8d6e63" ;;        # Material brown
+        "brown|dark|orange") echo "#a1887f" ;;     # Light brown
+        "brown|dark|"*) echo "#795548" ;;          # Dark brown
 
-        "brown|light|red") echo "#773311" ;;
-        "brown|light|orange") echo "#884422" ;;
-        "brown|light|"*) echo "#664422" ;;
+        "brown|light|red") echo "#5d4037" ;;       # Dark brown
+        "brown|light|orange") echo "#6d4c41" ;;    # Deep brown
+        "brown|light|"*) echo "#4e342e" ;;         # Very dark brown
 
-        # FALLBACKS - Theme adaptive
-        "dark|"*) echo "#999999" ;;
-        "light|"*) echo "#666666" ;;
-        *) echo "#888888" ;;
+        # FALLBACKS - Enhanced contrast
+        "dark|"*) echo "#bdbdbd" ;;                # Light gray for dark themes
+        "light|"*) echo "#424242" ;;               # Dark gray for light themes
+        *) echo "#757575" ;;                       # Medium gray default
     esac
 }
 
@@ -390,11 +445,14 @@ find_best_color_for_concept() {
     local dominant_color; dominant_color=$(get_palette_dominant_color)
     local palette_average; palette_average=$(get_palette_average)
 
-    # Get base semantic color
+    # Get base semantic color using enhanced algorithm
     local base_color; base_color=$(get_smart_color "$concept" "$dominant_color")
 
-    # Harmonize with palette (subtle 15% blend)
-    local final_color; final_color=$(blend_colors "$base_color" "$palette_average" 15)
+    # Apply contrast enhancement for better readability
+    local contrast_enhanced; contrast_enhanced=$(enhance_color_contrast "$base_color" "$concept")
+
+    # Apply subtle harmonization with palette (10% blend for more natural look)
+    local final_color; final_color=$(blend_colors "$contrast_enhanced" "$palette_average" 10)
 
     # Format output
     case "${format:-hex}" in
@@ -415,6 +473,10 @@ show_palette_visual() {
     done
 
     echo
+    echo -e "${BOLD}🎨 Enhanced Smart Colors (Theme-Adaptive):${NC}"
+    echo -e "${BLUE}   Current theme: $(is_light_theme && echo "Light" || echo "Dark")${NC}"
+    echo
+
     echo -e "${BOLD}Smart Background & Foreground:${NC}"
     local bg_fg_colors=(background background-alt foreground foreground-alt)
     for concept in "${bg_fg_colors[@]}"; do
@@ -423,7 +485,7 @@ show_palette_visual() {
     done
 
     echo
-    echo -e "${BOLD}Smart Semantic Colors:${NC}"
+    echo -e "${BOLD}Smart Semantic Colors (Enhanced Contrast):${NC}"
     local concepts=(error warning success info accent)
     for concept in "${concepts[@]}"; do
         local color; color=$(find_best_color_for_concept "$concept")
@@ -431,13 +493,19 @@ show_palette_visual() {
     done
 
     echo
-    echo -e "${BOLD}Smart Basic Colors:${NC}"
+    echo -e "${BOLD}Smart Basic Colors (Theme-Optimized):${NC}"
     local basic_colors=(red green blue yellow cyan magenta orange pink)
     for color in "${basic_colors[@]}"; do
         local color_value; color_value=$(find_best_color_for_concept "$color")
         show_color_block "$color_value" "$color"
     done
 
+    echo
+    echo -e "${BLUE}💡 Smart Colors Features:${NC}"
+    echo -e "   • Enhanced contrast ratios for better readability"
+    echo -e "   • Material Design inspired color choices"
+    echo -e "   • Automatic theme detection and adaptation"
+    echo -e "   • Harmonized with current palette (10% blend)"
     echo
 }
 
