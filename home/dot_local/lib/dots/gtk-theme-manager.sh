@@ -33,14 +33,14 @@ log() {
     local message="$*"
     local timestamp
     timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
-    
+
     echo "[$timestamp] [GTK-THEME] [$level] $message" >&2
 }
 
 # Function to check if a GTK theme is installed
 is_gtk_theme_installed() {
     local theme_name="$1"
-    
+
     # Check in common theme directories
     local theme_dirs=(
         "/usr/share/themes"
@@ -48,20 +48,20 @@ is_gtk_theme_installed() {
         "$HOME/.themes"
         "$HOME/.local/share/themes"
     )
-    
+
     for theme_dir in "${theme_dirs[@]}"; do
         if [[ -d "$theme_dir/$theme_name" ]]; then
             return 0
         fi
     done
-    
+
     return 1
 }
 
 # Function to check if an icon theme is installed
 is_icon_theme_installed() {
     local icon_theme="$1"
-    
+
     # Check in common icon directories
     local icon_dirs=(
         "/usr/share/icons"
@@ -69,13 +69,13 @@ is_icon_theme_installed() {
         "$HOME/.icons"
         "$HOME/.local/share/icons"
     )
-    
+
     for icon_dir in "${icon_dirs[@]}"; do
         if [[ -d "$icon_dir/$icon_theme" ]]; then
             return 0
         fi
     done
-    
+
     return 1
 }
 
@@ -84,13 +84,13 @@ apply_gtk_theme() {
     local gtk_theme="$1"
     local icon_theme="${2:-Adwaita}"
     local prefer_dark="${3:-false}"
-    
+
     log "INFO" "Applying GTK theme: $gtk_theme, icons: $icon_theme"
-    
+
     # Validate theme availability with fallbacks
     if ! is_gtk_theme_installed "$gtk_theme"; then
         log "WARN" "GTK theme '$gtk_theme' not found, trying fallbacks..."
-        
+
         # Common fallback themes in order of preference
         local fallback_themes=(
             "Orchis-Light-Compact"
@@ -100,7 +100,7 @@ apply_gtk_theme() {
             "Breeze"
             "oxygen-gtk"
         )
-        
+
         for fallback in "${fallback_themes[@]}"; do
             if is_gtk_theme_installed "$fallback"; then
                 gtk_theme="$fallback"
@@ -108,23 +108,23 @@ apply_gtk_theme() {
                 break
             fi
         done
-        
+
         if ! is_gtk_theme_installed "$gtk_theme"; then
             log "ERROR" "No suitable GTK theme found, keeping current theme"
             return 1
         fi
     fi
-    
+
     # Validate icon theme with fallbacks
     if ! is_icon_theme_installed "$icon_theme"; then
         log "WARN" "Icon theme '$icon_theme' not found, trying fallbacks..."
-        
+
         local fallback_icons=(
             "Numix-Circle"
             "Adwaita"
             "hicolor"
         )
-        
+
         for fallback in "${fallback_icons[@]}"; do
             if is_icon_theme_installed "$fallback"; then
                 icon_theme="$fallback"
@@ -133,7 +133,7 @@ apply_gtk_theme() {
             fi
         done
     fi
-    
+
     # Update GTK2 configuration
     if [[ -f "$GTK2_CONFIG" ]]; then
         sed -i "s/^gtk-theme-name=.*/gtk-theme-name=\"$gtk_theme\"/" "$GTK2_CONFIG"
@@ -163,7 +163,7 @@ gtk-xft-hintstyle="hintslight"
 gtk-xft-rgba="rgb"
 EOF
     fi
-    
+
     # Update GTK3 configuration
     if [[ -f "$GTK3_CONFIG" ]]; then
         sed -i "s/^gtk-theme-name=.*/gtk-theme-name=$gtk_theme/" "$GTK3_CONFIG"
@@ -194,7 +194,7 @@ gtk-xft-rgba=rgb
 gtk-modules=colorreload-gtk-module
 EOF
     fi
-    
+
     # Notify running GTK applications to reload themes
     if command -v gsettings >/dev/null 2>&1; then
         gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" 2>/dev/null || true
@@ -202,7 +202,7 @@ EOF
         gsettings set org.gnome.desktop.interface gtk-application-prefer-dark-theme "$prefer_dark" 2>/dev/null || true
         log "INFO" "Updated gsettings"
     fi
-    
+
     # Reload XFCE4 settings if running
     if pgrep -x "xfce4-session" >/dev/null; then
         if command -v xfconf-query >/dev/null 2>&1; then
@@ -211,7 +211,7 @@ EOF
             log "INFO" "Updated XFCE4 settings"
         fi
     fi
-    
+
     log "INFO" "GTK theme applied successfully: $gtk_theme"
     return 0
 }
@@ -221,22 +221,22 @@ detect_optimal_gtk_theme() {
     local wallpaper_path="$1"
     local detected_theme="Orchis-Light-Compact"  # Default
     local prefer_dark="false"
-    
+
     # First, try to use pywal's background color to determine if theme should be dark or light
     if [[ -f "$HOME/.cache/wal/colors" ]]; then
         log "INFO" "Analyzing pywal colors for optimal theme selection"
-        
+
         # Read background color from pywal
         local bg_color
         bg_color=$(head -n 1 "$HOME/.cache/wal/colors" | tr -d '#')
-        
+
         if [[ -n "$bg_color" ]]; then
             # Convert hex to RGB and calculate brightness
             local r=$((16#${bg_color:0:2}))
             local g=$((16#${bg_color:2:2}))
             local b=$((16#${bg_color:4:2}))
             local brightness=$((r + g + b))
-            
+
             # If background is dark (low brightness), suggest dark theme
             if [[ $brightness -lt 384 ]]; then  # 384 = 128 * 3 (threshold for dark)
                 log "INFO" "Dark background detected (brightness: $brightness), suggesting dark theme"
@@ -246,7 +246,7 @@ detect_optimal_gtk_theme() {
                     "Adwaita-dark"
                     "Breeze-Dark"
                 )
-                
+
                 for theme in "${dark_themes[@]}"; do
                     if is_gtk_theme_installed "$theme"; then
                         detected_theme="$theme"
@@ -262,7 +262,7 @@ detect_optimal_gtk_theme() {
                     "Adwaita"
                     "Breeze"
                 )
-                
+
                 for theme in "${light_themes[@]}"; do
                     if is_gtk_theme_installed "$theme"; then
                         detected_theme="$theme"
@@ -275,7 +275,7 @@ detect_optimal_gtk_theme() {
     elif command -v dots-smart-colors >/dev/null 2>&1; then
         # Fallback: use smart-colors to analyze current theme
         log "INFO" "Using smart-colors to analyze current theme"
-        
+
         # Check if current theme is light or dark using smart-colors logic
         if dots-smart-colors --analyze 2>/dev/null | grep -q "light theme\|bright"; then
             log "INFO" "Light theme detected, suggesting light GTK theme"
@@ -285,7 +285,7 @@ detect_optimal_gtk_theme() {
                 "Adwaita"
                 "Breeze"
             )
-            
+
             for theme in "${light_themes[@]}"; do
                 if is_gtk_theme_installed "$theme"; then
                     detected_theme="$theme"
@@ -301,7 +301,7 @@ detect_optimal_gtk_theme() {
                 "Adwaita-dark"
                 "Breeze-Dark"
             )
-            
+
             for theme in "${dark_themes[@]}"; do
                 if is_gtk_theme_installed "$theme"; then
                     detected_theme="$theme"
@@ -313,7 +313,7 @@ detect_optimal_gtk_theme() {
     else
         log "WARN" "No color analysis available, using default light theme"
     fi
-    
+
     log "INFO" "Detected optimal theme: $detected_theme (dark: $prefer_dark)"
     echo "$detected_theme:$prefer_dark"
 }
@@ -321,13 +321,13 @@ detect_optimal_gtk_theme() {
 # Function to apply GTK theme based on current rice configuration
 apply_rice_gtk_theme() {
     local rice_name="${1:-}"
-    
+
     # If no rice specified, try to detect current rice
     if [[ -z "$rice_name" ]] && [[ -f "$HOME/.cache/dots/current_rice" ]]; then
         source "$HOME/.cache/dots/current_rice"
         rice_name="$CURRENT_RICE"
     fi
-    
+
     if [[ -z "$rice_name" ]]; then
         log "WARN" "No rice specified, using default theme detection"
         local wallpaper
@@ -343,29 +343,29 @@ apply_rice_gtk_theme() {
         fi
         return
     fi
-    
+
     log "INFO" "Applying GTK theme for rice: $rice_name"
-    
+
     # Load rice configuration
     local rice_config="$HOME/.local/share/dots/rices/$rice_name/config.sh"
     if [[ ! -f "$rice_config" ]]; then
         log "ERROR" "Rice config not found: $rice_config"
         return 1
     fi
-    
+
     # Source rice configuration
     source "$rice_config"
-    
+
     # Get GTK theme from rice config or detect automatically
     local gtk_theme="${GTK_THEME:-}"
     local icon_theme="${ICON_THEME:-Numix-Circle}"
     local prefer_dark="${PREFER_DARK_THEME:-auto}"
-    
+
     # If no explicit theme set in rice, detect based on wallpaper
     if [[ -z "$gtk_theme" ]] || [[ "$gtk_theme" == "auto" ]]; then
         local current_wallpaper
         current_wallpaper=$(cat "$HOME/.cache/wal/wal" 2>/dev/null || echo "")
-        
+
         if [[ -n "$current_wallpaper" && -f "$current_wallpaper" ]]; then
             local theme_info
             theme_info=$(detect_optimal_gtk_theme "$current_wallpaper")
@@ -380,7 +380,7 @@ apply_rice_gtk_theme() {
             fi
         fi
     fi
-    
+
     # Apply the theme
     apply_gtk_theme "$gtk_theme" "$icon_theme" "$prefer_dark"
 }
@@ -399,14 +399,14 @@ get_current_gtk_theme() {
 # Function to list installed GTK themes
 list_installed_gtk_themes() {
     local themes=()
-    
+
     local theme_dirs=(
         "/usr/share/themes"
         "/usr/local/share/themes"
         "$HOME/.themes"
         "$HOME/.local/share/themes"
     )
-    
+
     for theme_dir in "${theme_dirs[@]}"; do
         if [[ -d "$theme_dir" ]]; then
             while IFS= read -r -d '' theme_path; do
@@ -418,7 +418,7 @@ list_installed_gtk_themes() {
             done < <(find "$theme_dir" -maxdepth 1 -type d -print0)
         fi
     done
-    
+
     # Remove duplicates and sort
     printf '%s\n' "${themes[@]}" | sort -u
 }

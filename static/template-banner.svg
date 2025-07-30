@@ -12,33 +12,33 @@
       <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.2"/>
     </filter>
   </defs>
-  
+
   <!-- Background -->
   <rect width="800" height="220" rx="15" ry="15" fill="url(#backgroundGradient)" filter="url(#shadow)"/>
-  
+
   <!-- Main Title -->
   <text x="400" y="45" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">
     🎉 NEW: Template Repository Available!
   </text>
-  
+
   <!-- Subtitle -->
   <text x="400" y="75" text-anchor="middle" fill="#f0f8ff" font-family="Arial, sans-serif" font-size="16">
     Want to use this powerful framework for your own dotfiles?
   </text>
-  
+
   <!-- Call to action -->
   <text x="400" y="105" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">
     ✨ Get the reusable template version ✨
   </text>
-  
+
   <!-- Button background -->
   <rect x="275" y="125" width="250" height="45" rx="10" ry="10" fill="url(#buttonGradient)" filter="url(#shadow)"/>
-  
+
   <!-- Button text -->
   <text x="400" y="153" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="bold">
     🚀 Use Template Repository
   </text>
-  
+
   <!-- Features text -->
   <text x="400" y="195" text-anchor="middle" fill="#e6f3ff" font-family="Arial, sans-serif" font-size="14">
     Pre-sanitized • Ready to fork • Easy to customize • Regularly updated

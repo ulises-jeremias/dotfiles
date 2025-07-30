@@ -79,14 +79,14 @@ log() {
     local level="$1"
     shift
     local message="$*"
-    
+
     if [[ "${quiet:-}" == "yes" ]] && [[ "$level" != "ERROR" ]]; then
         return 0
     fi
-    
+
     local timestamp
     timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
-    
+
     case "$level" in
         "ERROR")
             echo -e "${RED}❌ [ERROR] $message${NC}" >&2
@@ -114,19 +114,19 @@ log() {
 cmd_list() {
     log "" "${BLUE}📋 Installed GTK themes:${NC}"
     log "" ""
-    
+
     local themes
     themes=$(list_installed_gtk_themes)
-    
+
     if [[ -z "$themes" ]]; then
         log "WARN" "No GTK themes found"
         return 1
     fi
-    
+
     local current_theme
     current_theme=$(get_current_gtk_theme)
     log "DEBUG" "Current theme: $current_theme"
-    
+
     while IFS= read -r theme; do
         if [[ "$theme" == "$current_theme" ]]; then
             log "" "  ${GREEN}✓${NC} $theme ${CYAN}(current)${NC}"
@@ -134,7 +134,7 @@ cmd_list() {
             log "" "    $theme"
         fi
     done <<< "$themes"
-    
+
     log "" ""
     log "" "${CYAN}💡 Tip:${NC} Use 'dots gtk-theme apply <theme>' to apply a theme"
 }
@@ -143,15 +143,15 @@ cmd_list() {
 cmd_current() {
     local current_theme
     current_theme=$(get_current_gtk_theme)
-    
+
     log "" "${BLUE}🎨 Current GTK Theme:${NC} $current_theme"
-    
+
     # Show additional info
     if [[ -f "$HOME/.config/gtk-3.0/settings.ini" ]]; then
         local icon_theme
         icon_theme=$(grep "^gtk-icon-theme-name=" "$HOME/.config/gtk-3.0/settings.ini" | cut -d'=' -f2)
         log "" "${BLUE}🎯 Icon Theme:${NC} $icon_theme"
-        
+
         local dark_pref
         dark_pref=$(grep "^gtk-application-prefer-dark-theme=" "$HOME/.config/gtk-3.0/settings.ini" | cut -d'=' -f2)
         log "" "${BLUE}🌙 Dark Theme Preference:${NC} $dark_pref"
@@ -163,10 +163,10 @@ cmd_apply() {
     local theme_name="$1"
     local icon_theme="${2:-Numix-Circle}"
     local prefer_dark="${3:-false}"
-    
+
     log "" "${BLUE}🎨 Applying GTK Theme:${NC} $theme_name"
     log "DEBUG" "Icon theme: $icon_theme, prefer dark: $prefer_dark"
-    
+
     if apply_gtk_theme "$theme_name" "$icon_theme" "$prefer_dark"; then
         log "" "${GREEN}✅ Theme applied successfully${NC}"
     else
@@ -178,7 +178,7 @@ cmd_apply() {
 # Function to detect optimal theme
 cmd_detect() {
     local wallpaper_path="${1:-}"
-    
+
     if [[ -z "$wallpaper_path" ]]; then
         # Use current wallpaper
         wallpaper_path=$(cat "$HOME/.cache/wal/wal" 2>/dev/null || echo "")
@@ -187,22 +187,22 @@ cmd_detect() {
             return 1
         fi
     fi
-    
+
     if [[ ! -f "$wallpaper_path" ]]; then
         echo -e "${RED}❌ Wallpaper file not found: $wallpaper_path${NC}"
         return 1
     fi
-    
+
     echo -e "${BLUE}🔍 Analyzing wallpaper:${NC} $(basename "$wallpaper_path")"
-    
+
     local theme_info
     theme_info=$(detect_optimal_gtk_theme "$wallpaper_path")
     local detected_theme="${theme_info%:*}"
     local prefer_dark="${theme_info#*:}"
-    
+
     echo -e "${GREEN}🎯 Detected optimal theme:${NC} $detected_theme"
     echo -e "${GREEN}🌙 Dark preference:${NC} $prefer_dark"
-    
+
     # Ask if user wants to apply
     read -p "Apply this theme? (y/N): " -n 1 -r
     echo
@@ -214,9 +214,9 @@ cmd_detect() {
 # Function to apply rice-specific theme
 cmd_rice() {
     local rice_name="${1:-}"
-    
+
     echo -e "${BLUE}🍚 Applying GTK theme for rice:${NC} ${rice_name:-auto-detect}"
-    
+
     if apply_rice_gtk_theme "$rice_name"; then
         echo -e "${GREEN}✅ Rice GTK theme applied successfully${NC}"
     else
@@ -235,14 +235,14 @@ cmd_auto() {
 cmd_icons() {
     echo -e "${BLUE}🎯 Installed Icon Themes:${NC}"
     echo ""
-    
+
     local icon_dirs=(
         "/usr/share/icons"
         "/usr/local/share/icons"
         "$HOME/.icons"
         "$HOME/.local/share/icons"
     )
-    
+
     local icons=()
     for icon_dir in "${icon_dirs[@]}"; do
         if [[ -d "$icon_dir" ]]; then
@@ -255,16 +255,16 @@ cmd_icons() {
             done < <(find "$icon_dir" -maxdepth 1 -type d -print0)
         fi
     done
-    
+
     # Remove duplicates and sort
     local unique_icons
     unique_icons=$(printf '%s\n' "${icons[@]}" | sort -u)
-    
+
     local current_icon=""
     if [[ -f "$HOME/.config/gtk-3.0/settings.ini" ]]; then
         current_icon=$(grep "^gtk-icon-theme-name=" "$HOME/.config/gtk-3.0/settings.ini" | cut -d'=' -f2)
     fi
-    
+
     while IFS= read -r icon; do
         if [[ "$icon" == "$current_icon" ]]; then
             echo -e "  ${GREEN}✓${NC} $icon ${CYAN}(current)${NC}"
@@ -277,10 +277,10 @@ cmd_icons() {
 # Function to show theme information
 cmd_info() {
     local theme_name="$1"
-    
+
     echo -e "${BLUE}ℹ️  Theme Information: $theme_name${NC}"
     echo ""
-    
+
     # Find theme directories
     local theme_dirs=(
         "/usr/share/themes"
@@ -288,7 +288,7 @@ cmd_info() {
         "$HOME/.themes"
         "$HOME/.local/share/themes"
     )
-    
+
     local found_path=""
     for theme_dir in "${theme_dirs[@]}"; do
         if [[ -d "$theme_dir/$theme_name" ]]; then
@@ -296,14 +296,14 @@ cmd_info() {
             break
         fi
     done
-    
+
     if [[ -z "$found_path" ]]; then
         echo -e "${RED}❌ Theme not found: $theme_name${NC}"
         return 1
     fi
-    
+
     echo -e "${GREEN}📁 Location:${NC} $found_path"
-    
+
     # Check what components are available
     echo -e "${GREEN}🧩 Available Components:${NC}"
     if [[ -d "$found_path/gtk-2.0" ]]; then
@@ -311,19 +311,19 @@ cmd_info() {
     else
         echo -e "  ❌ GTK2"
     fi
-    
+
     if [[ -d "$found_path/gtk-3.0" ]]; then
         echo -e "  ✅ GTK3"
     else
         echo -e "  ❌ GTK3"
     fi
-    
+
     if [[ -d "$found_path/gtk-4.0" ]]; then
         echo -e "  ✅ GTK4"
     else
         echo -e "  ❌ GTK4"
     fi
-    
+
     # Show index.theme if available
     if [[ -f "$found_path/index.theme" ]]; then
         echo ""
@@ -341,17 +341,17 @@ cmd_info() {
 # Main script logic
 main() {
     log "DEBUG" "Starting GTK theme manager with args: ${arguments[*]}"
-    
+
     if [[ ${#arguments[@]} -eq 0 ]]; then
         log "ERROR" "No command specified. Use --help for usage information."
         exit 1
     fi
-    
+
     local command="${arguments[0]}"
     local cmd_args=("${arguments[@]:1}")
-    
+
     log "DEBUG" "Command: $command, args: ${cmd_args[*]}"
-    
+
     case "$command" in
         "list"|"ls")
             cmd_list

@@ -178,23 +178,23 @@ enhance_color_contrast() {
     local color="$1" concept="$2"
     local bg_color; bg_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
     local bg_luminance; bg_luminance=$(calculate_luminance "$bg_color")
-    
+
     # For light themes, ensure colors are dark enough for good contrast
     if is_light_theme; then
         # Ensure minimum contrast ratio for readability
         local color_luminance; color_luminance=$(calculate_luminance "$color")
-        
+
         # If color is too light for a light theme, darken it
         if [[ $color_luminance -gt 180 ]]; then
             # Darken the color by reducing RGB values
             local hex="${color#\#}"
             local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
-            
+
             # Reduce brightness by 30-40% for better contrast
             r=$(( (r * 60) / 100 ))
             g=$(( (g * 60) / 100 ))
             b=$(( (b * 60) / 100 ))
-            
+
             printf "#%02x%02x%02x" "$r" "$g" "$b"
         else
             echo "$color"
@@ -202,23 +202,23 @@ enhance_color_contrast() {
     else
         # For dark themes, ensure colors are bright enough
         local color_luminance; color_luminance=$(calculate_luminance "$color")
-        
+
         # If color is too dark for a dark theme, brighten it slightly
         if [[ $color_luminance -lt 80 ]]; then
             # Brighten the color
             local hex="${color#\#}"
             local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
-            
+
             # Increase brightness by 20-30%
             r=$(( (r * 130) / 100 ))
             g=$(( (g * 130) / 100 ))
             b=$(( (b * 130) / 100 ))
-            
+
             # Clamp to max 255
             [[ $r -gt 255 ]] && r=255
             [[ $g -gt 255 ]] && g=255
             [[ $b -gt 255 ]] && b=255
-            
+
             printf "#%02x%02x%02x" "$r" "$g" "$b"
         else
             echo "$color"

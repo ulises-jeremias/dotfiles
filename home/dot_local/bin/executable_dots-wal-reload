@@ -411,11 +411,11 @@ reload_additional_apps() {
 # Function to reload GTK themes
 reload_gtk_themes() {
     show_status "Updating GTK themes to match wallpaper..."
-    
+
     # Source GTK theme manager
     if [[ -f "$HOME/.local/lib/dots/gtk-theme-manager.sh" ]]; then
         source "$HOME/.local/lib/dots/gtk-theme-manager.sh"
-        
+
         # Apply GTK theme based on current rice (if any) or wallpaper
         if apply_rice_gtk_theme 2>/dev/null; then
             show_success "GTK themes updated automatically"
