@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Rice management commands
+##
+## Provides easy access to rice management functionality
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Usage:
+##     dots rice <command> [options]
+##
+## Commands:
+##     selector              Launch enhanced rice selector with metadata
+##     list                  List all available rices
+##     current               Show current rice
+##     apply <rice>          Apply specific rice
+##     metadata <rice>       Show metadata for specific rice
+##     status                Show metadata status for all rices
+
+set -euo pipefail
+
+# Source rice configuration if available
+if [[ -f "$HOME/.local/lib/dots/dots-rice-config.sh" ]]; then
+    source "$HOME/.local/lib/dots/dots-rice-config.sh"
+fi
+
+# Source rice metadata if available
+if [[ -f "$HOME/.local/lib/dots/rice-metadata.sh" ]]; then
+    source "$HOME/.local/lib/dots/rice-metadata.sh"
+fi
+
+show_help() {
+    echo "Rice Management Commands"
+    echo ""
+    echo "Usage: dots rice <command> [options]"
+    echo ""
+    echo "Commands:"
+    echo "  selector              Launch enhanced rice selector with metadata"
+    echo "  list                  List all available rices"
+    echo "  current               Show current rice"
+    echo "  apply <rice>          Apply specific rice"
+    echo "  metadata <rice>       Show metadata for specific rice"
+    echo "  status                Show metadata status for all rices"
+    echo ""
+    echo "Examples:"
+    echo "  dots rice selector            # Launch enhanced selector"
+    echo "  dots rice list               # List all rices"
+    echo "  dots rice current            # Show current rice"
+    echo "  dots rice apply gruvbox-anime # Apply specific rice"
+    echo "  dots rice metadata flowers   # Show metadata for flowers rice"
+    echo ""
+    echo "The enhanced selector shows additional information:"
+    echo "  • Style category (Nature, Retro, Gaming, etc.)"
+    echo "  • Color palette description"
+    echo "  • GTK theme and icon information"
+    echo "  • Number of wallpapers available"
+    echo "  • Tags and best use cases"
+}
+
+cmd_selector() {
+    local rice_selector="$HOME/.local/bin/dots-rofi-rice-selector"
+    
+    if [[ -x "$rice_selector" ]]; then
+        exec "$rice_selector" "$@"
+    else
+        echo "Error: Rice selector not found at $rice_selector"
+        exit 1
+    fi
+}
+
+cmd_list() {
+    if [[ -d "${RICES_DIR:-$HOME/.local/share/dots/rices}" ]]; then
+        echo "🍚 Available Rice Themes:"
+        echo ""
+        for rice_dir in "${RICES_DIR:-$HOME/.local/share/dots/rices}"/*/; do
+            if [[ -d "$rice_dir" ]]; then
+                local rice_name
+                rice_name=$(basename "$rice_dir")
+                echo "  • $rice_name"
+            fi
+        done
+    else
+        echo "Error: Rices directory not found"
+        exit 1
+    fi
+}
+
+cmd_current() {
+    local current_file="${CURRENT_RICE_FILE:-$HOME/.local/share/dots/rices/.current_rice}"
+    if [[ -f "$current_file" ]]; then
+        local current_rice
+        current_rice=$(<"$current_file")
+        echo "Current rice: $current_rice"
+    else
+        echo "No current rice set"
+    fi
+}
+
+cmd_apply() {
+    local rice_name="$1"
+    local rice_dir="${RICES_DIR:-$HOME/.local/share/dots/rices}/$rice_name"
+    
+    if [[ ! -d "$rice_dir" ]]; then
+        echo "Error: Rice '$rice_name' not found"
+        exit 1
+    fi
+    
+    if [[ -x "$rice_dir/apply.sh" ]]; then
+        echo "Applying rice: $rice_name"
+        echo "$rice_name" > "${CURRENT_RICE_FILE:-$HOME/.local/share/dots/rices/.current_rice}"
+        "$rice_dir/apply.sh"
+    else
+        echo "Error: Apply script not found for rice '$rice_name'"
+        exit 1
+    fi
+}
+
+cmd_metadata() {
+    local rice_name="$1"
+    
+    if command -v format_rice_metadata >/dev/null 2>&1; then
+        format_rice_metadata "$rice_name" "detailed"
+    else
+        # Fallback to simple config display
+        local rice_config="${RICES_DIR:-$HOME/.local/share/dots/rices}/$rice_name/config.sh"
+        if [[ -f "$rice_config" ]]; then
+            echo "Rice configuration for: $rice_name"
+            echo ""
+            cat "$rice_config"
+        else
+            echo "Error: Rice '$rice_name' not found"
+            exit 1
+        fi
+    fi
+}
+
+cmd_status() {
+    if command -v list_rices_with_metadata >/dev/null 2>&1; then
+        list_rices_with_metadata "compact"
+    else
+        echo "Metadata system not available"
+        cmd_list
+    fi
+}
+
+# Main command dispatch
+case "${1:-help}" in
+    "selector")
+        shift
+        cmd_selector "$@"
+        ;;
+    "list")
+        cmd_list
+        ;;
+    "current")
+        cmd_current
+        ;;
+    "apply")
+        if [[ $# -lt 2 ]]; then
+            echo "Error: Rice name required"
+            echo "Usage: dots rice apply <rice_name>"
+            exit 1
+        fi
+        cmd_apply "$2"
+        ;;
+    "metadata"|"info")
+        if [[ $# -lt 2 ]]; then
+            echo "Error: Rice name required"
+            echo "Usage: dots rice metadata <rice_name>"
+            exit 1
+        fi
+        cmd_metadata "$2"
+        ;;
+    "status")
+        cmd_status
+        ;;
+    "help"|"--help"|"-h")
+        show_help
+        ;;
+    *)
+        echo "Unknown command: $1"
+        echo "Run 'dots rice help' for usage information"
+        exit 1
+        ;;
+esac

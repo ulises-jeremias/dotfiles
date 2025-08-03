@@ -15,7 +15,8 @@
     "chezmoi",
     "getdisplaygeometry",
     "megalinter",
-    "oxsecurity"
+    "oxsecurity",
+    "polybar"
   ],
   "version": "0.2"
 }

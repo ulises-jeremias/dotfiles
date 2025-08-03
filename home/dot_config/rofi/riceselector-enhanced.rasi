@@ -1,0 +1,146 @@
+/*
+ * Enhanced Rice Selector Theme
+ * Extends the base rice selector with better metadata display
+ */
+
+@import "riceselector.rasi"
+
+* {
+    background-color: inherit;
+    text-color: inherit;
+}
+
+window {
+    transparency: "real";
+    background-color: rgba(30, 30, 46, 0.95);
+    border: 2px solid;
+    border-color: var(selected-active-background);
+    border-radius: 10px;
+}
+
+mainbox {
+    background-color: transparent;
+    padding: 20px;
+    spacing: 15px;
+}
+
+message {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(selected-active-background);
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin: 0px 0px 10px 0px;
+    text-color: var(foreground);
+}
+
+textbox {
+    background-color: transparent;
+    text-color: inherit;
+    markup: true;
+}
+
+listview {
+    background-color: transparent;
+    spacing: 8px;
+    cycle: true;
+    dynamic: true;
+    layout: vertical;
+}
+
+element {
+    background-color: transparent;
+    text-color: var(foreground);
+    orientation: horizontal;
+    border-radius: 8px;
+    padding: 12px 15px;
+    spacing: 15px;
+    border: 2px solid transparent;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color: var(foreground);
+}
+
+element normal.urgent {
+    background-color: var(urgent-background);
+    text-color: var(urgent-foreground);
+}
+
+element normal.active {
+    background-color: var(active-background);
+    text-color: var(active-foreground);
+}
+
+element selected.normal {
+    background-color: var(selected-normal-background);
+    text-color: var(selected-normal-foreground);
+    border: 2px solid var(selected-active-background);
+}
+
+element selected.urgent {
+    background-color: var(selected-urgent-background);
+    text-color: var(selected-urgent-foreground);
+}
+
+element selected.active {
+    background-color: var(selected-active-background);
+    text-color: var(selected-active-foreground);
+}
+
+element-icon {
+    background-color: transparent;
+    text-color: inherit;
+    size: 64px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    expand: true;
+    horizontal-align: 0;
+    vertical-align: 0.5;
+    margin: 0px 0px 0px 10px;
+    markup: true;
+    cursor: pointer;
+}
+
+element selected element-text {
+    text-color: var(selected-normal-foreground);
+}
+
+scrollbar {
+    width: 4px;
+    border: 0;
+    handle-color: var(selected-normal-background);
+    handle-width: 8px;
+    padding: 0;
+}
+
+/* Enhanced metadata styling */
+element-text {
+    font: "Hack Nerd Font 11";
+}
+
+element selected element-text {
+    font: "Hack Nerd Font Bold 11";
+}
+
+/* Animation for smoother transitions */
+element {
+    transition-property: "background-color", "border-color";
+    transition-duration: 200ms;
+    transition-timing-function: "ease-in-out";
+}
+
+/* Hover effects */
+element:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+element selected:hover {
+    background-color: var(selected-normal-background);
+    border-color: var(selected-active-background);
+}
