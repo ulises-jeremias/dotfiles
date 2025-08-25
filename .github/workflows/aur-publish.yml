@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout Latest Dotfiles Release
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Publish AUR package
         uses: ulises-jeremias/github-actions-aur-publish@v1
