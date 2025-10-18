@@ -1,0 +1,32 @@
+# yamllint configuration for HorneroConfig
+---
+extends: default
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+
+  indentation:
+    spaces: 2
+    indent-sequences: true
+
+  comments:
+    min-spaces-from-content: 1
+
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no']
+
+  document-start: disable
+
+  # GitHub Actions specific
+  brackets:
+    max-spaces-inside: 1
+
+  braces:
+    max-spaces-inside: 1
+
+ignore: |
+  .github/
+  playground/
+  home/dot_config/

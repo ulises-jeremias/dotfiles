@@ -1,28 +1,63 @@
 # Pre-commit hooks for dotfiles quality assurance
+# See https://pre-commit.com for more information
+# Install with: pipx install pre-commit
+# Setup: pre-commit install
+# Run manually: pre-commit run --all-files
+
 repos:
+  # General file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
       - id: end-of-file-fixer
       - id: check-yaml
+        args: [--unsafe]  # Allow custom YAML tags
       - id: check-json
+      - id: check-toml
+      - id: check-xml
       - id: check-added-large-files
+        args: [--maxkb=1000]
       - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
       - id: detect-private-key
+      - id: mixed-line-ending
+        args: [--fix=lf]
 
+  # Shell script linting and formatting
   - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.9.0
+    rev: v0.10.0
     hooks:
       - id: shellcheck
-        args: [--severity=warning]
+        args: [--severity=warning, --shell=bash]
+        exclude: ^home/dot_zsh/
 
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.7.0-1
+    rev: v3.10.0-1
     hooks:
       - id: shfmt
-        args: [-w, -s, -i, '2']
+        args: [-w, -s, -i, '2', -ci]
+        exclude: ^home/dot_zsh/
 
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.43.0
+    hooks:
+      - id: markdownlint
+        args: [--fix, --disable, MD013, MD033, MD041]
+
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [-c=.yamllint.yaml]
+
+  # Custom local hooks
   - repo: local
     hooks:
       - id: dots-script-validation
@@ -31,3 +66,10 @@ repos:
         language: script
         files: '^home/dot_local/bin/executable_dots-.*$'
         pass_filenames: false
+
+      - id: no-commit-to-main
+        name: Don't commit directly to main
+        entry: bash -c 'if [ "$PRE_COMMIT_FROM_REF" = "" ] && [ "$PRE_COMMIT_TO_REF" = "" ]; then branch=$(git rev-parse --abbrev-ref HEAD); if [ "$branch" = "main" ]; then echo "Direct commits to main branch are not allowed. Please use a feature branch."; exit 1; fi; fi; exit 0'
+        language: system
+        pass_filenames: false
+        always_run: true

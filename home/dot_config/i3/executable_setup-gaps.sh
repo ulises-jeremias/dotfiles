@@ -2,7 +2,7 @@
 
 # exit 0 if there is only one monitor
 if [ "$(xrandr --query | grep " connected" | wc -l)" -eq 1 ]; then
-	exit 0
+  exit 0
 fi
 
 # Identify the primary monitor
@@ -20,16 +20,16 @@ workspaces=$(i3-msg -t get_workspaces | jq -r '.[] | "\(.name) \(.output)"')
 
 # Iterate over the workspaces and their outputs
 while IFS= read -r line; do
-    workspace_name=$(echo "$line" | awk '{print $1}')
-    workspace_output=$(echo "$line" | awk '{print $2}')
+  workspace_name=$(echo "$line" | awk '{print $1}')
+  workspace_output=$(echo "$line" | awk '{print $2}')
 
-    # Apply gaps settings to workspaces that are not on the primary monitor
-    if [ "$workspace_output" != "$primary_monitor" ]; then
-        i3-msg "workspace $workspace_name"
-        i3-msg "gaps inner current set $other_gaps_inner"
-        i3-msg "gaps top current set $other_gaps_top"
-        i3-msg "gaps right current set $other_gaps_right"
-        i3-msg "gaps bottom current set $other_gaps_bottom"
-        i3-msg "gaps left current set $other_gaps_left"
-    fi
-done <<< "$workspaces"
+  # Apply gaps settings to workspaces that are not on the primary monitor
+  if [ "$workspace_output" != "$primary_monitor" ]; then
+    i3-msg "workspace $workspace_name"
+    i3-msg "gaps inner current set $other_gaps_inner"
+    i3-msg "gaps top current set $other_gaps_top"
+    i3-msg "gaps right current set $other_gaps_right"
+    i3-msg "gaps bottom current set $other_gaps_bottom"
+    i3-msg "gaps left current set $other_gaps_left"
+  fi
+done <<<"$workspaces"

@@ -24,11 +24,11 @@ ROOT="$(realpath "$(dirname "$0")")"
 . "${ROOT}/opts.sh" || exit # Bash implementation, slower
 
 # Boolean and parameter options
-[[ -n "$some_option"  ]] && echo "Option specified: --some-option"
-[[ -n "$some_boolean" ]] && echo "Option specified: --some-boolean"
-[[ -n "$some_value"   ]] && echo "Option specified: --some-value is $some_value"
+[[ -n $some_option ]] && echo "Option specified: --some-option"
+[[ -n $some_boolean ]] && echo "Option specified: --some-boolean"
+[[ -n $some_value ]] && echo "Option specified: --some-value is $some_value"
 
 # Arguments
 for argument in "${arguments[@]}"; do
-    echo "Argument specified: $argument"
+  echo "Argument specified: $argument"
 done

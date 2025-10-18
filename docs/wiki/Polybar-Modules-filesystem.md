@@ -145,7 +145,7 @@ label-mounted = %{T5}💾%{T-} %mountpoint%
 
 ; Bar configuration
 bar-used-width = 10
-bar-used-indicator = 
+bar-used-indicator =
 bar-used-fill = ─
 bar-used-empty = ─
 bar-used-foreground-0 = #55aa55

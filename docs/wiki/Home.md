@@ -1,6 +1,6 @@
 <div align="center">
   <h1>🏠 HorneroConfig - Comprehensive Dotfiles Framework</h1>
-  
+
   [Docs](https://ulises-jeremias.github.io/dotfiles) |
   [Changelog](#) |
   [Contributing](https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CONTRIBUTING.md)

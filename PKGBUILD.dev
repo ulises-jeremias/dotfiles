@@ -15,14 +15,14 @@ source=("git+$url.git")
 md5sums=('SKIP')
 
 pkgver() {
-	cd dotfiles
-	git describe --tags "$(git rev-list --tags --max-count=1)" | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+  cd dotfiles
+  git describe --tags "$(git rev-list --tags --max-count=1)" | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 package() {
-	if [[ ! -d "${HOME}/.dotfiles" ]]; then
-		cp -rf ./dotfiles ~/.dotfiles
-	fi
+  if [[ ! -d "${HOME}/.dotfiles" ]]; then
+    cp -rf ./dotfiles ~/.dotfiles
+  fi
 
-	chezmoi init --apply --verbose --force --source ~/.dotfiles
+  chezmoi init --apply --verbose --force --source ~/.dotfiles
 }

@@ -7,7 +7,6 @@
 ##
 ## Toggle the state of some applications
 
-
 NAME=$(basename "$0")
 VER="0.4"
 
@@ -121,23 +120,23 @@ toggle_caffeine() {
 
 # Catch command line options
 case $1 in
--h | --help) usage ;;
--v | --version) echo -e "${NAME} -- Version ${VER}" ;;
--p | --polybar)
-  [[ $2 =~ (-t|--toggle) ]] && opt=1
-  toggle_polybar
-  ;;
--c | --picom)
-  [[ $2 =~ (-t|--toggle) ]] && opt=1
-  toggle_picom
-  ;;
--r | --redshift)
-  [[ $2 =~ (-t|--toggle) ]] && opt=1
-  toggle_redshift
-  ;;
--f | --caffeine)
-  [[ $2 =~ (-t|--toggle) ]] && opt=1
-  toggle_caffeine
-  ;;
-*) echo -e "Option does not exist: $1" && usage && exit 1 ;;
+  -h | --help) usage ;;
+  -v | --version) echo -e "${NAME} -- Version ${VER}" ;;
+  -p | --polybar)
+    [[ $2 =~ (-t|--toggle) ]] && opt=1
+    toggle_polybar
+    ;;
+  -c | --picom)
+    [[ $2 =~ (-t|--toggle) ]] && opt=1
+    toggle_picom
+    ;;
+  -r | --redshift)
+    [[ $2 =~ (-t|--toggle) ]] && opt=1
+    toggle_redshift
+    ;;
+  -f | --caffeine)
+    [[ $2 =~ (-t|--toggle) ]] && opt=1
+    toggle_caffeine
+    ;;
+  *) echo -e "Option does not exist: $1" && usage && exit 1 ;;
 esac

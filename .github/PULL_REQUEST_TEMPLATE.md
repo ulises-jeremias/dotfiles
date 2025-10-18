@@ -1,6 +1,6 @@
 <!--
 
-Please title your PR as follows: `time: fix foo bar`. 
+Please title your PR as follows: `time: fix foo bar`.
 Always start with the thing you are fixing, then describe the fix.
 Don't use past tense (e.g. "fixed foo bar").
 

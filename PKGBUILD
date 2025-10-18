@@ -15,20 +15,20 @@ source=("git+$url.git")
 md5sums=('SKIP')
 
 pkgver() {
-	cd dotfiles || exit
-	git describe --tags "$(git rev-list --tags --max-count=1)" | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+  cd dotfiles || exit
+  git describe --tags "$(git rev-list --tags --max-count=1)" | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 package() {
-	cd dotfiles || exit
-	git fetch --tags
-	latest_release=$(git describe --tags "$(git rev-list --tags --max-count=1)")
-	git checkout "${latest_release}"
-	cd ..
+  cd dotfiles || exit
+  git fetch --tags
+  latest_release=$(git describe --tags "$(git rev-list --tags --max-count=1)")
+  git checkout "${latest_release}"
+  cd ..
 
-	if [[ ! -d "${HOME}/.dotfiles" ]]; then
-		cp -rf ./dotfiles ~/.dotfiles
-	fi
+  if [[ ! -d "${HOME}/.dotfiles" ]]; then
+    cp -rf ./dotfiles ~/.dotfiles
+  fi
 
-	chezmoi init --apply --verbose --force --source ~/.dotfiles
+  chezmoi init --apply --verbose --force --source ~/.dotfiles
 }

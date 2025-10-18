@@ -1,106 +1,543 @@
-# Contributing guide
+# Contributing to HorneroConfig
 
-When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
+> **Welcome!** 👋 We're thrilled you're interested in contributing to HorneroConfig. This guide will help you get started.
 
-Please note we have a [code of conduct](./.github/CODE_OF_CONDUCT.md), please follow it in all your interactions with the project.
+---
 
-You can help contribute to this project in many ways, including:
+## 🌟 Ways to Contribute
 
-## Reporting Bugs/Feature Requests
+There are many ways to contribute to HorneroConfig, and all of them are valuable:
 
-We welcome you to use the GitHub issue tracker to report bugs or suggest features.
+### 💬 Share Your Experience
 
-When filing an issue, please check existing open, or recently closed, issues to make sure somebody else hasn't already
-reported the issue. Please try to include as much information as you can. Details like these are incredibly useful:
+- **Star the repository** ⭐ - Show your support
+- **Share on social media** - Help others discover HorneroConfig
+- **Write blog posts** - Share your setup and customizations
+- **Answer questions** - Help others in discussions and issues
 
-- A reproducible test case or series of steps
-- The version of our code being used
-- Any modifications you've made relevant to the bug
-- Anything unusual about your environment or deployment
+### 🐛 Report Issues
 
-### Reporting Bugs
+Found a bug or have an idea? We want to hear about it!
 
-This section guides you through submitting a bug report for this project. Following these guidelines helps maintainers and the community understand your report, reproduce the behavior, and find related reports.
+- **Bug reports** - Help us improve stability and reliability
+- **Feature requests** - Suggest new capabilities and enhancements
+- **Documentation improvements** - Help us explain things better
+- **Rice themes** - Share your beautiful theme creations
 
-When creating bug reports please fill out [the required template](./.github/ISSUE_TEMPLATE/bug_report.md), the information it asks for helps us resolve issues faster.
+### 💻 Contribute Code
 
-### Suggesting Enhancements
+- **Fix bugs** - Tackle open issues
+- **Add features** - Implement new capabilities
+- **Improve performance** - Optimize existing code
+- **Enhance documentation** - Write guides and tutorials
 
-This section guides you through submitting an enhancement suggestion for this project, including completely new features and minor improvements to existing functionality. Following these guidelines helps maintainers and the community understand your suggestion and find related suggestions.
+### 🎨 Create Content
 
-When creating enhancement suggestions, please fill in [the template](./.github/ISSUE_TEMPLATE/feature_request.md), including the steps that you imagine you would take if the feature you're requesting existed.
+- **Design rice themes** - Create beautiful desktop themes
+- **Make wallpapers** - Contribute artwork
+- **Create tutorials** - Help others learn
+- **Record demos** - Show off features in action
 
-## Contributing via Pull Requests
+---
 
-Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
+## 🚀 Getting Started
 
-1. You are working against the latest source on the _main_ branch.
-2. You check existing open, and recently merged, pull requests to make sure someone else hasn't addressed the problem already.
-3. You open an issue to discuss any significant work - we would hate for your time to be wasted.
+### Prerequisites
 
-To send us a pull request, please:
+Before you start, make sure you have:
 
-1. Fork the repository.
-2. Modify the source; please focus on the specific change you are contributing. If you also reformat all the code, it will be hard for us to focus on your change.
-3. Ensure local tests pass (_if applicable_).
-4. Commit to your fork using clear commit messages.
-5. Send us a pull request, answering any default questions in the pull request template.
-6. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
+- A GitHub account
+- Git installed on your system
+- Basic familiarity with shell scripting (for code contributions)
+- A Linux system for testing (preferably Arch Linux)
 
-GitHub provides additional document on [forking a repository](https://help.github.com/articles/fork-a-repo/) and
-[creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
+### Setting Up Your Development Environment
 
-## Finding contributions to work on
+1. **Fork the repository** on GitHub
 
-Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any 'help wanted' issues is a great place to start.
+2. **Clone your fork** locally:
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/dotfiles ~/.dotfiles
+   cd ~/.dotfiles
+   ```
+
+3. **Add upstream remote**:
+   ```bash
+   git remote add upstream https://github.com/ulises-jeremias/dotfiles
+   ```
+
+4. **Install dependencies**:
+   ```bash
+   ./install.sh
+   ```
+
+5. **Set up pre-commit hooks** (required for contributors):
+
+   We use [pre-commit](https://pre-commit.com/) to maintain code quality. Install it with [pipx](https://pipx.pypa.io/) (recommended):
+
+   ```bash
+   # Install pipx if not already installed
+   # Arch Linux:
+   sudo pacman -S python-pipx
+
+   # Ubuntu/Debian:
+   sudo apt install pipx && pipx ensurepath
+
+   # macOS:
+   brew install pipx && pipx ensurepath
+
+   # Install pre-commit
+   pipx install pre-commit
+
+   # Set up git hooks in the repository
+   pre-commit install
+
+   # Test it works
+   pre-commit run --all-files
+   ```
+
+   **What pre-commit does:**
+   - ✅ Validates shell scripts with ShellCheck
+   - ✅ Formats shell scripts with shfmt
+   - ✅ Lints Markdown files
+   - ✅ Validates YAML syntax
+   - ✅ Checks for security issues (private keys, etc.)
+   - ✅ Validates custom dots scripts
+   - ✅ Prevents direct commits to main branch
+
+6. **Test in the playground** (recommended):
+   ```bash
+   ./bin/play
+   ```
+
+---
+
+## 🐛 Reporting Bugs
+
+### Before Submitting
+
+- **Search existing issues** - Your bug might already be reported
+- **Try the latest version** - The issue might already be fixed
+- **Test in playground** - Verify it's reproducible in a clean environment
+
+### Creating a Good Bug Report
+
+Use our [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) and include:
+
+1. **Clear title** - Briefly describe the issue
+2. **Environment details** - OS, window manager, versions
+3. **Steps to reproduce** - What did you do?
+4. **Expected behavior** - What should happen?
+5. **Actual behavior** - What actually happened?
+6. **Screenshots** - Visual evidence helps immensely
+7. **Error messages** - Include relevant logs
+
+**Example:**
+
+> **Title:** Polybar weather module shows wrong temperature
+>
+> **Environment:** Arch Linux, i3wm, Polybar 3.6.3
+>
+> **Steps:**
+> 1. Apply gruvbox-anime rice
+> 2. Check weather module on polybar
+> 3. Compare with actual weather
+>
+> **Expected:** Should show current temperature (72°F)
+> **Actual:** Shows 32°F (last cached value)
+>
+> **Logs:** `~/.cache/dots/weather.log` shows API timeout
+
+---
+
+## 💡 Suggesting Features
+
+### Before Submitting
+
+- **Check existing suggestions** - Someone might have had the same idea
+- **Consider the scope** - Does it fit HorneroConfig's philosophy?
+- **Think about impact** - How would this benefit users?
+
+### Creating a Feature Request
+
+Use our [feature request template](.github/ISSUE_TEMPLATE/feature_request.md) and include:
+
+1. **Clear title** - What's the feature?
+2. **Problem statement** - What need does this address?
+3. **Proposed solution** - How should it work?
+4. **Alternatives** - What other approaches did you consider?
+5. **Additional context** - Screenshots, mockups, examples
+
+**Example:**
+
+> **Title:** Add support for Wayland compositors
+>
+> **Problem:** HorneroConfig currently only supports X11 window managers
+>
+> **Solution:** Add configuration profiles for Sway and Hyprland
+>
+> **Alternatives:**
+> - Create a separate project for Wayland
+> - Provide documentation for manual Wayland setup
+>
+> **Context:** Many users are moving to Wayland for better security and performance
+
+---
+
+## 🔧 Contributing Code
+
+### The Contribution Process
+
+1. **Discuss first** for significant changes
+   - Open an issue to propose your idea
+   - Get feedback from maintainers
+   - Agree on implementation approach
+
+2. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+3. **Make your changes**
+   - Follow existing code style and patterns
+   - Write clear commit messages
+   - Test thoroughly in the playground
+
+4. **Commit with meaningful messages**:
+   ```bash
+   git commit -m "feat: add spotify integration to music player module"
+   ```
+
+5. **Push to your fork**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+6. **Create a Pull Request**
+   - Use the PR template
+   - Describe what changed and why
+   - Link related issues
+   - Add screenshots for visual changes
+
+### Code Style Guidelines
+
+**For detailed technical guidelines:**
+- Quick reference: [AGENTS.md](AGENTS.md)
+- Comprehensive guides: [docs/](docs/)
+  - [Development Standards](docs/Development-Standards.md) - Script templates and standards
+  - [Architecture Philosophy](docs/Architecture-Philosophy.md) - Design principles
+  - [Integration Patterns](docs/Integration-Patterns.md) - Best practices
+  - [Security Guidelines](docs/Security-Guidelines.md) - Security requirements
+  - [Performance Guidelines](docs/Performance-Guidelines.md) - Optimization tips
+
+Here are the key principles:
+
+- **Follow existing patterns** - Look at similar code for examples
+- **Keep it simple** - Readable code is better than clever code
+- **Write comments** - Explain the "why", not just the "what"
+- **Test your changes** - Use the playground environment
+- **Check with shellcheck** - Lint your shell scripts
+- **Handle errors gracefully** - Don't leave users confused
+
+### Commit Message Format
+
+We follow conventional commits for clarity:
+
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `style:` - Code style changes (formatting, etc.)
+- `refactor:` - Code refactoring
+- `test:` - Adding or updating tests
+- `chore:` - Maintenance tasks
+
+**Examples:**
+```
+feat: add weather forecast to polybar module
+fix: correct color contrast in light themes
+docs: update installation guide for Ubuntu
+refactor: simplify smart colors caching logic
+```
+
+---
+
+## 🎨 Creating Rice Themes
+
+Want to share your beautiful desktop theme? Here's how:
+
+### Rice Theme Structure
+
+Create a new directory in `home/dot_local/share/dots/rices/`:
+
+```
+your-rice-name/
+├── config.sh          # Theme configuration
+├── apply.sh           # Application script
+├── backgrounds/       # Wallpaper images
+├── preview.png        # Theme preview (required)
+└── README.md          # Theme description (optional)
+```
+
+### What to Include
+
+**config.sh** - Theme settings:
+```bash
+#!/usr/bin/env bash
+
+# Rice metadata
+RICE_NAME="your-rice-name"
+RICE_DESCRIPTION="Brief description of your theme"
+
+# Polybar configuration
+POLYBAR_PROFILE="default"  # or "minimal"
+
+# GTK theme
+GTK_THEME="Orchis-Dark-Compact"
+ICON_THEME="Papirus-Dark"
+
+# Optional: Window manager specific settings
+I3_GAPS_INNER=10
+I3_GAPS_OUTER=5
+```
+
+**apply.sh** - Setup script:
+```bash
+#!/usr/bin/env bash
+
+# Load rice configuration
+RICE_DIR="$(dirname "$(readlink -f "$0")")"
+source "${RICE_DIR}/config.sh"
+
+# Your customization logic here
+# Set wallpaper, apply colors, configure apps, etc.
+```
+
+**backgrounds/** - At least one high-quality wallpaper
+
+**preview.png** - Screenshot showcasing your theme (recommended: 1920x1080)
+
+### Submitting Your Rice
+
+1. Create your rice theme directory
+2. Test it thoroughly:
+   ```bash
+   dots rice apply your-rice-name
+   ```
+3. Take beautiful screenshots
+4. Submit a PR with:
+   - Your rice files
+   - Preview screenshot
+   - Description of the theme's aesthetic
+   - Any special requirements or dependencies
+
+---
+
+## 🧪 Testing Your Changes
+
+### Using the Playground
+
+The playground provides a safe testing environment:
+
+```bash
+# Start default environment
+./bin/play
+
+# Test with specific window manager
+./bin/play --provision i3
+./bin/play --provision openbox
+
+# Clean up when done
+./bin/play --remove
+```
+
+### What to Test
+
+**For all changes:**
+- Does it work as intended?
+- Does it handle errors gracefully?
+- Does it work in both light and dark themes?
+- Does it work with different window managers?
+
+**For visual changes:**
+- Does it look good in all rice themes?
+- Are colors appropriate and readable?
+- Does it scale properly on different resolutions?
+- Does it work on multiple monitors?
+
+**For scripts:**
+- Does it handle missing dependencies?
+- Does it clean up after itself?
+- Does it log appropriately?
+- Does shellcheck pass?
+
+---
+
+## 📝 Documentation Contributions
+
+Good documentation helps everyone! You can help by:
+
+### Types of Documentation
+
+- **Wiki pages** - Comprehensive guides and tutorials
+- **Code comments** - Explain complex logic
+- **README updates** - Keep main docs current
+- **ADRs** - Document architectural decisions
+- **Examples** - Show how to use features
+
+### Documentation Style
+
+- **Be clear and concise** - Get to the point
+- **Use examples** - Show, don't just tell
+- **Add screenshots** - Visuals help understanding
+- **Link related docs** - Help users find more info
+- **Test your instructions** - Make sure they actually work
+
+---
 
 ## 📁 Repository Structure
 
-Below is a description of the repository structure:
+Understanding the repository layout helps you navigate:
 
-```sh
+```
 .
-├── .github                 # GitHub related files
-├── docs/                   # Documentation files
-├── bin/                    # Scripts used by dots
-├── home/                   # Root directory of the dotfiles for the home directory
-├── lib/                    # Utility files used by dots
-├── playground/             # Testing environment using Vagrant
-├── scripts/                # Scripts used by dots
-├── static/                 # Static files used by the README
-└── install.sh              # Installation script
+├── .github/               # GitHub workflows, templates, copilot instructions
+├── docs/                  # Documentation and wiki content
+│   ├── adrs/             # Architecture Decision Records
+│   ├── images/           # Documentation images
+│   └── wiki/             # Wiki pages
+├── home/                  # Chezmoi-managed dotfiles
+│   ├── dot_config/       # ~/.config/ files
+│   ├── dot_local/        # ~/.local/ files
+│   │   ├── bin/          # Executable scripts
+│   │   ├── lib/          # Shared libraries
+│   │   └── share/        # Rice themes, data files
+│   └── dot_zsh/          # Zsh configuration
+├── playground/            # Testing environment (Vagrant/Docker)
+├── scripts/              # Installation and validation scripts
+├── bin/                  # Utility scripts (play, etc.)
+└── AGENTS.md             # AI agent guidelines (technical details)
 ```
 
-## Coding Guidelines
+### Key Files
 
-### Writing Shell Scripting code
+- `CONTRIBUTING.md` (this file) - Human contribution guide
+- `AGENTS.md` - AI agent quick reference
+- `README.md` - Project overview and features
+- `install.sh` - Installation script
+- `docs/` - Technical documentation and architecture guides
+  - `Architecture-Philosophy.md` - Core design principles
+  - `System-Architecture.md` - Detailed system components
+  - `Development-Standards.md` - Coding standards and templates
+  - `Integration-Patterns.md` - Integration best practices
+  - `Testing-Strategy.md` - Testing approach and requirements
+  - `Security-Guidelines.md` - Security practices
+  - `Performance-Guidelines.md` - Optimization strategies
 
-- Follow shell scripting best practices (e.g. as described in
-  [Google's shell style guide](https://google.github.io/styleguide/shell.xml))
-- Try to be POSIX compliant
-- Use `"${variable}"` instead of `$variable`
-- Constants (and global variables) should be in `UPPER_CASE`, other variables
-  should be in `lower_case`
-- Use single square brackets (`[ condition ]`) for conditionals
-  (e.g. in 'if' statements)
-- Write clean and readable code
-- Write comments where needed (e.g. explaining functions)
-- Explain what arguments a function takes (if any)
-- Use different error codes when exiting and explain when they occur
-  at the top of the file
-- If you've created a new file or have made a lot of changes
-  (judge this by yourself), you can add a copyright disclaimer below the shebang
-  line and below any other copyright notices
-  (e.g. `Copyright (C) Jane Doe <contact@jane.doe>`)
-- Always line wrap at 80 characters
-- Scripts should be named `setup-<function>` and should not have an extension
-- Libraries should always have a `.sh` extension and should not have a shebang
-- Neither scripts nor libraries should be executable (their permissions are
-  set during compilation)
-- Use `shellscript` to error-check your code
-- Test your code before submitting a PR (not required if it's a draft)
-- Write long and informative commit messages
+---
 
-### Writing Dockerfiles
+## 🤝 Community Guidelines
 
-- Follow the [Dockerfile best practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+### Our Values
+
+- **Respect** - Treat everyone with kindness and professionalism
+- **Inclusivity** - Welcome contributors of all skill levels
+- **Collaboration** - Work together to solve problems
+- **Quality** - Strive for excellence in everything
+- **Fun** - Enjoy the creative process!
+
+### Code of Conduct
+
+We follow a [Code of Conduct](.github/CODE_OF_CONDUCT.md). By participating, you agree to uphold this code. Report unacceptable behavior to the maintainers.
+
+### Getting Help
+
+- **GitHub Discussions** - Ask questions, share ideas
+- **Issues** - Report bugs and request features
+- **Wiki** - Comprehensive documentation
+- **Examples** - Learn from existing code
+
+---
+
+## 🎯 Finding Something to Work On
+
+Not sure where to start? Try these:
+
+### Good First Issues
+
+Look for issues labeled:
+- `good first issue` - Perfect for beginners
+- `help wanted` - Maintainers would appreciate help
+- `documentation` - Improve docs (no coding required)
+- `enhancement` - New feature requests
+
+### Popular Contribution Areas
+
+- **Polybar modules** - Add new system monitors or integrations
+- **Rice themes** - Create beautiful desktop themes
+- **Documentation** - Write guides and tutorials
+- **Bug fixes** - Tackle open bug reports
+- **Testing** - Improve test coverage
+- **Performance** - Optimize slow operations
+
+---
+
+## ✅ Pull Request Checklist
+
+Before submitting your PR, verify:
+
+- [ ] Code follows existing patterns and style
+- [ ] All scripts pass shellcheck
+- [ ] Changes tested in playground environment
+- [ ] Works in both light and dark themes (if applicable)
+- [ ] Documentation updated (if needed)
+- [ ] Commit messages follow conventional format
+- [ ] PR description explains what and why
+- [ ] Screenshots included (for visual changes)
+- [ ] Related issues linked
+
+---
+
+## 🎓 Learning Resources
+
+### For Contributors
+
+- **[AGENTS.md](AGENTS.md)** - AI agent quick reference
+- **[Technical Documentation](docs/)** - Comprehensive guides
+  - [Architecture Philosophy](docs/Architecture-Philosophy.md)
+  - [System Architecture](docs/System-Architecture.md)
+  - [Development Standards](docs/Development-Standards.md)
+  - [Integration Patterns](docs/Integration-Patterns.md)
+  - [Testing Strategy](docs/Testing-Strategy.md)
+  - [Security Guidelines](docs/Security-Guidelines.md)
+  - [Performance Guidelines](docs/Performance-Guidelines.md)
+- **[ADRs](docs/adrs/)** - Understand architectural decisions
+- **[Wiki](docs/wiki/)** - In-depth feature documentation
+- **Existing code** - Best examples are in the codebase
+
+### External Resources
+
+- [Google Shell Style Guide](https://google.github.io/styleguide/shellxml)
+- [Chezmoi Documentation](https://www.chezmoi.io/)
+- [i3 User's Guide](https://i3wm.org/docs/userguide.html)
+- [Polybar Wiki](https://github.com/polybar/polybar/wiki)
+
+---
+
+## 💖 Thank You!
+
+Every contribution, no matter how small, makes HorneroConfig better. We appreciate your time and effort!
+
+**Questions?** Feel free to ask in discussions or issues. We're here to help! 🚀
+
+---
+
+## 📧 Contact
+
+- **GitHub Issues**: Bug reports and feature requests
+- **GitHub Discussions**: Questions and general chat
+- **Pull Requests**: Code contributions
+- **Email**: For private concerns (see repository owner profile)
+
+---
+
+*Built with ❤️ by the HorneroConfig community*

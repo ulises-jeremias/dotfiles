@@ -97,7 +97,7 @@ label-font = 5
 ```ini
 [module/rb]
 type = custom/text
-label = 
+label =
 label-foreground = ${colors.foreground}
 label-background = ${colors.background}
 label-font = 5

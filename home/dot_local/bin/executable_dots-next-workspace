@@ -7,40 +7,39 @@
 ##
 ## Switch to the next existing workspace
 
-
-mapfile -t workspaces < <(i3-msg -t get_config | grep "set \$WS" | cut -d " " -f3)
+mapfile -t workspaces < <(i3-msg -t get_config | grep 'set $WS' | cut -d " " -f3)
 actual=$(i3-msg -t get_workspaces | jq '.[] | select(.focused).name')
 actual_index=0
 move_left=false
 next_index=0
 
 if [ "$1" = "-l" ] || [ "$1" = "--left" ]; then
-    move_left=true
+  move_left=true
 fi
 echo $move_left
 
 for i in "${!workspaces[@]}"; do
-    if [ "${workspaces[$i]}" = "$actual" ]; then
-        actual_index=$i
-        break
-    fi
+  if [ "${workspaces[$i]}" = "$actual" ]; then
+    actual_index=$i
+    break
+  fi
 done
 
-[[ $move_left = true ]] && next_index=$((actual_index - 1)) || next_index=$((actual_index + 1))
+[[ $move_left == true ]] && next_index=$((actual_index - 1)) || next_index=$((actual_index + 1))
 
 case "$next_index" in
-    "${#workspaces[@]}")
-        next_index=0
+  "${#workspaces[@]}")
+    next_index=0
     ;;
 
-    "0")
-        next_index="${#workspaces[@]}"
+  "0")
+    next_index="${#workspaces[@]}"
     ;;
-    *) ;;
+  *) ;;
 esac
 
 if [ "${#workspaces[@]}" = "$next_index" ]; then
-    next_index=0
+  next_index=0
 fi
 
 i3-msg workspace "${workspaces[$next_index]}"

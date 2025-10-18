@@ -93,7 +93,7 @@ jobs:
           node ./github-wikito-converter/dist/cli/gwtc.js --file-name index --output ./public --toc-level 3 ./docs/wiki
 
       - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public

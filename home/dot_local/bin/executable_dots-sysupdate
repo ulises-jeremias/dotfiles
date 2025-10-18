@@ -7,22 +7,21 @@
 ##
 ## Update the system
 
-
 if type -p yay >/dev/null; then
-    yay -Syu
+  yay -Syu
 elif type -p trizen >/dev/null; then
-    trizen -Syu
+  trizen -Syu
 elif type -p pacaur >/dev/null; then
-    pacaur -Syu
+  pacaur -Syu
 elif type -p pikaur >/dev/null; then
-    pikaur -Syu
+  pikaur -Syu
 elif type -p aura >/dev/null; then
-    aura -Syu
+  aura -Syu
 elif type -p aurman >/dev/null; then
-    aurman -Syu
+  aurman -Syu
 elif type -p pakku >/dev/null; then
-    pakku -Syu
+  pakku -Syu
 else
-    echo "No AUR helper found. Using pacman."
-    sudo pacman -Syyuu
+  echo "No AUR helper found. Using pacman."
+  sudo pacman -Syyuu
 fi

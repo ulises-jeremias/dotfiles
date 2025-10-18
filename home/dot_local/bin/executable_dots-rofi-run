@@ -7,7 +7,6 @@
 ##
 ## Show a rofi menu to run commands
 
-
 NAME=$(basename "$0")
 VER="0.5"
 uptime="$(uptime -p | sed -e 's/up //g')"
@@ -49,73 +48,73 @@ EOF
 
 for arg in "$@"; do
   case $arg in
-  -h | --help)
-    usage
-    exit 0
-    ;;
-  -v | --version)
-    echo -e "$NAME -- Version $VER"
-    exit 0
-    ;;
-  -r | --run)
-    rofi -modi run,drun -show drun \
-      -columns 1 -show-icons \
-      -theme ~/.config/rofi/apps.rasi
-    ;;
-  -w | --window)
-    rofi -modi window -show window -theme ~/.config/rofi/applets.rasi -hide-scrollbar
-    ;;
-  -q | --qalculate)
-    hash qalc &>/dev/null ||
-      {
-        echo "Requires 'libqalculate' installed"
-        exit 1
-      }
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    -v | --version)
+      echo -e "$NAME -- Version $VER"
+      exit 0
+      ;;
+    -r | --run)
+      rofi -modi run,drun -show drun \
+        -columns 1 -show-icons \
+        -theme ~/.config/rofi/apps.rasi
+      ;;
+    -w | --window)
+      rofi -modi window -show window -theme ~/.config/rofi/applets.rasi -hide-scrollbar
+      ;;
+    -q | --qalculate)
+      hash qalc &>/dev/null ||
+        {
+          echo "Requires 'libqalculate' installed"
+          exit 1
+        }
 
-    rofi -modi "calc:qalc +u8 -nocurrencies" \
-      -show "calc:qalc +u8 -nocurrencies" \
-      -hide-scrollbar -theme ~/.config/rofi/applets.rasi
-    ;;
-  -c | --clipboard)
-    hash greenclip &>/dev/null ||
-      {
-        echo "Requires 'greenclip' installed"
-        exit 1
-      }
+      rofi -modi "calc:qalc +u8 -nocurrencies" \
+        -show "calc:qalc +u8 -nocurrencies" \
+        -hide-scrollbar -theme ~/.config/rofi/applets.rasi
+      ;;
+    -c | --clipboard)
+      hash greenclip &>/dev/null ||
+        {
+          echo "Requires 'greenclip' installed"
+          exit 1
+        }
 
-    rofi -modi "clipboard:greenclip print" -show "clipboard:greenclip print" -theme ~/.config/rofi/applets.rasi
-    ;;
-  -b | --browser)
-    hash surfraw &>/dev/null ||
-      {
-        echo "Requires 'surfraw' installed"
-        exit 1
-      }
+      rofi -modi "clipboard:greenclip print" -show "clipboard:greenclip print" -theme ~/.config/rofi/applets.rasi
+      ;;
+    -b | --browser)
+      hash surfraw &>/dev/null ||
+        {
+          echo "Requires 'surfraw' installed"
+          exit 1
+        }
 
-    surfraw -browser="$BROWSER" "$(sr -elvi | awk -F'-' '{print $1}' |
-      sed '/:/d' | awk '{$1=$1};1' |
-      rofi -hide-scrollbar -theme ~/.config/rofi/applets.rasi -kb-row-select 'Tab' \
-        -kb-row-tab 'Control+space' -dmenu \
-        -mesg 'Tab for Autocomplete' -i -p 'Web Search')"
-    ;;
-  -l | --logout)
-    ANS="$(rofi -dmenu -theme ~/.config/rofi/powermenu.rasi \
-      -p "Uptime: $uptime" \
-      -mesg "Uptime: $uptime" \
-      -sep "|" <<<"$lock|$sleep|$logout|$reboot|$shutdown")"
+      surfraw -browser="$BROWSER" "$(sr -elvi | awk -F'-' '{print $1}' |
+        sed '/:/d' | awk '{$1=$1};1' |
+        rofi -hide-scrollbar -theme ~/.config/rofi/applets.rasi -kb-row-select 'Tab' \
+          -kb-row-tab 'Control+space' -dmenu \
+          -mesg 'Tab for Autocomplete' -i -p 'Web Search')"
+      ;;
+    -l | --logout)
+      ANS="$(rofi -dmenu -theme ~/.config/rofi/powermenu.rasi \
+        -p "Uptime: $uptime" \
+        -mesg "Uptime: $uptime" \
+        -sep "|" <<<"$lock|$sleep|$logout|$reboot|$shutdown")"
 
-    case "$ANS" in
-    "$lock") betterlockscreen --lock ;;
-    "$reboot") systemctl -i reboot ;;
-    "$shutdown") systemctl -i poweroff ;;
-    "$sleep") systemctl suspend ;;
-    "$logout") loginctl terminate-session "${XDG_SESSION_ID-}" ;;
-    esac
-    ;;
-  *)
-    printf "\nOption does not exist: %s\n\n" "$arg"
-    exit 2
-    ;;
+      case "$ANS" in
+        "$lock") betterlockscreen --lock ;;
+        "$reboot") systemctl -i reboot ;;
+        "$shutdown") systemctl -i poweroff ;;
+        "$sleep") systemctl suspend ;;
+        "$logout") loginctl terminate-session "${XDG_SESSION_ID-}" ;;
+      esac
+      ;;
+    *)
+      printf "\nOption does not exist: %s\n\n" "$arg"
+      exit 2
+      ;;
   esac
 done
 

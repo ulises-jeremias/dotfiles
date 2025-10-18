@@ -49,507 +49,548 @@ show_info() { echo -e "${BLUE}ℹ️${NC} $1"; }
 
 # Convert hex to RGB values
 hex_to_rgb() {
-    local hex="${1#\#}"
-    echo $((16#${hex:0:2})) $((16#${hex:2:2})) $((16#${hex:4:2}))
+  local hex="${1#\#}"
+  echo $((16#${hex:0:2})) $((16#${hex:2:2})) $((16#${hex:4:2}))
 }
 
 # Calculate luminance of a color (0-255 scale)
 calculate_luminance() {
-    local color="$1"
-    local hex="${color#\#}"
-    local r=$((16#${hex:0:2}))
-    local g=$((16#${hex:2:2}))
-    local b=$((16#${hex:4:2}))
+  local color="$1"
+  local hex="${color#\#}"
+  local r=$((16#${hex:0:2}))
+  local g=$((16#${hex:2:2}))
+  local b=$((16#${hex:4:2}))
 
-    # Calculate relative luminance using standard formula
-    # Using simplified integer math for performance
-    echo $(((r * 299 + g * 587 + b * 114) / 1000))
+  # Calculate relative luminance using standard formula
+  # Using simplified integer math for performance
+  echo $(((r * 299 + g * 587 + b * 114) / 1000))
 }
 
 # Detect if current theme is light or dark based on background
 is_light_theme() {
-    local bg_color; bg_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
-    local luminance; luminance=$(calculate_luminance "$bg_color")
+  local bg_color
+  bg_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
+  local luminance
+  luminance=$(calculate_luminance "$bg_color")
 
-    # Threshold: >128 is considered light theme (out of 255)
-    [[ $luminance -gt 128 ]]
+  # Threshold: >128 is considered light theme (out of 255)
+  [[ $luminance -gt 128 ]]
 }
 
 # Get optimal foreground color for current theme
 get_optimal_foreground() {
-    local original_fg; original_fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
+  local original_fg
+  original_fg=$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")
 
-    if is_light_theme; then
-        # In light themes, use a softer foreground instead of pure black
-        local color5; color5=$(xrdb -get "color5" 2>/dev/null || echo "#52758A")
-        local color7; color7=$(xrdb -get "color7" 2>/dev/null || echo "#0f1415")
+  if is_light_theme; then
+    # In light themes, use a softer foreground instead of pure black
+    local color5
+    color5=$(xrdb -get "color5" 2>/dev/null || echo "#52758A")
+    local color7
+    color7=$(xrdb -get "color7" 2>/dev/null || echo "#0f1415")
 
-        # Prefer color5 if available, fallback to color7, then original foreground
-        if [[ -n "$color5" && "$color5" != "#000000" ]]; then
-            echo "$color5"
-        elif [[ -n "$color7" && "$color7" != "#000000" ]]; then
-            echo "$color7"
-        else
-            echo "$original_fg"
-        fi
+    # Prefer color5 if available, fallback to color7, then original foreground
+    if [[ -n $color5 && $color5 != "#000000" ]]; then
+      echo "$color5"
+    elif [[ -n $color7 && $color7 != "#000000" ]]; then
+      echo "$color7"
     else
-        # In dark themes, use original foreground
-        echo "$original_fg"
+      echo "$original_fg"
     fi
+  else
+    # In dark themes, use original foreground
+    echo "$original_fg"
+  fi
 }
 
 # Convert hex to ANSI background color for terminal display
 hex_to_ansi_bg() {
-    local rgb; rgb=$(hex_to_rgb "$1")
-    echo "\033[48;2;${rgb// /;}m"
+  local rgb
+  rgb=$(hex_to_rgb "$1")
+  echo "\033[48;2;${rgb// /;}m"
 }
 
 # Show color block in terminal
 show_color_block() {
-    local hex="$1" label="$2" width="${3:-8}"
-    local ansi_bg; ansi_bg=$(hex_to_ansi_bg "$hex")
-    local spaces; printf -v spaces "%*s" "$width" ""
-    printf "${ansi_bg}${spaces}${NC} %-10s %s\n" "$label" "$hex"
+  local hex="$1" label="$2" width="${3:-8}"
+  local ansi_bg
+  ansi_bg=$(hex_to_ansi_bg "$hex")
+  local spaces
+  printf -v spaces "%*s" "$width" ""
+  printf "${ansi_bg}${spaces}${NC} %-10s %s\n" "$label" "$hex"
 }
 
 # Detect palette's dominant color tendency
 get_palette_dominant_color() {
-    local brightest_color="" brightest_value=0
+  local brightest_color="" brightest_value=0
 
-    # Check bright colors (9-14) for dominant hue
-    for i in {9..14}; do
-        local color; color=$(xrdb -get "color$i" 2>/dev/null) || continue
-        local hex="${color#\#}"
-        local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
-        local brightness=$((r + g + b))
+  # Check bright colors (9-14) for dominant hue
+  for i in {9..14}; do
+    local color
+    color=$(xrdb -get "color$i" 2>/dev/null) || continue
+    local hex="${color#\#}"
+    local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+    local brightness=$((r + g + b))
 
-        if [[ $brightness -gt $brightest_value ]]; then
-            brightest_value=$brightness
-            brightest_color="$color"
-        fi
-    done
-
-    # Classify hue based on RGB dominance
-    if [[ -n "$brightest_color" ]]; then
-        local hex="${brightest_color#\#}"
-        local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
-
-        if [[ $r -gt $g && $r -gt $b ]]; then
-            [[ $g -gt 100 ]] && echo "orange" || [[ $b -gt 100 ]] && echo "purple" || echo "red"
-        elif [[ $g -gt $r && $g -gt $b ]]; then
-            [[ $r -gt 100 ]] && echo "yellow" || [[ $b -gt 100 ]] && echo "cyan" || echo "green"
-        elif [[ $b -gt $r && $b -gt $g ]]; then
-            [[ $r -gt 100 ]] && echo "purple" || [[ $g -gt 100 ]] && echo "cyan" || echo "blue"
-        else
-            echo "gray"
-        fi
-    else
-        echo "unknown"
+    if [[ $brightness -gt $brightest_value ]]; then
+      brightest_value=$brightness
+      brightest_color="$color"
     fi
+  done
+
+  # Classify hue based on RGB dominance
+  if [[ -n $brightest_color ]]; then
+    local hex="${brightest_color#\#}"
+    local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+
+    if [[ $r -gt $g && $r -gt $b ]]; then
+      [[ $g -gt 100 ]] && echo "orange" || [[ $b -gt 100 ]] && echo "purple" || echo "red"
+    elif [[ $g -gt $r && $g -gt $b ]]; then
+      [[ $r -gt 100 ]] && echo "yellow" || [[ $b -gt 100 ]] && echo "cyan" || echo "green"
+    elif [[ $b -gt $r && $b -gt $g ]]; then
+      [[ $r -gt 100 ]] && echo "purple" || [[ $g -gt 100 ]] && echo "cyan" || echo "blue"
+    else
+      echo "gray"
+    fi
+  else
+    echo "unknown"
+  fi
 }
 
 # Get palette average color for harmonization
 get_palette_average() {
-    local total_r=0 total_g=0 total_b=0 color_count=0
+  local total_r=0 total_g=0 total_b=0 color_count=0
 
-    for i in {1..14}; do
-        local color; color=$(xrdb -get "color$i" 2>/dev/null) || continue
-        local hex="${color#\#}"
-        local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+  for i in {1..14}; do
+    local color
+    color=$(xrdb -get "color$i" 2>/dev/null) || continue
+    local hex="${color#\#}"
+    local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
 
-        total_r=$((total_r + r))
-        total_g=$((total_g + g))
-        total_b=$((total_b + b))
-        ((color_count++))
-    done
+    total_r=$((total_r + r))
+    total_g=$((total_g + g))
+    total_b=$((total_b + b))
+    ((color_count++))
+  done
 
-    if [[ $color_count -gt 0 ]]; then
-        local avg_r=$((total_r / color_count))
-        local avg_g=$((total_g / color_count))
-        local avg_b=$((total_b / color_count))
-        printf "#%02x%02x%02x" "$avg_r" "$avg_g" "$avg_b"
-    else
-        echo "#808080"
-    fi
+  if [[ $color_count -gt 0 ]]; then
+    local avg_r=$((total_r / color_count))
+    local avg_g=$((total_g / color_count))
+    local avg_b=$((total_b / color_count))
+    printf "#%02x%02x%02x" "$avg_r" "$avg_g" "$avg_b"
+  else
+    echo "#808080"
+  fi
 }
 
 # Enhanced color blending for better harmony and contrast
 enhance_color_contrast() {
-    local color="$1" concept="$2"
-    local bg_color; bg_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
-    local bg_luminance; bg_luminance=$(calculate_luminance "$bg_color")
+  local color="$1" concept="$2"
+  local bg_color
+  bg_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
+  local bg_luminance
+  bg_luminance=$(calculate_luminance "$bg_color")
 
-    # For light themes, ensure colors are dark enough for good contrast
-    if is_light_theme; then
-        # Ensure minimum contrast ratio for readability
-        local color_luminance; color_luminance=$(calculate_luminance "$color")
+  # For light themes, ensure colors are dark enough for good contrast
+  if is_light_theme; then
+    # Ensure minimum contrast ratio for readability
+    local color_luminance
+    color_luminance=$(calculate_luminance "$color")
 
-        # If color is too light for a light theme, darken it
-        if [[ $color_luminance -gt 180 ]]; then
-            # Darken the color by reducing RGB values
-            local hex="${color#\#}"
-            local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+    # If color is too light for a light theme, darken it
+    if [[ $color_luminance -gt 180 ]]; then
+      # Darken the color by reducing RGB values
+      local hex="${color#\#}"
+      local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
 
-            # Reduce brightness by 30-40% for better contrast
-            r=$(( (r * 60) / 100 ))
-            g=$(( (g * 60) / 100 ))
-            b=$(( (b * 60) / 100 ))
+      # Reduce brightness by 30-40% for better contrast
+      r=$(((r * 60) / 100))
+      g=$(((g * 60) / 100))
+      b=$(((b * 60) / 100))
 
-            printf "#%02x%02x%02x" "$r" "$g" "$b"
-        else
-            echo "$color"
-        fi
+      printf "#%02x%02x%02x" "$r" "$g" "$b"
     else
-        # For dark themes, ensure colors are bright enough
-        local color_luminance; color_luminance=$(calculate_luminance "$color")
-
-        # If color is too dark for a dark theme, brighten it slightly
-        if [[ $color_luminance -lt 80 ]]; then
-            # Brighten the color
-            local hex="${color#\#}"
-            local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
-
-            # Increase brightness by 20-30%
-            r=$(( (r * 130) / 100 ))
-            g=$(( (g * 130) / 100 ))
-            b=$(( (b * 130) / 100 ))
-
-            # Clamp to max 255
-            [[ $r -gt 255 ]] && r=255
-            [[ $g -gt 255 ]] && g=255
-            [[ $b -gt 255 ]] && b=255
-
-            printf "#%02x%02x%02x" "$r" "$g" "$b"
-        else
-            echo "$color"
-        fi
+      echo "$color"
     fi
+  else
+    # For dark themes, ensure colors are bright enough
+    local color_luminance
+    color_luminance=$(calculate_luminance "$color")
+
+    # If color is too dark for a dark theme, brighten it slightly
+    if [[ $color_luminance -lt 80 ]]; then
+      # Brighten the color
+      local hex="${color#\#}"
+      local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+
+      # Increase brightness by 20-30%
+      r=$(((r * 130) / 100))
+      g=$(((g * 130) / 100))
+      b=$(((b * 130) / 100))
+
+      # Clamp to max 255
+      [[ $r -gt 255 ]] && r=255
+      [[ $g -gt 255 ]] && g=255
+      [[ $b -gt 255 ]] && b=255
+
+      printf "#%02x%02x%02x" "$r" "$g" "$b"
+    else
+      echo "$color"
+    fi
+  fi
 }
 
 # Blend two colors with specified percentage
 blend_colors() {
-    local color1="$1" color2="$2" blend_percent="$3"
+  local color1="$1" color2="$2" blend_percent="$3"
 
-    local hex1="${color1#\#}" hex2="${color2#\#}"
-    local r1=$((16#${hex1:0:2})) g1=$((16#${hex1:2:2})) b1=$((16#${hex1:4:2}))
-    local r2=$((16#${hex2:0:2})) g2=$((16#${hex2:2:2})) b2=$((16#${hex2:4:2}))
+  local hex1="${color1#\#}" hex2="${color2#\#}"
+  local r1=$((16#${hex1:0:2})) g1=$((16#${hex1:2:2})) b1=$((16#${hex1:4:2}))
+  local r2=$((16#${hex2:0:2})) g2=$((16#${hex2:2:2})) b2=$((16#${hex2:4:2}))
 
-    local inv_percent=$((100 - blend_percent))
-    local result_r=$(((r1 * inv_percent + r2 * blend_percent) / 100))
-    local result_g=$(((g1 * inv_percent + g2 * blend_percent) / 100))
-    local result_b=$(((b1 * inv_percent + b2 * blend_percent) / 100))
+  local inv_percent=$((100 - blend_percent))
+  local result_r=$(((r1 * inv_percent + r2 * blend_percent) / 100))
+  local result_g=$(((g1 * inv_percent + g2 * blend_percent) / 100))
+  local result_b=$(((b1 * inv_percent + b2 * blend_percent) / 100))
 
-    # Clamp to 0-255
-    [[ $result_r -gt 255 ]] && result_r=255 || [[ $result_r -lt 0 ]] && result_r=0
-    [[ $result_g -gt 255 ]] && result_g=255 || [[ $result_g -lt 0 ]] && result_g=0
-    [[ $result_b -gt 255 ]] && result_b=255 || [[ $result_b -lt 0 ]] && result_b=0
+  # Clamp to 0-255
+  [[ $result_r -gt 255 ]] && result_r=255 || [[ $result_r -lt 0 ]] && result_r=0
+  [[ $result_g -gt 255 ]] && result_g=255 || [[ $result_g -lt 0 ]] && result_g=0
+  [[ $result_b -gt 255 ]] && result_b=255 || [[ $result_b -lt 0 ]] && result_b=0
 
-    printf "#%02x%02x%02x" "$result_r" "$result_g" "$result_b"
+  printf "#%02x%02x%02x" "$result_r" "$result_g" "$result_b"
 }
 
 # CORE FUNCTION: Semantic color lookup table with palette adaptation and theme awareness
 get_smart_color() {
-    local concept="$1" palette_dominant="$2"
+  local concept="$1" palette_dominant="$2"
 
-    # Handle neutrals separately (don't need palette adaptation)
-    case "$concept" in
-        white) xrdb -get "foreground" 2>/dev/null || echo "#ffffff"; return ;;
-        black) xrdb -get "background" 2>/dev/null || echo "#000000"; return ;;
-        gray|grey) xrdb -get "color8" 2>/dev/null || echo "#808080"; return ;;
-    esac
+  # Handle neutrals separately (don't need palette adaptation)
+  case "$concept" in
+    white)
+      xrdb -get "foreground" 2>/dev/null || echo "#ffffff"
+      return
+      ;;
+    black)
+      xrdb -get "background" 2>/dev/null || echo "#000000"
+      return
+      ;;
+    gray | grey)
+      xrdb -get "color8" 2>/dev/null || echo "#808080"
+      return
+      ;;
+  esac
 
-    # Detect if current theme is light or dark for adaptive color selection
-    local theme_type
-    if is_light_theme; then
-        theme_type="light"
-    else
-        theme_type="dark"
-    fi
+  # Detect if current theme is light or dark for adaptive color selection
+  local theme_type
+  if is_light_theme; then
+    theme_type="light"
+  else
+    theme_type="dark"
+  fi
 
-    # Enhanced lookup table: concept|theme|palette_tendency -> semantically correct color
-    # NEW: Better contrast ratios and more beautiful color selections
-    case "$concept|$theme_type|$palette_dominant" in
-        # ERROR (always reddish) - Enhanced contrast for better readability
-        "error|dark|red") echo "#ff6b6b" ;;        # More vibrant red for dark themes
-        "error|dark|orange") echo "#ff5722" ;;     # Orange-red blend
-        "error|dark|purple") echo "#e91e63" ;;     # Pink-red for purple themes
-        "error|dark|"*) echo "#f44336" ;;          # Material red default
+  # Enhanced lookup table: concept|theme|palette_tendency -> semantically correct color
+  # NEW: Better contrast ratios and more beautiful color selections
+  case "$concept|$theme_type|$palette_dominant" in
+    # ERROR (always reddish) - Enhanced contrast for better readability
+    "error|dark|red") echo "#ff6b6b" ;;    # More vibrant red for dark themes
+    "error|dark|orange") echo "#ff5722" ;; # Orange-red blend
+    "error|dark|purple") echo "#e91e63" ;; # Pink-red for purple themes
+    "error|dark|"*) echo "#f44336" ;;      # Material red default
 
-        "error|light|red") echo "#d32f2f" ;;       # Darker red for light themes
-        "error|light|orange") echo "#bf360c" ;;    # Deep orange-red
-        "error|light|purple") echo "#ad1457" ;;    # Deep pink-red
-        "error|light|"*) echo "#c62828" ;;         # Darker material red
+    "error|light|red") echo "#d32f2f" ;;    # Darker red for light themes
+    "error|light|orange") echo "#bf360c" ;; # Deep orange-red
+    "error|light|purple") echo "#ad1457" ;; # Deep pink-red
+    "error|light|"*) echo "#c62828" ;;      # Darker material red
 
-        # WARNING (always orange/yellow) - Better harmony with backgrounds
-        "warning|dark|orange") echo "#ff9800" ;;   # Vibrant orange
-        "warning|dark|yellow") echo "#ffc107" ;;   # Amber for visibility
-        "warning|dark|red") echo "#ff7043" ;;      # Orange-red warning
-        "warning|dark|"*) echo "#ff8f00" ;;        # Golden orange
+    # WARNING (always orange/yellow) - Better harmony with backgrounds
+    "warning|dark|orange") echo "#ff9800" ;; # Vibrant orange
+    "warning|dark|yellow") echo "#ffc107" ;; # Amber for visibility
+    "warning|dark|red") echo "#ff7043" ;;    # Orange-red warning
+    "warning|dark|"*) echo "#ff8f00" ;;      # Golden orange
 
-        "warning|light|orange") echo "#ef6c00" ;;  # Deep orange
-        "warning|light|yellow") echo "#f57f17" ;;  # Dark amber
-        "warning|light|red") echo "#d84315" ;;     # Deep orange-red
-        "warning|light|"*) echo "#e65100" ;;       # Dark orange
+    "warning|light|orange") echo "#ef6c00" ;; # Deep orange
+    "warning|light|yellow") echo "#f57f17" ;; # Dark amber
+    "warning|light|red") echo "#d84315" ;;    # Deep orange-red
+    "warning|light|"*) echo "#e65100" ;;      # Dark orange
 
-        # SUCCESS (always greenish) - Enhanced natural greens
-        "success|dark|green") echo "#4caf50" ;;    # Material green
-        "success|dark|cyan") echo "#00bcd4" ;;     # Cyan-green for freshness
-        "success|dark|blue") echo "#2196f3" ;;     # Blue-green alternative
-        "success|dark|"*) echo "#8bc34a" ;;        # Light green default
+    # SUCCESS (always greenish) - Enhanced natural greens
+    "success|dark|green") echo "#4caf50" ;; # Material green
+    "success|dark|cyan") echo "#00bcd4" ;;  # Cyan-green for freshness
+    "success|dark|blue") echo "#2196f3" ;;  # Blue-green alternative
+    "success|dark|"*) echo "#8bc34a" ;;     # Light green default
 
-        "success|light|green") echo "#2e7d32" ;;   # Dark forest green
-        "success|light|cyan") echo "#00838f" ;;    # Dark cyan-green
-        "success|light|blue") echo "#1565c0" ;;    # Dark blue alternative
-        "success|light|"*) echo "#689f38" ;;       # Olive green
+    "success|light|green") echo "#2e7d32" ;; # Dark forest green
+    "success|light|cyan") echo "#00838f" ;;  # Dark cyan-green
+    "success|light|blue") echo "#1565c0" ;;  # Dark blue alternative
+    "success|light|"*) echo "#689f38" ;;     # Olive green
 
-        # INFO (bluish/cyan) - Better contrast and readability
-        "info|dark|blue") echo "#2196f3" ;;        # Material blue
-        "info|dark|cyan") echo "#00bcd4" ;;        # Bright cyan
-        "info|dark|purple") echo "#9c27b0" ;;      # Purple-blue
-        "info|dark|"*) echo "#03a9f4" ;;           # Light blue default
+    # INFO (bluish/cyan) - Better contrast and readability
+    "info|dark|blue") echo "#2196f3" ;;   # Material blue
+    "info|dark|cyan") echo "#00bcd4" ;;   # Bright cyan
+    "info|dark|purple") echo "#9c27b0" ;; # Purple-blue
+    "info|dark|"*) echo "#03a9f4" ;;      # Light blue default
 
-        "info|light|blue") echo "#1976d2" ;;       # Dark blue
-        "info|light|cyan") echo "#0097a7" ;;       # Dark cyan
-        "info|light|purple") echo "#7b1fa2" ;;     # Dark purple
-        "info|light|"*) echo "#0288d1" ;;          # Medium blue
+    "info|light|blue") echo "#1976d2" ;;   # Dark blue
+    "info|light|cyan") echo "#0097a7" ;;   # Dark cyan
+    "info|light|purple") echo "#7b1fa2" ;; # Dark purple
+    "info|light|"*) echo "#0288d1" ;;      # Medium blue
 
-        # ACCENT (distinctive highlight) - More vibrant and theme-adaptive
-        "accent|dark|purple") echo "#9c27b0" ;;    # Vibrant purple
-        "accent|dark|pink") echo "#e91e63" ;;      # Material pink
-        "accent|dark|orange") echo "#ff5722" ;;    # Deep orange
-        "accent|dark|"*) echo "#673ab7" ;;         # Deep purple default
+    # ACCENT (distinctive highlight) - More vibrant and theme-adaptive
+    "accent|dark|purple") echo "#9c27b0" ;; # Vibrant purple
+    "accent|dark|pink") echo "#e91e63" ;;   # Material pink
+    "accent|dark|orange") echo "#ff5722" ;; # Deep orange
+    "accent|dark|"*) echo "#673ab7" ;;      # Deep purple default
 
-        "accent|light|purple") echo "#6a1b9a" ;;   # Dark purple
-        "accent|light|pink") echo "#c2185b" ;;     # Dark pink
-        "accent|light|orange") echo "#d84315" ;;   # Dark orange
-        "accent|light|"*) echo "#512da8" ;;        # Dark purple
+    "accent|light|purple") echo "#6a1b9a" ;; # Dark purple
+    "accent|light|pink") echo "#c2185b" ;;   # Dark pink
+    "accent|light|orange") echo "#d84315" ;; # Dark orange
+    "accent|light|"*) echo "#512da8" ;;      # Dark purple
 
-        # BASIC COLORS (maintain identity) - Better theme adaptation
-        "red|dark|red") echo "#f44336" ;;          # Material red
-        "red|dark|orange") echo "#ff5722" ;;       # Orange-red
-        "red|dark|"*) echo "#e53935" ;;            # Bright red
+    # BASIC COLORS (maintain identity) - Better theme adaptation
+    "red|dark|red") echo "#f44336" ;;    # Material red
+    "red|dark|orange") echo "#ff5722" ;; # Orange-red
+    "red|dark|"*) echo "#e53935" ;;      # Bright red
 
-        "red|light|red") echo "#d32f2f" ;;         # Dark red
-        "red|light|orange") echo "#bf360c" ;;      # Dark orange-red
-        "red|light|"*) echo "#c62828" ;;           # Deep red
+    "red|light|red") echo "#d32f2f" ;;    # Dark red
+    "red|light|orange") echo "#bf360c" ;; # Dark orange-red
+    "red|light|"*) echo "#c62828" ;;      # Deep red
 
-        "green|dark|green") echo "#4caf50" ;;      # Material green
-        "green|dark|cyan") echo "#26a69a" ;;       # Teal green
-        "green|dark|"*) echo "#66bb6a" ;;          # Light green
+    "green|dark|green") echo "#4caf50" ;; # Material green
+    "green|dark|cyan") echo "#26a69a" ;;  # Teal green
+    "green|dark|"*) echo "#66bb6a" ;;     # Light green
 
-        "green|light|green") echo "#388e3c" ;;     # Dark green
-        "green|light|cyan") echo "#00695c" ;;      # Dark teal
-        "green|light|"*) echo "#2e7d32" ;;         # Forest green
+    "green|light|green") echo "#388e3c" ;; # Dark green
+    "green|light|cyan") echo "#00695c" ;;  # Dark teal
+    "green|light|"*) echo "#2e7d32" ;;     # Forest green
 
-        "blue|dark|blue") echo "#2196f3" ;;        # Material blue
-        "blue|dark|cyan") echo "#00bcd4" ;;        # Cyan-blue
-        "blue|dark|"*) echo "#42a5f5" ;;           # Light blue
+    "blue|dark|blue") echo "#2196f3" ;; # Material blue
+    "blue|dark|cyan") echo "#00bcd4" ;; # Cyan-blue
+    "blue|dark|"*) echo "#42a5f5" ;;    # Light blue
 
-        "blue|light|blue") echo "#1976d2" ;;       # Dark blue
-        "blue|light|cyan") echo "#0097a7" ;;       # Dark cyan
-        "blue|light|"*) echo "#1565c0" ;;          # Deep blue
+    "blue|light|blue") echo "#1976d2" ;; # Dark blue
+    "blue|light|cyan") echo "#0097a7" ;; # Dark cyan
+    "blue|light|"*) echo "#1565c0" ;;    # Deep blue
 
-        "yellow|dark|yellow") echo "#ffeb3b" ;;    # Bright yellow
-        "yellow|dark|orange") echo "#ffc107" ;;    # Amber
-        "yellow|dark|"*) echo "#ffca28" ;;         # Golden yellow
+    "yellow|dark|yellow") echo "#ffeb3b" ;; # Bright yellow
+    "yellow|dark|orange") echo "#ffc107" ;; # Amber
+    "yellow|dark|"*) echo "#ffca28" ;;      # Golden yellow
 
-        "yellow|light|yellow") echo "#f57f17" ;;   # Dark yellow
-        "yellow|light|orange") echo "#ef6c00" ;;   # Dark amber
-        "yellow|light|"*) echo "#f9a825" ;;        # Dark golden
+    "yellow|light|yellow") echo "#f57f17" ;; # Dark yellow
+    "yellow|light|orange") echo "#ef6c00" ;; # Dark amber
+    "yellow|light|"*) echo "#f9a825" ;;      # Dark golden
 
-        "cyan|dark|cyan") echo "#00bcd4" ;;        # Material cyan
-        "cyan|dark|blue") echo "#03a9f4" ;;        # Cyan-blue
-        "cyan|dark|"*) echo "#26c6da" ;;           # Light cyan
+    "cyan|dark|cyan") echo "#00bcd4" ;; # Material cyan
+    "cyan|dark|blue") echo "#03a9f4" ;; # Cyan-blue
+    "cyan|dark|"*) echo "#26c6da" ;;    # Light cyan
 
-        "cyan|light|cyan") echo "#00838f" ;;       # Dark cyan
-        "cyan|light|blue") echo "#0277bd" ;;       # Dark cyan-blue
-        "cyan|light|"*) echo "#00695c" ;;          # Teal
+    "cyan|light|cyan") echo "#00838f" ;; # Dark cyan
+    "cyan|light|blue") echo "#0277bd" ;; # Dark cyan-blue
+    "cyan|light|"*) echo "#00695c" ;;    # Teal
 
-        "magenta|dark|purple"|"purple|dark|purple") echo "#9c27b0" ;;  # Material purple
-        "magenta|dark|pink"|"purple|dark|pink") echo "#e91e63" ;;      # Material pink
-        "magenta|dark|"*|"purple|dark|"*) echo "#ab47bc" ;;            # Light purple
+    "magenta|dark|purple" | "purple|dark|purple") echo "#9c27b0" ;; # Material purple
+    "magenta|dark|pink" | "purple|dark|pink") echo "#e91e63" ;;     # Material pink
+    "magenta|dark|"* | "purple|dark|"*) echo "#ab47bc" ;;           # Light purple
 
-        "magenta|light|purple"|"purple|light|purple") echo "#7b1fa2" ;; # Dark purple
-        "magenta|light|pink"|"purple|light|pink") echo "#ad1457" ;;     # Dark pink
-        "magenta|light|"*|"purple|light|"*) echo "#8e24aa" ;;          # Medium purple
+    "magenta|light|purple" | "purple|light|purple") echo "#7b1fa2" ;; # Dark purple
+    "magenta|light|pink" | "purple|light|pink") echo "#ad1457" ;;     # Dark pink
+    "magenta|light|"* | "purple|light|"*) echo "#8e24aa" ;;           # Medium purple
 
-        "orange|dark|orange") echo "#ff9800" ;;    # Material orange
-        "orange|dark|red") echo "#ff5722" ;;       # Deep orange
-        "orange|dark|"*) echo "#ffb74d" ;;         # Light orange
+    "orange|dark|orange") echo "#ff9800" ;; # Material orange
+    "orange|dark|red") echo "#ff5722" ;;    # Deep orange
+    "orange|dark|"*) echo "#ffb74d" ;;      # Light orange
 
-        "orange|light|orange") echo "#f57c00" ;;   # Dark orange
-        "orange|light|red") echo "#d84315" ;;      # Dark deep orange
-        "orange|light|"*) echo "#ef6c00" ;;        # Medium orange
+    "orange|light|orange") echo "#f57c00" ;; # Dark orange
+    "orange|light|red") echo "#d84315" ;;    # Dark deep orange
+    "orange|light|"*) echo "#ef6c00" ;;      # Medium orange
 
-        "pink|dark|pink") echo "#e91e63" ;;        # Material pink
-        "pink|dark|purple") echo "#9c27b0" ;;      # Pink-purple
-        "pink|dark|"*) echo "#f06292" ;;           # Light pink
+    "pink|dark|pink") echo "#e91e63" ;;   # Material pink
+    "pink|dark|purple") echo "#9c27b0" ;; # Pink-purple
+    "pink|dark|"*) echo "#f06292" ;;      # Light pink
 
-        "pink|light|pink") echo "#c2185b" ;;       # Dark pink
-        "pink|light|purple") echo "#7b1fa2" ;;     # Dark pink-purple
-        "pink|light|"*) echo "#ad1457" ;;          # Deep pink
+    "pink|light|pink") echo "#c2185b" ;;   # Dark pink
+    "pink|light|purple") echo "#7b1fa2" ;; # Dark pink-purple
+    "pink|light|"*) echo "#ad1457" ;;      # Deep pink
 
-        "brown|dark|red") echo "#8d6e63" ;;        # Material brown
-        "brown|dark|orange") echo "#a1887f" ;;     # Light brown
-        "brown|dark|"*) echo "#795548" ;;          # Dark brown
+    "brown|dark|red") echo "#8d6e63" ;;    # Material brown
+    "brown|dark|orange") echo "#a1887f" ;; # Light brown
+    "brown|dark|"*) echo "#795548" ;;      # Dark brown
 
-        "brown|light|red") echo "#5d4037" ;;       # Dark brown
-        "brown|light|orange") echo "#6d4c41" ;;    # Deep brown
-        "brown|light|"*) echo "#4e342e" ;;         # Very dark brown
+    "brown|light|red") echo "#5d4037" ;;    # Dark brown
+    "brown|light|orange") echo "#6d4c41" ;; # Deep brown
+    "brown|light|"*) echo "#4e342e" ;;      # Very dark brown
 
-        # FALLBACKS - Enhanced contrast
-        "dark|"*) echo "#bdbdbd" ;;                # Light gray for dark themes
-        "light|"*) echo "#424242" ;;               # Dark gray for light themes
-        *) echo "#757575" ;;                       # Medium gray default
-    esac
+    # FALLBACKS - Enhanced contrast
+    "dark|"*) echo "#bdbdbd" ;;  # Light gray for dark themes
+    "light|"*) echo "#424242" ;; # Dark gray for light themes
+    *) echo "#757575" ;;         # Medium gray default
+  esac
 }
 
 # Main function: Find best color for concept
 find_best_color_for_concept() {
-    local concept="$1"
+  local concept="$1"
 
-    # Validate concept
-    case "$concept" in
-        error|warning|success|info|accent|red|green|blue|yellow|cyan|magenta|purple|orange|pink|brown|white|black|gray|grey|background|background-alt|foreground|foreground-alt) ;;
-        *)
-            show_error "Unknown concept: $concept"
-            return 1
-            ;;
-    esac
+  # Validate concept
+  case "$concept" in
+    error | warning | success | info | accent | red | green | blue | yellow | cyan | magenta | purple | orange | pink | brown | white | black | gray | grey | background | background-alt | foreground | foreground-alt) ;;
+    *)
+      show_error "Unknown concept: $concept"
+      return 1
+      ;;
+  esac
 
-            # Handle neutrals and background/foreground variants directly
-    case "$concept" in
-        white|black|gray|grey)
-            get_smart_color "$concept"
-            return 0
-            ;;
-        background)
-            xrdb -get "background" 2>/dev/null || echo "#000000"
-            return 0
-            ;;
-        background-alt)
-            xrdb -get "color1" 2>/dev/null || echo "#1a1a1a"
-            return 0
-            ;;
-        foreground)
-            get_optimal_foreground
-            return 0
-            ;;
-        foreground-alt)
-            xrdb -get "color5" 2>/dev/null || echo "#888888"
-            return 0
-            ;;
-    esac
+  # Handle neutrals and background/foreground variants directly
+  case "$concept" in
+    white | black | gray | grey)
+      get_smart_color "$concept"
+      return 0
+      ;;
+    background)
+      xrdb -get "background" 2>/dev/null || echo "#000000"
+      return 0
+      ;;
+    background-alt)
+      xrdb -get "color1" 2>/dev/null || echo "#1a1a1a"
+      return 0
+      ;;
+    foreground)
+      get_optimal_foreground
+      return 0
+      ;;
+    foreground-alt)
+      xrdb -get "color5" 2>/dev/null || echo "#888888"
+      return 0
+      ;;
+  esac
 
-    # Get palette characteristics
-    local dominant_color; dominant_color=$(get_palette_dominant_color)
-    local palette_average; palette_average=$(get_palette_average)
+  # Get palette characteristics
+  local dominant_color
+  dominant_color=$(get_palette_dominant_color)
+  local palette_average
+  palette_average=$(get_palette_average)
 
-    # Get base semantic color using enhanced algorithm
-    local base_color; base_color=$(get_smart_color "$concept" "$dominant_color")
+  # Get base semantic color using enhanced algorithm
+  local base_color
+  base_color=$(get_smart_color "$concept" "$dominant_color")
 
-    # Apply contrast enhancement for better readability
-    local contrast_enhanced; contrast_enhanced=$(enhance_color_contrast "$base_color" "$concept")
+  # Apply contrast enhancement for better readability
+  local contrast_enhanced
+  contrast_enhanced=$(enhance_color_contrast "$base_color" "$concept")
 
-    # Apply subtle harmonization with palette (10% blend for more natural look)
-    local final_color; final_color=$(blend_colors "$contrast_enhanced" "$palette_average" 10)
+  # Apply subtle harmonization with palette (10% blend for more natural look)
+  local final_color
+  final_color=$(blend_colors "$contrast_enhanced" "$palette_average" 10)
 
-    # Format output
-    case "${format:-hex}" in
-        hex) echo "$final_color" ;;
-        rgb) hex_to_rgb "$final_color" ;;
-        *) echo "$final_color" ;;
-    esac
+  # Format output
+  case "${format:-hex}" in
+    hex) echo "$final_color" ;;
+    rgb) hex_to_rgb "$final_color" ;;
+    *) echo "$final_color" ;;
+  esac
 }
 
 # Show visual palette
 show_palette_visual() {
-    echo -e "${BOLD}Current Palette:${NC}"
+  echo -e "${BOLD}Current Palette:${NC}"
 
-    # Base16 colors
-    for i in {0..15}; do
-        local color; color=$(xrdb -get "color$i" 2>/dev/null) || continue
-        show_color_block "$color" "color$i"
-    done
+  # Base16 colors
+  for i in {0..15}; do
+    local color
+    color=$(xrdb -get "color$i" 2>/dev/null) || continue
+    show_color_block "$color" "color$i"
+  done
 
-    echo
-    echo -e "${BOLD}🎨 Enhanced Smart Colors (Theme-Adaptive):${NC}"
-    echo -e "${BLUE}   Current theme: $(is_light_theme && echo "Light" || echo "Dark")${NC}"
-    echo
+  echo
+  echo -e "${BOLD}🎨 Enhanced Smart Colors (Theme-Adaptive):${NC}"
+  echo -e "${BLUE}   Current theme: $(is_light_theme && echo "Light" || echo "Dark")${NC}"
+  echo
 
-    echo -e "${BOLD}Smart Background & Foreground:${NC}"
-    local bg_fg_colors=(background background-alt foreground foreground-alt)
-    for concept in "${bg_fg_colors[@]}"; do
-        local color; color=$(find_best_color_for_concept "$concept")
-        show_color_block "$color" "$concept"
-    done
+  echo -e "${BOLD}Smart Background & Foreground:${NC}"
+  local bg_fg_colors=(background background-alt foreground foreground-alt)
+  for concept in "${bg_fg_colors[@]}"; do
+    local color
+    color=$(find_best_color_for_concept "$concept")
+    show_color_block "$color" "$concept"
+  done
 
-    echo
-    echo -e "${BOLD}Smart Semantic Colors (Enhanced Contrast):${NC}"
-    local concepts=(error warning success info accent)
-    for concept in "${concepts[@]}"; do
-        local color; color=$(find_best_color_for_concept "$concept")
-        show_color_block "$color" "$concept"
-    done
+  echo
+  echo -e "${BOLD}Smart Semantic Colors (Enhanced Contrast):${NC}"
+  local concepts=(error warning success info accent)
+  for concept in "${concepts[@]}"; do
+    local color
+    color=$(find_best_color_for_concept "$concept")
+    show_color_block "$color" "$concept"
+  done
 
-    echo
-    echo -e "${BOLD}Smart Basic Colors (Theme-Optimized):${NC}"
-    local basic_colors=(red green blue yellow cyan magenta orange pink)
-    for color in "${basic_colors[@]}"; do
-        local color_value; color_value=$(find_best_color_for_concept "$color")
-        show_color_block "$color_value" "$color"
-    done
+  echo
+  echo -e "${BOLD}Smart Basic Colors (Theme-Optimized):${NC}"
+  local basic_colors=(red green blue yellow cyan magenta orange pink)
+  for color in "${basic_colors[@]}"; do
+    local color_value
+    color_value=$(find_best_color_for_concept "$color")
+    show_color_block "$color_value" "$color"
+  done
 
-    echo
-    echo -e "${BLUE}💡 Smart Colors Features:${NC}"
-    echo -e "   • Enhanced contrast ratios for better readability"
-    echo -e "   • Material Design inspired color choices"
-    echo -e "   • Automatic theme detection and adaptation"
-    echo -e "   • Harmonized with current palette (10% blend)"
-    echo
+  echo
+  echo -e "${BLUE}💡 Smart Colors Features:${NC}"
+  echo -e "   • Enhanced contrast ratios for better readability"
+  echo -e "   • Material Design inspired color choices"
+  echo -e "   • Automatic theme detection and adaptation"
+  echo -e "   • Harmonized with current palette (10% blend)"
+  echo
 }
 
 # Generate file outputs
 generate_smart_color_files() {
-    show_status "Generating smart color files..."
-    mkdir -p "$SMART_COLORS_DIR"
+  show_status "Generating smart color files..."
+  mkdir -p "$SMART_COLORS_DIR"
 
-    # Generate smart colors
-    local error_color; error_color=$(format="hex" find_best_color_for_concept "error")
-    local warning_color; warning_color=$(format="hex" find_best_color_for_concept "warning")
-    local success_color; success_color=$(format="hex" find_best_color_for_concept "success")
-    local info_color; info_color=$(format="hex" find_best_color_for_concept "info")
-    local accent_color; accent_color=$(format="hex" find_best_color_for_concept "accent")
+  # Generate smart colors
+  local error_color
+  error_color=$(format="hex" find_best_color_for_concept "error")
+  local warning_color
+  warning_color=$(format="hex" find_best_color_for_concept "warning")
+  local success_color
+  success_color=$(format="hex" find_best_color_for_concept "success")
+  local info_color
+  info_color=$(format="hex" find_best_color_for_concept "info")
+  local accent_color
+  accent_color=$(format="hex" find_best_color_for_concept "accent")
 
-    # Get palette colors
-    local bg; bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
-    local fg; fg=$(get_optimal_foreground)
-    local cursor
-    cursor=$(xrdb -get "cursor" 2>/dev/null)
-    if [[ -z "$cursor" ]]; then
-        cursor="$fg"
-    fi
+  # Get palette colors
+  local bg
+  bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
+  local fg
+  fg=$(get_optimal_foreground)
+  local cursor
+  cursor=$(xrdb -get "cursor" 2>/dev/null)
+  if [[ -z $cursor ]]; then
+    cursor="$fg"
+  fi
 
-    # Get background and foreground variants
-    local bg_alt; bg_alt=$(xrdb -get "color1" 2>/dev/null || echo "#1a1a1a")
-    local fg_alt; fg_alt=$(xrdb -get "color5" 2>/dev/null || echo "#888888")
+  # Get background and foreground variants
+  local bg_alt
+  bg_alt=$(xrdb -get "color1" 2>/dev/null || echo "#1a1a1a")
+  local fg_alt
+  fg_alt=$(xrdb -get "color5" 2>/dev/null || echo "#888888")
 
-    local base_colors=()
-    for i in {0..15}; do
-        base_colors[i]=$(xrdb -get "color$i" 2>/dev/null || echo "#000000")
-    done
+  local base_colors=()
+  for i in {0..15}; do
+    base_colors[i]=$(xrdb -get "color$i" 2>/dev/null || echo "#000000")
+  done
 
-    # Get wallpaper path
-    local wallpaper_path=""
-    if [[ -f ~/.cache/wal/wal ]]; then
-        wallpaper_path=$(cat ~/.cache/wal/wal)
-    elif [[ -f ~/.config/wpg/wp_init.py ]]; then
-        wallpaper_path=$(python3 -c "import os; exec(open(os.path.expanduser('~/.config/wpg/wp_init.py')).read()); print(wallpaper)" 2>/dev/null || echo "")
-    fi
-    [[ -z "$wallpaper_path" ]] && wallpaper_path="/home/$(whoami)/.wallpaper"
+  # Get wallpaper path
+  local wallpaper_path=""
+  if [[ -f ~/.cache/wal/wal ]]; then
+    wallpaper_path=$(cat ~/.cache/wal/wal)
+  elif [[ -f ~/.config/wpg/wp_init.py ]]; then
+    wallpaper_path=$(python3 -c "import os; exec(open(os.path.expanduser('~/.config/wpg/wp_init.py')).read()); print(wallpaper)" 2>/dev/null || echo "")
+  fi
+  [[ -z $wallpaper_path ]] && wallpaper_path="/home/$(whoami)/.wallpaper"
 
-    # Generate i3 colors file
-    cat > "$I3_COLORS_FILE" << EOF
+  # Generate i3 colors file
+  cat >"$I3_COLORS_FILE" <<EOF
 # Color palette generated by dots-smart-colors
 # Based on current X resources and smart color analysis
 # Auto-generated - do not edit manually
@@ -574,8 +615,8 @@ client.background       ${base_colors[7]}
 # accent=$accent_color
 EOF
 
-    # Generate EWW colors file
-    cat > "$EWW_COLORS_FILE" << EOF
+  # Generate EWW colors file
+  cat >"$EWW_COLORS_FILE" <<EOF
 // SCSS Variables
 // Generated by 'dots-smart-colors'
 \$wallpaper: "$wallpaper_path";
@@ -588,11 +629,11 @@ EOF
 // Colors
 EOF
 
-    for i in {0..15}; do
-        echo "\$color$i: ${base_colors[i]};" >> "$EWW_COLORS_FILE"
-    done
+  for i in {0..15}; do
+    echo "\$color$i: ${base_colors[i]};" >>"$EWW_COLORS_FILE"
+  done
 
-    cat >> "$EWW_COLORS_FILE" << EOF
+  cat >>"$EWW_COLORS_FILE" <<EOF
 
 // Background and foreground variants
 \$background-alt: $bg_alt;
@@ -608,14 +649,15 @@ EOF
 // Smart basic colors (theme-adaptive)
 EOF
 
-    local basic_colors=(red green blue yellow cyan magenta orange pink)
-    for color in "${basic_colors[@]}"; do
-        local color_value; color_value=$(format="hex" find_best_color_for_concept "$color")
-        echo "\$$color: $color_value;" >> "$EWW_COLORS_FILE"
-    done
+  local basic_colors=(red green blue yellow cyan magenta orange pink)
+  for color in "${basic_colors[@]}"; do
+    local color_value
+    color_value=$(format="hex" find_best_color_for_concept "$color")
+    echo "\$$color: $color_value;" >>"$EWW_COLORS_FILE"
+  done
 
-    # Generate shell colors file
-    cat > "$SHELL_COLORS_FILE" << EOF
+  # Generate shell colors file
+  cat >"$SHELL_COLORS_FILE" <<EOF
 # Shell variables
 # Generated by 'dots-smart-colors'
 
@@ -635,13 +677,14 @@ color_accent='$accent_color'
 # Smart basic colors
 EOF
 
-    for color in "${basic_colors[@]}"; do
-        local color_value; color_value=$(format="hex" find_best_color_for_concept "$color")
-        echo "color_${color}='$color_value'" >> "$SHELL_COLORS_FILE"
-    done
+  for color in "${basic_colors[@]}"; do
+    local color_value
+    color_value=$(format="hex" find_best_color_for_concept "$color")
+    echo "color_${color}='$color_value'" >>"$SHELL_COLORS_FILE"
+  done
 
-    # Generate environment colors file
-    cat > "$ENV_COLORS_FILE" << EOF
+  # Generate environment colors file
+  cat >"$ENV_COLORS_FILE" <<EOF
 # Environment variables for smart colors
 # Generated by 'dots-smart-colors'
 # Source this file: source $ENV_COLORS_FILE
@@ -662,27 +705,39 @@ export COLOR_ACCENT='$accent_color'
 # Smart basic colors
 EOF
 
-    local extended_colors=(red green blue yellow cyan magenta orange pink brown white black gray)
-    for color in "${extended_colors[@]}"; do
-        local color_value; color_value=$(format="hex" find_best_color_for_concept "$color")
-        echo "export COLOR_${color^^}='$color_value'" >> "$ENV_COLORS_FILE"
-    done
+  local extended_colors=(red green blue yellow cyan magenta orange pink brown white black gray)
+  for color in "${extended_colors[@]}"; do
+    local color_value
+    color_value=$(format="hex" find_best_color_for_concept "$color")
+    echo "export COLOR_${color^^}='$color_value'" >>"$ENV_COLORS_FILE"
+  done
 
-    # Generate polybar colors file
-    # Get all smart basic colors
-    local red_color; red_color=$(format="hex" find_best_color_for_concept "red")
-    local green_color; green_color=$(format="hex" find_best_color_for_concept "green")
-    local blue_color; blue_color=$(format="hex" find_best_color_for_concept "blue")
-    local yellow_color; yellow_color=$(format="hex" find_best_color_for_concept "yellow")
-    local cyan_color; cyan_color=$(format="hex" find_best_color_for_concept "cyan")
-    local magenta_color; magenta_color=$(format="hex" find_best_color_for_concept "magenta")
-    local orange_color; orange_color=$(format="hex" find_best_color_for_concept "orange")
-    local pink_color; pink_color=$(format="hex" find_best_color_for_concept "pink")
-    local white_color; white_color=$(format="hex" find_best_color_for_concept "white")
-    local black_color; black_color=$(format="hex" find_best_color_for_concept "black")
-    local gray_color; gray_color=$(format="hex" find_best_color_for_concept "gray")
+  # Generate polybar colors file
+  # Get all smart basic colors
+  local red_color
+  red_color=$(format="hex" find_best_color_for_concept "red")
+  local green_color
+  green_color=$(format="hex" find_best_color_for_concept "green")
+  local blue_color
+  blue_color=$(format="hex" find_best_color_for_concept "blue")
+  local yellow_color
+  yellow_color=$(format="hex" find_best_color_for_concept "yellow")
+  local cyan_color
+  cyan_color=$(format="hex" find_best_color_for_concept "cyan")
+  local magenta_color
+  magenta_color=$(format="hex" find_best_color_for_concept "magenta")
+  local orange_color
+  orange_color=$(format="hex" find_best_color_for_concept "orange")
+  local pink_color
+  pink_color=$(format="hex" find_best_color_for_concept "pink")
+  local white_color
+  white_color=$(format="hex" find_best_color_for_concept "white")
+  local black_color
+  black_color=$(format="hex" find_best_color_for_concept "black")
+  local gray_color
+  gray_color=$(format="hex" find_best_color_for_concept "gray")
 
-    cat > "$POLYBAR_COLORS_FILE" << EOF
+  cat >"$POLYBAR_COLORS_FILE" <<EOF
 ; Polybar colors configuration
 ; Generated by 'dots-smart-colors'
 ; This file contains standard polybar color definitions using smart theme-adaptive colors
@@ -730,99 +785,110 @@ accent = $accent_color
 ; Base16 color references (for compatibility)
 EOF
 
-    for i in {0..15}; do
-        echo "color$i = ${base_colors[i]}" >> "$POLYBAR_COLORS_FILE"
-    done
+  for i in {0..15}; do
+    echo "color$i = ${base_colors[i]}" >>"$POLYBAR_COLORS_FILE"
+  done
 
-    show_success "Smart color files generated in $SMART_COLORS_DIR"
+  show_success "Smart color files generated in $SMART_COLORS_DIR"
 }
 
 # Main script logic
 main() {
-    # Check dependencies
-    command -v xrdb >/dev/null 2>&1 || { show_error "xrdb not found"; exit 1; }
+  # Check dependencies
+  command -v xrdb >/dev/null 2>&1 || {
+    show_error "xrdb not found"
+    exit 1
+  }
 
-    # Handle options
-    if [[ -n "$analyze" ]]; then
-        show_palette_visual
-    elif [[ -n "$colors" ]]; then
-        show_palette_visual
-    elif [[ -n "$export" ]]; then
-        case "${format:-shell}" in
-            files) generate_smart_color_files ;;
-            *)
-                local concepts=(error warning success info accent red green blue yellow cyan magenta orange pink brown white black gray)
-                echo "# Smart color variables generated by dots-smart-colors"
-                echo "# Source this file or copy to your shell/polybar config"
-                echo
+  # Handle options
+  if [[ -n $analyze ]]; then
+    show_palette_visual
+  elif [[ -n $colors ]]; then
+    show_palette_visual
+  elif [[ -n $export ]]; then
+    case "${format:-shell}" in
+      files) generate_smart_color_files ;;
+      *)
+        local concepts=(error warning success info accent red green blue yellow cyan magenta orange pink brown white black gray)
+        echo "# Smart color variables generated by dots-smart-colors"
+        echo "# Source this file or copy to your shell/polybar config"
+        echo
 
-                echo "# Background and foreground variants"
-                for concept in background background-alt foreground foreground-alt; do
-                    local color; color=$(find_best_color_for_concept "$concept")
-                    echo "export COLOR_${concept^^//-/_}='$color'"
-                done
-
-                echo
-                echo "# Semantic colors"
-                for concept in error warning success info accent; do
-                    local color; color=$(find_best_color_for_concept "$concept")
-                    echo "export COLOR_${concept^^}='$color'"
-                done
-
-                echo
-                echo "# Basic colors"
-                for concept in red green blue yellow cyan magenta orange pink brown white black gray; do
-                    local color; color=$(find_best_color_for_concept "$concept")
-                    echo "export COLOR_${concept^^}='$color'"
-                done
-
-                echo
-                echo "# Polybar format variables (background/foreground)"
-                for concept in background background-alt foreground foreground-alt; do
-                    local color; color=$(format="polybar" find_best_color_for_concept "$concept")
-                    echo "# $concept = $color"
-                done
-
-                echo
-                echo "# Polybar format variables (semantic)"
-                for concept in error warning success info accent; do
-                    local color; color=$(format="polybar" find_best_color_for_concept "$concept")
-                    echo "# $concept = $color"
-                done
-
-                echo
-                echo "# Polybar format variables (basic colors)"
-                for concept in red green blue yellow cyan magenta orange pink; do
-                    local color; color=$(format="polybar" find_best_color_for_concept "$concept")
-                    echo "# $concept = $color"
-                done
-                ;;
-        esac
-    elif [[ -n "$concept" ]]; then
-        find_best_color_for_concept "$concept"
-    elif [[ -n "$generate" ]]; then
-        generate_smart_color_files
-    else
-        # Default: show quick palette
-        echo -e "${BOLD}Smart Colors Preview:${NC}"
-
-        # Show background/foreground first
-        local bg_fg_colors=(background foreground background-alt foreground-alt)
-        for concept in "${bg_fg_colors[@]}"; do
-            local color; color=$(find_best_color_for_concept "$concept")
-            show_color_block "$color" "$concept"
+        echo "# Background and foreground variants"
+        for concept in background background-alt foreground foreground-alt; do
+          local color
+          color=$(find_best_color_for_concept "$concept")
+          echo "export COLOR_${concept^^//-/_}='$color'"
         done
 
         echo
-        echo -e "${BOLD}Semantic Colors:${NC}"
-        local concepts=(error warning success info accent)
-        for concept in "${concepts[@]}"; do
-            local color; color=$(find_best_color_for_concept "$concept")
-            show_color_block "$color" "$concept"
+        echo "# Semantic colors"
+        for concept in error warning success info accent; do
+          local color
+          color=$(find_best_color_for_concept "$concept")
+          echo "export COLOR_${concept^^}='$color'"
         done
+
         echo
-        show_info "Use --help for more options"
-    fi
+        echo "# Basic colors"
+        for concept in red green blue yellow cyan magenta orange pink brown white black gray; do
+          local color
+          color=$(find_best_color_for_concept "$concept")
+          echo "export COLOR_${concept^^}='$color'"
+        done
+
+        echo
+        echo "# Polybar format variables (background/foreground)"
+        for concept in background background-alt foreground foreground-alt; do
+          local color
+          color=$(format="polybar" find_best_color_for_concept "$concept")
+          echo "# $concept = $color"
+        done
+
+        echo
+        echo "# Polybar format variables (semantic)"
+        for concept in error warning success info accent; do
+          local color
+          color=$(format="polybar" find_best_color_for_concept "$concept")
+          echo "# $concept = $color"
+        done
+
+        echo
+        echo "# Polybar format variables (basic colors)"
+        for concept in red green blue yellow cyan magenta orange pink; do
+          local color
+          color=$(format="polybar" find_best_color_for_concept "$concept")
+          echo "# $concept = $color"
+        done
+        ;;
+    esac
+  elif [[ -n $concept ]]; then
+    find_best_color_for_concept "$concept"
+  elif [[ -n $generate ]]; then
+    generate_smart_color_files
+  else
+    # Default: show quick palette
+    echo -e "${BOLD}Smart Colors Preview:${NC}"
+
+    # Show background/foreground first
+    local bg_fg_colors=(background foreground background-alt foreground-alt)
+    for concept in "${bg_fg_colors[@]}"; do
+      local color
+      color=$(find_best_color_for_concept "$concept")
+      show_color_block "$color" "$concept"
+    done
+
+    echo
+    echo -e "${BOLD}Semantic Colors:${NC}"
+    local concepts=(error warning success info accent)
+    for concept in "${concepts[@]}"; do
+      local color
+      color=$(find_best_color_for_concept "$concept")
+      show_color_block "$color" "$concept"
+    done
+    echo
+    show_info "Use --help for more options"
+  fi
 }
 
 # Run main function

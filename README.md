@@ -290,18 +290,63 @@ cd dotfiles
 
 ### 🔧 **Development Setup**
 
-Contribute with confidence using our quality tools:
+Contribute with confidence using our quality tools. We use [pre-commit](https://pre-commit.com/) to ensure code quality and consistency.
+
+#### **Installing Pre-commit with pipx** (Recommended)
+
+[pipx](https://pipx.pypa.io/) is the recommended way to install pre-commit as it provides isolation and clean management:
 
 ```bash
-# Install development dependencies
-pip install pre-commit
+# Install pre-commit using pipx
+pipx install pre-commit
 
-# Set up git hooks
+# Verify installation
+pre-commit --version
+```
+
+#### **Setting Up Pre-commit Hooks**
+
+After cloning the repository:
+
+```bash
+# Navigate to the repository
+cd ~/.dotfiles
+
+# Install git hooks
 pre-commit install
 
-# Run quality checks
+# (Optional) Install hooks for commit messages
+pre-commit install --hook-type commit-msg
+
+# Run all hooks manually on all files
 pre-commit run --all-files
 ```
+
+#### **What Pre-commit Checks**
+
+Our pre-commit configuration automatically validates:
+
+- ✅ **Shell Scripts**: ShellCheck linting + shfmt formatting
+- ✅ **Markdown**: Linting and formatting
+- ✅ **YAML**: Syntax validation and linting
+- ✅ **General**: Trailing whitespace, EOF, merge conflicts, private keys
+- ✅ **Custom**: Dots script validation, branch protection
+
+#### **Manual Hook Execution**
+
+```bash
+# Run all hooks on all files
+pre-commit run --all-files
+
+# Run specific hook
+pre-commit run shellcheck --all-files
+pre-commit run markdownlint --all-files
+
+# Skip hooks for a commit (use sparingly)
+git commit --no-verify -m "Your message"
+```
+
+For more details, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 🌍 **Platform Support**
 
@@ -322,6 +367,8 @@ pre-commit run --all-files
 
 Comprehensive guides for every aspect:
 
+### 📚 User Documentation
+
 - 🏠 [**Getting Started**](https://ulises-jeremias.github.io/dotfiles/#Home) - Your first steps
 - 🎨 [**Rice System**](https://ulises-jeremias.github.io/dotfiles/#Rice-System-Theme-Management) - Theme management
 - 🧠 [**Smart Colors**](https://ulises-jeremias.github.io/dotfiles/#Smart-Colors-System) - Intelligent theming
@@ -329,6 +376,19 @@ Comprehensive guides for every aspect:
 - 🎛️ [**EWW Widgets**](https://ulises-jeremias.github.io/dotfiles/#EWW-Widgets) - Modern widgets
 - 🔧 [**Scripts Guide**](https://ulises-jeremias.github.io/dotfiles/#Dots-Scripts) - Automation tools
 - 🛡️ [**Security**](https://ulises-jeremias.github.io/dotfiles/#Security) - Privacy & security
+
+### 🤖 Developer & AI Documentation
+
+- 📋 [**AGENTS.md**](AGENTS.md) - Quick reference for AI agents and developers
+- 📁 [**docs/**](docs/) - Comprehensive technical documentation
+  - [Architecture Philosophy](docs/Architecture-Philosophy.md) - Core design principles
+  - [System Architecture](docs/System-Architecture.md) - Detailed subsystem architecture
+  - [Development Standards](docs/Development-Standards.md) - Coding standards and templates
+  - [Integration Patterns](docs/Integration-Patterns.md) - Best practices for integrations
+  - [Testing Strategy](docs/Testing-Strategy.md) - Testing approach and playground usage
+  - [Security Guidelines](docs/Security-Guidelines.md) - Security requirements and practices
+  - [Performance Guidelines](docs/Performance-Guidelines.md) - Optimization strategies
+- 📐 [**ADRs**](docs/adrs/) - Architecture Decision Records
 
 ## 🤝 **Contributing**
 
