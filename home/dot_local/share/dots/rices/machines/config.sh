@@ -11,11 +11,11 @@ RICE_TAGS="cyberpunk,industrial,futuristic,dark,bold"
 RICE_BEST_FOR="Coding, terminal work, cyberpunk enthusiasts, modern aesthetics"
 
 # Theme Components Information
-GTK_THEME="Orchis-Dark-Compact" # Industrial dark theme for cyberpunk aesthetic
-ICON_THEME="Numix-Circle"       # Clean, modern icons
+GTK_THEME="Orchis-Light-Compact" # Light, modern theme for industrial aesthetic
+ICON_THEME="Numix-Circle"        # Clean, modern icons
 CURSOR_THEME="Adwaita"
 SMART_COLORS="true"
-PREFER_DARK_THEME="true" # Dark theme for machines/cyberpunk vibe
+PREFER_DARK_THEME="false" # Light theme for better usability
 
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#83a598"

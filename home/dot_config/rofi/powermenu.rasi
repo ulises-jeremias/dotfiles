@@ -35,7 +35,7 @@ window {
     margin:                      0px;
     padding:                     0px;
     border:                      0px solid;
-    border-radius:               20px;
+    border-radius:               28px;
     border-color:                @selected-normal-foreground;
     cursor:                      "default";
     background-color:            @background;
@@ -44,9 +44,9 @@ window {
 /*****----- Main Box -----*****/
 mainbox {
     enabled:                     true;
-    spacing:                     15px;
+    spacing:                     20px;
     margin:                      0px;
-    padding:                     30px;
+    padding:                     40px;
     border:                      0px solid;
     border-radius:               0px;
     border-color:                @selected-normal-foreground;
@@ -145,16 +145,16 @@ listview {
 
 /*****----- Elements -----*****/
 element {
-    padding:                     40px 10px;
+    padding:                     50px 14px;
     border:                      0px solid;
-    border-radius:               100%;
+    border-radius:               24px;
     border-color:                @selected-normal-foreground;
     background-color:            @alternate-normal-background;
     text-color:                  @foreground;
     cursor:                      pointer;
 }
-element-text {
-    font:                        "Hack Nerd Font Mono 32";
+#element-text {
+    font:                        "Hack Nerd Font Mono 36";
     background-color:            transparent;
     text-color:                  inherit;
     cursor:                      inherit;

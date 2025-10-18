@@ -33,7 +33,7 @@ window {
     margin:                      0px;
     padding:                     0px;
     border:                      0px solid;
-    border-radius:               12px;
+    border-radius:               20px;
     border-color:                @selected-normal-foreground;
     cursor:                      "default";
     background-color:            @background;
@@ -42,9 +42,9 @@ window {
 /*****----- Main Box -----*****/
 mainbox {
     enabled:                     true;
-    spacing:                     15px;
+    spacing:                     20px;
     margin:                      0px;
-    padding:                     30px;
+    padding:                     40px;
     background-color:            transparent;
     children:                    [ "inputbar", "message", "listview" ];
 }
@@ -70,24 +70,24 @@ textbox-prompt-colon {
     enabled:                     true;
     expand:                      false;
     str:                         "󰣇";
-    padding:                     14px;
-    border-radius:               12px;
+    padding:                     16px;
+    border-radius:               16px;
     vertical-align:              0.5;
     background-color:            @urgent-background;
     text-color:                  @selected-normal-foreground;
 }
 prompt {
     enabled:                     true;
-    padding:                     14px;
-    border-radius:               12px;
+    padding:                     16px;
+    border-radius:               16px;
     vertical-align:              0.5;
     background-color:            @urgent-background;
     text-color:                  @selected-normal-foreground;
 }
 entry {
     enabled:                     true;
-    padding:                     14px;
-    border-radius:               12px;
+    padding:                     16px;
+    border-radius:               16px;
     vertical-align:              0.5;
     background-color:            @selected-normal-background;
     text-color:                  @selected-normal-foreground;
@@ -127,9 +127,9 @@ listview {
 /*****----- Elements -----*****/
 element {
     enabled:                     true;
-    padding:                     20px 18px;
+    padding:                     24px 20px;
     border:                      0px solid;
-    border-radius:               12px;
+    border-radius:               16px;
     border-color:                @selected-normal-foreground;
     background-color:            transparent;
     text-color:                  @foreground;

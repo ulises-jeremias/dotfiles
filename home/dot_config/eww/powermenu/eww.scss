@@ -11,17 +11,19 @@
 .bg {
   background-image: url($wallpaper);
   background-color: lighten($background, 10%);
-  opacity: 1;
+  opacity: 1.0;
 }
 .placeholder {
-  background-color: lighten($background, 12%);
-  border-radius: 16px;
+  background-color: lighten($background, 14%);
+  border-radius: 24px;
+  padding: 8px;
 }
 
 /** Generic window ***********************************/
 .genwin {
-  background-color: lighten($background, 10%);
-  border-radius: 16px;
+  background-color: lighten($background, 12%);
+  border-radius: 24px;
+  padding: 6px;
 }
 
 /** Clock ********************************************/

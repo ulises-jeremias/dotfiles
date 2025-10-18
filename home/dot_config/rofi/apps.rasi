@@ -28,19 +28,19 @@ configuration {
     border:                      0px solid;
     border-radius:               0px;
     cursor:                      "default";
-    background-color:            #1a1e2475;
+    background-color:            #1a1e2485;
 }
 #mainbox {
-    background-color    : #1a1e2470;
-    padding:             30 50;
-    border-radius:       16;
+    background-color    : #1a1e2480;
+    padding:             40 60;
+    border-radius:       24;
 }
 #inputbar {
-    background-color    : #f5f5f520;
-    border-color        : #f5f5f530;
+    background-color    : #f5f5f530;
+    border-color        : #f5f5f540;
     border              : 2;
-    border-radius       : 16;
-    padding             : 10px;
+    border-radius       : 24;
+    padding             : 16px;
     margin              : 7% 28%;
     font                : "Hack Nerd Font Mono 12";
 }
@@ -81,8 +81,8 @@ configuration {
     fixed-height:                true;
     fixed-columns:               true;
 
-    spacing:                     36;
-    margin:                      24px;
+    spacing:                     40;
+    margin:                      32px;
     padding:                     0px;
     border:                      0px solid;
     border-radius:               0px;
@@ -91,9 +91,9 @@ configuration {
 }
 #element {
     orientation         : vertical;
-    padding             : 8 24;
+    padding             : 12 28;
     background-color    : @background;
-    border-radius       : 16;
+    border-radius       : 20;
 }
 #element.normal {
     background-color    : @background;
@@ -103,7 +103,7 @@ configuration {
 }
 #element-icon {
     size                : 5em;
-    margin              : 0 16 0 0;
+    margin              : 0 16 8 0;
     background-color    : transparent;
 }
 #element-text {

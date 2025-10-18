@@ -11,10 +11,11 @@ RICE_TAGS="minimal,clean,gruvbox,productivity"
 RICE_BEST_FOR="Distraction-free work, minimal desktop lovers, focus sessions"
 
 # Theme Components Information
-GTK_THEME="Orchis-Dark-Compact"
+GTK_THEME="Orchis-Light-Compact"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="Adwaita"
 SMART_COLORS="true"
+PREFER_DARK_THEME="false"
 
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#d79921"
