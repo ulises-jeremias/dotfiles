@@ -377,6 +377,70 @@ apply_smart_colors_to_apps() {
     fi
   fi
 
+  # Update Hyprland if running
+  if pgrep Hyprland >/dev/null 2>&1; then
+    show_status "Hyprland detected, applying smart colors..."
+
+    # Link colors to Hyprland config
+    local hypr_colors_dir="$HOME/.config/hypr/hyprland.conf.d"
+    if [[ -d $hypr_colors_dir ]]; then
+      if [[ -f "$HOME/.cache/dots/smart-colors/colors-hyprland.conf" ]]; then
+        # Replace colors in colors.conf
+        cp "$HOME/.cache/dots/smart-colors/colors-hyprland.conf" "$hypr_colors_dir/colors.conf" 2>/dev/null
+
+        # Reload Hyprland config
+        if hyprctl reload >/dev/null 2>&1; then
+          show_success "Hyprland colors updated"
+          UPDATED_APPS+=("Hyprland with smart colors")
+          smart_colors_applied=true
+        fi
+      fi
+    fi
+  fi
+
+  # Update Waybar if running
+  if pgrep waybar >/dev/null 2>&1; then
+    show_status "Waybar detected, restarting with smart colors..."
+
+    # Link Waybar colors
+    local waybar_configs=("$HOME/.config/waybar/configs/default")
+    for config_dir in "${waybar_configs[@]}"; do
+      if [[ -d $config_dir ]]; then
+        ln -sf "$HOME/.cache/dots/smart-colors/colors-waybar.css" "$config_dir/colors.css" 2>/dev/null || true
+      fi
+    done
+
+    if ~/.config/waybar/launch.sh restart >/dev/null 2>&1 || killall -q waybar && ~/.config/waybar/launch.sh & then
+      show_success "Waybar restarted with smart colors"
+      UPDATED_APPS+=("Waybar with smart colors")
+      smart_colors_applied=true
+    else
+      show_warning "Waybar restart failed"
+      FAILED_APPS+=("Waybar restart")
+    fi
+  fi
+
+  # Update Mako if running
+  if pgrep mako >/dev/null 2>&1; then
+    show_status "Mako detected, restarting with smart colors..."
+
+    # Replace colors in mako config
+    if [[ -f "$HOME/.cache/dots/smart-colors/colors-mako.conf" ]]; then
+      # Backup original if exists
+      [[ -f "$HOME/.config/mako/config" ]] && cp "$HOME/.config/mako/config" "$HOME/.config/mako/config.bak" 2>/dev/null
+
+      # Merge smart colors into mako config
+      cat "$HOME/.cache/dots/smart-colors/colors-mako.conf" >"$HOME/.config/mako/config" 2>/dev/null
+
+      # Reload mako
+      if makoctl reload >/dev/null 2>&1; then
+        show_success "Mako restarted with smart colors"
+        UPDATED_APPS+=("Mako with smart colors")
+        smart_colors_applied=true
+      fi
+    fi
+  fi
+
   if [[ $smart_colors_applied == "true" ]]; then
     show_success "Smart colors applied to running applications"
   else
@@ -427,6 +491,37 @@ reload_gtk_themes() {
   else
     show_warning "GTK theme manager not found, skipping GTK theme update"
     SKIPPED_APPS+=("GTK themes")
+  fi
+}
+
+# Function to reload hyprpaper (Hyprland wallpaper daemon)
+reload_hyprpaper() {
+  # Only run on Hyprland
+  if [[ ${XDG_SESSION_TYPE:-} != "wayland" ]] || [[ ${XDG_CURRENT_DESKTOP:-} != *"Hyprland"* ]]; then
+    return 0
+  fi
+
+  if ! check_command hyprpaper "Hyprpaper" false; then
+    return 0
+  fi
+
+  show_status "Updating wallpaper with hyprpaper..."
+
+  # Use dots-hyprpaper-set helper if available
+  if command -v dots-hyprpaper-set >/dev/null 2>&1; then
+    if dots-hyprpaper-set; then
+      show_success "Hyprpaper wallpaper updated"
+      UPDATED_APPS+=("Hyprpaper")
+      return 0
+    else
+      show_warning "Hyprpaper update failed"
+      FAILED_APPS+=("Hyprpaper")
+      return 1
+    fi
+  else
+    show_warning "dots-hyprpaper-set not found, skipping hyprpaper update"
+    SKIPPED_APPS+=("Hyprpaper")
+    return 1
   fi
 }
 
@@ -503,6 +598,9 @@ main() {
 
   # Apply GTK themes to match wallpaper
   reload_gtk_themes
+
+  # Set wallpaper for Hyprland
+  reload_hyprpaper
 
   # Apply smart colors after all standard wal operations
   reload_smart_colors

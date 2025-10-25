@@ -76,13 +76,22 @@ for arg in "$@"; do
         -hide-scrollbar -theme ~/.config/rofi/applets.rasi
       ;;
     -c | --clipboard)
-      hash greenclip &>/dev/null ||
-        {
-          echo "Requires 'greenclip' installed"
-          exit 1
-        }
-
-      rofi -modi "clipboard:greenclip print" -show "clipboard:greenclip print" -theme ~/.config/rofi/applets.rasi
+      # Clipboard manager - Detect session type and use appropriate tool
+      if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+        hash cliphist &>/dev/null ||
+          {
+            echo "Requires 'cliphist' installed (Wayland clipboard manager)"
+            exit 1
+          }
+        cliphist list | rofi -dmenu -theme ~/.config/rofi/applets.rasi | cliphist decode | wl-copy
+      else
+        hash greenclip &>/dev/null ||
+          {
+            echo "Requires 'greenclip' installed (X11 clipboard manager)"
+            exit 1
+          }
+        rofi -modi "clipboard:greenclip print" -show "clipboard:greenclip print" -theme ~/.config/rofi/applets.rasi
+      fi
       ;;
     -b | --browser)
       hash surfraw &>/dev/null ||

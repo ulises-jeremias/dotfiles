@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Hyprland wallpaper management with swaybg/hyprpaper
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+##     @script.name [COMMAND] [OPTIONS]
+##
+## Commands:
+##     set <path>             Set wallpaper from path
+##     reload                 Reload current wallpaper
+##
+## Options:
+##     -h, --help             Show this help message
+##     -v, --version          Display script version
+
+NAME=$(basename "$0")
+VER="1.0"
+
+WALLPAPERS_DIR="${HOME}/.config/wallpapers"
+CURRENT_WALLPAPER="${HOME}/.cache/current_wallpaper"
+
+usage() {
+  cat <<-EOF
+
+ USAGE:  $NAME [COMMAND] [OPTIONS]
+
+ COMMANDS:
+
+     set <path>        Set wallpaper from path
+     reload            Reload current wallpaper
+
+ OPTIONS:
+
+     -h,--help         Display this message
+     -v,--version      Display script version
+
+ DEPENDENCIES:
+     swaybg OR hyprpaper
+
+EOF
+}
+
+# Set wallpaper with swaybg
+set_wallpaper_swaybg() {
+  local wallpaper="$1"
+
+  killall -q swaybg 2>/dev/null
+  swaybg -i "$wallpaper" -m fill &
+  echo "$wallpaper" > "$CURRENT_WALLPAPER"
+}
+
+# Set wallpaper with hyprpaper
+set_wallpaper_hyprpaper() {
+  local wallpaper="$1"
+
+  hyprctl hyprpaper preload "$wallpaper"
+  hyprctl hyprpaper wallpaper ",$wallpaper"
+  echo "$wallpaper" > "$CURRENT_WALLPAPER"
+}
+
+# Main
+case "${1:-}" in
+  -h|--help)
+    usage
+    ;;
+  -v|--version)
+    echo "$NAME -- Version $VER"
+    ;;
+  set)
+    if [[ -z "${2:-}" ]]; then
+      echo "Error: No wallpaper path provided"
+      usage
+      exit 1
+    fi
+
+    if [[ ! -f "$2" ]]; then
+      echo "Error: Wallpaper file not found: $2"
+      exit 1
+    fi
+
+    if command -v hyprpaper >/dev/null; then
+      set_wallpaper_hyprpaper "$2"
+    elif command -v swaybg >/dev/null; then
+      set_wallpaper_swaybg "$2"
+    else
+      echo "Error: Neither hyprpaper nor swaybg found"
+      exit 1
+    fi
+    ;;
+  reload)
+    if [[ ! -f "$CURRENT_WALLPAPER" ]]; then
+      echo "Error: No current wallpaper set"
+      exit 1
+    fi
+
+    wallpaper="$(cat "$CURRENT_WALLPAPER")"
+
+    if [[ ! -f "$wallpaper" ]]; then
+      echo "Error: Current wallpaper file not found: $wallpaper"
+      exit 1
+    fi
+
+    if command -v hyprpaper >/dev/null; then
+      set_wallpaper_hyprpaper "$wallpaper"
+    elif command -v swaybg >/dev/null; then
+      set_wallpaper_swaybg "$wallpaper"
+    else
+      echo "Error: Neither hyprpaper nor swaybg found"
+      exit 1
+    fi
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac

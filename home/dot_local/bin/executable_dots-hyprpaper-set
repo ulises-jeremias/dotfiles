@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Set wallpaper using hyprpaper for Hyprland
+## This script updates hyprpaper configuration and reloads it
+
+set -euo pipefail
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+show_error() {
+  echo -e "${RED}❌${NC} $1" >&2
+}
+
+show_success() {
+  echo -e "${GREEN}✅${NC} $1"
+}
+
+show_status() {
+  echo -e "${CYAN}🎨${NC} $1"
+}
+
+# Get wallpaper path from arguments or auto-detect
+WALLPAPER_PATH=""
+
+if [[ $# -eq 1 ]]; then
+  WALLPAPER_PATH="$1"
+else
+  # Auto-detect from wpg or wal
+  if [[ -L "$HOME/.config/wpg/.current" ]] || [[ -f "$HOME/.config/wpg/.current" ]]; then
+    # .current is typically a symlink, resolve it
+    WALLPAPER_PATH=$(readlink -f "$HOME/.config/wpg/.current" 2>/dev/null || echo "")
+  fi
+
+  if [[ -z $WALLPAPER_PATH ]] && { [[ -L "$HOME/.cache/wal/wal" ]] || [[ -f "$HOME/.cache/wal/wal" ]]; }; then
+    # wal is also a symlink
+    WALLPAPER_PATH=$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || echo "")
+  fi
+
+  if [[ -z $WALLPAPER_PATH ]]; then
+    show_error "No wallpaper path provided and could not auto-detect"
+    echo "Usage: $0 [wallpaper_path]"
+    exit 1
+  fi
+fi
+
+# Validate wallpaper exists
+if [[ ! -f $WALLPAPER_PATH ]]; then
+  show_error "Wallpaper file not found: $WALLPAPER_PATH"
+  exit 1
+fi
+
+show_status "Setting wallpaper: $WALLPAPER_PATH"
+
+# Check if hyprpaper is running
+if ! pgrep -x hyprpaper >/dev/null; then
+  show_status "Starting hyprpaper..."
+  hyprpaper &
+  sleep 1
+fi
+
+# Use hyprctl to update wallpaper via IPC
+if command -v hyprctl >/dev/null 2>&1; then
+  # Unload previous wallpaper (ignore errors)
+  hyprctl hyprpaper unload all 2>/dev/null || true
+
+  # Preload new wallpaper
+  if hyprctl hyprpaper preload "$WALLPAPER_PATH" 2>/dev/null; then
+    # Set wallpaper for all monitors
+    if hyprctl hyprpaper wallpaper ",$WALLPAPER_PATH" 2>/dev/null; then
+      show_success "Wallpaper set successfully"
+      exit 0
+    else
+      show_error "Failed to set wallpaper"
+      exit 1
+    fi
+  else
+    show_error "Failed to preload wallpaper"
+    exit 1
+  fi
+else
+  show_error "hyprctl not found - are you running Hyprland?"
+  exit 1
+fi
