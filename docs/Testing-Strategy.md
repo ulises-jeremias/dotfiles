@@ -5,7 +5,9 @@
 Testing ensures reliability across diverse environments:
 
 - Multiple Linux distributions (Arch, Ubuntu, Fedora)
-- Different window managers (i3, Openbox, XFCE4)
+- Hyprland window manager (Wayland)
+- Different themes (rices)
+- Multiple hardware configurations
 - Various hardware configurations (laptop, desktop, VM)
 - Light and dark themes
 - Different monitor setups (single, dual, triple)
@@ -23,16 +25,15 @@ Testing ensures reliability across diverse environments:
 
 - Test all visual changes in Vagrant (GUI required)
 - Test installation and CLI scripts in Docker (faster iteration)
-- Verify window manager integration in appropriate WM
+- Verify Hyprland integration in Wayland session
 - Check theme switching in both light and dark modes
 
 **Provision Commands:**
 
 ```bash
-./bin/play                    # Start default environment
-./bin/play --provision i3     # Test with i3 window manager
-./bin/play --provision openbox # Test with Openbox
-./bin/play --remove           # Clean up environment
+./bin/play                       # Start default environment
+./bin/play --provision hyprland  # Test with Hyprland
+./bin/play --remove              # Clean up environment
 ```
 
 ## What to Test
@@ -58,7 +59,7 @@ Testing ensures reliability across diverse environments:
 1. Apply script executes without errors
 2. All applications receive correct colors
 3. Wallpaper loads correctly
-4. Polybar uses correct profile
+4. Waybar uses correct configuration
 5. EWW widgets display properly
 
 ## Testing Checklist
@@ -87,7 +88,7 @@ Testing ensures reliability across diverse environments:
 - [ ] Apply script is idempotent
 - [ ] All assets load correctly
 - [ ] Colors applied consistently
-- [ ] Polybar profile loads
+- [ ] Waybar configuration loads
 - [ ] EWW widgets display
 - [ ] Wallpaper sets correctly
 - [ ] Preview screenshot included

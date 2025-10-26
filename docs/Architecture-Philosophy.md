@@ -34,7 +34,7 @@ Components are self-contained units that can be:
 
 **Example Applications:**
 
-- Polybar modules (20+ independent modules)
+- Waybar modules (20+ independent modules)
 - Rice themes (12+ self-contained themes)
 - EWW widgets (dashboard, powermenu, sidebar)
 - Utility scripts (100+ independent tools)
@@ -80,7 +80,7 @@ Security is not optional or afterthought:
 
 1. **Theme System (Rice)** - Complete desktop theme management
 2. **Smart Colors System** - Intelligent color adaptation
-3. **Polybar Integration** - Modular status bar system
+3. **Waybar Integration** - Modular status bar system
 4. **EWW Widget System** - Modern declarative widgets
 5. **Script Management (dots)** - Unified utility interface
 

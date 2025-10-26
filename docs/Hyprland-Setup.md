@@ -2,7 +2,7 @@
 
 ## Overview
 
-HorneroConfig now supports Hyprland (Wayland compositor) alongside i3/Openbox (X11). The implementation follows the same modular architecture and integrates seamlessly with the existing rice system, smart-colors, and configuration management.
+HorneroConfig is a Wayland-first dotfiles configuration built for Hyprland. The implementation follows a modular architecture and integrates seamlessly with the rice system, smart-colors, Waybar, and configuration management.
 
 ## Quick Start
 
