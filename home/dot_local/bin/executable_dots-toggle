@@ -21,9 +21,7 @@ usage() {
 
     -v,--version      Display script version
 
-    -p,--polybar      Toggle the configured polybar session, can use toggle option
-
-    -c,--picom       Toggle picom or daemon monitoring icon, can use toggle option
+    -w,--waybar       Toggle the configured waybar session, can use toggle option
 
     -r,--redshift     Toggle redshift or daemon monitoring icon, can use toggle option
 
@@ -36,36 +34,19 @@ usage() {
 EOF
 }
 
-toggle_polybar() {
+toggle_waybar() {
   if ((opt == 1)); then
-    polybar-msg cmd toggle
+    if pgrep -x waybar >/dev/null; then
+      killall waybar
+    else
+      ~/.config/waybar/launch.sh &
+    fi
     exit $?
   fi
-  on=""
-  off=""
+  on=""
+  off=""
   while true; do
-    if [ "$(pidof polybar | wc -l)" -ne 0 ]; then
-      echo "$on"
-    else
-      echo "%{F#888888}$off"
-    fi
-    sleep 2
-  done
-}
-
-toggle_picom() {
-  if ((opt == 1)); then
-    if [ "$(pidof picom | wc -l)" -ne 0 ]; then
-      al-compositor --stop
-    else
-      al-compositor --start
-    fi
-    exit 0
-  fi
-  on=""
-  off=""
-  while true; do
-    if [ "$(pidof picom | wc -l)" -ne 0 ]; then
+    if pgrep -x waybar >/dev/null; then
       echo "$on"
     else
       echo "%{F#888888}$off"
@@ -122,13 +103,9 @@ toggle_caffeine() {
 case $1 in
   -h | --help) usage ;;
   -v | --version) echo -e "${NAME} -- Version ${VER}" ;;
-  -p | --polybar)
+  -w | --waybar)
     [[ $2 =~ (-t|--toggle) ]] && opt=1
-    toggle_polybar
-    ;;
-  -c | --picom)
-    [[ $2 =~ (-t|--toggle) ]] && opt=1
-    toggle_picom
+    toggle_waybar
     ;;
   -r | --redshift)
     [[ $2 =~ (-t|--toggle) ]] && opt=1

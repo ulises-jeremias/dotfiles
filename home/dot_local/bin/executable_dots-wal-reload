@@ -111,32 +111,6 @@ reload_wal() {
   fi
 }
 
-# Function to reload i3 configuration
-reload_i3() {
-  if ! pgrep "i3" >/dev/null 2>&1; then
-    show_warning "i3 is not running, skipping i3 reload"
-    SKIPPED_APPS+=("i3")
-    return 0
-  fi
-
-  show_status "Reloading i3 configuration..."
-
-  if i3-msg reload >/dev/null 2>&1; then
-    show_success "i3 configuration reloaded"
-    UPDATED_APPS+=("i3")
-
-    # Apply gaps if setup script exists
-    if [[ -x ~/.config/i3/setup-gaps.sh ]]; then
-      if safe_execute "Applying i3 gaps" ~/.config/i3/setup-gaps.sh; then
-        show_success "i3 gaps applied"
-      fi
-    fi
-  else
-    show_error "Failed to reload i3 configuration"
-    FAILED_APPS+=("i3")
-  fi
-}
-
 # Function to reload rofi colors
 reload_rofi() {
   if ! check_command rofi "Rofi"; then
@@ -187,7 +161,8 @@ reload_eww() {
 
   for eww_config in "${eww_configs[@]}"; do
     if [[ -d $eww_config ]]; then
-      local config_name=$(basename "$eww_config")
+      local config_name
+      config_name=$(basename "$eww_config")
       rm -f "$eww_config/colors.scss"
       if ln -sf "$wal_colors" "$eww_config/colors.scss" 2>/dev/null; then
         show_success "EWW $config_name colors linked"
@@ -208,6 +183,13 @@ reload_eww() {
 
 # Function to reload betterlockscreen
 reload_betterlockscreen() {
+  # Deprecated on Wayland - using hyprlock instead
+  if [[ ${XDG_SESSION_TYPE:-} == "wayland" ]]; then
+    show_warning "Betterlockscreen not supported on Wayland, use hyprlock"
+    SKIPPED_APPS+=("Betterlockscreen (Wayland)")
+    return 0
+  fi
+
   if ! check_command betterlockscreen "Betterlockscreen"; then
     return 0
   fi
@@ -304,12 +286,6 @@ reload_smart_colors() {
 create_smart_color_links() {
   show_status "Creating smart color symbolic links..."
 
-  # Create links in i3 config directory
-  local i3_config_dir="$HOME/.config/i3/config.d"
-  if [[ -d $i3_config_dir ]]; then
-    ln -sf "$HOME/.cache/dots/smart-colors/colors-i3.conf" "$i3_config_dir/smart-colors.conf" 2>/dev/null || true
-  fi
-
   # Create links in EWW directories
   local eww_dirs=("$HOME/.config/eww/dashboard" "$HOME/.config/eww/powermenu")
   for eww_dir in "${eww_dirs[@]}"; do
@@ -318,12 +294,12 @@ create_smart_color_links() {
     fi
   done
 
-  # Create links in polybar config directories
-  local polybar_configs=("$HOME/.config/polybar/configs/default")
-  for config_dir in "${polybar_configs[@]}"; do
+  # Create links for Waybar
+  local waybar_configs=("$HOME/.config/waybar/configs/default")
+  for config_dir in "${waybar_configs[@]}"; do
     if [[ -d $config_dir ]]; then
-      ln -sf "$HOME/.cache/dots/smart-colors/colors-polybar.conf" "$config_dir/colors.conf" 2>/dev/null || true
-      show_success "Polybar colors linked to $config_dir/colors.conf"
+      ln -sf "$HOME/.cache/dots/smart-colors/colors-waybar.css" "$config_dir/colors.css" 2>/dev/null || true
+      show_success "Waybar colors linked to $config_dir/colors.css"
     fi
   done
 }
@@ -331,19 +307,6 @@ create_smart_color_links() {
 # Apply smart colors to running applications
 apply_smart_colors_to_apps() {
   local smart_colors_applied=false
-
-  # Update polybar if running
-  if pgrep polybar >/dev/null; then
-    show_status "Polybar detected, restarting with smart colors..."
-    if ~/.config/polybar/launch.sh restart >/dev/null 2>&1; then
-      show_success "Polybar restarted with smart colors"
-      UPDATED_APPS+=("Polybar with smart colors")
-      smart_colors_applied=true
-    else
-      show_warning "Polybar restart failed"
-      FAILED_APPS+=("Polybar restart")
-    fi
-  fi
 
   # Update EWW widgets if running
   if command -v eww >/dev/null 2>&1 && eww ping >/dev/null 2>&1; then
@@ -361,19 +324,6 @@ apply_smart_colors_to_apps() {
       ~/.config/eww/powermenu/launch.sh restart >/dev/null 2>&1 && show_success "EWW powermenu updated with smart colors"
       UPDATED_APPS+=("EWW Powermenu")
       smart_colors_applied=true
-    fi
-  fi
-
-  # Update i3 if running and config exists
-  if pgrep i3 >/dev/null && [[ -f "$HOME/.config/i3/config.d/smart-colors.conf" ]]; then
-    show_status "i3 detected, reloading with smart colors..."
-    if i3-msg reload >/dev/null 2>&1; then
-      show_success "i3 configuration reloaded with smart colors"
-      UPDATED_APPS+=("i3 with smart colors")
-      smart_colors_applied=true
-    else
-      show_warning "i3 reload failed"
-      FAILED_APPS+=("i3 reload")
     fi
   fi
 
@@ -590,7 +540,6 @@ main() {
   reload_wal
 
   # Reload applications (fast operations first)
-  reload_i3
   reload_rofi
   reload_eww
   reload_discord
@@ -627,11 +576,11 @@ case "${1:-}" in
     echo "  help, -h       - Show this help"
     echo ""
     echo "Supported applications:"
-    echo "  • i3 window manager (with smart color generation)"
     echo "  • Rofi application launcher"
     echo "  • EWW widgets (with smart color enhancement)"
-    echo "  • Polybar (with smart color integration and auto-restart)"
-    echo "  • Betterlockscreen"
+    echo "  • Hyprland (with smart color integration)"
+    echo "  • Waybar (with smart color integration and auto-restart)"
+    echo "  • Mako notifications"
     echo "  • Discord (via wal-discord)"
     echo "  • Kitty terminal"
     echo "  • Alacritty terminal"
@@ -641,7 +590,8 @@ case "${1:-}" in
     echo "  • Theme-adaptive color selection for better readability"
     echo "  • Automatic semantic color mapping (error, success, info, etc.)"
     echo "  • Enhanced EWW color generation beyond pywal"
-    echo "  • Polybar integration with environment-based smart colors"
+    echo "  • Waybar integration with environment-based smart colors"
+    echo "  • Hyprland border and window decoration integration"
     ;;
   *)
     main
