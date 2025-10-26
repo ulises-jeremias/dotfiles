@@ -1,11 +1,11 @@
 /* ============================================================================
  * Waybar i3-Style Configuration - Smart Colors Edition (Cozy Variant)
  * ============================================================================
- * Limpia duplicaciones y evita errores de parseo.
- * Paleta: neutrales en base, acentos moderados, estados destacados.
+ * Clean duplications and avoid parsing errors.
+ * Palette: neutral base, moderate accents, highlighted states.
  * ============================================================================ */
 
-@import "/home/ulisesjcf/.cache/dots/smart-colors/colors-waybar.css";
+@import "./colors.css";
 
 /* ==========================================================================
  * Global

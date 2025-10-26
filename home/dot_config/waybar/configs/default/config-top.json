@@ -1,6 +1,7 @@
 {
   "layer": "top",
   "position": "top",
+  "output": "!",
   "height": 46,
   "spacing": 0,
   "margin-top": 8,
