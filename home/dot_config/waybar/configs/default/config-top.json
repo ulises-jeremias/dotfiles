@@ -10,13 +10,54 @@
 
   "modules-left": [
     "custom/jgmenu",
+    "custom/dots-separator",
     "custom/apps",
     "custom/window-switch",
     "custom/rices",
     "pulseaudio#microphone",
-    "pulseaudio",
-    "backlight"
+    "group/volume",
+    "group/backlight"
   ],
+
+  "group/volume": {
+    "orientation": "horizontal",
+    "modules": [
+      "pulseaudio",
+      "pulseaudio/slider"
+    ]
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 Muted",
+    "format-icons": {
+      "headphone": "󰋋",
+      "hands-free": "󰥰",
+      "headset": "󰋎",
+      "phone": "󰄜",
+      "portable": "󰦢",
+      "car": "󰄋",
+      "default": ["󰕿", "󰖀", "󰕾"]
+    },
+    "scroll-step": 1,
+    "on-click": "pavucontrol",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "{desc}\nVolume: {volume}%"
+  },
+  "group/backlight": {
+    "orientation": "horizontal",
+    "modules": [
+      "backlight",
+      "backlight/slider"
+    ]
+  },
+  "backlight": {
+    "device": "intel_backlight",
+    "format": "{icon} {percent}%",
+    "format-icons": ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"],
+    "on-scroll-up": "brightnessctl set 5%+",
+    "on-scroll-down": "brightnessctl set 5%-",
+    "tooltip-format": "Brightness: {percent}%"
+  },
 
   "modules-center": [
     "clock",
@@ -31,15 +72,17 @@
   ],
 
   "custom/jgmenu": {
-    "format": "󰀻",
-    "tooltip": false,
-    "on-click": "jgmenu_run"
+    "format": "  ",
+    "tooltip": true,
+    "tooltip-format": "Open Jgmenu",
+    "on-click": "dots-jgmenu",
+    "on-right-click": "exo-open ~/.config/jgmenu/jgmenurc"
   },
 
   "custom/apps": {
     "format": "󰘖",
     "tooltip": false,
-    "on-click": "rofi -show drun -theme ~/.config/rofi/themes/launcher.rasi"
+    "on-click": "dots-rofi-run --run"
   },
 
   "custom/window-switch": {
@@ -63,20 +106,12 @@
     "on-click": "~/.local/bin/dots night-mode toggle"
   },
 
-  "custom/feh-blur": {
-    "format": "{}",
-    "exec": "~/.local/bin/dots feh-blur status-icon",
-    "interval": 5,
-    "tooltip": true,
-    "exec-tooltip": "~/.local/bin/dots feh-blur status-text",
-    "on-click": "~/.local/bin/dots feh-blur toggle"
-  },
-
   "custom/github": {
     "format": "󰊤 {}",
     "exec": "~/.config/waybar/scripts/github",
     "interval": 300,
-    "tooltip": false,
+    "tooltip": true,
+    "tooltip-format": "Open GitHub Notifications",
     "on-click": "xdg-open https://github.com/notifications"
   },
 
@@ -107,37 +142,23 @@
     "tooltip-format": "Microphone: {volume}%"
   },
 
-  "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "󰝟 Muted",
-    "format-icons": {
-      "headphone": "󰋋",
-      "hands-free": "󰥰",
-      "headset": "󰋎",
-      "phone": "󰄜",
-      "portable": "󰦢",
-      "car": "󰄋",
-      "default": ["󰕿", "󰖀", "󰕾"]
-    },
-    "scroll-step": 1,
-    "on-click": "pavucontrol",
-    "on-click-right": "pamixer -t",
-    "tooltip-format": "{desc}\nVolume: {volume}%"
+  "pulseaudio/slider": {
+    "min": 0,
+    "max": 100,
+    "orientation": "horizontal"
   },
 
-  "backlight": {
-    "device": "intel_backlight",
-    "format": "{icon} {percent}%",
-    "format-icons": ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"],
-    "on-scroll-up": "brightnessctl set 5%+",
-    "on-scroll-down": "brightnessctl set 5%-",
-    "tooltip-format": "Brightness: {percent}%"
+  "backlight/slider": {
+    "min": 0,
+    "max": 100,
+    "orientation": "horizontal",
+    "device": "intel_backlight"
   },
 
   "clock": {
     "interval": 1,
-    "format": "󰥔 {:%I:%M %p}",
-    "format-alt": "󰸗 {:%Y-%m-%d %a}",
+    "format": " {:%I:%M %p}",
+    "format-alt": "󰧒 {:%Y-%m-%d %a}",
     "tooltip-format": "<tt><small>{calendar}</small></tt>",
     "calendar": {
       "mode": "year",

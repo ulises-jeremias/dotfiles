@@ -684,6 +684,30 @@ EOF
     echo "export COLOR_${color^^}='$color_value'" >>"$ENV_COLORS_FILE"
   done
 
+  # Get all smart basic colors
+  local red_color
+  red_color=$(format="hex" find_best_color_for_concept "red")
+  local green_color
+  green_color=$(format="hex" find_best_color_for_concept "green")
+  local blue_color
+  blue_color=$(format="hex" find_best_color_for_concept "blue")
+  local yellow_color
+  yellow_color=$(format="hex" find_best_color_for_concept "yellow")
+  local cyan_color
+  cyan_color=$(format="hex" find_best_color_for_concept "cyan")
+  local magenta_color
+  magenta_color=$(format="hex" find_best_color_for_concept "magenta")
+  local orange_color
+  orange_color=$(format="hex" find_best_color_for_concept "orange")
+  local pink_color
+  pink_color=$(format="hex" find_best_color_for_concept "pink")
+  local white_color
+  white_color=$(format="hex" find_best_color_for_concept "white")
+  local black_color
+  black_color=$(format="hex" find_best_color_for_concept "black")
+  local gray_color
+  gray_color=$(format="hex" find_best_color_for_concept "gray")
+
   # Generate Waybar CSS colors file
   local WAYBAR_COLORS_FILE="${SMART_COLORS_DIR}/colors-waybar.css"
   cat >"$WAYBAR_COLORS_FILE" <<EOF
@@ -824,7 +848,6 @@ main() {
           echo "export COLOR_${concept^^}='$color'"
         done
 
-        # (Polybar/i3 export removed for Wayland-only configuration)
         ;;
     esac
   elif [[ -n $concept ]]; then

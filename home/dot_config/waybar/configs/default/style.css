@@ -12,124 +12,350 @@
  * ==========================================================================
  */
 * {
-  border: none;
-  border-radius: 0;
-  font-family: "Hack Nerd Font Mono", "Noto Color Emoji", monospace;
-  font-size: 13px;
-  font-weight: normal;
-  min-height: 0;
+	border: none;
+	border-radius: 0;
+	font-family: "Hack Nerd Font Mono", "Noto Color Emoji", monospace;
+	font-size: 13px;
+	font-weight: normal;
+	min-height: 0;
 }
 
-.text-small { font-size: 10px; }
-.text-normal { font-size: 12px; }
-.text-medium { font-size: 13px; }
-.text-large { font-size: 15px; }
-.text-xlarge { font-size: 18px; }
+.text-small {
+	font-size: 10px;
+}
+.text-normal {
+	font-size: 12px;
+}
+.text-medium {
+	font-size: 13px;
+}
+.text-large {
+	font-size: 15px;
+}
+.text-xlarge {
+	font-size: 18px;
+}
 
 /* ==========================================================================
  * Windows
  * ==========================================================================
  */
-window#waybar.top { background-color: @bg-primary; color: @fg-primary; border-radius: 12px; }
-window#waybar.bottom { background-color: @bg-primary; color: @fg-primary; }
+window#waybar.top {
+	background-color: @bg-primary;
+	color: @fg-primary;
+	border-radius: 12px;
+}
+window#waybar.bottom {
+	background-color: @bg-primary;
+	color: @fg-primary;
+}
 
 /* ==========================================================================
  * Workspaces
  * ==========================================================================
  */
-#workspaces { background: transparent; margin: 0; padding: 0; }
-#workspaces button {
-  background: transparent;
-  color: @fg-secondary;
-  padding: 4px 10px;
-  margin: 4px 3px;
-  border: none;
-  border-radius: 8px;
-  font-size: 17px;
+#workspaces {
+	background: transparent;
+	margin: 0;
+	padding: 0;
 }
-#workspaces button:hover { background-color: @bg-hover; color: @smart-blue; }
-#workspaces button.active { background-color: @bg-hover; color: @smart-orange; font-size: 19px; border: 1px solid @border-color; }
-#workspaces button.urgent { background-color: @smart-error; color: @bg-primary; }
+#workspaces button {
+	background: transparent;
+	color: @fg-secondary;
+	padding: 4px 16px;
+	margin: 6px 3px;
+	border: none;
+	border-radius: 8px;
+	font-size: 17px;
+}
+#workspaces button:hover {
+	background-color: @bg-hover;
+	color: @smart-blue;
+}
+#workspaces button.active {
+	background-color: @bg-hover;
+	color: @smart-orange;
+	font-size: 19px;
+	border: 1px solid @border-color;
+}
+#workspaces button.urgent {
+	background-color: @smart-error;
+	color: @bg-primary;
+}
 
-@keyframes blink { 0% { opacity: 1; } 50% { opacity: .55; } 100% { opacity: 1; } }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: .7; } 100% { opacity: 1; } }
+@keyframes blink {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.55;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes pulse {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.7;
+	}
+	100% {
+		opacity: 1;
+	}
+}
 
 /* ==========================================================================
  * Custom Modules
  * ==========================================================================
  */
-#custom-jgmenu,#custom-apps,#custom-window-switch,#custom-rices {
-  background: transparent; padding: 6px 10px; margin: 4px 3px; border-radius: 8px; font-size: 15px;
+#custom-jgmenu,
+#custom-apps,
+#custom-window-switch,
+#custom-rices {
+	background: transparent;
+	padding: 4px 16px;
+	margin: 6px 3px;
+	border-radius: 8px;
+	font-size: 26px;
 }
-#custom-jgmenu { font-size: 19px; color: @smart-accent; }
-#custom-apps { color: @fg-secondary; }
-#custom-window-switch { color: @smart-blue; }
-#custom-rices { color: @smart-orange; }
-#custom-jgmenu:hover,#custom-apps:hover,#custom-window-switch:hover,#custom-rices:hover { background-color: @bg-hover; }
+#custom-jgmenu {
+	font-size: 32px;
+  padding: 4px 4px;
+  margin: 6px 10px;
+	color: @smart-accent;
+}
+#custom-apps {
+	color: @fg-secondary;
+}
+#custom-window-switch {
+	color: @smart-blue;
+}
+#custom-rices {
+	color: @smart-orange;
+}
+#custom-jgmenu:hover,
+#custom-apps:hover,
+#custom-window-switch:hover,
+#custom-rices:hover {
+	background-color: @bg-hover;
+}
 
 /* ==========================================================================
  * Audio
  * ==========================================================================
  */
-#pulseaudio,#pulseaudio\.microphone { background: transparent; color: @fg-primary; padding: 6px 10px; margin: 4px 3px; border-radius: 8px; font-size: 15px; }
-#pulseaudio:hover,#pulseaudio\.microphone:hover { background-color: @bg-hover; }
-#pulseaudio.muted,#pulseaudio\.microphone.source-muted { color: @smart-warning; }
+#pulseaudio,
+#pulseaudio\.microphone {
+	background: transparent;
+	color: @fg-primary;
+	padding: 4px 16px;
+	margin: 6px 3px;
+	border-radius: 8px;
+	font-size: 15px;
+}
+#pulseaudio:hover,
+#pulseaudio\.microphone:hover {
+	background-color: @bg-hover;
+}
+#pulseaudio.muted,
+#pulseaudio\.microphone.source-muted {
+	color: @smart-warning;
+}
 
 /* ==========================================================================
  * Backlight
  * ==========================================================================
  */
-#backlight { background: transparent; color: @fg-primary; padding: 6px 10px; margin: 4px 3px; border-radius: 8px; font-size: 15px; }
-#backlight:hover { background-color: @bg-hover; }
+#backlight {
+	background: transparent;
+	color: @fg-primary;
+	padding: 4px 16px;
+	margin: 6px 3px;
+	border-radius: 8px;
+	font-size: 15px;
+}
+#backlight:hover {
+	background-color: @bg-hover;
+}
 
 /* ==========================================================================
  * Clock
  * ==========================================================================
  */
-#clock { background: transparent; color: @smart-pink; padding: 6px 12px; margin: 4px 6px; border-radius: 8px; font-weight: bold; font-size: 14px; }
-#clock:hover { background-color: @bg-hover; }
+#clock {
+	background: transparent;
+	color: @smart-pink;
+	padding: 4px 12px;
+	margin: 6px 6px;
+	border-radius: 8px;
+	font-weight: bold;
+	font-size: 14px;
+}
+#clock:hover {
+	background-color: @bg-hover;
+}
 
 /* ==========================================================================
  * Toggles
  * ==========================================================================
  */
-#custom-night-mode,#custom-feh-blur,#custom-github,#custom-weather { background: transparent; padding: 6px 10px; margin: 4px 3px; border-radius: 8px; font-size: 14px; }
-#custom-night-mode { color: @smart-orange; }
-#custom-feh-blur { color: @smart-blue; }
-#custom-github { color: @smart-success; }
-#custom-weather { color: @smart-info; }
-#custom-night-mode:hover,#custom-feh-blur:hover,#custom-github:hover,#custom-weather:hover { background-color: @bg-hover; }
+#custom-night-mode,
+#custom-github,
+#custom-weather {
+	background: transparent;
+	padding: 4px 16px;
+	margin: 6px 3px;
+	border-radius: 8px;
+	font-size: 15px;
+}
+#custom-night-mode {
+	color: @smart-orange;
+}
+#custom-github {
+	color: @smart-success;
+}
+#custom-weather {
+	color: @smart-info;
+}
+#custom-night-mode:hover,
+#custom-github:hover,
+#custom-weather:hover {
+	background-color: @bg-hover;
+}
 
 /* ==========================================================================
  * Tray
  * ==========================================================================
  */
-#tray { background: transparent; padding: 6px 8px; margin: 4px 3px; border-radius: 8px; }
-#tray:hover { background-color: @bg-hover; }
-#tray > .passive { -gtk-icon-effect: dim; }
-#tray > .needs-attention { -gtk-icon-effect: highlight; animation: pulse 1s ease infinite; }
+#tray {
+	background: transparent;
+	padding: 4px 8px;
+	margin: 6px 3px;
+	border-radius: 8px;
+}
+#tray:hover {
+	background-color: @bg-hover;
+}
+#tray > .passive {
+	-gtk-icon-effect: dim;
+}
+#tray > .needs-attention {
+	-gtk-icon-effect: highlight;
+	animation: pulse 1s ease infinite;
+}
 
 /* ==========================================================================
  * Media Player
  * ==========================================================================
  */
-#mpris,#custom-playing,#custom-player-controls,#custom-player-info { background: transparent; padding: 4px 8px; margin: 4px 3px; border-radius: 8px; }
-#custom-player-controls { font-size: 17px; color: @smart-accent; }
-#custom-player-controls:hover { background-color: @bg-hover; }
-#custom-player-info { font-style: italic; color: @fg-secondary; font-size: 11px; }
+#mpris,
+#custom-playing,
+#custom-player-controls,
+#custom-player-info {
+	background: transparent;
+	padding: 4px 8px;
+	margin: 6px 3px;
+	border-radius: 8px;
+}
+#custom-player-controls {
+	font-size: 17px;
+	color: @smart-accent;
+}
+#custom-player-controls:hover {
+	background-color: @bg-hover;
+}
+#custom-player-info {
+	font-style: italic;
+	color: @fg-secondary;
+	font-size: 11px;
+}
 
 /* ==========================================================================
  * System Resources
  * ==========================================================================
  */
-#language,#disk,#temperature { background: transparent; color: @fg-secondary; padding: 4px 8px; margin: 4px 3px; border-radius: 8px; font-size: 13px; }
-#memory { background: transparent; color: @smart-orange; padding: 4px 8px; margin: 4px 3px; border-radius: 8px; font-size: 13px; }
-#cpu { background: transparent; color: @smart-pink; padding: 4px 8px; margin: 4px 3px; border-radius: 8px; font-size: 13px; }
-#language:hover,#disk:hover,#temperature:hover,#memory:hover,#cpu:hover { background-color: @bg-hover; }
-#disk.warning,#memory.warning,#cpu.warning { color: @smart-warning; animation: pulse 1s ease infinite; }
-#disk.critical,#memory.critical,#cpu.critical,#temperature.critical { color: @smart-error; animation: blink 1s ease infinite; }
+#language,
+#disk,
+#temperature {
+	background: transparent;
+	color: @fg-secondary;
+	padding: 4px 8px;
+	margin: 6px 3px;
+	border-radius: 8px;
+	font-size: 13px;
+}
+#memory {
+	background: transparent;
+	color: @smart-orange;
+	padding: 4px 8px;
+	margin: 6px 3px;
+	border-radius: 8px;
+	font-size: 13px;
+}
+#cpu {
+	background: transparent;
+	color: @smart-pink;
+	padding: 4px 8px;
+	margin: 6px 3px;
+	border-radius: 8px;
+	font-size: 13px;
+}
+#language:hover,
+#disk:hover,
+#temperature:hover,
+#memory:hover,
+#cpu:hover {
+	background-color: @bg-hover;
+}
+#disk.warning,
+#memory.warning,
+#cpu.warning {
+	color: @smart-warning;
+	animation: pulse 1s ease infinite;
+}
+#disk.critical,
+#memory.critical,
+#cpu.critical,
+#temperature.critical {
+	color: @smart-error;
+	animation: blink 1s ease infinite;
+}
 
 /* ==========================================================================
- * End
+ * Sliders (Backlight & PulseAudio)
  * ==========================================================================
+ * Styling for slider modules. GTK requires explicit min-width/height.
  */
+#backlight-slider,
+#pulseaudio-slider {
+	background: transparent;
+	padding: 4px 8px;
+	margin: 6px 3px;
+	border-radius: 8px;
+}
+#backlight-slider trough,
+#pulseaudio-slider trough {
+	min-height: 10px;
+	min-width: 90px;
+	border-radius: 6px;
+	background-color: @bg-hover;
+}
+#backlight-slider highlight {
+	border-radius: 6px;
+	background-color: @smart-blue;
+}
+#pulseaudio-slider highlight {
+	border-radius: 6px;
+	background-color: @smart-orange;
+}
+#backlight-slider slider,
+#pulseaudio-slider slider {
+	min-width: 0;
+	min-height: 0;
+	opacity: 0;
+	background: none;
+	border: none;
+	box-shadow: none;
+}
