@@ -181,51 +181,93 @@ reload_eww() {
   fi
 }
 
-# Function to reload betterlockscreen
-reload_betterlockscreen() {
-  # Deprecated on Wayland - using hyprlock instead
+# Function to reload lockscreen
+reload_lockscreen() {
+  # Use dots-lockscreen for Wayland, betterlockscreen for X11
   if [[ ${XDG_SESSION_TYPE:-} == "wayland" ]]; then
-    show_warning "Betterlockscreen not supported on Wayland, use hyprlock"
-    SKIPPED_APPS+=("Betterlockscreen (Wayland)")
-    return 0
-  fi
+    if ! check_command dots-lockscreen "dots-lockscreen"; then
+      return 0
+    fi
 
-  if ! check_command betterlockscreen "Betterlockscreen"; then
-    return 0
-  fi
+    # Move to background to not block the reload process
+    (
+      local current_wallpaper="$HOME/.cache/current_wallpaper"
 
-  # Move to background to not block the reload process
-  (
-    local current_wallpaper="$HOME/.config/wpg/.current"
+      if [[ -f $current_wallpaper ]]; then
+        local wallpaper_path
+        wallpaper_path=$(cat "$current_wallpaper")
 
-    if [[ -f $current_wallpaper ]]; then
-      show_status "Updating betterlockscreen with current wallpaper (background)..."
-      if betterlockscreen -u "$current_wallpaper" >/dev/null 2>&1; then
-        show_success "Betterlockscreen updated"
-        UPDATED_APPS+=("Betterlockscreen")
+        if [[ -f $wallpaper_path ]]; then
+          show_status "Updating lockscreen with current wallpaper (background)..."
+          if dots-lockscreen --update="$wallpaper_path" >/dev/null 2>&1; then
+            show_success "Lockscreen updated"
+            UPDATED_APPS+=("Lockscreen")
+          else
+            show_error "Lockscreen update failed"
+            FAILED_APPS+=("Lockscreen")
+          fi
+        else
+          show_warning "Current wallpaper file not found: $wallpaper_path"
+          SKIPPED_APPS+=("Lockscreen")
+        fi
       else
-        show_error "Betterlockscreen update failed"
-        FAILED_APPS+=("Betterlockscreen")
+        show_warning "Current wallpaper cache not found: $current_wallpaper"
+        # Fallback: try to use wal wallpaper
+        local wal_wallpaper
+        wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
+        if [[ -f $wal_wallpaper ]]; then
+          if dots-lockscreen --update="$wal_wallpaper" >/dev/null 2>&1; then
+            show_success "Lockscreen updated (wal fallback)"
+            UPDATED_APPS+=("Lockscreen")
+          else
+            FAILED_APPS+=("Lockscreen")
+          fi
+        else
+          SKIPPED_APPS+=("Lockscreen")
+        fi
       fi
-    else
-      show_warning "Current wallpaper not found: $current_wallpaper"
-      # Fallback: try to use wal wallpaper
-      local wal_wallpaper
-      wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
-      if [[ -f $wal_wallpaper ]]; then
-        if betterlockscreen -u "$wal_wallpaper" >/dev/null 2>&1; then
-          show_success "Betterlockscreen updated (wal fallback)"
+    ) &
+
+    show_status "Lockscreen update started in background..."
+  else
+    # X11 fallback - use betterlockscreen if available
+    if ! check_command betterlockscreen "Betterlockscreen"; then
+      return 0
+    fi
+
+    # Move to background to not block the reload process
+    (
+      local current_wallpaper="$HOME/.config/wpg/.current"
+
+      if [[ -f $current_wallpaper ]]; then
+        show_status "Updating betterlockscreen with current wallpaper (background)..."
+        if betterlockscreen -u "$current_wallpaper" >/dev/null 2>&1; then
+          show_success "Betterlockscreen updated"
           UPDATED_APPS+=("Betterlockscreen")
         else
+          show_error "Betterlockscreen update failed"
           FAILED_APPS+=("Betterlockscreen")
         fi
       else
-        SKIPPED_APPS+=("Betterlockscreen")
+        show_warning "Current wallpaper not found: $current_wallpaper"
+        # Fallback: try to use wal wallpaper
+        local wal_wallpaper
+        wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
+        if [[ -f $wal_wallpaper ]]; then
+          if betterlockscreen -u "$wal_wallpaper" >/dev/null 2>&1; then
+            show_success "Betterlockscreen updated (wal fallback)"
+            UPDATED_APPS+=("Betterlockscreen")
+          else
+            FAILED_APPS+=("Betterlockscreen")
+          fi
+        else
+          SKIPPED_APPS+=("Betterlockscreen")
+        fi
       fi
-    fi
-  ) &
+    ) &
 
-  show_status "Betterlockscreen update started in background..."
+    show_status "Betterlockscreen update started in background..."
+  fi
 }
 
 # Function to reload Discord theme
@@ -555,7 +597,7 @@ main() {
   reload_smart_colors
 
   # Move slow operations to the end (background)
-  reload_betterlockscreen
+  reload_lockscreen
 
   # Update rice integration
   update_current_rice

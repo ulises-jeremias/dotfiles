@@ -1,0 +1,355 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Wayland lockscreen management with swaylock-effects
+## Alternative to betterlockscreen for Wayland
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Usage:
+##     @script.name [OPTION] ARGUMENTS...
+##
+## Options:
+##         --update=PATH             Update lockscreen images from wallpaper
+##     -l, --lock                    Lock screen with blur effect
+##         --lock-effect=EFFECT      Lock screen with specific effect (dim, blur, dimblur, pixel)
+##     -w, --wall                    Set wallpaper (uses dots-hyprpaper-set)
+##         --wall-effect=EFFECT      Set wallpaper with specific effect
+##         --dim=LEVEL               Dim level (0-100, default: 40)
+##         --blur=LEVEL              Blur level (1-10, default: 5)
+##         --pixel=SCALE             Pixel scale (default: 10)
+##     -h, --help                    Show this help message
+##     -v, --version                 Display script version
+
+set -e
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+VER="1.0.0"
+
+# Configuration
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dots-lockscreen"
+CURRENT_DIR="$CACHE_DIR/current"
+CURRENT_WALLPAPER="$HOME/.cache/current_wallpaper"
+
+# Default values from options
+DIM_LEVEL="${dim:-40}"
+BLUR_LEVEL="${blur:-5}"
+PIXEL_SCALE="${pixel:-10}"
+
+# Lock screen images
+LOCK_RESIZE="$CURRENT_DIR/lock_resize.png"
+LOCK_DIM="$CURRENT_DIR/lock_dim.png"
+LOCK_BLUR="$CURRENT_DIR/lock_blur.png"
+LOCK_DIMBLUR="$CURRENT_DIR/lock_dimblur.png"
+LOCK_PIXEL="$CURRENT_DIR/lock_pixel.png"
+
+# Smart colors cache
+SMART_COLORS_CACHE="${HOME}/.cache/dots/smart-colors/current.env"
+
+# Logging functions
+log_info() {
+  echo -e "\033[1;34m[INFO]\033[0m $*"
+}
+
+log_success() {
+  echo -e "\033[1;32m[SUCCESS]\033[0m $*"
+}
+
+log_error() {
+  echo -e "\033[1;31m[ERROR]\033[0m $*" >&2
+}
+
+log_warning() {
+  echo -e "\033[1;33m[WARNING]\033[0m $*"
+}
+
+# Check dependencies
+check_dependencies() {
+  local missing_deps=()
+
+  if ! command -v swaylock >/dev/null 2>&1; then
+    missing_deps+=("swaylock or swaylock-effects")
+  fi
+
+  if ! command -v convert >/dev/null 2>&1 && ! command -v magick >/dev/null 2>&1; then
+    missing_deps+=("imagemagick")
+  fi
+
+  if [[ ${#missing_deps[@]} -gt 0 ]]; then
+    log_error "Missing dependencies: ${missing_deps[*]}"
+    return 1
+  fi
+
+  return 0
+}
+
+# Get convert command (ImageMagick)
+get_convert_cmd() {
+  if command -v magick >/dev/null 2>&1; then
+    echo "magick"
+  else
+    echo "convert"
+  fi
+}
+
+# Run ImageMagick command
+run_magick() {
+  local convert_cmd
+  convert_cmd=$(get_convert_cmd)
+
+  if [[ $convert_cmd == "magick" ]]; then
+    magick "$@"
+  else
+    convert "$@"
+  fi
+}
+
+# Load smart colors
+load_smart_colors() {
+  if [[ -f $SMART_COLORS_CACHE ]]; then
+    # shellcheck source=/dev/null
+    source "$SMART_COLORS_CACHE"
+  else
+    # Fallback colors
+    SMART_BG="${SMART_BG:-#1e1e1e}"
+    SMART_FG="${SMART_FG:-#ffffff}"
+    SMART_PRIMARY="${SMART_PRIMARY:-#6495ed}"
+    SMART_ACCENT="${SMART_ACCENT:-#ff6b6b}"
+    SMART_SUCCESS="${SMART_SUCCESS:-#51cf66}"
+    SMART_WARNING="${SMART_WARNING:-#ffd43b}"
+    SMART_ERROR="${SMART_ERROR:-#ff6b6b}"
+  fi
+}
+
+# Create effect images
+create_resize_image() {
+  local input="$1"
+  local output="$2"
+  local convert_cmd
+  convert_cmd=$(get_convert_cmd)
+
+  log_info "Creating base resized image..."
+  # Get screen resolution
+  local resolution
+  if [[ -n ${WAYLAND_DISPLAY:-} ]] && command -v swaymsg >/dev/null 2>&1; then
+    resolution=$(swaymsg -t get_outputs 2>/dev/null | jq -r '.[0] | "\(.current_mode.width)x\(.current_mode.height)"' 2>/dev/null || echo "1920x1080")
+  elif command -v xrandr >/dev/null 2>&1; then
+    resolution=$(xrandr --current | grep '\*' | uniq | awk '{print $1}' | head -n1)
+    [[ -z $resolution ]] && resolution="1920x1080"
+  else
+    resolution="1920x1080"
+  fi
+
+  # Use magick directly to avoid deprecation warnings
+  run_magick "$input" -resize "${resolution}^" -gravity center -extent "${resolution}" "$output"
+}
+
+create_dim_image() {
+  local input="$1"
+  local output="$2"
+  local level="$3"
+
+  log_info "Creating dimmed image (level: $level)..."
+  run_magick "$input" -fill black -colorize "${level}%" "$output"
+}
+
+create_blur_image() {
+  local input="$1"
+  local output="$2"
+  local level="$3"
+
+  log_info "Creating blurred image (level: $level)..."
+  run_magick "$input" -blur "0x${level}" "$output"
+}
+
+create_dimblur_image() {
+  local input="$1"
+  local output="$2"
+  local dim_level="$3"
+  local blur_level="$4"
+
+  log_info "Creating dim+blur image..."
+  run_magick "$input" -fill black -colorize "${dim_level}%" -blur "0x${blur_level}" "$output"
+}
+
+create_pixel_image() {
+  local input="$1"
+  local output="$2"
+  local scale="$3"
+
+  log_info "Creating pixelated image (scale: $scale)..."
+  local width height
+  width=$(run_magick "$input" -format "%w" info:)
+  height=$(run_magick "$input" -format "%h" info:)
+
+  local new_width=$((width / scale))
+  local new_height=$((height / scale))
+
+  run_magick "$input" -scale "${new_width}x${new_height}" -scale "${width}x${height}" "$output"
+}
+
+# Update lockscreen images
+update_lockscreen() {
+  local wallpaper="$1"
+
+  if [[ ! -f $wallpaper ]]; then
+    log_error "Wallpaper file not found: $wallpaper"
+    return 1
+  fi
+
+  log_info "Updating lockscreen images from: $wallpaper"
+
+  # Create cache directory
+  mkdir -p "$CURRENT_DIR"
+
+  # Create base resized image
+  create_resize_image "$wallpaper" "$LOCK_RESIZE"
+
+  # Create effect images
+  create_dim_image "$LOCK_RESIZE" "$LOCK_DIM" "$DIM_LEVEL"
+  create_blur_image "$LOCK_RESIZE" "$LOCK_BLUR" "$BLUR_LEVEL"
+  create_dimblur_image "$LOCK_RESIZE" "$LOCK_DIMBLUR" "$DIM_LEVEL" "$BLUR_LEVEL"
+  create_pixel_image "$LOCK_RESIZE" "$LOCK_PIXEL" "$PIXEL_SCALE"
+
+  log_success "Lockscreen images updated successfully"
+}
+
+# Lock screen with swaylock
+lock_screen() {
+  local effect="${1:-blur}"
+  local image=""
+
+  load_smart_colors
+
+  # Select image based on effect
+  case "$effect" in
+    dim)
+      image="$LOCK_DIM"
+      ;;
+    blur)
+      image="$LOCK_BLUR"
+      ;;
+    dimblur)
+      image="$LOCK_DIMBLUR"
+      ;;
+    pixel)
+      image="$LOCK_PIXEL"
+      ;;
+    *)
+      image="$LOCK_BLUR"
+      ;;
+  esac
+
+  # Fallback to resize if effect image doesn't exist
+  if [[ ! -f $image ]]; then
+    log_warning "Effect image not found, using base image"
+    image="$LOCK_RESIZE"
+  fi
+
+  # Check if image exists
+  if [[ ! -f $image ]]; then
+    log_error "No lockscreen image available. Run: dots-lockscreen -u <wallpaper>"
+    return 1
+  fi
+
+  log_info "Locking screen with effect: $effect"
+  log_info "Using image: $image"
+
+  # Remove # from color codes
+  local bg_color="${SMART_BG#\#}"
+  local fg_color="${SMART_FG#\#}"
+  local primary_color="${SMART_PRIMARY#\#}"
+  local accent_color="${SMART_ACCENT#\#}"
+  local error_color="${SMART_ERROR#\#}"
+  local success_color="${SMART_SUCCESS#\#}"
+
+  # Lock with swaylock-effects
+  # Using exec to replace the shell process with swaylock
+  exec swaylock \
+    --image "$image" \
+    --color "${bg_color}" \
+    --inside-color "${bg_color}99" \
+    --ring-color "${primary_color}" \
+    --line-color "${bg_color}" \
+    --key-hl-color "${success_color}" \
+    --bs-hl-color "${error_color}" \
+    --separator-color "00000000" \
+    --inside-ver-color "${primary_color}99" \
+    --ring-ver-color "${primary_color}" \
+    --inside-wrong-color "${error_color}99" \
+    --ring-wrong-color "${error_color}" \
+    --text-color "${fg_color}" \
+    --text-ver-color "${fg_color}" \
+    --text-wrong-color "${fg_color}" \
+    --indicator-radius 100 \
+    --indicator-thickness 7 \
+    --effect-blur 7x5 \
+    --effect-vignette 0.5:0.5 \
+    --fade-in 0.2
+}
+
+# Main function
+main() {
+  # Handle version flag
+  if [[ ${version:-} == "yes" ]]; then
+    echo "dots-lockscreen version $VER"
+    exit 0
+  fi
+
+  # Check if running on Wayland
+  if [[ -z ${WAYLAND_DISPLAY:-} ]]; then
+    log_error "This script requires Wayland"
+    exit 1
+  fi
+
+  # Check dependencies
+  if ! check_dependencies; then
+    exit 1
+  fi
+
+  # Determine action based on flags
+  if [[ -n ${update:-} ]]; then
+    # Update lockscreen images
+    local wallpaper="$update"
+
+    if [[ ! -f $wallpaper ]]; then
+      # Try to get current wallpaper
+      if [[ -f $CURRENT_WALLPAPER ]]; then
+        wallpaper=$(cat "$CURRENT_WALLPAPER")
+      else
+        log_error "Wallpaper file not found: $wallpaper"
+        exit 1
+      fi
+    fi
+
+    update_lockscreen "$wallpaper"
+
+  elif [[ ${lock:-} == "yes" ]] || [[ -n ${lock_effect:-} ]]; then
+    # Lock screen
+    local effect="${lock_effect:-blur}"
+    lock_screen "$effect"
+
+  elif [[ ${wall:-} == "yes" ]] || [[ -n ${wall_effect:-} ]]; then
+    # Set wallpaper
+    local effect="${wall_effect:-}"
+
+    if command -v dots-hyprpaper-set >/dev/null 2>&1; then
+      if [[ -n $effect ]]; then
+        dots-hyprpaper-set "$effect"
+      else
+        dots-hyprpaper-set
+      fi
+    else
+      log_warning "dots-hyprpaper-set not found, skipping wallpaper update"
+    fi
+
+  else
+    log_error "No command specified. Use -h for help"
+    exit 1
+  fi
+}
+
+main "$@"

@@ -98,7 +98,7 @@ dots eww-dashboard
 
 **Power Options**:
 
-- **Lock**: Secure your session with betterlockscreen
+- **Lock**: Secure your session with swaylock (dots-lockscreen)
 - **Logout**: Exit current user session
 - **Sleep**: Suspend system to RAM
 - **Reboot**: Restart the system
@@ -308,7 +308,7 @@ Power button actions:
 
 (defwidget lock []
   (box :class "genwin" :orientation "v" :spacing 20 :halign "center" :valign "center" :space-evenly "false"
-    (button :class "btn_lock" :onclick "betterlockscreen -l" "")))
+    (button :class "btn_lock" :onclick "dots-lockscreen --lock" "")))
 ```
 
 ---
@@ -466,7 +466,7 @@ ps aux | grep eww
 
 - ✅ **All rice themes** (automatic color adaptation)
 - ✅ **Multiple window managers** (i3, Openbox, etc.)
-- ✅ **System power management** (systemd, betterlockscreen)
+- ✅ **System power management** (systemd, swaylock)
 - ✅ **Media players** (MPRIS-compatible applications)
 
 ### Pairs Well With

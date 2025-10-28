@@ -113,7 +113,7 @@ for arg in "$@"; do
         -sep "|" <<<"$lock|$sleep|$logout|$reboot|$shutdown")"
 
       case "$ANS" in
-        "$lock") betterlockscreen --lock ;;
+        "$lock") dots-lockscreen --lock ;;
         "$reboot") systemctl -i reboot ;;
         "$shutdown") systemctl -i poweroff ;;
         "$sleep") systemctl suspend ;;
