@@ -1,0 +1,61 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+# Hyprland and Wayland core packages
+yay -S --noconfirm --needed \
+  hyprland \
+  xdg-desktop-portal-hyprland \
+  xdg-desktop-portal-gtk \
+  qt5-wayland \
+  qt6-wayland \
+  polkit-gnome \
+  xwaylandvideobridge
+
+# Waybar (status bar)
+yay -S --noconfirm --needed waybar
+
+# Notification daemon
+yay -S --noconfirm --needed \
+  mako \
+  libnotify
+
+# Screen locking and idle management
+yay -S --noconfirm --needed \
+  swaylock-effects \
+  hypridle
+
+# Screenshots
+yay -S --noconfirm --needed \
+  grim \
+  slurp \
+  swappy
+
+# Wallpaper management
+yay -S --noconfirm --needed \
+  swaybg \
+  hyprpaper
+
+# Clipboard manager
+yay -S --noconfirm --needed \
+  wl-clipboard \
+  cliphist
+
+# Application launcher (Wayland-compatible Rofi)
+yay -S --noconfirm --needed rofi-lbonn-wayland-git || \
+  yay -S --noconfirm --needed rofi-wayland
+
+# Additional utilities
+yay -S --noconfirm --needed \
+  dex \
+  brightnessctl \
+  hyprpicker \
+  wlogout
+
+# NOTE: playerctl and pamixer are installed by run_onchange_before_install-packages.sh.tmpl
+#       to avoid duplication here. Both are Wayland/X11 agnostic utilities.
+
+{{      end -}}
+
+{{ end -}}

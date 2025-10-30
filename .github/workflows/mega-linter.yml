@@ -9,6 +9,8 @@ on:
   # Comment this line to trigger action only on pull-requests
   # (not recommended if you don't pay for GH Actions)
   push:
+    branches:
+      - main
 
   pull_request:
     branches:

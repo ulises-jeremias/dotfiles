@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Waybar Player Info Script
+## Returns current song title and artist
+
+player_status=$(playerctl status 2>/dev/null)
+
+# Early return if not playing or paused
+if [ "${player_status}" != "Playing" ] && [ "${player_status}" != "Paused" ]; then
+  echo ""
+  exit 0
+fi
+
+# Get song info
+title=$(playerctl metadata --format '{{ title }}' 2>/dev/null | head -n1)
+artist=$(playerctl metadata --format '{{ artist }}' 2>/dev/null | head -n1)
+
+# Format output
+if [[ -n "${title}" && -n "${artist}" ]]; then
+  # Truncate if too long
+  max_len=40
+  output="${title} - ${artist}"
+  if [ ${#output} -gt ${max_len} ]; then
+    output="${output:0:$((max_len-3))}..."
+  fi
+  echo "${output}"
+elif [[ -n "${title}" ]]; then
+  # Only title available
+  if [ ${#title} -gt 40 ]; then
+    echo "${title:0:37}..."
+  else
+    echo "${title}"
+  fi
+else
+  echo ""
+fi

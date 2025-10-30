@@ -50,7 +50,7 @@
 ;; power buttons
 (defwidget lock []
   (box :class "genwin" :vexpand "false" :hexpand "false"
-    (button :class "btn_lock" :onclick "~/.config/eww/powermenu/launch.sh; betterlockscreen --lock" "")))
+    (button :class "btn_lock" :onclick "~/.config/eww/powermenu/launch.sh; dots-lockscreen --lock" "")))
 
 (defwidget logout []
   (box :class "genwin" :vexpand "false" :hexpand "false"

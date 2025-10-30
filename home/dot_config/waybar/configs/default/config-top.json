@@ -1,0 +1,188 @@
+{
+  "layer": "top",
+  "position": "top",
+  "output": "!",
+  "height": 46,
+  "spacing": 0,
+  "margin-top": 8,
+  "margin-left": 8,
+  "margin-right": 8,
+
+  "modules-left": [
+    "custom/jgmenu",
+    "custom/dots-separator",
+    "custom/apps",
+    "custom/window-switch",
+    "custom/rices",
+    "pulseaudio#microphone",
+    "group/volume",
+    "group/backlight"
+  ],
+
+  "group/volume": {
+    "orientation": "horizontal",
+    "modules": [
+      "pulseaudio",
+      "pulseaudio/slider"
+    ]
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 Muted",
+    "format-icons": {
+      "headphone": "󰋋",
+      "hands-free": "󰥰",
+      "headset": "󰋎",
+      "phone": "󰄜",
+      "portable": "󰦢",
+      "car": "󰄋",
+      "default": ["󰕿", "󰖀", "󰕾"]
+    },
+    "scroll-step": 1,
+    "on-click": "pavucontrol",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "{desc}\nVolume: {volume}%"
+  },
+  "group/backlight": {
+    "orientation": "horizontal",
+    "modules": [
+      "backlight",
+      "backlight/slider"
+    ]
+  },
+  "backlight": {
+    "device": "intel_backlight",
+    "format": "{icon} {percent}%",
+    "format-icons": ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"],
+    "on-scroll-up": "brightnessctl set 5%+",
+    "on-scroll-down": "brightnessctl set 5%-",
+    "tooltip-format": "Brightness: {percent}%"
+  },
+
+  "modules-center": [
+    "clock",
+    "custom/weather"
+  ],
+
+  "modules-right": [
+    "custom/night-mode",
+    "custom/feh-blur",
+    "custom/github",
+    "tray"
+  ],
+
+  "custom/jgmenu": {
+    "format": "  ",
+    "tooltip": true,
+    "tooltip-format": "Open Jgmenu",
+    "on-click": "dots-jgmenu",
+    "on-right-click": "exo-open ~/.config/jgmenu/jgmenurc"
+  },
+
+  "custom/apps": {
+    "format": "󰘖",
+    "tooltip": false,
+    "on-click": "dots-rofi-run --run"
+  },
+
+  "custom/window-switch": {
+    "format": "",
+    "tooltip": false,
+    "on-click": "rofi -show window -theme ~/.config/rofi/themes/launcher.rasi"
+  },
+
+  "custom/rices": {
+    "format": "󰟪",
+    "tooltip": false,
+    "on-click": "~/.local/bin/dots rice selector"
+  },
+
+  "custom/night-mode": {
+    "format": "{}",
+    "exec": "~/.local/bin/dots night-mode status-icon",
+    "interval": 5,
+    "tooltip": true,
+    "exec-tooltip": "~/.local/bin/dots night-mode status-text",
+    "on-click": "~/.local/bin/dots night-mode toggle"
+  },
+
+  "custom/github": {
+    "format": "󰊤 {}",
+    "exec": "~/.config/waybar/scripts/github",
+    "interval": 300,
+    "tooltip": true,
+    "tooltip-format": "Open GitHub Notifications",
+    "on-click": "xdg-open https://github.com/notifications"
+  },
+
+  "custom/weather": {
+    "format": "{}",
+    "exec": "~/.config/waybar/scripts/weather",
+    "interval": 1800,
+    "tooltip": false
+  },
+
+  "custom/separator": {
+    "format": "|",
+    "tooltip": false
+  },
+
+  "custom/dots-separator": {
+    "format": "•",
+    "tooltip": false
+  },
+
+  "pulseaudio#microphone": {
+    "format": "{format_source}",
+    "format-source": "󰍬 {volume}%",
+    "format-source-muted": "󰍭 Muted",
+    "on-click": "pamixer --default-source -t",
+    "on-scroll-up": "pamixer --default-source -i 5",
+    "on-scroll-down": "pamixer --default-source -d 5",
+    "tooltip-format": "Microphone: {volume}%"
+  },
+
+  "pulseaudio/slider": {
+    "min": 0,
+    "max": 100,
+    "orientation": "horizontal"
+  },
+
+  "backlight/slider": {
+    "min": 0,
+    "max": 100,
+    "orientation": "horizontal",
+    "device": "intel_backlight"
+  },
+
+  "clock": {
+    "interval": 1,
+    "format": " {:%I:%M %p}",
+    "format-alt": "󰧒 {:%Y-%m-%d %a}",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#ffead3'><b>{}</b></span>",
+        "days": "<span color='#ecc6d9'><b>{}</b></span>",
+        "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+        "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+        "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
+      }
+    },
+    "actions": {
+      "on-click-right": "mode",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down"
+    }
+  },
+
+  "tray": {
+    "icon-size": 18,
+    "spacing": 10,
+    "show-passive-items": true
+  }
+}

@@ -139,7 +139,7 @@ trap cleanup_resources EXIT INT TERM
 The smart colors system demonstrates good caching:
 
 1. **Generate once**: Colors analyzed from wallpaper
-2. **Cache multiple formats**: i3, EWW, Polybar, shell
+2. **Cache multiple formats**: EWW, Waybar, Hyprland, shell
 3. **Invalidate on change**: New wallpaper triggers regeneration
 4. **Fast reads**: Applications read pre-generated files
 5. **No recomputation**: Same colors used across all apps

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Waybar Player Status Script
+## Returns simple status icon for media player
+
+player_status=$(playerctl status 2>/dev/null)
+
+case "${player_status}" in
+  "Playing")
+    echo "󰏥"
+    ;;
+  "Paused")
+    echo "󰐌"
+    ;;
+  *)
+    echo ""
+    ;;
+esac

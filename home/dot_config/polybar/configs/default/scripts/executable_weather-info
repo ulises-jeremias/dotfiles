@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-weather_temp=$(dots-weather-info --temp)
-weather_icon=$(dots-weather-info --icon)
-weather_hex=$(dots-weather-info --hex)
-
-echo " %{F${weather_hex}}%{T5}$weather_icon%{T-}%{F} $weather_temp"

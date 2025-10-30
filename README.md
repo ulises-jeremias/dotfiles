@@ -40,7 +40,7 @@
 - 🎨 **Beautiful Rice Themes** - 12+ stunning pre-configured desktop themes
 - ⚡ **One-Command Setup** - From zero to hero in minutes
 - 🔧 **100+ Automation Scripts** - Comprehensive tooling ecosystem
-- 🪟 **Multi-WM Support** - Works with i3, Openbox, XFCE4, and more
+- 🌊 **Hyprland/Wayland** - Modern compositor with smooth animations and gestures
 - 🛡️ **Security-First** - Built-in security auditing and hardening
 - 📦 **Zero Maintenance** - Powered by chezmoi for seamless updates
 
@@ -48,17 +48,17 @@
 
 <div align="center">
 
-|    🧠 **Smart Colors**     |   🎨 **Rice System**   |     📊 **Polybar**      |  🎛️ **EWW Widgets**   |
+|    🧠 **Smart Colors**     |   🎨 **Rice System**   |     📊 **Waybar**       |  🎛️ **EWW Widgets**   |
 | :------------------------: | :--------------------: | :---------------------: | :-------------------: |
 | Intelligent color analysis |  12+ beautiful themes  |       20+ modules       | Modern system widgets |
 |  Theme-adaptive palettes   |  One-click switching   | Smart color integration | Dashboard & powermenu |
-|   Semantic color mapping   | Wallpaper coordination |     Profile system      |     Auto-updating     |
+|   Semantic color mapping   | Wallpaper coordination |     Dual-bar layout     |     Auto-updating     |
 
-| 🪟 **Window Managers** |  🔧 **Automation**   |  🛡️ **Security**  | 📦 **Management**  |
-| :--------------------: | :------------------: | :---------------: | :----------------: |
-|  i3 • Openbox • XFCE4  | 100+ utility scripts | Security auditing |  Chezmoi powered   |
-|  Seamless integration  | Smart notifications  |  Hardening tools  |   Cross-platform   |
-|   Custom keybindings   |  System monitoring   | Privacy features  | Version controlled |
+| 🌊 **Hyprland/Wayland** |  🔧 **Automation**   |  🛡️ **Security**  | 📦 **Management**  |
+| :---------------------: | :------------------: | :---------------: | :----------------: |
+| Smooth animations       | 100+ utility scripts | Security auditing |  Chezmoi powered   |
+| Gesture support         | Smart notifications  |  Hardening tools  |   Cross-platform   |
+| i3-compatible bindings  |  System monitoring   | Privacy features  | Version controlled |
 
 </div>
 
@@ -68,7 +68,7 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 
 - **🎯 Semantic Intelligence**: Error, success, warning, info colors that make sense
 - **🎨 Theme Adaptation**: Perfect contrast and readability on any background
-- **⚡ Auto-Application**: Instantly applies to Polybar, EWW, i3, and all scripts
+- **⚡ Auto-Application**: Instantly applies to Waybar, EWW, Hyprland, and all scripts
 - **🔄 Live Updates**: Colors refresh automatically when you change wallpapers
 
 ## 🎨 **Gallery**
@@ -189,17 +189,17 @@ dots rice list
 
 <div align="center">
 
-| Component             | Application                                                                        | Description           |
-| :-------------------- | :--------------------------------------------------------------------------------- | :-------------------- |
-| 🪟 **Window Manager** | [i3](https://i3wm.org) • [Openbox](http://openbox.org) • [XFCE](https://xfce.org)  | Flexible WM support   |
-| 📊 **Status Bar**     | [Polybar](https://polybar.github.io)                                               | Beautiful & modular   |
-| 🚀 **App Launcher**   | [Rofi](https://github.com/davatorium/rofi)                                         | Lightning fast        |
-| 🐾 **Terminal**       | [Kitty](https://sw.kovidgoyal.net/kitty)                                           | GPU-accelerated       |
-| 🐚 **Shell**          | [Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k) | Feature-rich          |
-| 🌿 **Notifications**  | [Dunst](https://github.com/dunst-project/dunst)                                    | Minimalist design     |
-| 🍧 **Compositor**     | [Picom](https://github.com/yshui/picom)                                            | Smooth animations     |
-| 🃏 **File Manager**   | [Thunar](https://docs.xfce.org/xfce/thunar/start)                                  | Customized interface  |
-| 🎛️ **Widgets**        | [EWW](https://github.com/elkowar/eww)                                              | Modern system widgets |
+| Component              | Application                                                                         | Description            |
+| :--------------------- | :---------------------------------------------------------------------------------- | :--------------------- |
+| 🌊 **Window Manager**  | [Hyprland](https://hyprland.org)                                                    | Dynamic tiling WM      |
+| 📊 **Status Bar**      | [Waybar](https://github.com/Alexays/Waybar)                                        | Wayland status bar     |
+| 🚀 **App Launcher**    | [Rofi](https://github.com/lbonn/rofi) (Wayland fork)                                | Lightning fast         |
+| 🐾 **Terminal**        | [Kitty](https://sw.kovidgoyal.net/kitty)                                            | GPU-accelerated        |
+| 🐚 **Shell**           | [Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k) | Feature-rich           |
+| 🌿 **Notifications**   | [Mako](https://github.com/emersion/mako)                                            | Wayland notifications  |
+| 🖼️ **Wallpaper**       | [hyprpaper](https://github.com/hyprwm/hyprpaper)                                    | Wallpaper daemon       |
+| 🃏 **File Manager**    | [Thunar](https://docs.xfce.org/xfce/thunar/start)                                   | Customized interface   |
+| 🎛️ **Widgets**         | [EWW](https://github.com/elkowar/eww)                                               | Modern system widgets  |
 
 </div>
 
@@ -238,9 +238,9 @@ Experience the future of desktop theming:
 dots smart-colors --analyze
 
 # Export colors for different applications
-dots smart-colors --export --format=polybar
+dots smart-colors --export --format=waybar
 dots smart-colors --export --format=eww
-dots smart-colors --export --format=i3
+dots smart-colors --export --format=hyprland
 
 # Get optimal color for specific concepts
 dots smart-colors --concept=error --format=hex
@@ -280,9 +280,8 @@ cd dotfiles
 # Start testing environment
 ./bin/play
 
-# Provision with different WMs
-./bin/play --provision i3
-./bin/play --provision openbox
+# Provision with Hyprland
+./bin/play --provision hyprland
 
 # Clean up
 ./bin/play --remove
@@ -372,7 +371,7 @@ Comprehensive guides for every aspect:
 - 🏠 [**Getting Started**](https://ulises-jeremias.github.io/dotfiles/#Home) - Your first steps
 - 🎨 [**Rice System**](https://ulises-jeremias.github.io/dotfiles/#Rice-System-Theme-Management) - Theme management
 - 🧠 [**Smart Colors**](https://ulises-jeremias.github.io/dotfiles/#Smart-Colors-System) - Intelligent theming
-- 📊 [**Polybar Config**](https://ulises-jeremias.github.io/dotfiles/#Polybar-Configuration-Structure) - Status bar setup
+- 📊 [**Waybar Config**](https://ulises-jeremias.github.io/dotfiles/#Waybar-Configuration) - Status bar setup
 - 🎛️ [**EWW Widgets**](https://ulises-jeremias.github.io/dotfiles/#EWW-Widgets) - Modern widgets
 - 🔧 [**Scripts Guide**](https://ulises-jeremias.github.io/dotfiles/#Dots-Scripts) - Automation tools
 - 🛡️ [**Security**](https://ulises-jeremias.github.io/dotfiles/#Security) - Privacy & security

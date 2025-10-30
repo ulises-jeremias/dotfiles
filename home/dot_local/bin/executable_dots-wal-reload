@@ -111,32 +111,6 @@ reload_wal() {
   fi
 }
 
-# Function to reload i3 configuration
-reload_i3() {
-  if ! pgrep "i3" >/dev/null 2>&1; then
-    show_warning "i3 is not running, skipping i3 reload"
-    SKIPPED_APPS+=("i3")
-    return 0
-  fi
-
-  show_status "Reloading i3 configuration..."
-
-  if i3-msg reload >/dev/null 2>&1; then
-    show_success "i3 configuration reloaded"
-    UPDATED_APPS+=("i3")
-
-    # Apply gaps if setup script exists
-    if [[ -x ~/.config/i3/setup-gaps.sh ]]; then
-      if safe_execute "Applying i3 gaps" ~/.config/i3/setup-gaps.sh; then
-        show_success "i3 gaps applied"
-      fi
-    fi
-  else
-    show_error "Failed to reload i3 configuration"
-    FAILED_APPS+=("i3")
-  fi
-}
-
 # Function to reload rofi colors
 reload_rofi() {
   if ! check_command rofi "Rofi"; then
@@ -187,7 +161,8 @@ reload_eww() {
 
   for eww_config in "${eww_configs[@]}"; do
     if [[ -d $eww_config ]]; then
-      local config_name=$(basename "$eww_config")
+      local config_name
+      config_name=$(basename "$eww_config")
       rm -f "$eww_config/colors.scss"
       if ln -sf "$wal_colors" "$eww_config/colors.scss" 2>/dev/null; then
         show_success "EWW $config_name colors linked"
@@ -206,44 +181,93 @@ reload_eww() {
   fi
 }
 
-# Function to reload betterlockscreen
-reload_betterlockscreen() {
-  if ! check_command betterlockscreen "Betterlockscreen"; then
-    return 0
-  fi
+# Function to reload lockscreen
+reload_lockscreen() {
+  # Use dots-lockscreen for Wayland, betterlockscreen for X11
+  if [[ ${XDG_SESSION_TYPE:-} == "wayland" ]]; then
+    if ! check_command dots-lockscreen "dots-lockscreen"; then
+      return 0
+    fi
 
-  # Move to background to not block the reload process
-  (
-    local current_wallpaper="$HOME/.config/wpg/.current"
+    # Move to background to not block the reload process
+    (
+      local current_wallpaper="$HOME/.cache/current_wallpaper"
 
-    if [[ -f $current_wallpaper ]]; then
-      show_status "Updating betterlockscreen with current wallpaper (background)..."
-      if betterlockscreen -u "$current_wallpaper" >/dev/null 2>&1; then
-        show_success "Betterlockscreen updated"
-        UPDATED_APPS+=("Betterlockscreen")
+      if [[ -f $current_wallpaper ]]; then
+        local wallpaper_path
+        wallpaper_path=$(cat "$current_wallpaper")
+
+        if [[ -f $wallpaper_path ]]; then
+          show_status "Updating lockscreen with current wallpaper (background)..."
+          if dots-lockscreen --update="$wallpaper_path" >/dev/null 2>&1; then
+            show_success "Lockscreen updated"
+            UPDATED_APPS+=("Lockscreen")
+          else
+            show_error "Lockscreen update failed"
+            FAILED_APPS+=("Lockscreen")
+          fi
+        else
+          show_warning "Current wallpaper file not found: $wallpaper_path"
+          SKIPPED_APPS+=("Lockscreen")
+        fi
       else
-        show_error "Betterlockscreen update failed"
-        FAILED_APPS+=("Betterlockscreen")
+        show_warning "Current wallpaper cache not found: $current_wallpaper"
+        # Fallback: try to use wal wallpaper
+        local wal_wallpaper
+        wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
+        if [[ -f $wal_wallpaper ]]; then
+          if dots-lockscreen --update="$wal_wallpaper" >/dev/null 2>&1; then
+            show_success "Lockscreen updated (wal fallback)"
+            UPDATED_APPS+=("Lockscreen")
+          else
+            FAILED_APPS+=("Lockscreen")
+          fi
+        else
+          SKIPPED_APPS+=("Lockscreen")
+        fi
       fi
-    else
-      show_warning "Current wallpaper not found: $current_wallpaper"
-      # Fallback: try to use wal wallpaper
-      local wal_wallpaper
-      wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
-      if [[ -f $wal_wallpaper ]]; then
-        if betterlockscreen -u "$wal_wallpaper" >/dev/null 2>&1; then
-          show_success "Betterlockscreen updated (wal fallback)"
+    ) &
+
+    show_status "Lockscreen update started in background..."
+  else
+    # X11 fallback - use betterlockscreen if available
+    if ! check_command betterlockscreen "Betterlockscreen"; then
+      return 0
+    fi
+
+    # Move to background to not block the reload process
+    (
+      local current_wallpaper="$HOME/.config/wpg/.current"
+
+      if [[ -f $current_wallpaper ]]; then
+        show_status "Updating betterlockscreen with current wallpaper (background)..."
+        if betterlockscreen -u "$current_wallpaper" >/dev/null 2>&1; then
+          show_success "Betterlockscreen updated"
           UPDATED_APPS+=("Betterlockscreen")
         else
+          show_error "Betterlockscreen update failed"
           FAILED_APPS+=("Betterlockscreen")
         fi
       else
-        SKIPPED_APPS+=("Betterlockscreen")
+        show_warning "Current wallpaper not found: $current_wallpaper"
+        # Fallback: try to use wal wallpaper
+        local wal_wallpaper
+        wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
+        if [[ -f $wal_wallpaper ]]; then
+          if betterlockscreen -u "$wal_wallpaper" >/dev/null 2>&1; then
+            show_success "Betterlockscreen updated (wal fallback)"
+            UPDATED_APPS+=("Betterlockscreen")
+          else
+            FAILED_APPS+=("Betterlockscreen")
+          fi
+        else
+          SKIPPED_APPS+=("Betterlockscreen")
+        fi
       fi
-    fi
-  ) &
+    ) &
 
-  show_status "Betterlockscreen update started in background..."
+    show_status "Betterlockscreen update started in background..."
+  fi
 }
 
 # Function to reload Discord theme
@@ -304,12 +328,6 @@ reload_smart_colors() {
 create_smart_color_links() {
   show_status "Creating smart color symbolic links..."
 
-  # Create links in i3 config directory
-  local i3_config_dir="$HOME/.config/i3/config.d"
-  if [[ -d $i3_config_dir ]]; then
-    ln -sf "$HOME/.cache/dots/smart-colors/colors-i3.conf" "$i3_config_dir/smart-colors.conf" 2>/dev/null || true
-  fi
-
   # Create links in EWW directories
   local eww_dirs=("$HOME/.config/eww/dashboard" "$HOME/.config/eww/powermenu")
   for eww_dir in "${eww_dirs[@]}"; do
@@ -318,12 +336,12 @@ create_smart_color_links() {
     fi
   done
 
-  # Create links in polybar config directories
-  local polybar_configs=("$HOME/.config/polybar/configs/default")
-  for config_dir in "${polybar_configs[@]}"; do
+  # Create links for Waybar
+  local waybar_configs=("$HOME/.config/waybar/configs/default")
+  for config_dir in "${waybar_configs[@]}"; do
     if [[ -d $config_dir ]]; then
-      ln -sf "$HOME/.cache/dots/smart-colors/colors-polybar.conf" "$config_dir/colors.conf" 2>/dev/null || true
-      show_success "Polybar colors linked to $config_dir/colors.conf"
+      ln -sf "$HOME/.cache/dots/smart-colors/colors-waybar.css" "$config_dir/colors.css" 2>/dev/null || true
+      show_success "Waybar colors linked to $config_dir/colors.css"
     fi
   done
 }
@@ -331,19 +349,6 @@ create_smart_color_links() {
 # Apply smart colors to running applications
 apply_smart_colors_to_apps() {
   local smart_colors_applied=false
-
-  # Update polybar if running
-  if pgrep polybar >/dev/null; then
-    show_status "Polybar detected, restarting with smart colors..."
-    if ~/.config/polybar/launch.sh restart >/dev/null 2>&1; then
-      show_success "Polybar restarted with smart colors"
-      UPDATED_APPS+=("Polybar with smart colors")
-      smart_colors_applied=true
-    else
-      show_warning "Polybar restart failed"
-      FAILED_APPS+=("Polybar restart")
-    fi
-  fi
 
   # Update EWW widgets if running
   if command -v eww >/dev/null 2>&1 && eww ping >/dev/null 2>&1; then
@@ -364,16 +369,67 @@ apply_smart_colors_to_apps() {
     fi
   fi
 
-  # Update i3 if running and config exists
-  if pgrep i3 >/dev/null && [[ -f "$HOME/.config/i3/config.d/smart-colors.conf" ]]; then
-    show_status "i3 detected, reloading with smart colors..."
-    if i3-msg reload >/dev/null 2>&1; then
-      show_success "i3 configuration reloaded with smart colors"
-      UPDATED_APPS+=("i3 with smart colors")
+  # Update Hyprland if running
+  if pgrep Hyprland >/dev/null 2>&1; then
+    show_status "Hyprland detected, applying smart colors..."
+
+    # Link colors to Hyprland config
+    local hypr_colors_dir="$HOME/.config/hypr/hyprland.conf.d"
+    if [[ -d $hypr_colors_dir ]]; then
+      if [[ -f "$HOME/.cache/dots/smart-colors/colors-hyprland.conf" ]]; then
+        # Replace colors in colors.conf
+        cp "$HOME/.cache/dots/smart-colors/colors-hyprland.conf" "$hypr_colors_dir/colors.conf" 2>/dev/null
+
+        # Reload Hyprland config
+        if hyprctl reload >/dev/null 2>&1; then
+          show_success "Hyprland colors updated"
+          UPDATED_APPS+=("Hyprland with smart colors")
+          smart_colors_applied=true
+        fi
+      fi
+    fi
+  fi
+
+  # Update Waybar if running
+  if pgrep waybar >/dev/null 2>&1; then
+    show_status "Waybar detected, restarting with smart colors..."
+
+    # Link Waybar colors
+    local waybar_configs=("$HOME/.config/waybar/configs/default")
+    for config_dir in "${waybar_configs[@]}"; do
+      if [[ -d $config_dir ]]; then
+        ln -sf "$HOME/.cache/dots/smart-colors/colors-waybar.css" "$config_dir/colors.css" 2>/dev/null || true
+      fi
+    done
+
+    if ~/.config/waybar/launch.sh restart >/dev/null 2>&1 || killall -q waybar && ~/.config/waybar/launch.sh & then
+      show_success "Waybar restarted with smart colors"
+      UPDATED_APPS+=("Waybar with smart colors")
       smart_colors_applied=true
     else
-      show_warning "i3 reload failed"
-      FAILED_APPS+=("i3 reload")
+      show_warning "Waybar restart failed"
+      FAILED_APPS+=("Waybar restart")
+    fi
+  fi
+
+  # Update Mako if running
+  if pgrep mako >/dev/null 2>&1; then
+    show_status "Mako detected, restarting with smart colors..."
+
+    # Replace colors in mako config
+    if [[ -f "$HOME/.cache/dots/smart-colors/colors-mako.conf" ]]; then
+      # Backup original if exists
+      [[ -f "$HOME/.config/mako/config" ]] && cp "$HOME/.config/mako/config" "$HOME/.config/mako/config.bak" 2>/dev/null
+
+      # Merge smart colors into mako config
+      cat "$HOME/.cache/dots/smart-colors/colors-mako.conf" >"$HOME/.config/mako/config" 2>/dev/null
+
+      # Reload mako
+      if makoctl reload >/dev/null 2>&1; then
+        show_success "Mako restarted with smart colors"
+        UPDATED_APPS+=("Mako with smart colors")
+        smart_colors_applied=true
+      fi
     fi
   fi
 
@@ -427,6 +483,37 @@ reload_gtk_themes() {
   else
     show_warning "GTK theme manager not found, skipping GTK theme update"
     SKIPPED_APPS+=("GTK themes")
+  fi
+}
+
+# Function to reload hyprpaper (Hyprland wallpaper daemon)
+reload_hyprpaper() {
+  # Only run on Hyprland
+  if [[ ${XDG_SESSION_TYPE:-} != "wayland" ]] || [[ ${XDG_CURRENT_DESKTOP:-} != *"Hyprland"* ]]; then
+    return 0
+  fi
+
+  if ! check_command hyprpaper "Hyprpaper" false; then
+    return 0
+  fi
+
+  show_status "Updating wallpaper with hyprpaper..."
+
+  # Use dots-hyprpaper-set helper if available
+  if command -v dots-hyprpaper-set >/dev/null 2>&1; then
+    if dots-hyprpaper-set; then
+      show_success "Hyprpaper wallpaper updated"
+      UPDATED_APPS+=("Hyprpaper")
+      return 0
+    else
+      show_warning "Hyprpaper update failed"
+      FAILED_APPS+=("Hyprpaper")
+      return 1
+    fi
+  else
+    show_warning "dots-hyprpaper-set not found, skipping hyprpaper update"
+    SKIPPED_APPS+=("Hyprpaper")
+    return 1
   fi
 }
 
@@ -495,7 +582,6 @@ main() {
   reload_wal
 
   # Reload applications (fast operations first)
-  reload_i3
   reload_rofi
   reload_eww
   reload_discord
@@ -504,11 +590,14 @@ main() {
   # Apply GTK themes to match wallpaper
   reload_gtk_themes
 
+  # Set wallpaper for Hyprland
+  reload_hyprpaper
+
   # Apply smart colors after all standard wal operations
   reload_smart_colors
 
   # Move slow operations to the end (background)
-  reload_betterlockscreen
+  reload_lockscreen
 
   # Update rice integration
   update_current_rice
@@ -529,11 +618,11 @@ case "${1:-}" in
     echo "  help, -h       - Show this help"
     echo ""
     echo "Supported applications:"
-    echo "  • i3 window manager (with smart color generation)"
     echo "  • Rofi application launcher"
     echo "  • EWW widgets (with smart color enhancement)"
-    echo "  • Polybar (with smart color integration and auto-restart)"
-    echo "  • Betterlockscreen"
+    echo "  • Hyprland (with smart color integration)"
+    echo "  • Waybar (with smart color integration and auto-restart)"
+    echo "  • Mako notifications"
     echo "  • Discord (via wal-discord)"
     echo "  • Kitty terminal"
     echo "  • Alacritty terminal"
@@ -543,7 +632,8 @@ case "${1:-}" in
     echo "  • Theme-adaptive color selection for better readability"
     echo "  • Automatic semantic color mapping (error, success, info, etc.)"
     echo "  • Enhanced EWW color generation beyond pywal"
-    echo "  • Polybar integration with environment-based smart colors"
+    echo "  • Waybar integration with environment-based smart colors"
+    echo "  • Hyprland border and window decoration integration"
     ;;
   *)
     main

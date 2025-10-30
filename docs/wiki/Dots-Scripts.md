@@ -63,7 +63,7 @@ dots <script>   # Run a specific script (with optional flags)
 - `sysupdate` – Perform comprehensive system updates
 - `toggle` – Toggle state of applications like polybar, compositor, notifications
 - `updates` – Check and display available package updates with notifications
-- `wal-reload` – **[ENHANCED]** Reload pywal colorscheme and apply smart colors to i3, rofi, eww, polybar, betterlockscreen
+- `wal-reload` – **[ENHANCED]** Reload pywal colorscheme and apply smart colors to i3, rofi, eww, polybar, lockscreen
 - `weather-info` – Display current weather information and forecasts
 
 ---
