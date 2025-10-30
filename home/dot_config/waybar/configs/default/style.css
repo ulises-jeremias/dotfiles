@@ -23,15 +23,19 @@
 .text-small {
 	font-size: 10px;
 }
+
 .text-normal {
 	font-size: 12px;
 }
+
 .text-medium {
 	font-size: 13px;
 }
+
 .text-large {
 	font-size: 15px;
 }
+
 .text-xlarge {
 	font-size: 18px;
 }
@@ -45,6 +49,7 @@ window#waybar.top {
 	color: @fg-primary;
 	border-radius: 12px;
 }
+
 window#waybar.bottom {
 	background-color: @bg-primary;
 	color: @fg-primary;
@@ -59,6 +64,7 @@ window#waybar.bottom {
 	margin: 0;
 	padding: 0;
 }
+
 #workspaces button {
 	background: transparent;
 	color: @fg-secondary;
@@ -68,16 +74,19 @@ window#waybar.bottom {
 	border-radius: 8px;
 	font-size: 17px;
 }
+
 #workspaces button:hover {
 	background-color: @bg-hover;
 	color: @smart-blue;
 }
+
 #workspaces button.active {
 	background-color: @bg-hover;
 	color: @smart-orange;
 	font-size: 19px;
 	border: 1px solid @border-color;
 }
+
 #workspaces button.urgent {
 	background-color: @smart-error;
 	color: @bg-primary;
@@ -87,20 +96,25 @@ window#waybar.bottom {
 	0% {
 		opacity: 1;
 	}
+
 	50% {
 		opacity: 0.55;
 	}
+
 	100% {
 		opacity: 1;
 	}
 }
+
 @keyframes pulse {
 	0% {
 		opacity: 1;
 	}
+
 	50% {
 		opacity: 0.7;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -120,21 +134,23 @@ window#waybar.bottom {
 	border-radius: 8px;
 	font-size: 26px;
 }
+
 #custom-jgmenu {
-	font-size: 32px;
-  padding: 4px 4px;
-  margin: 6px 10px;
 	color: @smart-accent;
 }
+
 #custom-apps {
 	color: @fg-secondary;
 }
+
 #custom-window-switch {
 	color: @smart-blue;
 }
+
 #custom-rices {
 	color: @smart-orange;
 }
+
 #custom-jgmenu:hover,
 #custom-apps:hover,
 #custom-window-switch:hover,
@@ -155,10 +171,12 @@ window#waybar.bottom {
 	border-radius: 8px;
 	font-size: 15px;
 }
+
 #pulseaudio:hover,
 #pulseaudio\.microphone:hover {
 	background-color: @bg-hover;
 }
+
 #pulseaudio.muted,
 #pulseaudio\.microphone.source-muted {
 	color: @smart-warning;
@@ -176,6 +194,7 @@ window#waybar.bottom {
 	border-radius: 8px;
 	font-size: 15px;
 }
+
 #backlight:hover {
 	background-color: @bg-hover;
 }
@@ -193,6 +212,7 @@ window#waybar.bottom {
 	font-weight: bold;
 	font-size: 14px;
 }
+
 #clock:hover {
 	background-color: @bg-hover;
 }
@@ -210,15 +230,19 @@ window#waybar.bottom {
 	border-radius: 8px;
 	font-size: 15px;
 }
+
 #custom-night-mode {
 	color: @smart-orange;
 }
+
 #custom-github {
 	color: @smart-success;
 }
+
 #custom-weather {
 	color: @smart-info;
 }
+
 #custom-night-mode:hover,
 #custom-github:hover,
 #custom-weather:hover {
@@ -235,13 +259,16 @@ window#waybar.bottom {
 	margin: 6px 3px;
 	border-radius: 8px;
 }
+
 #tray:hover {
 	background-color: @bg-hover;
 }
-#tray > .passive {
+
+#tray>.passive {
 	-gtk-icon-effect: dim;
 }
-#tray > .needs-attention {
+
+#tray>.needs-attention {
 	-gtk-icon-effect: highlight;
 	animation: pulse 1s ease infinite;
 }
@@ -259,13 +286,16 @@ window#waybar.bottom {
 	margin: 6px 3px;
 	border-radius: 8px;
 }
+
 #custom-player-controls {
 	font-size: 17px;
 	color: @smart-accent;
 }
+
 #custom-player-controls:hover {
 	background-color: @bg-hover;
 }
+
 #custom-player-info {
 	font-style: italic;
 	color: @fg-secondary;
@@ -286,6 +316,7 @@ window#waybar.bottom {
 	border-radius: 8px;
 	font-size: 13px;
 }
+
 #memory {
 	background: transparent;
 	color: @smart-orange;
@@ -294,6 +325,7 @@ window#waybar.bottom {
 	border-radius: 8px;
 	font-size: 13px;
 }
+
 #cpu {
 	background: transparent;
 	color: @smart-pink;
@@ -302,6 +334,7 @@ window#waybar.bottom {
 	border-radius: 8px;
 	font-size: 13px;
 }
+
 #language:hover,
 #disk:hover,
 #temperature:hover,
@@ -309,12 +342,14 @@ window#waybar.bottom {
 #cpu:hover {
 	background-color: @bg-hover;
 }
+
 #disk.warning,
 #memory.warning,
 #cpu.warning {
 	color: @smart-warning;
 	animation: pulse 1s ease infinite;
 }
+
 #disk.critical,
 #memory.critical,
 #cpu.critical,
@@ -335,6 +370,7 @@ window#waybar.bottom {
 	margin: 6px 3px;
 	border-radius: 8px;
 }
+
 #backlight-slider trough,
 #pulseaudio-slider trough {
 	min-height: 10px;
@@ -342,14 +378,17 @@ window#waybar.bottom {
 	border-radius: 6px;
 	background-color: @bg-hover;
 }
+
 #backlight-slider highlight {
 	border-radius: 6px;
 	background-color: @smart-blue;
 }
+
 #pulseaudio-slider highlight {
 	border-radius: 6px;
 	background-color: @smart-orange;
 }
+
 #backlight-slider slider,
 #pulseaudio-slider slider {
 	min-width: 0;

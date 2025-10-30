@@ -102,6 +102,7 @@
     "sway",
     "syscall",
     "tmpl",
+    "togglesplit",
     "trivy",
     "ulises",
     "uname",
