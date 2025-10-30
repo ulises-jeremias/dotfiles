@@ -16,7 +16,6 @@
 
   "modules-right": [
     "hyprland/language",
-    "custom/separator",
     "disk",
     "memory",
     "cpu",

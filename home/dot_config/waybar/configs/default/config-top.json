@@ -38,8 +38,8 @@
       "default": ["󰕿", "󰖀", "󰕾"]
     },
     "scroll-step": 1,
-    "on-click": "pavucontrol",
-    "on-click-right": "pamixer -t",
+    "on-click": "pamixer -t",
+    "on-click-right": "pavucontrol",
     "tooltip-format": "{desc}\nVolume: {volume}%"
   },
   "group/backlight": {
@@ -71,7 +71,7 @@
   ],
 
   "custom/jgmenu": {
-    "format": "  ",
+    "format": "",
     "tooltip": true,
     "tooltip-format": "Open Jgmenu",
     "on-click": "dots-jgmenu",
