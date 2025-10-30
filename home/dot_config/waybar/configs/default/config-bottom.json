@@ -110,7 +110,7 @@
 
   "memory": {
     "interval": 5,
-    "format": "󰍛 {percentage_used}%",
+    "format": "󰍛 {percentage}%",
     "tooltip-format": "RAM: {used:0.1f}GB / {total:0.1f}GB\nSwap: {swapUsed:0.1f}GB / {swapTotal:0.1f}GB",
     "states": {
       "warning": 70,

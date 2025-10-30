@@ -10,7 +10,6 @@
 
   "modules-left": [
     "custom/jgmenu",
-    "custom/dots-separator",
     "custom/apps",
     "custom/window-switch",
     "custom/rices",
