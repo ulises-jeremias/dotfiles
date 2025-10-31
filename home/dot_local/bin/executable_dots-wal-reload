@@ -578,8 +578,14 @@ main() {
   echo -e "${PURPLE}🎨 Enhanced Wal Reload Script 🎨${NC}"
   echo ""
 
+  # Set wallpaper for Hyprland
+  reload_hyprpaper
+
   # Core wal reload
   reload_wal
+
+  # Apply smart colors after all standard wal operations
+  reload_smart_colors
 
   # Reload applications (fast operations first)
   reload_rofi
@@ -589,12 +595,6 @@ main() {
 
   # Apply GTK themes to match wallpaper
   reload_gtk_themes
-
-  # Set wallpaper for Hyprland
-  reload_hyprpaper
-
-  # Apply smart colors after all standard wal operations
-  reload_smart_colors
 
   # Move slow operations to the end (background)
   reload_lockscreen
