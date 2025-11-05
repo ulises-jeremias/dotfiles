@@ -29,7 +29,9 @@ launch_wofi() {
 }
 launch_rofi() {
   command -v rofi >/dev/null 2>&1 || return 1
-  exec rofi -modi drun,run -show drun -theme "$HOME/.config/rofi/apps.rasi"
+  exec rofi -modi run,drun -show drun \
+    -columns 1 -show-icons \
+    -theme "$HOME/.config/rofi/apps.rasi"
 }
 
 minimal_fallback() {
