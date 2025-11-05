@@ -5,113 +5,84 @@
 - [🏠 Home](Home)
 - [⚙️ Customization](Customization)
 - [🎨 Rice System](Rice-System-Theme-Management)
-- [🧠 Smart Colors System](Smart-Colors-System) ⭐ **Updated**
+- [🧠 Smart Colors System](Smart-Colors-System) ⭐
 
-### 🖥️ **Desktop Environment**
+### 🪟 **Window Manager & Desktop**
 
-#### 🪟 **Window Managers**
+#### **Hyprland (Wayland)**
 
 - [🪟 Window Managers Overview](Window-Managers)
+- [⌨️ Hyprland Keybindings](Hyprland-Keybindings-i3-Compatibility)
+- [🔒 Lockscreen](Lockscreen)
 
-#### 🎨 **Applications & Tools**
+#### **Visual Components**
 
 - [🖼️ EWW Widgets](EWW-Widgets)
-- [🚀 Rofi App Launcher](Rofi-Apps-Launcher)
+- [🚀 Rofi Launcher](Rofi-Apps-Launcher)
+- [📁 Thunar File Manager](Thunar-Side-Panel)
+
+#### **Terminal & Shell**
+
 - [💻 Kitty Terminal](Kitty)
 - [🐚 Zsh Shell](Zsh)
 
-### 📊 **Polybar Status Bar**
+### 🔧 **Scripts & Utilities**
 
-#### 📋 **Core Configuration**
+#### 📜 **Core Scripts**
 
-- [📊 Polybar Overview](Polybar)
-- [🏗️ Configuration Structure](Polybar-Configuration-Structure) ⭐ **Updated**
-- [📱 Bar Configurations](Polybar-Bar-Configurations)
-- [😀 Emoji Support](Polybar-Emoji-Support)
-
-#### 🎛️ **Polybar Modules**
-
-**System Monitoring:**
-
-- [🧠 CPU Module](Polybar-Modules-cpu)
-- [💾 Memory Module](Polybar-Modules-memory)
-- [💾 Filesystem Module](Polybar-Modules-filesystem)
-- [🔋 Battery Module](Polybar-Modules-battery)
-- [🌡️ Temperature Module](Polybar-Modules-temperature)
-
-**Audio & Media:**
-
-- [🎵 Music Player Module](Polybar-Modules-music-player)
-- [🎵 Spotify Module](Polybar-Modules-spotify)
-- [🎤 Microphone Module](Polybar-Modules-microphone)
-- [🔊 PipeWire Module](Polybar-Modules-pipewire)
-
-**System Controls:**
-
-- [🔆 Backlight Module](Polybar-Modules-backlight)
-- [🌙 Night Mode Module](Polybar-Modules-nightmode)
-- [📶 Bluetooth Module](Polybar-Modules-bluetooth)
-- [🌐 Network Module](Polybar-Modules-network)
-
-**Information & Time:**
-
-- [📅 Date Module](Polybar-Modules-date)
-- [🌤️ Weather Module](Polybar-Modules-weather)
-- [💻 GitHub Module](Polybar-Modules-github)
-
-**Navigation & Interface:**
-
-- [📋 JGMenu Module](Polybar-Modules-jgmenu)
-- [🛠️ Utility & Helper Modules](Polybar-Modules-utility-helpers)
-
-### 🔧 **Scripts & Tools**
-
-#### 📜 **Dots Scripts**
-
-- [📜 Dots Scripts Overview](Dots-Scripts) ⭐ **Updated**
+- [📜 Dots Scripts Guide](Dots-Scripts) ⭐ **Complete Documentation**
 - [💾 Backup System](Dots-Backup)
 - [🚀 Eject System](Dots-Eject)
 
-#### 🎯 **GUI Tools & Launchers**
+#### 🎯 **Key Tools (with Fallback Chains)**
 
-- [🚀 Application Launcher](Dots-Scripts#launcher--application-launcher) (fuzzel/wofi/rofi)
-- [📋 Clipboard Manager](Dots-Scripts#clipboard--clipboard-manager) (copyq/cliphist)
-- [⚡ Power Menu](Dots-Scripts#power-menu--power-management-menu) (nwg-bar/eww/rofi)
-- [📸 Screenshots](Dots-Scripts#screenshooter--screenshot-tool) (flameshot/grimblast/grim)
-- [🔒 Screen Lock](Dots-Scripts#lockscreen--screen-lock) (swaylock/i3lock)
-- [⚙️ Settings Hub](Dots-Scripts#settings-gui--settings-hub)
+**GUI Launchers:**
 
-### 🔐 **System & Security**
+- [🚀 App Launcher](Dots-Scripts#launcher--application-launcher) - fuzzel → wofi → rofi
+- [📋 Clipboard](Dots-Scripts#clipboard--clipboard-manager) - copyq → cliphist → greenclip
+- [⚡ Power Menu](Dots-Scripts#power-menu--power-management-menu) - nwg-bar → eww → rofi
+- [⚙️ Settings Hub](Dots-Scripts#settings-gui--settings-hub) - unified GUI settings
 
-#### 🛡️ **Security & Hardware**
+**Media & Screen:**
+
+- [📸 Screenshots](Dots-Scripts#screenshooter--screenshot-tool) - flameshot → grimblast → grim
+- [🔒 Screen Lock](Dots-Scripts#lockscreen--screen-lock) - swaylock → i3lock
+- [🔆 Brightness](Dots-Scripts#brightness--screen-brightness-control) - brightnessctl → blight
+
+**System:**
+
+- [⚡ Performance](Dots-Scripts#performance-mode--cpu-performance-profiles) - powerprofilesctl
+- [⌨️ Keyboard Layout](Dots-Scripts#keyboard-layout--keyboard-layout-switcher) - 13 layouts
+- [🔋 Battery Monitor](Dots-Scripts#battery-monitor--battery-alert-daemon) - poweralertd
+- [📁 File Manager](Dots-Scripts#file-manager--file-manager-launcher) - thunar → nautilus
+
+### 🛡️ **System & Hardware**
 
 - [🛡️ Security](Security)
 - [🖥️ Hardware](Hardware)
 - [🎮 NVIDIA Troubleshooting](Hardware-nvidia-troubleshooting)
-- [⚡ Hybrid GPU Performance](Hybrid-GPU-Performance) 🆕
+- [⚡ Hybrid GPU Performance](Hybrid-GPU-Performance)
 - [📶 Network Manager](Network-Manager)
 
-### 🧪 **Development & Support**
-
-#### 📖 **Documentation**
+### 🧪 **Development**
 
 - [🤝 Contributing](CONTRIBUTING)
 - [🧪 Testing](Testing)
-- [📅 Changelog 2025](Changelog-2025) 🆕
+- [📅 Changelog 2025](Changelog-2025)
 
 ---
 
-### 🔍 **Quick Links**
+### 🔍 **Quick Access**
 
-**Most Popular:**
+**Essential:**
 
-- [🏠 Getting Started](Home)
-- [🎨 Rice Themes](Rice-System-Theme-Management)
-- [🧠 Smart Colors](Smart-Colors-System)
+- [🏠 Home](Home) - Start here
+- [📜 Dots Scripts](Dots-Scripts) ⭐ - All tools & fallbacks
+- [🎨 Rice System](Rice-System-Theme-Management) - Theme switching
+- [🧠 Smart Colors](Smart-Colors-System) - Adaptive theming
 
-**Recently Updated:**
+**Recent Updates:**
 
-- [📜 Dots Scripts](Dots-Scripts) ⭐ **NEW - Complete tool documentation**
-- [⚡ Hybrid GPU Performance](Hybrid-GPU-Performance) 🆕
-- [🧠 Smart Colors System](Smart-Colors-System) ⭐
-- [📅 Changelog 2025](Changelog-2025) 🆕
+- ⭐ **Dots Scripts** - Complete tool documentation with fallback chains
+- 🆕 **Hybrid GPU** - NVIDIA/Intel power management
+- 🆕 **Changelog 2025** - Latest changes
