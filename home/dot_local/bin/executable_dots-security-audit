@@ -24,368 +24,368 @@ SECURITY_LOG="$HOME/.cache/dots/security_audit_${date_str}.log"
 [[ ! -d "$(dirname "$SECURITY_LOG")" ]] && mkdir -p "$(dirname "$SECURITY_LOG")"
 
 check_file_permissions() {
-    echo "🔒 Checking file permissions across system..."
+  echo "🔒 Checking file permissions across system..."
 
-    local issues=0
+  local issues=0
 
-    # Check SSH directory permissions
-    if [[ -d "$HOME/.ssh" ]]; then
-        local ssh_perms
-        ssh_perms=$(stat -c %a "$HOME/.ssh")
-        if [[ "$ssh_perms" != "700" ]]; then
-            echo "❌ SSH directory has incorrect permissions: $ssh_perms (should be 700)"
-            ((issues++))
-        else
-            echo "✅ SSH directory permissions correct"
-        fi
-
-        # Check SSH key permissions
-        find "$HOME/.ssh" -type f \( -name "id_*" -o -name "*_rsa" -o -name "*_ed25519" -o -name "*_ecdsa" \) ! -name "*.pub" | while read -r key; do
-            local key_perms
-            key_perms=$(stat -c %a "$key")
-            if [[ "$key_perms" != "600" ]]; then
-                echo "❌ SSH private key has incorrect permissions: $(basename "$key") ($key_perms, should be 600)"
-                ((issues++))
-            fi
-        done
-
-        # Check SSH config permissions
-        if [[ -f "$HOME/.ssh/config" ]]; then
-            local config_perms
-            config_perms=$(stat -c %a "$HOME/.ssh/config")
-            if [[ "$config_perms" != "600" ]]; then
-                echo "❌ SSH config has incorrect permissions: $config_perms (should be 600)"
-                ((issues++))
-            fi
-        fi
+  # Check SSH directory permissions
+  if [[ -d "$HOME/.ssh" ]]; then
+    local ssh_perms
+    ssh_perms=$(stat -c %a "$HOME/.ssh")
+    if [[ $ssh_perms != "700" ]]; then
+      echo "❌ SSH directory has incorrect permissions: $ssh_perms (should be 700)"
+      ((issues++))
+    else
+      echo "✅ SSH directory permissions correct"
     fi
 
-    # Check credential files
-    local cred_dir="$HOME/.config/private_credentials"
-    if [[ -d "$cred_dir" ]]; then
-        find "$cred_dir" -type f -exec stat -c "%a %n" {} \; | while read -r perms file; do
-            if [[ "$perms" != "600" ]]; then
-                echo "❌ Credential file has incorrect permissions: $(basename "$file") ($perms, should be 600)"
-                ((issues++))
-            fi
-        done
+    # Check SSH key permissions
+    find "$HOME/.ssh" -type f \( -name "id_*" -o -name "*_rsa" -o -name "*_ed25519" -o -name "*_ecdsa" \) ! -name "*.pub" | while read -r key; do
+      local key_perms
+      key_perms=$(stat -c %a "$key")
+      if [[ $key_perms != "600" ]]; then
+        echo "❌ SSH private key has incorrect permissions: $(basename "$key") ($key_perms, should be 600)"
+        ((issues++))
+      fi
+    done
+
+    # Check SSH config permissions
+    if [[ -f "$HOME/.ssh/config" ]]; then
+      local config_perms
+      config_perms=$(stat -c %a "$HOME/.ssh/config")
+      if [[ $config_perms != "600" ]]; then
+        echo "❌ SSH config has incorrect permissions: $config_perms (should be 600)"
+        ((issues++))
+      fi
     fi
+  fi
 
-    # Check for world-readable sensitive files in home directory
-    echo "  Checking for world-readable sensitive files..."
-    find "$HOME" -maxdepth 3 -type f \( -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name "*.pfx" -o -name "*password*" -o -name "*secret*" \) -perm /o+r 2>/dev/null | while read -r file; do
-        echo "❌ Sensitive file is world-readable: $file"
+  # Check credential files
+  local cred_dir="$HOME/.config/private_credentials"
+  if [[ -d $cred_dir ]]; then
+    find "$cred_dir" -type f -exec stat -c "%a %n" {} \; | while read -r perms file; do
+      if [[ $perms != "600" ]]; then
+        echo "❌ Credential file has incorrect permissions: $(basename "$file") ($perms, should be 600)"
         ((issues++))
+      fi
     done
+  fi
 
-    # Check dotfiles scripts are not world-writable
-    find "$HOME/.local/bin" -name "executable_dots-*" -perm /o+w 2>/dev/null | while read -r script; do
-        echo "❌ Script is world-writable: $(basename "$script")"
-        ((issues++))
-    done
+  # Check for world-readable sensitive files in home directory
+  echo "  Checking for world-readable sensitive files..."
+  find "$HOME" -maxdepth 3 -type f \( -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name "*.pfx" -o -name "*password*" -o -name "*secret*" \) -perm /o+r 2>/dev/null | while read -r file; do
+    echo "❌ Sensitive file is world-readable: $file"
+    ((issues++))
+  done
 
-    # Check home directory permissions
-    local home_perms
-    home_perms=$(stat -c %a "$HOME")
-    if [[ "${home_perms: -1}" -gt "5" ]]; then
-        echo "❌ Home directory is world-writable: $home_perms"
-        ((issues++))
-    fi
+  # Check dotfiles scripts are not world-writable
+  find "$HOME/.local/bin" -name "executable_dots-*" -perm /o+w 2>/dev/null | while read -r script; do
+    echo "❌ Script is world-writable: $(basename "$script")"
+    ((issues++))
+  done
 
-    # Check for files with SUID/SGID bits in user directories
-    echo "  Checking for suspicious SUID/SGID files..."
-    find "$HOME/.local" "$HOME/.config" -type f \( -perm -4000 -o -perm -2000 \) 2>/dev/null | while read -r file; do
-        echo "⚠️  Found SUID/SGID file in user directory: $file"
-    done
+  # Check home directory permissions
+  local home_perms
+  home_perms=$(stat -c %a "$HOME")
+  if [[ ${home_perms: -1} -gt "5" ]]; then
+    echo "❌ Home directory is world-writable: $home_perms"
+    ((issues++))
+  fi
 
-    return $issues
+  # Check for files with SUID/SGID bits in user directories
+  echo "  Checking for suspicious SUID/SGID files..."
+  find "$HOME/.local" "$HOME/.config" -type f \( -perm -4000 -o -perm -2000 \) 2>/dev/null | while read -r file; do
+    echo "⚠️  Found SUID/SGID file in user directory: $file"
+  done
+
+  return $issues
 }
 
 scan_for_secrets() {
-    echo "🔍 Scanning for exposed secrets in applied configurations..."
+  echo "🔍 Scanning for exposed secrets in applied configurations..."
 
-    local issues=0
+  local issues=0
 
-    # Common secret patterns
-    local patterns=(
-        "password.*=.*['\"][^'\"]{8,}['\"]"
-        "token.*=.*['\"][^'\"]{16,}['\"]"
-        "api[_-]?key.*=.*['\"][^'\"]{16,}['\"]"
-        "secret.*=.*['\"][^'\"]{16,}['\"]"
-        "private[_-]?key.*=.*['\"][^'\"]{32,}['\"]"
-        "aws_access_key_id.*=.*[A-Z0-9]{20}"
-        "aws_secret_access_key.*=.*[A-Za-z0-9/+=]{40}"
-    )
+  # Common secret patterns
+  local patterns=(
+    "password.*=.*['\"][^'\"]{8,}['\"]"
+    "token.*=.*['\"][^'\"]{16,}['\"]"
+    "api[_-]?key.*=.*['\"][^'\"]{16,}['\"]"
+    "secret.*=.*['\"][^'\"]{16,}['\"]"
+    "private[_-]?key.*=.*['\"][^'\"]{32,}['\"]"
+    "aws_access_key_id.*=.*[A-Z0-9]{20}"
+    "aws_secret_access_key.*=.*[A-Za-z0-9/+=]{40}"
+  )
 
-    # Locations to scan for secrets (actual applied configs)
-    local scan_locations=(
-        "$HOME/.config"
-        "$HOME/.local/share"
-        "$HOME/.zshrc"
-        "$HOME/.bashrc"
-        "$HOME/.profile"
-        "$HOME/.zprofile"
-        "$HOME/.gitconfig"
-        "$HOME/.npmrc"
-        "$HOME/.env"
-        "$HOME/.envrc"
-    )
+  # Locations to scan for secrets (actual applied configs)
+  local scan_locations=(
+    "$HOME/.config"
+    "$HOME/.local/share"
+    "$HOME/.zshrc"
+    "$HOME/.bashrc"
+    "$HOME/.profile"
+    "$HOME/.zprofile"
+    "$HOME/.gitconfig"
+    "$HOME/.npmrc"
+    "$HOME/.env"
+    "$HOME/.envrc"
+  )
 
-    echo "  Scanning applied configurations for secrets..."
+  echo "  Scanning applied configurations for secrets..."
 
-    for location in "${scan_locations[@]}"; do
-        if [[ -e "$location" ]]; then
-            for pattern in "${patterns[@]}"; do
-                local matches
-                if [[ -d "$location" ]]; then
-                    matches=$(find "$location" -type f -name "*.conf" -o -name "*.config" -o -name "*.sh" -o -name "*.zsh" -o -name "*.bash" 2>/dev/null |
-                    xargs grep -lEi "$pattern" 2>/dev/null || true)
-                else
-                    matches=$(grep -lEi "$pattern" "$location" 2>/dev/null || true)
-                fi
-
-                if [[ -n "$matches" ]]; then
-                    echo "❌ Potential secret found in: $matches"
-                    echo "   Pattern: $pattern"
-                    ((issues++))
-                fi
-            done
+  for location in "${scan_locations[@]}"; do
+    if [[ -e $location ]]; then
+      for pattern in "${patterns[@]}"; do
+        local matches
+        if [[ -d $location ]]; then
+          matches=$(find "$location" -type f -name "*.conf" -o -name "*.config" -o -name "*.sh" -o -name "*.zsh" -o -name "*.bash" 2>/dev/null |
+            xargs grep -lEi "$pattern" 2>/dev/null || true)
+        else
+          matches=$(grep -lEi "$pattern" "$location" 2>/dev/null || true)
         fi
-    done
 
-    # Check for hardcoded IPs in actual configs
-    echo "  Checking for hardcoded internal IPs..."
-    for location in "${scan_locations[@]}"; do
-        if [[ -e "$location" ]]; then
-            local ip_matches
-            if [[ -d "$location" ]]; then
-                ip_matches=$(find "$location" -type f 2>/dev/null |
-                xargs grep -lE "\b(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|127\.0\.0\.1)\b" 2>/dev/null || true)
-            else
-                ip_matches=$(grep -lE "\b(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|127\.0\.0\.1)\b" "$location" 2>/dev/null || true)
-            fi
-
-            if [[ -n "$ip_matches" ]]; then
-                echo "⚠️  Found internal IP addresses in: $ip_matches"
-            fi
+        if [[ -n $matches ]]; then
+          echo "❌ Potential secret found in: $matches"
+          echo "   Pattern: $pattern"
+          ((issues++))
         fi
-    done
-
-    # Check environment variables for secrets
-    echo "  Checking environment variables..."
-    if env | grep -Ei "(password|token|secret|key)" | grep -v "XDG\|DESKTOP\|SESSION"; then
-        echo "⚠️  Found potential secrets in environment variables"
+      done
     fi
+  done
 
-    # Check shell history for accidentally entered secrets
-    echo "  Checking shell history for potential secrets..."
-    local history_files=("$HOME/.zsh_history" "$HOME/.bash_history" "$HOME/.history")
-    for hist_file in "${history_files[@]}"; do
-        if [[ -f "$hist_file" ]]; then
-            if grep -Ei "(password|token|secret|key).*=" "$hist_file" | head -5; then
-                echo "⚠️  Found potential secrets in shell history: $hist_file"
-            fi
-        fi
-    done
+  # Check for hardcoded IPs in actual configs
+  echo "  Checking for hardcoded internal IPs..."
+  for location in "${scan_locations[@]}"; do
+    if [[ -e $location ]]; then
+      local ip_matches
+      if [[ -d $location ]]; then
+        ip_matches=$(find "$location" -type f 2>/dev/null |
+          xargs grep -lE "\b(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|127\.0\.0\.1)\b" 2>/dev/null || true)
+      else
+        ip_matches=$(grep -lE "\b(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|127\.0\.0\.1)\b" "$location" 2>/dev/null || true)
+      fi
 
-    if [[ $issues -eq 0 ]]; then
-        echo "✅ No obvious secrets found in applied configurations"
+      if [[ -n $ip_matches ]]; then
+        echo "⚠️  Found internal IP addresses in: $ip_matches"
+      fi
     fi
+  done
 
-    return $issues
+  # Check environment variables for secrets
+  echo "  Checking environment variables..."
+  if env | grep -Ei "(password|token|secret|key)" | grep -v "XDG\|DESKTOP\|SESSION"; then
+    echo "⚠️  Found potential secrets in environment variables"
+  fi
+
+  # Check shell history for accidentally entered secrets
+  echo "  Checking shell history for potential secrets..."
+  local history_files=("$HOME/.zsh_history" "$HOME/.bash_history" "$HOME/.history")
+  for hist_file in "${history_files[@]}"; do
+    if [[ -f $hist_file ]]; then
+      if grep -Ei "(password|token|secret|key).*=" "$hist_file" | head -5; then
+        echo "⚠️  Found potential secrets in shell history: $hist_file"
+      fi
+    fi
+  done
+
+  if [[ $issues -eq 0 ]]; then
+    echo "✅ No obvious secrets found in applied configurations"
+  fi
+
+  return $issues
 }
 
 check_system_security() {
-    echo "🛡️  Checking system security settings..."
+  echo "🛡️  Checking system security settings..."
 
-    # Check if firewall is active
-    if command -v ufw >/dev/null 2>&1; then
-        if ufw status | grep -q "Status: active"; then
-            echo "✅ UFW firewall is active"
-        else
-            echo "⚠️  UFW firewall is not active"
-        fi
-        elif command -v firewall-cmd >/dev/null 2>&1; then
-        if firewall-cmd --state 2>/dev/null | grep -q running; then
-            echo "✅ Firewalld is running"
-        else
-            echo "⚠️  Firewalld is not running"
-        fi
-        elif command -v iptables >/dev/null 2>&1; then
-        local rules_count
-        rules_count=$(iptables -L | wc -l)
-        if [[ $rules_count -gt 10 ]]; then
-            echo "✅ iptables rules configured"
-        else
-            echo "⚠️  No firewall rules detected"
-        fi
+  # Check if firewall is active
+  if command -v ufw >/dev/null 2>&1; then
+    if ufw status | grep -q "Status: active"; then
+      echo "✅ UFW firewall is active"
     else
-        echo "⚠️  No firewall management tool detected"
+      echo "⚠️  UFW firewall is not active"
     fi
-
-    # Check for automatic updates
-    if [[ -f /etc/systemd/system/timers.target.wants/apt-daily.timer ]]; then
-        echo "✅ Automatic updates configured (apt)"
-        elif systemctl is-enabled dnf-automatic.timer >/dev/null 2>&1; then
-        echo "✅ Automatic updates configured (dnf)"
-        elif command -v pacman >/dev/null 2>&1 && systemctl is-enabled --quiet reflector.timer 2>/dev/null; then
-        echo "✅ Automatic mirror updates configured (arch)"
+  elif command -v firewall-cmd >/dev/null 2>&1; then
+    if firewall-cmd --state 2>/dev/null | grep -q running; then
+      echo "✅ Firewalld is running"
     else
-        echo "⚠️  Automatic updates not detected"
+      echo "⚠️  Firewalld is not running"
     fi
-
-    # Check SSH configuration
-    if [[ -f /etc/ssh/sshd_config ]]; then
-        if grep -q "^PermitRootLogin no" /etc/ssh/sshd_config; then
-            echo "✅ SSH root login disabled"
-        else
-            echo "⚠️  SSH root login not explicitly disabled"
-        fi
-
-        if grep -q "^PasswordAuthentication no" /etc/ssh/sshd_config; then
-            echo "✅ SSH password authentication disabled"
-        else
-            echo "⚠️  SSH password authentication not disabled"
-        fi
-
-        if grep -q "^Protocol 2" /etc/ssh/sshd_config || ! grep -q "^Protocol" /etc/ssh/sshd_config; then
-            echo "✅ SSH using secure protocol"
-        else
-            echo "❌ SSH not using protocol 2"
-        fi
-    fi
-
-    # Check for running security tools
-    if systemctl is-active --quiet fail2ban 2>/dev/null; then
-        echo "✅ fail2ban is running"
+  elif command -v iptables >/dev/null 2>&1; then
+    local rules_count
+    rules_count=$(iptables -L | wc -l)
+    if [[ $rules_count -gt 10 ]]; then
+      echo "✅ iptables rules configured"
     else
-        echo "⚠️  fail2ban not running"
+      echo "⚠️  No firewall rules detected"
     fi
+  else
+    echo "⚠️  No firewall management tool detected"
+  fi
 
-    if command -v apparmor_status >/dev/null 2>&1; then
-        if apparmor_status >/dev/null 2>&1; then
-            echo "✅ AppArmor is active"
-        else
-            echo "⚠️  AppArmor not active"
-        fi
-        elif command -v sestatus >/dev/null 2>&1; then
-        if sestatus | grep -q "enabled"; then
-            echo "✅ SELinux is enabled"
-        else
-            echo "⚠️  SELinux not enabled"
-        fi
+  # Check for automatic updates
+  if [[ -f /etc/systemd/system/timers.target.wants/apt-daily.timer ]]; then
+    echo "✅ Automatic updates configured (apt)"
+  elif systemctl is-enabled dnf-automatic.timer >/dev/null 2>&1; then
+    echo "✅ Automatic updates configured (dnf)"
+  elif command -v pacman >/dev/null 2>&1 && systemctl is-enabled --quiet reflector.timer 2>/dev/null; then
+    echo "✅ Automatic mirror updates configured (arch)"
+  else
+    echo "⚠️  Automatic updates not detected"
+  fi
+
+  # Check SSH configuration
+  if [[ -f /etc/ssh/sshd_config ]]; then
+    if grep -q "^PermitRootLogin no" /etc/ssh/sshd_config; then
+      echo "✅ SSH root login disabled"
     else
-        echo "⚠️  No MAC (Mandatory Access Control) system detected"
+      echo "⚠️  SSH root login not explicitly disabled"
     fi
 
-    # Check for suspicious network connections
-    echo "  Checking for suspicious network connections..."
-    if command -v netstat >/dev/null 2>&1; then
-        local suspicious_ports
-        suspicious_ports=$(netstat -tulnp 2>/dev/null | grep -E ":22[0-9][0-9]|:31[0-9][0-9]|:44[0-9][0-9]" | wc -l)
-        if [[ $suspicious_ports -gt 0 ]]; then
-            echo "⚠️  Found $suspicious_ports potentially suspicious listening ports"
-        fi
+    if grep -q "^PasswordAuthentication no" /etc/ssh/sshd_config; then
+      echo "✅ SSH password authentication disabled"
+    else
+      echo "⚠️  SSH password authentication not disabled"
     fi
 
-    # Check system integrity
-    if command -v debsums >/dev/null 2>&1; then
-        echo "  System package integrity check available (debsums)"
-        elif command -v rpm >/dev/null 2>&1; then
-        echo "  System package integrity check available (rpm -V)"
+    if grep -q "^Protocol 2" /etc/ssh/sshd_config || ! grep -q "^Protocol" /etc/ssh/sshd_config; then
+      echo "✅ SSH using secure protocol"
+    else
+      echo "❌ SSH not using protocol 2"
     fi
+  fi
 
-    # Check for unattended upgrades
-    if [[ -f /etc/apt/apt.conf.d/20auto-upgrades ]]; then
-        if grep -q "APT::Periodic::Unattended-Upgrade \"1\"" /etc/apt/apt.conf.d/20auto-upgrades; then
-            echo "✅ Unattended security upgrades enabled"
-        fi
+  # Check for running security tools
+  if systemctl is-active --quiet fail2ban 2>/dev/null; then
+    echo "✅ fail2ban is running"
+  else
+    echo "⚠️  fail2ban not running"
+  fi
+
+  if command -v apparmor_status >/dev/null 2>&1; then
+    if apparmor_status >/dev/null 2>&1; then
+      echo "✅ AppArmor is active"
+    else
+      echo "⚠️  AppArmor not active"
     fi
+  elif command -v sestatus >/dev/null 2>&1; then
+    if sestatus | grep -q "enabled"; then
+      echo "✅ SELinux is enabled"
+    else
+      echo "⚠️  SELinux not enabled"
+    fi
+  else
+    echo "⚠️  No MAC (Mandatory Access Control) system detected"
+  fi
+
+  # Check for suspicious network connections
+  echo "  Checking for suspicious network connections..."
+  if command -v netstat >/dev/null 2>&1; then
+    local suspicious_ports
+    suspicious_ports=$(netstat -tulnp 2>/dev/null | grep -E ":22[0-9][0-9]|:31[0-9][0-9]|:44[0-9][0-9]" | wc -l)
+    if [[ $suspicious_ports -gt 0 ]]; then
+      echo "⚠️  Found $suspicious_ports potentially suspicious listening ports"
+    fi
+  fi
+
+  # Check system integrity
+  if command -v debsums >/dev/null 2>&1; then
+    echo "  System package integrity check available (debsums)"
+  elif command -v rpm >/dev/null 2>&1; then
+    echo "  System package integrity check available (rpm -V)"
+  fi
+
+  # Check for unattended upgrades
+  if [[ -f /etc/apt/apt.conf.d/20auto-upgrades ]]; then
+    if grep -q 'APT::Periodic::Unattended-Upgrade "1"' /etc/apt/apt.conf.d/20auto-upgrades; then
+      echo "✅ Unattended security upgrades enabled"
+    fi
+  fi
 }
 
 run_security_audit() {
-    echo "🔐 Running comprehensive security audit..."
-    echo "Timestamp: $(date)" >"$SECURITY_LOG"
+  echo "🔐 Running comprehensive security audit..."
+  echo "Timestamp: $(date)" >"$SECURITY_LOG"
 
-    {
-        echo ""
-        check_file_permissions
-        echo ""
-        scan_for_secrets
-        echo ""
-        check_system_security
-    } | tee -a "$SECURITY_LOG"
-
+  {
     echo ""
-    echo "📄 Security audit completed. Log saved to: $SECURITY_LOG"
+    check_file_permissions
+    echo ""
+    scan_for_secrets
+    echo ""
+    check_system_security
+  } | tee -a "$SECURITY_LOG"
+
+  echo ""
+  echo "📄 Security audit completed. Log saved to: $SECURITY_LOG"
 }
 
 apply_security_fixes() {
-    echo "🔧 Applying security fixes..."
+  echo "🔧 Applying security fixes..."
 
-    # Fix SSH directory permissions
-    if [[ -d "$HOME/.ssh" ]]; then
-        chmod 700 "$HOME/.ssh"
-        echo "✅ Fixed SSH directory permissions"
+  # Fix SSH directory permissions
+  if [[ -d "$HOME/.ssh" ]]; then
+    chmod 700 "$HOME/.ssh"
+    echo "✅ Fixed SSH directory permissions"
 
-        # Fix SSH key permissions
-        find "$HOME/.ssh" -type f \( -name "id_*" -o -name "*_rsa" -o -name "*_ed25519" -o -name "*_ecdsa" \) ! -name "*.pub" -exec chmod 600 {} \;
-        echo "✅ Fixed SSH private key permissions"
+    # Fix SSH key permissions
+    find "$HOME/.ssh" -type f \( -name "id_*" -o -name "*_rsa" -o -name "*_ed25519" -o -name "*_ecdsa" \) ! -name "*.pub" -exec chmod 600 {} \;
+    echo "✅ Fixed SSH private key permissions"
 
-        # Fix SSH config permissions
-        if [[ -f "$HOME/.ssh/config" ]]; then
-            chmod 600 "$HOME/.ssh/config"
-            echo "✅ Fixed SSH config permissions"
-        fi
-
-        # Fix SSH public key permissions
-        find "$HOME/.ssh" -name "*.pub" -exec chmod 644 {} \;
-        echo "✅ Fixed SSH public key permissions"
+    # Fix SSH config permissions
+    if [[ -f "$HOME/.ssh/config" ]]; then
+      chmod 600 "$HOME/.ssh/config"
+      echo "✅ Fixed SSH config permissions"
     fi
 
-    # Fix credential file permissions
-    local cred_dir="$HOME/.config/private_credentials"
-    if [[ -d "$cred_dir" ]]; then
-        find "$cred_dir" -type f -exec chmod 600 {} \;
-        chmod 700 "$cred_dir"
-        echo "✅ Fixed credential file permissions"
-    fi
+    # Fix SSH public key permissions
+    find "$HOME/.ssh" -name "*.pub" -exec chmod 644 {} \;
+    echo "✅ Fixed SSH public key permissions"
+  fi
 
-    # Fix script permissions
-    find "$HOME/.local/bin" -name "executable_dots-*" -exec chmod 755 {} \;
-    echo "✅ Fixed script permissions"
+  # Fix credential file permissions
+  local cred_dir="$HOME/.config/private_credentials"
+  if [[ -d $cred_dir ]]; then
+    find "$cred_dir" -type f -exec chmod 600 {} \;
+    chmod 700 "$cred_dir"
+    echo "✅ Fixed credential file permissions"
+  fi
 
-    # Fix sensitive file permissions
-    find "$HOME" -maxdepth 3 -type f \( -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name "*.pfx" \) -exec chmod 600 {} \; 2>/dev/null
-    echo "✅ Fixed sensitive file permissions"
+  # Fix script permissions
+  find "$HOME/.local/bin" -name "executable_dots-*" -exec chmod 755 {} \;
+  echo "✅ Fixed script permissions"
 
-    # Remove world permissions from home directory if needed
-    local home_perms
-    home_perms=$(stat -c %a "$HOME")
-    if [[ "${home_perms: -1}" -gt "5" ]]; then
-        chmod o-rwx "$HOME"
-        echo "✅ Removed world permissions from home directory"
-    fi
+  # Fix sensitive file permissions
+  find "$HOME" -maxdepth 3 -type f \( -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name "*.pfx" \) -exec chmod 600 {} \; 2>/dev/null
+  echo "✅ Fixed sensitive file permissions"
 
-    # Clear potentially sensitive shell history
-    if [[ -f "$HOME/.zsh_history" ]]; then
-        sed -i '/password\|token\|secret\|key.*=/d' "$HOME/.zsh_history" 2>/dev/null || true
-        echo "✅ Cleaned sensitive entries from zsh history"
-    fi
+  # Remove world permissions from home directory if needed
+  local home_perms
+  home_perms=$(stat -c %a "$HOME")
+  if [[ ${home_perms: -1} -gt "5" ]]; then
+    chmod o-rwx "$HOME"
+    echo "✅ Removed world permissions from home directory"
+  fi
 
-    if [[ -f "$HOME/.bash_history" ]]; then
-        sed -i '/password\|token\|secret\|key.*=/d' "$HOME/.bash_history" 2>/dev/null || true
-        echo "✅ Cleaned sensitive entries from bash history"
-    fi
+  # Clear potentially sensitive shell history
+  if [[ -f "$HOME/.zsh_history" ]]; then
+    sed -i '/password\|token\|secret\|key.*=/d' "$HOME/.zsh_history" 2>/dev/null || true
+    echo "✅ Cleaned sensitive entries from zsh history"
+  fi
 
-    echo "🔒 Security fixes applied"
+  if [[ -f "$HOME/.bash_history" ]]; then
+    sed -i '/password\|token\|secret\|key.*=/d' "$HOME/.bash_history" 2>/dev/null || true
+    echo "✅ Cleaned sensitive entries from bash history"
+  fi
+
+  echo "🔒 Security fixes applied"
 }
 
 generate_security_report() {
-    local report_file
-    report_file="$HOME/.cache/dots/security_report_$(date +%Y%m%d).md"
+  local report_file
+  report_file="$HOME/.cache/dots/security_report_$(date +%Y%m%d).md"
 
-    cat >"$report_file" <<EOF
+  cat >"$report_file" <<EOF
 # HorneroConfig Security Report
 
 Generated: $(date)
@@ -433,20 +433,20 @@ For additional security, consider:
 - Regular security updates
 EOF
 
-    echo "📋 Security report generated: $report_file"
+  echo "📋 Security report generated: $report_file"
 }
 
 # Main execution logic
-if [[ -n "${audit}" ]]; then
-    run_security_audit
-    elif [[ -n "${fix}" ]]; then
-    apply_security_fixes
-    elif [[ -n "${report}" ]]; then
-    generate_security_report
-    elif [[ -n "${permissions}" ]]; then
-    check_file_permissions
-    elif [[ -n "${secrets}" ]]; then
-    scan_for_secrets
+if [[ -n ${audit} ]]; then
+  run_security_audit
+elif [[ -n ${fix} ]]; then
+  apply_security_fixes
+elif [[ -n ${report} ]]; then
+  generate_security_report
+elif [[ -n ${permissions} ]]; then
+  check_file_permissions
+elif [[ -n ${secrets} ]]; then
+  scan_for_secrets
 else
-    run_security_audit
+  run_security_audit
 fi

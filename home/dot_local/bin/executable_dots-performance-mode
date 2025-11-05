@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+## dots-performance-mode: Select or view performance profiles
+## Usage:
+##   @script.name [OPTIONS]
+## Options:
+##   -h, --help            Show help
+##       --gui             Open auto-cpufreq GUI if available
+##       --backend=NAME    Menu backend: fuzzel|wofi|rofi (auto chain if omitted)
+set -e
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+GUI=${gui:-no}
+BACKEND=${backend:-auto}
+
+if [[ $GUI == yes ]]; then
+  if command -v auto-cpufreq-gtk >/dev/null 2>&1; then
+    exec auto-cpufreq-gtk
+  elif command -v auto-cpufreq >/dev/null 2>&1; then
+    notify-send "Performance" "auto-cpufreq-gtk missing; using CLI monitor" || true
+    exec auto-cpufreq --monitor
+  else
+    notify-send "Performance" "auto-cpufreq tools not installed" || true
+    exit 1
+  fi
+fi
+
+if ! command -v powerprofilesctl >/dev/null 2>&1; then
+  notify-send "Performance" "powerprofilesctl not installed" || true
+  exit 1
+fi
+
+current=$(powerprofilesctl get)
+profiles=$(powerprofilesctl list | awk '{print $1}')
+
+menu=""
+for p in $profiles; do
+  if [[ $p == "$current" ]]; then
+    menu+="✓ $p\n"
+  else
+    menu+="  $p\n"
+  fi
+done
+menu=${menu%\n}
+
+choose_menu() {
+  case "$BACKEND" in
+    fuzzel)
+      command -v fuzzel >/dev/null 2>&1 || return 1
+      echo -e "$menu" | fuzzel --prompt "Performance> "
+      ;;
+    wofi)
+      command -v wofi >/dev/null 2>&1 || return 1
+      echo -e "$menu" | wofi --dmenu --prompt "Performance> "
+      ;;
+    rofi)
+      command -v rofi >/dev/null 2>&1 || return 1
+      echo -e "$menu" | rofi -dmenu -i -p "Performance" -mesg "Current: $current" -theme ~/.config/rofi/applets.rasi -no-custom
+      ;;
+    auto | *)
+      if command -v fuzzel >/dev/null 2>&1; then
+        echo -e "$menu" | fuzzel --prompt "Performance> "
+        return
+      fi
+      if command -v wofi >/dev/null 2>&1; then
+        echo -e "$menu" | wofi --dmenu --prompt "Performance> "
+        return
+      fi
+      if command -v rofi >/dev/null 2>&1; then
+        echo -e "$menu" | rofi -dmenu -i -p "Performance" -mesg "Current: $current" -theme ~/.config/rofi/applets.rasi -no-custom
+        return
+      fi
+      return 1
+      ;;
+  esac
+}
+
+selected=$(choose_menu || true)
+[[ -z $selected ]] && exit 0
+selected=${selected#✓ }
+selected=${selected#  }
+
+powerprofilesctl set "$selected"
+notify-send "Performance Mode" "Set to $selected" -u low || true

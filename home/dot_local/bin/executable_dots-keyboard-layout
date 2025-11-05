@@ -1,0 +1,254 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Program: dots-keyboard-layout
+## Description: Interactive keyboard layout selector for Hyprland/Wayland/X11
+##
+## Usage: dots-keyboard-layout [OPTIONS] [LAYOUT] [VARIANT]
+##
+## Options:
+##   -m, --menu          Show rofi menu to select layout (default)
+##   -c, --current       Show current layout info
+##   -g, --get           Get current layout name only
+##   -a, --apply=LAYOUT  Apply layout directly (requires LAYOUT arg)
+##       --variant=VAR   Specify variant when using --apply
+##   -l, --list          List all available layouts
+##   -h, --help          Show this help message
+##
+## Arguments:
+##   LAYOUT              Keyboard layout code (e.g., us, es, gb)
+##   VARIANT             Optional layout variant (e.g., intl, dvorak)
+##
+## Examples:
+##   dots-keyboard-layout                      # Show menu (default)
+##   dots-keyboard-layout --current            # Show current layout
+##   dots-keyboard-layout --apply=us           # Apply US layout
+##   dots-keyboard-layout --apply=us --variant=intl  # Apply US International
+##   dots-keyboard-layout --list               # List all layouts
+
+set -e
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+SCRIPT_NAME="$(basename "$0")"
+readonly SCRIPT_NAME
+
+# Available layouts (customize as needed)
+declare -A LAYOUTS=(
+  ["🇺🇸 US"]="us:"
+  ["🇺🇸 US International"]="us:intl"
+  ["🇪🇸 Spanish"]="es:"
+  ["🇦🇷 Spanish Latin America"]="latam:"
+  ["🇬🇧 UK"]="gb:"
+  ["🇩🇪 German"]="de:"
+  ["🇫🇷 French"]="fr:"
+  ["🇮🇹 Italian"]="it:"
+  ["🇵🇹 Portuguese"]="pt:"
+  ["🇧🇷 Portuguese Brazil"]="br:"
+  ["🇷🇺 Russian"]="ru:"
+  ["🇯🇵 Japanese"]="jp:"
+  ["🇨🇳 Chinese"]="cn:"
+)
+
+# Detect current session type
+detect_session() {
+  if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
+    echo "hyprland"
+  elif [[ -n ${WAYLAND_DISPLAY:-} ]]; then
+    echo "wayland"
+  elif [[ -n ${I3SOCK:-} ]]; then
+    echo "i3"
+  else
+    echo "x11"
+  fi
+}
+
+# Get current layout
+get_current_layout() {
+  local session
+  session=$(detect_session)
+
+  case "$session" in
+    hyprland)
+      hyprctl getoption input:kb_layout -j 2>/dev/null | jq -r '.str' || echo "us"
+      ;;
+    wayland | i3 | x11)
+      setxkbmap -query 2>/dev/null | awk '/layout/{print $2}' || echo "us"
+      ;;
+  esac
+}
+
+# Get current variant
+get_current_variant() {
+  local session
+  session=$(detect_session)
+
+  case "$session" in
+    hyprland)
+      hyprctl getoption input:kb_variant -j 2>/dev/null | jq -r '.str' || echo ""
+      ;;
+    wayland | i3 | x11)
+      setxkbmap -query 2>/dev/null | awk '/variant/{print $2}' || echo ""
+      ;;
+  esac
+}
+
+# Apply layout to current session
+apply_layout() {
+  local layout="$1"
+  local variant="${2:-}"
+  local session
+  session=$(detect_session)
+
+  case "$session" in
+    hyprland)
+      hyprctl keyword input:kb_layout "$layout" >/dev/null 2>&1
+      if [[ -n $variant ]]; then
+        hyprctl keyword input:kb_variant "$variant" >/dev/null 2>&1
+      else
+        hyprctl keyword input:kb_variant "" >/dev/null 2>&1
+      fi
+      ;;
+    wayland | i3 | x11)
+      if [[ -n $variant ]]; then
+        setxkbmap "$layout" "$variant" 2>/dev/null
+      else
+        setxkbmap "$layout" 2>/dev/null
+      fi
+      ;;
+  esac
+
+  # Send notification
+  local display_text="$layout"
+  [[ -n $variant ]] && display_text="$layout ($variant)"
+
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -u low -i input-keyboard "Keyboard Layout" "Switched to $display_text"
+  fi
+}
+
+# Get friendly name from layout:variant string
+get_friendly_name() {
+  local search="$1"
+
+  for label in "${!LAYOUTS[@]}"; do
+    local value="${LAYOUTS[$label]}"
+    if [[ $value == "$search" ]]; then
+      echo "$label"
+      return 0
+    fi
+  done
+
+  echo "$search"
+}
+
+# Build rofi menu
+show_menu() {
+  local current_layout current_variant current_full
+  current_layout=$(get_current_layout)
+  current_variant=$(get_current_variant)
+  current_full="${current_layout}:${current_variant}"
+
+  # Build menu with current layout marked
+  local menu=""
+  local sorted_keys=()
+
+  # Sort keys alphabetically
+  while IFS= read -r key; do
+    sorted_keys+=("$key")
+  done < <(printf '%s\n' "${!LAYOUTS[@]}" | sort)
+
+  for label in "${sorted_keys[@]}"; do
+    local value="${LAYOUTS[$label]}"
+
+    if [[ $value == "$current_full" ]]; then
+      menu+="✓ $label\n"
+    else
+      menu+="  $label\n"
+    fi
+  done
+
+  # Show rofi menu
+  local selected
+  if command -v rofi >/dev/null 2>&1; then
+    selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
+      -p "Keyboard Layout" \
+      -mesg "Current: $(get_friendly_name "$current_full")" \
+      -theme ~/.config/rofi/applets.rasi \
+      -no-custom)
+  else
+    echo "Error: rofi not installed" >&2
+    return 1
+  fi
+
+  [[ -z $selected ]] && return 0
+
+  # Remove checkmark/spaces
+  selected="${selected#✓ }"
+  selected="${selected#  }"
+
+  # Apply selection
+  local value="${LAYOUTS[$selected]}"
+  local layout variant
+
+  IFS=':' read -r layout variant <<<"$value"
+  apply_layout "$layout" "$variant"
+}
+
+# Show current layout info
+show_current() {
+  local session current_layout current_variant
+  session=$(detect_session)
+  current_layout=$(get_current_layout)
+  current_variant=$(get_current_variant)
+
+  echo "Session: $session"
+  echo "Layout: $current_layout"
+  [[ -n $current_variant ]] && echo "Variant: $current_variant"
+
+  local current_full="${current_layout}:${current_variant}"
+  local friendly
+  friendly=$(get_friendly_name "$current_full")
+  echo "Display: $friendly"
+}
+
+# Main
+main() {
+  # Handle flags
+  if [[ ${menu:-no} == yes ]]; then
+    show_menu
+    exit 0
+  fi
+
+  if [[ ${current:-no} == yes ]]; then
+    show_current
+    exit 0
+  fi
+
+  if [[ ${get:-no} == yes ]]; then
+    get_current_layout
+    exit 0
+  fi
+
+  if [[ ${list:-no} == yes ]]; then
+    echo "Available layouts:"
+    for label in "${!LAYOUTS[@]}"; do
+      printf "  %-30s = %s\n" "$label" "${LAYOUTS[$label]}"
+    done | sort
+    exit 0
+  fi
+
+  if [[ -n ${apply:-} ]]; then
+    local layout="$apply"
+    local var="${variant:-}"
+    apply_layout "$layout" "$var"
+    exit 0
+  fi
+
+  # Default: show menu if no flags
+  show_menu
+}
+
+main "$@"

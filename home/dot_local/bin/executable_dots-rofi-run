@@ -1,132 +1,18 @@
 #!/usr/bin/env bash
+# Legacy wrapper kept for backward compatibility.
+# Delegates to dots-launcher or specific newer wrappers.
+set -euo pipefail
 
-## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
-## Licensed under MIT.
-##
-## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
-##
-## Show a rofi menu to run commands
-
-NAME=$(basename "$0")
-VER="0.5"
-uptime="$(uptime -p | sed -e 's/up //g')"
-
-# 󰌾 | 󰤄 | 󰗽 |  | 󰐥
-lock="󰌾"
-sleep="󰤄"
-logout="󰗽"
-reboot=""
-shutdown="󰐥"
-
-usage() {
-  cat <<-EOF
-
- USAGE:  $NAME [OPTIONS]
-
- OPTIONS:
-
-    -h,--help          Display this message
-
-    -v,--version       Display script version
-
-    -r,--run           Application launcher
-
-    -w,--window        Switch between windows
-
-    -l,--logout        System logout dialog
-
-    -b,--browser       Browser search by keyword (requires surfraw)
-
-    -q,--qalculate     Persistant calculator dialog (requires libqalculate)
-
-    -c,--clipboard     Select previous clipboard entries (requires greenclip)
-
-  Without any options the run dialog will be opened.
-
-EOF
-}
-
-for arg in "$@"; do
-  case $arg in
-    -h | --help)
-      usage
-      exit 0
-      ;;
-    -v | --version)
-      echo -e "$NAME -- Version $VER"
-      exit 0
-      ;;
-    -r | --run)
-      rofi -modi run,drun -show drun \
-        -columns 1 -show-icons \
-        -theme ~/.config/rofi/apps.rasi
-      ;;
-    -w | --window)
-      rofi -modi window -show window -theme ~/.config/rofi/applets.rasi -hide-scrollbar
-      ;;
-    -q | --qalculate)
-      hash qalc &>/dev/null ||
-        {
-          echo "Requires 'libqalculate' installed"
-          exit 1
-        }
-
-      rofi -modi "calc:qalc +u8 -nocurrencies" \
-        -show "calc:qalc +u8 -nocurrencies" \
-        -hide-scrollbar -theme ~/.config/rofi/applets.rasi
-      ;;
-    -c | --clipboard)
-      # Clipboard manager - Detect session type and use appropriate tool
-      if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
-        hash cliphist &>/dev/null ||
-          {
-            echo "Requires 'cliphist' installed (Wayland clipboard manager)"
-            exit 1
-          }
-        cliphist list | rofi -dmenu -theme ~/.config/rofi/applets.rasi | cliphist decode | wl-copy
-      else
-        hash greenclip &>/dev/null ||
-          {
-            echo "Requires 'greenclip' installed (X11 clipboard manager)"
-            exit 1
-          }
-        rofi -modi "clipboard:greenclip print" -show "clipboard:greenclip print" -theme ~/.config/rofi/applets.rasi
-      fi
-      ;;
-    -b | --browser)
-      hash surfraw &>/dev/null ||
-        {
-          echo "Requires 'surfraw' installed"
-          exit 1
-        }
-
-      surfraw -browser="$BROWSER" "$(sr -elvi | awk -F'-' '{print $1}' |
-        sed '/:/d' | awk '{$1=$1};1' |
-        rofi -hide-scrollbar -theme ~/.config/rofi/applets.rasi -kb-row-select 'Tab' \
-          -kb-row-tab 'Control+space' -dmenu \
-          -mesg 'Tab for Autocomplete' -i -p 'Web Search')"
-      ;;
-    -l | --logout)
-      ANS="$(rofi -dmenu -theme ~/.config/rofi/powermenu.rasi \
-        -p "Uptime: $uptime" \
-        -mesg "Uptime: $uptime" \
-        -sep "|" <<<"$lock|$sleep|$logout|$reboot|$shutdown")"
-
-      case "$ANS" in
-        "$lock") dots-lockscreen --lock ;;
-        "$reboot") systemctl -i reboot ;;
-        "$shutdown") systemctl -i poweroff ;;
-        "$sleep") systemctl suspend ;;
-        "$logout") loginctl terminate-session "${XDG_SESSION_ID-}" ;;
-      esac
-      ;;
-    *)
-      printf "\nOption does not exist: %s\n\n" "$arg"
-      exit 2
-      ;;
-  esac
-done
-
-(($# == 0)) && "$0" -r
-
-exit 0
+script="${1:-}"
+case "$script" in
+  -c | --clipboard)
+    exec "$HOME/.local/bin/dots-clipboard"
+    ;;
+  -r | --run | "")
+    exec "$HOME/.local/bin/dots-launcher"
+    ;;
+  *)
+    echo "This legacy script only supports --run / --clipboard now. Use newer wrappers." >&2
+    exit 2
+    ;;
+esac

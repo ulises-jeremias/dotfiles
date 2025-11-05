@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Simple battery status: prefer poweralertd state? else acpi/upower.
+set -euo pipefail
+format_pct() {
+  printf '%s%%' "$1"
+}
+get_pct_acpi() { acpi -b 2>/dev/null | grep -Eo '[0-9]+%' | head -1 | tr -d '%'; }
+get_pct_upower() {
+  bat=$(upower -e | grep battery | head -1 || true)
+  [[ -z $bat ]] && echo 100 && return 0
+  upower -i "$bat" | awk '/percentage/ {gsub("%","",$2); print $2; exit}'
+}
+percentage=""
+if command -v acpi >/dev/null 2>&1; then percentage=$(get_pct_acpi); elif command -v upower >/dev/null 2>&1; then percentage=$(get_pct_upower); else percentage=100; fi
+# Icon tiers
+icon=""
+if ((percentage < 15)); then icon=""; elif ((percentage < 40)); then icon=""; elif ((percentage < 65)); then icon=""; elif ((percentage < 90)); then icon=""; fi
+printf '%s %s%%\n' "$icon" "$percentage"

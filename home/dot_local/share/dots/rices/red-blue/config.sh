@@ -13,7 +13,7 @@ RICE_BEST_FOR="Presentations, high visibility, attention-grabbing interface"
 # Theme Components Information
 GTK_THEME="auto"
 ICON_THEME="Numix-Circle"
-CURSOR_THEME="Adwaita"
+CURSOR_THEME="elementary"
 SMART_COLORS="true"
 
 # Color Scheme Preview

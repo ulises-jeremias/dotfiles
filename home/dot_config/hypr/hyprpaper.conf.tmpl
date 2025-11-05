@@ -15,6 +15,14 @@ ipc = on
 # Disable splash screen for cleaner startup
 splash = false
 
-# Initial wallpaper will be set by dots-wal-reload on startup
-# Format: preload = /path/to/wallpaper.jpg
-# Format: wallpaper = MONITOR,/path/to/wallpaper.jpg
+# Initial wallpaper will be set by dots-hyprpaper-set on startup
+# Preload wallpaper from wpg or wal if available
+{{ if stat (joinPath .chezmoi.homeDir ".config/wpg/.current") -}}
+preload = {{ joinPath .chezmoi.homeDir ".config/wpg/.current" }}
+wallpaper = ,{{ joinPath .chezmoi.homeDir ".config/wpg/.current" }}
+{{ else if stat (joinPath .chezmoi.homeDir ".cache/wal/wal") -}}
+preload = {{ joinPath .chezmoi.homeDir ".cache/wal/wal" }}
+wallpaper = ,{{ joinPath .chezmoi.homeDir ".cache/wal/wal" }}
+{{ else -}}
+# No wallpaper configured yet - will be set by dots-hyprpaper-set
+{{ end -}}

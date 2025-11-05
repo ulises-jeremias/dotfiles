@@ -19,162 +19,162 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 # Core dependencies required for basic functionality
 declare -A CORE_DEPS=(
-    ["git"]="Version control system"
-    ["curl"]="HTTP client for downloads"
-    ["wget"]="HTTP client alternative"
-    ["chezmoi"]="Dotfiles manager"
-    ["zsh"]="Primary shell"
+  ["git"]="Version control system"
+  ["curl"]="HTTP client for downloads"
+  ["wget"]="HTTP client alternative"
+  ["chezmoi"]="Dotfiles manager"
+  ["zsh"]="Primary shell"
 )
 
 # Window manager dependencies
 declare -A WM_DEPS=(
-    ["i3"]="i3 window manager"
-    ["openbox"]="Openbox window manager"
-    ["polybar"]="Status bar"
-    ["rofi"]="Application launcher"
-    ["picom"]="Compositor"
-    ["feh"]="Wallpaper setter"
-    ["dunst"]="Notification daemon"
+  ["i3"]="i3 window manager"
+  ["openbox"]="Openbox window manager"
+  ["polybar"]="Status bar"
+  ["rofi"]="Application launcher"
+  ["picom"]="Compositor"
+  ["feh"]="Wallpaper setter"
+  ["dunst"]="Notification daemon"
 )
 
 # Development tools (optional)
 declare -A DEV_DEPS=(
-    ["kitty"]="Terminal emulator"
-    ["nvim"]="Text editor"
-    ["tmux"]="Terminal multiplexer"
-    ["ranger"]="File manager"
-    ["btop"]="System monitor"
-    ["fastfetch"]="System info"
+  ["kitty"]="Terminal emulator"
+  ["nvim"]="Text editor"
+  ["tmux"]="Terminal multiplexer"
+  ["ranger"]="File manager"
+  ["btop"]="System monitor"
+  ["fastfetch"]="System info"
 )
 
 # Audio/Media dependencies (optional)
 declare -A MEDIA_DEPS=(
-    ["pipewire"]="Audio system"
-    ["spotify"]="Music player"
-    ["mpv"]="Video player"
-    ["cava"]="Audio visualizer"
+  ["pipewire"]="Audio system"
+  ["spotify"]="Music player"
+  ["mpv"]="Video player"
+  ["cava"]="Audio visualizer"
 )
 
 check_dependency() {
-    local cmd="$1"
-    local desc="$2"
+  local cmd="$1"
+  local desc="$2"
 
-    if command -v "$cmd" >/dev/null 2>&1; then
-        echo "✅ $cmd - $desc"
-        return 0
-    else
-        echo "❌ $cmd - $desc (missing)"
-        return 1
-    fi
+  if command -v "$cmd" >/dev/null 2>&1; then
+    echo "✅ $cmd - $desc"
+    return 0
+  else
+    echo "❌ $cmd - $desc (missing)"
+    return 1
+  fi
 }
 
 check_all_dependencies() {
-    local missing=0
+  local missing=0
 
-    echo "🔍 Checking core dependencies..."
-    for cmd in "${!CORE_DEPS[@]}"; do
-        if ! check_dependency "$cmd" "${CORE_DEPS[$cmd]}"; then
-            ((missing++))
-        fi
+  echo "🔍 Checking core dependencies..."
+  for cmd in "${!CORE_DEPS[@]}"; do
+    if ! check_dependency "$cmd" "${CORE_DEPS[$cmd]}"; then
+      ((missing++))
+    fi
+  done
+
+  echo ""
+  echo "🪟 Checking window manager dependencies..."
+  for cmd in "${!WM_DEPS[@]}"; do
+    if ! check_dependency "$cmd" "${WM_DEPS[$cmd]}"; then
+      ((missing++))
+    fi
+  done
+
+  if [[ -n ${optional} ]]; then
+    echo ""
+    echo "🔧 Checking development dependencies..."
+    for cmd in "${!DEV_DEPS[@]}"; do
+      check_dependency "$cmd" "${DEV_DEPS[$cmd]}" || true
     done
 
     echo ""
-    echo "🪟 Checking window manager dependencies..."
-    for cmd in "${!WM_DEPS[@]}"; do
-        if ! check_dependency "$cmd" "${WM_DEPS[$cmd]}"; then
-            ((missing++))
-        fi
+    echo "🎵 Checking media dependencies..."
+    for cmd in "${!MEDIA_DEPS[@]}"; do
+      check_dependency "$cmd" "${MEDIA_DEPS[$cmd]}" || true
     done
+  fi
 
-    if [[ -n "${optional}" ]]; then
-        echo ""
-        echo "🔧 Checking development dependencies..."
-        for cmd in "${!DEV_DEPS[@]}"; do
-            check_dependency "$cmd" "${DEV_DEPS[$cmd]}" || true
-        done
-
-        echo ""
-        echo "🎵 Checking media dependencies..."
-        for cmd in "${!MEDIA_DEPS[@]}"; do
-            check_dependency "$cmd" "${MEDIA_DEPS[$cmd]}" || true
-        done
-    fi
-
-    if [[ $missing -gt 0 ]]; then
-        echo ""
-        echo "⚠️  Found $missing missing core dependencies!"
-        echo "Run 'dots dependencies --install' to install them."
-        return 1
-    else
-        echo ""
-        echo "✅ All core dependencies are satisfied!"
-        return 0
-    fi
+  if [[ $missing -gt 0 ]]; then
+    echo ""
+    echo "⚠️  Found $missing missing core dependencies!"
+    echo "Run 'dots dependencies --install' to install them."
+    return 1
+  else
+    echo ""
+    echo "✅ All core dependencies are satisfied!"
+    return 0
+  fi
 }
 
 install_dependencies() {
-    echo "🔧 Installing dependencies..."
+  echo "🔧 Installing dependencies..."
 
-    # Detect package manager and install accordingly
-    if command -v pacman >/dev/null 2>&1; then
-        # Arch Linux
-        sudo pacman -S --needed git curl wget zsh i3 polybar rofi picom feh dunst kitty
-    elif command -v apt >/dev/null 2>&1; then
-        # Debian/Ubuntu
-        sudo apt update
-        sudo apt install -y git curl wget zsh i3 polybar rofi picom feh dunst kitty-terminal
-    elif command -v dnf >/dev/null 2>&1; then
-        # Fedora
-        sudo dnf install -y git curl wget zsh i3 polybar rofi picom feh dunst kitty
-    else
-        echo "❌ Unsupported package manager. Please install dependencies manually."
-        exit 1
-    fi
+  # Detect package manager and install accordingly
+  if command -v pacman >/dev/null 2>&1; then
+    # Arch Linux
+    sudo pacman -S --needed git curl wget zsh i3 polybar rofi picom feh dunst kitty
+  elif command -v apt >/dev/null 2>&1; then
+    # Debian/Ubuntu
+    sudo apt update
+    sudo apt install -y git curl wget zsh i3 polybar rofi picom feh dunst kitty-terminal
+  elif command -v dnf >/dev/null 2>&1; then
+    # Fedora
+    sudo dnf install -y git curl wget zsh i3 polybar rofi picom feh dunst kitty
+  else
+    echo "❌ Unsupported package manager. Please install dependencies manually."
+    exit 1
+  fi
 
-    # Install chezmoi if not present
-    if ! command -v chezmoi >/dev/null 2>&1; then
-        echo "📦 Installing chezmoi..."
-        sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin
-    fi
+  # Install chezmoi if not present
+  if ! command -v chezmoi >/dev/null 2>&1; then
+    echo "📦 Installing chezmoi..."
+    sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin
+  fi
 }
 
 list_dependencies() {
-    echo "📋 HorneroConfig Dependencies"
-    echo ""
+  echo "📋 HorneroConfig Dependencies"
+  echo ""
 
-    echo "Core Dependencies:"
-    for cmd in "${!CORE_DEPS[@]}"; do
-        echo "  - $cmd: ${CORE_DEPS[$cmd]}"
+  echo "Core Dependencies:"
+  for cmd in "${!CORE_DEPS[@]}"; do
+    echo "  - $cmd: ${CORE_DEPS[$cmd]}"
+  done
+
+  echo ""
+  echo "Window Manager Dependencies:"
+  for cmd in "${!WM_DEPS[@]}"; do
+    echo "  - $cmd: ${WM_DEPS[$cmd]}"
+  done
+
+  if [[ -n ${optional} ]]; then
+    echo ""
+    echo "Development Dependencies (Optional):"
+    for cmd in "${!DEV_DEPS[@]}"; do
+      echo "  - $cmd: ${DEV_DEPS[$cmd]}"
     done
 
     echo ""
-    echo "Window Manager Dependencies:"
-    for cmd in "${!WM_DEPS[@]}"; do
-        echo "  - $cmd: ${WM_DEPS[$cmd]}"
+    echo "Media Dependencies (Optional):"
+    for cmd in "${!MEDIA_DEPS[@]}"; do
+      echo "  - $cmd: ${MEDIA_DEPS[$cmd]}"
     done
-
-    if [[ -n "${optional}" ]]; then
-        echo ""
-        echo "Development Dependencies (Optional):"
-        for cmd in "${!DEV_DEPS[@]}"; do
-            echo "  - $cmd: ${DEV_DEPS[$cmd]}"
-        done
-
-        echo ""
-        echo "Media Dependencies (Optional):"
-        for cmd in "${!MEDIA_DEPS[@]}"; do
-            echo "  - $cmd: ${MEDIA_DEPS[$cmd]}"
-        done
-    fi
+  fi
 }
 
 # Main logic
-if [[ -n "${check}" ]]; then
-    check_all_dependencies
-elif [[ -n "${install}" ]]; then
-    install_dependencies
-elif [[ -n "${list}" ]]; then
-    list_dependencies
+if [[ -n ${check} ]]; then
+  check_all_dependencies
+elif [[ -n ${install} ]]; then
+  install_dependencies
+elif [[ -n ${list} ]]; then
+  list_dependencies
 else
-    check_all_dependencies
+  check_all_dependencies
 fi

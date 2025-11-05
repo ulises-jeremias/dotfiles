@@ -63,7 +63,20 @@ show_status "Setting wallpaper: $WALLPAPER_PATH"
 if ! pgrep -x hyprpaper >/dev/null; then
   show_status "Starting hyprpaper..."
   hyprpaper &
-  sleep 1
+  sleep 2
+fi
+
+# Wait for hyprpaper to be ready (with timeout)
+MAX_RETRIES=10
+RETRY_COUNT=0
+while ! pgrep -x hyprpaper >/dev/null && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+  sleep 0.5
+  RETRY_COUNT=$((RETRY_COUNT + 1))
+done
+
+if ! pgrep -x hyprpaper >/dev/null; then
+  show_error "hyprpaper failed to start after ${MAX_RETRIES} retries"
+  exit 1
 fi
 
 # Use hyprctl to update wallpaper via IPC

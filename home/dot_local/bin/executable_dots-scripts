@@ -13,17 +13,17 @@
 
 # if ~/.local/bin is not in the PATH, add it
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    export PATH="$HOME/.local/bin:${PATH}"
+  export PATH="$HOME/.local/bin:${PATH}"
 fi
 
 # if ~/bin is not in the PATH, add it
 if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
-    export PATH="$HOME/bin:${PATH}"
+  export PATH="$HOME/bin:${PATH}"
 fi
 
 # Add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
 if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
-    export PATH="${HOME}/.pyenv/shims:${PATH}"
+  export PATH="${HOME}/.pyenv/shims:${PATH}"
 fi
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
@@ -33,12 +33,12 @@ source ~/.local/lib/dots/dots-scripts.sh || exit
 
 # Function to execute the command in a terminal
 execute_command() {
-    local script_name
-    script_name=$(echo "$1" | cut -d ' ' -f 2 | cut -d ':' -f 1)
-    local command="kitty --hold -e echo \"dots $script_name\""
+  local script_name
+  script_name=$(echo "$1" | cut -d ' ' -f 2 | cut -d ':' -f 1)
+  local command="kitty --hold -e echo \"dots $script_name\""
 
-    # Open kitty with the command
-    eval "$command"
+  # Open kitty with the command
+  eval "$command"
 }
 
 # Create the menu with rofi
@@ -46,5 +46,5 @@ selected=$(printf '%s\n' "${scripts_list[@]}" | rofi -dmenu -i -p "Select Script
 
 # If a script is selected, execute or display its command
 if [ -n "$selected" ]; then
-    execute_command "$selected"
+  execute_command "$selected"
 fi

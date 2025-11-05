@@ -1,0 +1,298 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Settings GUI - Central configuration hub
+## Unified access to system settings via rofi
+
+set -euo pipefail
+
+SCRIPT_NAME="$(basename "$0")"
+readonly SCRIPT_NAME
+
+# Detect session
+detect_session() {
+  if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
+    echo "hyprland"
+  elif [[ -n ${WAYLAND_DISPLAY:-} ]]; then
+    echo "wayland"
+  else
+    echo "x11"
+  fi
+}
+
+# Settings categories
+show_menu() {
+  local session
+  session=$(detect_session)
+
+  local options=(
+    "⌨  Keyboard Layout"
+    "🎨 GTK Themes"
+    "🎨 Quick Theme Switch"
+    "🖥️  Display Settings"
+    "🎨 Rice Selector"
+    "🌈 Smart Colors"
+    "🌙 Night Mode"
+    "📶 Network"
+    "🔊 Audio"
+    "🔋 Power Management"
+    "🃏 File Manager"
+    "⚙️  Advanced Settings"
+  )
+
+  # Build menu
+  local menu=""
+  for option in "${options[@]}"; do
+    menu+="$option\n"
+  done
+
+  # Show rofi menu
+  local selected
+  if command -v rofi >/dev/null 2>&1; then
+    selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
+      -p "Settings" \
+      -mesg "Select configuration category" \
+      -theme ~/.config/rofi/applets.rasi \
+      -no-custom)
+  else
+    echo "Error: rofi not installed" >&2
+    return 1
+  fi
+
+  [[ -z $selected ]] && return 0
+
+  # Execute selected action
+  case "$selected" in
+    "⌨  Keyboard Layout")
+      ~/.local/bin/dots-keyboard-layout menu
+      ;;
+    "🎨 GTK Themes")
+      if command -v nwg-look >/dev/null 2>&1; then
+        nwg-look &
+      elif command -v lxappearance >/dev/null 2>&1; then
+        lxappearance &
+      else
+        notify-send "GTK Themes" "Install nwg-look or lxappearance for theme configuration"
+      fi
+      ;;
+    "🎨 Quick Theme Switch")
+      ~/.local/bin/dots-theme-selector &
+      ;;
+    "🖥️  Display Settings")
+      case "$session" in
+        hyprland)
+          if command -v nwg-displays >/dev/null 2>&1; then
+            nwg-displays &
+          else
+            notify-send "Display Settings" "Use hyprctl or install nwg-displays\n\nExample:\nhyprctl monitors"
+          fi
+          ;;
+        *)
+          if command -v arandr >/dev/null 2>&1; then
+            arandr &
+          else
+            notify-send "Display Settings" "Install arandr for display configuration"
+          fi
+          ;;
+      esac
+      ;;
+    "🎨 Rice Selector")
+      ~/.local/bin/dots rice selector
+      ;;
+    "🌈 Smart Colors")
+      ~/.local/bin/dots smart-colors menu || notify-send "Smart Colors" "Smart colors menu not available"
+      ;;
+    "🌙 Night Mode")
+      ~/.local/bin/dots night-mode toggle
+      ;;
+    "📶 Network")
+      if command -v nm-connection-editor >/dev/null 2>&1; then
+        nm-connection-editor &
+      elif command -v nmtui >/dev/null 2>&1; then
+        kitty -e nmtui &
+      else
+        notify-send "Network" "Install nm-connection-editor or nmtui"
+      fi
+      ;;
+    "🔊 Audio")
+      if command -v pavucontrol >/dev/null 2>&1; then
+        pavucontrol &
+      elif command -v alsamixer >/dev/null 2>&1; then
+        kitty -e alsamixer &
+      else
+        notify-send "Audio" "Install pavucontrol for audio configuration"
+      fi
+      ;;
+    "🔋 Power Management")
+      show_power_menu
+      ;;
+    "🃏 File Manager")
+      ~/.local/bin/dots-file-manager select
+      ;;
+    "⚙️  Advanced Settings")
+      show_advanced_menu
+      ;;
+  esac
+}
+
+# Power management submenu
+show_power_menu() {
+  local options=(
+    "🔋 Battery Info"
+    "🔆 Brightness Control"
+    "💤 Idle Settings"
+    "⚡ Performance Mode"
+    "⏻ Power Menu"
+    "🚀 Set Performance Profile"
+  )
+
+  local menu=""
+  for option in "${options[@]}"; do
+    menu+="$option\n"
+  done
+
+  local selected
+  selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
+    -p "Power Management" \
+    -theme ~/.config/rofi/applets.rasi \
+    -no-custom)
+
+  [[ -z $selected ]] && return 0
+
+  case "$selected" in
+    "🔋 Battery Info")
+      if command -v acpi >/dev/null 2>&1; then
+        local battery_info
+        battery_info=$(acpi -b)
+        notify-send "Battery" "$battery_info"
+      else
+        notify-send "Battery" "Install acpi for battery information"
+      fi
+      ;;
+    "🔆 Brightness Control")
+      if command -v brightnessctl >/dev/null 2>&1; then
+        local current
+        current=$(brightnessctl get)
+        local max
+        max=$(brightnessctl max)
+        local percent
+        percent=$((current * 100 / max))
+        notify-send "Brightness" "Current: $percent%"
+      fi
+      ;;
+    "💤 Idle Settings")
+      if command -v hypridle >/dev/null 2>&1; then
+        kitty -e nvim ~/.config/hypr/hypridle.conf &
+      else
+        notify-send "Idle Settings" "Hypridle not configured"
+      fi
+      ;;
+    "⚡ Performance Mode")
+      notify-send "Performance Mode" "Not yet implemented"
+      ;;
+    "🚀 Set Performance Profile")
+      ~/.local/bin/dots-performance-mode &
+      ;;
+    "⏻ Power Menu")
+      ~/.local/bin/dots-power-menu menu
+      ;;
+  esac
+}
+
+# Advanced settings submenu
+show_advanced_menu() {
+  local options=(
+    "📝 Edit Hyprland Config"
+    "📝 Edit Waybar Config"
+    "📝 Edit Rofi Config"
+    "🔄 Reload Hyprland"
+    "🔄 Reload Waybar"
+    "📊 System Info"
+  )
+
+  local menu=""
+  for option in "${options[@]}"; do
+    menu+="$option\n"
+  done
+
+  local selected
+  selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
+    -p "Advanced Settings" \
+    -theme ~/.config/rofi/applets.rasi \
+    -no-custom)
+
+  [[ -z $selected ]] && return 0
+
+  case "$selected" in
+    "📝 Edit Hyprland Config")
+      kitty -e nvim ~/.config/hypr/hyprland.conf &
+      ;;
+    "📝 Edit Waybar Config")
+      kitty -e nvim ~/.config/waybar/configs/default/config-top.json &
+      ;;
+    "📝 Edit Rofi Config")
+      kitty -e nvim ~/.config/rofi/config.rasi &
+      ;;
+    "🔄 Reload Hyprland")
+      hyprctl reload && notify-send "Hyprland" "Configuration reloaded"
+      ;;
+    "🔄 Reload Waybar")
+      ~/.config/waybar/launch.sh && notify-send "Waybar" "Reloaded"
+      ;;
+    "📊 System Info")
+      if command -v fastfetch >/dev/null 2>&1; then
+        kitty -e fastfetch &
+      elif command -v neofetch >/dev/null 2>&1; then
+        kitty -e neofetch &
+      else
+        notify-send "System Info" "Install fastfetch or neofetch"
+      fi
+      ;;
+  esac
+}
+
+# Main
+main() {
+  case "${1:-menu}" in
+    menu | --menu | -m | "")
+      show_menu
+      ;;
+    help | --help | -h)
+      cat <<EOF
+Usage: $SCRIPT_NAME [COMMAND]
+
+Central settings hub for system configuration.
+
+Commands:
+  menu, -m        Show settings menu (default)
+  help, -h        Show this help message
+
+Settings categories:
+  - Keyboard Layout
+  - GTK Themes
+  - Display Settings
+  - Rice Selector
+  - Smart Colors
+  - Night Mode
+  - Network
+  - Audio
+  - Power Management
+  - File Manager
+  - Advanced Settings
+
+Keybinding suggestion (hyprland):
+  bind = SUPER, I, exec, $SCRIPT_NAME menu
+  bind = SUPER SHIFT, S, exec, $SCRIPT_NAME menu
+EOF
+      ;;
+    *)
+      echo "Unknown command: $1" >&2
+      echo "Try '$SCRIPT_NAME help' for more information." >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

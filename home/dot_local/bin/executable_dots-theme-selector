@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Program: dots-theme-selector
+## Description: GTK theme selector with community tool priority
+##
+## Usage: dots-theme-selector [OPTIONS]
+##
+## Options:
+##   -h, --help          Show this help message
+##
+## Examples:
+##   dots-theme-selector             # Launch theme selector (nwg-look or rofi fallback)
+##
+## Notes:
+##   Priority: nwg-look > rofi minimal selector
+##   Scans ~/.themes and /usr/share/themes for available themes
+
+set -e
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+if command -v nwg-look >/dev/null 2>&1; then
+  exec nwg-look
+fi
+
+# Minimal list-based selector for GTK theme if nwg-look is absent
+THEMES=$( (
+  ls -1 ~/.themes 2>/dev/null
+  ls -1 /usr/share/themes 2>/dev/null
+) | sort -u) || true
+if [[ -z ${THEMES} ]]; then
+  notify-send "Themes" "No themes found in ~/.themes or /usr/share/themes"
+  exit 1
+fi
+
+if ! command -v rofi >/dev/null 2>&1; then
+  echo "Error: rofi not installed" >&2
+  exit 1
+fi
+
+SELECTED=$(echo "$THEMES" | rofi -dmenu -i -p "GTK Theme" -theme ~/.config/rofi/applets.rasi)
+[[ -z $SELECTED ]] && exit 0
+
+gsettings set org.gnome.desktop.interface gtk-theme "$SELECTED" || {
+  notify-send "Theme" "Failed to apply $SELECTED"
+  exit 1
+}
+notify-send "Theme" "Applied $SELECTED"

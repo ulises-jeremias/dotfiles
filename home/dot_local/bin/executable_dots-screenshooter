@@ -29,23 +29,65 @@ EOF
 }
 
 shoot() {
+  local pictures_dir
+  pictures_dir=$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")
+  local timestamp
+  timestamp=$(date +%Y%m%d_%H%M%S)
+  local filename="${pictures_dir}/screenshot_${timestamp}.png"
+
+  # Priority 1: Flameshot (cross-platform GUI with editor)
   if type -p flameshot >/dev/null; then
     if [ -n "$region" ]; then
       flameshot gui
     else
       flameshot full
     fi
-  elif type -p xfce4-screenshooter >/dev/null; then
-    if [ -n "$region" ]; then
-      region_flag="-r"
-    fi
-    xfce4-screenshooter $region_flag
-  else
-    if [ -n "$region" ]; then
-      region_flag="-s"
-    fi
-    scrot $region_flag '%S.png' -e 'mv $f $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png ; feh $$(xdg-user-dir PICTURES)/img-%S-$wx$h.png'
+    return 0
   fi
+
+  # Priority 2: Hyprland native (grimblast)
+  if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]] && type -p grimblast >/dev/null; then
+    if [ -n "$region" ]; then
+      grimblast --notify copysave area "$filename"
+    else
+      grimblast --notify copysave screen "$filename"
+    fi
+    return 0
+  fi
+
+  # Priority 3: Wayland generic (grim + slurp)
+  if [[ -n ${WAYLAND_DISPLAY:-} ]] && type -p grim >/dev/null; then
+    if [ -n "$region" ] && type -p slurp >/dev/null; then
+      grim -g "$(slurp)" "$filename" && notify-send -i "$filename" "Screenshot" "Saved to $filename"
+    else
+      grim "$filename" && notify-send -i "$filename" "Screenshot" "Saved to $filename"
+    fi
+    return 0
+  fi
+
+  # Priority 4: XFCE4 screenshooter (fallback for X11)
+  if type -p xfce4-screenshooter >/dev/null; then
+    if [ -n "$region" ]; then
+      xfce4-screenshooter -r
+    else
+      xfce4-screenshooter -f
+    fi
+    return 0
+  fi
+
+  # Priority 5: scrot (last resort for X11)
+  if type -p scrot >/dev/null; then
+    if [ -n "$region" ]; then
+      scrot -s "$filename" && notify-send -i "$filename" "Screenshot" "Saved to $filename"
+    else
+      scrot "$filename" && notify-send -i "$filename" "Screenshot" "Saved to $filename"
+    fi
+    return 0
+  fi
+
+  # No screenshot tool found
+  notify-send -u critical "Screenshot Error" "No screenshot tool available. Install grimblast, grim, or flameshot."
+  return 1
 }
 
 # Catch command line options

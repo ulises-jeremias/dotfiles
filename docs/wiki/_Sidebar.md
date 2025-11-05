@@ -12,10 +12,6 @@
 #### 🪟 **Window Managers**
 
 - [🪟 Window Managers Overview](Window-Managers)
-- [🔷 i3 Window Manager](i3)
-  - [🪟 Smart Floating](i3-Smart-Floating) 🆕
-- [📦 Openbox](Openbox)
-- [🐭 Xfce4](Xfce4)
 
 #### 🎨 **Applications & Tools**
 
@@ -65,7 +61,6 @@
 
 **Navigation & Interface:**
 
-- [🔷 i3 Workspaces Module](Polybar-Modules-i3)
 - [📋 JGMenu Module](Polybar-Modules-jgmenu)
 - [🛠️ Utility & Helper Modules](Polybar-Modules-utility-helpers)
 
@@ -73,9 +68,18 @@
 
 #### 📜 **Dots Scripts**
 
-- [📜 Dots Scripts Overview](Dots-Scripts)
+- [📜 Dots Scripts Overview](Dots-Scripts) ⭐ **Updated**
 - [💾 Backup System](Dots-Backup)
 - [🚀 Eject System](Dots-Eject)
+
+#### 🎯 **GUI Tools & Launchers**
+
+- [🚀 Application Launcher](Dots-Scripts#launcher--application-launcher) (fuzzel/wofi/rofi)
+- [📋 Clipboard Manager](Dots-Scripts#clipboard--clipboard-manager) (copyq/cliphist)
+- [⚡ Power Menu](Dots-Scripts#power-menu--power-management-menu) (nwg-bar/eww/rofi)
+- [📸 Screenshots](Dots-Scripts#screenshooter--screenshot-tool) (flameshot/grimblast/grim)
+- [🔒 Screen Lock](Dots-Scripts#lockscreen--screen-lock) (swaylock/i3lock)
+- [⚙️ Settings Hub](Dots-Scripts#settings-gui--settings-hub)
 
 ### 🔐 **System & Security**
 
@@ -84,6 +88,7 @@
 - [🛡️ Security](Security)
 - [🖥️ Hardware](Hardware)
 - [🎮 NVIDIA Troubleshooting](Hardware-nvidia-troubleshooting)
+- [⚡ Hybrid GPU Performance](Hybrid-GPU-Performance) 🆕
 - [📶 Network Manager](Network-Manager)
 
 ### 🧪 **Development & Support**
@@ -103,12 +108,10 @@
 - [🏠 Getting Started](Home)
 - [🎨 Rice Themes](Rice-System-Theme-Management)
 - [🧠 Smart Colors](Smart-Colors-System)
-- [📊 Polybar Setup](Polybar)
-- [🔷 i3 Configuration](i3)
 
 **Recently Updated:**
 
+- [📜 Dots Scripts](Dots-Scripts) ⭐ **NEW - Complete tool documentation**
+- [⚡ Hybrid GPU Performance](Hybrid-GPU-Performance) 🆕
 - [🧠 Smart Colors System](Smart-Colors-System) ⭐
-- [🏗️ Polybar Structure](Polybar-Configuration-Structure) ⭐
-- [🪟 i3 Smart Floating](i3-Smart-Floating) 🆕
 - [📅 Changelog 2025](Changelog-2025) 🆕

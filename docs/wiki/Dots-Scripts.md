@@ -35,36 +35,291 @@ dots <script>   # Run a specific script (with optional flags)
 
 > 📝 This list may evolve. To check the current list on your system, run: `dots --list`
 
-- `brightness` – Adjust screen brightness via `xbacklight`, `brightnessctl`, `blight`, or `xrandr`
-- `check-network` – Check if you’re connected to the internet
-- `checkupdates` – Query available package updates
+### 🎯 Core User Interface Tools
+
+#### `launcher` – Application Launcher
+
+**Purpose**: Unified application launcher with intelligent fallback chain  
+**Primary Tool**: fuzzel (fast, minimal Wayland launcher)  
+**Fallback Chain**: `fuzzel` → `wofi` → `rofi` → `minimal prompt`  
+**Usage Examples**:
+
+```bash
+dots launcher                    # Auto-detect best launcher
+dots launcher --backend=fuzzel   # Force fuzzel
+dots launcher --backend=rofi     # Force rofi
+dots launcher --list             # Show available launchers
+```
+
+#### `clipboard` – Clipboard Manager
+
+**Purpose**: Clipboard history and management  
+**Primary Tool**: copyq (feature-rich GUI clipboard manager)  
+**Fallback Chain (Wayland)**: `copyq` → `cliphist`+(fuzzel/wofi/rofi) → `rofi greenclip` → `minimal`  
+**Fallback Chain (X11)**: `copyq` → `rofi greenclip` → `minimal`  
+**Usage Examples**:
+
+```bash
+dots clipboard                   # Auto-detect best manager
+dots clipboard --backend=copyq   # Force copyq GUI
+dots clipboard --backend=cliphist # Force cliphist (Wayland only)
+```
+
+#### `power-menu` – Power Management Menu
+
+**Purpose**: System power options (lock, sleep, logout, reboot, shutdown)  
+**Primary Tool**: nwg-bar (modern Wayland power menu)  
+**Fallback Chain**: `nwg-bar` → `eww` → `rofi`  
+**Usage Examples**:
+
+```bash
+dots power-menu                  # Auto-detect best menu
+dots power-menu --mode=nwg-bar   # Force nwg-bar
+dots power-menu --mode=rofi      # Force rofi menu
+```
+
+**Note**: wlogout is installed but disabled (styling issues)
+
+#### `settings-gui` – Settings Hub
+
+**Purpose**: Central GUI for system settings  
+**Categories**:
+
+- **GTK Themes**: `nwg-look` → `lxappearance` → rofi menu
+- **Display**: `nwg-displays` (Wayland) / `arandr` (X11) → manual config
+- **Network**: `nm-connection-editor` → `nmtui`
+- **Audio**: `pavucontrol` → `alsamixer`
+- **Keyboard**: rofi menu with Hyprland integration
+- **Power**: `hypridle` config editor
+- **System Info**: `fastfetch` → `neofetch`
+
+**Usage Examples**:
+
+```bash
+dots settings-gui                # Show all options
+# Opens rofi menu to select: Themes, Display, Network, Audio, etc.
+```
+
+#### `performance-mode` – CPU Performance Profiles
+
+**Purpose**: Switch between performance/balanced/power-saver modes  
+**Primary Tool**: powerprofilesctl (systemd power profiles)  
+**GUI Option**: auto-cpufreq-gtk (optional graphical monitor)  
+**Fallback Chain**: `auto-cpufreq-gtk` (with --gui) → `powerprofilesctl` menu (fuzzel/wofi/rofi)  
+**Usage Examples**:
+
+```bash
+dots performance-mode            # Show profile menu
+dots performance-mode --gui      # Open auto-cpufreq GUI
+dots performance-mode --backend=rofi  # Force rofi menu
+```
+
+#### `screenshooter` – Screenshot Tool
+
+**Purpose**: Capture screenshots (fullscreen or region)  
+**Primary Tool**: flameshot (cross-platform with editor)  
+**Fallback Chain**: `flameshot` → `grimblast` (Hyprland) → `grim`+`slurp` (Wayland) → `xfce4-screenshooter` (X11) → `scrot` (X11)  
+**Usage Examples**:
+
+```bash
+dots screenshooter --fullscreen  # Capture entire screen
+dots screenshooter --region      # Select region to capture
+```
+
+#### `lockscreen` – Screen Lock
+
+**Purpose**: Lock screen with blur/dim effects  
+**Primary Tool**: swaylock-effects (Wayland)  
+**Fallback**: i3lock (X11)  
+**Effects**: dim, blur, dimblur, pixel  
+**Usage Examples**:
+
+```bash
+dots lockscreen --lock           # Lock with default effect
+dots lockscreen --lock-effect=blur  # Lock with blur
+dots lockscreen --update=/path/to/wallpaper  # Update lockscreen image
+dots lockscreen --wall           # Set wallpaper (uses hyprpaper)
+```
+
+#### `theme-selector` – GTK Theme Selector
+
+**Purpose**: Choose GTK themes visually  
+**Primary Tool**: nwg-look (modern GTK theme switcher)  
+**Fallback**: rofi menu with installed themes  
+**Usage Examples**:
+
+```bash
+dots theme-selector              # Open theme GUI or menu
+```
+
+### 🎨 Theming & Customization
+
+#### `smart-colors` – Intelligent Color Analysis
+
+**Purpose**: Theme-adaptive color palette analysis and semantic color generation  
+**Features**:
+
+- Automatic light/dark theme detection
+- Smart foreground optimization for readability
+- Semantic color mapping (error, success, warning, info, accent)
+- Multi-format export (shell, polybar, EWW, i3, mako, waybar, hyprland)
+**Usage Examples**:
+
+```bash
+dots smart-colors                # Analyze current palette
+dots smart-colors --analyze      # Detailed analysis
+dots smart-colors --concept=error  # Get error color
+dots smart-colors --export --format=eww  # Export EWW SCSS
+```
+
+#### `gtk-theme` – GTK Theme Manager
+
+**Purpose**: Intelligent GTK theme management integrated with rice system  
+**Features**:
+
+- Rice-aware theme application
+- Auto-detect light/dark themes from wallpaper
+- List and apply themes interactively
+**Usage Examples**:
+
+```bash
+dots gtk-theme list              # Show installed themes
+dots gtk-theme current           # Show active theme
+dots gtk-theme apply Orchis-Dark # Apply specific theme
+dots gtk-theme auto              # Auto-detect optimal theme
+dots gtk-theme rice space        # Apply rice-specific theme
+```
+
+#### `rice` – Rice Theme Manager
+
+**Purpose**: Switch between complete desktop themes (wallpaper, colors, configs)  
+**Features**:
+
+- Modular rice system in `~/.local/share/dots/rices/`
+- Each rice includes: wallpaper, color palette, module configs
+- Integrated with smart-colors for automatic color generation
+**Usage Examples**:
+
+```bash
+dots rice list                   # Show all available rices
+dots rice set gruvbox-dark       # Apply gruvbox-dark rice
+dots rice info space             # Show rice details
+```
+
+#### `wal-reload` – Theme Refresh
+
+**Purpose**: Complete theme refresh after wallpaper changes  
+**Automatic Process**:
+
+1. Generate pywal colors from wallpaper
+2. Analyze palette with smart-colors algorithm
+3. Apply optimized colors to all applications:
+   - EWW: Enhanced `colors.scss` with semantic variables
+   - Polybar: Smart environment variables + auto-restart
+   - i3: Generated `colors-smart.conf`
+   - Waybar: `colors-waybar.css`
+   - Mako: `colors-mako.conf`
+   - Hyprland: `colors-hyprland.conf`
+   - Scripts: Weather, player, jgmenu
+
+**Usage**: Usually called automatically by wpg/wallpaper changes
+
+```bash
+dots wal-reload                  # Manual theme refresh
+```
+
+### 🖥️ System Utilities
+
+#### `brightness` – Screen Brightness Control
+
+**Purpose**: Adjust display brightness  
+**Fallback Chain**: `brightnessctl` → `blight` → `xbacklight` → `xrandr`  
+**Usage Examples**:
+
+```bash
+dots brightness                  # Show current brightness
+dots brightness --list           # List displays
+dots brightness --temp           # Show color temperature
+dots brightness eDP-1 + 10       # Increase by 10%
+dots brightness HDMI-1 set 50    # Set to 50%
+```
+
+#### `keyboard-layout` – Keyboard Layout Switcher
+
+**Purpose**: Switch keyboard layouts with visual menu  
+**Supported Layouts**: 13 layouts (us, es, fr, de, ru, ar, etc.)  
+**Session Aware**: Hyprland (hyprctl) / X11 (setxkbmap)  
+**Usage Examples**:
+
+```bash
+dots keyboard-layout --menu      # Show layout menu
+dots keyboard-layout --current   # Show current layout
+dots keyboard-layout --apply=es  # Switch to Spanish
+dots keyboard-layout --list      # List all layouts
+```
+
+#### `battery-monitor` – Battery Alert Daemon
+
+**Purpose**: Monitor battery and send low/critical alerts  
+**Primary Tool**: poweralertd (if available)  
+**Fallback**: Built-in acpi/upower monitoring  
+**Usage Examples**:
+
+```bash
+dots battery-monitor --daemon    # Run as background daemon
+dots battery-monitor --low=20 --crit=10  # Custom thresholds
+dots battery-monitor --interval=60  # Check every 60s
+```
+
+#### `file-manager` – File Manager Launcher
+
+**Purpose**: Launch preferred file manager  
+**Fallback Chain**: `thunar` → `nautilus` → `nemo` → `pcmanfm-qt` → `dolphin` → `pcmanfm` → `caja`  
+**Usage Examples**:
+
+```bash
+dots file-manager                # Open default file manager
+dots file-manager --list         # Show available file managers
+dots file-manager --set=nautilus # Set preferred manager
+dots file-manager --path=/home   # Open specific path
+```
+
+#### `night-mode` – Blue Light Filter
+
+**Purpose**: Reduce blue light for night viewing  
+**Fallback Chain**: `redshift` → `gammastep` (Wayland) → `wlsunset` (Wayland) → `xrandr` (X11)  
+**Usage Examples**:
+
+```bash
+dots night-mode toggle           # Toggle night mode on/off
+dots night-mode status           # Check current status
+```
+
+### 🔧 System Management
+
+- `check-network` – Verify internet connectivity
+- `checkupdates` – Query available package updates  
 - `config-manager` – Manage configuration snapshots and backups
 - `dependencies` – Check and install required system dependencies
-- `feh-blur` – Blur the background when using feh to set wallpaper
-- `git-notify` – Send notifications when git commits are made
-- `gtk-theme` – **[NEW]** Intelligent GTK theme management with rice integration and auto-detection
-- `i3-resurrect-rofi` – Manage i3-resurrect workspace profiles via Rofi menu
-- `jgmenu` – Launch jgmenu application launcher
-- `microphone` – Monitor and toggle microphone mute status with visual indicators
-- `monitor` – Get the name of the currently active monitor
-- `next-workspace` – Switch to the next existing i3 workspace
-- `night-mode` – Toggle night mode/blue light filter
-- `performance` – Monitor system performance and run benchmarks
-- `popup-calendar` – Display a calendar in a popup window
-- `rofi-bluetooth` – Manage Bluetooth device connections via Rofi menu
-- `rofi-randr` – Display resolution management via Rofi menu
-- `rofi-rice-selector` – Select and apply desktop rice themes via Rofi menu
-- `rofi-run` – Enhanced Rofi application and command launcher
-- `rofi-xrandr` – Advanced display configuration with charts via Rofi
-- `screenshooter` – Take screenshots with various options and formats
-- `scripts` – Interactive menu to browse and launch available dots scripts
-- `security-audit` – Run comprehensive security audits and apply security fixes
-- `smart-colors` – **[NEW]** Analyze color palettes and suggest optimal semantic colors
-- `sysupdate` – Perform comprehensive system updates
-- `toggle` – Toggle state of applications like polybar, compositor, notifications
-- `updates` – Check and display available package updates with notifications
-- `wal-reload` – **[ENHANCED]** Reload pywal colorscheme and apply smart colors to i3, rofi, eww, polybar, lockscreen
-- `weather-info` – Display current weather information and forecasts
+- `security-audit` – Comprehensive security audits with auto-fixes
+- `sysupdate` – Perform full system updates (pacman/yay/flatpak)
+- `toggle` – Toggle applications (polybar, compositor, notifications)
+- `updates` – Check updates with notifications
+
+### 🎵 Media & Extras
+
+- `microphone` – Monitor and toggle mic mute with visual indicators
+- `popup-calendar` – Display calendar in popup window
+- `weather-info` – Current weather and forecasts
+- `git-notify` – Notifications on git commits
+
+### 🗂️ Legacy Tools
+
+- `rofi-run` – Legacy wrapper (delegates to `dots-launcher`)
+- `rofi-bluetooth` – Bluetooth management via Rofi (use `dots settings-gui` instead)
+- `rofi-randr` – Display config via Rofi (use `dots settings-gui` instead)
+- `rofi-rice-selector` – Rice selector (use `dots rice` instead)
+- `rofi-xrandr` – Advanced display config (use `nwg-displays` or `arandr`)
 
 ---
 

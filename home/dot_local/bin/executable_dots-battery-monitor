@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Program: dots-battery-monitor
+## Description: Battery monitoring daemon with threshold notifications
+##
+## Usage: dots-battery-monitor [OPTIONS]
+##
+## Options:
+##       --low=PERCENT       Low battery threshold (default: 20)
+##       --crit=PERCENT      Critical battery threshold (default: 10)
+##       --interval=SECONDS  Polling interval in seconds (default: 120)
+##   -d, --daemon            Run as background daemon (default: foreground loop)
+##   -h, --help              Show this help message
+##
+## Examples:
+##   dots-battery-monitor                          # Start with defaults
+##   dots-battery-monitor --low=25 --crit=15       # Custom thresholds
+##   dots-battery-monitor --interval=60 --daemon   # 60s polling in background
+##
+## Notes:
+##   Uses poweralertd if available; otherwise falls back to polling loop
+##   Notifications sent via notify-send (low/normal/critical urgency)
+
+set -e
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+THRESHOLDS_LOW=${low:-20}
+THRESHOLDS_CRIT=${crit:-10}
+INTERVAL=${interval:-120}
+
+get_percentage() {
+  if command -v acpi >/dev/null 2>&1; then
+    acpi -b | grep -Eo '[0-9]+%' | head -1 | tr -d '%'
+  elif command -v upower >/dev/null 2>&1; then
+    local bat
+    bat=$(upower -e | grep battery | head -1 || true)
+    [[ -z $bat ]] && echo 100 && return 0
+    upower -i "$bat" | awk '/percentage/ {gsub("%","",$2); print $2; exit}'
+  else
+    echo 100
+  fi
+}
+
+main() {
+  # Check for poweralertd first
+  if command -v poweralertd >/dev/null 2>&1; then
+    notify-send "Battery Monitor" "poweralertd active (wrapper idle)" -u low
+    exit 0
+  fi
+
+  # Background daemon mode
+  if [[ ${daemon:-no} == yes ]]; then
+    nohup "$0" --low="$THRESHOLDS_LOW" --crit="$THRESHOLDS_CRIT" --interval="$INTERVAL" \
+      >/dev/null 2>&1 &
+    exit 0
+  fi
+
+  # Polling loop (foreground)
+  first_run=true
+  while true; do
+    pct=$(get_percentage)
+    if ((pct <= THRESHOLDS_CRIT)); then
+      notify-send -u critical "Battery Critical" "${pct}% remaining" || true
+    elif ((pct <= THRESHOLDS_LOW)); then
+      notify-send -u normal "Battery Low" "${pct}% remaining" || true
+    else
+      if $first_run; then
+        notify-send -u low "Battery" "${pct}%" || true
+      fi
+    fi
+    first_run=false
+    sleep "$INTERVAL"
+  done
+}
+
+main "$@"

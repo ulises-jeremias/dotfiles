@@ -5,7 +5,7 @@ include "/home/user/.gtkrc-2.0.mine"
 gtk-theme-name="Orchis-Light-Compact"
 gtk-icon-theme-name="Numix-Circle"
 gtk-font-name="sans 11"
-gtk-cursor-theme-name="Adwaita"
+gtk-cursor-theme-name="elementary"
 gtk-cursor-theme-size=24
 gtk-toolbar-style=GTK_TOOLBAR_ICONS
 gtk-toolbar-icon-size=GTK_ICON_SIZE_SMALL_TOOLBAR

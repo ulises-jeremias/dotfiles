@@ -7,13 +7,13 @@
 ## Returns count of unread GitHub notifications
 
 # Check if gh CLI is installed
-if ! command -v gh &> /dev/null; then
+if ! command -v gh &>/dev/null; then
   echo "0"
   exit 0
 fi
 
 # Check if authenticated
-if ! gh auth status &> /dev/null; then
+if ! gh auth status &>/dev/null; then
   echo "0"
   exit 0
 fi
@@ -22,7 +22,7 @@ fi
 count=$(gh api notifications --jq 'length' 2>/dev/null || echo "0")
 
 # Return count
-if [[ "${count}" -gt 0 ]]; then
+if [[ ${count} -gt 0 ]]; then
   echo "${count}"
 else
   echo "0"

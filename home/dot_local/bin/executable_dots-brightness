@@ -3,11 +3,31 @@
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
-## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+## Brightness control using xbacklight, brightnessctl, blight, or xrandr
 ##
-## Control the brightness of the screen using different backends such as xbacklight, brightnessctl, blight, or xrandr
+## Usage:
+##   @script.name DISPLAY OP [STEP] [OPTIONS]
+##
+## Options:
+##   -h, --help          Show this help
+##       --temp          Adjust color temperature instead of brightness
+##       --list          List all connected displays
+##
+## Arguments:
+##   DISPLAY             Display name (use "*" for focused display)
+##   OP                  Operation: +, -, or =
+##   STEP                Step size or target value (default: 0.1 for +/-, 1.0 for =)
+##
+## Examples:
+##   @script.name "*" + 0.1         # Increase brightness by 10%
+##   @script.name "*" - 0.05        # Decrease brightness by 5%
+##   @script.name eDP-1 = 0.8       # Set brightness to 80%
+##   @script.name "*" + 0.1 --temp  # Increase color temperature
+##   @script.name --list            # Show all displays
 
 set -e
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 if ! command -v bc &>/dev/null; then
   echo "bc command could not be found, it's needed to run this script."
@@ -33,7 +53,7 @@ GAMMA_VALS=('1.0:0.7:0.4' # 3000K
 
 get_gamma_index() {
   for i in "${!GAMMA_VALS[@]}"; do
-    [[ "${GAMMA_VALS[$i]}" = "$1" ]] && echo "$i" && break
+    [[ ${GAMMA_VALS[$i]} == "$1" ]] && echo "$i" && break
   done
 }
 
@@ -90,21 +110,6 @@ list_displays() {
   echo "$displist" | column -t | sed 's/^/  /'
 }
 
-display_usage() {
-  script_name=$(basename "$0")
-  echo "Usage: $script_name display op [stepsize|value] [--temp]"
-  echo
-  echo 'arguments:'
-  echo '  op:             '-' to decrease or '+' to increase brightness'
-  echo '                  '=' to set brightness to a specific value'
-  echo '  display:        name of a connected display to adjust. Will update focused display if argument is "*"'
-  echo '  stepsize:       size of adjustment step (default 0.1)'
-  echo '  value:          value to set (default 1.0 for brightness, 0.6 for color temperature)'
-  echo '  --temp:         adjusts color temperature instead of brightness'
-  echo
-  list_displays
-}
-
 exec_op() {
   if [ "$1" = '+' ]; then
     NEWVAL=$(echo "$3 + $2" | bc)
@@ -122,26 +127,37 @@ exec_op() {
   echo "$NEWVAL"
 }
 
-if [[ "$2" = '+' || "$2" = '-' || "$2" = '=' ]] && [[ -n "$1" ]]; then
-  OP="$2"
-  DISP="$1"
-  if [ "${DISP}" = "*" ]; then
-    # use focused monitor instead
-    DISP="$(dots monitor)"
-  fi
-  shift
-  shift
-else
-  display_usage
+# Handle --list flag
+if [[ ${list:-no} == yes ]]; then
+  list_displays
+  exit 0
+fi
+
+# Parse positional arguments
+if [[ $# -lt 2 ]]; then
+  echo "Error: Missing arguments. Use --help for usage." >&2
   exit 1
 fi
 
-if [[ "$1" =~ ^[0-9]+(.[0-9]+)?$ ]]; then
-  OPVAL=$1
-  shift
+DISP="$1"
+OP="$2"
+
+if [ "${DISP}" = "*" ]; then
+  # use focused monitor instead
+  DISP="$(dots monitor)"
+fi
+
+if [[ ! $OP =~ ^[+\-=]$ ]]; then
+  echo "Error: Operation must be +, -, or =" >&2
+  exit 1
+fi
+
+# Get step/value (third positional arg or default)
+if [[ $# -ge 3 && $3 =~ ^[0-9]+(.[0-9]+)?$ ]]; then
+  OPVAL=$3
 else
-  if [[ "$OP" = '=' ]]; then
-    if [[ "$1" = '--temp' ]]; then
+  if [[ $OP == '=' ]]; then
+    if [[ ${temp:-no} == yes ]]; then
       OPVAL='0.6'
     else
       OPVAL='1.0'
@@ -153,7 +169,7 @@ fi
 
 CURRBRIGHT=$(get_brightness "$DISP")
 echo "$CURRBRIGHT"
-if [[ ! "$CURRBRIGHT" =~ ^[0-9]+.[0-9]+$ ]]; then
+if [[ ! $CURRBRIGHT =~ ^[0-9]+.[0-9]+$ ]]; then
   echo "Error: Selected display $DISP has no brightness value!"
   echo
   list_displays
@@ -161,7 +177,7 @@ if [[ ! "$CURRBRIGHT" =~ ^[0-9]+.[0-9]+$ ]]; then
 fi
 
 CURRGAMMA=$(get_gamma "$DISP")
-if [[ ! "$CURRGAMMA" =~ ^[0-9].[0-9]:[0-9].[0-9]:[0-9].[0-9]$ ]]; then
+if [[ ! $CURRGAMMA =~ ^[0-9].[0-9]:[0-9].[0-9]:[0-9].[0-9]$ ]]; then
   echo "Error: Selected display $DISP has no gamma value!"
   echo
   list_displays
@@ -171,7 +187,7 @@ fi
 NEWBRIGHT="$CURRBRIGHT"
 NEWGAMMA="$CURRGAMMA"
 
-if [ "$1" = '--temp' ]; then
+if [[ ${temp:-no} == yes ]]; then
   CURRTEMP=$(get_temp_for_gamma "$CURRGAMMA")
   NEWTEMP=$(exec_op "$OP" "$OPVAL" "$CURRTEMP")
   NEWGAMMA=$(get_gamma_for_temp "$NEWTEMP")
@@ -192,6 +208,6 @@ else
   xrandr --output "$DISP" --brightness "$NEWBRIGHT" --gamma "$NEWGAMMA"
 fi
 
-if [ "$1" = '--temp' ]; then
+if [[ ${temp:-no} == yes ]]; then
   xrandr --output "$DISP" --gamma "$NEWGAMMA"
 fi

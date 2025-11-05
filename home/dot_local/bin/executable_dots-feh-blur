@@ -275,67 +275,67 @@ show_help() {
 }
 
 parse_opts() {
-  while [[ "$1" =~ ^- ]] && [ ! "$1" == "--" ]; do
+  while [[ $1 =~ ^- ]] && [ ! "$1" == "--" ]; do
     case $1 in
-    -h | --help)
-      MODE=noop
-      show_help
-      ;;
-    -V | --version)
-      MODE=noop
-      echo version
-      ;;
-    -b | --blur)
-      shift
-      BLUR_STRENGTH="$1"
-      ;;
-    -c | --uncontrast)
-      REDUCE_CONTRAST=1
-      ;;
-    --save-image)
-      shift
-      BLUR_IMAGE_SAVE_LOCATION="$1"
-      ;;
-    --no-animate)
-      ANIMATE_FADE=0
-      ;;
-    -D | --dim | --darken)
-      shift
-      DIM_COLOR="#000"
-      DIM_STRENGTH="$1"
-      ;;
-    --lighten)
-      shift
-      DIM_COLOR="#fff"
-      DIM_STRENGTH="$1"
-      ;;
-    --tint-color)
-      shift
-      DIM_COLOR="$1"
-      ;;
-    --tint-strength)
-      shift
-      DIM_STRENGTH="$1"
-      ;;
-    -d | --daemon)
-      MODE=background
-      ;;
-    -s | --stop)
-      MODE=stop
-      ;;
-    -t | --toggle)
-      if [ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]; then
-        MODE=stop
-      else
+      -h | --help)
+        MODE=noop
+        show_help
+        ;;
+      -V | --version)
+        MODE=noop
+        echo version
+        ;;
+      -b | --blur)
+        shift
+        BLUR_STRENGTH="$1"
+        ;;
+      -c | --uncontrast)
+        REDUCE_CONTRAST=1
+        ;;
+      --save-image)
+        shift
+        BLUR_IMAGE_SAVE_LOCATION="$1"
+        ;;
+      --no-animate)
+        ANIMATE_FADE=0
+        ;;
+      -D | --dim | --darken)
+        shift
+        DIM_COLOR="#000"
+        DIM_STRENGTH="$1"
+        ;;
+      --lighten)
+        shift
+        DIM_COLOR="#fff"
+        DIM_STRENGTH="$1"
+        ;;
+      --tint-color)
+        shift
+        DIM_COLOR="$1"
+        ;;
+      --tint-strength)
+        shift
+        DIM_STRENGTH="$1"
+        ;;
+      -d | --daemon)
         MODE=background
-      fi
-      ;;
-    -q | --quiet)
-      VERBOSE=0
-      ;;
-    -v | --verbose)
-      VERBOSE=2
-      ;;
+        ;;
+      -s | --stop)
+        MODE=stop
+        ;;
+      -t | --toggle)
+        if [ "$(pgrep -fcl "$PROC_EXPR")" -gt 1 ]; then
+          MODE=stop
+        else
+          MODE=background
+        fi
+        ;;
+      -q | --quiet)
+        VERBOSE=0
+        ;;
+      -v | --verbose)
+        VERBOSE=2
+        ;;
     esac
     shift
   done
@@ -379,30 +379,30 @@ main() {
   parse_opts "$@"
 
   case "$MODE" in
-  background)
-    kill_other_instances
-    print_usage
-    "$0" --worker --quiet &
-    disown
+    background)
+      kill_other_instances
+      print_usage
+      "$0" --worker --quiet &
+      disown
 
-    head "Background mode"
-    info "$BIN started in background mode!"
-    info "To stop, use '$BIN --stop'."
-    ;;
+      head "Background mode"
+      info "$BIN started in background mode!"
+      info "To stop, use '$BIN --stop'."
+      ;;
 
-  stop)
-    kill_other_instances
-    ;;
+    stop)
+      kill_other_instances
+      ;;
 
-  noop)
-    exit
-    ;;
+    noop)
+      exit
+      ;;
 
-  *)
-    kill_other_instances
-    print_usage
-    run_loop
-    ;;
+    *)
+      kill_other_instances
+      print_usage
+      run_loop
+      ;;
   esac
 }
 

@@ -7,6 +7,7 @@ This section contains documentation related to hardware configuration and troubl
 ### Graphics
 
 - [NVIDIA Troubleshooting Guide](./Hardware-nvidia-troubleshooting) - Comprehensive guide for NVIDIA driver installation, configuration, and troubleshooting on Arch Linux.
+- [Hybrid GPU Performance Guide](./Hybrid-GPU-Performance) - Performance optimization for laptops with Intel iGPU + NVIDIA dGPU, including Reverse PRIME configuration and power management.
 
 ## Future Additions
 

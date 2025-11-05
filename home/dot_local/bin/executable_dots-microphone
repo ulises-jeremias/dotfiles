@@ -39,29 +39,29 @@ parse_cmd_args() {
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
-    --muted-color)
-      muted_color=$2
-      shift 2
-      ;;
-    --unmuted-color)
-      unmuted_color=$2
-      shift 2
-      ;;
-    --no-unmuted)
-      no_unmuted=true
-      shift 2
-      ;;
-    -t | --toggle)
-      exec_toggle=true
-      shift 2
-      ;;
-    -h | --help)
-      show_help
-      exit
-      ;;
-    *)
-      break
-      ;;
+      --muted-color)
+        muted_color=$2
+        shift 2
+        ;;
+      --unmuted-color)
+        unmuted_color=$2
+        shift 2
+        ;;
+      --no-unmuted)
+        no_unmuted=true
+        shift 2
+        ;;
+      -t | --toggle)
+        exec_toggle=true
+        shift 2
+        ;;
+      -h | --help)
+        show_help
+        exit
+        ;;
+      *)
+        break
+        ;;
     esac
   done
 }
@@ -76,7 +76,7 @@ get_default_source() {
 status() {
   DEFAULT_SOURCE=$(get_default_source)
   MUTED=$(wpctl get-volume "$DEFAULT_SOURCE" | grep -oE '\[MUTED\]')
-  if [[ -n "$MUTED" ]]; then
+  if [[ -n $MUTED ]]; then
     echo -e "${muted_color}${reset}" # Muted icon
   else
     [[ ${no_unmuted} != true ]] && echo -e "${unmuted_color}${reset}" # Unmuted icon
@@ -99,7 +99,7 @@ toggle() {
 
 parse_cmd_args "$@"
 
-if [[ ${exec_toggle} = true ]]; then
+if [[ ${exec_toggle} == true ]]; then
   toggle
   exit
 fi

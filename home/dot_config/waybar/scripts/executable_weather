@@ -7,7 +7,7 @@
 ## Returns current weather information with icon and temperature
 
 # Check if dots-weather-info command exists
-if ! command -v dots-weather-info &> /dev/null; then
+if ! command -v dots-weather-info &>/dev/null; then
   echo ""
   exit 0
 fi
@@ -17,7 +17,7 @@ weather_temp=$(dots-weather-info --temp 2>/dev/null)
 weather_icon=$(dots-weather-info --icon 2>/dev/null)
 
 # Return empty if weather info is not available
-if [[ -z "${weather_temp}" ]] || [[ -z "${weather_icon}" ]]; then
+if [[ -z ${weather_temp} ]] || [[ -z ${weather_icon} ]]; then
   echo ""
   exit 0
 fi

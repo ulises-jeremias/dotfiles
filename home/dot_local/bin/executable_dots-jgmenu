@@ -13,72 +13,72 @@ target_config_file="$HOME/.config/jgmenu/jgmenurc"
 
 # Function to get smart colors with proper fallbacks
 get_smart_color() {
-    local concept="$1"
-    local fallback_xrdb="${2:-background}"
+  local concept="$1"
+  local fallback_xrdb="${2:-background}"
 
-    # Load smart colors from shell variables file if available
-    local smart_colors_file="$HOME/.cache/dots/smart-colors/colors.sh"
-    if [[ -f "$smart_colors_file" ]]; then
-        source "$smart_colors_file"
+  # Load smart colors from shell variables file if available
+  local smart_colors_file="$HOME/.cache/dots/smart-colors/colors.sh"
+  if [[ -f $smart_colors_file ]]; then
+    source "$smart_colors_file"
 
-        # Map concepts to shell variables
-        case "$concept" in
-            "BACKGROUND")
-                echo "${color_black:-$(xrdb -get "background" 2>/dev/null || echo "#1b1f26")}"
-                ;;
-            "FOREGROUND")
-                echo "${color_white:-$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")}"
-                ;;
-            "ACCENT")
-                echo "${color_accent:-$(xrdb -get "color13" 2>/dev/null || echo "#8fa1b3")}"
-                ;;
-            "INFO")
-                echo "${color_info:-$(xrdb -get "color12" 2>/dev/null || echo "#919ba0")}"
-                ;;
-            "ERROR")
-                echo "${color_error:-$(xrdb -get "color9" 2>/dev/null || echo "#ff6666")}"
-                ;;
-            "SUCCESS")
-                echo "${color_success:-$(xrdb -get "color10" 2>/dev/null || echo "#66ff66")}"
-                ;;
-            "WARNING")
-                echo "${color_warning:-$(xrdb -get "color11" 2>/dev/null || echo "#ffff66")}"
-                ;;
-            *)
-                xrdb -get "$fallback_xrdb" 2>/dev/null || echo "#ffffff"
-                ;;
-        esac
-    else
-        # Fallback to xrdb colors if smart colors file doesn't exist
+    # Map concepts to shell variables
+    case "$concept" in
+      "BACKGROUND")
+        echo "${color_black:-$(xrdb -get "background" 2>/dev/null || echo "#1b1f26")}"
+        ;;
+      "FOREGROUND")
+        echo "${color_white:-$(xrdb -get "foreground" 2>/dev/null || echo "#ffffff")}"
+        ;;
+      "ACCENT")
+        echo "${color_accent:-$(xrdb -get "color13" 2>/dev/null || echo "#8fa1b3")}"
+        ;;
+      "INFO")
+        echo "${color_info:-$(xrdb -get "color12" 2>/dev/null || echo "#919ba0")}"
+        ;;
+      "ERROR")
+        echo "${color_error:-$(xrdb -get "color9" 2>/dev/null || echo "#ff6666")}"
+        ;;
+      "SUCCESS")
+        echo "${color_success:-$(xrdb -get "color10" 2>/dev/null || echo "#66ff66")}"
+        ;;
+      "WARNING")
+        echo "${color_warning:-$(xrdb -get "color11" 2>/dev/null || echo "#ffff66")}"
+        ;;
+      *)
         xrdb -get "$fallback_xrdb" 2>/dev/null || echo "#ffffff"
-    fi
+        ;;
+    esac
+  else
+    # Fallback to xrdb colors if smart colors file doesn't exist
+    xrdb -get "$fallback_xrdb" 2>/dev/null || echo "#ffffff"
+  fi
 }
 
 # Function to get color (legacy wrapper)
 get_xrdb_color() {
-    get_smart_color "SMART_FOREGROUND" "$1"
+  get_smart_color "SMART_FOREGROUND" "$1"
 }
 
 # Function to update color placeholders with smart colors
 update_color() {
-    local color_name="$1"
-    local smart_placeholder="$2"
-    local opacity_transparency="${3:-100}"
+  local color_name="$1"
+  local smart_placeholder="$2"
+  local opacity_transparency="${3:-100}"
 
-    [ -z "$smart_placeholder" ] && return # Skip if placeholder is empty
+  [ -z "$smart_placeholder" ] && return # Skip if placeholder is empty
 
-    # Get the smart color for this placeholder
-    local color_value=$(get_smart_color "$smart_placeholder")
+  # Get the smart color for this placeholder
+  local color_value=$(get_smart_color "$smart_placeholder")
 
-    # Update the color in the config file, preserving opacity/transparency
-    sed -i "s|^$color_name.*= SMART_.*|$color_name = $color_value $opacity_transparency|" "$target_config_file"
+  # Update the color in the config file, preserving opacity/transparency
+  sed -i "s|^$color_name.*= SMART_.*|$color_name = $color_value $opacity_transparency|" "$target_config_file"
 }
 
 # Ensure the original configuration file exists
 if [ ! -f "$original_config_file" ]; then
-    echo "Original configuration file $original_config_file does not exist."
-    notify-send "$0: Original configuration file $original_config_file does not exist."
-    exit 1
+  echo "Original configuration file $original_config_file does not exist."
+  notify-send "$0: Original configuration file $original_config_file does not exist."
+  exit 1
 fi
 
 # Copy the original configuration file to the temporary location

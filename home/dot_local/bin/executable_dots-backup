@@ -31,106 +31,105 @@ backup_dir=${backup_dir:-"${dotfiles_dir}/backup"}
 backup_name=${backup_name:-"dotfiles_backup"}
 
 if [ -n "${register_cron}" ]; then
-    if ! type -t crontab >/dev/null 2>&1; then
-        echo "crontab is not installed, please install it."
-        notify-send "crontab is not installed, please install it."
-        exit 1
-    fi
+  if ! type -t crontab >/dev/null 2>&1; then
+    echo "crontab is not installed, please install it."
+    notify-send "crontab is not installed, please install it."
+    exit 1
+  fi
 
-    echo "Registering cron job..."
+  echo "Registering cron job..."
 
-    read -rp "Minute (range: 0-59): " min
-    read -rp "Hour (range: 0-23): " hour
-    read -rp "Day of the Month (range: 1-31): " day
-    read -rp "Month of the Year (range: 1-12): " month
-    read -rp "Day of the Week (range: 1-7, 1 standing for Monday): " week
+  read -rp "Minute (range: 0-59): " min
+  read -rp "Hour (range: 0-23): " hour
+  read -rp "Day of the Month (range: 1-31): " day
+  read -rp "Month of the Year (range: 1-12): " month
+  read -rp "Day of the Week (range: 1-7, 1 standing for Monday): " week
 
-    command="bash $(dirname "$0")/dots-backup --backup-dir ${backup_dir} --backup-name ${backup_name} --dotfiles-dir ${dotfiles_dir}"
+  command="bash $(dirname "$0")/dots-backup --backup-dir ${backup_dir} --backup-name ${backup_name} --dotfiles-dir ${dotfiles_dir}"
 
-    crontab -l > /tmp/cron.tr
-    echo "${min} ${hour} ${day} ${month} ${week} ${command}" >> /tmp/cron.tr
+  crontab -l >/tmp/cron.tr
+  echo "${min} ${hour} ${day} ${month} ${week} ${command}" >>/tmp/cron.tr
 
-    crontab /tmp/cron.tr
+  crontab /tmp/cron.tr
 
-    echo ""
-    echo "Current crontab: "
-    crontab -l
-    echo ""
+  echo ""
+  echo "Current crontab: "
+  crontab -l
+  echo ""
 
-    exit 0
+  exit 0
 fi
 
 if [ -n "${unregister_cron}" ]; then
-    if ! type -t crontab >/dev/null 2>&1; then
-        echo "crontab is not installed, please install it."
-        exit 1
-    fi
+  if ! type -t crontab >/dev/null 2>&1; then
+    echo "crontab is not installed, please install it."
+    exit 1
+  fi
 
-    echo "Unregistering cron job..."
+  echo "Unregistering cron job..."
 
-    crontab -l > /tmp/cron.tr
-    sed -i "/dots-backup/d" /tmp/cron.tr
+  crontab -l >/tmp/cron.tr
+  sed -i "/dots-backup/d" /tmp/cron.tr
 
-    crontab /tmp/cron.tr
+  crontab /tmp/cron.tr
 
-    echo ""
-    echo "Current crontab: "
-    crontab -l
-    echo ""
+  echo ""
+  echo "Current crontab: "
+  crontab -l
+  echo ""
 
-    exit 0
+  exit 0
 fi
 
 if ! type -t tar >/dev/null 2>&1; then
-    echo "tar is not installed, please install it."
-    exit 1
+  echo "tar is not installed, please install it."
+  exit 1
 fi
 
-if [[ ! -d "${backup_dir}" ]]; then
-    mkdir -p "${backup_dir}"
+if [[ ! -d ${backup_dir} ]]; then
+  mkdir -p "${backup_dir}"
 fi
 
-if [[ -n "${list}" ]]; then
-    # enumerate available backups
-    echo "Available backups:"
-    i=1
-    shopt -s nullglob
-    for filepath in "${backup_dir}"/*.zip; do
-        echo "  ${i}) $(basename "${filepath}")"
-        i=$((i+1))
-    done
-    exit 0
+if [[ -n ${list} ]]; then
+  # enumerate available backups
+  echo "Available backups:"
+  i=1
+  shopt -s nullglob
+  for filepath in "${backup_dir}"/*.zip; do
+    echo "  ${i}) $(basename "${filepath}")"
+    i=$((i + 1))
+  done
+  exit 0
 fi
 
 create_backup() {
-    # create zip file at `${backup_dir}/${time_str}_${backup_name}.zip` with all files in `${dotfiles_dir}`
-    # except `${backup_dir}`.
-    local backup_file="${backup_dir}/${time_str}_${backup_name}.zip"
-    tar -czf "${backup_file}" -C "${dotfiles_dir}" --exclude "${backup_dir}" .
-    echo "Backup created at ${backup_file}"
+  # create zip file at `${backup_dir}/${time_str}_${backup_name}.zip` with all files in `${dotfiles_dir}`
+  # except `${backup_dir}`.
+  local backup_file="${backup_dir}/${time_str}_${backup_name}.zip"
+  tar -czf "${backup_file}" -C "${dotfiles_dir}" --exclude "${backup_dir}" .
+  echo "Backup created at ${backup_file}"
 }
 
 rollback_to_backup() {
-    # rollback to backup
-    local backup_file="${backup_dir}/${backup_name}.zip"
-    if [[ ! -f "${backup_file}" ]]; then
-        echo "Backup file ${backup_file} does not exist."
-        exit 1
-    fi
+  # rollback to backup
+  local backup_file="${backup_dir}/${backup_name}.zip"
+  if [[ ! -f ${backup_file} ]]; then
+    echo "Backup file ${backup_file} does not exist."
+    exit 1
+  fi
 
-    echo "Rolling back to backup ${backup_file}..."
-    rm -rf "${dotfiles_dir}"
-    mkdir -p "${dotfiles_dir}"
-    tar -xzf "${backup_file}" -C "${dotfiles_dir}"
-    echo "Rollback complete."
-    echo "Run the command \"${dotfiles_dir}/install\" to install the dotfiles."
+  echo "Rolling back to backup ${backup_file}..."
+  rm -rf "${dotfiles_dir}"
+  mkdir -p "${dotfiles_dir}"
+  tar -xzf "${backup_file}" -C "${dotfiles_dir}"
+  echo "Rollback complete."
+  echo "Run the command \"${dotfiles_dir}/install\" to install the dotfiles."
 }
 
-if [[ -n "${rollback}" ]]; then
-    create_backup
-    rollback_to_backup
-    exit 0
+if [[ -n ${rollback} ]]; then
+  create_backup
+  rollback_to_backup
+  exit 0
 fi
-
 
 create_backup

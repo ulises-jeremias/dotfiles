@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Verify presence of community tools and log fallbacks.
+set -euo pipefail
+
+TOOLS=(
+  wlogout
+  nwg-bar
+  nwg-drawer
+  nwg-look
+  nwg-displays
+  hyprlock
+  hypridle
+  poweralertd
+  brightnessctl
+  acpi
+  upower
+  dynamic-power-daemon
+  fuzzel
+  wofi
+  rofi
+  copyq
+  cliphist
+  auto-cpufreq
+  auto-cpufreq-gtk
+  grim
+  slurp
+  pavucontrol
+)
+
+missing=()
+for t in "${TOOLS[@]}"; do
+  if ! command -v "$t" >/dev/null 2>&1; then
+    missing+=("$t")
+  fi
+done
+
+log_file="$HOME/.cache/dots/community-tools-status.log"
+mkdir -p "$(dirname "$log_file")"
+{
+  echo "Timestamp: $(date -Is)"
+  echo "Present tools:"
+  for t in "${TOOLS[@]}"; do command -v "$t" >/dev/null 2>&1 && echo "  - $t"; done
+  echo "Missing tools:"
+  for t in "${missing[@]}"; do echo "  - $t"; done
+  echo
+  echo "Fallback notes:"
+  [[ " wlogout " =~ " ${missing[*]} " ]] && echo "  - wlogout missing: falling back to nwg-bar/eww/rofi in dots-power-menu"
+  [[ " nwg-bar " =~ " ${missing[*]} " ]] && echo "  - nwg-bar missing: skipping its layer in power menu chain"
+  [[ " nwg-drawer " =~ " ${missing[*]} " ]] && echo "  - nwg-drawer missing: launcher chain will ignore it"
+  [[ " fuzzel " =~ " ${missing[*]} " ]] && echo "  - fuzzel missing: launcher will try wofi/rofi"
+  [[ " wofi " =~ " ${missing[*]} " ]] && echo "  - wofi missing: launcher will try rofi"
+  [[ " copyq " =~ " ${missing[*]} " ]] && echo "  - copyq missing: clipboard wrapper will use cliphist/rofi"
+  [[ " cliphist " =~ " ${missing[*]} " ]] && echo "  - cliphist missing: clipboard wrapper will use rofi greenclip if available"
+  [[ " auto-cpufreq-gtk " =~ " ${missing[*]} " ]] && echo "  - auto-cpufreq-gtk missing: performance GUI fallback not available"
+  [[ " poweralertd " =~ " ${missing[*]} " ]] && echo "  - poweralertd missing: battery notifications via acpi/upower wrappers (if available)"
+  [[ " nwg-look " =~ " ${missing[*]} " ]] && echo "  - nwg-look missing: using dots-theme-selector minimal mode"
+  [[ " nwg-displays " =~ " ${missing[*]} " ]] && echo "  - nwg-displays missing: manage monitors via hyprctl and monitors.conf"
+  [[ " hyprlock " =~ " ${missing[*]} " ]] && echo "  - hyprlock missing: swaylock/i3lock fallback if installed"
+  [[ " hypridle " =~ " ${missing[*]} " ]] && echo "  - hypridle missing: idle features disabled"
+  echo "---"
+} >>"$log_file"
+
+# Export environment marker for session scripts
+printf '%s' "COMMUNITY_TOOLS_MISSING=${#missing[@]}" >"$HOME/.cache/dots/community-tools.env"

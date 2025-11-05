@@ -89,10 +89,17 @@
   },
 
   "hyprland/language": {
-    "format": "󰌌 {}",
+    "format": "⌨ {}",
     "format-en": "EN",
     "format-es": "ES",
-    "tooltip-format": "Keyboard layout: {long}"
+    "format-us": "US",
+    "format-gb": "GB",
+    "format-de": "DE",
+    "format-fr": "FR",
+    "format-latam": "LATAM",
+    "on-click": "~/.local/bin/dots-keyboard-layout menu",
+    "tooltip": true,
+    "tooltip-format": "Keyboard: {long}\nClick to change layout"
   },
 
   "disk": {

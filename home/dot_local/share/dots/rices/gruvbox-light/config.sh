@@ -13,7 +13,7 @@ RICE_BEST_FOR="Daytime work, light theme lovers, comfortable viewing"
 # Theme Components Information
 GTK_THEME="Orchis-Light-Compact" # Light theme that matches gruvbox light aesthetic
 ICON_THEME="Numix-Circle"        # Warm, friendly icons
-CURSOR_THEME="Adwaita"
+CURSOR_THEME="elementary"
 SMART_COLORS="true"
 PREFER_DARK_THEME="false" # Explicitly prefer light theme
 

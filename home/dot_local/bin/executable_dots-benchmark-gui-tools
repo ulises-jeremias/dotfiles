@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Copyright (C) 2025 HorneroConfig Contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# dots-benchmark-gui-tools: measure startup time & resident memory of launcher & menu tools.
+# Provides a quick comparative report to evaluate impact of migration.
+# Tools measured if present: fuzzel, wofi, rofi, copyq, wlogout, nwg-bar.
+# Method: spawn each tool in a minimal non-blocking way (timeout) and sample /proc metrics.
+set -euo pipefail
+
+SAMPLES=3
+TIMEOUT=2
+TOOLS=(fuzzel wofi rofi copyq wlogout nwg-bar)
+
+echo -e "GUI Tools Benchmark (samples=$SAMPLES timeout=${TIMEOUT}s)\n"
+
+benchmark_tool() {
+  local tool=$1
+  command -v "$tool" >/dev/null 2>&1 || {
+    printf '%-10s %s\n' "$tool" "NOT INSTALLED"
+    return
+  }
+
+  local total_time_ns=0
+  local peak_rss_kb=0
+
+  for ((i = 1; i <= SAMPLES; i++)); do
+    local start_ns end_ns pid rss
+    start_ns=$(date +%s%N)
+    # Launch tool in background with minimal args; kill after TIMEOUT
+    case "$tool" in
+      fuzzel) fuzzel --version >/dev/null & ;;
+      wofi) wofi --show run & ;;
+      rofi) rofi -e "" & ;;
+      copyq) copyq show & ;;
+      wlogout) wlogout & ;;
+      nwg-bar) nwg-bar & ;;
+      *) "$tool" & ;;
+    esac
+    pid=$!
+    # Allow up to TIMEOUT seconds; sample RSS after 0.3s
+    sleep 0.3
+    if [[ -f /proc/$pid/status ]]; then
+      rss=$(grep -E '^VmRSS:' /proc/$pid/status | awk '{print $2}') || rss=0
+      ((rss > peak_rss_kb)) && peak_rss_kb=$rss
+    fi
+    # Kill process if still running
+    if kill -0 $pid 2>/dev/null; then
+      sleep $((TIMEOUT - 1)) 2>/dev/null || true
+      kill -TERM $pid 2>/dev/null || true
+      sleep 0.1
+      kill -KILL $pid 2>/dev/null || true
+    fi
+    end_ns=$(date +%s%N)
+    total_time_ns=$((total_time_ns + (end_ns - start_ns)))
+  done
+
+  local avg_ms=$((total_time_ns / SAMPLES / 1000000))
+  printf '%-10s avg_start_ms=%5d peak_rss_kb=%6d\n' "$tool" "$avg_ms" "$peak_rss_kb"
+}
+
+for t in "${TOOLS[@]}"; do
+  benchmark_tool "$t"
+done | sort
+
+echo "\nNote: peak_rss_kb is approximate; short-lived processes may exit before sampling." >&2
+echo "Set SAMPLES env var to override (e.g., SAMPLES=5 dots-benchmark-gui-tools)." >&2

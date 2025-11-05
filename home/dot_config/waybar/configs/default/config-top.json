@@ -66,6 +66,8 @@
     "custom/night-mode",
     "custom/feh-blur",
     "custom/github",
+    "custom/performance-profile",
+    "custom/battery",
     "tray"
   ],
 
@@ -80,13 +82,13 @@
   "custom/apps": {
     "format": "󰘖",
     "tooltip": false,
-    "on-click": "dots-rofi-run --run"
+    "on-click": "dots-launcher"
   },
 
   "custom/window-switch": {
     "format": "",
     "tooltip": false,
-    "on-click": "rofi -show window -theme ~/.config/rofi/themes/launcher.rasi"
+    "on-click": "rofi -show window -theme ~/.config/rofi/applets.rasi"
   },
 
   "custom/rices": {
@@ -111,6 +113,23 @@
     "tooltip": true,
     "tooltip-format": "Open GitHub Notifications",
     "on-click": "xdg-open https://github.com/notifications"
+  },
+
+  "custom/performance-profile": {
+    "format": "{}",
+    "exec": "~/.config/waybar/scripts/performance-profile",
+    "interval": 10,
+    "tooltip": true,
+    "tooltip-format": "Performance profile (click to change)",
+    "on-click": "~/.local/bin/dots-performance-mode"
+  },
+
+  "custom/battery": {
+    "format": "{}",
+    "exec": "~/.config/waybar/scripts/battery-status",
+    "interval": 30,
+    "tooltip": true,
+    "tooltip-format": "Battery status; notifications via poweralertd or wrapper"
   },
 
   "custom/weather": {

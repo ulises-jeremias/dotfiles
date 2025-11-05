@@ -13,7 +13,7 @@ RICE_BEST_FOR="Long coding sessions, anime lovers, warm aesthetic"
 # Theme Components Information
 GTK_THEME="Orchis-Light-Compact"
 ICON_THEME="Numix-Circle"
-CURSOR_THEME="Adwaita"
+CURSOR_THEME="elementary"
 SMART_COLORS="true"
 PREFER_DARK_THEME="false"
 

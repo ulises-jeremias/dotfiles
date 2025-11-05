@@ -6,20 +6,34 @@ set -eufo pipefail
 {{ $packages := list
   "bat"
   "btop"
+  "copyq"
   "dbus-python"
   "direnv"
+  "fuzzel"
   "exa"
   "jq"
   "fastfetch"
+  "mako"
   "pacman-contrib"
   "python"
   "python-pip"
   "python-pipx"
   "shellcheck"
+  "acpi"
+  "upower"
+  "brightnessctl"
+  "grim"
+  "slurp"
+  "cliphist"
+  "pavucontrol"
+  "wofi"
 -}}
 
 {{ $aurPackages := list
   "cava"
+  "auto-cpufreq"
+  "nwg-bar"
+  "nwg-drawer"
 -}}
 
 {{ if and (not .ephemeral) (not .headless) -}}
@@ -35,6 +49,8 @@ set -eufo pipefail
   "w3m"
   "wmctrl"
   "yad"
+  "hyprlock"
+  "hypridle"
 ) -}}
 
 {{ $aurPackages = concat $aurPackages (list
@@ -43,6 +59,11 @@ set -eufo pipefail
   "pamac-aur"
   "pwvucontrol"
   "skippy-xd"
+  "wlogout"
+  "nwg-look"
+  "nwg-displays"
+  "poweralertd"
+  "dynamic-power-daemon"
 ) -}}
 {{ end -}}
 

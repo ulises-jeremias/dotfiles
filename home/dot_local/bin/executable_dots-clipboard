@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+## dots-clipboard: Clipboard manager wrapper
+## Wayland order (auto): copyq > cliphist+(fuzzel|wofi|rofi) > rofi greenclip > minimal
+## X11 order (auto): copyq > rofi greenclip > minimal
+## Usage:
+##   @script.name [OPTIONS]
+## Options:
+##   -h, --help            Show help
+##       --backend=NAME    Force backend: copyq|cliphist|rofi|minimal
+## Examples:
+##   @script.name --backend=copyq   # force copyq GUI
+##   @script.name --backend=rofi    # force rofi clipboard mode
+set -e
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+BACKEND=${backend:-auto}
+
+is_wayland() { [[ ${XDG_SESSION_TYPE:-} == wayland ]]; }
+
+menu_pick() {
+  local title="$1"
+  if command -v fuzzel >/dev/null 2>&1; then
+    fuzzel --prompt "$title> "
+  elif command -v wofi >/dev/null 2>&1; then
+    wofi --dmenu --prompt "$title> "
+  elif command -v rofi >/dev/null 2>&1; then
+    rofi -dmenu -p "$title" -theme "$HOME/.config/rofi/applets.rasi"
+  else
+    cat
+  fi
+}
+
+do_copyq() {
+  command -v copyq >/dev/null 2>&1 || return 1
+  exec copyq show
+}
+do_rofi_clip() {
+  command -v rofi >/dev/null 2>&1 || return 1
+  rofi -modi "clipboard:greenclip print" -show "clipboard:greenclip print" -theme "$HOME/.config/rofi/applets.rasi"
+}
+do_cliphist() {
+  command -v cliphist >/dev/null 2>&1 || return 1
+  local selection
+  selection=$(cliphist list | menu_pick Clipboard) || true
+  [[ -z $selection ]] && exit 0
+  cliphist decode <<<"$selection" | wl-copy
+  return 0
+}
+
+minimal_fallback() {
+  echo "[dots-clipboard] minimal fallback" >&2
+  if command -v wl-paste >/dev/null 2>&1; then
+    wl-paste | head -c 500
+  else
+    echo "(no data)"
+  fi
+}
+
+case "$BACKEND" in
+  copyq) do_copyq || {
+    echo "copyq not available" >&2
+    exit 1
+  } ;;
+  cliphist)
+    is_wayland || {
+      echo "cliphist is Wayland-only" >&2
+      exit 1
+    }
+    do_cliphist || {
+      echo "cliphist not available" >&2
+      exit 1
+    }
+    ;;
+  rofi) do_rofi_clip || {
+    echo "rofi clipboard mode not available" >&2
+    exit 1
+  } ;;
+  minimal) minimal_fallback ;;
+  auto | *)
+    if is_wayland; then
+      do_copyq || do_cliphist || do_rofi_clip || minimal_fallback
+    else
+      do_copyq || do_rofi_clip || minimal_fallback
+    fi
+    ;;
+esac

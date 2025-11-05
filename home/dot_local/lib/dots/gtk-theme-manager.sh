@@ -82,7 +82,7 @@ is_icon_theme_installed() {
 # Function to apply GTK theme with fallbacks
 apply_gtk_theme() {
   local gtk_theme="$1"
-  local icon_theme="${2:-Adwaita}"
+  local icon_theme="${2:-elementary}"
   local prefer_dark="${3:-false}"
 
   log "INFO" "Applying GTK theme: $gtk_theme, icons: $icon_theme"
@@ -94,7 +94,7 @@ apply_gtk_theme() {
     # Common fallback themes in order of preference
     local fallback_themes=(
       "Orchis-Light-Compact"
-      "Adwaita"
+      "elementary"
       "Arc-Dark"
       "Arc"
       "Breeze"
@@ -121,7 +121,7 @@ apply_gtk_theme() {
 
     local fallback_icons=(
       "Numix-Circle"
-      "Adwaita"
+      "elementary"
       "hicolor"
     )
 
@@ -149,7 +149,7 @@ include "/home/\$USER/.gtkrc-2.0.mine"
 gtk-theme-name="$gtk_theme"
 gtk-icon-theme-name="$icon_theme"
 gtk-font-name="sans 11"
-gtk-cursor-theme-name="Adwaita"
+gtk-cursor-theme-name="elementary"
 gtk-cursor-theme-size=24
 gtk-toolbar-style=GTK_TOOLBAR_ICONS
 gtk-toolbar-icon-size=GTK_ICON_SIZE_SMALL_TOOLBAR
@@ -179,7 +179,7 @@ gtk-application-prefer-dark-theme=$prefer_dark
 gtk-theme-name=$gtk_theme
 gtk-icon-theme-name=$icon_theme
 gtk-font-name=sans 11
-gtk-cursor-theme-name=Adwaita
+gtk-cursor-theme-name=elementary
 gtk-cursor-theme-size=24
 gtk-toolbar-style=GTK_TOOLBAR_ICONS
 gtk-toolbar-icon-size=GTK_ICON_SIZE_SMALL_TOOLBAR
@@ -203,14 +203,9 @@ EOF
     log "INFO" "Updated gsettings"
   fi
 
-  # Reload XFCE4 settings if running
-  if pgrep -x "xfce4-session" >/dev/null; then
-    if command -v xfconf-query >/dev/null 2>&1; then
-      xfconf-query -c xsettings -p /Net/ThemeName -s "$gtk_theme" 2>/dev/null || true
-      xfconf-query -c xsettings -p /Net/IconThemeName -s "$icon_theme" 2>/dev/null || true
-      log "INFO" "Updated XFCE4 settings"
-    fi
-  fi
+  # XFCE4 settings support removed - using gsettings only
+  # If running XFCE4 session, gsettings should be sufficient
+  # Legacy xfconf-query support can be re-enabled if needed
 
   log "INFO" "GTK theme applied successfully: $gtk_theme"
   return 0
@@ -243,7 +238,7 @@ detect_optimal_gtk_theme() {
         local dark_themes=(
           "Orchis-Dark-Compact"
           "Arc-Dark"
-          "Adwaita-dark"
+          "elementary-dark"
           "Breeze-Dark"
         )
 
@@ -259,7 +254,7 @@ detect_optimal_gtk_theme() {
         local light_themes=(
           "Orchis-Light-Compact"
           "Arc"
-          "Adwaita"
+          "elementary"
           "Breeze"
         )
 
@@ -282,7 +277,7 @@ detect_optimal_gtk_theme() {
       local light_themes=(
         "Orchis-Light-Compact"
         "Arc"
-        "Adwaita"
+        "elementary"
         "Breeze"
       )
 
@@ -298,7 +293,7 @@ detect_optimal_gtk_theme() {
       local dark_themes=(
         "Orchis-Dark-Compact"
         "Arc-Dark"
-        "Adwaita-dark"
+        "elementary-dark"
         "Breeze-Dark"
       )
 

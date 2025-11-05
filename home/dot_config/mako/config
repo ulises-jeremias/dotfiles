@@ -15,7 +15,7 @@ width=350
 height=150
 margin=18
 padding=15
-gap=12
+outer-margin=12
 
 # ============================================================================
 # Visual Styling

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Outputs current power profile (powerprofilesctl) in terse form
+set -euo pipefail
+if ! command -v powerprofilesctl >/dev/null 2>&1; then
+  echo "-"
+  exit 0
+fi
+current=$(powerprofilesctl get)
+# Map names to icons/text
+case "$current" in
+  performance) echo "⚡ PERF" ;;
+  balanced) echo " BAL" ;;
+  power-saver) echo " SAVE" ;;
+  *) echo "$current" ;;
+esac

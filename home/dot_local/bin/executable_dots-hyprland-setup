@@ -68,21 +68,21 @@ INSTALL_NVIDIA=false
 FORCE_INSTALL=false
 
 case "${1:-}" in
-  -h|--help)
+  -h | --help)
     usage
     exit 0
     ;;
-  -v|--version)
+  -v | --version)
     echo "$NAME -- Version $VER"
     exit 0
     ;;
-  -c|--check-only)
+  -c | --check-only)
     CHECK_ONLY=true
     ;;
   --nvidia)
     INSTALL_NVIDIA=true
     ;;
-  -f|--force)
+  -f | --force)
     FORCE_INSTALL=true
     ;;
 esac
@@ -132,7 +132,7 @@ AUR_PACKAGES=(
   wlogout
 )
 
-if [[ "$CHECK_ONLY" == "true" ]]; then
+if [[ $CHECK_ONLY == "true" ]]; then
   print_step "Checking Hyprland dependencies..."
 
   missing=()
@@ -172,7 +172,7 @@ sudo pacman -Syu --noconfirm
 
 # Install core packages
 for pkg in "${CORE_PACKAGES[@]}"; do
-  if pacman -Qi "$pkg" &>/dev/null && [[ "$FORCE_INSTALL" != "true" ]]; then
+  if pacman -Qi "$pkg" &>/dev/null && [[ $FORCE_INSTALL != "true" ]]; then
     print_success "$pkg already installed"
   else
     if sudo pacman -S --noconfirm "$pkg" 2>/dev/null || paru -S --noconfirm "$pkg"; then
@@ -184,7 +184,7 @@ for pkg in "${CORE_PACKAGES[@]}"; do
 done
 
 # Install NVIDIA packages if requested
-if [[ "$INSTALL_NVIDIA" == "true" ]]; then
+if [[ $INSTALL_NVIDIA == "true" ]]; then
   print_step "Installing NVIDIA packages..."
   for pkg in "${NVIDIA_PACKAGES[@]}"; do
     paru -S --noconfirm "$pkg" || print_warning "Failed to install $pkg"

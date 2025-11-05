@@ -75,61 +75,61 @@ parse_cmd_args() {
 
   while getopts ":b:t:r:avlkh" opt; do
     case "$opt" in
-    b)
-      branch="${OPTARG}"
-      ;;
-    t)
-      refresh_delay="${OPTARG}"
-      if ! [[ ${refresh_delay} =~ ^[0-9]+$ ]]; then
-        log "Refresh delay must be a number (of seconds)"
+      b)
+        branch="${OPTARG}"
+        ;;
+      t)
+        refresh_delay="${OPTARG}"
+        if ! [[ ${refresh_delay} =~ ^[0-9]+$ ]]; then
+          log "Refresh delay must be a number (of seconds)"
+          exit 1
+        fi
+        ;;
+      a)
+        async=true
+        ;;
+      v)
+        verbose=true
+        ;;
+      r)
+        REPOSITORY="${OPTARG}"
+        ;;
+      l)
+        bg_jobs=$(ps_jobs "$0" "-eaf")
+        bg_count=$(count "${bg_jobs}")
+        log "Running background jobs: ${bg_count}"
+        if [ "${bg_count}" -gt 0 ]; then
+          ps | head -n 1 # print ps column names header
+          echo "${bg_jobs}"
+        fi
+        exit 0
+        ;;
+      k)
+        curr_comm=$(ps -o command -p "$$" | grep -v COMMAND)
+        bg_jobs=$(ps_jobs "$0" "-eao pid,command" | cut -f 1 -d ' ')
+        bg_count=$(count "${bg_jobs}")
+        if [ "${bg_count}" -eq 0 ]; then
+          log "No jobs running!"
+        else
+          log -n "Killing ${bg_count} jobs: "
+          log "${bg_jobs}"
+          kill "${bg_jobs}"
+          log "Success!"
+        fi
+        exit 0
+        ;;
+      h)
+        show_help
         exit 1
-      fi
-      ;;
-    a)
-      async=true
-      ;;
-    v)
-      verbose=true
-      ;;
-    r)
-      REPOSITORY="${OPTARG}"
-      ;;
-    l)
-      bg_jobs=$(ps_jobs "$0" "-eaf")
-      bg_count=$(count "${bg_jobs}")
-      log "Running background jobs: ${bg_count}"
-      if [ "${bg_count}" -gt 0 ]; then
-        ps | head -n 1 # print ps column names header
-        echo "${bg_jobs}"
-      fi
-      exit 0
-      ;;
-    k)
-      curr_comm=$(ps -o command -p "$$" | grep -v COMMAND)
-      bg_jobs=$(ps_jobs "$0" "-eao pid,command" | cut -f 1 -d ' ')
-      bg_count=$(count "${bg_jobs}")
-      if [ "${bg_count}" -eq 0 ]; then
-        log "No jobs running!"
-      else
-        log -n "Killing ${bg_count} jobs: "
-        log "${bg_jobs}"
-        kill "${bg_jobs}"
-        log "Success!"
-      fi
-      exit 0
-      ;;
-    h)
-      show_help
-      exit 1
-      ;;
-    :)
-      log "Required argument for option ${OPTARG}"
-      exit 1
-      ;;
-    ?)
-      log "Unrecognized option ${OPTARG}"
-      exit 1
-      ;;
+        ;;
+      :)
+        log "Required argument for option ${OPTARG}"
+        exit 1
+        ;;
+      ?)
+        log "Unrecognized option ${OPTARG}"
+        exit 1
+        ;;
     esac
   done
   shift $((OPTIND - 1))

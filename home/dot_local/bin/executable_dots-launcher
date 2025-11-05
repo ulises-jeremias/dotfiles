@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+## dots-launcher: Unified application launcher wrapper
+## Preference order (auto): fuzzel > wofi > rofi > minimal prompt
+## Usage:
+##   @script.name [OPTIONS]
+## Options:
+##   -h, --help            Show help (auto by EasyOptions)
+##       --backend=NAME    Force backend: fuzzel|wofi|rofi|minimal
+##       --list            Print detected backends (in priority order) then exit
+## Examples:
+##   @script.name                  # auto chain
+##   @script.name --backend=rofi   # force rofi
+##   @script.name --list           # list available backends
+set -e
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+BACKEND=${backend:-auto}
+LIST=${list:-no}
+
+launch_fuzzel() {
+  command -v fuzzel >/dev/null 2>&1 || return 1
+  exec fuzzel
+}
+launch_wofi() {
+  command -v wofi >/dev/null 2>&1 || return 1
+  exec wofi --show drun
+}
+launch_rofi() {
+  command -v rofi >/dev/null 2>&1 || return 1
+  exec rofi -modi drun,run -show drun -theme "$HOME/.config/rofi/apps.rasi"
+}
+
+minimal_fallback() {
+  echo "[dots-launcher] minimal fallback (no GUI launchers found)" >&2
+  read -r -p "command> " cmd || exit 1
+  [[ -z $cmd ]] && exit 0
+  exec $cmd
+}
+
+if [[ $LIST == yes ]]; then
+  order=(fuzzel wofi rofi minimal)
+  avail=()
+  for t in "${order[@]}"; do
+    if [[ $t == minimal ]]; then
+      avail+=(minimal)
+    elif command -v "$t" >/dev/null 2>&1; then
+      avail+=("$t")
+    fi
+  done
+  printf '%s\n' "${avail[@]}"
+  exit 0
+fi
+
+case "$BACKEND" in
+  fuzzel) launch_fuzzel || {
+    echo "fuzzel not available" >&2
+    exit 1
+  } ;;
+  wofi) launch_wofi || {
+    echo "wofi not available" >&2
+    exit 1
+  } ;;
+  rofi) launch_rofi || {
+    echo "rofi not available" >&2
+    exit 1
+  } ;;
+  minimal) minimal_fallback ;;
+  auto | *)
+    launch_fuzzel || launch_wofi || launch_rofi || minimal_fallback
+    ;;
+esac

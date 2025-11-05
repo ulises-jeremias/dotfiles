@@ -27,7 +27,7 @@ get_rice_metadata() {
   local RICE_PALETTE="Standard"
   local GTK_THEME="Auto"
   local ICON_THEME="Numix-Circle"
-  local CURSOR_THEME="Adwaita"
+  local CURSOR_THEME="elementary"
   local WALLPAPER_COUNT="Unknown"
   local SMART_COLORS="true"
   local POLYBAR_PROFILE="default"
