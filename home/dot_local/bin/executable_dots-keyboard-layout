@@ -147,7 +147,7 @@ toggle_layout() {
   done
 
   # Get next layout
-  local next_index=$(( (current_index + 1) % ${#PREFERRED_LAYOUTS[@]} ))
+  local next_index=$(((current_index + 1) % ${#PREFERRED_LAYOUTS[@]}))
   local next_layout="${PREFERRED_LAYOUTS[$next_index]}"
 
   # Split layout:variant
