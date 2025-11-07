@@ -121,7 +121,7 @@
     "interval": 10,
     "tooltip": true,
     "tooltip-format": "Performance profile (click to change)",
-    "on-click": "~/.local/bin/dots-performance-mode"
+    "on-click": "~/.local/bin/dots-performance-mode --gui"
   },
 
   "custom/battery": {
@@ -199,7 +199,7 @@
 
   "tray": {
     "icon-size": 18,
-    "spacing": 10,
+    "spacing": 12,
     "show-passive-items": true
   }
 }

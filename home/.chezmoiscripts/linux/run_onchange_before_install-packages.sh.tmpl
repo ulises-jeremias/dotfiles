@@ -27,6 +27,7 @@ set -eufo pipefail
   "cliphist"
   "pavucontrol"
   "wofi"
+  "power-profiles-daemon"
 -}}
 
 {{ $aurPackages := list
@@ -51,6 +52,7 @@ set -eufo pipefail
   "yad"
   "hyprlock"
   "hypridle"
+  "lxqt-config"
 ) -}}
 
 {{ $aurPackages = concat $aurPackages (list
@@ -63,7 +65,6 @@ set -eufo pipefail
   "nwg-look"
   "nwg-displays"
   "poweralertd"
-  "dynamic-power-daemon"
 ) -}}
 {{ end -}}
 

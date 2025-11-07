@@ -335,15 +335,6 @@ create_smart_color_links() {
       ln -sf "$HOME/.cache/dots/smart-colors/colors-eww.scss" "$eww_dir/smart-colors.scss" 2>/dev/null || true
     fi
   done
-
-  # Create links for Waybar
-  local waybar_configs=("$HOME/.config/waybar/configs/default")
-  for config_dir in "${waybar_configs[@]}"; do
-    if [[ -d $config_dir ]]; then
-      ln -sf "$HOME/.cache/dots/smart-colors/colors-waybar.css" "$config_dir/colors.css" 2>/dev/null || true
-      show_success "Waybar colors linked to $config_dir/colors.css"
-    fi
-  done
 }
 
 # Apply smart colors to running applications

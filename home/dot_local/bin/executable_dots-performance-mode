@@ -21,8 +21,7 @@ if [[ $GUI == yes ]]; then
     notify-send "Performance" "auto-cpufreq-gtk missing; using CLI monitor" || true
     exec auto-cpufreq --monitor
   else
-    notify-send "Performance" "auto-cpufreq tools not installed" || true
-    exit 1
+    notify-send "Performance" "auto-cpufreq tools not installed. Falling back to powerprofilesctl." || true
   fi
 fi
 

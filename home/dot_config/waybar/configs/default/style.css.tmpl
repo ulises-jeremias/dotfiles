@@ -5,7 +5,8 @@
  * Palette: neutral base, moderate accents, highlighted states.
  * ============================================================================ */
 
-@import "./colors.css";
+@import "{{ joinPath .chezmoi.homeDir ".cache/wal/colors-waybar.css" }}";
+@import "{{ joinPath .chezmoi.homeDir ".cache/dots/smart-colors/colors-waybar.css" }}";
 
 /* ==========================================================================
  * Global
@@ -18,6 +19,27 @@
 	font-size: 13px;
 	font-weight: normal;
 	min-height: 0;
+}
+
+/* Increase icon size for Nerd Fonts without affecting text/numbers */
+#workspaces button,
+#custom-jgmenu,
+#custom-apps,
+#custom-window-switch,
+#custom-rices {
+	font-size: 22px;
+}
+
+/* Icon size for modules with icons + text */
+#pulseaudio,
+#pulseaudio\.microphone,
+#backlight,
+#custom-night-mode,
+#custom-github,
+#custom-weather,
+#custom-battery,
+#custom-performance-profile {
+	font-size: 15px;
 }
 
 .text-small {
@@ -72,7 +94,6 @@ window#waybar.bottom {
 	margin: 6px 3px;
 	border: none;
 	border-radius: 8px;
-	font-size: 22px;
 }
 
 #workspaces button:hover {
@@ -83,7 +104,6 @@ window#waybar.bottom {
 #workspaces button.active {
 	background-color: @bg-hover;
 	color: @smart-orange;
-	font-size: 19px;
 	border: 1px solid @border-color;
 }
 
@@ -132,7 +152,6 @@ window#waybar.bottom {
 	padding: 4px 16px;
 	margin: 6px 3px;
 	border-radius: 8px;
-	font-size: 22px;
 }
 
 #custom-jgmenu {
@@ -165,11 +184,17 @@ window#waybar.bottom {
 #pulseaudio,
 #pulseaudio\.microphone {
 	background: transparent;
-	color: @fg-primary;
 	padding: 4px 16px;
 	margin: 6px 3px;
 	border-radius: 8px;
-	font-size: 15px;
+}
+
+#pulseaudio {
+	color: @smart-blue;
+}
+
+#pulseaudio\.microphone {
+	color: @smart-pink;
 }
 
 #pulseaudio:hover,
@@ -188,11 +213,10 @@ window#waybar.bottom {
  */
 #backlight {
 	background: transparent;
-	color: @fg-primary;
+	color: @smart-orange;
 	padding: 4px 16px;
 	margin: 6px 3px;
 	border-radius: 8px;
-	font-size: 15px;
 }
 
 #backlight:hover {
@@ -223,12 +247,13 @@ window#waybar.bottom {
  */
 #custom-night-mode,
 #custom-github,
-#custom-weather {
+#custom-weather,
+#custom-battery,
+#custom-performance-profile {
 	background: transparent;
 	padding: 4px 16px;
 	margin: 6px 3px;
 	border-radius: 8px;
-	font-size: 15px;
 }
 
 #custom-night-mode {
@@ -243,9 +268,19 @@ window#waybar.bottom {
 	color: @smart-info;
 }
 
+#custom-battery {
+	color: @smart-pink;
+}
+
+#custom-performance-profile {
+	color: @smart-blue;
+}
+
 #custom-night-mode:hover,
 #custom-github:hover,
-#custom-weather:hover {
+#custom-weather:hover,
+#custom-battery:hover,
+#custom-performance-profile:hover {
 	background-color: @bg-hover;
 }
 

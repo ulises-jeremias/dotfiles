@@ -187,16 +187,28 @@
 
   "hyprland/language": {
     "format": "⌨ {}",
-    "format-en": "EN",
-    "format-es": "ES",
-    "format-us": "US",
-    "format-gb": "GB",
-    "format-de": "DE",
-    "format-fr": "FR",
-    "format-latam": "LATAM",
-    "on-click": "~/.local/bin/dots-keyboard-layout menu",
+    "format-en": "🇺🇸",
+    "format-es": "🇪🇸",
+    "format-us": "🇺🇸",
+    "format-gb": "🇬🇧",
+    "format-de": "🇩🇪",
+    "format-fr": "🇫🇷",
+    "format-latam": "🇦🇷",
+    "format-br": "🇧🇷",
+    "format-pt": "🇵🇹",
+    "format-it": "🇮🇹",
+    "format-ru": "🇷🇺",
+    "format-jp": "🇯🇵",
+    "format-cn": "🇨🇳",
+    "format-kr": "🇰🇷",
+    "format-in": "🇮🇳",
+    "format-mx": "🇲🇽",
+    "format-ca": "🇨🇦",
+    "format-au": "🇦🇺",
+    "on-click": "~/.local/bin/dots-keyboard-layout --toggle",
+    "on-click-right": "~/.local/bin/dots-keyboard-settings",
     "tooltip": true,
-    "tooltip-format": "Keyboard: {long}\nClick to change layout"
+    "tooltip-format": "Keyboard: {long}\nLeft-click: Toggle layout\nRight-click: Open settings"
   },
 
   "disk": {

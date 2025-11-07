@@ -4,108 +4,51 @@
 ## Licensed under MIT.
 ##
 ## Keyboard Settings Manager
-## Provides GUI for keyboard configuration that syncs with Hyprland
+## Opens LXQt keyboard configuration GUI
 
 set -euo pipefail
 
 SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_NAME
 
-# Detect current WM/Compositor
-detect_session() {
-  if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
-    echo "hyprland"
-  elif [[ -n ${I3SOCK:-} ]]; then
-    echo "i3"
+# Open LXQt keyboard settings
+open_keyboard_settings() {
+  if command -v lxqt-config-input >/dev/null 2>&1; then
+    lxqt-config-input &
   else
-    echo "x11"
-  fi
-}
-
-# Apply keyboard settings to Hyprland
-apply_to_hyprland() {
-  local layout="${1:-us}"
-  local variant="${2:-}"
-  local options="${3:-}"
-
-  hyprctl keyword input:kb_layout "$layout"
-
-  if [[ -n $variant ]]; then
-    hyprctl keyword input:kb_variant "$variant"
-  fi
-
-  if [[ -n $options ]]; then
-    hyprctl keyword input:kb_options "$options"
-  fi
-
-  notify-send "Keyboard Settings" "Applied: $layout${variant:+ ($variant)}"
-}
-
-# Open XFCE4 keyboard settings
-open_xfce4_settings() {
-  if command -v xfce4-keyboard-settings >/dev/null 2>&1; then
-    xfce4-keyboard-settings
-  else
-    notify-send "Error" "xfce4-keyboard-settings not installed"
+    notify-send "Error" "lxqt-config-input not installed. Install it with: sudo pacman -S lxqt-config-input"
     exit 1
   fi
 }
 
-# Show current Hyprland keyboard config
-show_current() {
-  local session
-  session=$(detect_session)
+# Show help
+show_help() {
+  cat <<EOF
+Usage: $SCRIPT_NAME
 
-  case "$session" in
-    hyprland)
-      echo "Current Hyprland keyboard configuration:"
-      hyprctl getoption input:kb_layout -j | jq -r '.str'
-      hyprctl getoption input:kb_variant -j | jq -r '.str'
-      hyprctl getoption input:kb_options -j | jq -r '.str'
-      ;;
-    *)
-      echo "Not running in Hyprland"
-      setxkbmap -query
-      ;;
-  esac
+Opens LXQt keyboard configuration GUI for comprehensive keyboard settings
+including layouts, variants, key repeat rate, and more.
+
+The GUI provides:
+  - Multiple keyboard layouts
+  - Layout variants
+  - Keyboard model selection
+  - Key repeat rate and delay
+  - NumLock on startup
+
+This is a community-maintained, lightweight solution that works well
+with Wayland, X11, and Hyprland.
+EOF
 }
 
 # Main logic
 main() {
-  local session
-  session=$(detect_session)
-
-  case "${1:-gui}" in
-    gui | --gui)
-      # Open XFCE4 settings for visual config
-      open_xfce4_settings
-      ;;
-    apply)
-      # Apply layout manually
-      if [[ $session == "hyprland" ]]; then
-        apply_to_hyprland "${2:-us}" "${3:-}" "${4:-}"
-      else
-        setxkbmap "${2:-us}" "${3:-}" ${4:+-option "$4"}
-      fi
-      ;;
-    show | --show)
-      show_current
+  case "${1:-}" in
+    -h | --help)
+      show_help
       ;;
     *)
-      cat <<EOF
-Usage: $SCRIPT_NAME [COMMAND] [OPTIONS]
-
-Commands:
-  gui, --gui           Open XFCE4 keyboard settings GUI
-  apply LAYOUT [VAR]   Apply keyboard layout (e.g., apply us dvorak)
-  show, --show         Show current keyboard configuration
-
-Examples:
-  $SCRIPT_NAME                    # Open GUI
-  $SCRIPT_NAME apply us           # Apply US layout
-  $SCRIPT_NAME apply us intl      # Apply US International
-  $SCRIPT_NAME show               # Show current config
-EOF
+      open_keyboard_settings
       ;;
   esac
 }

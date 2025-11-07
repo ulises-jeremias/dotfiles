@@ -28,7 +28,7 @@ show_menu() {
   session=$(detect_session)
 
   local options=(
-    "⌨  Keyboard Layout"
+    "⌨  Keyboard Settings"
     "🎨 GTK Themes"
     "🎨 Quick Theme Switch"
     "🖥️  Display Settings"
@@ -39,6 +39,7 @@ show_menu() {
     "🔊 Audio"
     "🔋 Power Management"
     "🃏 File Manager"
+    "🖼️  LXQt Configuration"
     "⚙️  Advanced Settings"
   )
 
@@ -65,8 +66,8 @@ show_menu() {
 
   # Execute selected action
   case "$selected" in
-    "⌨  Keyboard Layout")
-      ~/.local/bin/dots-keyboard-layout menu
+    "⌨  Keyboard Settings")
+      ~/.local/bin/dots-keyboard-settings
       ;;
     "🎨 GTK Themes")
       if command -v nwg-look >/dev/null 2>&1; then
@@ -131,8 +132,73 @@ show_menu() {
     "🃏 File Manager")
       ~/.local/bin/dots-file-manager select
       ;;
+    "🖼️  LXQt Configuration")
+      show_lxqt_menu
+      ;;
     "⚙️  Advanced Settings")
       show_advanced_menu
+      ;;
+  esac
+}
+
+# LXQt configuration submenu
+show_lxqt_menu() {
+  local options=(
+    "⌨  Keyboard & Input"
+    "🖱️  Mouse & Touchpad"
+    "🖥️  Monitor Settings"
+    "🎨 Appearance"
+    "⚙️  LXQt Settings (All)"
+  )
+
+  local menu=""
+  for option in "${options[@]}"; do
+    menu+="$option\n"
+  done
+
+  local selected
+  selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
+    -p "LXQt Configuration" \
+    -theme ~/.config/rofi/applets.rasi \
+    -no-custom)
+
+  [[ -z $selected ]] && return 0
+
+  case "$selected" in
+    "⌨  Keyboard & Input")
+      if command -v lxqt-config-input >/dev/null 2>&1; then
+        lxqt-config-input &
+      else
+        notify-send "LXQt Config" "Install lxqt-config-input"
+      fi
+      ;;
+    "🖱️  Mouse & Touchpad")
+      if command -v lxqt-config-input >/dev/null 2>&1; then
+        lxqt-config-input &
+      else
+        notify-send "LXQt Config" "Install lxqt-config-input"
+      fi
+      ;;
+    "🖥️  Monitor Settings")
+      if command -v lxqt-config-monitor >/dev/null 2>&1; then
+        lxqt-config-monitor &
+      else
+        notify-send "LXQt Config" "Install lxqt-config (provides monitor settings)"
+      fi
+      ;;
+    "🎨 Appearance")
+      if command -v lxqt-config-appearance >/dev/null 2>&1; then
+        lxqt-config-appearance &
+      else
+        notify-send "LXQt Config" "Install lxqt-config (provides appearance settings)"
+      fi
+      ;;
+    "⚙️  LXQt Settings (All)")
+      if command -v lxqt-config >/dev/null 2>&1; then
+        lxqt-config &
+      else
+        notify-send "LXQt Config" "Install lxqt-config package"
+      fi
       ;;
   esac
 }
@@ -270,7 +336,7 @@ Commands:
   help, -h        Show this help message
 
 Settings categories:
-  - Keyboard Layout
+  - Keyboard Settings (LXQt GUI)
   - GTK Themes
   - Display Settings
   - Rice Selector
@@ -280,6 +346,7 @@ Settings categories:
   - Audio
   - Power Management
   - File Manager
+  - LXQt Configuration
   - Advanced Settings
 
 Keybinding suggestion (hyprland):
