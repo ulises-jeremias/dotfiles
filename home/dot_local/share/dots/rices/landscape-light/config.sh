@@ -11,7 +11,7 @@ RICE_TAGS="nature,light,clean,minimalist,natural"
 RICE_BEST_FOR="Daytime work, light theme lovers, minimal aesthetics"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact"
+GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"

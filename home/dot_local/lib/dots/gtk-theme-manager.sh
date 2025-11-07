@@ -93,7 +93,7 @@ apply_gtk_theme() {
 
     # Common fallback themes in order of preference
     local fallback_themes=(
-      "Orchis-Light-Compact"
+      "Orchis-Light"
       "elementary"
       "Arc-Dark"
       "Arc"
@@ -214,7 +214,7 @@ EOF
 # Function to detect optimal GTK theme based on wallpaper colors
 detect_optimal_gtk_theme() {
   local wallpaper_path="$1"
-  local detected_theme="Orchis-Light-Compact" # Default
+  local detected_theme="Orchis-Light" # Default
   local prefer_dark="false"
 
   # First, try to use pywal's background color to determine if theme should be dark or light
@@ -252,7 +252,7 @@ detect_optimal_gtk_theme() {
       else
         log "INFO" "Light background detected (brightness: $brightness), suggesting light theme"
         local light_themes=(
-          "Orchis-Light-Compact"
+          "Orchis-Light"
           "Arc"
           "elementary"
           "Breeze"
@@ -275,7 +275,7 @@ detect_optimal_gtk_theme() {
     if dots-smart-colors --analyze 2>/dev/null | grep -q "light theme\|bright"; then
       log "INFO" "Light theme detected, suggesting light GTK theme"
       local light_themes=(
-        "Orchis-Light-Compact"
+        "Orchis-Light"
         "Arc"
         "elementary"
         "Breeze"
@@ -334,7 +334,7 @@ apply_rice_gtk_theme() {
       local prefer_dark="${theme_info#*:}"
       apply_gtk_theme "$gtk_theme" "Numix-Circle" "$prefer_dark"
     else
-      apply_gtk_theme "Orchis-Light-Compact" "Numix-Circle" "false"
+      apply_gtk_theme "Orchis-Light" "Numix-Circle" "false"
     fi
     return
   fi
@@ -369,7 +369,7 @@ apply_rice_gtk_theme() {
         prefer_dark="${theme_info#*:}"
       fi
     else
-      gtk_theme="Orchis-Light-Compact"
+      gtk_theme="Orchis-Light"
       if [[ $prefer_dark == "auto" ]]; then
         prefer_dark="false"
       fi

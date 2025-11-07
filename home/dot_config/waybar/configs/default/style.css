@@ -72,7 +72,7 @@ window#waybar.bottom {
 	margin: 6px 3px;
 	border: none;
 	border-radius: 8px;
-	font-size: 17px;
+	font-size: 22px;
 }
 
 #workspaces button:hover {
@@ -132,7 +132,7 @@ window#waybar.bottom {
 	padding: 4px 16px;
 	margin: 6px 3px;
 	border-radius: 8px;
-	font-size: 26px;
+	font-size: 22px;
 }
 
 #custom-jgmenu {
@@ -288,7 +288,7 @@ window#waybar.bottom {
 }
 
 #custom-player-controls {
-	font-size: 17px;
+	font-size: 13px;
 	color: @smart-accent;
 }
 
@@ -297,9 +297,8 @@ window#waybar.bottom {
 }
 
 #custom-player-info {
-	font-style: italic;
 	color: @fg-secondary;
-	font-size: 11px;
+	font-size: 13px;
 }
 
 /* ==========================================================================

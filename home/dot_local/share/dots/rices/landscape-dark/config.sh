@@ -11,7 +11,7 @@ RICE_TAGS="nature,professional,dark,elegant"
 RICE_BEST_FOR="Professional work, night sessions, nature lovers"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact"
+GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"

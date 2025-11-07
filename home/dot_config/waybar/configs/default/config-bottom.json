@@ -1,17 +1,12 @@
 {
   "layer": "top",
   "position": "bottom",
-  "height": 30,
+  "height": 28,
   "spacing": 0,
 
-  "modules-left": [
-    "hyprland/workspaces"
-  ],
+  "modules-left": ["hyprland/workspaces"],
 
-  "modules-center": [
-    "custom/player-controls",
-    "custom/player-info"
-  ],
+  "modules-center": ["custom/player-controls", "custom/player-info"],
 
   "modules-right": [
     "hyprland/language",
@@ -22,36 +17,138 @@
   ],
 
   "hyprland/workspaces": {
-    "format": "{icon}",
-    "format-icons": {
-      "1": "󰝦",
-      "2": "󰝦",
-      "3": "󰝦",
-      "4": "󰝦",
-      "5": "󰝦",
-      "6": "󰝦",
-      "7": "󰝦",
-      "8": "󰝦",
-      "9": "󰝦",
-      "10": "󰝦",
-      "active": "󰮯",
-      "default": "󰧞"
+    "format": "{windows}",
+    "format-window-separator": " ",
+    "window-rewrite-default": "󰧞",
+    "window-rewrite": {
+      "class<kitty>": "󰞷",
+      "class<Alacritty>": "󰞷",
+      "class<foot>": "󰞷",
+      "class<wezterm>": "󰞷",
+      "class<terminator>": "󰞷",
+      "class<gnome-terminal>": "󰞷",
+
+      "class<brave-browser>": "󰖟",
+      "class<firefox>": "󰈹",
+      "class<Firefox>": "󰈹",
+      "class<chromium>": "󰊯",
+      "class<Google-chrome>": "󰊯",
+      "class<vivaldi-stable>": "󰖟",
+      "class<opera>": "󰬺",
+      "class<microsoft-edge>": "󰇩",
+
+      "class<Code>": "󰨞",
+      "class<code>": "󰨞",
+      "class<nvim>": "",
+      "class<vim>": "",
+      "class<emacs>": "",
+      "class<sublime_text>": "󰅳",
+      "class<atom>": "",
+      "class<WebStorm>": "󱃖",
+      "class<IntelliJ IDEA>": "󱃖",
+      "class<PyCharm>": "󱃖",
+
+      "class<Slack>": "󰍩",
+      "class<discord>": "󰙯",
+      "class<telegram>": "",
+      "class<whatsapp>": "󰖣",
+      "class<teams>": "󰊻",
+      "class<zoom>": "󰊽",
+      "class<signal>": "󰭹",
+
+      "class<spotify>": "󰓇",
+      "class<Spotify>": "󰓇",
+      "class<vlc>": "󰕼",
+      "class<mpv>": "󰐹",
+      "class<rhythmbox>": "󰓃",
+      "class<audacity>": "󰈣",
+      "class<obs>": "󰐌",
+
+      "class<thunar>": "󰉋",
+      "class<Thunar>": "󰉋",
+      "class<nautilus>": "󰉋",
+      "class<dolphin>": "󰉋",
+      "class<pcmanfm>": "󰉋",
+      "class<nemo>": "󰉋",
+      "class<ranger>": "󰉋",
+
+      "class<obsidian>": "󱓷",
+      "class<notion>": "󰈙",
+      "class<logseq>": "󰗀",
+      "class<typora>": "󰧮",
+      "class<marktext>": "󰗞",
+      "class<zettlr>": "󰠮",
+
+      "class<gimp>": "󰵉",
+      "class<inkscape>": "󰜬",
+      "class<krita>": "󰚻",
+      "class<blender>": "󰂫",
+      "class<darktable>": "󰄄",
+      "class<rawtherapee>": "󰄄",
+      "class<figma-linux>": "󰤱",
+      "class<aseprite>": "󰏘",
+
+      "class<steam>": "󰓓",
+      "class<lutris>": "󰺵",
+      "class<heroic>": "󰊴",
+      "class<minecraft>": "󰍳",
+      "class<gamemode>": "󰊴",
+
+      "class<virtualbox>": "󰢔",
+      "class<virt-manager>": "󰢔",
+      "class<vmware>": "󰢔",
+      "class<docker>": "󰡨",
+      "class<qemu>": "󰢔",
+
+      "class<libreoffice>": "󰈙",
+      "class<libreoffice-writer>": "󰈙",
+      "class<libreoffice-calc>": "󰈛",
+      "class<libreoffice-impress>": "󰈧",
+      "class<evince>": "󰈦",
+      "class<okular>": "󰈦",
+      "class<zathura>": "󰈦",
+
+      "class<thunderbird>": "󰇮",
+      "class<evolution>": "󰇮",
+      "class<mailspring>": "󰇮",
+
+      "class<filezilla>": "󰒍",
+      "class<transmission>": "󰶘",
+      "class<qbittorrent>": "󰶘",
+      "class<bitwarden>": "󰌾",
+      "class<keepassxc>": "󰌾",
+
+      "class<calculator>": "󰃬",
+      "class<galculator>": "󰃬",
+      "class<gnome-calculator>": "󰃬",
+
+      "class<system-monitor>": "󰍹",
+      "class<htop>": "󰍹",
+      "class<btop>": "󰍹",
+      "class<bashtop>": "󰍹",
+
+      "title<.*youtube.*>": "󰗃",
+      "title<.*github.*>": "󰊤",
+      "title<.*gmail.*>": "󰊫",
+      "title<.*reddit.*>": "󰑍",
+      "title<.*twitter.*>": "󰕄",
+      "title<.*instagram.*>": "󰋾",
+      "title<.*linkedin.*>": "󰌻",
+      "title<.*stackoverflow.*>": "󰓌",
+      "title<.*netflix.*>": "󰝆"
     },
     "on-scroll-up": "hyprctl dispatch workspace e+1",
     "on-scroll-down": "hyprctl dispatch workspace e-1",
     "on-click": "activate",
-    "persistent-workspaces": {
-      "*": 10
-    },
-    "all-outputs": false,
-    "show-special": false
+    "all-outputs": true,
+    "show-special": true
   },
 
   "mpris": {
     "format": "{player_icon} {dynamic}",
     "format-paused": "{status_icon} <i>{dynamic}</i>",
     "dynamic-order": ["title", "artist"],
-    "dynamic-len": 40,
+    "dynamic-len": 32,
     "player-icons": {
       "default": "▶",
       "mpv": "🎵",

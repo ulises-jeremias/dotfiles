@@ -11,7 +11,7 @@ RICE_TAGS="retro,anime,warm,cozy"
 RICE_BEST_FOR="Long coding sessions, anime lovers, warm aesthetic"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact"
+GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"

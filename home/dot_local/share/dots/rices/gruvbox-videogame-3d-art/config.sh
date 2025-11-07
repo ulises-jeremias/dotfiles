@@ -11,7 +11,7 @@ RICE_TAGS="gaming,3d,modern,gruvbox,art"
 RICE_BEST_FOR="Modern gaming, 3D enthusiasts, artistic workflows"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact"
+GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"

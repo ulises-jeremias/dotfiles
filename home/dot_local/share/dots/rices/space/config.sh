@@ -11,8 +11,8 @@ RICE_TAGS="cosmic,space,mystical,calming,dark"
 RICE_BEST_FOR="Night sessions, space enthusiasts, calming work environment"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact" # Light theme for cosmic aesthetic with better readability
-ICON_THEME="Numix-Circle"        # Modern, clean icons
+GTK_THEME="Orchis-Light"  # Light theme for cosmic aesthetic with better readability
+ICON_THEME="Numix-Circle" # Modern, clean icons
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
 PREFER_DARK_THEME="false" # Light theme for comfortable viewing

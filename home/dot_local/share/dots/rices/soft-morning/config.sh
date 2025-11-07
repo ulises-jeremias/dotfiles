@@ -11,7 +11,7 @@ RICE_TAGS="morning,fresh,calm,cozy,light,gentle"
 RICE_BEST_FOR="Morning work, fresh start, calm environment, productivity with comfort"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact"
+GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"

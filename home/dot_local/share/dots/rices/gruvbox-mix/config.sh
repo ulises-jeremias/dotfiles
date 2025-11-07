@@ -11,7 +11,7 @@ RICE_TAGS="gruvbox,mixed,varied,warm,diverse"
 RICE_BEST_FOR="Versatile usage, gruvbox enthusiasts, varied workflows"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact"
+GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"

@@ -132,7 +132,7 @@ dots gtk-theme list
 dots gtk-theme current
 
 # Apply specific theme
-dots gtk-theme apply Orchis-Light-Compact
+dots gtk-theme apply Orchis-Light
 
 # Auto-detect optimal theme
 dots gtk-theme auto

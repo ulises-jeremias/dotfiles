@@ -11,7 +11,7 @@ RICE_TAGS="pastel,cozy,soft,dreamy,light,comfortable"
 RICE_BEST_FOR="All-day work, creative tasks, gentle on the eyes, cozy environment"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact"
+GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"

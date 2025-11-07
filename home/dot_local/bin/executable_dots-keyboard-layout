@@ -12,7 +12,7 @@
 ##   -m, --menu          Show rofi menu to select layout (default)
 ##   -c, --current       Show current layout info
 ##   -g, --get           Get current layout name only
-##   -a, --apply=LAYOUT  Apply layout directly (requires LAYOUT arg)
+##       --apply=LAYOUT  Apply layout directly (requires LAYOUT arg)
 ##       --variant=VAR   Specify variant when using --apply
 ##   -l, --list          List all available layouts
 ##   -h, --help          Show this help message

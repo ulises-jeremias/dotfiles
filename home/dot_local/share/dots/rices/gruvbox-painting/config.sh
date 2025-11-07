@@ -11,7 +11,7 @@ RICE_TAGS="gruvbox,art,painting,artistic,warm"
 RICE_BEST_FOR="Artists, creative work, aesthetic appreciation"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact"
+GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"

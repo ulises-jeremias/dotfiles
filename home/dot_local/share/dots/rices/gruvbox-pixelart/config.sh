@@ -11,7 +11,7 @@ RICE_TAGS="retro,gaming,8bit,pixelart,gruvbox"
 RICE_BEST_FOR="Retro gaming enthusiasts, pixel art lovers, nostalgia"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light-Compact"
+GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
