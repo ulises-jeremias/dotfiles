@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 150">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="150" fill="url(#bgGradient)" rx="12"/>
+
+  <!-- Decorative X11 window frames -->
+  <rect x="20" y="20" width="80" height="60" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" rx="4"/>
+  <rect x="24" y="24" width="72" height="8" fill="rgba(255,255,255,0.2)" rx="2"/>
+
+  <rect x="900" y="70" width="80" height="60" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" rx="4"/>
+  <rect x="904" y="74" width="72" height="8" fill="rgba(255,255,255,0.2)" rx="2"/>
+
+  <!-- X11 Logo Symbol -->
+  <g transform="translate(130, 30)">
+    <path d="M 0,0 L 20,30 M 20,0 L 0,30" stroke="url(#accentGradient)" stroke-width="4" stroke-linecap="round" filter="url(#glow)"/>
+    <text x="30" y="22" font-family="'JetBrains Mono', monospace" font-size="20" font-weight="700" fill="white" filter="url(#glow)">11</text>
+  </g>
+
+  <!-- Main Content -->
+  <text x="500" y="55" font-family="'Segoe UI', Arial, sans-serif" font-size="28" font-weight="700" fill="white" text-anchor="middle" filter="url(#glow)">
+    🪟 Looking for X11 + Classic WMs?
+  </text>
+
+  <text x="500" y="85" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="rgba(255,255,255,0.95)" text-anchor="middle">
+    X11 with i3, OpenBox, XFCE4, Polybar, Dunst &amp; Picom
+  </text>
+
+  <!-- Call to Action Button -->
+  <g transform="translate(370, 100)">
+    <rect width="260" height="38" fill="url(#accentGradient)" rx="20" filter="url(#glow)"/>
+    <text x="130" y="25" font-family="'Segoe UI', Arial, sans-serif" font-size="16" font-weight="600" fill="white" text-anchor="middle">
+      ✨ Check the X11 Branch →
+    </text>
+  </g>
+
+  <!-- Decorative dots -->
+  <circle cx="850" cy="35" r="4" fill="rgba(255,255,255,0.6)" filter="url(#glow)"/>
+  <circle cx="865" cy="30" r="3" fill="rgba(255,255,255,0.4)"/>
+  <circle cx="875" cy="40" r="2" fill="rgba(255,255,255,0.5)"/>
+</svg>
