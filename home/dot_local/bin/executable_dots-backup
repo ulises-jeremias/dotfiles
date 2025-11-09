@@ -93,11 +93,11 @@ fi
 if [[ -n ${list} ]]; then
   # enumerate available backups
   echo "Available backups:"
-  i=1
+  backup_number=1
   shopt -s nullglob
   for filepath in "${backup_dir}"/*.zip; do
-    echo "  ${i}) $(basename "${filepath}")"
-    i=$((i + 1))
+    echo "  ${backup_number}) $(basename "${filepath}")"
+    backup_number=$((backup_number + 1))
   done
   exit 0
 fi
