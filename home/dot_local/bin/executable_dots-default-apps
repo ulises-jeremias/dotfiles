@@ -1,0 +1,495 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Default Applications Manager
+## Configure XDG default applications using handlr
+## Note: Terminal emulator uses exo config (~/.config/xfce4/helpers.rc)
+##       All other apps use handlr/XDG MIME associations
+##
+## Usage:
+##   @script.name [OPTIONS]
+##
+## Options:
+##   -h, --help              Show this help
+##   -g, --gui               Show GUI selector (default)
+##   -l, --list              List current default applications
+##   -i, --info              Show detailed info about default apps
+##       --set=TYPE APP      Set default app for type (e.g., --set=x-scheme-handler/http firefox)
+##       --type=TYPE         Filter by MIME type or category
+##   -v, --verbose           Enable verbose output
+##
+## Categories:
+##   file-manager   - Default file manager
+##   terminal       - Default terminal emulator
+##   web-browser    - Default web browser
+##   text-editor    - Default text editor
+##   image-viewer   - Default image viewer
+##   video-player   - Default video player
+##   audio-player   - Default audio player
+##   pdf-viewer     - Default PDF viewer
+##
+## Examples:
+##   @script.name --gui                              # Show GUI selector
+##   @script.name --list                             # List all defaults
+##   @script.name --set x-scheme-handler/http firefox  # Set browser
+##   @script.name --type=file-manager                # Show file manager options
+
+set -e
+
+# Source EasyOptions for argument parsing
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+SCRIPT_NAME="$(basename "$0")"
+readonly SCRIPT_NAME
+readonly CACHE_DIR="$HOME/.cache/dots/default-apps"
+readonly CONFIG_FILE="$HOME/.config/dots/default-apps.conf"
+
+# Logging function
+log() {
+  local level="$1"
+  shift
+  if [[ ${verbose:-no} == yes ]] || [[ $level == "ERROR" ]]; then
+    echo "[$level] $*" >&2
+  fi
+}
+
+# Check dependencies
+check_dependencies() {
+  local missing_deps=()
+
+  if ! command -v handlr >/dev/null 2>&1; then
+    missing_deps+=("handlr-regex")
+  fi
+
+  if [[ ${gui:-yes} == yes ]] && ! command -v rofi >/dev/null 2>&1; then
+    missing_deps+=("rofi")
+  fi
+
+  if [[ ${#missing_deps[@]} -gt 0 ]]; then
+    log "ERROR" "Missing dependencies: ${missing_deps[*]}"
+    log "ERROR" "Install with: sudo pacman -S ${missing_deps[*]}"
+    exit 1
+  fi
+}
+
+# Initialize cache directory
+init_cache() {
+  mkdir -p "$CACHE_DIR"
+  mkdir -p "$(dirname "$CONFIG_FILE")"
+}
+
+# MIME type mappings for common categories
+get_mime_for_category() {
+  local category="$1"
+
+  case "$category" in
+    file-manager)
+      echo "inode/directory"
+      ;;
+    terminal)
+      echo "x-scheme-handler/terminal"
+      ;;
+    web-browser)
+      echo "x-scheme-handler/http"
+      ;;
+    text-editor)
+      echo "text/plain"
+      ;;
+    image-viewer)
+      echo "image/png"
+      ;;
+    video-player)
+      echo "video/mp4"
+      ;;
+    audio-player)
+      echo "audio/mpeg"
+      ;;
+    pdf-viewer)
+      echo "application/pdf"
+      ;;
+    *)
+      echo "$category"
+      ;;
+  esac
+}
+
+# Get human-readable name from .desktop file
+get_app_name() {
+  local desktop_file="$1"
+
+  if [[ -f $desktop_file ]]; then
+    grep "^Name=" "$desktop_file" | head -1 | cut -d'=' -f2
+  else
+    basename "$desktop_file" .desktop
+  fi
+}
+
+# List current default applications
+list_defaults() {
+  local categories=(
+    "file-manager:📁 File Manager"
+    "terminal:💻 Terminal"
+    "web-browser:🌐 Web Browser"
+    "text-editor:📝 Text Editor"
+    "image-viewer:🖼️  Image Viewer"
+    "video-player:🎬 Video Player"
+    "audio-player:🎵 Audio Player"
+    "pdf-viewer:📄 PDF Viewer"
+  )
+
+  echo "Current Default Applications:"
+  echo "=============================="
+  echo ""
+
+  for category_pair in "${categories[@]}"; do
+    local category="${category_pair%%:*}"
+    local label="${category_pair#*:}"
+
+    local default_app
+    local app_name
+
+    # Special handling for terminal (uses exo config, not MIME)
+    if [[ $category == "terminal" ]]; then
+      if [[ -f ~/.config/xfce4/helpers.rc ]]; then
+        default_app=$(grep "^TerminalEmulator=" ~/.config/xfce4/helpers.rc 2>/dev/null | cut -d'=' -f2)
+        [[ -z $default_app ]] && default_app="Not set"
+      else
+        default_app="Not set"
+      fi
+
+      if [[ $default_app != "Not set" ]]; then
+        # Try to find a friendly name
+        case "$default_app" in
+          kitty) app_name="Kitty Terminal" ;;
+          alacritty) app_name="Alacritty" ;;
+          xterm) app_name="XTerm" ;;
+          *) app_name="$default_app" ;;
+        esac
+      else
+        app_name="Not set"
+      fi
+    else
+      # Normal MIME-based handling
+      local mime_type
+      mime_type=$(get_mime_for_category "$category")
+      default_app=$(handlr get "$mime_type" 2>/dev/null || echo "")
+
+      # handlr returns empty string on error, not exit code
+      [[ -z $default_app ]] && default_app="Not set"
+
+      if [[ $default_app != "Not set" ]]; then
+        # Find .desktop file
+        for desktop_dir in /usr/share/applications ~/.local/share/applications; do
+          if [[ -f "$desktop_dir/$default_app" ]]; then
+            app_name=$(get_app_name "$desktop_dir/$default_app")
+            break
+          fi
+        done
+        app_name="${app_name:-$default_app}"
+      else
+        app_name="Not set"
+      fi
+    fi
+
+    printf "%-20s %s\n" "$label" "$app_name"
+  done
+}
+
+# Get available applications for a MIME type
+get_available_apps() {
+  local mime_type="$1"
+
+  # Search for .desktop files that handle this MIME type
+  local apps=()
+  for desktop_dir in /usr/share/applications ~/.local/share/applications; do
+    [[ ! -d $desktop_dir ]] && continue
+    while IFS= read -r desktop_file; do
+      [[ ! -f $desktop_file ]] && continue
+      # Check if this desktop file handles the mime type
+      if grep -qi "MimeType=.*${mime_type}" "$desktop_file" 2>/dev/null; then
+        local basename_file
+        basename_file=$(basename "$desktop_file")
+        # Avoid duplicates
+        local found=false
+        for existing in "${apps[@]}"; do
+          [[ $existing == "$basename_file" ]] && found=true && break
+        done
+        [[ $found == false ]] && apps+=("$basename_file")
+      fi
+    done < <(find "$desktop_dir" -maxdepth 1 -name "*.desktop" 2>/dev/null)
+  done
+
+  # Print apps, one per line
+  for app in "${apps[@]}"; do
+    echo "$app"
+  done
+}
+
+# Show GUI selector for a category
+show_gui_selector() {
+  local categories=(
+    "📁 File Manager:file-manager"
+    "💻 Terminal:terminal"
+    "🌐 Web Browser:web-browser"
+    "📝 Text Editor:text-editor"
+    "🖼️ Image Viewer:image-viewer"
+    "🎬 Video Player:video-player"
+    "🎵 Audio Player:audio-player"
+    "📄 PDF Viewer:pdf-viewer"
+  )
+
+  local menu=""
+  for category_pair in "${categories[@]}"; do
+    local label="${category_pair%%:*}"
+    local category="${category_pair#*:}"
+    local mime_type
+    mime_type=$(get_mime_for_category "$category")
+
+    local current
+    current=$(handlr get "$mime_type" 2>/dev/null || echo "Not set")
+    if [[ $current != "Not set" ]]; then
+      current=$(basename "$current" .desktop)
+      menu+="$label ($current)\n"
+    else
+      menu+="$label (Not set)\n"
+    fi
+  done
+
+  local selected
+  selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
+    -p "Default Applications" \
+    -theme ~/.config/rofi/applets.rasi \
+    -no-custom) || return 0
+
+  [[ -z $selected ]] && return 0
+
+  # Extract category from selection
+  local selected_label="${selected%% (*}"
+  local category=""
+  for category_pair in "${categories[@]}"; do
+    if [[ "${category_pair%%:*}" == "$selected_label" ]]; then
+      category="${category_pair#*:}"
+      break
+    fi
+  done
+
+  [[ -z $category ]] && return 0
+
+  # Show available applications
+  show_app_selector "$category"
+}
+
+# Show terminal selector (special handling for exo)
+show_terminal_selector() {
+  # Common terminal emulators
+  local terminals=(
+    "kitty:Kitty Terminal"
+    "alacritty:Alacritty"
+    "wezterm:WezTerm"
+    "foot:Foot"
+    "xterm:XTerm"
+    "gnome-terminal:GNOME Terminal"
+    "konsole:Konsole"
+    "xfce4-terminal:XFCE Terminal"
+  )
+
+  # Get current default
+  local current_term=""
+  if [[ -f ~/.config/xfce4/helpers.rc ]]; then
+    current_term=$(grep "^TerminalEmulator=" ~/.config/xfce4/helpers.rc 2>/dev/null | cut -d'=' -f2)
+  fi
+
+  # Build menu with available terminals
+  local menu=""
+  for term_pair in "${terminals[@]}"; do
+    local term_cmd="${term_pair%%:*}"
+    local term_name="${term_pair#*:}"
+
+    # Check if terminal is installed
+    if command -v "$term_cmd" >/dev/null 2>&1; then
+      if [[ $term_cmd == "$current_term" ]]; then
+        menu+="✓ $term_name|$term_cmd\n"
+      else
+        menu+="  $term_name|$term_cmd\n"
+      fi
+    fi
+  done
+
+  if [[ -z $menu ]]; then
+    notify-send "Default Applications" "No terminal emulators found" -u low
+    return 0
+  fi
+
+  local selected
+  selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
+    -p "Select Terminal Emulator" \
+    -theme ~/.config/rofi/applets.rasi \
+    -no-custom) || return 0
+
+  [[ -z $selected ]] && return 0
+
+  # Extract terminal command from selection
+  local term_cmd="${selected##*|}"
+  term_cmd="${term_cmd#✓ }"
+  term_cmd="${term_cmd#  }"
+
+  # Set as default in exo config
+  mkdir -p ~/.config/xfce4
+  if [[ -f ~/.config/xfce4/helpers.rc ]]; then
+    sed -i "s/^TerminalEmulator=.*/TerminalEmulator=$term_cmd/" ~/.config/xfce4/helpers.rc
+  else
+    echo "TerminalEmulator=$term_cmd" > ~/.config/xfce4/helpers.rc
+  fi
+
+  log "INFO" "Set $term_cmd as default terminal emulator"
+  notify-send "Default Applications" "Set ${selected%%|*} as default terminal" -u low
+}
+
+# Show application selector for specific category
+show_app_selector() {
+  local category="$1"
+
+  # Special handling for terminal
+  if [[ $category == "terminal" ]]; then
+    show_terminal_selector
+    return 0
+  fi
+
+  local mime_type
+  mime_type=$(get_mime_for_category "$category")
+
+  # Get list of available applications
+  local apps
+  apps=$(get_available_apps "$mime_type")
+
+  if [[ -z $apps ]]; then
+    notify-send "Default Applications" "No applications found for $category" -u low
+    return 0
+  fi
+
+  # Build menu with app names
+  local menu=""
+  local current_default
+  current_default=$(handlr get "$mime_type" 2>/dev/null || echo "")
+
+  while IFS= read -r desktop_file; do
+    [[ -z $desktop_file ]] && continue
+
+    local app_name=""
+    for desktop_dir in /usr/share/applications ~/.local/share/applications; do
+      if [[ -f "$desktop_dir/$desktop_file" ]]; then
+        app_name=$(get_app_name "$desktop_dir/$desktop_file")
+        break
+      fi
+    done
+    app_name="${app_name:-$(basename "$desktop_file" .desktop)}"
+
+    if [[ $desktop_file == "$current_default" ]]; then
+      menu+="✓ $app_name|$desktop_file\n"
+    else
+      menu+="  $app_name|$desktop_file\n"
+    fi
+  done <<< "$apps"
+
+  local selected
+  selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
+    -p "Select ${category//-/ }" \
+    -theme ~/.config/rofi/applets.rasi \
+    -no-custom) || return 0
+
+  [[ -z $selected ]] && return 0
+
+  # Extract desktop file from selection
+  local desktop_file="${selected##*|}"
+  desktop_file="${desktop_file#✓ }"
+  desktop_file="${desktop_file#  }"
+
+  # Set as default
+  if handlr set "$mime_type" "$desktop_file" 2>/dev/null; then
+    log "INFO" "Set $desktop_file as default for $category"
+    notify-send "Default Applications" "Set as default: ${selected%%|*}" -u low
+  else
+    log "ERROR" "Failed to set default application"
+    notify-send "Default Applications" "Failed to set default application" -u critical
+  fi
+}
+
+# Set default application
+set_default() {
+  local mime_type="$1"
+  local app="$2"
+
+  if handlr set "$mime_type" "$app" 2>/dev/null; then
+    log "INFO" "Set $app as default for $mime_type"
+    echo "Successfully set $app as default for $mime_type"
+  else
+    log "ERROR" "Failed to set default application"
+    echo "Failed to set default application" >&2
+    exit 1
+  fi
+}
+
+# Show detailed info
+show_info() {
+  echo "Default Applications Configuration"
+  echo "=================================="
+  echo ""
+  echo "Configuration managed by: handlr + exo"
+  echo "Config locations:"
+  echo "  - handlr: ~/.config/handlr/handlr.toml"
+  echo "  - exo (terminal): ~/.config/xfce4/helpers.rc"
+  echo "Desktop files: /usr/share/applications, ~/.local/share/applications"
+  echo ""
+
+  list_defaults
+
+  echo ""
+  echo "To configure graphically, use:"
+  echo "  - dots-default-apps --gui"
+  echo "  - handlr (command-line tool)"
+  echo ""
+  echo "Note: Terminal emulator is configured via exo-open,"
+  echo "      which uses ~/.config/xfce4/helpers.rc"
+}
+
+# Main function
+main() {
+  check_dependencies
+  init_cache
+
+  # Handle commands
+  if [[ ${info:-no} == yes ]]; then
+    show_info
+    exit 0
+  fi
+
+  if [[ ${list:-no} == yes ]]; then
+    list_defaults
+    exit 0
+  fi
+
+  if [[ -n ${set:-} ]]; then
+    if [[ -z ${arguments[0]:-} ]] || [[ -z ${arguments[1]:-} ]]; then
+      log "ERROR" "Usage: --set MIME_TYPE APPLICATION"
+      exit 1
+    fi
+    set_default "${arguments[0]}" "${arguments[1]}"
+    exit 0
+  fi
+
+  if [[ -n ${type:-} ]]; then
+    show_app_selector "$type"
+    exit 0
+  fi
+
+  # Default: show GUI
+  if [[ ${gui:-yes} == yes ]]; then
+    show_gui_selector
+  else
+    show_info
+  fi
+}
+
+main "$@"

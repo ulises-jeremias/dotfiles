@@ -21,3 +21,5 @@ Each ADR follows this structure:
 - [ADR-002: Modular Rice System Architecture](002-rice-system.md)
 - [ADR-003: EasyOptions for Script Argument Parsing](003-easyoptions-standard.md)
 - [ADR-004: Testing Strategy with Docker/Vagrant](004-testing-strategy.md)
+- [ADR-005: Smart Colors Centralized Integration](005-smart-colors-centralized-integration.md)
+- [ADR-006: Use XDG Default Applications with handlr](006-xdg-default-apps-handlr.md)

@@ -89,7 +89,8 @@ dots power-menu --mode=rofi      # Force rofi menu
 - **Display**: `nwg-displays` (Wayland) / `arandr` (X11) → manual config
 - **Network**: `nm-connection-editor` → `nmtui`
 - **Audio**: `pavucontrol` → `alsamixer`
-- **Keyboard**: rofi menu with Hyprland integration
+- **Keyboard**: LXQt keyboard configuration GUI
+- **Default Applications**: Configure default apps via `handlr`
 - **Power**: `hypridle` config editor
 - **System Info**: `fastfetch` → `neofetch`
 
@@ -99,6 +100,35 @@ dots power-menu --mode=rofi      # Force rofi menu
 dots settings-gui                # Show all options
 # Opens rofi menu to select: Themes, Display, Network, Audio, etc.
 ```
+
+#### `default-apps` – Default Applications Manager
+
+**Purpose**: Configure XDG default applications  
+**Primary Tool**: handlr (modern XDG MIME handler)  
+**System Integration**: Works with `exo-open`, `handlr`, and `xdg-open`  
+**Categories**: file-manager, terminal, web-browser, text-editor, image-viewer, video-player, audio-player, pdf-viewer
+
+**Usage Examples**:
+
+```bash
+dots default-apps --gui                    # Show GUI selector
+dots default-apps --list                   # List current defaults
+dots default-apps --type=file-manager      # Configure file manager
+dots default-apps --set x-scheme-handler/http firefox.desktop  # Set browser
+dots default-apps --info                   # Show configuration info
+```
+
+**How it works**:
+
+- Uses `handlr` to manage XDG MIME associations
+- `exo-open` respects these settings (e.g., `exo-open --launch FileManager`)
+- GUI provides category-based selection (no need to know MIME types)
+- Configuration stored in `~/.config/handlr/handlr.toml`
+
+**Alternative tools**:
+
+- Command-line: `handlr set <MIME_TYPE> <APP.desktop>`
+- exo-open: For terminal emulator configuration
 
 #### `performance-mode` – CPU Performance Profiles
 
@@ -273,16 +303,19 @@ dots battery-monitor --interval=60  # Check every 60s
 
 #### `file-manager` – File Manager Launcher
 
-**Purpose**: Launch preferred file manager  
-**Fallback Chain**: `thunar` → `nautilus` → `nemo` → `pcmanfm-qt` → `dolphin` → `pcmanfm` → `caja`  
+**Purpose**: Wrapper for XDG default file manager  
+**Primary Tool**: exo-open (respects XDG MIME associations)  
+**Fallback Chain**: `exo-open` → `handlr` → `xdg-open`  
 **Usage Examples**:
 
 ```bash
 dots file-manager                # Open default file manager
-dots file-manager --list         # Show available file managers
-dots file-manager --set=nautilus # Set preferred manager
+dots file-manager --info         # Show current default
+dots file-manager --select       # Configure default apps
 dots file-manager --path=/home   # Open specific path
 ```
+
+**Note**: Configure the actual file manager with `dots default-apps --type=file-manager`
 
 #### `night-mode` – Blue Light Filter
 

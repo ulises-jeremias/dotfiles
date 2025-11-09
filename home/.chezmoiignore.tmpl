@@ -23,4 +23,23 @@
 .config/xfce4/**
 .config/picom.conf
 {{-   end -}}
+
+# XFCE configs - Only manage helpers.rc for exo-open, ignore xfconf
+.config/xfce4/xfconf/**
+
+# LXQt - Only manage minimal required configs
+# Ignore window geometry and UI state files
+.config/lxqt/lxqt-config-appearance.conf
+.config/lxqt/lxqt-config.conf
+.config/lxqt/lxqt-config-locale.conf
+.config/lxqt/lxqt-config-monitor.conf
+.config/lxqt/session.conf
+
+# Temporary and cache directories
+.cache/**
+.local/state/**
+
+# Application-specific caches and states
+.config/dots/file-manager.conf
+.cache/dots/**
 {{- end -}}

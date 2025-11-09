@@ -3,13 +3,38 @@
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
+## Launch jgmenu with smart color integration
+##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
-## Show a jgmenu
+## Usage:
+##     @script.name [OPTIONS]
+##
+## Options:
+##     -h, --help           Show this help message
+##     -v, --verbose        Enable verbose output
+##         --config=PATH    Use specific config file (default: ~/.config/jgmenu/jgmenurc-config)
 
-# Paths to the original and temporary configuration files
-original_config_file="$HOME/.config/jgmenu/jgmenurc-config"
-target_config_file="$HOME/.config/jgmenu/jgmenurc"
+set -e
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+SCRIPT_NAME="$(basename "$0")"
+readonly SCRIPT_NAME
+
+# Paths to configuration files
+readonly ORIGINAL_CONFIG_FILE="${config:-$HOME/.config/jgmenu/jgmenurc-config}"
+readonly TARGET_CONFIG_FILE="$HOME/.config/jgmenu/jgmenurc"
+readonly SMART_COLORS_FILE="$HOME/.cache/dots/smart-colors/colors.sh"
+
+# Logging function
+log() {
+  local level="$1"
+  shift
+  if [[ ${verbose:-no} == yes ]] || [[ $level == "ERROR" ]]; then
+    echo "[$SCRIPT_NAME] [$level] $*" >&2
+  fi
+}
 
 # Function to get smart colors with proper fallbacks
 get_smart_color() {
@@ -17,9 +42,9 @@ get_smart_color() {
   local fallback_xrdb="${2:-background}"
 
   # Load smart colors from shell variables file if available
-  local smart_colors_file="$HOME/.cache/dots/smart-colors/colors.sh"
-  if [[ -f $smart_colors_file ]]; then
-    source "$smart_colors_file"
+  if [[ -f $SMART_COLORS_FILE ]]; then
+    # shellcheck source=/dev/null
+    source "$SMART_COLORS_FILE"
 
     # Map concepts to shell variables
     case "$concept" in
@@ -50,13 +75,9 @@ get_smart_color() {
     esac
   else
     # Fallback to xrdb colors if smart colors file doesn't exist
+    log "WARNING" "Smart colors file not found, using xrdb fallback"
     xrdb -get "$fallback_xrdb" 2>/dev/null || echo "#ffffff"
   fi
-}
-
-# Function to get color (legacy wrapper)
-get_xrdb_color() {
-  get_smart_color "SMART_FOREGROUND" "$1"
 }
 
 # Function to update color placeholders with smart colors
@@ -65,36 +86,71 @@ update_color() {
   local smart_placeholder="$2"
   local opacity_transparency="${3:-100}"
 
-  [ -z "$smart_placeholder" ] && return # Skip if placeholder is empty
+  [[ -z $smart_placeholder ]] && return 0
 
   # Get the smart color for this placeholder
-  local color_value=$(get_smart_color "$smart_placeholder")
+  local color_value
+  color_value=$(get_smart_color "$smart_placeholder")
 
   # Update the color in the config file, preserving opacity/transparency
-  sed -i "s|^$color_name.*= SMART_.*|$color_name = $color_value $opacity_transparency|" "$target_config_file"
+  sed -i "s|^$color_name.*= SMART_.*|$color_name = $color_value $opacity_transparency|" "$TARGET_CONFIG_FILE"
+
+  log "INFO" "Updated $color_name with $smart_placeholder ($color_value)"
 }
 
-# Ensure the original configuration file exists
-if [ ! -f "$original_config_file" ]; then
-  echo "Original configuration file $original_config_file does not exist."
-  notify-send "$0: Original configuration file $original_config_file does not exist."
-  exit 1
-fi
+# Validate dependencies
+check_dependencies() {
+  local missing_deps=()
 
-# Copy the original configuration file to the temporary location
-cp "$original_config_file" "$target_config_file"
+  if ! command -v jgmenu_run >/dev/null 2>&1; then
+    missing_deps+=("jgmenu")
+  fi
 
-# Replace smart color placeholders with actual colors from dots-smart-colors
-update_color "color_menu_bg" "BACKGROUND" "98"
-update_color "color_menu_fg" "FOREGROUND" "100"
-update_color "color_norm_bg" "BACKGROUND" "0"
-update_color "color_norm_fg" "FOREGROUND" "100"
-update_color "color_sel_bg" "ACCENT" "60"
-update_color "color_sel_fg" "FOREGROUND" "100"
-update_color "color_sep_fg" "INFO" "40"
+  if [[ ${#missing_deps[@]} -gt 0 ]]; then
+    log "ERROR" "Missing dependencies: ${missing_deps[*]}"
+    notify-send -u critical "JGMenu" "Missing dependencies: ${missing_deps[*]}"
+    return 1
+  fi
 
-# Set JGMENU_CONFIG to point to the temporary configuration file
-export JGMENU_CONFIG="$target_config_file"
+  return 0
+}
 
-# Run jgmenu with the updated configuration file
-jgmenu_run
+# Main execution
+main() {
+  # Check dependencies
+  check_dependencies || exit 1
+
+  # Ensure the original configuration file exists
+  if [[ ! -f $ORIGINAL_CONFIG_FILE ]]; then
+    log "ERROR" "Configuration file not found: $ORIGINAL_CONFIG_FILE"
+    notify-send -u critical "JGMenu" "Configuration file not found"
+    exit 1
+  fi
+
+  log "INFO" "Copying configuration from $ORIGINAL_CONFIG_FILE to $TARGET_CONFIG_FILE"
+
+  # Copy the original configuration file to the temporary location
+  if ! cp "$ORIGINAL_CONFIG_FILE" "$TARGET_CONFIG_FILE"; then
+    log "ERROR" "Failed to copy configuration file"
+    exit 1
+  fi
+
+  # Replace smart color placeholders with actual colors from dots-smart-colors
+  log "INFO" "Applying smart colors to jgmenu configuration"
+  update_color "color_menu_bg" "BACKGROUND" "98"
+  update_color "color_menu_fg" "FOREGROUND" "100"
+  update_color "color_norm_bg" "BACKGROUND" "0"
+  update_color "color_norm_fg" "FOREGROUND" "100"
+  update_color "color_sel_bg" "ACCENT" "60"
+  update_color "color_sel_fg" "FOREGROUND" "100"
+  update_color "color_sep_fg" "INFO" "40"
+
+  # Set JGMENU_CONFIG to point to the temporary configuration file
+  export JGMENU_CONFIG="$TARGET_CONFIG_FILE"
+
+  log "INFO" "Launching jgmenu with position_mode=fixed"
+
+  jgmenu_run
+}
+
+main "$@"

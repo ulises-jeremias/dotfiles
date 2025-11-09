@@ -3,211 +3,93 @@
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
-## File Manager Launcher - Unified file manager wrapper
-## Auto-detects and launches preferred file manager
+## File Manager Launcher - Wrapper for exo-open FileManager
+## Delegates to XDG default file manager configured via handlr/exo
 ##
 ## Usage:
 ##   @script.name [OPTIONS] [PATH]
 ##
 ## Options:
 ##   -h, --help          Show this help
-##   -s, --select        Show menu to select preferred file manager
-##   -i, --info          Show current configuration
-##   -l, --list          List available file managers
-##       --set=FM        Set preferred file manager (e.g., --set=nautilus)
+##   -s, --select        Open default applications settings
+##   -i, --info          Show current default file manager
 ##       --path=PATH     Path to open (default: current directory)
 
 set -e
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
-readonly CONFIG_FILE="$HOME/.config/dots/file-manager.conf"
+# Show current default file manager
+show_info() {
+  echo "File Manager Configuration"
+  echo "=========================="
+  echo ""
 
-# Available file managers in priority order
-declare -A FILE_MANAGERS=(
-  ["thunar"]="Thunar (XFCE, lightweight)"
-  ["nautilus"]="Nautilus (GNOME, feature-rich)"
-  ["nemo"]="Nemo (Cinnamon, feature-rich)"
-  ["pcmanfm-qt"]="PCManFM-Qt (LXQt, lightweight)"
-  ["dolphin"]="Dolphin (KDE, feature-rich)"
-  ["pcmanfm"]="PCManFM (LXDE, lightweight)"
-  ["caja"]="Caja (MATE, traditional)"
-)
-
-# Get preferred file manager from config
-get_preferred() {
-  if [[ -f $CONFIG_FILE ]]; then
-    grep -v '^#' "$CONFIG_FILE" | grep -v '^$' | head -1
-  fi
-}
-
-# Set preferred file manager
-set_preferred() {
-  local fm="$1"
-
-  if ! command -v "$fm" >/dev/null 2>&1; then
-    echo "Error: $fm is not installed" >&2
-    return 1
-  fi
-
-  mkdir -p "$(dirname "$CONFIG_FILE")"
-  echo "# Preferred file manager" >"$CONFIG_FILE"
-  echo "$fm" >>"$CONFIG_FILE"
-
-  echo "✓ Preferred file manager set to: $fm"
-  notify-send "File Manager" "Preferred file manager set to $fm"
-}
-
-# Detect available file managers
-detect_available() {
-  local available=()
-
-  for fm in "${!FILE_MANAGERS[@]}"; do
-    if command -v "$fm" >/dev/null 2>&1; then
-      available+=("$fm")
-    fi
-  done
-
-  printf '%s\n' "${available[@]}"
-}
-
-# Get best available file manager
-get_best_available() {
-  local preferred
-  preferred=$(get_preferred)
-
-  # Use preferred if set and available
-  if [[ -n $preferred ]] && command -v "$preferred" >/dev/null 2>&1; then
-    echo "$preferred"
-    return 0
+  if command -v handlr >/dev/null 2>&1; then
+    local default_fm
+    default_fm=$(handlr get inode/directory 2>/dev/null || echo "Not set")
+    echo "Current default: $default_fm"
+    echo ""
+    echo "Available file managers:"
+    # List .desktop files that handle inode/directory
+    for desktop_dir in /usr/share/applications ~/.local/share/applications; do
+      [[ ! -d $desktop_dir ]] && continue
+      while IFS= read -r desktop_file; do
+        [[ ! -f $desktop_file ]] && continue
+        if grep -qi "MimeType=.*inode/directory" "$desktop_file" 2>/dev/null; then
+          local name
+          name=$(grep "^Name=" "$desktop_file" | head -1 | cut -d'=' -f2)
+          local basename_file
+          basename_file=$(basename "$desktop_file")
+          echo "  - $basename_file ($name)"
+        fi
+      done < <(find "$desktop_dir" -maxdepth 1 -name "*.desktop" 2>/dev/null)
+    done
+  elif command -v xdg-mime >/dev/null 2>&1; then
+    local default_fm
+    default_fm=$(xdg-mime query default inode/directory 2>/dev/null || echo "Not set")
+    echo "Current default: $default_fm"
+  else
+    echo "No XDG tools found (handlr or xdg-mime)"
   fi
 
-  # Default priority order
-  local priority_order=(
-    "thunar"
-    "nautilus"
-    "nemo"
-    "pcmanfm-qt"
-    "dolphin"
-    "pcmanfm"
-    "caja"
-  )
+  echo ""
+  echo "To configure:"
+  echo "  - dots-default-apps --gui"
+  echo "  - dots-default-apps --type=file-manager"
+  echo "  - handlr set inode/directory thunar.desktop"
+}
 
-  for fm in "${priority_order[@]}"; do
-    if command -v "$fm" >/dev/null 2>&1; then
-      echo "$fm"
-      return 0
-    fi
-  done
-
-  return 1
+# Open default applications settings
+open_settings() {
+  if command -v dots-default-apps >/dev/null 2>&1; then
+    dots-default-apps --type=file-manager
+  else
+    echo "Error: dots-default-apps not found" >&2
+    exit 1
+  fi
 }
 
 # Launch file manager
-launch_fm() {
-  local path="${1:-.}"
-  local fm
+launch_file_manager() {
+  local path="${path:-$(pwd)}"
 
-  fm=$(get_best_available)
-
-  if [[ -z $fm ]]; then
-    notify-send -u critical "File Manager Error" "No file manager installed"
-    echo "Error: No file manager found. Install one of: ${!FILE_MANAGERS[*]}" >&2
-    return 1
-  fi
-
-  # Launch in background
-  case "$fm" in
-    thunar | nautilus | nemo | caja)
-      "$fm" "$path" &>/dev/null &
-      ;;
-    pcmanfm | pcmanfm-qt)
-      "$fm" "$path" &>/dev/null &
-      ;;
-    dolphin)
-      "$fm" "$path" &>/dev/null &
-      ;;
-    *)
-      "$fm" "$path" &>/dev/null &
-      ;;
-  esac
-
-  disown
-}
-
-# Show selection menu
-show_menu() {
-  local available
-  mapfile -t available < <(detect_available)
-
-  if [[ ${#available[@]} -eq 0 ]]; then
-    notify-send -u critical "File Manager Error" "No file manager installed"
-    echo "Error: No file manager found" >&2
-    return 1
-  fi
-
-  local current
-  current=$(get_preferred)
-
-  # Build menu
-  local menu=""
-  for fm in "${available[@]}"; do
-    local desc="${FILE_MANAGERS[$fm]}"
-    if [[ $fm == "$current" ]]; then
-      menu+="✓ $fm - $desc\n"
-    else
-      menu+="  $fm - $desc\n"
-    fi
-  done
-
-  # Show rofi menu
-  local selected
-  if command -v rofi >/dev/null 2>&1; then
-    selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
-      -p "File Manager" \
-      -mesg "Current: ${current:-auto-detect}" \
-      -theme ~/.config/rofi/applets.rasi \
-      -no-custom)
+  if command -v exo-open >/dev/null 2>&1; then
+    exo-open --launch FileManager "$path" &
+  elif command -v handlr >/dev/null 2>&1; then
+    handlr open "$path" &
+  elif command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "$path" &
   else
-    echo "Error: rofi not installed" >&2
-    return 1
+    echo "Error: No file manager launcher found (exo-open, handlr, or xdg-open)" >&2
+    exit 1
   fi
-
-  [[ -z $selected ]] && return 0
-
-  # Extract FM name (remove checkmark and description)
-  selected="${selected#✓ }"
-  selected="${selected#  }"
-  selected="${selected%% -*}"
-
-  set_preferred "$selected"
 }
 
-# Show info
-show_info() {
-  local preferred current_best
-  preferred=$(get_preferred)
-  current_best=$(get_best_available)
-
-  echo "Preferred: ${preferred:-not set}"
-  echo "Current best: ${current_best:-none}"
-  echo ""
-  echo "Available file managers:"
-
-  local available
-  mapfile -t available < <(detect_available)
-
-  for fm in "${available[@]}"; do
-    local desc="${FILE_MANAGERS[$fm]}"
-    printf "  %-15s - %s\n" "$fm" "$desc"
-  done
-}
-
-# Main
+# Main function
 main() {
-  # Handle flags
-  if [[ ${select:-no} == yes ]]; then
-    show_menu
+  if [[ ${help:-no} == yes ]]; then
+    show_help
     exit 0
   fi
 
@@ -216,25 +98,13 @@ main() {
     exit 0
   fi
 
-  if [[ ${list:-no} == yes ]]; then
-    detect_available
+  if [[ ${select:-no} == yes ]]; then
+    open_settings
     exit 0
   fi
 
-  if [[ -n ${set:-} ]]; then
-    set_preferred "$set"
-    exit 0
-  fi
-
-  # Launch with optional path
-  local target_path="${path:-.}"
-
-  # If positional arg provided without --path flag, use it
-  if [[ $# -gt 0 && -z ${path:-} ]]; then
-    target_path="$1"
-  fi
-
-  launch_fm "$target_path"
+  # Default: launch file manager
+  launch_file_manager
 }
 
 main "$@"

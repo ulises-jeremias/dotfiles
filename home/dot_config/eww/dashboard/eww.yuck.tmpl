@@ -197,86 +197,86 @@
 ;; ** Windows *************************************************************************
 
 ;; background
-(defwindow dashboard-background :stacking "fg" :focusable "false" :screen 1
-	    :geometry (geometry :x 0 :y 0 :width "1920px" :height "1080px")
+(defwindow dashboard-background :stacking "overlay" :focusable "false"
+	    :geometry (geometry :x 0 :y 0 :width "100%" :height "100%")
 					(bg))
 
 ;; profile
-(defwindow dashboard-profile :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-profile :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 150 :y 150 :width 350 :height 440)
 					(user))
 
 ;; system
-(defwindow dashboard-system :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-system :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 150 :y 605 :width 350 :height 325)
 					(system))
 
 ;; clock
-(defwindow dashboard-clock :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-clock :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 515 :y 150 :width 350 :height 155)
 					(clock))
 
 ;; uptime
-(defwindow dashboard-uptime :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-uptime :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 515 :y 320 :width 350 :height 155)
 					(uptime))
 
 ;; music
-(defwindow dashboard-music :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-music :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 515 :y 490 :width 610 :height 280)
 					(music))
 
 ;; github
-(defwindow dashboard-github :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-github :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 515 :y 785 :width 141 :height 145)
 					(github))
 
 ;; youtube
-(defwindow dashboard-youtube :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-youtube :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 671 :y 785 :width 142 :height 145)
 					(youtube))
 
 ;; weather
-(defwindow dashboard-weather :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-weather :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 880 :y 150 :width 550 :height 325)
 					(weather))
 
 ;; mail
-(defwindow dashboard-mail :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-mail :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 827 :y 785 :width 298 :height 145)
 					(mail))
 
 ;; folders
-(defwindow dashboard-folders :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-folders :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 1140 :y 490 :width 290 :height 438)
 					(folders))
 
 ;; lock
-(defwindow dashboard-lock :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-lock :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 1445 :y 150 :width 155 :height 155)
 					(lock))
 
 ;; logout
-(defwindow dashboard-logout :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-logout :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 1615 :y 150 :width 155 :height 155)
 					(logout))
 
 ;; sleep
-(defwindow dashboard-sleep :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-sleep :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 1445 :y 320 :width 155 :height 155)
 					(sleep))
 
 ;; reboot
-(defwindow dashboard-reboot :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-reboot :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 1615 :y 320 :width 155 :height 155)
 					(reboot))
 
 ;; poweroff
-(defwindow dashboard-poweroff :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-poweroff :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 1445 :y 490 :width 325 :height 155)
 					(poweroff))
 
 ;; placeholder 1
-(defwindow dashboard-placeholder :stacking "fg" :focusable "false" :screen 1
+(defwindow dashboard-placeholder :stacking "overlay" :focusable "false"
 	    :geometry (geometry :x 1445 :y 660 :width 325 :height 267)
 					(placeholder))

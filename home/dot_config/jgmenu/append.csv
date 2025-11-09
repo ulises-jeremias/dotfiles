@@ -1,9 +1,3 @@
 ^sep()
-Lock,dots-lockscreen --lock,system-lock-screen
-Exit,^checkout(exit),system-shutdown
-
-exit,^tag(exit)
-exit to prompt,loginctl terminate-session "${XDG_SESSION_ID-}",system-log-out
-suspend,systemctl -i suspend,system-log-out
-reboot,systemctl -i reboot,system-reboot
-poweroff,systemctl -i poweroff,system-shutdown
+Settings,dots settings-gui,preferences-system
+Power Menu,dots power-menu --rofi,system-log-out

@@ -39,6 +39,7 @@ show_menu() {
     "🔊 Audio"
     "🔋 Power Management"
     "🃏 File Manager"
+    "🎯 Default Applications"
     "🖼️  LXQt Configuration"
     "⚙️  Advanced Settings"
   )
@@ -131,6 +132,9 @@ show_menu() {
       ;;
     "🃏 File Manager")
       ~/.local/bin/dots-file-manager select
+      ;;
+    "🎯 Default Applications")
+      ~/.local/bin/dots-default-apps --gui
       ;;
     "🖼️  LXQt Configuration")
       show_lxqt_menu

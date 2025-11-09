@@ -1,43 +1,53 @@
 # jgmenurc
 
+# Performance and behavior
 stay_alive           = 1
 #hide_on_startup     = 0
 csv_cmd              = pmenu
 tint2_look           = 1
-at_pointer           = 0
+position_mode        = fixed
 terminal_exec        = kitty
 terminal_args        = -e
-#monitor             = 0
+monitor              = 0
 
+# Position and size (aligned with Waybar height)
 menu_margin_x        = 20
-menu_margin_y        = 60
+menu_margin_y        = 78
 menu_width           = 500
-menu_padding_top     = 2
-menu_padding_right   = 2
-menu_padding_bottom  = 5
-menu_padding_left    = 2
-menu_radius          = 12
-menu_border          = 0
 menu_halign          = left
 menu_valign          = top
 
-#sub_spacing         = 1
+# Spacing and padding
+menu_padding_top     = 10
+menu_padding_right   = 10
+menu_padding_bottom  = 10
+menu_padding_left    = 10
+menu_radius          = 12
+menu_border          = 0
+
+# Submenu settings
+sub_spacing          = 1
 #sub_padding_top     = -1
 #sub_padding_right   = -1
 #sub_padding_bottom  = -1
 #sub_padding_left    = -1
 sub_hover_action     = 1
 
-#item_margin_x       = 3
+# Item spacing (consistent with rofi: 8-16px)
+item_margin_x        = 4
 item_margin_y        = 5
 item_height          = 30
-item_padding_x       = 8
+item_padding_x       = 10
 item_radius          = 8
 item_border          = 0
-#item_halign         = left
+item_halign          = left
 
+# Separator
 sep_height           = 5
+sep_halign           = left
+sep_markup           = font="Hack Nerd Font 11" weight="bold"
 
+# Typography and icons
 font                 = Hack Nerd Font Mono 12px
 font_fallback        = xtg
 icon_size            = 24
@@ -45,8 +55,9 @@ icon_text_spacing    = 10
 icon_theme           = Numix-Circle
 icon_theme_fallback  = xtg
 
-#arrow_string        = ▸
-#arrow_width         = 15
+# Arrow for submenus
+arrow_string         = ▸
+arrow_width          = 15
 
 # Smart colors - will be replaced by dots-jgmenu script
 # Uses dots-smart-colors for theme-adaptive color selection
