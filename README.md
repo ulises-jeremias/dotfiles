@@ -9,7 +9,7 @@
 
 **Intelligent • Beautiful • Powerful • Seamless**
 
-[📖 Documentation](https://ulises-jeremias.github.io/dotfiles) •
+[📖 Documentation](https://github.com/ulises-jeremias/dotfiles/wiki) •
 [🎨 Gallery](#-gallery) •
 [🚀 Quick Start](#-quick-installation) •
 [🤝 Contributing](CONTRIBUTING.md)
@@ -34,99 +34,72 @@
 
 </div>
 
-## 🌟 **What is HorneroConfig?**
+---
 
-<img alt="" align="right" width="400px" src="./static/collage.png"/>
+## 🌟 What is HorneroConfig?
 
-**HorneroConfig** is a cutting-edge dotfiles framework that transforms your Linux desktop into a **masterpiece of functionality and beauty**. Named after the industrious hornero bird 🐦, renowned for its skillful nest-building, this framework empowers you to craft the perfect digital workspace.
+<img alt="HorneroConfig Collage" align="right" width="400px" src="./static/collage.png"/>
 
-### 🎯 **Why Choose HorneroConfig?**
+**HorneroConfig** is a cutting-edge dotfiles framework that transforms your Linux desktop into a masterpiece of functionality and beauty. Named after the industrious hornero bird 🐦, renowned for its skillful nest-building, this framework empowers you to craft the perfect digital workspace.
 
-- 🧠 **Smart Color Intelligence** - Revolutionary color system that adapts to any theme
-- 🎨 **Beautiful Rice Themes** - 12+ stunning pre-configured desktop themes
-- ⚡ **One-Command Setup** - From zero to hero in minutes
-- 🔧 **100+ Automation Scripts** - Comprehensive tooling ecosystem
-- 🌊 **Hyprland/Wayland** - Modern compositor with smooth animations and gestures
-- 🛡️ **Security-First** - Built-in security auditing and hardening
-- 📦 **Zero Maintenance** - Powered by chezmoi for seamless updates
+### ✨ Highlights
 
-## ✨ **Key Features**
+🧠 **Smart Color Intelligence** — Automatic theme-aware color adaptation  
+🎨 **12+ Beautiful Themes** — Stunning pre-configured rice themes  
+⚡ **One-Command Setup** — From zero to hero in minutes  
+🌊 **Hyprland/Wayland** — Modern compositor with smooth animations  
+🔧 **100+ Automation Scripts** — Comprehensive tooling ecosystem  
+🛡️ **Security-First** — Built-in auditing and hardening  
+📦 **Zero Maintenance** — Powered by chezmoi for seamless updates
 
-<div align="center">
+<br clear="right"/>
 
-|    🧠 **Smart Colors**     |   🎨 **Rice System**   |     📊 **Waybar**       |  🎛️ **EWW Widgets**   |
-| :------------------------: | :--------------------: | :---------------------: | :-------------------: |
-| Intelligent color analysis |  12+ beautiful themes  |       20+ modules       | Modern system widgets |
-|  Theme-adaptive palettes   |  One-click switching   | Smart color integration | Dashboard & powermenu |
-|   Semantic color mapping   | Wallpaper coordination |     Dual-bar layout     |     Auto-updating     |
+---
 
-| 🌊 **Hyprland/Wayland** |  🔧 **Automation**   |  🛡️ **Security**  | 📦 **Management**  |
-| :---------------------: | :------------------: | :---------------: | :----------------: |
-| Smooth animations       | 100+ utility scripts | Security auditing |  Chezmoi powered   |
-| Gesture support         | Smart notifications  |  Hardening tools  |   Cross-platform   |
-| i3-compatible bindings  |  System monitoring   | Privacy features  | Version controlled |
+## 🎨 Gallery
 
-</div>
-
-### 🧠 **Revolutionary Smart Colors System**
-
-Our **game-changing smart colors technology** automatically analyzes your color palette and intelligently selects optimal colors for different concepts:
-
-- **🎯 Semantic Intelligence**: Error, success, warning, info colors that make sense
-- **🎨 Theme Adaptation**: Perfect contrast and readability on any background
-- **⚡ Auto-Application**: Instantly applies to Waybar, EWW, Hyprland, and all scripts
-- **🔄 Live Updates**: Colors refresh automatically when you change wallpapers
-
-## 🎨 **Gallery**
+<details>
+<summary>🖼️ <b>Click to view screenshots</b></summary>
 
 <div align="center">
 
-### 🌙 **Dark Theme Showcase**
+### 🌙 Dark Theme
 
 <img src="./static/screen.png" alt="Dark Theme" width="800px"/>
 
-### ☀️ **Light Theme Excellence**
+### ☀️ Light Theme
 
 <img src="./static/screen-2.jpg" alt="Light Theme" width="800px"/>
 
-### 🚀 **Application Launcher**
+### 🚀 Application Launchers
 
 <img src="./static/screenshot-launchpad.png" alt="Rofi Launcher" width="400px"/> <img src="./static/screenshot-spotlight-dark.png" alt="Spotlight Dark" width="400px"/>
 
 </div>
 
-## 🚀 **Quick Installation**
+</details>
 
-### ⚡ **One-Line Install** (Recommended)
+---
 
-Transform your desktop instantly with a single command:
+## 🚀 Quick Installation
 
-```bash
-sh -c "$(wget -qO- "https://github.com/ulises-jeremias/dotfiles/blob/main/scripts/install_dotfiles.sh?raw=true")"
-```
-
-> 💡 **Alternative with curl:**
->
-> ```bash
-> sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/main/scripts/install_dotfiles.sh?raw=true")"
-> ```
-
-### 📦 **Arch Linux Users** (AUR)
+### ⚡ One-Line Install (Recommended)
 
 ```bash
-# Stable release
-yay -S dots-stable
-
-# Development release (latest features)
-yay -S dots-git
+sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/main/scripts/install_dotfiles.sh?raw=true")"
 ```
 
-### 🛠️ **Advanced Installation**
+### 📦 Arch Linux (AUR)
+
+```bash
+yay -S dots-stable      # Stable release
+yay -S dots-git         # Latest features
+```
 
 <details>
-<summary>📋 Click to expand advanced installation methods</summary>
+<summary>🛠 <b>More installation methods</b></summary>
 
-#### Using Chezmoi (Recommended)
+#### Using Chezmoi
 
 ```bash
 chezmoi init --apply ulises-jeremias --source ~/.dotfiles
@@ -139,7 +112,7 @@ git clone https://github.com/ulises-jeremias/dotfiles ~/.dotfiles
 ~/.dotfiles/install.sh
 ```
 
-#### Manual AUR Installation
+#### Manual AUR Build
 
 ```bash
 git clone https://aur.archlinux.org/dots-stable.git /tmp/dots-stable
@@ -148,285 +121,159 @@ cd /tmp/dots-stable && makepkg -si
 
 </details>
 
-## 🎨 **Rice Themes Collection**
+---
 
-Choose from our curated collection of stunning desktop themes:
+## 💎 Key Features
 
-<div align="center">
+### 🧠 Revolutionary Smart Colors System
 
-| Theme                           | Style         | Palette                       | Description                     |
-| :------------------------------ | :------------ | :---------------------------- | :------------------------------ |
-| 🌸 **flowers**                  | Nature        | Vibrant florals               | Fresh and energizing            |
-| 🍂 **gruvbox-anime**            | Retro Anime   | Warm earth + anime aesthetics | Classic gruvbox meets anime art |
-| ☀️ **gruvbox-light**            | Retro Light   | Light warm earth tones        | Bright and comfortable gruvbox  |
-| 🔲 **gruvbox-minimalistic**     | Retro Minimal | Clean warm earth tones        | Simplified gruvbox aesthetic    |
-| 🎨 **gruvbox-mix**              | Retro Mixed   | Varied warm earth tones       | Diverse gruvbox palette         |
-| 🖼️ **gruvbox-painting**         | Retro Art     | Artistic warm earth tones     | Painterly gruvbox aesthetic     |
-| 🎮 **gruvbox-pixelart**         | Retro Gaming  | Pixelated warm earth tones    | 8-bit gruvbox nostalgia         |
-| 🎲 **gruvbox-videogame-3d-art** | Gaming        | 3D art warm earth tones       | Modern gaming meets gruvbox     |
-| 🌲 **landscape-dark**           | Nature        | Dark earth tones              | Professional and elegant        |
-| ☀️ **landscape-light**          | Nature        | Light natural colors          | Clean and minimalist            |
-| 🤖 **machines**                 | Cyberpunk     | Industrial grays              | Futuristic and bold             |
-| 🔴 **red-blue**                 | High Contrast | Vibrant contrast              | Energetic and dynamic           |
-| 🌌 **space**                    | Cosmic        | Deep blues & purples          | Mystical and calming            |
+Our **game-changing smart colors technology** automatically analyzes your color palette and intelligently selects optimal colors for UI elements:
 
-</div>
+✨ **Semantic Intelligence** — Error, success, warning, info colors that make sense  
+🎨 **Theme Adaptation** — Perfect contrast and readability on any background  
+⚡ **Auto-Application** — Instantly applies to Waybar, EWW, Hyprland, and scripts  
+🔄 **Live Updates** — Colors refresh automatically when you change wallpapers
 
-### 🎯 **Quick Theme Switching**
+> 📖 [Learn more about Smart Colors →](https://github.com/ulises-jeremias/dotfiles/wiki/Smart-Colors-System)
+
+### 🎨 Rice System & Themes
+
+Choose from **12+ stunning themes** spanning nature, retro, cyberpunk, and cosmic aesthetics:
 
 ```bash
-# Interactive theme selector
-dots rofi-rice-selector
-
-# Apply specific theme
-dots rice apply gruvbox-anime
-
-# Apply minimalistic theme
-dots rice apply gruvbox-minimalistic
-
-# Apply nature theme
-dots rice apply landscape-dark
-
-# List all available themes
-dots rice list
+dots rofi-rice-selector     # Interactive theme picker 🎯
+dots rice apply flowers     # Apply a specific theme
+dots rice list              # See all available themes
 ```
 
-## 🔧 **Core Applications**
+> 📖 [Explore all themes →](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management)
 
-<div align="center">
+### 🔧 Core Stack
 
-| Component              | Application                                                                         | Description            |
-| :--------------------- | :---------------------------------------------------------------------------------- | :--------------------- |
-| 🌊 **Window Manager**  | [Hyprland](https://hyprland.org)                                                    | Dynamic tiling WM      |
-| 📊 **Status Bar**      | [Waybar](https://github.com/Alexays/Waybar)                                        | Wayland status bar     |
-| 🚀 **App Launcher**    | [Rofi](https://github.com/lbonn/rofi) (Wayland fork)                                | Lightning fast         |
-| 🐾 **Terminal**        | [Kitty](https://sw.kovidgoyal.net/kitty)                                            | GPU-accelerated        |
-| 🐚 **Shell**           | [Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k) | Feature-rich           |
-| 🌿 **Notifications**   | [Mako](https://github.com/emersion/mako)                                            | Wayland notifications  |
-| 🖼️ **Wallpaper**       | [hyprpaper](https://github.com/hyprwm/hyprpaper)                                    | Wallpaper daemon       |
-| 🃏 **File Manager**    | [Thunar](https://docs.xfce.org/xfce/thunar/start)                                   | Customized interface   |
-| 🎛️ **Widgets**         | [EWW](https://github.com/elkowar/eww)                                               | Modern system widgets  |
+🌊 **[Hyprland](https://hyprland.org)** — Dynamic tiling Wayland compositor  
+📊 **[Waybar](https://github.com/Alexays/Waybar)** — Beautiful dual-bar status bar with 20+ modules  
+🚀 **[Rofi](https://github.com/lbonn/rofi)** — Lightning-fast app launcher (Wayland fork)  
+🐾 **[Kitty](https://sw.kovidgoyal.net/kitty)** — GPU-accelerated terminal emulator  
+🐚 **[Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Feature-rich shell with beautiful prompt  
+🎛️ **[EWW](https://github.com/elkowar/eww)** — Modern system widgets (dashboard & powermenu)
 
-</div>
+🔒 **Lockscreen** — Secure with custom styling  
+🎨 **Theme Manager** — Rice system integration
 
-## 🛠️ **Powerful Automation**
+> 📖 [Complete component list →](https://github.com/ulises-jeremias/dotfiles/wiki/Home)
 
-### 📜 **100+ Built-in Scripts**
+### 🛠️ Powerful Automation
 
-Access a comprehensive toolkit through the `dots` command:
+Access **100+ built-in scripts** via the `dots` command:
 
 ```bash
-# Interactive script browser
-dots scripts
-
-# System management
+dots scripts            # Interactive script browser
 dots sysupdate          # Comprehensive system updates
-dots backup             # Automated backups with scheduling
-dots security-audit     # Security analysis and hardening
-
-# Theming & visuals
 dots smart-colors       # Intelligent color analysis
-dots wal-reload         # Complete theme refresh
+dots security-audit     # Security analysis and hardening
 dots rofi-rice-selector # Visual theme picker
-
-# System monitoring
-dots monitor            # Display management
-dots performance        # System benchmarks
-dots weather-info       # Weather integration
 ```
 
-### 🧠 **Smart Color Intelligence**
+📂 `dots-eject` — Export configs for manual use  
+🔄 `dots-update` — Sync with upstream changes
 
-Experience the future of desktop theming:
+> 📖 [Scripts documentation →](https://github.com/ulises-jeremias/dotfiles/wiki/Dots-Scripts)
+
+---
+
+## 🧪 Development & Testing
+
+### 🎮 Safe Testing Environment
+
+Try HorneroConfig risk-free with our Vagrant playground:
 
 ```bash
-# Analyze your current palette
-dots smart-colors --analyze
-
-# Export colors for different applications
-dots smart-colors --export --format=waybar
-dots smart-colors --export --format=eww
-dots smart-colors --export --format=hyprland
-
-# Get optimal color for specific concepts
-dots smart-colors --concept=error --format=hex
-dots smart-colors --concept=success --format=rgb
+git clone https://github.com/ulises-jeremias/dotfiles && cd dotfiles
+./bin/play                        # Start VM
+./bin/play --provision hyprland   # Provision with Hyprland
+./bin/play --remove               # Clean up
 ```
 
-## 🛡️ **Security & Privacy**
+> 📖 [Testing guide →](docs/Testing-Strategy.md)
 
-### 🔒 **Built-in Security Features**
+### 🔧 Contributing
 
-- **🔍 Security Auditing**: Comprehensive system security analysis
-- **🛡️ Hardening Tools**: Automated security configuration
-- **🔐 Privacy Protection**: Privacy-focused defaults and tools
-- **📊 Security Monitoring**: Continuous security health checks
+We use [pre-commit](https://pre-commit.com/) for code quality:
 
 ```bash
-# Run complete security audit
-dots security-audit
-
-# Apply security hardening
-dots security-audit --apply
-
-# Check system security status
-dots security-audit --status
+pipx install pre-commit           # Install pre-commit
+cd ~/.dotfiles && pre-commit install   # Set up hooks
+pre-commit run --all-files        # Run all checks
 ```
 
-## 🧪 **Testing & Development**
+> 🤝 [Contributing guide →](CONTRIBUTING.md) | [Development standards →](docs/Development-Standards.md)
 
-### 🎮 **Playground Environment**
+---
 
-Test HorneroConfig safely with our Vagrant-based playground:
+## 📖 Documentation
 
-```bash
-git clone https://github.com/ulises-jeremias/dotfiles
-cd dotfiles
+### 📚 For Users
 
-# Start testing environment
-./bin/play
+🏠 [**Getting Started**](https://github.com/ulises-jeremias/dotfiles/wiki/Home) — First steps and basic setup  
+🎨 [**Rice System**](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management) — Theme management  
+🧠 [**Smart Colors**](https://github.com/ulises-jeremias/dotfiles/wiki/Smart-Colors-System) — Intelligent theming  
+📊 [**Waybar**](https://github.com/ulises-jeremias/dotfiles/wiki/Waybar-Configuration) — Status bar configuration  
+🎛️ [**EWW Widgets**](https://github.com/ulises-jeremias/dotfiles/wiki/EWW-Widgets) — System widgets  
+🔧 [**Scripts**](https://github.com/ulises-jeremias/dotfiles/wiki/Dots-Scripts) — Automation tools  
+🛡️ [**Security**](https://github.com/ulises-jeremias/dotfiles/wiki/Security) — Privacy and security
 
-# Provision with Hyprland
-./bin/play --provision hyprland
+### 🤖 For Developers & AI Agents
 
-# Clean up
-./bin/play --remove
-```
+📋 [**AGENTS.md**](AGENTS.md) — Quick reference guide  
+🏗️ [**Architecture**](docs/Architecture-Philosophy.md) — Design principles  
+📐 [**ADRs**](docs/adrs/) — Architecture decisions  
+🔒 [**Security**](docs/Security-Guidelines.md) — Security practices  
+⚡ [**Performance**](docs/Performance-Guidelines.md) — Optimization strategies
 
-### 🔧 **Development Setup**
+---
 
-Contribute with confidence using our quality tools. We use [pre-commit](https://pre-commit.com/) to ensure code quality and consistency.
+## 🌍 Platform Support
 
-#### **Installing Pre-commit with pipx** (Recommended)
+🐧 **Arch Linux** — Full support with AUR packages  
+🐧 **Ubuntu/Debian** — Supported (manual dependencies)  
+🐧 **Fedora/RHEL** — Supported (manual dependencies)  
+☁️ **Cloud Dev** — GitHub Codespaces, Gitpod, VS Code Remote
 
-[pipx](https://pipx.pypa.io/) is the recommended way to install pre-commit as it provides isolation and clean management:
+> 📖 [Platform-specific guides →](https://github.com/ulises-jeremias/dotfiles/wiki/Home)
 
-```bash
-# Install pre-commit using pipx
-pipx install pre-commit
+---
 
-# Verify installation
-pre-commit --version
-```
+## 🤝 Contributing
 
-#### **Setting Up Pre-commit Hooks**
+We welcome all contributions! 🎉
 
-After cloning the repository:
-
-```bash
-# Navigate to the repository
-cd ~/.dotfiles
-
-# Install git hooks
-pre-commit install
-
-# (Optional) Install hooks for commit messages
-pre-commit install --hook-type commit-msg
-
-# Run all hooks manually on all files
-pre-commit run --all-files
-```
-
-#### **What Pre-commit Checks**
-
-Our pre-commit configuration automatically validates:
-
-- ✅ **Shell Scripts**: ShellCheck linting + shfmt formatting
-- ✅ **Markdown**: Linting and formatting
-- ✅ **YAML**: Syntax validation and linting
-- ✅ **General**: Trailing whitespace, EOF, merge conflicts, private keys
-- ✅ **Custom**: Dots script validation, branch protection
-
-#### **Manual Hook Execution**
-
-```bash
-# Run all hooks on all files
-pre-commit run --all-files
-
-# Run specific hook
-pre-commit run shellcheck --all-files
-pre-commit run markdownlint --all-files
-
-# Skip hooks for a commit (use sparingly)
-git commit --no-verify -m "Your message"
-```
-
-For more details, see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## 🌍 **Platform Support**
+🐛 Bug reports • ✨ Feature requests • 🎨 New themes • 📚 Documentation • 🔧 Code
 
 <div align="center">
 
-| Platform                 | Status              | Notes                          |
-| :----------------------- | :------------------ | :----------------------------- |
-| 🐧 **Arch Linux**        | ✅ **Full Support** | AUR packages available         |
-| 🐧 **Ubuntu/Debian**     | ✅ **Supported**    | Manual dependency installation |
-| 🐧 **Fedora/RHEL**       | ✅ **Supported**    | Manual dependency installation |
-| ☁️ **GitHub Codespaces** | ✅ **Supported**    | Cloud development              |
-| 🐳 **VS Code Remote**    | ✅ **Supported**    | Container development          |
-| 🌐 **Gitpod**            | ✅ **Supported**    | Browser-based development      |
-
-</div>
-
-## 📖 **Documentation**
-
-Comprehensive guides for every aspect:
-
-### 📚 User Documentation
-
-- 🏠 [**Getting Started**](https://ulises-jeremias.github.io/dotfiles/#Home) - Your first steps
-- 🎨 [**Rice System**](https://ulises-jeremias.github.io/dotfiles/#Rice-System-Theme-Management) - Theme management
-- 🧠 [**Smart Colors**](https://ulises-jeremias.github.io/dotfiles/#Smart-Colors-System) - Intelligent theming
-- 📊 [**Waybar Config**](https://ulises-jeremias.github.io/dotfiles/#Waybar-Configuration) - Status bar setup
-- 🎛️ [**EWW Widgets**](https://ulises-jeremias.github.io/dotfiles/#EWW-Widgets) - Modern widgets
-- 🔧 [**Scripts Guide**](https://ulises-jeremias.github.io/dotfiles/#Dots-Scripts) - Automation tools
-- 🛡️ [**Security**](https://ulises-jeremias.github.io/dotfiles/#Security) - Privacy & security
-
-### 🤖 Developer & AI Documentation
-
-- 📋 [**AGENTS.md**](AGENTS.md) - Quick reference for AI agents and developers
-- 📁 [**docs/**](docs/) - Comprehensive technical documentation
-  - [Architecture Philosophy](docs/Architecture-Philosophy.md) - Core design principles
-  - [System Architecture](docs/System-Architecture.md) - Detailed subsystem architecture
-  - [Development Standards](docs/Development-Standards.md) - Coding standards and templates
-  - [Integration Patterns](docs/Integration-Patterns.md) - Best practices for integrations
-  - [Testing Strategy](docs/Testing-Strategy.md) - Testing approach and playground usage
-  - [Security Guidelines](docs/Security-Guidelines.md) - Security requirements and practices
-  - [Performance Guidelines](docs/Performance-Guidelines.md) - Optimization strategies
-- 📐 [**ADRs**](docs/adrs/) - Architecture Decision Records
-
-## 🤝 **Contributing**
-
-Join our amazing community! We welcome:
-
-- 🐛 **Bug Reports** - Help us improve
-- ✨ **Feature Requests** - Share your ideas
-- 🎨 **New Rice Themes** - Show your creativity
-- 📚 **Documentation** - Help others learn
-- 🔧 **Code Contributions** - Make it better
-
-### 🌟 **Contributors**
-
-<div align="center">
+### 🌟 Contributors
 
 <a href="https://github.com/ulises-jeremias/dotfiles/contributors">
   <img src="https://contrib.rocks/image?repo=ulises-jeremias/dotfiles" alt="Contributors" />
 </a>
 
-_Made with ❤️ by our amazing community_
-
 </div>
+
+---
 
 <div align="center">
 
-### 💝 **Show Your Support**
+### 💝 Show Your Support
 
-If HorneroConfig has improved your Linux experience, consider:
+If HorneroConfig has improved your Linux experience:
 
-⭐ **Star this repository** • 🐦 **Share on social media** • 🤝 **Contribute to the project**
+⭐ **[Star this repo](https://github.com/ulises-jeremias/dotfiles)** • 🐦 **Share it** • 🤝 **Contribute**
 
-**🏠 HorneroConfig - Building the perfect digital nest, one configuration at a time**
+<br>
 
-_Licensed under [MIT License](LICENSE) • Made with ❤️ for the Linux community_
+**🏠 HorneroConfig**  
+*Building the perfect digital nest, one configuration at a time*
+
+<sub>Licensed under [MIT License](LICENSE) • Made with ❤️ for the Linux community</sub>
 
 </div>
