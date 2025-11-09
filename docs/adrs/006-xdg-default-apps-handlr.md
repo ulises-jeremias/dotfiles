@@ -41,7 +41,7 @@ Launch Layer
    - Installed via `pacman -S handlr-regex`
    - Provides `handlr set`, `handlr get`, `handlr list` commands
    - Stores configuration in `~/.config/handlr/handlr.toml`
-   - Much better UX than `xdg-mime` (legacy tool)
+   - Improved UX for XDG MIME management
 
 2. **dots-default-apps** - HorneroConfig wrapper
    - GUI with rofi for category-based selection (no MIME types needed)
@@ -84,8 +84,7 @@ Launch Layer
 ### Negative
 
 - ⚠️ **New dependency** - Adds `handlr-regex` package (but small: ~2MB)
-- ⚠️ **Migration** - Existing `~/.config/dots/file-manager.conf` ignored (one-time issue)
-- ⚠️ **Learning curve** - Users familiar with old system need to learn `handlr`
+- ⚠️ **Learning curve** - Users need to understand `handlr` usage
 
 ### Neutral
 
@@ -157,7 +156,7 @@ Users can also configure defaults with:
 
 - **nwg-look** - GTK settings GUI with "Default Applications" tab
 - **handlr** - Direct CLI: `handlr set <MIME> <APP.desktop>`
-- **xdg-mime** - Legacy tool: `xdg-mime default <APP.desktop> <MIME>`
+- **xdg-mime** - CLI tool: `xdg-mime default <APP.desktop> <MIME>`
 
 All methods write to the same XDG MIME database, ensuring consistency.
 

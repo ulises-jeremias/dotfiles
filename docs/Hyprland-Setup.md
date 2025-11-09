@@ -20,6 +20,7 @@ dots hyprland-setup --nvidia
 
 1. Log out and select "Hyprland" from your display manager
 2. Set up colors and theme:
+
    ```bash
    dots wal-reload
    dots rice selector
@@ -43,32 +44,24 @@ dots hyprland-setup --nvidia
     └── autostart.conf         # Startup applications (mirrors i3 autostart pattern)
 ```
 
-### Design Consistency with X11 Stack
+### Design Principles
 
-The Hyprland configuration follows the same architectural principles as the X11 stack:
+The Hyprland configuration follows HorneroConfig's architectural principles:
 
-#### Visual Consistency
-- **Corner Radius**: 12px (matching picom.conf)
-- **Gaps**: inner=12, outer=18 (matching i3 gaps configuration)
-- **Border Size**: 2px (matching i3 border pixel 2)
-- **Blur**: Similar to picom's dual_kawase strength 6
-- **Shadow**: Matching picom's shadow settings (radius 12, offset -12)
+#### Visual Design
+
+- **Corner Radius**: 12px rounded corners for a polished look
+- **Gaps**: inner=12, outer=18 for comfortable spacing
+- **Border Size**: 2px borders for clear window separation
+- **Blur**: Dual kawase blur (strength 6) for elegant transparency
+- **Shadow**: Soft shadows (radius 12, offset -12) for depth perception
 
 #### Configuration Pattern
-- **Modular Structure**: Split configs in `.conf.d/` (like picom-rules.conf separation)
+
+- **Modular Structure**: Split configs in `.conf.d/` for maintainability
 - **Smart Colors Integration**: All color values replaced by dots-smart-colors via dots-wal-reload
-- **Autostart**: Uses `dex --autostart` for XDG desktop files (same as i3)
+- **Autostart**: Uses `dex --autostart` for XDG desktop files
 - **Comments**: Extensive documentation headers in all config files
-
-#### Component Equivalents
-
-| X11 Stack | Wayland Stack | Design Principle |
-|-----------|---------------|------------------|
-| picom.conf | hyprland.conf decoration{} | 12px corners, shadows, blur |
-| dunst | mako | Smart-colors, urgency levels, app-specific rules |
-| polybar | waybar | Modular CSS, semantic colors, rich modules |
-| rofi | rofi-wayland | Same .rasi themes, session-aware clipboard |
-| i3 autostart | hyprland autostart | XDG autostart, service daemons, theme loading |
 
 ### Integration with Existing Systems
 
@@ -81,6 +74,7 @@ dots-smart-colors --generate
 ```
 
 Generates:
+
 - `~/.cache/dots/smart-colors/colors-hyprland.conf`
 - `~/.cache/dots/smart-colors/colors-waybar.css`
 - `~/.cache/dots/smart-colors/colors-mako.conf`
@@ -102,12 +96,11 @@ Follows the same profile system as Polybar:
 
 #### Rice System
 
-Rice themes now support both X11 and Wayland:
+Rice themes support Wayland configurations:
 
 ```bash
 # ~/.local/share/dots/rices/gruvbox-wayland/config.sh
-POLYBAR_PROFILE="default"    # For X11
-WAYBAR_PROFILE="default"     # For Wayland
+WAYBAR_PROFILE="default"
 ```
 
 Apply scripts automatically detect the session type and configure accordingly.
@@ -117,6 +110,7 @@ Apply scripts automatically detect the session type and configure accordingly.
 All follow the `dots-*` pattern:
 
 ### Screenshots
+
 ```bash
 dots hyprshot                 # Full screen
 dots hyprshot --region        # Select region
@@ -126,6 +120,7 @@ dots hyprshot --clipboard     # Copy to clipboard
 ```
 
 ### Wallpapers
+
 ```bash
 dots hyprlock set /path/to/wallpaper
 dots hyprlock reload
@@ -134,35 +129,42 @@ dots hyprlock reload
 ## Keybindings
 
 ### Essential Apps
+
 - `Super + Return` - Terminal (kitty)
 - `Super + D` - Application launcher
 - `Super + F` - File manager
 - `Super + X` - Power menu
 
 ### Window Management
+
 - `Super + Q` - Close window
 - `Super + Space` - Toggle floating
 - `Super + M` - Toggle fullscreen
 - `Super + H/J/K/L` - Move focus (vim-like)
 
 ### Workspaces
+
 - `Super + 1-9` - Switch workspace
 - `Super + Shift + 1-9` - Move window to workspace
 - `Super + Mouse scroll` - Switch workspace
 
 ### Screenshots
+
 - `Print` - Full screenshot
 - `Shift + Print` - Region screenshot
 - `Super + Print` - Window screenshot
 
 ### Media Keys
+
 - `XF86AudioRaiseVolume/LowerVolume` - Volume control
 - `XF86MonBrightnessUp/Down` - Brightness control
 - `XF86AudioPlay/Next/Prev` - Media playback
 
-## Updating Colors/Theme
+## Theme Management
 
-The workflow is the same as X11:
+### Updating Colors/Theme
+
+Update colors and themes with these commands:
 
 ```bash
 # After changing wallpaper or colors
@@ -173,45 +175,42 @@ dots rice selector
 ```
 
 This automatically:
+
 1. Generates smart-color files for all applications
 2. Reloads Hyprland colors
 3. Restarts Waybar
 4. Reloads Mako notifications
 5. Updates all EWW widgets
 
-## Creating New Rices
+### Creating New Rices
 
-Rice themes can support both X11 and Wayland. Example structure:
+Rice themes can be created with Wayland-specific configurations:
 
 ```bash
 # ~/.local/share/dots/rices/my-rice/config.sh
 RICE_NAME="My Rice"
-POLYBAR_PROFILE="default"    # For i3/Polybar
-WAYBAR_PROFILE="default"     # For Hyprland/Waybar
+WAYBAR_PROFILE="default"
 ```
 
-The apply script detects session type:
+The apply script handles session-specific configuration:
 
 ```bash
 # ~/.local/share/dots/rices/my-rice/apply.sh
-if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
-    # Apply Wayland configuration
-    dots-wal-reload
-    ~/.config/waybar/launch.sh restart
-else
-    # Apply X11 configuration
-    ~/.config/polybar/launch.sh restart
-fi
+# Apply Wayland configuration
+dots-wal-reload
+~/.config/waybar/launch.sh restart
 ```
 
 ## Troubleshooting
 
 ### Check Dependencies
+
 ```bash
 dots hyprland-setup --check-only
 ```
 
 ### View Logs
+
 ```bash
 # Waybar logs
 tail -f ~/.cache/waybar/waybar.log
@@ -221,6 +220,7 @@ cat /tmp/hypr/$(ls -t /tmp/hypr/ | head -1)/hyprland.log
 ```
 
 ### Restart Components
+
 ```bash
 # Waybar
 killall waybar && ~/.config/waybar/launch.sh
@@ -235,20 +235,12 @@ hyprctl reload
 ## NVIDIA Users
 
 Add to kernel parameters in bootloader:
+
 ```
 nvidia_drm.modeset=1
 ```
 
 The environment.conf automatically sets NVIDIA-specific variables when detected.
-
-## Migration from X11
-
-Your existing configuration is preserved. Both X11 and Wayland configs coexist:
-
-- X11: i3, Polybar, Dunst, Picom
-- Wayland: Hyprland, Waybar, Mako (no compositor needed)
-
-Switch between them by selecting different sessions at login.
 
 ## Contributing
 

@@ -51,4 +51,3 @@ Key components:
 
 - **Directory Structure**: Requires specific organization in user directories
 - **Dependencies**: Relies on external tools like pywal for color generation
-- **Migration**: Existing themes need to be converted to rice format

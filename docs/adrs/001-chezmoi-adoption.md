@@ -14,8 +14,6 @@ Managing dotfiles across multiple machines and environments is challenging. We n
 - Provide version control integration
 - Allow easy customization and forking
 
-Previous approaches using symlinks or simple git repositories lacked the flexibility needed for a comprehensive dotfiles framework.
-
 ## Decision
 
 We adopted [Chezmoi](https://www.chezmoi.io/) as our primary dotfiles management tool.
@@ -43,8 +41,3 @@ Key factors in this decision:
 - Additional dependency (chezmoi must be installed)
 - Learning curve for contributors unfamiliar with chezmoi
 - Some file naming conventions (dot_ prefix) may be confusing initially
-
-### Neutral
-
-- Migration required from previous dotfiles structure
-- Documentation updates needed to explain chezmoi-specific features

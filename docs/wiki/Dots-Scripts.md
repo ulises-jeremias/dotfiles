@@ -346,12 +346,12 @@ dots night-mode status           # Check current status
 - `weather-info` – Current weather and forecasts
 - `git-notify` – Notifications on git commits
 
-### 🗂️ Legacy Tools
+### � Convenience Wrappers
 
-- `rofi-run` – Legacy wrapper (delegates to `dots-launcher`)
-- `rofi-bluetooth` – Bluetooth management via Rofi (use `dots settings-gui` instead)
-- `rofi-randr` – Display config via Rofi (use `dots settings-gui` instead)
-- `rofi-rice-selector` – Rice selector (use `dots rice` instead)
+- `rofi-run` – Convenience wrapper (delegates to `dots-launcher`)
+- `rofi-bluetooth` – Bluetooth management via Rofi (use `dots settings-gui` for GUI)
+- `rofi-randr` – Display config via Rofi (use `dots settings-gui` for GUI)
+- `rofi-rice-selector` – Rice selector (use `dots rice` for full features)
 - `rofi-xrandr` – Advanced display config (use `nwg-displays` or `arandr`)
 
 ---
