@@ -31,9 +31,10 @@ if [ -z "${os}" ]; then
   fi
 fi
 
-oss=(arch-linux debian)
+# List of supported operating systems
+supported_os_list=(arch-linux debian)
 
-if [[ " ${oss[*]} " != *"${os}"* ]]; then
+if [[ " ${supported_os_list[*]} " != *"${os}"* ]]; then
   echo "${os} is not supported"
   exit 1
 fi

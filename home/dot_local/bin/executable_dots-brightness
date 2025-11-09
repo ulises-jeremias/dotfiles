@@ -58,26 +58,26 @@ get_gamma_index() {
 }
 
 get_temp_for_gamma() {
-  idx=$(get_gamma_index "$1")
-  awk '{printf "%.1f", $1 / 10}' <<<"$idx"
+  gamma_index=$(get_gamma_index "$1")
+  awk '{printf "%.1f", $1 / 10}' <<<"$gamma_index"
 }
 
 get_gamma_for_temp() {
-  idx=$(awk '{printf "%d", $1 * 10}' <<<"$1")
-  echo "${GAMMA_VALS[$idx]}"
+  temp_index=$(awk '{printf "%d", $1 * 10}' <<<"$1")
+  echo "${GAMMA_VALS[$temp_index]}"
 }
 
 # gamma values returned by xrandr --verbose are somehow inverted
 # https://gitlab.freedesktop.org/xorg/app/xrandr/issues/33
 # this function corrects this bug by reverting the calculation
 invert_gamma() {
-  inv_r=$(cut -d: -f1 <<<"$1")
-  inv_g=$(cut -d: -f2 <<<"$1")
-  inv_b=$(cut -d: -f3 <<<"$1")
-  r=$(awk '{printf "%.1f", 1/$1}' <<<"$inv_r" 2>/dev/null)
-  g=$(awk '{printf "%.1f", 1/$1}' <<<"$inv_g" 2>/dev/null)
-  b=$(awk '{printf "%.1f", 1/$1}' <<<"$inv_b" 2>/dev/null)
-  echo "$r:$g:$b"
+  inverted_red=$(cut -d: -f1 <<<"$1")
+  inverted_green=$(cut -d: -f2 <<<"$1")
+  inverted_blue=$(cut -d: -f3 <<<"$1")
+  red=$(awk '{printf "%.1f", 1/$1}' <<<"$inverted_red" 2>/dev/null)
+  green=$(awk '{printf "%.1f", 1/$1}' <<<"$inverted_green" 2>/dev/null)
+  blue=$(awk '{printf "%.1f", 1/$1}' <<<"$inverted_blue" 2>/dev/null)
+  echo "$red:$green:$blue"
 }
 
 get_gamma() {
