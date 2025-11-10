@@ -14,18 +14,36 @@
     "custom/window-switch",
     "custom/rices",
     "hyprland/window",
-    "pulseaudio#microphone",
-    "group/volume",
+    "group/audio",
     "group/backlight"
   ],
 
-  "group/volume": {
+  "group/audio": {
     "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": true
+    },
     "modules": [
+      "custom/audio-header",
+      "pulseaudio#microphone",
       "pulseaudio",
       "pulseaudio/slider"
     ]
   },
+
+  "group/backlight": {
+    "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": true
+    },
+    "modules": [
+      "backlight",
+      "backlight/slider"
+    ]
+  },
+
   "pulseaudio": {
     "format": "{icon} {volume}%",
     "format-muted": "󰝟 Muted",
@@ -43,13 +61,7 @@
     "on-click-right": "pavucontrol",
     "tooltip-format": "{desc}\nVolume: {volume}%"
   },
-  "group/backlight": {
-    "orientation": "horizontal",
-    "modules": [
-      "backlight",
-      "backlight/slider"
-    ]
-  },
+
   "backlight": {
     "device": "intel_backlight",
     "format": "{icon} {percent}%",
@@ -78,6 +90,12 @@
     "tooltip-format": "Open Jgmenu",
     "on-click": "dots-jgmenu",
     "on-right-click": "exo-open ~/.config/jgmenu/jgmenurc"
+  },
+
+  "custom/audio-header": {
+    "format": "󰝚",
+    "tooltip": true,
+    "tooltip-format": "Audio Controls\nClick to expand/collapse"
   },
 
   "custom/apps": {

@@ -78,9 +78,13 @@ window#waybar {
 #cpu,
 #memory,
 #temperature,
+#language,
 #tray,
 #clock,
-#custom-weather {
+#custom-weather,
+#custom-audio-header,
+#custom-system-controls-header,
+#custom-system-monitors-header {
 	padding: 8px 0;
 	margin: 2px 4px;
 	border: 1px solid transparent;
@@ -201,8 +205,11 @@ window#waybar {
  * Audio & Brightness Groups
  * ==========================================================================
  */
+box#audio,
 box#volume,
-box#backlight {
+box#backlight,
+box#system-controls,
+box#system-monitors {
 	background: transparent;
 	padding: 4px 0;
 	margin: 2px 4px;
@@ -211,15 +218,89 @@ box#backlight {
 	transition: all 0.2s ease;
 }
 
-box#volume:hover,
-box#backlight:hover {
+box#audio:hover {
+	background-color: @bg-hover;
+	border-color: rgba(235, 103, 152, 0.5);
+}
+
+box#volume:hover {
 	background-color: @bg-hover;
 	border-color: rgba(249, 181, 90, 0.5);
+}
+
+box#backlight:hover {
+	background-color: @bg-hover;
+	border-color: rgba(249, 226, 90, 0.5);
+}
+
+/* First module indicators in collapsed groups */
+box#backlight > #backlight {
+	border-left: 2px solid @smart-yellow;
+	padding-left: 2px;
+}
+
+box#system-controls:hover {
+	background-color: @bg-hover;
+	border-color: rgba(249, 181, 90, 0.5);
+}
+
+box#system-monitors:hover {
+	background-color: @bg-hover;
+	border-color: rgba(103, 163, 235, 0.5);
 }
 
 box#volume:hover #pulseaudio,
 box#backlight:hover #backlight {
 	color: @smart-orange;
+}
+
+/* Drawer indicator - first module in collapsed group */
+box#audio > #audio-header,
+box#system-controls > #system-controls-header,
+box#system-monitors > #system-monitors-header {
+	font-size: 22px;
+	font-weight: bold;
+	padding: 8px 0;
+	margin: 2px 4px;
+	border-radius: 8px;
+}
+
+/* Header colors and borders */
+#custom-audio-header {
+	color: @smart-pink;
+	font-size: 22px;
+	padding-left: 2px;
+}
+
+#custom-system-controls-header {
+	color: @smart-orange;
+	font-size: 22px;
+	padding-left: 2px;
+}
+
+#custom-system-monitors-header {
+	color: @smart-cyan;
+	font-size: 22px;
+	padding-left: 2px;
+}
+
+box#audio > #audio-header {
+	padding-left: 2px;
+}
+
+box#system-controls > #system-controls-header {
+	padding-left: 2px;
+}
+
+box#system-monitors > #system-monitors-header {
+	padding-left: 2px;
+}
+
+/* Header hover effects - minimal */
+#custom-audio-header:hover,
+#custom-system-controls-header:hover,
+#custom-system-monitors-header:hover {
+	/* No background or border changes on hover */
 }
 
 #pulseaudio {
@@ -391,6 +472,26 @@ slider highlight {
 #memory.critical {
 	color: @smart-error;
 	animation: blink 1s ease infinite;
+}
+
+/* ==========================================================================
+ * Keyboard Language
+ * ==========================================================================
+ */
+#language {
+	color: @fg-primary;
+	font-size: 15px;
+	padding: 6px 0;
+	margin: 2px 4px;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	transition: all 0.2s ease;
+}
+
+#language:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+	color: @smart-cyan;
 }
 
 /* ==========================================================================

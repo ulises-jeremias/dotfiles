@@ -13,19 +13,14 @@
   "modules-center": ["clock", "custom/weather"],
 
   "modules-right": [
-    "pulseaudio#microphone",
-    "group/volume",
+    "group/audio",
     "group/backlight",
     "custom/separator",
-    "custom/night-mode",
-    "custom/performance-profile",
-    "battery",
+    "group/system-controls",
     "custom/separator",
-    "disk",
-    "cpu",
-    "memory",
-    "temperature",
+    "group/system-monitors",
     "custom/separator",
+    "hyprland/language",
     "tray"
   ],
 
@@ -144,9 +139,27 @@
     "sort-by-number": true
   },
 
-  "group/volume": {
+  "group/audio": {
     "orientation": "vertical",
-    "modules": ["pulseaudio", "pulseaudio/slider"]
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "custom/audio-header",
+      "pulseaudio#microphone",
+      "pulseaudio",
+      "pulseaudio/slider"
+    ]
+  },
+
+  "group/backlight": {
+    "orientation": "vertical",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": false
+    },
+    "modules": ["backlight", "backlight/slider"]
   },
 
   "pulseaudio": {
@@ -173,11 +186,6 @@
     "orientation": "vertical"
   },
 
-  "group/backlight": {
-    "orientation": "vertical",
-    "modules": ["backlight", "backlight/slider"]
-  },
-
   "backlight": {
     "device": "intel_backlight",
     "format": "{icon}",
@@ -202,6 +210,35 @@
     "on-scroll-up": "pamixer --default-source -i 5",
     "on-scroll-down": "pamixer --default-source -d 5",
     "tooltip-format": "Microphone: {volume}%"
+  },
+
+  "group/system-controls": {
+    "orientation": "vertical",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "custom/system-controls-header",
+      "battery",
+      "custom/night-mode",
+      "custom/performance-profile"
+    ]
+  },
+
+  "group/system-monitors": {
+    "orientation": "vertical",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "custom/system-monitors-header",
+      "disk",
+      "cpu",
+      "memory",
+      "temperature"
+    ]
   },
 
   "custom/night-mode": {
@@ -247,6 +284,24 @@
   "custom/separator": {
     "format": "—",
     "tooltip": false
+  },
+
+  "custom/audio-header": {
+    "format": "󰝚",
+    "tooltip": true,
+    "tooltip-format": "Audio & Brightness Controls\nClick to expand/collapse"
+  },
+
+  "custom/system-controls-header": {
+    "format": "󰒓",
+    "tooltip": true,
+    "tooltip-format": "System Controls\nClick to expand/collapse"
+  },
+
+  "custom/system-monitors-header": {
+    "format": "󰍛",
+    "tooltip": true,
+    "tooltip-format": "System Monitors\nClick to expand/collapse"
   },
 
   "clock": {
@@ -313,6 +368,32 @@
     "format-icons": ["󰔏", "󰔏", "󰸁"],
     "tooltip-format": "Temperature: {temperatureC}°C",
     "on-click": "kitty --class=floating -e btop"
+  },
+
+  "hyprland/language": {
+    "format": "{}",
+    "format-en": "🇺🇸",
+    "format-es": "🇪🇸",
+    "format-us": "🇺🇸",
+    "format-gb": "🇬🇧",
+    "format-de": "🇩🇪",
+    "format-fr": "🇫🇷",
+    "format-latam": "🇦🇷",
+    "format-br": "🇧🇷",
+    "format-pt": "🇵🇹",
+    "format-it": "🇮🇹",
+    "format-ru": "🇷🇺",
+    "format-jp": "🇯🇵",
+    "format-cn": "🇨🇳",
+    "format-kr": "🇰🇷",
+    "format-in": "🇮🇳",
+    "format-mx": "🇲🇽",
+    "format-ca": "🇨🇦",
+    "format-au": "🇦🇺",
+    "on-click": "~/.local/bin/dots-keyboard-layout --toggle",
+    "on-click-right": "~/.local/bin/dots-keyboard-settings",
+    "tooltip": true,
+    "tooltip-format": "Keyboard: {long}\nLeft-click: Toggle layout\nRight-click: Open settings"
   },
 
   "tray": {
