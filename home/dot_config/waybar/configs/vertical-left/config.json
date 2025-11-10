@@ -17,10 +17,9 @@
     "group/backlight",
     "custom/separator",
     "group/system-controls",
-    "custom/separator",
     "group/system-monitors",
-    "custom/separator",
     "hyprland/language",
+    "custom/separator",
     "tray"
   ],
 
@@ -148,8 +147,8 @@
     "modules": [
       "custom/audio-header",
       "pulseaudio#microphone",
-      "pulseaudio",
-      "pulseaudio/slider"
+      "pulseaudio/slider",
+      "pulseaudio"
     ]
   },
 
@@ -159,7 +158,11 @@
       "transition-duration": 300,
       "transition-left-to-right": false
     },
-    "modules": ["backlight", "backlight/slider"]
+    "modules": [
+      "custom/backlight-header",
+      "backlight/slider",
+      "backlight"
+    ]
   },
 
   "pulseaudio": {
@@ -289,7 +292,13 @@
   "custom/audio-header": {
     "format": "󰝚",
     "tooltip": true,
-    "tooltip-format": "Audio & Brightness Controls\nClick to expand/collapse"
+    "tooltip-format": "Audio Controls\nClick to expand/collapse"
+  },
+
+  "custom/backlight-header": {
+    "format": "󰃟",
+    "tooltip": true,
+    "tooltip-format": "Brightness Controls\nClick to expand/collapse"
   },
 
   "custom/system-controls-header": {

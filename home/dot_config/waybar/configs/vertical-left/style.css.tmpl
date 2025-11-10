@@ -83,6 +83,7 @@ window#waybar {
 #clock,
 #custom-weather,
 #custom-audio-header,
+#custom-backlight-header,
 #custom-system-controls-header,
 #custom-system-monitors-header {
 	padding: 8px 0;
@@ -235,7 +236,6 @@ box#backlight:hover {
 
 /* First module indicators in collapsed groups */
 box#backlight > #backlight {
-	border-left: 2px solid @smart-yellow;
 	padding-left: 2px;
 }
 
@@ -256,18 +256,25 @@ box#backlight:hover #backlight {
 
 /* Drawer indicator - first module in collapsed group */
 box#audio > #audio-header,
+box#backlight > #backlight-header,
 box#system-controls > #system-controls-header,
 box#system-monitors > #system-monitors-header {
 	font-size: 22px;
 	font-weight: bold;
-	padding: 8px 0;
-	margin: 2px 4px;
+	padding: 4px 0;
+	margin: 2px 2px;
 	border-radius: 8px;
 }
 
 /* Header colors and borders */
 #custom-audio-header {
 	color: @smart-pink;
+	font-size: 22px;
+	padding-left: 2px;
+}
+
+#custom-backlight-header {
+	color: @smart-yellow;
 	font-size: 22px;
 	padding-left: 2px;
 }
@@ -285,6 +292,10 @@ box#system-monitors > #system-monitors-header {
 }
 
 box#audio > #audio-header {
+	padding-left: 2px;
+}
+
+box#backlight > #backlight-header {
 	padding-left: 2px;
 }
 
@@ -480,7 +491,7 @@ slider highlight {
  */
 #language {
 	color: @fg-primary;
-	font-size: 15px;
+	font-size: 13px;
 	padding: 6px 0;
 	margin: 2px 4px;
 	border: 1px solid transparent;
