@@ -32,7 +32,7 @@
 
 /* Icon size for modules with icons + text */
 #pulseaudio,
-#pulseaudio\.microphone,
+#pulseaudio.microphone,
 #backlight,
 #custom-night-mode,
 #custom-github,
@@ -69,6 +69,7 @@
 window#waybar.top {
 	background-color: @bg-primary;
 	color: @fg-primary;
+	border-radius: 0px;
 	border-radius: 12px;
 }
 
@@ -89,22 +90,25 @@ window#waybar.bottom {
 
 #workspaces button {
 	background: transparent;
-	color: @fg-secondary;
-	padding: 4px 16px;
-	margin: 6px 3px;
-	border: none;
-	border-radius: 8px;
+	color: @fg-primary;
+	padding: 2px 12px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #workspaces button:hover {
 	background-color: @bg-hover;
-	color: @smart-blue;
+	color: @smart-cyan;
+	border-color: @smart-cyan;
 }
 
 #workspaces button.active {
-	background-color: @bg-hover;
+	background-color: rgba(249, 181, 90, 0.15);
 	color: @smart-orange;
-	border: 1px solid @border-color;
+	border-color: @smart-orange;
+	font-weight: bold;
 }
 
 #workspaces button.urgent {
@@ -149,25 +153,27 @@ window#waybar.bottom {
 #custom-window-switch,
 #custom-rices {
 	background: transparent;
-	padding: 4px 16px;
-	margin: 6px 3px;
-	border-radius: 8px;
+	padding: 2px 12px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-jgmenu {
-	color: @smart-accent;
+	color: @smart-cyan;
 }
 
 #custom-apps {
-	color: @fg-secondary;
+	color: @smart-pink;
 }
 
 #custom-window-switch {
-	color: @smart-blue;
+	color: @smart-yellow;
 }
 
 #custom-rices {
-	color: @smart-orange;
+	color: @smart-magenta;
 }
 
 #custom-jgmenu:hover,
@@ -175,52 +181,79 @@ window#waybar.bottom {
 #custom-window-switch:hover,
 #custom-rices:hover {
 	background-color: @bg-hover;
+	border-color: currentColor;
 }
 
 /* ==========================================================================
  * Audio
  * ==========================================================================
  */
-#pulseaudio,
-#pulseaudio\.microphone {
+/* Groups for volume and backlight with slider */
+box#volume,
+box#backlight {
 	background: transparent;
-	padding: 4px 16px;
-	margin: 6px 3px;
-	border-radius: 8px;
+	padding: 2px 6px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
-#pulseaudio {
-	color: @smart-blue;
-}
-
-#pulseaudio\.microphone {
-	color: @smart-pink;
-}
-
-#pulseaudio:hover,
-#pulseaudio\.microphone:hover {
+box#volume:hover,
+box#backlight:hover {
 	background-color: @bg-hover;
+	border-color: rgba(249, 181, 90, 0.5);
 }
 
-#pulseaudio.muted,
-#pulseaudio\.microphone.source-muted {
-	color: @smart-warning;
+box#volume:hover #pulseaudio,
+box#backlight:hover #backlight {
+	color: @smart-orange;
 }
 
-/* ==========================================================================
- * Backlight
- * ==========================================================================
- */
+#pulseaudio,
+#pulseaudio.microphone {
+	background: transparent;
+	padding: 2px 6px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#pulseaudio.microphone:hover {
+	background-color: @bg-hover;
+	border-color: @smart-pink;
+}
+
 #backlight {
 	background: transparent;
-	color: @smart-orange;
-	padding: 4px 16px;
-	margin: 6px 3px;
-	border-radius: 8px;
+	padding: 2px 12px;
+	margin: 0px;
+	border: 1px solid transparent;
+	border-radius: 0px;
+	transition: all 0.2s ease;
 }
 
 #backlight:hover {
 	background-color: @bg-hover;
+	border-color: @smart-yellow;
+}
+
+#pulseaudio {
+	color: @smart-orange;
+}
+
+#pulseaudio.microphone {
+	color: @smart-pink;
+}
+
+#backlight {
+	color: @smart-yellow;
+}
+
+#pulseaudio.muted,
+#pulseaudio.microphone.source-muted {
+	color: @smart-warning;
 }
 
 /* ==========================================================================
@@ -228,17 +261,19 @@ window#waybar.bottom {
  * ==========================================================================
  */
 #clock {
-	background: transparent;
-	color: @smart-pink;
-	padding: 4px 12px;
-	margin: 6px 6px;
-	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.05);
+	color: @fg-primary;
+	padding: 2px 16px;
+	margin: 4px 4px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 6px;
 	font-weight: bold;
-	font-size: 14px;
+	font-size: 13px;
 }
 
 #clock:hover {
 	background-color: @bg-hover;
+	border-color: @smart-pink;
 }
 
 /* ==========================================================================
@@ -251,29 +286,31 @@ window#waybar.bottom {
 #custom-battery,
 #custom-performance-profile {
 	background: transparent;
-	padding: 4px 16px;
-	margin: 6px 3px;
-	border-radius: 8px;
+	padding: 2px 10px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-night-mode {
-	color: @smart-orange;
+	color: @smart-yellow;
 }
 
 #custom-github {
-	color: @smart-success;
+	color: @smart-green;
 }
 
 #custom-weather {
-	color: @smart-info;
+	color: @smart-cyan;
 }
 
 #custom-battery {
-	color: @smart-pink;
+	color: @smart-orange;
 }
 
 #custom-performance-profile {
-	color: @smart-blue;
+	color: @smart-magenta;
 }
 
 #custom-night-mode:hover,
@@ -282,6 +319,7 @@ window#waybar.bottom {
 #custom-battery:hover,
 #custom-performance-profile:hover {
 	background-color: @bg-hover;
+	border-color: currentColor;
 }
 
 /* ==========================================================================
@@ -290,13 +328,15 @@ window#waybar.bottom {
  */
 #tray {
 	background: transparent;
-	padding: 4px 8px;
-	margin: 6px 3px;
-	border-radius: 8px;
+	padding: 2px 8px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
 }
 
 #tray:hover {
 	background-color: @bg-hover;
+	border-color: rgba(255, 255, 255, 0.1);
 }
 
 #tray>.passive {
@@ -317,23 +357,38 @@ window#waybar.bottom {
 #custom-player-controls,
 #custom-player-info {
 	background: transparent;
-	padding: 4px 8px;
-	margin: 6px 3px;
-	border-radius: 8px;
+	padding: 2px 10px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-player-controls {
 	font-size: 13px;
-	color: @smart-accent;
+	color: @smart-magenta;
 }
 
 #custom-player-controls:hover {
 	background-color: @bg-hover;
+	border-color: @smart-magenta;
 }
 
 #custom-player-info {
-	color: @fg-secondary;
-	font-size: 13px;
+	color: @fg-primary;
+	font-size: 12px;
+}
+
+/* ==========================================================================
+ * Hyprland Window (Hidden - Used for .empty detection)
+ * ==========================================================================
+ */
+#window {
+	opacity: 0;
+	margin: 0;
+	padding: 0;
+	min-width: 0;
+	min-height: 0;
 }
 
 /* ==========================================================================
@@ -344,37 +399,52 @@ window#waybar.bottom {
 #disk,
 #temperature {
 	background: transparent;
-	color: @fg-secondary;
-	padding: 4px 8px;
-	margin: 6px 3px;
-	border-radius: 8px;
-	font-size: 13px;
+	color: @fg-primary;
+	padding: 2px 10px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	font-size: 12px;
+	transition: all 0.2s ease;
+}
+
+#language:hover,
+#disk:hover,
+#temperature:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
 }
 
 #memory {
 	background: transparent;
 	color: @smart-orange;
-	padding: 4px 8px;
-	margin: 6px 3px;
-	border-radius: 8px;
-	font-size: 13px;
+	padding: 2px 10px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	font-size: 12px;
+	transition: all 0.2s ease;
+}
+
+#memory:hover {
+	background-color: @bg-hover;
+	border-color: @smart-orange;
 }
 
 #cpu {
 	background: transparent;
 	color: @smart-pink;
-	padding: 4px 8px;
-	margin: 6px 3px;
-	border-radius: 8px;
-	font-size: 13px;
+	padding: 2px 10px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	font-size: 12px;
+	transition: all 0.2s ease;
 }
 
-#language:hover,
-#disk:hover,
-#temperature:hover,
-#memory:hover,
 #cpu:hover {
 	background-color: @bg-hover;
+	border-color: @smart-pink;
 }
 
 #disk.warning,
@@ -400,26 +470,28 @@ window#waybar.bottom {
 #backlight-slider,
 #pulseaudio-slider {
 	background: transparent;
-	padding: 4px 8px;
-	margin: 6px 3px;
-	border-radius: 8px;
+	padding: 2px 6px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
 }
 
 #backlight-slider trough,
 #pulseaudio-slider trough {
-	min-height: 10px;
-	min-width: 90px;
-	border-radius: 6px;
+	min-height: 8px;
+	min-width: 80px;
+	border-radius: 4px;
 	background-color: @bg-hover;
+	border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 #backlight-slider highlight {
-	border-radius: 6px;
-	background-color: @smart-blue;
+	border-radius: 4px;
+	background-color: @smart-yellow;
 }
 
 #pulseaudio-slider highlight {
-	border-radius: 6px;
+	border-radius: 4px;
 	background-color: @smart-orange;
 }
 

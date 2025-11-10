@@ -1,17 +1,19 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 34,
+  "height": 36,
   "spacing": 0,
-  "margin-top": 8,
+  "margin-top": 6,
   "margin-left": 8,
   "margin-right": 8,
+  "margin-bottom": 0,
 
   "modules-left": [
     "custom/jgmenu",
     "custom/apps",
     "custom/window-switch",
     "custom/rices",
+    "hyprland/window",
     "pulseaudio#microphone",
     "group/volume",
     "group/backlight"
@@ -64,7 +66,6 @@
 
   "modules-right": [
     "custom/night-mode",
-    "custom/feh-blur",
     "custom/github",
     "custom/performance-profile",
     "custom/battery",
@@ -201,5 +202,13 @@
     "icon-size": 18,
     "spacing": 12,
     "show-passive-items": true
+  },
+
+  "hyprland/window": {
+    "format": "",
+    "separate-outputs": false,
+    "rewrite": {
+      "": ""
+    }
   }
 }
