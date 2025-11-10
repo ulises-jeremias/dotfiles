@@ -404,25 +404,25 @@ apply_smart_colors_to_apps() {
   fi
 
   # Update Mako if running
-  if pgrep mako >/dev/null 2>&1; then
-    show_status "Mako detected, restarting with smart colors..."
+  # if pgrep mako >/dev/null 2>&1; then
+  #   show_status "Mako detected, restarting with smart colors..."
 
-    # Replace colors in mako config
-    if [[ -f "$HOME/.cache/dots/smart-colors/colors-mako.conf" ]]; then
-      # Backup original if exists
-      [[ -f "$HOME/.config/mako/config" ]] && cp "$HOME/.config/mako/config" "$HOME/.config/mako/config.bak" 2>/dev/null
+  #   # Replace colors in mako config
+  #   if [[ -f "$HOME/.cache/dots/smart-colors/colors-mako.conf" ]]; then
+  #     # Backup original if exists
+  #     [[ -f "$HOME/.config/mako/config" ]] && cp "$HOME/.config/mako/config" "$HOME/.config/mako/config.bak" 2>/dev/null
 
-      # Merge smart colors into mako config
-      cat "$HOME/.cache/dots/smart-colors/colors-mako.conf" >"$HOME/.config/mako/config" 2>/dev/null
+  #     # Merge smart colors into mako config
+  #     cat "$HOME/.cache/dots/smart-colors/colors-mako.conf" >"$HOME/.config/mako/config" 2>/dev/null
 
-      # Reload mako
-      if makoctl reload >/dev/null 2>&1; then
-        show_success "Mako restarted with smart colors"
-        UPDATED_APPS+=("Mako with smart colors")
-        smart_colors_applied=true
-      fi
-    fi
-  fi
+  #     # Reload mako
+  #     if makoctl reload >/dev/null 2>&1; then
+  #       show_success "Mako restarted with smart colors"
+  #       UPDATED_APPS+=("Mako with smart colors")
+  #       smart_colors_applied=true
+  #     fi
+  #   fi
+  # fi
 
   if [[ $smart_colors_applied == "true" ]]; then
     show_success "Smart colors applied to running applications"

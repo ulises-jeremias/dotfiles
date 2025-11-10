@@ -15,7 +15,7 @@ GTK_THEME="Orchis-Light"  # Light theme for cosmic aesthetic with better readabi
 ICON_THEME="Numix-Circle" # Modern, clean icons
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
-PREFER_DARK_THEME="false" # Light theme for comfortable viewing
+PREFER_DARK_THEME="auto" # Light theme for comfortable viewing
 
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#b16286"

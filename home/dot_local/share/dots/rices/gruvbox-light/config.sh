@@ -15,7 +15,7 @@ GTK_THEME="Orchis-Light"  # Light theme that matches gruvbox light aesthetic
 ICON_THEME="Numix-Circle" # Warm, friendly icons
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
-PREFER_DARK_THEME="false" # Explicitly prefer light theme
+PREFER_DARK_THEME="auto" # Explicitly prefer light theme
 
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#d79921"

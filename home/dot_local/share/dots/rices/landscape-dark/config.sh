@@ -15,7 +15,7 @@ GTK_THEME="Orchis-Light"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
-PREFER_DARK_THEME="false"
+PREFER_DARK_THEME="auto"
 
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#689d6a"
