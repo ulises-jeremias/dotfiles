@@ -37,7 +37,7 @@
 #custom-night-mode,
 #custom-github,
 #custom-weather,
-#custom-battery,
+#battery,
 #custom-performance-profile {
 	font-size: 15px;
 }
@@ -283,7 +283,7 @@ box#backlight:hover #backlight {
 #custom-night-mode,
 #custom-github,
 #custom-weather,
-#custom-battery,
+#battery,
 #custom-performance-profile {
 	background: transparent;
 	padding: 2px 10px;
@@ -305,7 +305,7 @@ box#backlight:hover #backlight {
 	color: @smart-cyan;
 }
 
-#custom-battery {
+#battery {
 	color: @smart-orange;
 }
 
@@ -316,10 +316,28 @@ box#backlight:hover #backlight {
 #custom-night-mode:hover,
 #custom-github:hover,
 #custom-weather:hover,
-#custom-battery:hover,
+#battery:hover,
 #custom-performance-profile:hover {
 	background-color: @bg-hover;
 	border-color: currentColor;
+}
+
+#battery.charging {
+	color: @smart-green;
+}
+
+#battery.plugged {
+	color: @smart-cyan;
+}
+
+#battery.warning:not(.charging) {
+	color: @smart-warning;
+	animation: pulse 1s ease infinite;
+}
+
+#battery.critical:not(.charging) {
+	color: @smart-error;
+	animation: blink 1s ease infinite;
 }
 
 /* ==========================================================================

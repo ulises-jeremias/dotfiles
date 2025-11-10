@@ -68,12 +68,12 @@
     "custom/night-mode",
     "custom/github",
     "custom/performance-profile",
-    "custom/battery",
+    "battery",
     "tray"
   ],
 
   "custom/jgmenu": {
-    "format": "",
+    "format": "󰣇",
     "tooltip": true,
     "tooltip-format": "Open Jgmenu",
     "on-click": "dots-jgmenu",
@@ -125,12 +125,17 @@
     "on-click": "~/.local/bin/dots-performance-mode --gui"
   },
 
-  "custom/battery": {
-    "format": "{}",
-    "exec": "~/.config/waybar/scripts/battery-status",
+  "battery": {
     "interval": 30,
-    "tooltip": true,
-    "tooltip-format": "Battery status; notifications via poweralertd or wrapper"
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-plugged": "󰚥 {capacity}%",
+    "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "tooltip-format": "Battery: {capacity}%\n{timeTo}"
   },
 
   "custom/weather": {

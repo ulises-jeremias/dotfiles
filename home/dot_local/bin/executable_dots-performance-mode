@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 ## dots-performance-mode: Select or view performance profiles
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
 ## Usage:
 ##   @script.name [OPTIONS]
 ## Options:

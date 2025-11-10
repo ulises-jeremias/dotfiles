@@ -1,0 +1,235 @@
+{
+  "layer": "top",
+  "position": "left",
+  "width": 48,
+  "spacing": 0,
+  "margin-top": 8,
+  "margin-left": 6,
+  "margin-bottom": 8,
+  "margin-right": 0,
+
+  "modules-left": ["custom/jgmenu", "hyprland/workspaces", "custom/separator"],
+
+  "modules-center": ["clock", "custom/weather"],
+
+  "modules-right": [
+    "pulseaudio#microphone",
+    "group/volume",
+    "group/backlight",
+    "custom/separator",
+    "custom/night-mode",
+    "custom/performance-profile",
+    "battery",
+    "custom/separator",
+    "disk",
+    "cpu",
+    "memory",
+    "temperature",
+    "custom/separator",
+    "tray"
+  ],
+
+  "custom/jgmenu": {
+    "format": "󰣇",
+    "tooltip": true,
+    "tooltip-format": "Open Jgmenu",
+    "on-click": "dots-jgmenu",
+    "on-right-click": "exo-open ~/.config/jgmenu/jgmenurc"
+  },
+
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "1": "一",
+      "2": "二",
+      "3": "三",
+      "4": "四",
+      "5": "五",
+      "6": "六",
+      "7": "七",
+      "8": "八",
+      "9": "九",
+      "10": "十"
+    },
+    "on-click": "activate",
+    "all-outputs": true,
+    "sort-by-number": true
+  },
+
+  "group/volume": {
+    "orientation": "vertical",
+    "modules": ["pulseaudio", "pulseaudio/slider"]
+  },
+
+  "pulseaudio": {
+    "format": "{icon}",
+    "format-muted": "󰝟",
+    "format-icons": {
+      "headphone": "󰋋",
+      "hands-free": "󰥰",
+      "headset": "󰋎",
+      "phone": "󰄜",
+      "portable": "󰦢",
+      "car": "󰄋",
+      "default": ["󰕿", "󰖀", "󰕾"]
+    },
+    "scroll-step": 1,
+    "on-click": "pamixer -t",
+    "on-click-right": "pavucontrol",
+    "tooltip-format": "{desc}\nVolume: {volume}%"
+  },
+
+  "pulseaudio/slider": {
+    "min": 0,
+    "max": 100,
+    "orientation": "vertical"
+  },
+
+  "group/backlight": {
+    "orientation": "vertical",
+    "modules": ["backlight", "backlight/slider"]
+  },
+
+  "backlight": {
+    "device": "intel_backlight",
+    "format": "{icon}",
+    "format-icons": ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"],
+    "on-scroll-up": "brightnessctl set 5%+",
+    "on-scroll-down": "brightnessctl set 5%-",
+    "tooltip-format": "Brightness: {percent}%"
+  },
+
+  "backlight/slider": {
+    "min": 0,
+    "max": 100,
+    "orientation": "vertical",
+    "device": "intel_backlight"
+  },
+
+  "pulseaudio#microphone": {
+    "format": "{format_source}",
+    "format-source": "󰍬",
+    "format-source-muted": "󰍭",
+    "on-click": "pamixer --default-source -t",
+    "on-scroll-up": "pamixer --default-source -i 5",
+    "on-scroll-down": "pamixer --default-source -d 5",
+    "tooltip-format": "Microphone: {volume}%"
+  },
+
+  "custom/night-mode": {
+    "format": "{}",
+    "exec": "~/.local/bin/dots night-mode status-icon",
+    "interval": 5,
+    "tooltip": true,
+    "exec-tooltip": "~/.local/bin/dots night-mode status-text",
+    "on-click": "~/.local/bin/dots night-mode toggle"
+  },
+
+  "custom/performance-profile": {
+    "format": "{}",
+    "exec": "~/.config/waybar/scripts/performance-profile",
+    "interval": 10,
+    "tooltip": true,
+    "tooltip-format": "Performance profile (click to change)",
+    "on-click": "~/.local/bin/dots-performance-mode --gui"
+  },
+
+  "battery": {
+    "interval": 30,
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon}",
+    "format-charging": "󰂄",
+    "format-plugged": "󰚥",
+    "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "tooltip-format": "Battery: {capacity}%\n{timeTo}",
+    "on-click": "kitty --class=floating -e btop"
+  },
+
+  "custom/weather": {
+    "format": "{}",
+    "exec": "~/.config/waybar/scripts/weather",
+    "interval": 1800,
+    "tooltip": true,
+    "rotate": 90
+  },
+
+  "custom/separator": {
+    "format": "—",
+    "tooltip": false
+  },
+
+  "clock": {
+    "interval": 60,
+    "format": "{:%H\n%M}",
+    "format-alt": "{:%m\n%d}",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#ffead3'><b>{}</b></span>",
+        "days": "<span color='#ecc6d9'><b>{}</b></span>",
+        "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+        "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+        "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
+      }
+    },
+    "actions": {
+      "on-click-right": "mode",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down"
+    }
+  },
+
+  "disk": {
+    "interval": 30,
+    "format": "󰋊",
+    "path": "/",
+    "tooltip-format": "Disk Usage\nUsed: {used} / {total}\nFree: {free} ({percentage_free}%)",
+    "states": {
+      "warning": 70,
+      "critical": 85
+    },
+    "on-click": "kitty --class=floating -e btop"
+  },
+
+  "cpu": {
+    "interval": 5,
+    "format": "󰘚",
+    "states": {
+      "warning": 70,
+      "critical": 90
+    },
+    "tooltip-format": "CPU Usage: {usage}%\nFrequency: {avg_frequency}GHz",
+    "on-click": "kitty --class=floating -e btop"
+  },
+
+  "memory": {
+    "interval": 5,
+    "format": "󰍛",
+    "tooltip-format": "RAM: {used:0.1f}GB / {total:0.1f}GB\nSwap: {swapUsed:0.1f}GB / {swapTotal:0.1f}GB",
+    "on-click": "kitty --class=floating -e btop"
+  },
+
+  "temperature": {
+    "interval": 5,
+    "thermal-zone": 0,
+    "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+    "critical-threshold": 80,
+    "format": "{icon}",
+    "format-icons": ["󰔏", "󰔏", "󰸁"],
+    "tooltip-format": "Temperature: {temperatureC}°C",
+    "on-click": "kitty --class=floating -e btop"
+  },
+
+  "tray": {
+    "icon-size": 18,
+    "spacing": 8,
+    "show-passive-items": true
+  }
+}

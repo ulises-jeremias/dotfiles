@@ -24,3 +24,6 @@ RICE_SECONDARY_COLOR="#98971a"
 
 # Polybar profile to use for this rice
 POLYBAR_PROFILE="default"
+
+# Waybar profile to use for this rice
+WAYBAR_PROFILE="vertical-left"

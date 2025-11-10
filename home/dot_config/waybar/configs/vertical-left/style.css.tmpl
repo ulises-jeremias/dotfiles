@@ -1,0 +1,451 @@
+/* ============================================================================
+ * Waybar Vertical Left Sidebar - Smart Colors Edition
+ * ============================================================================
+ * Single vertical bar on the left with essential modules
+ * Optimized for vertical orientation and space efficiency
+ * ============================================================================ */
+
+@import "{{ joinPath .chezmoi.homeDir ".cache/wal/colors-waybar.css" }}";
+@import "{{ joinPath .chezmoi.homeDir ".cache/dots/smart-colors/colors-waybar.css" }}";
+
+/* ==========================================================================
+ * Global
+ * ==========================================================================
+ */
+* {
+	border: none;
+	border-radius: 0;
+	font-family: "Hack Nerd Font Mono", "Noto Color Emoji", monospace;
+	font-size: 13px;
+	font-weight: normal;
+	min-height: 0;
+}
+
+/* Increase icon size for main modules */
+#workspaces button,
+#custom-jgmenu {
+	font-size: 22px;
+}
+
+/* Icon size for modules with icons */
+#pulseaudio,
+#pulseaudio.microphone,
+#backlight,
+#custom-night-mode,
+#custom-performance-profile,
+#battery,
+#cpu,
+#memory,
+#temperature {
+	font-size: 18px;
+}
+
+/* Clock gets special size for readability */
+#clock {
+	font-size: 16px;
+}
+
+#custom-weather {
+	font-size: 14px;
+}
+
+/* ==========================================================================
+ * Window
+ * ==========================================================================
+ */
+window#waybar {
+	background-color: @bg-primary;
+	color: @fg-primary;
+	border-radius: 12px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 4px 6px;
+	transition: all 0.3s ease;
+}
+
+/* ==========================================================================
+ * Module Container Styling
+ * ==========================================================================
+ */
+#workspaces,
+#custom-jgmenu,
+#pulseaudio,
+#pulseaudio.microphone,
+#backlight,
+#custom-night-mode,
+#custom-performance-profile,
+#battery,
+#disk,
+#cpu,
+#memory,
+#temperature,
+#tray,
+#clock,
+#custom-weather {
+	padding: 8px 0;
+	margin: 2px 4px;
+	border: 1px solid transparent;
+	transition: all 0.2s ease;
+}
+
+/* ==========================================================================
+ * Top Section - Menu & Workspaces
+ * ==========================================================================
+ */
+#custom-jgmenu {
+	color: @smart-cyan;
+	padding: 12px 0;
+	margin: 4px 4px;
+	border-radius: 8px;
+}
+
+#custom-jgmenu:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
+#workspaces {
+	background: transparent;
+	padding: 0;
+	margin: 0 4px;
+}
+
+#workspaces button {
+	background: transparent;
+	color: @fg-primary;
+	padding: 6px 0;
+	margin: 2px 0;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#workspaces button.active {
+	background-color: rgba(249, 181, 90, 0.15);
+	color: @smart-orange;
+	border-color: @smart-orange;
+	font-weight: bold;
+}
+
+#workspaces button.urgent {
+	background-color: rgba(235, 103, 152, 0.15);
+	color: @smart-pink;
+	border-color: @smart-pink;
+	animation: blink 1s ease infinite;
+}
+
+#workspaces button:hover {
+	background-color: @bg-hover;
+	color: @smart-cyan;
+	border-color: @smart-cyan;
+}
+
+@keyframes blink {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.5;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes pulse {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.7;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+/* ==========================================================================
+ * Center Section - Clock & Weather
+ * ==========================================================================
+ */
+#clock {
+	background: rgba(255, 255, 255, 0.05);
+	color: @fg-primary;
+	font-weight: 600;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 8px;
+	padding: 12px 0;
+	margin: 6px 4px;
+}
+
+#clock:hover {
+	background-color: @bg-hover;
+	border-color: @smart-pink;
+}
+
+#custom-weather {
+	color: @smart-cyan;
+	padding: 8px 0;
+	border-radius: 8px;
+}
+
+#custom-weather:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
+/* ==========================================================================
+ * Audio & Brightness Groups
+ * ==========================================================================
+ */
+box#volume,
+box#backlight {
+	background: transparent;
+	padding: 4px 0;
+	margin: 2px 4px;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	transition: all 0.2s ease;
+}
+
+box#volume:hover,
+box#backlight:hover {
+	background-color: @bg-hover;
+	border-color: rgba(249, 181, 90, 0.5);
+}
+
+box#volume:hover #pulseaudio,
+box#backlight:hover #backlight {
+	color: @smart-orange;
+}
+
+#pulseaudio {
+	color: @smart-orange;
+	padding: 4px 0;
+}
+
+#backlight {
+	color: @smart-yellow;
+	padding: 4px 0;
+}
+
+#pulseaudio.microphone {
+	color: @smart-pink;
+	padding: 6px 0;
+	border-radius: 8px;
+}
+
+#pulseaudio.microphone:hover {
+	background-color: @bg-hover;
+	border-color: @smart-pink;
+}
+
+/* ==========================================================================
+ * Sliders (Vertical Orientation)
+ * ==========================================================================
+ */
+slider {
+	min-width: 4px;
+	min-height: 60px;
+	background: transparent;
+	border-radius: 2px;
+	margin: 4px 0;
+}
+
+slider trough {
+	min-width: 4px;
+	min-height: 60px;
+	border-radius: 2px;
+	background-color: @bg-hover;
+	border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+slider highlight {
+	min-width: 4px;
+	border-radius: 2px;
+}
+
+#pulseaudio-slider slider highlight {
+	background-color: @smart-orange;
+}
+
+#backlight-slider slider highlight {
+	background-color: @smart-yellow;
+}
+
+/* ==========================================================================
+ * System Controls
+ * ==========================================================================
+ */
+#custom-night-mode {
+	color: @smart-yellow;
+	border-radius: 8px;
+}
+
+#custom-night-mode:hover {
+	background-color: @bg-hover;
+	border-color: @smart-yellow;
+}
+
+#custom-performance-profile {
+	color: @smart-magenta;
+	border-radius: 8px;
+}
+
+#custom-performance-profile:hover {
+	background-color: @bg-hover;
+	border-color: @smart-magenta;
+}
+
+#battery {
+	color: @smart-orange;
+	border-radius: 8px;
+}
+
+#battery:hover {
+	background-color: @bg-hover;
+	border-color: @smart-orange;
+}
+
+#battery.charging {
+	color: @smart-green;
+}
+
+#battery.plugged {
+	color: @smart-cyan;
+}
+
+#battery.warning:not(.charging) {
+	color: @smart-warning;
+	animation: pulse 1s ease infinite;
+}
+
+#battery.critical:not(.charging) {
+	color: @smart-error;
+	background-color: rgba(235, 103, 152, 0.25);
+	animation: blink 0.5s ease infinite;
+}
+
+/* ==========================================================================
+ * System Monitors
+ * ==========================================================================
+ */
+#disk {
+	color: @smart-green;
+	border-radius: 8px;
+}
+
+#disk:hover {
+	background-color: @bg-hover;
+	border-color: @smart-green;
+}
+
+#cpu {
+	color: @smart-pink;
+	border-radius: 8px;
+}
+
+#cpu:hover {
+	background-color: @bg-hover;
+	border-color: @smart-pink;
+}
+
+#memory {
+	color: @smart-orange;
+	border-radius: 8px;
+}
+
+#memory:hover {
+	background-color: @bg-hover;
+	border-color: @smart-orange;
+}
+
+#temperature {
+	color: @smart-cyan;
+	border-radius: 8px;
+}
+
+#temperature:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
+#temperature.critical {
+	color: @smart-error;
+	background-color: rgba(235, 103, 152, 0.25);
+	animation: blink 0.5s ease infinite;
+}
+
+#disk.warning,
+#cpu.warning,
+#memory.warning {
+	color: @smart-warning;
+	animation: pulse 1s ease infinite;
+}
+
+#disk.critical,
+#cpu.critical,
+#memory.critical {
+	color: @smart-error;
+	animation: blink 1s ease infinite;
+}
+
+/* ==========================================================================
+ * Tray
+ * ==========================================================================
+ */
+#tray {
+	background: transparent;
+	padding: 4px 0;
+	margin: 4px 4px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+}
+
+#tray:hover {
+	background-color: @bg-hover;
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+#tray > .passive {
+	-gtk-icon-effect: dim;
+	opacity: 0.5;
+}
+
+#tray > .needs-attention {
+	-gtk-icon-effect: highlight;
+	background-color: rgba(235, 103, 152, 0.15);
+	border-radius: 8px;
+	animation: pulse 1s ease infinite;
+}
+
+/* ==========================================================================
+ * Separator
+ * ==========================================================================
+ */
+#custom-separator {
+	color: rgba(255, 255, 255, 0.2);
+	padding: 0;
+	margin: 2px 4px;
+	font-size: 10px;
+}
+
+/* ==========================================================================
+ * Tooltips
+ * ==========================================================================
+ */
+tooltip {
+	background-color: @bg-primary;
+	color: @fg-primary;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
+	padding: 8px 12px;
+	font-size: 12px;
+}
+
+tooltip label {
+	color: @fg-primary;
+}

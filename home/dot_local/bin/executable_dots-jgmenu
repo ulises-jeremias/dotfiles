@@ -3,7 +3,7 @@
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
-## Launch jgmenu with smart color integration
+## Launch jgmenu with smart color integration and configurable positioning
 ##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
@@ -11,9 +11,15 @@
 ##     @script.name [OPTIONS]
 ##
 ## Options:
-##     -h, --help           Show this help message
-##     -v, --verbose        Enable verbose output
-##         --config=PATH    Use specific config file (default: ~/.config/jgmenu/jgmenurc-config)
+##     -h, --help              Show this help message
+##     -v, --verbose           Enable verbose output
+##         --config=PATH       Use specific config file (default: ~/.config/jgmenu/jgmenurc-config)
+##     -x, --position-x=NUM    X coordinate for menu (default: auto-detect from bar position)
+##     -y, --position-y=NUM    Y coordinate for menu (default: auto-detect from bar position)
+##         --position-mode=MODE Position mode: pointer, fixed, center, ipc (default: auto-detect)
+##         --halign=ALIGN      Horizontal alignment: left, center, right (default: left)
+##         --valign=ALIGN      Vertical alignment: top, center, bottom (default: top)
+##         --at-pointer        Use pointer position (shortcut for --position-mode=pointer)
 
 set -e
 
@@ -26,6 +32,18 @@ readonly SCRIPT_NAME
 readonly ORIGINAL_CONFIG_FILE="${config:-$HOME/.config/jgmenu/jgmenurc-config}"
 readonly TARGET_CONFIG_FILE="$HOME/.config/jgmenu/jgmenurc"
 readonly SMART_COLORS_FILE="$HOME/.cache/dots/smart-colors/colors.sh"
+
+# Position defaults (will be auto-detected if not provided)
+POSITION_X="${position_x:-}"
+POSITION_Y="${position_y:-}"
+POSITION_MODE="${position_mode:-}"
+HALIGN="${halign:-left}"
+VALIGN="${valign:-top}"
+
+# Check for --at-pointer flag
+if [[ ${at_pointer:-no} == yes ]]; then
+  POSITION_MODE="pointer"
+fi
 
 # Logging function
 log() {
@@ -115,6 +133,100 @@ check_dependencies() {
   return 0
 }
 
+# Auto-detect waybar position and calculate menu position
+auto_detect_position() {
+  log "INFO" "Auto-detecting menu position from Waybar"
+
+  # Check for required dependencies
+  if ! command -v hyprctl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+    log "WARNING" "hyprctl or jq not found, falling back to pointer mode"
+    POSITION_MODE="${POSITION_MODE:-pointer}"
+    return 0
+  fi
+
+  # Try to get Waybar info using hyprctl (Hyprland specific)
+  local waybar_info
+  waybar_info=$(hyprctl clients -j 2>/dev/null | jq -r '.[] | select(.class == "waybar")' 2>/dev/null)
+
+  if [[ -z $waybar_info ]]; then
+    log "WARNING" "No Waybar instance found, falling back to pointer mode"
+    POSITION_MODE="${POSITION_MODE:-pointer}"
+    return 0
+  fi
+
+  local bar_x bar_y bar_width bar_height
+  bar_x=$(echo "$waybar_info" | jq -r '.at[0]' 2>/dev/null)
+  bar_y=$(echo "$waybar_info" | jq -r '.at[1]' 2>/dev/null)
+  bar_width=$(echo "$waybar_info" | jq -r '.size[0]' 2>/dev/null)
+  bar_height=$(echo "$waybar_info" | jq -r '.size[1]' 2>/dev/null)
+
+  if [[ -z $bar_x || -z $bar_y || -z $bar_width || -z $bar_height ]]; then
+    log "WARNING" "Could not parse Waybar geometry, falling back to pointer mode"
+    POSITION_MODE="${POSITION_MODE:-pointer}"
+    return 0
+  fi
+
+  # Determine bar position (top, bottom, left, right) and calculate menu position
+  if [[ $bar_y -lt 50 ]]; then
+    # Top bar - menu appears below
+    POSITION_X="${POSITION_X:-$bar_x}"
+    POSITION_Y="${POSITION_Y:-$((bar_y + bar_height + 5))}"
+    HALIGN="${HALIGN:-left}"
+    VALIGN="top"
+    log "INFO" "Detected top bar at (x=$bar_x, y=$bar_y, w=$bar_width, h=$bar_height) → menu at (x=$POSITION_X, y=$POSITION_Y)"
+  elif [[ $bar_x -lt 50 ]]; then
+    # Left bar - menu appears to the right
+    POSITION_X="${POSITION_X:-$((bar_x + bar_width + 5))}"
+    POSITION_Y="${POSITION_Y:-$bar_y}"
+    HALIGN="left"
+    VALIGN="${VALIGN:-top}"
+    log "INFO" "Detected left bar at (x=$bar_x, y=$bar_y, w=$bar_width, h=$bar_height) → menu at (x=$POSITION_X, y=$POSITION_Y)"
+  else
+    # Other positions (right/bottom) - use simple offset
+    POSITION_X="${POSITION_X:-$bar_x}"
+    POSITION_Y="${POSITION_Y:-$bar_y}"
+    log "INFO" "Detected bar at (x=$bar_x, y=$bar_y) → using default positioning"
+  fi
+
+  POSITION_MODE="${POSITION_MODE:-fixed}"
+  return 0
+}
+
+# Apply position configuration to jgmenu config
+apply_position_config() {
+  log "INFO" "Applying position configuration (mode=$POSITION_MODE)"
+
+  # Set position mode
+  if [[ -n $POSITION_MODE ]]; then
+    sed -i "s|^position_mode.*=.*|position_mode        = $POSITION_MODE|" "$TARGET_CONFIG_FILE"
+    log "INFO" "Set position_mode = $POSITION_MODE"
+  fi
+
+  # Set coordinates if in fixed mode
+  if [[ $POSITION_MODE == "fixed" ]]; then
+    if [[ -n $POSITION_X ]]; then
+      sed -i "s|^menu_margin_x.*=.*|menu_margin_x        = $POSITION_X|" "$TARGET_CONFIG_FILE"
+      log "INFO" "Set menu_margin_x = $POSITION_X"
+    fi
+
+    if [[ -n $POSITION_Y ]]; then
+      sed -i "s|^menu_margin_y.*=.*|menu_margin_y        = $POSITION_Y|" "$TARGET_CONFIG_FILE"
+      log "INFO" "Set menu_margin_y = $POSITION_Y"
+    fi
+  fi
+
+  # Set alignment
+  if [[ -n $HALIGN ]]; then
+    sed -i "s|^menu_halign.*=.*|menu_halign          = $HALIGN|" "$TARGET_CONFIG_FILE"
+    log "INFO" "Set menu_halign = $HALIGN"
+  fi
+
+  if [[ -n $VALIGN ]]; then
+    sed -i "s|^menu_valign.*=.*|menu_valign          = $VALIGN|" "$TARGET_CONFIG_FILE"
+    log "INFO" "Set menu_valign = $VALIGN"
+  fi
+}
+
 # Main execution
 main() {
   # Check dependencies
@@ -145,10 +257,24 @@ main() {
   update_color "color_sel_fg" "FOREGROUND" "100"
   update_color "color_sep_fg" "INFO" "40"
 
+  # Auto-detect position if not explicitly set
+  if [[ -z $POSITION_MODE || ($POSITION_MODE == "fixed" && (-z $POSITION_X || -z $POSITION_Y)) ]]; then
+    auto_detect_position
+  fi
+
+  # Apply position configuration
+  apply_position_config
+
   # Set JGMENU_CONFIG to point to the temporary configuration file
   export JGMENU_CONFIG="$TARGET_CONFIG_FILE"
 
-  log "INFO" "Launching jgmenu with position_mode=fixed"
+  # Log final configuration
+  log "INFO" "Launching jgmenu with:"
+  log "INFO" "  Position mode: $POSITION_MODE"
+  if [[ $POSITION_MODE == "fixed" ]]; then
+    log "INFO" "  Coordinates: x=$POSITION_X, y=$POSITION_Y"
+    log "INFO" "  Alignment: halign=$HALIGN, valign=$VALIGN"
+  fi
 
   jgmenu_run
 }

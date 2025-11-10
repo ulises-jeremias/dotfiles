@@ -36,10 +36,7 @@
 ##     @script.name detect ~/Pictures/wallpaper.jpg
 ##     @script.name auto
 
-set -euo pipefail
-
-# Source EasyOptions for argument parsing
-source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+set -e
 
 # Source EasyOptions for argument parsing
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit

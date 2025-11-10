@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 ## dots-clipboard: Clipboard manager wrapper
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
 ## Wayland order (auto): copyq > cliphist+(fuzzel|wofi|rofi) > rofi greenclip > minimal
 ## X11 order (auto): copyq > rofi greenclip > minimal
 ## Usage:
@@ -11,6 +13,7 @@
 ## Examples:
 ##   @script.name --backend=copyq   # force copyq GUI
 ##   @script.name --backend=rofi    # force rofi clipboard mode
+
 set -e
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
