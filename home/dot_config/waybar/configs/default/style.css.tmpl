@@ -70,13 +70,14 @@
 window#waybar.top {
 	background-color: @bg-primary;
 	color: @fg-primary;
-	border-radius: 0px;
 	border-radius: 12px;
 }
 
 window#waybar.bottom {
 	background-color: @bg-primary;
 	color: @fg-primary;
+	border-radius: 12px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ==========================================================================
@@ -149,6 +150,166 @@ window#waybar.bottom {
  * Custom Modules
  * ==========================================================================
  */
+
+/* JGMenu */
+#custom-jgmenu {
+	color: @smart-cyan;
+	padding: 0 12px;
+	margin: 0 4px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-jgmenu:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
+/* ==========================================================================
+ * Apps Groups - Quick Actions Menu
+ * ==========================================================================
+ */
+box#quick-apps,
+box#system-apps,
+box#power-actions {
+	padding: 4px 4px;
+	margin: 0 4px;
+}
+
+#custom-quick-apps-header {
+	color: @smart-cyan;
+	font-size: 22px;
+	padding: 0 8px;
+}
+
+#custom-system-apps-header {
+	color: @smart-orange;
+	font-size: 22px;
+	padding: 0 8px;
+}
+
+#custom-power-actions-header {
+	color: @smart-error;
+	font-size: 22px;
+	padding: 0 8px;
+}
+
+/* Quick Apps - Category 1 (Primary actions) */
+#custom-apps-web {
+	color: @smart-cyan;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-terminal {
+	color: @smart-green;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-files {
+	color: @smart-yellow;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+/* System Tools - Category 2 */
+#custom-apps-system {
+	color: @smart-orange;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-audio {
+	color: @smart-pink;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+/* Power Actions - Category 3 */
+#custom-apps-lock {
+	color: @fg-secondary;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-reboot {
+	color: @smart-warning;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-shutdown {
+	color: @smart-error;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+/* Hover states for app buttons */
+#custom-apps-web:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
+#custom-apps-terminal:hover {
+	background-color: @bg-hover;
+	border-color: @smart-green;
+}
+
+#custom-apps-files:hover {
+	background-color: @bg-hover;
+	border-color: @smart-yellow;
+}
+
+#custom-apps-system:hover {
+	background-color: @bg-hover;
+	border-color: @smart-orange;
+}
+
+#custom-apps-audio:hover {
+	background-color: @bg-hover;
+	border-color: @smart-pink;
+}
+
+#custom-apps-lock:hover {
+	background-color: @bg-hover;
+	border-color: @fg-secondary;
+}
+
+#custom-apps-reboot:hover {
+	background-color: rgba(249, 181, 90, 0.15);
+	border-color: @smart-warning;
+}
+
+#custom-apps-shutdown:hover {
+	background-color: rgba(235, 103, 152, 0.15);
+	border-color: @smart-error;
+}
+
+#custom-separator-dot {
+	color: @fg-tertiary;
+	font-size: 10px;
+	padding: 0 4px;
+}
+
+/* Old custom modules (keeping for compatibility) */
 #custom-jgmenu,
 #custom-apps,
 #custom-window-switch,
@@ -186,58 +347,43 @@ window#waybar.bottom {
 }
 
 /* ==========================================================================
- * Audio & Brightness Groups
+ * Audio & Brightness Modules
  * ==========================================================================
  */
-/* Groups for audio (collapsible) and backlight */
-box#audio,
+/* Volume and Brightness groups */
 box#volume,
-box#backlight {
+box#brightness {
 	background: transparent;
-	padding: 2px 6px;
+	padding: 2px 10px;
 	margin: 4px 2px;
 	border: 1px solid transparent;
 	border-radius: 6px;
 	transition: all 0.2s ease;
 }
 
-box#audio:hover {
-	background-color: @bg-hover;
-	border-color: rgba(235, 103, 152, 0.5);
+#pulseaudio {
+	color: @smart-orange;
+}
+
+#pulseaudio.microphone {
+	color: @smart-pink;
 }
 
 box#volume:hover {
 	background-color: @bg-hover;
-	border-color: rgba(249, 181, 90, 0.5);
+	border-color: @smart-orange;
 }
 
-box#backlight:hover {
+box#brightness:hover {
 	background-color: @bg-hover;
-	border-color: rgba(249, 226, 90, 0.5);
+	border-color: @smart-yellow;
 }
 
-box#volume:hover #pulseaudio,
-box#backlight:hover #backlight {
-	color: @smart-orange;
-}
-
-/* Audio header styling */
-#custom-audio-header {
-	color: @smart-pink;
-	font-size: 18px;
-	padding-left: 4px;
-	margin-right: 4px;
-}
-
-/* First module indicators in collapsed groups */
-box#backlight > #backlight {
-	padding-left: 4px;
-}
-
-#pulseaudio,
+/* Microphone (standalone) */
 #pulseaudio.microphone {
 	background: transparent;
-	padding: 2px 6px;
+	color: @smart-pink;
+	padding: 2px 10px;
 	margin: 4px 2px;
 	border: 1px solid transparent;
 	border-radius: 6px;
@@ -249,29 +395,17 @@ box#backlight > #backlight {
 	border-color: @smart-pink;
 }
 
-#backlight {
+/* Volume and Backlight modules inside groups */
+box#volume > #pulseaudio,
+box#brightness > #backlight {
 	background: transparent;
-	padding: 2px 12px;
-	margin: 0px;
-	border: 1px solid transparent;
-	border-radius: 0px;
-	transition: all 0.2s ease;
-}
-
-#backlight:hover {
-	background-color: @bg-hover;
-	border-color: @smart-yellow;
-}
-
-#pulseaudio {
+	padding: 2px 8px;
+	margin: 0;
+	border: none;
 	color: @smart-orange;
 }
 
-#pulseaudio.microphone {
-	color: @smart-pink;
-}
-
-#backlight {
+box#brightness > #backlight {
 	color: @smart-yellow;
 }
 
@@ -301,9 +435,13 @@ box#backlight > #backlight {
 }
 
 /* ==========================================================================
- * Toggles
+ * System Monitors & Controls
  * ==========================================================================
  */
+#disk,
+#cpu,
+#memory,
+#temperature,
 #custom-night-mode,
 #custom-github,
 #custom-weather,
@@ -315,6 +453,35 @@ box#backlight > #backlight {
 	border: 1px solid transparent;
 	border-radius: 6px;
 	transition: all 0.2s ease;
+}
+
+#disk {
+	color: @smart-magenta;
+}
+
+#cpu {
+	color: @smart-cyan;
+}
+
+#memory {
+	color: @smart-yellow;
+}
+
+#temperature {
+	color: @smart-green;
+}
+
+#temperature.critical {
+	color: @smart-error;
+	animation: blink 1s ease infinite;
+}
+
+#disk:hover,
+#cpu:hover,
+#memory:hover,
+#temperature:hover {
+	background-color: @bg-hover;
+	border-color: currentColor;
 }
 
 #custom-night-mode {
@@ -362,6 +529,25 @@ box#backlight > #backlight {
 #battery.critical:not(.charging) {
 	color: @smart-error;
 	animation: blink 1s ease infinite;
+}
+
+/* ==========================================================================
+ * Keyboard Layout
+ * ==========================================================================
+ */
+#language {
+	background: transparent;
+	padding: 2px 10px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	font-size: 16px;
+	transition: all 0.2s ease;
+}
+
+#language:hover {
+	background-color: @bg-hover;
+	border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* ==========================================================================
@@ -421,6 +607,11 @@ box#backlight > #backlight {
 	font-size: 12px;
 }
 
+#custom-player-info:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
 /* ==========================================================================
  * Hyprland Window (Hidden - Used for .empty detection)
  * ==========================================================================
@@ -437,11 +628,9 @@ box#backlight > #backlight {
  * System Resources
  * ==========================================================================
  */
-#language,
-#disk,
-#temperature {
+#language {
 	background: transparent;
-	color: @fg-primary;
+	color: @smart-cyan;
 	padding: 2px 10px;
 	margin: 4px 2px;
 	border: 1px solid transparent;
@@ -450,16 +639,30 @@ box#backlight > #backlight {
 	transition: all 0.2s ease;
 }
 
-#language:hover,
-#disk:hover,
-#temperature:hover {
+#language:hover {
 	background-color: @bg-hover;
 	border-color: @smart-cyan;
 }
 
+#disk {
+	background: transparent;
+	color: @smart-magenta;
+	padding: 2px 10px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	font-size: 12px;
+	transition: all 0.2s ease;
+}
+
+#disk:hover {
+	background-color: @bg-hover;
+	border-color: @smart-magenta;
+}
+
 #memory {
 	background: transparent;
-	color: @smart-orange;
+	color: @smart-yellow;
 	padding: 2px 10px;
 	margin: 4px 2px;
 	border: 1px solid transparent;
@@ -470,7 +673,7 @@ box#backlight > #backlight {
 
 #memory:hover {
 	background-color: @bg-hover;
-	border-color: @smart-orange;
+	border-color: @smart-yellow;
 }
 
 #cpu {
@@ -487,6 +690,22 @@ box#backlight > #backlight {
 #cpu:hover {
 	background-color: @bg-hover;
 	border-color: @smart-pink;
+}
+
+#temperature {
+	background: transparent;
+	color: @smart-green;
+	padding: 2px 10px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	font-size: 12px;
+	transition: all 0.2s ease;
+}
+
+#temperature:hover {
+	background-color: @bg-hover;
+	border-color: @smart-green;
 }
 
 #disk.warning,

@@ -68,6 +68,16 @@ window#waybar {
  */
 #workspaces,
 #custom-jgmenu,
+#custom-apps-header,
+#custom-apps-web,
+#custom-apps-terminal,
+#custom-apps-files,
+#custom-apps-system,
+#custom-apps-audio,
+#custom-apps-lock,
+#custom-apps-reboot,
+#custom-apps-shutdown,
+#custom-separator-dot,
 #pulseaudio,
 #pulseaudio.microphone,
 #backlight,
@@ -100,7 +110,9 @@ window#waybar {
 	color: @smart-cyan;
 	padding: 12px 0;
 	margin: 4px 4px;
-	border-radius: 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-jgmenu:hover {
@@ -108,6 +120,157 @@ window#waybar {
 	border-color: @smart-cyan;
 }
 
+/* ==========================================================================
+ * Apps Groups - Quick Actions Menu
+ * ==========================================================================
+ */
+box#quick-apps,
+box#system-apps,
+box#power-actions {
+	padding: 4px 0;
+	margin: 4px 0;
+}
+
+#custom-quick-apps-header {
+	color: @smart-cyan;
+	font-size: 22px;
+	padding-left: 2px;
+}
+
+box#quick-apps > #custom-quick-apps-header {
+	padding-left: 2px;
+}
+
+#custom-system-apps-header {
+	color: @smart-orange;
+	font-size: 22px;
+	padding-left: 2px;
+}
+
+box#system-apps > #custom-system-apps-header {
+	padding-left: 2px;
+}
+
+#custom-power-actions-header {
+	color: @smart-error;
+	font-size: 22px;
+	padding-left: 2px;
+}
+
+box#power-actions > #custom-power-actions-header {
+	padding-left: 2px;
+}
+
+/* Quick Apps - Category 1 (Primary actions) */
+#custom-apps-web {
+	color: @smart-cyan;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-terminal {
+	color: @smart-green;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-files {
+	color: @smart-yellow;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+/* System Tools - Category 2 */
+#custom-apps-system {
+	color: @smart-orange;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-audio {
+	color: @smart-pink;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+/* Power Actions - Category 3 */
+#custom-apps-lock {
+	color: @fg-secondary;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-reboot {
+	color: @smart-warning;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-shutdown {
+	color: @smart-error;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+/* Hover states for app buttons */
+#custom-apps-web:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
+#custom-apps-terminal:hover {
+	background-color: @bg-hover;
+	border-color: @smart-green;
+}
+
+#custom-apps-files:hover {
+	background-color: @bg-hover;
+	border-color: @smart-yellow;
+}
+
+#custom-apps-system:hover {
+	background-color: @bg-hover;
+	border-color: @smart-orange;
+}
+
+#custom-apps-audio:hover {
+	background-color: @bg-hover;
+	border-color: @smart-pink;
+}
+
+#custom-apps-lock:hover {
+	background-color: @bg-hover;
+	border-color: @fg-secondary;
+}
+
+#custom-apps-reboot:hover {
+	background-color: rgba(249, 181, 90, 0.15);
+	border-color: @smart-warning;
+}
+
+#custom-apps-shutdown:hover {
+	background-color: rgba(235, 103, 152, 0.15);
+	border-color: @smart-error;
+}
+
+#custom-separator-dot {
+	color: @fg-tertiary;
+	font-size: 10px;
+	padding: 2px 0;
+}
+
+/* ==========================================================================
+ * Workspaces
+ * ==========================================================================
+ */
 #workspaces {
 	background: transparent;
 	padding: 0;
@@ -181,9 +344,10 @@ window#waybar {
 	color: @fg-secondary;
 	font-weight: 600;
 	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 8px;
+	border-radius: 6px;
 	padding: 12px 0;
 	margin: 6px 4px;
+	transition: all 0.2s ease;
 }
 
 #clock:hover {
@@ -194,7 +358,9 @@ window#waybar {
 #custom-weather {
 	color: @smart-cyan;
 	padding: 8px 0;
-	border-radius: 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-weather:hover {
@@ -267,21 +433,33 @@ box#system-monitors > #system-monitors-header {
 #custom-audio-header {
 	color: @smart-pink;
 	font-size: 22px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-backlight-header {
 	color: @smart-yellow;
 	font-size: 22px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-system-controls-header {
 	color: @smart-orange;
 	font-size: 22px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-system-monitors-header {
 	color: @smart-cyan;
 	font-size: 22px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 /* Header hover effects - minimal */
@@ -294,17 +472,35 @@ box#system-monitors > #system-monitors-header {
 #pulseaudio {
 	color: @smart-orange;
 	padding: 4px 0;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#pulseaudio:hover {
+	background-color: @bg-hover;
+	border-color: @smart-orange;
 }
 
 #backlight {
 	color: @smart-yellow;
 	padding: 4px 0;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#backlight:hover {
+	background-color: @bg-hover;
+	border-color: @smart-yellow;
 }
 
 #pulseaudio.microphone {
 	color: @smart-pink;
 	padding: 6px 0;
-	border-radius: 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #pulseaudio.microphone:hover {
@@ -351,7 +547,9 @@ slider highlight {
  */
 #custom-night-mode {
 	color: @smart-yellow;
-	border-radius: 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-night-mode:hover {
@@ -361,7 +559,9 @@ slider highlight {
 
 #custom-performance-profile {
 	color: @smart-magenta;
-	border-radius: 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #custom-performance-profile:hover {
@@ -371,7 +571,9 @@ slider highlight {
 
 #battery {
 	color: @smart-orange;
-	border-radius: 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #battery:hover {
@@ -403,18 +605,22 @@ slider highlight {
  * ==========================================================================
  */
 #disk {
-	color: @smart-green;
-	border-radius: 8px;
+	color: @smart-magenta;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #disk:hover {
 	background-color: @bg-hover;
-	border-color: @smart-green;
+	border-color: @smart-magenta;
 }
 
 #cpu {
 	color: @smart-pink;
-	border-radius: 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #cpu:hover {
@@ -423,23 +629,27 @@ slider highlight {
 }
 
 #memory {
-	color: @smart-orange;
-	border-radius: 8px;
+	color: @smart-yellow;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #memory:hover {
 	background-color: @bg-hover;
-	border-color: @smart-orange;
+	border-color: @smart-yellow;
 }
 
 #temperature {
-	color: @smart-cyan;
-	border-radius: 8px;
+	color: @smart-green;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
 }
 
 #temperature:hover {
 	background-color: @bg-hover;
-	border-color: @smart-cyan;
+	border-color: @smart-green;
 }
 
 #temperature.critical {
@@ -467,19 +677,18 @@ slider highlight {
  * ==========================================================================
  */
 #language {
-	color: @fg-secondary;
+	color: @smart-cyan;
 	font-size: 13px;
 	padding: 6px 0;
 	margin: 2px 4px;
 	border: 1px solid transparent;
-	border-radius: 8px;
+	border-radius: 6px;
 	transition: all 0.2s ease;
 }
 
 #language:hover {
 	background-color: @bg-hover;
 	border-color: @smart-cyan;
-	color: @smart-cyan;
 }
 
 /* ==========================================================================

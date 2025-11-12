@@ -10,34 +10,145 @@
 
   "modules-left": [
     "custom/jgmenu",
-    "custom/apps",
-    "custom/window-switch",
-    "custom/rices",
+    "group/quick-apps",
+    "group/system-apps",
+    "group/power-actions",
     "hyprland/window",
-    "group/audio",
-    "group/backlight"
+    "pulseaudio#microphone",
+    "group/volume",
+    "group/brightness"
   ],
 
-  "group/audio": {
+  "group/quick-apps": {
     "orientation": "horizontal",
     "drawer": {
       "transition-duration": 300,
       "transition-left-to-right": true
     },
     "modules": [
-      "custom/audio-header",
-      "pulseaudio#microphone",
-      "pulseaudio",
-      "pulseaudio/slider"
+      "custom/quick-apps-header",
+      "custom/apps-web",
+      "custom/apps-terminal",
+      "custom/apps-files"
     ]
   },
 
-  "group/backlight": {
+  "custom/quick-apps-header": {
+    "format": "󰘳",
+    "tooltip": true,
+    "tooltip-format": "Quick Apps\nClick to expand/collapse"
+  },
+
+  "group/system-apps": {
     "orientation": "horizontal",
     "drawer": {
       "transition-duration": 300,
       "transition-left-to-right": true
     },
+    "modules": [
+      "custom/system-apps-header",
+      "custom/apps-system",
+      "custom/apps-audio"
+    ]
+  },
+
+  "custom/system-apps-header": {
+    "format": "󰒓",
+    "tooltip": true,
+    "tooltip-format": "System Apps\nClick to expand/collapse"
+  },
+
+  "group/power-actions": {
+    "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": true
+    },
+    "modules": [
+      "custom/power-actions-header",
+      "custom/apps-lock",
+      "custom/apps-reboot",
+      "custom/apps-shutdown"
+    ]
+  },
+
+  "custom/power-actions-header": {
+    "format": "󰐥",
+    "tooltip": true,
+    "tooltip-format": "Power Actions\nClick to expand/collapse"
+  },
+
+  "custom/apps-web": {
+    "format": "󰈹",
+    "tooltip": true,
+    "tooltip-format": "Open Web Browser",
+    "on-click": "exo-open --launch WebBrowser"
+  },
+
+  "custom/apps-terminal": {
+    "format": "󰞷",
+    "tooltip": true,
+    "tooltip-format": "Open Terminal",
+    "on-click": "exo-open --launch TerminalEmulator"
+  },
+
+  "custom/apps-files": {
+    "format": "󰉋",
+    "tooltip": true,
+    "tooltip-format": "Open File Manager",
+    "on-click": "exo-open --launch FileManager"
+  },
+
+  "custom/apps-system": {
+    "format": "󰍺",
+    "tooltip": true,
+    "tooltip-format": "Display Settings",
+    "on-click": "~/.local/bin/dots-settings-gui --category display"
+  },
+
+  "custom/apps-audio": {
+    "format": "󰕾",
+    "tooltip": true,
+    "tooltip-format": "Audio Settings (Pavucontrol)",
+    "on-click": "pavucontrol"
+  },
+
+  "custom/apps-lock": {
+    "format": "󰌾",
+    "tooltip": true,
+    "tooltip-format": "Lock Screen",
+    "on-click": "~/.config/hypr/scripts/lock.sh"
+  },
+
+  "custom/apps-reboot": {
+    "format": "󰜉",
+    "tooltip": true,
+    "tooltip-format": "Reboot System",
+    "on-click": "systemctl reboot"
+  },
+
+  "custom/apps-shutdown": {
+    "format": "󰐥",
+    "tooltip": true,
+    "tooltip-format": "Shutdown System",
+    "on-click": "systemctl poweroff"
+  },
+
+  "custom/separator-dot": {
+    "format": "•",
+    "tooltip": false
+  },
+
+  "group/volume": {
+    "orientation": "horizontal",
+    "modules": [
+      "pulseaudio",
+      "pulseaudio/slider"
+    ]
+  },
+
+  "group/brightness": {
+    "orientation": "horizontal",
     "modules": [
       "backlight",
       "backlight/slider"
@@ -77,10 +188,10 @@
   ],
 
   "modules-right": [
-    "custom/night-mode",
-    "custom/github",
-    "custom/performance-profile",
     "battery",
+    "custom/night-mode",
+    "custom/performance-profile",
+    "custom/github",
     "tray"
   ],
 
@@ -92,12 +203,6 @@
     "on-right-click": "exo-open ~/.config/jgmenu/jgmenurc"
   },
 
-  "custom/audio-header": {
-    "format": "󰝚",
-    "tooltip": true,
-    "tooltip-format": "Audio Controls\nClick to expand/collapse"
-  },
-
   "custom/apps": {
     "format": "󰘖",
     "tooltip": false,
@@ -105,7 +210,7 @@
   },
 
   "custom/window-switch": {
-    "format": "",
+    "format": "󰖯",
     "tooltip": false,
     "on-click": "rofi -show window -theme ~/.config/rofi/applets.rasi"
   },
@@ -153,7 +258,8 @@
     "format-charging": "󰂄 {capacity}%",
     "format-plugged": "󰚥 {capacity}%",
     "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-    "tooltip-format": "Battery: {capacity}%\n{timeTo}"
+    "tooltip-format": "Battery: {capacity}%\n{timeTo}",
+    "on-click": "kitty --class=floating -e btop"
   },
 
   "custom/weather": {
