@@ -34,10 +34,10 @@ readonly SCRIPT_NAME
 # Format: "layout:variant" (use empty string for no variant)
 PREFERRED_LAYOUTS=(
   "us:"
-  "es:"
+  "latam:"
   # Add more layouts as needed, e.g.:
   # "us:intl"
-  # "latam:"
+  # "es:"
   # "gb:"
 )
 

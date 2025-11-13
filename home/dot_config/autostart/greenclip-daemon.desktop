@@ -1,5 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Greenclip Daemon
-Exec=greenclip daemon
-X-GNOME-Autostart-enabled=true

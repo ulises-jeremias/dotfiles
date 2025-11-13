@@ -35,17 +35,7 @@ shoot() {
   timestamp=$(date +%Y%m%d_%H%M%S)
   local filename="${pictures_dir}/screenshot_${timestamp}.png"
 
-  # Priority 1: Flameshot (cross-platform GUI with editor)
-  if type -p flameshot >/dev/null; then
-    if [ -n "$region" ]; then
-      flameshot gui
-    else
-      flameshot full
-    fi
-    return 0
-  fi
-
-  # Priority 2: Hyprland native (grimblast)
+  # Priority 1: Hyprland native (grimblast) - Best for Hyprland
   if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]] && type -p grimblast >/dev/null; then
     if [ -n "$region" ]; then
       grimblast --notify copysave area "$filename"
@@ -55,12 +45,22 @@ shoot() {
     return 0
   fi
 
-  # Priority 3: Wayland generic (grim + slurp)
+  # Priority 2: Wayland generic (grim + slurp) - Works well with multiple monitors
   if [[ -n ${WAYLAND_DISPLAY:-} ]] && type -p grim >/dev/null; then
     if [ -n "$region" ] && type -p slurp >/dev/null; then
       grim -g "$(slurp)" "$filename" && notify-send -i "$filename" "Screenshot" "Saved to $filename"
     else
       grim "$filename" && notify-send -i "$filename" "Screenshot" "Saved to $filename"
+    fi
+    return 0
+  fi
+
+  # Priority 3: Flameshot (GUI with editor, but has issues with Wayland multi-monitor)
+  if type -p flameshot >/dev/null; then
+    if [ -n "$region" ]; then
+      flameshot gui
+    else
+      flameshot full
     fi
     return 0
   fi
