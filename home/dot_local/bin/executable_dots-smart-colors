@@ -55,13 +55,13 @@ hex_to_rgb() {
 calculate_luminance() {
   local color="$1"
   local hex="${color#\#}"
-  local r=$((16#${hex:0:2}))
-  local g=$((16#${hex:2:2}))
-  local b=$((16#${hex:4:2}))
+  local red=$((16#${hex:0:2}))
+  local green=$((16#${hex:2:2}))
+  local blue=$((16#${hex:4:2}))
 
   # Calculate relative luminance using standard formula
   # Using simplified integer math for performance
-  echo $(((r * 299 + g * 587 + b * 114) / 1000))
+  echo $(((red * 299 + green * 587 + blue * 114) / 1000))
 }
 
 # Detect if current theme is light or dark based on background
@@ -127,8 +127,8 @@ get_palette_dominant_color() {
     local color
     color=$(xrdb -get "color$i" 2>/dev/null) || continue
     local hex="${color#\#}"
-    local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
-    local brightness=$((r + g + b))
+    local red=$((16#${hex:0:2})) green=$((16#${hex:2:2})) blue=$((16#${hex:4:2}))
+    local brightness=$((red + green + blue))
 
     if [[ $brightness -gt $brightest_value ]]; then
       brightest_value=$brightness
@@ -139,14 +139,14 @@ get_palette_dominant_color() {
   # Classify hue based on RGB dominance
   if [[ -n $brightest_color ]]; then
     local hex="${brightest_color#\#}"
-    local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+    local red=$((16#${hex:0:2})) green=$((16#${hex:2:2})) blue=$((16#${hex:4:2}))
 
-    if [[ $r -gt $g && $r -gt $b ]]; then
-      [[ $g -gt 100 ]] && echo "orange" || [[ $b -gt 100 ]] && echo "purple" || echo "red"
-    elif [[ $g -gt $r && $g -gt $b ]]; then
-      [[ $r -gt 100 ]] && echo "yellow" || [[ $b -gt 100 ]] && echo "cyan" || echo "green"
-    elif [[ $b -gt $r && $b -gt $g ]]; then
-      [[ $r -gt 100 ]] && echo "purple" || [[ $g -gt 100 ]] && echo "cyan" || echo "blue"
+    if [[ $red -gt $green && $red -gt $blue ]]; then
+      [[ $green -gt 100 ]] && echo "orange" || [[ $blue -gt 100 ]] && echo "purple" || echo "red"
+    elif [[ $green -gt $red && $green -gt $blue ]]; then
+      [[ $red -gt 100 ]] && echo "yellow" || [[ $blue -gt 100 ]] && echo "cyan" || echo "green"
+    elif [[ $blue -gt $red && $blue -gt $green ]]; then
+      [[ $red -gt 100 ]] && echo "purple" || [[ $green -gt 100 ]] && echo "cyan" || echo "blue"
     else
       echo "gray"
     fi
@@ -157,25 +157,25 @@ get_palette_dominant_color() {
 
 # Get palette average color for harmonization
 get_palette_average() {
-  local total_r=0 total_g=0 total_b=0 color_count=0
+  local total_red=0 total_green=0 total_blue=0 color_count=0
 
   for i in {1..14}; do
     local color
     color=$(xrdb -get "color$i" 2>/dev/null) || continue
     local hex="${color#\#}"
-    local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+    local red=$((16#${hex:0:2})) green=$((16#${hex:2:2})) blue=$((16#${hex:4:2}))
 
-    total_r=$((total_r + r))
-    total_g=$((total_g + g))
-    total_b=$((total_b + b))
+    total_red=$((total_red + red))
+    total_green=$((total_green + green))
+    total_blue=$((total_blue + blue))
     ((color_count++))
   done
 
   if [[ $color_count -gt 0 ]]; then
-    local avg_r=$((total_r / color_count))
-    local avg_g=$((total_g / color_count))
-    local avg_b=$((total_b / color_count))
-    printf "#%02x%02x%02x" "$avg_r" "$avg_g" "$avg_b"
+    local avg_red=$((total_red / color_count))
+    local avg_green=$((total_green / color_count))
+    local avg_blue=$((total_blue / color_count))
+    printf "#%02x%02x%02x" "$avg_red" "$avg_green" "$avg_blue"
   else
     echo "#808080"
   fi
@@ -184,10 +184,10 @@ get_palette_average() {
 # Enhanced color blending for better harmony and contrast
 enhance_color_contrast() {
   local color="$1" concept="$2"
-  local bg_color
-  bg_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
+  local background_color
+  background_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
   local bg_luminance
-  bg_luminance=$(calculate_luminance "$bg_color")
+  bg_luminance=$(calculate_luminance "$background_color")
 
   # For light themes, ensure colors are dark enough for good contrast
   if is_light_theme; then
@@ -199,14 +199,14 @@ enhance_color_contrast() {
     if [[ $color_luminance -gt 180 ]]; then
       # Darken the color by reducing RGB values
       local hex="${color#\#}"
-      local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+      local red=$((16#${hex:0:2})) green=$((16#${hex:2:2})) blue=$((16#${hex:4:2}))
 
       # Reduce brightness by 30-40% for better contrast
-      r=$(((r * 60) / 100))
-      g=$(((g * 60) / 100))
-      b=$(((b * 60) / 100))
+      red=$(((red * 60) / 100))
+      green=$(((green * 60) / 100))
+      blue=$(((blue * 60) / 100))
 
-      printf "#%02x%02x%02x" "$r" "$g" "$b"
+      printf "#%02x%02x%02x" "$red" "$green" "$blue"
     else
       echo "$color"
     fi
@@ -219,19 +219,19 @@ enhance_color_contrast() {
     if [[ $color_luminance -lt 80 ]]; then
       # Brighten the color
       local hex="${color#\#}"
-      local r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+      local red=$((16#${hex:0:2})) green=$((16#${hex:2:2})) blue=$((16#${hex:4:2}))
 
       # Increase brightness by 20-30%
-      r=$(((r * 130) / 100))
-      g=$(((g * 130) / 100))
-      b=$(((b * 130) / 100))
+      red=$(((red * 130) / 100))
+      green=$(((green * 130) / 100))
+      blue=$(((blue * 130) / 100))
 
       # Clamp to max 255
-      [[ $r -gt 255 ]] && r=255
-      [[ $g -gt 255 ]] && g=255
-      [[ $b -gt 255 ]] && b=255
+      [[ $red -gt 255 ]] && red=255
+      [[ $green -gt 255 ]] && green=255
+      [[ $blue -gt 255 ]] && blue=255
 
-      printf "#%02x%02x%02x" "$r" "$g" "$b"
+      printf "#%02x%02x%02x" "$red" "$green" "$blue"
     else
       echo "$color"
     fi
@@ -243,20 +243,20 @@ blend_colors() {
   local color1="$1" color2="$2" blend_percent="$3"
 
   local hex1="${color1#\#}" hex2="${color2#\#}"
-  local r1=$((16#${hex1:0:2})) g1=$((16#${hex1:2:2})) b1=$((16#${hex1:4:2}))
-  local r2=$((16#${hex2:0:2})) g2=$((16#${hex2:2:2})) b2=$((16#${hex2:4:2}))
+  local red1=$((16#${hex1:0:2})) green1=$((16#${hex1:2:2})) blue1=$((16#${hex1:4:2}))
+  local red2=$((16#${hex2:0:2})) green2=$((16#${hex2:2:2})) blue2=$((16#${hex2:4:2}))
 
-  local inv_percent=$((100 - blend_percent))
-  local result_r=$(((r1 * inv_percent + r2 * blend_percent) / 100))
-  local result_g=$(((g1 * inv_percent + g2 * blend_percent) / 100))
-  local result_b=$(((b1 * inv_percent + b2 * blend_percent) / 100))
+  local inverse_percent=$((100 - blend_percent))
+  local result_red=$(((red1 * inverse_percent + red2 * blend_percent) / 100))
+  local result_green=$(((green1 * inverse_percent + green2 * blend_percent) / 100))
+  local result_blue=$(((blue1 * inverse_percent + blue2 * blend_percent) / 100))
 
   # Clamp to 0-255
-  [[ $result_r -gt 255 ]] && result_r=255 || [[ $result_r -lt 0 ]] && result_r=0
-  [[ $result_g -gt 255 ]] && result_g=255 || [[ $result_g -lt 0 ]] && result_g=0
-  [[ $result_b -gt 255 ]] && result_b=255 || [[ $result_b -lt 0 ]] && result_b=0
+  [[ $result_red -gt 255 ]] && result_red=255 || [[ $result_red -lt 0 ]] && result_red=0
+  [[ $result_green -gt 255 ]] && result_green=255 || [[ $result_green -lt 0 ]] && result_green=0
+  [[ $result_blue -gt 255 ]] && result_blue=255 || [[ $result_blue -lt 0 ]] && result_blue=0
 
-  printf "#%02x%02x%02x" "$result_r" "$result_g" "$result_b"
+  printf "#%02x%02x%02x" "$result_red" "$result_green" "$result_blue"
 }
 
 # CORE FUNCTION: Semantic color lookup table with palette adaptation and theme awareness
@@ -557,21 +557,21 @@ generate_smart_color_files() {
   accent_color=$(format="hex" find_best_color_for_concept "accent")
 
   # Get palette colors
-  local bg
-  bg=$(xrdb -get "background" 2>/dev/null || echo "#000000")
-  local fg
-  fg=$(get_optimal_foreground)
-  local cursor
-  cursor=$(xrdb -get "cursor" 2>/dev/null)
-  if [[ -z $cursor ]]; then
-    cursor="$fg"
+  local background_color
+  background_color=$(xrdb -get "background" 2>/dev/null || echo "#000000")
+  local foreground_color
+  foreground_color=$(get_optimal_foreground)
+  local cursor_color
+  cursor_color=$(xrdb -get "cursor" 2>/dev/null)
+  if [[ -z $cursor_color ]]; then
+    cursor_color="$foreground_color"
   fi
 
   # Get background and foreground variants
-  local bg_alt
-  bg_alt=$(xrdb -get "color1" 2>/dev/null || echo "#1a1a1a")
-  local fg_alt
-  fg_alt=$(xrdb -get "color5" 2>/dev/null || echo "#888888")
+  local background_alt_color
+  background_alt_color=$(xrdb -get "color1" 2>/dev/null || echo "#1a1a1a")
+  local foreground_alt_color
+  foreground_alt_color=$(xrdb -get "color5" 2>/dev/null || echo "#888888")
 
   local base_colors=()
   for i in {0..15}; do
@@ -594,9 +594,9 @@ generate_smart_color_files() {
 \$wallpaper: "$wallpaper_path";
 
 // Special
-\$background: $bg;
-\$foreground: $fg;
-\$cursor: $cursor;
+\$background: $background_color;
+\$foreground: $foreground_color;
+\$cursor: $cursor_color;
 
 // Colors
 EOF
@@ -608,8 +608,8 @@ EOF
   cat >>"$EWW_COLORS_FILE" <<EOF
 
 // Background and foreground variants
-\$background-alt: $bg_alt;
-\$foreground-alt: $fg_alt;
+\$background-alt: $background_alt_color;
+\$foreground-alt: $foreground_alt_color;
 
 // Smart semantic colors (theme-adaptive)
 \$error: $error_color;
@@ -634,10 +634,10 @@ EOF
 # Generated by 'dots-smart-colors'
 
 # Background and foreground variants
-color_background='$bg'
-color_background_alt='$bg_alt'
-color_foreground='$fg'
-color_foreground_alt='$fg_alt'
+color_background='$background_color'
+color_background_alt='$background_alt_color'
+color_foreground='$foreground_color'
+color_foreground_alt='$foreground_alt_color'
 
 # Smart semantic colors
 color_error='$error_color'
@@ -662,10 +662,10 @@ EOF
 # Source this file: source $ENV_COLORS_FILE
 
 # Background and foreground variants
-export COLOR_BACKGROUND='$bg'
-export COLOR_BACKGROUND_ALT='$bg_alt'
-export COLOR_FOREGROUND='$fg'
-export COLOR_FOREGROUND_ALT='$fg_alt'
+export COLOR_BACKGROUND='$background_color'
+export COLOR_BACKGROUND_ALT='$background_alt_color'
+export COLOR_FOREGROUND='$foreground_color'
+export COLOR_FOREGROUND_ALT='$foreground_alt_color'
 
 # Smart semantic colors
 export COLOR_ERROR='$error_color'
@@ -715,10 +715,10 @@ EOF
 /* Generated by 'dots-smart-colors' */
 /* Theme-adaptive colors for Wayland/Hyprland */
 
-@define-color bg-primary $bg;
+@define-color bg-primary $background_color;
 @define-color bg-secondary ${base_colors[1]};
 @define-color bg-hover ${base_colors[8]};
-@define-color fg-primary $fg;
+@define-color fg-primary $foreground_color;
 @define-color fg-secondary ${base_colors[5]};
 
 /* Smart semantic colors */
@@ -756,8 +756,8 @@ EOF
 # Generated by 'dots-smart-colors'
 # Include this in your mako config or replace values manually
 
-background-color=$bg
-text-color=$fg
+background-color=$background_color
+text-color=$foreground_color
 border-color=$accent_color
 progress-color=over ${base_colors[8]}
 
@@ -806,8 +806,8 @@ EOF
 /* Generated by 'dots-smart-colors' */
 /* Theme-adaptive colors for power menu */
 
-@define-color wlogout-bg $bg;
-@define-color wlogout-fg $fg;
+@define-color wlogout-bg $background_color;
+@define-color wlogout-fg $foreground_color;
 @define-color wlogout-border $accent_color;
 
 @define-color wlogout-bg-hover ${base_colors[8]};

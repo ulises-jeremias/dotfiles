@@ -94,14 +94,14 @@ list_snapshots() {
 
   for snapshot_dir in "$SNAPSHOTS_DIR"/config_*; do
     if [[ -d $snapshot_dir ]] && [[ -f "$snapshot_dir/metadata.json" ]]; then
-      local id hostname timestamp size commit
-      id=$(basename "$snapshot_dir")
+      local snapshot_id hostname timestamp size commit
+      snapshot_id=$(basename "$snapshot_dir")
       hostname=$(jq -r '.hostname // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null || echo "unknown")
       timestamp=$(jq -r '.timestamp // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null | cut -d'T' -f1,2 | tr 'T' ' ' | cut -d'+' -f1)
       size=$(du -sh "$snapshot_dir" 2>/dev/null | cut -f1 || echo "?")
       commit=$(jq -r '.dotfiles_commit // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null | cut -c1-12)
 
-      printf "%-20s %-19s %-15s %-10s %s\n" "$id" "$timestamp" "$hostname" "$size" "$commit"
+      printf "%-20s %-19s %-15s %-10s %s\n" "$snapshot_id" "$timestamp" "$hostname" "$size" "$commit"
     fi
   done
 

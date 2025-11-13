@@ -14,14 +14,14 @@ wconnected="直"
 econnected=""
 edisconnect=""
 
-id="$(ip link | awk '/state UP/ {print $2}')"
+network_interface="$(ip link | awk '/state UP/ {print $2}')"
 
 while true; do
   if ping -c 1 google.com >/dev/null 2>&1; then
-    [[ $id == e* ]] && echo "$econnected" || echo "$wconnected"
+    [[ $network_interface == e* ]] && echo "$econnected" || echo "$wconnected"
     sleep 25
   else
-    [[ $id == e* ]] && echo "$edisconnect" || echo "$wdisconnect"
+    [[ $network_interface == e* ]] && echo "$edisconnect" || echo "$wdisconnect"
     sleep 0.6
   fi
 done
