@@ -8,7 +8,15 @@
   "margin-bottom": 8,
   "margin-right": 0,
 
-  "modules-left": ["custom/jgmenu", "group/quick-apps", "group/system-apps", "group/power-actions", "hyprland/workspaces", "custom/separator"],
+  "modules-left": [
+    "custom/jgmenu",
+    "custom/separator",
+    "group/quick-apps",
+    "group/system-apps",
+    "group/power-actions",
+    "hyprland/workspaces",
+    "custom/separator"
+  ],
 
   "modules-center": ["clock", "custom/weather"],
 
@@ -35,7 +43,7 @@
     "orientation": "vertical",
     "drawer": {
       "transition-duration": 300,
-      "transition-left-to-right": false
+      "transition-left-to-right": true
     },
     "modules": [
       "custom/quick-apps-header",
@@ -55,7 +63,7 @@
     "orientation": "vertical",
     "drawer": {
       "transition-duration": 300,
-      "transition-left-to-right": false
+      "transition-left-to-right": true
     },
     "modules": [
       "custom/system-apps-header",
@@ -74,7 +82,7 @@
     "orientation": "vertical",
     "drawer": {
       "transition-duration": 300,
-      "transition-left-to-right": false
+      "transition-left-to-right": true
     },
     "modules": [
       "custom/power-actions-header",

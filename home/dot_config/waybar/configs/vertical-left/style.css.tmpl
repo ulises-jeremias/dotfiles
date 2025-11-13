@@ -68,7 +68,6 @@ window#waybar {
  */
 #workspaces,
 #custom-jgmenu,
-#custom-apps-header,
 #custom-apps-web,
 #custom-apps-terminal,
 #custom-apps-files,
@@ -88,10 +87,17 @@ window#waybar {
 #cpu,
 #memory,
 #temperature,
-#language,
 #tray,
 #clock,
-#custom-weather,
+#custom-weather {
+	padding: 4px 0;
+	margin: 4px 4px;
+	border: 1px solid transparent;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-header,
+#language,
 #custom-audio-header,
 #custom-backlight-header,
 #custom-system-controls-header,
@@ -108,7 +114,7 @@ window#waybar {
  */
 #custom-jgmenu {
 	color: @smart-cyan;
-	padding: 12px 0;
+	padding: 4px 0;
 	margin: 4px 4px;
 	border: 1px solid transparent;
 	border-radius: 6px;
@@ -128,7 +134,25 @@ box#quick-apps,
 box#system-apps,
 box#power-actions {
 	padding: 2px 0;
-	margin: 4px 0;
+	margin: 4px 4px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+box#quick-apps:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
+box#system-apps:hover {
+	background-color: @bg-hover;
+	border-color: @smart-orange;
+}
+
+box#power-actions:hover {
+	background-color: @bg-hover;
+	border-color: @smart-error;
 }
 
 #custom-quick-apps-header {
@@ -697,7 +721,7 @@ slider highlight {
  */
 #tray {
 	background: transparent;
-	padding: 2px 0;
+	padding: 8px 0;
 	margin: 4px 4px;
 	border: 1px solid transparent;
 	border-radius: 6px;
