@@ -98,11 +98,10 @@ dots eww-dashboard
 
 **Power Options**:
 
-- **Lock**: Secure your session with swaylock (dots-lockscreen)
-- **Logout**: Exit current user session
-- **Sleep**: Suspend system to RAM
-- **Reboot**: Restart the system
-- **Poweroff**: Complete system shutdown
+- **Shutdown**: Power off your system
+- **Reboot**: Restart your system
+- **Lock**: Secure your session with hyprlock (dots-lockscreen)
+- **Logout**: End your current session
 
 **Visual Design**:
 
@@ -466,7 +465,9 @@ ps aux | grep eww
 
 - ✅ **All rice themes** (automatic color adaptation)
 - ✅ **Multiple window managers** (i3, Openbox, etc.)
-- ✅ **System power management** (systemd, swaylock)
+- ✅ **Integrated with Hyprland** (window management, workspace switching)
+- ✅ **System power management** (systemd, hyprlock)
+- ✅ **Modular design** (easy to add/remove widgets)
 - ✅ **Media players** (MPRIS-compatible applications)
 
 ### Pairs Well With

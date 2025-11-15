@@ -1,11 +1,11 @@
 # Lockscreen System
 
-> **Wayland-native lockscreen management with swaylock-effects**  
-> Alternative to betterlockscreen for Wayland environments
+> **Wayland-native lockscreen management with hyprlock**  
+> Alternative to betterlockscreen for Wayland/Hyprland environments
 
 ## Overview
 
-`dots-lockscreen` provides a Wayland-compatible lockscreen solution using `swaylock-effects`. It processes wallpapers with various visual effects and integrates with the dots ecosystem's smart color system.
+`dots-lockscreen` provides a Wayland-compatible lockscreen solution using `hyprlock`. It processes wallpapers with various visual effects and integrates with the dots ecosystem's smart color system.
 
 ## Features
 
@@ -17,16 +17,16 @@
 
 ## Installation
 
-The lockscreen system is automatically installed with Hyprland:
+The lockscreen system is automatically installed when you apply the dotfiles with chezmoi. The installation script is located at:
 
-```bash
-yay -S --noconfirm --needed swaylock-effects
+```text
+home/.chezmoiscripts/linux/run_onchange_before_install-hyprland.sh.tmpl
 ```
 
-For manual installation:
+It installs:
 
 ```bash
-dots hyprland-setup
+yay -S --noconfirm --needed hyprlock hypridle
 ```
 
 ## Usage
@@ -169,36 +169,41 @@ if command -v dots-lockscreen &>/dev/null; then
 fi
 ```
 
-## Swaylock Options
+## Hyprlock Configuration
 
-The script uses these swaylock-effects options:
+The script dynamically generates a hyprlock configuration with these features:
 
-```bash
-swaylock \
-  --image <effect-image> \
-  --color <bg-color> \
-  --inside-color <bg-color>99 \
-  --ring-color <primary-color> \
-  --key-hl-color <success-color> \
-  --bs-hl-color <error-color> \
-  --indicator-radius 100 \
-  --indicator-thickness 7 \
-  --effect-blur 7x5 \
-  --effect-vignette 0.5:0.5 \
-  --grace 2 \
-  --fade-in 0.2
+```conf
+background {
+  path = <effect-image>
+  blur_passes = 3
+  blur_size = 7
+  contrast = 0.8916
+  brightness = 0.8172
+  vibrancy = 0.1696
+}
+
+input-field {
+  size = 300, 60
+  outline_thickness = 2
+  outer_color = rgba(<primary-color>)
+  inner_color = rgba(<bg-color>)
+  font_color = rgba(<fg-color>)
+  fail_color = rgba(<error-color>)
+  # ... and more
+}
 ```
 
 ## Comparison with Betterlockscreen
 
 | Feature | betterlockscreen | dots-lockscreen |
 |---------|------------------|-----------------|
-| Platform | X11 (i3lock) | Wayland (swaylock) |
+| Platform | X11 (i3lock) | Wayland (hyprlock) |
 | Effects | 6 effects | 4 core effects |
-| Multi-monitor | Native support | Via swaylock |
+| Multi-monitor | Native support | Via hyprlock |
 | Color integration | Manual config | Smart-colors system |
-| Dependencies | i3lock-color, imagemagick | swaylock-effects, imagemagick |
-| Login box | Custom rendering | Swaylock built-in |
+| Dependencies | i3lock-color, imagemagick | hyprlock, imagemagick |
+| Login box | Custom rendering | Hyprlock built-in |
 
 ## Troubleshooting
 
@@ -221,12 +226,12 @@ magick --version
 convert --version
 ```
 
-### Swaylock not found
+### Hyprlock not found
 
-Install swaylock-effects:
+Install hyprlock:
 
 ```bash
-yay -S swaylock-effects
+yay -S hyprlock
 ```
 
 ### Lock command fails
@@ -239,10 +244,10 @@ dots lockscreen --update=~/.cache/current_wallpaper
 
 ## Dependencies
 
-- `swaylock` or `swaylock-effects` (required)
+- `hyprlock` (required)
 - `imagemagick` (required)
 - `jq` (for resolution detection)
-- `swaymsg` (for Wayland display info)
+- `hyprctl` (for Hyprland display info)
 
 ## Files
 

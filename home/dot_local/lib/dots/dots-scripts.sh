@@ -21,7 +21,7 @@ scripts_list=(
   "⌨️ keyboard-layout: Toggle keyboard layouts for Hyprland/Wayland/X11"
   "⚙️ keyboard-settings: Open LXQt keyboard configuration GUI"
   "🚀 launcher: Unified application launcher (fuzzel > wofi > rofi > minimal)"
-  "🔒 lockscreen: Wayland lockscreen with swaylock-effects (betterlockscreen alternative)"
+  "🔒 lockscreen: Wayland lockscreen with hyprlock (betterlockscreen alternative)"
   "🎤 microphone: Monitor and toggle microphone mute status with visual indicators"
   "🔄 next-workspace: Switch to the next existing Hyprland workspace"
   "🌙 night-mode: Toggle night mode/blue light filter"

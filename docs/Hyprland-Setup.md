@@ -8,12 +8,20 @@ HorneroConfig is a Wayland-first dotfiles configuration built for Hyprland. The 
 
 ### Installation
 
-```bash
-# Install Hyprland and all dependencies
-dots hyprland-setup
+Hyprland and all dependencies are automatically installed when you apply the dotfiles with chezmoi:
 
-# For NVIDIA users
-dots hyprland-setup --nvidia
+```bash
+# Apply dotfiles (includes Hyprland installation)
+chezmoi apply
+
+# Or for initial setup
+chezmoi init --apply https://github.com/ulises-jeremias/dotfiles
+```
+
+The installation script is located at:
+
+```text
+home/.chezmoiscripts/linux/run_onchange_before_install-hyprland.sh.tmpl
 ```
 
 ### First Run
@@ -112,18 +120,28 @@ All follow the `dots-*` pattern:
 ### Screenshots
 
 ```bash
-dots hyprshot                 # Full screen
-dots hyprshot --region        # Select region
-dots hyprshot --window        # Active window
-dots hyprshot --edit          # Open in swappy
-dots hyprshot --clipboard     # Copy to clipboard
+dots screenshooter                    # Interactive region selection (default)
+dots screenshooter --fullscreen       # Full screen
+dots screenshooter --region           # Select region with slurp
+dots screenshooter --window           # Active window
+```
+
+The screenshot tool uses `grim` and `slurp` for Wayland-native screenshots.
+
+### Lockscreen
+
+```bash
+dots lockscreen --lock                # Lock with default blur effect
+dots lockscreen --lock-effect=dim     # Lock with dim effect
+dots lockscreen --lock-effect=pixel   # Lock with pixelated effect
+dots lockscreen --update=<wallpaper>  # Update lockscreen images
 ```
 
 ### Wallpapers
 
 ```bash
-dots hyprlock set /path/to/wallpaper
-dots hyprlock reload
+dots hyprpaper-set                    # Set wallpaper with hyprpaper
+dots wal-reload                       # Reload wallpaper and update all themes
 ```
 
 ## Keybindings
@@ -203,10 +221,16 @@ dots-wal-reload
 
 ## Troubleshooting
 
-### Check Dependencies
+### Check Installed Packages
+
+You can verify which Hyprland-related packages are installed:
 
 ```bash
-dots hyprland-setup --check-only
+# Check Hyprland
+pacman -Q hyprland
+
+# Check all Wayland tools
+pacman -Q | grep -E "(hypr|wayland|waybar|mako|grim|slurp)"
 ```
 
 ### View Logs
@@ -234,13 +258,22 @@ hyprctl reload
 
 ## NVIDIA Users
 
-Add to kernel parameters in bootloader:
+### Kernel Parameters
 
-```
+Add to kernel parameters in your bootloader configuration:
+
+```text
 nvidia_drm.modeset=1
 ```
 
-The environment.conf automatically sets NVIDIA-specific variables when detected.
+### Automatic Detection
+
+The `environment.conf` automatically detects NVIDIA GPUs and sets the appropriate environment variables when needed. No manual configuration is required after setting the kernel parameter.
+
+For detailed NVIDIA setup and troubleshooting, see:
+
+- [Hybrid GPU Performance Guide](Hybrid-GPU-Performance.md)
+- [Hardware NVIDIA Troubleshooting](wiki/Hardware-nvidia-troubleshooting.md)
 
 ## Contributing
 

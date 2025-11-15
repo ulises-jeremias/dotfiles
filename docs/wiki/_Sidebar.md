@@ -46,7 +46,7 @@
 **Media & Screen:**
 
 - [📸 Screenshots](Dots-Scripts#screenshooter--screenshot-tool) - flameshot → grimblast → grim
-- [🔒 Screen Lock](Dots-Scripts#lockscreen--screen-lock) - swaylock → i3lock
+- [🔒 Screen Lock](Dots-Scripts#lockscreen--screen-lock) - hyprlock → i3lock
 - [🔆 Brightness](Dots-Scripts#brightness--screen-brightness-control) - brightnessctl → blight
 
 **System:**

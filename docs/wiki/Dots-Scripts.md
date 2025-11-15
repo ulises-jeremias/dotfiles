@@ -159,7 +159,7 @@ dots screenshooter --region      # Select region to capture
 #### `lockscreen` – Screen Lock
 
 **Purpose**: Lock screen with blur/dim effects  
-**Primary Tool**: swaylock-effects (Wayland)  
+**Primary Tool**: hyprlock (Wayland)  
 **Fallback**: i3lock (X11)  
 **Effects**: dim, blur, dimblur, pixel  
 **Usage Examples**:
