@@ -12,18 +12,7 @@ set -euo pipefail
 
 # Configuration
 readonly EWW_CONFIG_DIR="$HOME/.config/eww/powermenu"
-readonly WIDGETS=(
-  "powermenu-bg"
-  "powermenu-close"
-  "powermenu-clock"
-  "powermenu-uptime"
-  "powermenu-lock"
-  "powermenu-logout"
-  "powermenu-sleep"
-  "powermenu-reboot"
-  "powermenu-poweroff"
-  "powermenu-placeholder"
-)
+readonly WINDOW_NAME="powermenu"
 
 # Ensure daemon is running
 if ! eww ping >/dev/null 2>&1; then
@@ -36,15 +25,17 @@ action="${1:-toggle}"
 
 case "$action" in
   open)
-    eww --config "$EWW_CONFIG_DIR" open-many "${WIDGETS[@]}" 2>/dev/null || true
+    eww --config "$EWW_CONFIG_DIR" open "$WINDOW_NAME" 2>/dev/null || true
     ;;
   close)
-    for widget in "${WIDGETS[@]}"; do
-      eww --config "$EWW_CONFIG_DIR" close "$widget" 2>/dev/null || true
-    done
+    eww --config "$EWW_CONFIG_DIR" close "$WINDOW_NAME" 2>/dev/null || true
     ;;
   toggle)
-    eww --config "$EWW_CONFIG_DIR" open-many --toggle "${WIDGETS[@]}" 2>/dev/null || true
+    if eww --config "$EWW_CONFIG_DIR" windows | grep -q "^\*$WINDOW_NAME$"; then
+      eww --config "$EWW_CONFIG_DIR" close "$WINDOW_NAME" 2>/dev/null || true
+    else
+      eww --config "$EWW_CONFIG_DIR" open "$WINDOW_NAME" 2>/dev/null || true
+    fi
     ;;
   *)
     echo "Usage: $0 [open|close|toggle]"
