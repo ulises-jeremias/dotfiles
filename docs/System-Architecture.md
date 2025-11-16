@@ -35,7 +35,7 @@
 
 - Analysis engine: Color science algorithms for semantic mapping
 - Cache system: Pre-generated format-specific files in `~/.cache/dots/smart-colors/`
-- Export formats: i3, EWW (SCSS), Polybar, shell, environment variables
+- Export formats: Hyprland, EWW (SCSS), Waybar (CSS), shell, environment variables
 - Integration: Automatic reload on wallpaper change
 
 **Key Algorithms:**
@@ -52,7 +52,7 @@
 - Automatic invalidation on palette change
 - No hardcoded color values anywhere
 
-## 3. Polybar Integration
+## 3. Waybar Integration
 
 **Purpose**: Modular status bar system with profile-based configuration.
 

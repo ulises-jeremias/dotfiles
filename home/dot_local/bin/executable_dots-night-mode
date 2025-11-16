@@ -201,7 +201,7 @@ toggle_xrandr() {
       xrandr --output "${display}" --gamma 1:1:1 --brightness 1.0
     done
     show_success "Day mode enabled (xrandr reset)"
-    send_notification "� Day Mode" "Gamma adjustment removed" "weather-clear-symbolic"
+    send_notification "☀️ Day Mode" "Gamma adjustment removed" "weather-clear-symbolic"
     echo "disabled" >"$NIGHT_MODE_STATE_FILE"
   else
     # Enable night mode - apply warm gamma
@@ -209,7 +209,7 @@ toggle_xrandr() {
       xrandr --output "${display}" --gamma 1:0.85:0.6 --brightness 0.9
     done
     show_success "Night mode enabled (xrandr gamma adjustment)"
-    send_notification "� Night Mode" "Gamma adjustment applied" "weather-clear-night-symbolic"
+    send_notification "🌙 Night Mode" "Gamma adjustment applied" "weather-clear-night-symbolic"
     echo "enabled" >"$NIGHT_MODE_STATE_FILE"
   fi
 }
@@ -364,6 +364,8 @@ show_help() {
   echo "  on, enable      - Force enable night mode"
   echo "  off, disable    - Force disable night mode"
   echo "  status          - Show current status and detection info"
+  echo "  status-icon     - Output icon for status bars (🌙/☀️)"
+  echo "  status-text     - Output tooltip text for status bars"
   echo "  backends        - List available backends"
   echo "  help            - Show this help"
   echo ""
@@ -373,6 +375,7 @@ show_help() {
   echo "  - Automatic backend detection and selection"
   echo "  - Colored output and desktop notifications"
   echo "  - Reliable toggle behavior"
+  echo "  - Waybar/status bar integration support"
   echo ""
   echo "Supported backends (in order of preference):"
   echo "  - redshift     - Best for X11, automatic location detection"
@@ -406,6 +409,23 @@ case "${1:-auto}" in
     ;;
   "status")
     show_current_status
+    ;;
+  "status-icon")
+    # Output icon for Waybar/status bars
+    if is_night_mode_active; then
+      echo "󰖔"
+    else
+      echo "󰖙"
+    fi
+    ;;
+  "status-text")
+    # Output detailed text for Waybar tooltip
+    if is_night_mode_active; then
+      backend=$(get_active_backend)
+      echo "Night Mode Active\nBackend: ${backend}\nClick to toggle"
+    else
+      echo "Day Mode\nClick to enable night mode"
+    fi
     ;;
   "backends")
     backends_str=$(detect_backends)

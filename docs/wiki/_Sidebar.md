@@ -12,7 +12,7 @@
 #### **Hyprland (Wayland)**
 
 - [🪟 Window Managers Overview](Window-Managers)
-- [⌨️ Hyprland Keybindings](Hyprland-Keybindings-i3-Compatibility)
+- [⌨️ Hyprland Keybindings](Hyprland-Keybindings)
 - [🔒 Lockscreen](Lockscreen)
 
 #### **Visual Components**

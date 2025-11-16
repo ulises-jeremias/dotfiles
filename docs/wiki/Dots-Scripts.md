@@ -148,7 +148,7 @@ dots performance-mode --backend=rofi  # Force rofi menu
 
 **Purpose**: Capture screenshots (fullscreen or region)  
 **Primary Tool**: flameshot (cross-platform with editor)  
-**Fallback Chain**: `flameshot` → `grimblast` (Hyprland) → `grim`+`slurp` (Wayland) → `xfce4-screenshooter` (X11) → `scrot` (X11)  
+**Fallback Chain**: `grimblast` (Hyprland) → `grim`+`slurp` (Wayland) → `flameshot` (fallback)  
 **Usage Examples**:
 
 ```bash
@@ -160,7 +160,7 @@ dots screenshooter --region      # Select region to capture
 
 **Purpose**: Lock screen with blur/dim effects  
 **Primary Tool**: hyprlock (Wayland)  
-**Fallback**: i3lock (X11)  
+**Primary**: hyprlock (Wayland/Hyprland)  
 **Effects**: dim, blur, dimblur, pixel  
 **Usage Examples**:
 
@@ -192,7 +192,7 @@ dots theme-selector              # Open theme GUI or menu
 - Automatic light/dark theme detection
 - Smart foreground optimization for readability
 - Semantic color mapping (error, success, warning, info, accent)
-- Multi-format export (shell, polybar, EWW, i3, mako, waybar, hyprland)
+- Multi-format export (shell, EWW, mako, waybar, hyprland)
 **Usage Examples**:
 
 ```bash
@@ -245,8 +245,8 @@ dots rice info space             # Show rice details
 2. Analyze palette with smart-colors algorithm
 3. Apply optimized colors to all applications:
    - EWW: Enhanced `colors.scss` with semantic variables
-   - Polybar: Smart environment variables + auto-restart
-   - i3: Generated `colors-smart.conf`
+   - Waybar: Smart CSS variables + auto-restart
+   - Hyprland: Generated color configuration
    - Waybar: `colors-waybar.css`
    - Mako: `colors-mako.conf`
    - Hyprland: `colors-hyprland.conf`
@@ -336,7 +336,7 @@ dots night-mode status           # Check current status
 - `dependencies` – Check and install required system dependencies
 - `security-audit` – Comprehensive security audits with auto-fixes
 - `sysupdate` – Perform full system updates (pacman/yay/flatpak)
-- `toggle` – Toggle applications (polybar, compositor, notifications)
+- `toggle` – Toggle applications (waybar, notifications, widgets)
 - `updates` – Check updates with notifications
 
 ### 🎵 Media & Extras
@@ -346,7 +346,7 @@ dots night-mode status           # Check current status
 - `weather-info` – Current weather and forecasts
 - `git-notify` – Notifications on git commits
 
-### � Convenience Wrappers
+### 🔗 Convenience Wrappers
 
 - `rofi-run` – Convenience wrapper (delegates to `dots-launcher`)
 - `rofi-bluetooth` – Bluetooth management via Rofi (use `dots settings-gui` for GUI)
@@ -373,12 +373,17 @@ dots-smart-colors --analyze
 
 # Get specific semantic color
 dots-smart-colors --concept=error
-dots-smart-colors --concept=success --format=polybar
+dots-smart-colors --concept=success --format=waybar
 
 # Export for different applications
 dots-smart-colors --export                    # Shell variables
 dots-smart-colors --export --format=eww       # EWW SCSS
-dots-smart-colors --export --format=i3        # i3 configuration
+```
+
+#### Export Colors for WM Integration
+
+```bash
+dots-smart-colors --export --format=hyprland  # Hyprland configuration
 ```
 
 **Key Features:**
@@ -387,7 +392,7 @@ dots-smart-colors --export --format=i3        # i3 configuration
 - **🆕 Smart Foreground Optimization**: Light themes get softer foreground colors for better readability
 - **Theme-adaptive**: Colors automatically adjust to any palette
 - **Semantic mapping**: Intelligent error/success/warning color selection
-- **Multiple formats**: Shell, Polybar, EWW, i3 export support
+- **Multiple formats**: Shell, Waybar, EWW, Hyprland export support
 - **Fallback system**: Always provides valid colors
 - **Simple variables**: Clean COLOR*ERROR, COLOR_SUCCESS format (no SMART* prefix)
 
@@ -402,8 +407,8 @@ When you change wallpapers via `wpg`, the system now:
 2. **Analyzes palette** with smart colors algorithm
 3. **Applies optimized colors** to all applications:
    - **EWW**: Enhanced `colors.scss` with semantic variables
-   - **Polybar**: Smart environment variables + auto-restart
-   - **i3**: Generated `colors-smart.conf` file
+   - **Waybar**: Smart CSS variables + auto-restart
+   - **Hyprland**: Generated color configuration file
    - **Scripts**: Weather, player, jgmenu with smart colors
 
 **No manual configuration needed** - everything happens automatically!

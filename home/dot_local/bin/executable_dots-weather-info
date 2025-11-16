@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#!/usr/bin/env bash
-
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
@@ -16,6 +14,7 @@
 ##         --temp                            Get weather temperature.
 ##         --hex                             Get weather hex color.
 ##         --stat                            Get weather status.
+##         --loc                             Get location (city, region, country).
 ##         --quote                           Get weather quote.
 ##         --quote2                          Get weather quote.
 ##
@@ -29,6 +28,7 @@ cache_weather_degree=${cache_dir}/weather-degree
 cache_weather_quote=${cache_dir}/weather-quote
 cache_weather_hex=${cache_dir}/weather-hex
 cache_weather_icon=${cache_dir}/weather-icon
+cache_weather_location=${cache_dir}/weather-location
 
 ## Weather data
 KEY="0867dd59b3bfcbdf3f98937d4df8c340"
@@ -48,6 +48,10 @@ get_weather_data() {
     if [ -n "$location" ]; then
       latitude=$(echo "$location" | jq ".lat")
       longitude=$(echo "$location" | jq ".lon")
+      city=$(echo "$location" | jq -r ".city")
+      region=$(echo "$location" | jq -r ".regionName")
+      country=$(echo "$location" | jq -r ".country")
+      echo "${city}, ${region}, ${country}" >"${cache_weather_location}"
       weather="$(curl -sf "http://api.openweathermap.org/data/2.5/weather?APPID=$KEY&lat=$latitude&lon=$longitude&units=$UNIT")"
     fi
   else
@@ -169,6 +173,8 @@ elif [[ -n $hex ]]; then
   cat "${cache_weather_hex}"
 elif [[ -n $stat ]]; then
   cat "${cache_weather_stat}"
+elif [[ -n $loc ]]; then
+  cat "${cache_weather_location}"
 elif [[ -n $quote ]]; then
   head -n1 <"${cache_weather_quote}"
 elif [[ -n $quote2 ]]; then

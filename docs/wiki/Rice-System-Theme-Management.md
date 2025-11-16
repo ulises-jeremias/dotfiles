@@ -62,8 +62,8 @@ dots rofi-rice-selector
 **🔄 Automatic Application Updates:**
 
 - **EWW widgets**: Enhanced `colors.scss` with semantic variables
-- **Polybar modules**: Smart environment variables
-- **i3 window manager**: Generated `colors-smart.conf`
+- **Waybar status bar**: Smart CSS variables
+- **Hyprland window manager**: Generated color configuration
 - **GTK applications**: Automatic theme coordination with brightness detection
 - **Scripts**: Weather, player, and other polybar scripts
 

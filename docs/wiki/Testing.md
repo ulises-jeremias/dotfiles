@@ -32,8 +32,8 @@ These docs include:
 
 You can try out:
 
-- 🪟 Window managers (Openbox, XFCE4, i3)
-- 🎨 Themes (Rofi, Polybar, Zsh prompt)
+- 🪟 Window manager (Hyprland)
+- 🎨 Themes (Rofi, Waybar, Zsh prompt)
 - 🧩 Modules and utilities
 - 🧪 Custom scripts or aliases
 - 🛡️ Security configurations and defaults

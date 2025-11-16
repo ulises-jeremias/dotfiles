@@ -34,7 +34,7 @@ Use this for scripting, automating, or managing networks programmatically.
 
 ### 3. **`network-manager-applet`** – GUI tray icon
 
-If you're running a system tray (e.g., via Polybar or XFCE), you can use the applet to manage Wi-Fi and VPNs.
+If you're running a system tray (e.g., via Waybar), you can use the applet to manage Wi-Fi and VPNs.
 
 Install:
 

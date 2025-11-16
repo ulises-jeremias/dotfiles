@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
 # Outputs current power profile (powerprofilesctl) in terse form
 set -euo pipefail
+
+# Check if powerprofilesctl is available
 if ! command -v powerprofilesctl >/dev/null 2>&1; then
-  echo "-"
+  echo "󰒲"
   exit 0
 fi
-current=$(powerprofilesctl get)
+
+# Try to get the profile, suppress errors if service is not available
+current=$(powerprofilesctl get 2>/dev/null || echo "")
+
+# If we couldn't get a profile (service not running/masked), show inactive icon
+if [[ -z $current ]]; then
+  echo "󰒲"
+  exit 0
+fi
+
 # Map names to icons/text
 case "$current" in
   performance) echo "⚡ PERF" ;;
-  balanced) echo " BAL" ;;
-  power-saver) echo " SAVE" ;;
+  balanced) echo "󰾅 BAL" ;;
+  power-saver) echo "󰾆 SAVE" ;;
   *) echo "$current" ;;
 esac

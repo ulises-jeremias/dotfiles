@@ -140,7 +140,7 @@ sudo pacman -S nvidia-dkms
 
 - Ensure `nvidia-utils` and `mesa` are installed.
 
-- Disable compositing (especially in i3, bspwm, etc.)
+- Configure Hyprland for optimal NVIDIA performance
 
 ---
 

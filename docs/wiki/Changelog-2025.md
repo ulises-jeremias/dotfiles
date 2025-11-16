@@ -71,7 +71,15 @@ dots-smart-colors --analyze --colors
 
 ```ini
 # Smart floating script integration
-bindsym $Mod+Shift+f exec --no-startup-id ~/.config/i3/smart-float.sh
+```conf
+```
+
+**Hyprland Floating Window Configuration**:
+
+```conf
+# Hyprland floating window rules are configured in hyprland.conf
+```
+```
 
 # Global floating window constraints
 floating_minimum_size 400 x 300

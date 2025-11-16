@@ -323,7 +323,7 @@
     "format-icons": ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"],
     "on-scroll-up": "brightnessctl set 5%+",
     "on-scroll-down": "brightnessctl set 5%-",
-    "tooltip-format": "Brightness: {percent}%"
+    "tooltip-format": "Brightness: {percent}%\nDevice: intel_backlight"
   },
 
   "backlight/slider": {
@@ -340,7 +340,7 @@
     "on-click": "pamixer --default-source -t",
     "on-scroll-up": "pamixer --default-source -i 5",
     "on-scroll-down": "pamixer --default-source -d 5",
-    "tooltip-format": "Microphone: {volume}%"
+    "tooltip-format": "{source_desc}\nVolume: {volume}%"
   },
 
   "group/system-controls": {
@@ -406,10 +406,10 @@
 
   "custom/weather": {
     "format": "{}",
-    "exec": "~/.config/waybar/scripts/weather",
+    "exec": "~/.config/waybar/scripts/weather --text-only",
     "interval": 1800,
     "tooltip": true,
-    "rotate": 90
+    "exec-tooltip": "~/.config/waybar/scripts/weather --tooltip"
   },
 
   "custom/separator": {
@@ -536,6 +536,7 @@
   "tray": {
     "icon-size": 18,
     "spacing": 8,
-    "show-passive-items": true
+    "show-passive-items": true,
+    "tooltip": true
   }
 }

@@ -48,7 +48,7 @@ Our configuration uses:
 
 - **Font**: `Hack Nerd Font Mono 10`
 - **Mode**: Fullscreen with center alignment
-- **Transparency**: Real transparency (requires a compositor like `picom`)
+- **Transparency**: Real transparency (Hyprland compositor handles this automatically)
 - **Dynamic Theming**: Integrated with [`pywal`](https://github.com/dylanaraps/pywal) to match your wallpaper
 
 ### Dynamic Color with Pywal
@@ -77,7 +77,7 @@ To run Rofi and test your setup:
 rofi -show drun
 ```
 
-Or bind a custom keybinding to launch it from Openbox/i3/etc.
+Or bind a custom keybinding in Hyprland configuration.
 
 ---
 

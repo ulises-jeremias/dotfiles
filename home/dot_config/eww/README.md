@@ -128,31 +128,31 @@ All scripts automatically:
 
 ## Integration with Window Manager
 
-### i3 Integration
+### Hyprland Integration
 
-The scripts are integrated with your i3 configuration:
+The widgets are integrated with Hyprland configuration:
 
-```bash
+```conf
 # Dashboard toggle (Mod+d)
-bindsym $Mod+d exec --no-startup-id ~/.config/eww/dashboard/launch.sh
+bind = $Mod, D, exec, ~/.config/eww/dashboard/launch.sh
 
 # Powermenu toggle (Mod+x)
-bindsym $Mod+x exec --no-startup-id ~/.config/eww/powermenu/launch.sh
+bind = $Mod, X, exec, ~/.config/eww/powermenu/launch.sh
 ```
 
 ### Additional Keybindings
 
-Consider adding these keybindings to your i3 config:
+Add custom keybindings to Hyprland:
 
-```bash
+```conf
 # Sidebar toggle
-bindsym $Mod+s exec --no-startup-id ~/.config/eww/sidebar/launch.sh
+bind = $Mod, S, exec, ~/.config/eww/sidebar/launch.sh
 
 # EWW status
-bindsym $Mod+Shift+e exec --no-startup-id ~/.config/eww/eww-manager.sh status
+bind = $Mod SHIFT, E, exec, ~/.config/eww/eww-manager.sh status
 
 # EWW cleanup
-bindsym $Mod+Shift+Ctrl+e exec --no-startup-id ~/.config/eww/eww-manager.sh cleanup
+bind = $Mod SHIFT CTRL, E, exec, ~/.config/eww/eww-manager.sh cleanup
 ```
 
 ## Troubleshooting

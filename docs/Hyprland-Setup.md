@@ -49,7 +49,7 @@ home/.chezmoiscripts/linux/run_onchange_before_install-hyprland.sh.tmpl
     ├── keybindings.conf       # All keybindings
     ├── window-rules.conf      # Window rules and layer rules
     ├── colors.conf            # Smart-colors integration
-    └── autostart.conf         # Startup applications (mirrors i3 autostart pattern)
+    └── autostart.conf         # Startup applications
 ```
 
 ### Design Principles
@@ -89,7 +89,7 @@ Generates:
 
 #### Waybar (Status Bar)
 
-Follows the same profile system as Polybar:
+Uses a profile-based configuration system:
 
 ```
 ~/.config/waybar/

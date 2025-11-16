@@ -22,14 +22,14 @@
 - **[ADR-004: Testing Strategy](adrs/004-testing-strategy.md)** - Docker vs Vagrant environments
 - **[ADR-005: Smart Colors Integration](adrs/005-smart-colors-centralized-integration.md)** - Color caching system
 
-## � User Documentation
+## 📖 User Documentation
 
 ### Wiki
 
 The `wiki/` directory contains comprehensive user-facing guides:
 
-- **Window Managers**: i3, Openbox, XFCE4
-- **Components**: Polybar, EWW, Rofi, Kitty
+- **Window Manager**: Hyprland
+- **Components**: Waybar, EWW, Rofi, Kitty
 - **Theming**: Rice system, smart colors, wallpapers
 - **Tools**: Dots scripts, backup, security
 - **Customization**: Personalization guides
@@ -80,8 +80,9 @@ docs/
 ## External Resources
 
 - [Chezmoi Documentation](https://www.chezmoi.io/)
-- [i3 User's Guide](https://i3wm.org/docs/userguide.html)
-- [Polybar Wiki](https://github.com/polybar/polybar/wiki)
+- [Arch Wiki - Window Manager](https://wiki.archlinux.org/title/Window_manager)
+- [Hyprland Wiki](https://wiki.hyprland.org/)
+- [Waybar Wiki](https://github.com/Alexays/Waybar/wiki)
 - [EWW Documentation](https://elkowar.github.io/eww/)
 - [Arch Wiki](https://wiki.archlinux.org/)
 

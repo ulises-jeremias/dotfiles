@@ -179,7 +179,7 @@
     "format-icons": ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"],
     "on-scroll-up": "brightnessctl set 5%+",
     "on-scroll-down": "brightnessctl set 5%-",
-    "tooltip-format": "Brightness: {percent}%"
+    "tooltip-format": "Brightness: {percent}%\nDevice: intel_backlight"
   },
 
   "modules-center": [
@@ -266,7 +266,8 @@
     "format": "{}",
     "exec": "~/.config/waybar/scripts/weather",
     "interval": 1800,
-    "tooltip": false
+    "tooltip": true,
+    "exec-tooltip": "~/.config/waybar/scripts/weather --tooltip"
   },
 
   "custom/separator": {
@@ -286,7 +287,7 @@
     "on-click": "pamixer --default-source -t",
     "on-scroll-up": "pamixer --default-source -i 5",
     "on-scroll-down": "pamixer --default-source -d 5",
-    "tooltip-format": "Microphone: {volume}%"
+    "tooltip-format": "{source_desc}\nVolume: {volume}%"
   },
 
   "pulseaudio/slider": {
@@ -330,7 +331,8 @@
   "tray": {
     "icon-size": 18,
     "spacing": 12,
-    "show-passive-items": true
+    "show-passive-items": true,
+    "tooltip": true
   },
 
   "hyprland/window": {
@@ -338,6 +340,8 @@
     "separate-outputs": false,
     "rewrite": {
       "": ""
-    }
+    },
+    "tooltip": true,
+    "tooltip-format": "Active Window: {title}"
   }
 }

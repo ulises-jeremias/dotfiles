@@ -1,0 +1,172 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Post-Installation Service Initialization
+## Initializes required services and data after dotfiles are applied
+## This ensures all scripts have necessary data cached before first use
+
+set -euo pipefail
+
+echo "═══════════════════════════════════════════════════════════════"
+echo "  Initializing HorneroConfig Services"
+echo "═══════════════════════════════════════════════════════════════"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to print status messages
+print_status() {
+  local status=$1
+  local message=$2
+
+  case $status in
+    "success")
+      echo -e "${GREEN}✓${NC} ${message}"
+      ;;
+    "error")
+      echo -e "${RED}✗${NC} ${message}"
+      ;;
+    "info")
+      echo -e "${YELLOW}ℹ${NC} ${message}"
+      ;;
+  esac
+}
+
+# Create necessary cache directories
+print_status "info" "Creating cache directories..."
+mkdir -p "$HOME/.cache/dots/weather"
+mkdir -p "$HOME/.cache/dots/smart-colors"
+mkdir -p "$HOME/.cache/dots/rice"
+mkdir -p "$HOME/.cache/dots/default-apps"
+mkdir -p "$HOME/.cache/dots-lockscreen"
+print_status "success" "Cache directories created"
+
+# Initialize weather data
+print_status "info" "Fetching initial weather data..."
+if command -v dots-weather-info &>/dev/null; then
+  # Run in background to avoid blocking, but wait up to 10 seconds
+  timeout 10s dots-weather-info --getdata &>/dev/null || true
+
+  # Check if data was successfully fetched
+  if [[ -f "$HOME/.cache/dots/weather/weather-degree" ]]; then
+    print_status "success" "Weather data initialized"
+  else
+    print_status "error" "Failed to fetch weather data (non-critical, will retry on first use)"
+  fi
+else
+  print_status "error" "dots-weather-info not found (will be available after next login)"
+fi
+
+# Initialize rice system
+print_status "info" "Checking rice configuration..."
+if command -v dots &>/dev/null; then
+  current_rice=$(dots rice current 2>/dev/null | grep -o '[^ ]*$' || echo "")
+
+  if [[ -z "$current_rice" ]]; then
+    # Set default rice if none is configured
+    if [[ -d "$HOME/.local/share/dots/rices/landscape-light" ]]; then
+      print_status "info" "Setting default rice: landscape-light"
+      echo "landscape-light" > "$HOME/.local/share/dots/rices/.current_rice"
+      current_rice="landscape-light"
+    fi
+  fi
+
+  if [[ -n "$current_rice" ]]; then
+    print_status "info" "Generating smart colors for rice: $current_rice"
+
+    # Generate smart colors in background with timeout
+    if timeout 15s dots-smart-colors --generate &>/dev/null; then
+      print_status "success" "Smart colors generated for $current_rice"
+    else
+      print_status "error" "Failed to generate smart colors (non-critical)"
+    fi
+  else
+    print_status "info" "No rice configured yet"
+  fi
+else
+  print_status "info" "dots command not available yet (will be available after next login)"
+fi
+
+# Verify essential scripts are executable
+print_status "info" "Verifying script permissions..."
+essential_scripts=(
+  "$HOME/.local/bin/dots-weather-info"
+  "$HOME/.local/bin/dots-rice"
+  "$HOME/.local/bin/dots-night-mode"
+  "$HOME/.local/bin/dots-rofi-rice-selector"
+  "$HOME/.local/bin/dots-smart-colors"
+  "$HOME/.local/bin/dots-lockscreen"
+  "$HOME/.local/bin/dots-default-apps"
+)
+
+for script in "${essential_scripts[@]}"; do
+  if [[ -f "$script" ]]; then
+    if [[ ! -x "$script" ]]; then
+      chmod +x "$script"
+      print_status "success" "Made executable: $(basename "$script")"
+    fi
+  fi
+done
+
+# Initialize night mode state file
+print_status "info" "Initializing night mode state..."
+NIGHT_MODE_STATE_FILE="$HOME/.cache/dots/night_mode_state"
+if [[ ! -f "$NIGHT_MODE_STATE_FILE" ]]; then
+  echo "day" > "$NIGHT_MODE_STATE_FILE"
+  print_status "success" "Night mode state initialized"
+else
+  print_status "success" "Night mode state already exists"
+fi
+
+# Initialize font cache
+if command -v fc-cache &>/dev/null; then
+  print_status "info" "Updating font cache..."
+  if fc-cache -f &>/dev/null; then
+    print_status "success" "Font cache updated"
+  else
+    print_status "error" "Failed to update font cache (non-critical)"
+  fi
+fi
+
+# Check for critical dependencies
+print_status "info" "Checking critical dependencies..."
+critical_deps=(
+  "jq"           # JSON parsing (used by weather, smart-colors)
+  "curl"         # HTTP requests (weather data)
+  "bc"           # Math calculations (brightness, smart-colors)
+)
+
+missing_deps=()
+for dep in "${critical_deps[@]}"; do
+  if ! command -v "$dep" &>/dev/null; then
+    missing_deps+=("$dep")
+  fi
+done
+
+if [[ ${#missing_deps[@]} -gt 0 ]]; then
+  print_status "error" "Missing critical dependencies: ${missing_deps[*]}"
+  print_status "info" "Install with: sudo pacman -S ${missing_deps[*]}"
+else
+  print_status "success" "All critical dependencies installed"
+fi
+
+echo "═══════════════════════════════════════════════════════════════"
+echo -e "${GREEN}✓${NC} Service initialization complete!"
+echo "═══════════════════════════════════════════════════════════════"
+echo ""
+echo "Next steps:"
+echo "  1. Log out and log back in for all changes to take effect"
+echo "  2. Select a rice theme: dots rofi-rice-selector"
+echo "  3. Configure monitors: dots hypr-monitors"
+echo ""
+echo "For more information, check the documentation:"
+echo "  https://github.com/ulises-jeremias/dotfiles/wiki"
+echo ""
+
+{{ end -}}
