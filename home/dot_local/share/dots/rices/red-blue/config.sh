@@ -19,7 +19,8 @@ SMART_COLORS="true"
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#cc241d"
 RICE_PRIMARY_COLOR="#458588"
-RICE_SECONDARY_COLOR="#d3869b"
+RICE_SECONDARY_COLOR="#0099cc"
 
-# Polybar profile to use for this rice
-POLYBAR_PROFILE="default"
+# Waybar profile to use for this rice
+WAYBAR_PROFILE="default"
+

@@ -35,25 +35,26 @@ into a harmonious blend of elegance and efficiency.
 
 - **🎨 Advanced Rice System**: Switch between beautiful desktop themes instantly
 - **🧠 Smart Colors**: Intelligent color adaptation for optimal readability and theme consistency  
-- **📊 Polybar**: Highly customizable status bar with 20+ modules
+- **📊 Waybar**: Beautiful dual-bar status configuration with 20+ modules
 - **🎛️ EWW Widgets**: Modern system widgets (dashboard, powermenu, sidebar)
-- **🪟 Multi-WM Support**: Works with i3, Openbox, and XFCE4
+- **🌊 Hyprland**: Dynamic tiling Wayland compositor with smooth animations
 - **📦 Easy Management**: Simple installation and configuration via chezmoi
 - **🔧 100+ Scripts**: Comprehensive automation and utility scripts
 - **🔄 Automatic Theming**: Seamless wallpaper-to-theme integration
 - **🛡️ Security**: Built-in security auditing and hardening tools
 
-Most were written from scratch. Some details:
+Most were written from scratch. Core stack:
 
-- **Window Manager** 🍱 [i3](https://i3wm.org) and/or [Openbox](http://openbox.org/wiki/Main_Page) and/or [XFCE](https://www.xfce.org/)!
-- **Panel** 🌸 [Polybar](https://polybar.github.io/) which is a fast and easy-to-use status bar!
-- **Application Launcher** 🚀 [Rofi](https://github.com/davatorium/rofi) which is blazing fast!
-- **Desktop Notification** 🌿 [Dunst](https://github.com/dunst-project/dunst) which is minimalist!
-- **Terminal Emulator** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/) The fast, feature-rich, GPU based terminal emulator!
-- **Shell** 🐚 [Zsh](https://zsh.org) with several post-installation tweaks!
-- **Compositor** 🍧 [Picom](https://github.com/yshui/picom) for that perfection topping with Animations!
-- **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with a customized side pane!
-- **Widgets** 🎨 [Eww](https://github.com/elkowar/eww) with 2 different pre-backed widgets!
+- **Compositor** 🌊 [Hyprland](https://hyprland.org) - Dynamic tiling Wayland compositor
+- **Status Bar** 📊 [Waybar](https://github.com/Alexays/Waybar) - Beautiful, customizable status bar
+- **Application Launcher** 🚀 [Rofi](https://github.com/lbonn/rofi) - Blazing fast app launcher (Wayland fork)
+- **Notifications** 🔔 [Mako](https://github.com/emersion/mako) - Lightweight notification daemon
+- **Terminal Emulator** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/) - GPU-accelerated terminal
+- **Shell** 🐚 [Zsh](https://zsh.org) with Powerlevel10k prompt
+- **Lockscreen** 🔒 [Hyprlock](https://github.com/hyprwm/hyprlock) - Secure lock screen
+- **Wallpaper** 🖼️ [Hyprpaper](https://github.com/hyprwm/hyprpaper) - Fast wallpaper daemon
+- **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with customized side pane
+- **Widgets** 🎨 [EWW](https://github.com/elkowar/eww) with dashboard and powermenu
 - and many more!
 
 ![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/main/static/screen.png?raw=true)
@@ -67,6 +68,25 @@ Most were written from scratch. Some details:
 ![Nord Two Lines](https://github.com/ulises-jeremias/dotfiles/blob/main/static/screenshot-nord-two-lines.png?raw=true)
 
 ![Launchpad](https://github.com/ulises-jeremias/dotfiles/blob/main/static/screenshot-launchpad.png?raw=true)
+
+## 🚀 Installation & Performance
+
+### Chaotic-AUR Repository
+
+HorneroConfig automatically configures the [Chaotic-AUR](https://aur.chaotic.cx/) repository during installation. This provides:
+
+- **⚡ Precompiled Binaries**: Skip building AUR packages from source
+- **🎯 Faster Setup**: Reduce installation time by 50-70%
+- **🔄 Regular Updates**: Automatically maintained packages
+- **📦 Popular Packages**: Hyprland ecosystem, nwg-* tools, pamac-aur, auto-cpufreq, and more
+
+The repository is configured automatically by the chezmoi script at:
+
+```text
+home/.chezmoiscripts/linux/run_onchange_before_install-000-chaotic-aur.sh.tmpl
+```
+
+For more information, visit the [Chaotic-AUR documentation](https://aur.chaotic.cx/docs).
 
 [licensebadge]: https://img.shields.io/badge/License-MIT-blue.svg
 [licenseurl]: https://github.com/ulises-jeremias/dotfiles/blob/main/LICENSE

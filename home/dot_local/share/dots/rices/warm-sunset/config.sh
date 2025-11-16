@@ -20,7 +20,8 @@ PREFER_DARK_THEME="auto"
 # Color Scheme Preview - Warm sunset colors
 RICE_ACCENT_COLOR="#ffb347"    # Soft orange
 RICE_PRIMARY_COLOR="#f4a460"   # Sandy brown
-RICE_SECONDARY_COLOR="#ffd97d" # Golden yellow
+RICE_SECONDARY_COLOR="#ff8c00"
 
-# Polybar profile to use for this rice
-POLYBAR_PROFILE="default"
+# Waybar profile to use for this rice
+WAYBAR_PROFILE="default"
+

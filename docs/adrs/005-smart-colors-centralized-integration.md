@@ -26,14 +26,14 @@ We implemented a centralized smart colors system with the following architecture
 
 ### 2. Format-Specific Files
 
-- `colors-i3.conf`: i3 client color directives with actual color values (not variables)
 - `colors-eww.scss`: SCSS variables for EWW widgets
+- `colors-waybar.css`: CSS variables for Waybar styling
 - `colors.sh`: Shell variables for scripts
-- `colors.env`: Environment variables for applications like Polybar
+- `colors.env`: Environment variables for applications
 
 ### 3. Symbolic Links Strategy
 
-- `~/.config/i3/config.d/smart-colors.conf` → centralized i3 file
+- `~/.config/waybar/smart-colors.css` → centralized Waybar file
 - `~/.config/eww/dashboard/smart-colors.scss` → centralized EWW file
 - `~/.config/eww/powermenu/smart-colors.scss` → centralized EWW file
 
@@ -41,9 +41,10 @@ We implemented a centralized smart colors system with the following architecture
 
 Smart colors are integrated with different applications using their native formats:
 
-```sh
-# Direct color values for immediate application
-client.focused #2e9ef4 #2e9ef4 #191c21 #83a598 #2e9ef4
+```css
+/* CSS variables for Waybar and web-based widgets */
+@define-color accent #2e9ef4;
+@define-color info #83a598;
 ```
 
 ## Implementation Details
@@ -62,19 +63,19 @@ client.focused #2e9ef4 #2e9ef4 #191c21 #83a598 #2e9ef4
    - Sources `colors.env` for environment variables
    - Enhanced application reloading logic
 
-3. **i3 Configuration**:
+3. **Waybar Configuration**:
 
-   - `colors.conf` includes `smart-colors.conf` with actual color directives
-   - No variable expansion required
+   - Imports `smart-colors.css` for theme variables
+   - CSS variables provide instant color updates
 
 4. **EWW Configuration**:
 
    - Dashboard and powermenu import `smart-colors.scss`
    - SCSS variables work correctly with @import
 
-5. **Polybar Configuration**:
-   - Enhanced smart colors loading in `default.sh` profile
-   - Fallback strategy: cache → generate → default export
+5. **Hyprland Configuration**:
+   - Colors loaded via environment variables
+   - Immediate application without restart
 
 ## Consequences
 
@@ -96,9 +97,9 @@ A comprehensive test script (`scripts/test-smart-colors-integration.sh`) verifie
 
 - Smart color file generation
 - Symbolic link creation
-- i3 configuration syntax validation
+- Waybar configuration syntax validation
 - EWW configuration validation
-- Polybar integration verification
+- Hyprland integration verification
 
 ## Future Considerations
 

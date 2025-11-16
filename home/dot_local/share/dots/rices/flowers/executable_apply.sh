@@ -26,6 +26,5 @@ if [[ -f "$HOME/.local/lib/dots/gtk-theme-manager.sh" ]]; then
   apply_rice_gtk_theme "flowers"
 fi
 
-~/.config/polybar/launch.sh &
 
 notify-send "HorneroConfig" "Flowers rice applied successfully."

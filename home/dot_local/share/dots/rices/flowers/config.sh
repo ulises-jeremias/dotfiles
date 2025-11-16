@@ -20,7 +20,8 @@ PREFER_DARK_THEME="auto" # Auto-detect based on wallpaper analysis
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#d3869b"
 RICE_PRIMARY_COLOR="#458588"
-RICE_SECONDARY_COLOR="#b16286"
+RICE_SECONDARY_COLOR="#689d6a"
 
-# Polybar profile to use for this rice
-POLYBAR_PROFILE="default"
+# Waybar profile to use for this rice
+WAYBAR_PROFILE="default"
+

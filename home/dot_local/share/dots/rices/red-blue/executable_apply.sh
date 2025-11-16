@@ -20,6 +20,5 @@ if [ -z "${wallpaper}" ]; then
 fi
 wpg -s "$wallpaper"
 
-~/.config/polybar/launch.sh &
 
 notify-send "RedBlueConfig" "RedBlue rice applied successfully."

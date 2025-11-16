@@ -59,9 +59,9 @@ All changes will be synced to your system.
 
 ## 📁 What You Can Customize
 
-- 🪟 Window manager settings (i3, Openbox, XFCE4)
+- 🌊 Compositor settings (Hyprland)
 - 💻 Terminal experience (Zsh, Kitty)
-- 🎨 Theme and color schemes (Rofi, Polybar, Pywal)
+- 🎨 Theme and color schemes (Rofi, Waybar, Pywal)
 - 🛠️ Utility scripts (`dots`) and workflow helpers
 - 🔒 Security tools and system behaviors
 
@@ -78,7 +78,7 @@ The dotfiles include an **intelligent color system** that automatically optimize
 
 - **Semantic Colors**: Error, success, warning, info colors that adapt to any palette
 - **Theme Intelligence**: Automatically selects optimal colors based on wallpaper
-- **Application Integration**: Works with Polybar, EWW, i3, and custom scripts
+- **Application Integration**: Works with Waybar, EWW, Hyprland, and custom scripts
 - **Automatic Updates**: Colors refresh automatically when changing wallpapers
 
 Learn more: [Smart Colors System](Smart-Colors-System)

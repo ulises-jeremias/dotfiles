@@ -50,7 +50,7 @@ dots-smart-colors --concept=foreground-alt
 
 # All available in generated files
 ~/.cache/dots/smart-colors/colors.sh
-~/.cache/dots/smart-colors/colors-polybar.conf
+~/.cache/dots/smart-colors/colors-waybar.css
 ```
 
 #### 🎨 **Enhanced Visualization**
@@ -68,86 +68,6 @@ dots-smart-colors --analyze --colors
 - Smart Basic Colors (theme-adaptive)
 
 ---
-
-### 📊 **Polybar Visual Optimization**
-
-#### 🎯 **Color Usage Philosophy Overhaul**
-
-Complete redesign of how colors are used across all polybar modules for better visual hierarchy and reduced eye strain.
-
-**Before vs After:**
-
-```ini
-# ❌ BEFORE: Aggressive accent colors everywhere
-[module/jgmenu]
-label-foreground = ${colors.accent}    # Too bright/distracting
-
-[module/github]
-label-foreground = ${colors.info}      # Too aggressive
-
-[module/cpu]
-format-prefix-foreground = ${colors.accent}  # Overwhelming
-
-# ✅ AFTER: Subtle, consistent colors
-[module/jgmenu]
-label-foreground = ${colors.foreground-alt}  # Subtle, beautiful
-
-[module/github]
-label-foreground = ${colors.foreground-alt}  # Comfortable
-
-[module/cpu]
-format-prefix-foreground = ${colors.foreground-alt}  # Consistent
-```
-
-#### 📋 **Optimized Modules List**
-
-**Icons & Navigation (now using `foreground-alt`):**
-
-- ✅ jgmenu - Menu launcher icon
-- ✅ github - Notification counter
-- ✅ cpu - CPU usage icon
-- ✅ memory - Memory usage icon
-- ✅ apps - Application launcher menu
-- ✅ keyboard - Keyboard layout indicator
-- ✅ filesystem - Disk usage display
-- ✅ rices - Rice theme selector
-- ✅ dots - Decorative elements
-
-**Active Elements (using semantic colors):**
-
-- ✅ i3 workspaces - Active workspace uses `info` instead of `accent`
-- ✅ backlight - Progress bar uses `info` for better readability
-- ✅ Media player - Smart color usage for play/pause states
-
-#### 🎨 **New Color Philosophy**
-
-- **`foreground-alt`**: For icons, subtle elements, secondary text
-- **`accent`**: Reserved ONLY for truly important highlights
-- **`info`**: For informational elements and active states
-- **Semantic colors**: Used appropriately for their meaning (error=red, success=green, etc.)
-
----
-
-### 🪟 **i3 Smart Floating Windows**
-
-#### 🚀 **New Feature: Intelligent Window Management**
-
-Completely new system for handling floating windows in i3 with automatic sizing and positioning.
-
-**New Keybinding:**
-
-```bash
-Super + Shift + F    # Smart floating toggle
-```
-
-**What It Does:**
-
-- **Tiled → Floating**: Automatically resizes to 70% width × 65% height and centers perfectly
-- **Floating → Tiled**: Returns to normal tiling mode
-- **Screen-Aware**: Adapts to different monitor sizes and resolutions
-- **Smart Constraints**: Respects minimum (600×400) and maximum (1400×900) sizes
-
-**Configuration Added:**
 
 ```ini
 # Smart floating script integration

@@ -131,11 +131,11 @@ dots-smart-colors --concept=success --format=polybar
 dots-smart-colors --export --format=eww > ~/.config/eww/dashboard/colors.scss
 ```
 
-**i3 Configuration:**
+**Waybar CSS Generation:**
 
 ```bash
-# Generate i3 color variables
-dots-smart-colors --export --format=i3 > ~/.config/i3/colors-smart.conf
+# Generate Waybar CSS variables
+dots-smart-colors --export --format=waybar > ~/.config/waybar/smart-colors.css
 ```
 
 #### Supported Concepts
@@ -237,23 +237,23 @@ export COLOR_ACCENT='#7e68a0'
 
 **Usage**: `source ~/.cache/dots/smart-colors/colors.env` to load into environment
 
-#### 5. **`colors-polybar.conf`** - Polybar Status Bar
+#### 5. **`colors-waybar.css`** - Waybar Status Bar
 
-```ini
-[colors]
-background = #b0d5d8
-foreground = #52758A  ; Optimized for light themes
-primary = #348C9E
+```css
+/* CSS variables for Waybar styling */
+@define-color background #b0d5d8;
+@define-color foreground #52758A;  /* Optimized for light themes */
+@define-color primary #348C9E;
 
-; Smart semantic colors
-success = #0abf66
-warning = #b8850f
-error = #b84b49
-info = #0a94bd
-accent = #7e68a0
+/* Smart semantic colors */
+@define-color success #0abf66;
+@define-color warning #b8850f;
+@define-color error #b84b49;
+@define-color info #0a94bd;
+@define-color accent #7e68a0;
 ```
 
-**Usage**: `include-file = ~/.cache/dots/smart-colors/colors-polybar.conf`
+**Usage**: `@import "~/.cache/dots/smart-colors/colors-waybar.css";` in Waybar stylesheet
 
 ### 🔄 Automatic Workflow
 
@@ -282,9 +282,9 @@ Each application type uses its preferred format:
 
 | Application       | File Used                   | Integration Method                  |
 | ----------------- | --------------------------- | ----------------------------------- |
-| **i3 WM**         | `colors-i3.conf`            | Include directive in i3 config      |
+| **Hyprland**      | `colors.env`                | Environment variables in config     |
+| **Waybar**        | `colors-waybar.css`         | CSS import in stylesheet            |
 | **EWW Widgets**   | `colors-eww.scss`           | SCSS import in stylesheets          |
-| **Polybar**       | `colors-polybar.conf`       | Include directive in polybar config |
 | **Shell Scripts** | `colors.sh` or `colors.env` | Source in scripts or profiles       |
 | **Custom Apps**   | Any format                  | Choose the most appropriate format  |
 
@@ -298,7 +298,7 @@ dots-smart-colors --generate
 ls -la ~/.cache/dots/smart-colors/
 
 # View specific file
-cat ~/.cache/dots/smart-colors/colors-polybar.conf
+cat ~/.cache/dots/smart-colors/colors-waybar.css
 
 # Clear cache (will be regenerated automatically)
 rm -rf ~/.cache/dots/smart-colors/
@@ -318,10 +318,10 @@ graph LR
     B --> C[pywal generation]
     C --> D[smart-colors analysis]
     D --> E[EWW colors.scss]
-    D --> F[polybar environment]
-    D --> G[i3 colors-smart.conf]
+    D --> F[waybar colors.css]
+    D --> G[hyprland colors.env]
     E --> H[EWW restart]
-    F --> I[polybar restart]
+    F --> I[waybar restart]
 ```
 
 **No manual configuration needed!**
@@ -334,35 +334,43 @@ graph LR
 - Includes semantic variables (`$error`, `$success`)
 - Maintains compatibility with existing configs
 
-**Polybar:**
+**Waybar:**
 
-- Exports smart colors to environment variables
+- Generates CSS variables file for theming
 - All modules automatically use optimal colors
 - Automatic restart to apply new colors
 
-**i3 Window Manager:**
+**Hyprland:**
 
-- Generates `~/.config/i3/colors-smart.conf`
-- Provides smart color variables for window theming
-- Include with: `include ~/.config/i3/colors-smart.conf`
+- Colors loaded via environment variables
+- Automatic reload without restart
+- Seamless theme integration
 
 **Scripts:**
 
-- All polybar scripts use smart colors when available
-- Fallback to xrdb if smart colors not available
+- All scripts use smart colors when available
+- Fallback to pywal if smart colors not available
 
 ---
 
 ## 🎯 Usage Examples
 
-### Polybar Module Development
+### Waybar Module Styling
 
-```ini
-[module/my-module]
-type = internal/cpu
-format-prefix-foreground = ${colors.accent}    # Smart accent color
-label-foreground = ${colors.info}              # Smart info color
-format-warn-foreground = ${colors.warning}     # Smart warning color
+```css
+@import "~/.cache/dots/smart-colors/colors-waybar.css";
+
+#cpu {
+  color: @info;              /* Smart info color */
+}
+
+#battery.warning {
+  color: @warning;           /* Smart warning color */
+}
+
+#battery.critical {
+  color: @error;             /* Smart error color */
+}
 ```
 
 ### EWW Widget Styling
@@ -387,22 +395,15 @@ format-warn-foreground = ${colors.warning}     # Smart warning color
 
 ```bash
 #!/bin/bash
+### Shell Scripts
+
+```bash
+#!/bin/bash
 # Load smart colors
 eval "$(dots-smart-colors --export)"
 
 echo -e "\\033[${COLOR_ERROR}mError message\\033[0m"
 echo -e "\\033[${COLOR_SUCCESS}mSuccess message\\033[0m"
-```
-
-### i3 Configuration
-
-```ini
-# Include smart colors
-include ~/.config/i3/colors-smart.conf
-
-# Use smart colors in window theming
-client.focused          $smart_accent  $smart_accent  $background     $smart_info    $smart_accent
-client.urgent           $smart_error   $smart_error   $background     $smart_error   $smart_error
 ```
 
 ---
@@ -414,8 +415,8 @@ client.urgent           $smart_error   $smart_error   $background     $smart_err
 You can override smart colors for specific applications:
 
 ```bash
-export POLYBAR_THEME_ACCENT="#ff0000"      # Force specific accent color
-export POLYBAR_THEME_SUCCESS="#00ff00"     # Force specific success color
+export THEME_ACCENT="#ff0000"      # Force specific accent color
+export THEME_SUCCESS="#00ff00"     # Force specific success color
 ```
 
 ### Custom Color Mappings

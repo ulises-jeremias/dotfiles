@@ -20,6 +20,5 @@ if [ -z "${wallpaper}" ]; then
 fi
 wpg -s "$wallpaper"
 
-~/.config/polybar/launch.sh &
 
 notify-send "Gruvbox Light Config" "Gruvbox Light rice applied successfully."

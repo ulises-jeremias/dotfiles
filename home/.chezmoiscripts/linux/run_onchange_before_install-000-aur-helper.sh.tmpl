@@ -2,11 +2,30 @@
 
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
+#
+# Install yay AUR helper
+# Note: Chaotic-AUR repository is configured first (000-chaotic-aur.sh)
+# to provide precompiled binaries for many AUR packages, reducing build times.
 
+set -euo pipefail
+
+echo "🔧 Installing yay AUR helper..."
+
+# Check if yay is already installed
+if command -v yay &> /dev/null; then
+  echo "✓ yay is already installed"
+  exit 0
+fi
+
+# Install build dependencies
 sudo pacman -Syy --needed git base-devel
+
+# Clone and build yay
 git clone https://aur.archlinux.org/yay.git /tmp/yay
 cd /tmp/yay
-makepkg -si
+makepkg -si --noconfirm
+
+echo "✅ yay AUR helper installed successfully!"
 {{      end -}}
 
 {{ end -}}

@@ -20,10 +20,11 @@ PREFER_DARK_THEME="auto" # Light theme for comfortable viewing
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#b16286"
 RICE_PRIMARY_COLOR="#458588"
-RICE_SECONDARY_COLOR="#689d6a"
+RICE_SECONDARY_COLOR="#88c0d0"
 
-# Polybar profile to use for this rice
-POLYBAR_PROFILE="default"
+# Waybar profile to use for this rice
+WAYBAR_PROFILE="vertical-left"
+
 
 # Waybar profile to use for this rice
 WAYBAR_PROFILE="vertical-left"

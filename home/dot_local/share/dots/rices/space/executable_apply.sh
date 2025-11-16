@@ -26,6 +26,5 @@ if [[ -f "$HOME/.local/lib/dots/gtk-theme-manager.sh" ]]; then
   apply_rice_gtk_theme "space"
 fi
 
-~/.config/polybar/launch.sh &
 
 notify-send "SpaceConfig" "Space rice applied successfully."

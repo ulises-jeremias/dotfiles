@@ -55,34 +55,40 @@ measure_shell_startup() {
 }
 
 check_memory_usage() {
-  echo "💾 Analyzing memory usage..."
+  echo "💾 Analyzing memory usage (Wayland stack)..."
 
-  # Check currently running processes from dotfiles
-  echo "Current dotfiles processes:"
-  ps aux | grep -E "(polybar|dunst|picom|rofi)" | grep -v grep
+  echo "Current relevant processes:"
+  ps aux | grep -E "(Hyprland|waybar|eww|mako|rofi|hyprpaper|hyprlock|kitty)" | grep -v grep || echo "  (none)"
 
   echo ""
-  echo "Memory usage by category:"
+  echo "Memory usage by component:"
 
-  # Window manager
-  wm_mem=$(ps aux | grep -E "(i3|openbox)" | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
-  echo "  Window Manager: ${wm_mem:-0 MB}"
+  hypr_mem=$(ps aux | grep Hyprland | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  echo "  Hyprland: ${hypr_mem:-0 MB}"
 
-  # Status bar
-  bar_mem=$(ps aux | grep polybar | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
-  echo "  Polybar: ${bar_mem:-0 MB}"
+  waybar_mem=$(ps aux | grep waybar | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  echo "  Waybar: ${waybar_mem:-0 MB}"
 
-  # Compositor
-  comp_mem=$(ps aux | grep picom | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
-  echo "  Compositor: ${comp_mem:-0 MB}"
+  eww_mem=$(ps aux | grep -w eww | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  echo "  EWW: ${eww_mem:-0 MB}"
 
-  # Terminal
+  mako_mem=$(ps aux | grep mako | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  echo "  Mako: ${mako_mem:-0 MB}"
+
+  rofi_mem=$(ps aux | grep rofi | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  echo "  Rofi: ${rofi_mem:-0 MB}"
+
+  hyprpaper_mem=$(ps aux | grep hyprpaper | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  echo "  Hyprpaper: ${hyprpaper_mem:-0 MB}"
+
+  hyprlock_mem=$(ps aux | grep hyprlock | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  echo "  Hyprlock: ${hyprlock_mem:-0 MB}"
+
   term_mem=$(ps aux | grep kitty | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
-  echo "  Terminal: ${term_mem:-0 MB}"
+  echo "  Kitty: ${term_mem:-0 MB}"
 
-  # Calculate total
-  total_mem=$(ps aux | grep -E "(i3|openbox|polybar|picom|kitty|dunst)" | grep -v grep | awk '{sum+=$6} END {print sum/1024}')
-  echo "  Total dotfiles memory: ${total_mem:-0} MB"
+  total_mem=$(ps aux | grep -E "(Hyprland|waybar|eww|mako|rofi|hyprpaper|hyprlock|kitty)" | grep -v grep | awk '{sum+=$6} END {print sum/1024}')
+  echo "  Total stack memory: ${total_mem:-0} MB"
 }
 
 run_benchmark() {
@@ -166,7 +172,7 @@ EOF
   echo ""
   echo "📊 Quick Summary:"
   echo "  Latest startup time: $(tail -1 "$PERF_LOG_DIR"/startup_*.log 2>/dev/null | grep -o '[0-9.]*s' | tail -1 || echo 'N/A')"
-  echo "  Current memory usage: $(ps aux | grep -E "(i3|openbox|polybar|picom)" | grep -v grep | awk '{sum+=$6} END {print sum/1024}' || echo '0') MB"
+  echo "  Current memory usage: $(ps aux | grep -E "(Hyprland|waybar|eww|mako|rofi|hyprpaper|hyprlock|kitty)" | grep -v grep | awk '{sum+=$6} END {print sum/1024}' || echo '0') MB"
 }
 
 # Main execution

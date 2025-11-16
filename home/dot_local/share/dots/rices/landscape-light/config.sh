@@ -20,7 +20,8 @@ PREFER_DARK_THEME="auto"
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#d79921"
 RICE_PRIMARY_COLOR="#076678"
-RICE_SECONDARY_COLOR="#427b58"
+RICE_SECONDARY_COLOR="#689d6a"
 
-# Polybar profile to use for this rice
-POLYBAR_PROFILE="default"
+# Waybar profile to use for this rice
+WAYBAR_PROFILE="default"
+

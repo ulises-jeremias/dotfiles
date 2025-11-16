@@ -20,6 +20,5 @@ if [ -z "${wallpaper}" ]; then
 fi
 wpg -s "$wallpaper"
 
-~/.config/polybar/launch.sh &
 
 notify-send "Gruvbox Anime Config" "Gruvbox Anime rice applied successfully."

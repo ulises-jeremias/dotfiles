@@ -29,7 +29,7 @@ Key components:
 
 - `dots-rice-config.sh` - Core rice management library
 - Individual rice directories with modular configurations
-- Integration with pywal, polybar, and other theming tools
+- Integration with pywal, waybar, and other theming tools
 
 ## Consequences
 

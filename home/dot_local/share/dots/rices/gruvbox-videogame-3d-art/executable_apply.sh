@@ -20,6 +20,5 @@ if [ -z "${wallpaper}" ]; then
 fi
 wpg -s "$wallpaper"
 
-~/.config/polybar/launch.sh &
 
 notify-send "Gruvbox Videogame 3D Art Config" "Gruvbox Videogame 3D Art rice applied successfully."

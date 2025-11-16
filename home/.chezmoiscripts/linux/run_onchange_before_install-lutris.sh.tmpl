@@ -1,0 +1,102 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+#
+# Install Lutris and Steam gaming platforms with all recommended dependencies
+# https://lutris.net
+# https://store.steampowered.com
+#
+# This script installs:
+# - Lutris (open gaming platform)
+# - Steam (Valve's gaming platform)
+# - Wine + Winetricks (Windows compatibility)
+# - GameMode (system optimizations during gaming)
+# - Vulkan support (modern graphics API)
+# - DirectX 12 support via vkd3d
+# - Platform-specific libraries (Ubisoft, EA, GOG, Battle.net)
+# - Utilities (installer extractors, icon support, gamma restoration)
+
+set -euo pipefail
+
+echo "🎮 Installing gaming platforms (Lutris + Steam)..."
+
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+{{   $sudo = "" -}}
+{{ end -}}
+
+# Core gaming packages
+{{ $packages := list
+  "lutris"
+  "steam"
+  "wine"
+  "winetricks"
+  "gamemode"
+  "lib32-gamemode"
+-}}
+
+# Graphics support (Vulkan, OpenGL, DirectX)
+{{ $packages = concat $packages (list
+  "lib32-vulkan-icd-loader"
+  "lib32-mesa"
+  "vulkan-tools"
+  "vkd3d"
+  "lib32-vkd3d"
+) -}}
+
+# Platform support (Ubisoft, EA, GOG, Battle.net)
+{{ $packages = concat $packages (list
+  "lib32-gnutls"
+  "python-protobuf"
+) -}}
+
+# Utilities
+{{ $packages = concat $packages (list
+  "innoextract"
+  "python-pefile"
+  "xorg-xgamma"
+  "fluidsynth"
+  "libayatana-appindicator"
+) -}}
+
+# AUR packages
+{{ $aurPackages := list
+  "umu-launcher"
+-}}
+
+# Install all packages
+{{ $sudo }}pacman -S --noconfirm --needed {{ $packages | join " " }}
+
+# NVIDIA-specific packages (if NVIDIA GPU detected)
+if lspci | grep -i nvidia &> /dev/null; then
+  echo "🎮 NVIDIA GPU detected, installing lib32-nvidia-utils..."
+  {{ $sudo }}pacman -S --noconfirm --needed lib32-nvidia-utils
+fi
+
+# Install AUR packages
+if command -v yay &> /dev/null; then
+  echo "🚀 Installing AUR packages..."
+  yay -S --noconfirm --needed {{ $aurPackages | join " " }}
+else
+  echo "⚠️  yay not found, skipping AUR packages installation"
+  echo "   Install them manually later with: yay -S {{ $aurPackages | join " " }}"
+fi
+
+echo "✅ Gaming platforms and dependencies installed successfully!"
+echo ""
+echo "🎮 Next steps:"
+echo "   1. Launch Steam: steam"
+echo "   2. Launch Lutris: lutris"
+echo "   3. Configure Wine runners in Lutris settings"
+echo "   4. Add your game library accounts (Steam, GOG, Epic, etc.)"
+echo ""
+echo "📚 Useful commands:"
+echo "   - Check Vulkan support: vulkaninfo | grep deviceName"
+echo "   - Test GameMode: gamemoded -t"
+echo "   - Wine version: wine --version"
+echo "   - Steam runtime info: steam --version"
+
+{{      end -}}
+
+{{ end -}}

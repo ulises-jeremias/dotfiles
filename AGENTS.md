@@ -37,8 +37,26 @@ See [Development Standards](docs/Development-Standards.md) for complete requirem
 - **Polybar** - Profile-based modular status bar
 - **EWW** - Declarative widgets with SCSS styling
 - **Dots CLI** - Unified script interface
+- **Chaotic-AUR** - Precompiled AUR packages for faster installation
 
 See [System Architecture](docs/System-Architecture.md) for detailed architecture.
+
+### Installation & Package Management
+
+**Chezmoi Scripts Execution Order:**
+
+- `000-aaa-chaotic-aur.sh` - Configure Chaotic-AUR repository first
+- `000-aur-helper.sh` - Install yay AUR helper
+- Other scripts follow alphabetically
+
+**Chaotic-AUR Benefits:**
+
+- Precompiled binaries for popular AUR packages
+- 50-70% faster installation times
+- Automatically configured during `chezmoi apply`
+- No manual intervention required
+
+See [Chaotic-AUR docs](https://aur.chaotic.cx/docs) for repository details.
 
 ## Documentation Index
 

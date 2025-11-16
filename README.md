@@ -96,6 +96,8 @@ yay -S dots-stable      # Stable release
 yay -S dots-git         # Latest features
 ```
 
+> 💡 **Performance Tip**: HorneroConfig automatically configures [Chaotic-AUR](https://aur.chaotic.cx/) during installation, providing precompiled binaries for popular AUR packages (Hyprland ecosystem, nwg-* tools, etc.) to significantly reduce installation time.
+
 <details>
 <summary>🛠 <b>More installation methods</b></summary>
 
@@ -153,12 +155,13 @@ dots rice list              # See all available themes
 🌊 **[Hyprland](https://hyprland.org)** — Dynamic tiling Wayland compositor  
 📊 **[Waybar](https://github.com/Alexays/Waybar)** — Beautiful dual-bar status bar with 20+ modules  
 🚀 **[Rofi](https://github.com/lbonn/rofi)** — Lightning-fast app launcher (Wayland fork)  
+🔔 **[Mako](https://github.com/emersion/mako)** — Lightweight notification daemon  
 🐾 **[Kitty](https://sw.kovidgoyal.net/kitty)** — GPU-accelerated terminal emulator  
 🐚 **[Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Feature-rich shell with beautiful prompt  
-🎛️ **[EWW](https://github.com/elkowar/eww)** — Modern system widgets (dashboard & powermenu)
-
-🔒 **Lockscreen** — Secure with custom styling  
-🎨 **Theme Manager** — Rice system integration
+🎛️ **[EWW](https://github.com/elkowar/eww)** — Modern system widgets (dashboard & powermenu)  
+🔒 **[Hyprlock](https://github.com/hyprwm/hyprlock)** — Secure lock screen  
+🖼️ **[Hyprpaper](https://github.com/hyprwm/hyprpaper)** — Fast wallpaper daemon  
+🎨 **Rice System** — Instant theme switching
 
 > 📖 [Complete component list →](https://github.com/ulises-jeremias/dotfiles/wiki/Home)
 

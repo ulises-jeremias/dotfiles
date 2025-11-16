@@ -22,5 +22,6 @@ RICE_ACCENT_COLOR="#d79921"
 RICE_PRIMARY_COLOR="#458588"
 RICE_SECONDARY_COLOR="#689d6a"
 
-# Polybar profile to use for this rice
-POLYBAR_PROFILE="default"
+# Waybar profile to use for this rice
+WAYBAR_PROFILE="default"
+

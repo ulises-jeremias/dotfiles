@@ -1,6 +1,6 @@
-# 🪟 Window Managers Configuration Guide
+# 🪟 Hyprland Configuration Guide
 
-This guide provides an overview of how to customize the supported window managers in this dotfiles setup: **i3**, **Openbox**, and **XFCE4**.
+This guide provides an overview of how to customize Hyprland, the dynamic tiling Wayland compositor used in this dotfiles setup.
 
 > [!TIP]
 > Everything is fully customizable — from layout and keybindings to appearance and startup behavior. All configurations are version-controlled using `chezmoi`, making it easy to manage and sync.
@@ -9,96 +9,43 @@ This guide provides an overview of how to customize the supported window manager
 
 ## 🧱 General Customization Workflow
 
-Regardless of the window manager, the general process is:
+The general process is:
 
 1. Locate the config directory
 2. Edit files with `chezmoi edit`
 3. Apply changes with `chezmoi apply`
-4. Restart your WM or re-source configurations (if applicable)
+4. Restart Hyprland or reload configurations
 
 ---
 
-## 🔲 i3 Window Manager
+## 🌊 Hyprland Configuration
 
-📁 **Config Path**: `~/.config/i3`
+📁 **Config Path**: `~/.config/hypr`
 
-The i3 configuration controls:
+The Hyprland configuration controls:
 
 - Keybindings
+- Window rules and behavior
 - Workspace layout
-- Application launching
-- Status bar integration (e.g., Polybar)
+- Animations and effects
+- Wayland-specific settings
 
 To edit:
 
 ```sh
-chezmoi edit ~/.config/i3/config
+chezmoi edit ~/.config/hypr/hyprland.conf
 chezmoi apply
 ```
 
-For more info, check the [i3 customization documentation](i3).
-
----
-
-## ⚫ Openbox Window Manager
-
-📁 **Config Path**: `~/.config/openbox`
-
-Openbox is a lightweight and highly customizable WM. You can tweak:
-
-- Window behavior and focus model
-- Desktop menus
-- Keybindings
-- Autostart applications
-
-To edit configs:
-
-```sh
-chezmoi edit ~/.config/openbox/rc.xml
-chezmoi apply
-```
-
-GUI alternative: Use `obconf` for quick edits to appearance and themes.
-
-Explore more in the [Openbox customization documentation](Openbox).
-
----
-
-## 🖥️ XFCE4 Desktop Environment
-
-📁 **Config Path**: `~/.config/xfce4`
-
-XFCE4 is a full-featured desktop environment. Customizations here are **global** and apply across all your installed WMs.
-
-Use the built-in Settings Manager:
-
-```sh
-xfce4-settings-manager
-```
-
-From there, configure:
-
-- Panels
-- Keybindings
-- Appearance
-- Power management
-- Preferred apps
-
-You can also edit config files manually via chezmoi:
-
-```sh
-chezmoi edit ~/.config/xfce4 --source ~/.dotfiles
-chezmoi apply
-```
-
-More details in the [XFCE4 customization documentation](Xfce4).
+For more info, check the [Hyprland documentation](https://wiki.hyprland.org/).
 
 ---
 
 ## 🔧 Pro Tips
 
-- Add WM-specific autostart scripts or shared components
-- Mix and match (e.g., run Openbox with Polybar and Rofi)
+- Add compositor-specific autostart scripts
+- Use Waybar for status bar integration
+- Leverage Rofi for application launching
 - Use `chezmoi diff` to preview config changes
 
 ---
@@ -107,7 +54,7 @@ More details in the [XFCE4 customization documentation](Xfce4).
 
 If you run into issues or want to go deeper:
 
-- Check the documentation for each WM: [i3](i3), [Openbox](Openbox), [XFCE4](Xfce4)
+- Check the [Hyprland Wiki](https://wiki.hyprland.org/)
 - Visit the [Dotfiles Discussions](https://github.com/ulises-jeremias/dotfiles/discussions)
 
-Customizing your window manager is one of the best ways to boost your productivity and tailor your desktop to your style — make it yours! 🎨
+Customizing your compositor is one of the best ways to boost your productivity and tailor your desktop to your style — make it yours! 🎨

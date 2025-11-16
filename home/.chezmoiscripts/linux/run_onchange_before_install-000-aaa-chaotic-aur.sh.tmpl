@@ -1,0 +1,63 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+#
+# Setup Chaotic-AUR repository for faster AUR package installation
+# https://aur.chaotic.cx/docs
+#
+# Chaotic-AUR provides precompiled binaries for popular AUR packages,
+# significantly reducing installation time and build requirements.
+# This is especially beneficial for:
+# - Hyprland ecosystem packages (hyprlock, hypridle, etc.)
+# - Large packages (pamac-aur, cursor-bin, etc.)
+# - Frequently updated packages (auto-cpufreq, nwg-* tools, etc.)
+
+set -euo pipefail
+
+echo "🔧 Setting up Chaotic-AUR repository..."
+
+# Install the primary keyring and mirrorlist
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+{{   $sudo = "" -}}
+{{ end -}}
+
+# Check if Chaotic-AUR is already configured
+if grep -q "chaotic-aur" /etc/pacman.conf 2>/dev/null; then
+  echo "✓ Chaotic-AUR already configured"
+  exit 0
+fi
+
+# Receive the primary key
+{{ $sudo }}pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+
+# Locally sign the key
+{{ $sudo }}pacman-key --lsign-key 3056513887B78AEB
+
+# Install the keyring and mirrorlist packages
+{{ $sudo }}pacman -U --noconfirm \
+  'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+  'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+
+# Append Chaotic-AUR repository to pacman.conf
+if ! grep -q "\[chaotic-aur\]" /etc/pacman.conf; then
+  echo "Adding Chaotic-AUR to /etc/pacman.conf..."
+  cat << 'EOF' | {{ $sudo }}tee -a /etc/pacman.conf
+
+# Chaotic-AUR repository - precompiled AUR packages
+# https://aur.chaotic.cx/docs
+[chaotic-aur]
+Include = /etc/pacman.d/chaotic-mirrorlist
+EOF
+fi
+
+# Update package databases
+{{ $sudo }}pacman -Sy
+
+echo "✅ Chaotic-AUR repository configured successfully!"
+echo "📦 Available packages can be found at: https://aur.chaotic.cx/packages"
+
+{{      end -}}
+
+{{ end -}}

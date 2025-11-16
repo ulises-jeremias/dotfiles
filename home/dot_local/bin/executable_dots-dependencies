@@ -26,15 +26,16 @@ declare -A CORE_DEPS=(
   ["zsh"]="Primary shell"
 )
 
-# Window manager dependencies
-declare -A WM_DEPS=(
-  ["i3"]="i3 window manager"
-  ["openbox"]="Openbox window manager"
-  ["polybar"]="Status bar"
+# (Legacy X11 components removed: i3, openbox, polybar, picom, feh, dunst)
+# Wayland environment components (canonical stack)
+declare -A WL_DEPS=(
+  ["hyprland"]="Wayland compositor"
+  ["waybar"]="Status bar"
+  ["eww"]="Widget system"
   ["rofi"]="Application launcher"
-  ["picom"]="Compositor"
-  ["feh"]="Wallpaper setter"
-  ["dunst"]="Notification daemon"
+  ["mako"]="Notification daemon"
+  ["hyprpaper"]="Wallpaper daemon"
+  ["hyprlock"]="Lock screen"
 )
 
 # Development tools (optional)
@@ -79,9 +80,9 @@ check_all_dependencies() {
   done
 
   echo ""
-  echo "🪟 Checking window manager dependencies..."
-  for cmd in "${!WM_DEPS[@]}"; do
-    if ! check_dependency "$cmd" "${WM_DEPS[$cmd]}"; then
+  echo "🪟 Checking Wayland environment components..."
+  for cmd in "${!WL_DEPS[@]}"; do
+    if ! check_dependency "$cmd" "${WL_DEPS[$cmd]}"; then
       ((missing++))
     fi
   done
@@ -113,25 +114,25 @@ check_all_dependencies() {
 }
 
 install_dependencies() {
-  echo "🔧 Installing dependencies..."
+  echo "🔧 Installing dependencies (core + Wayland stack)..."
 
-  # Detect package manager and install accordingly
   if command -v pacman >/dev/null 2>&1; then
-    # Arch Linux
-    sudo pacman -S --needed git curl wget zsh i3 polybar rofi picom feh dunst kitty
+    sudo pacman -S --needed git curl wget zsh hyprland waybar rofi mako hyprpaper hyprlock kitty
+    if ! command -v eww >/dev/null 2>&1; then
+      echo "ℹ️  Install 'eww' via AUR (e.g. yay -S eww) for widgets."
+    fi
   elif command -v apt >/dev/null 2>&1; then
-    # Debian/Ubuntu
     sudo apt update
-    sudo apt install -y git curl wget zsh i3 polybar rofi picom feh dunst kitty-terminal
+    sudo apt install -y git curl wget zsh kitty rofi mako
+    echo "⚠️  Install hyprland/waybar/hyprpaper/hyprlock/eww manually (not all in apt)."
   elif command -v dnf >/dev/null 2>&1; then
-    # Fedora
-    sudo dnf install -y git curl wget zsh i3 polybar rofi picom feh dunst kitty
+    sudo dnf install -y git curl wget zsh hyprland waybar rofi mako hyprpaper kitty
+    echo "ℹ️  Install hyprlock & eww separately if unavailable."
   else
-    echo "❌ Unsupported package manager. Please install dependencies manually."
+    echo "❌ Unsupported package manager. Install packages manually."
     exit 1
   fi
 
-  # Install chezmoi if not present
   if ! command -v chezmoi >/dev/null 2>&1; then
     echo "📦 Installing chezmoi..."
     sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin
@@ -148,9 +149,9 @@ list_dependencies() {
   done
 
   echo ""
-  echo "Window Manager Dependencies:"
-  for cmd in "${!WM_DEPS[@]}"; do
-    echo "  - $cmd: ${WM_DEPS[$cmd]}"
+  echo "Wayland Environment Components:"
+  for cmd in "${!WL_DEPS[@]}"; do
+    echo "  - $cmd: ${WL_DEPS[$cmd]}"
   done
 
   if [[ -n ${optional} ]]; then
