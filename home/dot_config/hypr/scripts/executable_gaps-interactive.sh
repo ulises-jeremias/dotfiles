@@ -10,22 +10,22 @@ set -euo pipefail
 
 # Get current gaps
 get_inner_gaps() {
-  hyprctl getoption general:gaps_in -j | jq -r '.int'
+  hyprctl getoption general:gaps_in -j | jq -r '.custom' | awk '{print $1}'
 }
 
 get_outer_gaps() {
-  hyprctl getoption general:gaps_out -j | jq -r '.int'
+  hyprctl getoption general:gaps_out -j | jq -r '.custom' | awk '{print $1}'
 }
 
 # Show rofi menu for gap selection
 show_menu() {
   local title="$1"
   echo -e "Increase (+5)\nDecrease (-5)\nIncrease All (Shift +5)\nDecrease All (Shift -5)\nReset (0)" |
-    rofi -dmenu -p "$title" -theme-str 'window {width: 300px;}' -theme-str 'listview {lines: 5;}'
+    rofi -dmenu -p "$title" -theme ~/.config/rofi/applets.rasi
 }
 
 # Main menu
-main_choice=$(echo -e "Inner Gaps\nOuter Gaps" | rofi -dmenu -p "Gaps Mode" -theme-str 'window {width: 200px;}' -theme-str 'listview {lines: 2;}')
+main_choice=$(echo -e "Inner Gaps\nOuter Gaps" | rofi -dmenu -p "Gaps Mode" -theme ~/.config/rofi/applets.rasi)
 
 case "$main_choice" in
   "Inner Gaps")
