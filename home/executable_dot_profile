@@ -10,6 +10,11 @@ export QT_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 # export SHIN_DEFAULT_COMMAND="sgpt"
 
+# Prioritize gnome-keyring over kwallet system-wide
+export PASSWORD_STORE=basic
+unset KDE_FULL_SESSION
+unset KDE_SESSION_VERSION
+
 # Start gnome-keyring-daemon if not running (for non-Hyprland sessions)
 if [ -z "$GNOME_KEYRING_CONTROL" ] && command -v gnome-keyring-daemon >/dev/null 2>&1; then
   eval "$(gnome-keyring-daemon --start --components=secrets,pkcs11,ssh)"
