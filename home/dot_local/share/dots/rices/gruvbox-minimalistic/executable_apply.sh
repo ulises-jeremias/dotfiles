@@ -20,5 +20,4 @@ if [ -z "${wallpaper}" ]; then
 fi
 wpg -s "$wallpaper"
 
-
 notify-send "Gruvbox Minimalistic Config" "Gruvbox Minimalistic rice applied successfully."

@@ -20,5 +20,4 @@ if [ -z "${wallpaper}" ]; then
 fi
 wpg -s "$wallpaper"
 
-
 notify-send "LandscapeLightConfig" "LandscapeLight rice applied successfully."

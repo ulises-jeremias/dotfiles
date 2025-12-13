@@ -26,5 +26,4 @@ if [[ -f "$HOME/.local/lib/dots/gtk-theme-manager.sh" ]]; then
   apply_rice_gtk_theme "flowers"
 fi
 
-
 notify-send "HorneroConfig" "Flowers rice applied successfully."

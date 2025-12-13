@@ -10,6 +10,13 @@ export QT_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 # export SHIN_DEFAULT_COMMAND="sgpt"
 
+# Start gnome-keyring-daemon if not running (for non-Hyprland sessions)
+if [ -z "$GNOME_KEYRING_CONTROL" ] && command -v gnome-keyring-daemon >/dev/null 2>&1; then
+  eval "$(gnome-keyring-daemon --start --components=secrets,pkcs11,ssh)"
+  export GNOME_KEYRING_CONTROL
+  export SSH_AUTH_SOCK
+fi
+
 # add /usr/local/bin to PATH if it exists and is not already in path
 [[ -d "/usr/local/bin" && ! "$PATH" =~ "/usr/local/bin" ]] && export PATH="/usr/local/bin:$PATH"
 

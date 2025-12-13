@@ -23,4 +23,3 @@ RICE_SECONDARY_COLOR="#0099cc"
 
 # Waybar profile to use for this rice
 WAYBAR_PROFILE="default"
-

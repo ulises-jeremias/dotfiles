@@ -18,10 +18,9 @@ SMART_COLORS="true"
 PREFER_DARK_THEME="auto"
 
 # Color Scheme Preview - Warm sunset colors
-RICE_ACCENT_COLOR="#ffb347"    # Soft orange
-RICE_PRIMARY_COLOR="#f4a460"   # Sandy brown
+RICE_ACCENT_COLOR="#ffb347"  # Soft orange
+RICE_PRIMARY_COLOR="#f4a460" # Sandy brown
 RICE_SECONDARY_COLOR="#ff8c00"
 
 # Waybar profile to use for this rice
 WAYBAR_PROFILE="default"
-

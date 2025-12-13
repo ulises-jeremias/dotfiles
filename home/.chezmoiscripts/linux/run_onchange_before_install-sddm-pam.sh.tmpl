@@ -1,0 +1,33 @@
+{{ if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Configure PAM for gnome-keyring unlock on SDDM login
+PAM_SDDM="/etc/pam.d/sddm"
+
+if [ ! -f "$PAM_SDDM" ]; then
+  echo "⚠️  SDDM PAM file not found: $PAM_SDDM"
+  exit 0
+fi
+
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+{{   $sudo = "" -}}
+{{ end -}}
+
+# Backup original
+{{ $sudo }}cp "$PAM_SDDM" "${PAM_SDDM}.bak.$(date +%Y%m%d_%H%M%S)"
+
+# Uncomment gnome-keyring PAM module lines (remove leading -)
+{{ $sudo }}sed -i 's/^-auth.*pam_gnome_keyring\.so/auth       optional    pam_gnome_keyring.so/' "$PAM_SDDM"
+{{ $sudo }}sed -i 's/^-password.*pam_gnome_keyring\.so/password   optional    pam_gnome_keyring.so    use_authtok/' "$PAM_SDDM"
+{{ $sudo }}sed -i 's/^-session.*pam_gnome_keyring\.so auto_start/session    optional    pam_gnome_keyring.so    auto_start/' "$PAM_SDDM"
+
+# Comment out kwallet PAM module lines (add leading -)
+{{ $sudo }}sed -i 's/^auth.*pam_kwallet5\.so/-auth       optional    pam_kwallet5.so/' "$PAM_SDDM"
+{{ $sudo }}sed -i 's/^session.*pam_kwallet5\.so auto_start/-session    optional    pam_kwallet5.so         auto_start/' "$PAM_SDDM"
+
+echo "✅ SDDM PAM configured for gnome-keyring"
+
+{{ end -}}

@@ -18,10 +18,9 @@ SMART_COLORS="true"
 PREFER_DARK_THEME="auto"
 
 # Color Scheme Preview - Soft pastel colors
-RICE_ACCENT_COLOR="#d3a9e3"    # Soft lavender
-RICE_PRIMARY_COLOR="#a8dadc"   # Soft cyan
+RICE_ACCENT_COLOR="#d3a9e3"  # Soft lavender
+RICE_PRIMARY_COLOR="#a8dadc" # Soft cyan
 RICE_SECONDARY_COLOR="#d4a6e8"
 
 # Waybar profile to use for this rice
 WAYBAR_PROFILE="default"
-

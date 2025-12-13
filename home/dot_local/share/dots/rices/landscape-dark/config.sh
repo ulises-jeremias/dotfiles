@@ -25,6 +25,5 @@ RICE_SECONDARY_COLOR="#689d6a"
 # Waybar profile to use for this rice
 WAYBAR_PROFILE="default"
 
-
 # Waybar profile to use for this rice
 WAYBAR_PROFILE="vertical-left"

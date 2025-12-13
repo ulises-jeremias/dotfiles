@@ -18,10 +18,9 @@ SMART_COLORS="true"
 PREFER_DARK_THEME="auto"
 
 # Color Scheme Preview - Soft morning colors
-RICE_ACCENT_COLOR="#b8dbd9"    # Soft teal
-RICE_PRIMARY_COLOR="#c4dfe6"   # Soft blue
+RICE_ACCENT_COLOR="#b8dbd9"  # Soft teal
+RICE_PRIMARY_COLOR="#c4dfe6" # Soft blue
 RICE_SECONDARY_COLOR="#b8bb26"
 
 # Waybar profile to use for this rice
 WAYBAR_PROFILE="default"
-
