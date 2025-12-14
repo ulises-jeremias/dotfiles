@@ -17,7 +17,10 @@
 ##         --cleanup                         Clean old snapshots (keep last 10).
 ##
 
+set -euo pipefail
+
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/logging.sh || exit
 
 SNAPSHOTS_DIR="$HOME/.cache/dots/snapshots"
 [[ ! -d $SNAPSHOTS_DIR ]] && mkdir -p "$SNAPSHOTS_DIR"
@@ -28,7 +31,7 @@ create_snapshot() {
   local snapshot_id="config_${timestamp}"
   local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
 
-  echo "📸 Creating configuration snapshot: $snapshot_id"
+  log_info "Creating configuration snapshot: $snapshot_id"
 
   mkdir -p "$snapshot_dir"
 
@@ -49,20 +52,20 @@ create_snapshot() {
 EOF
 
   # Backup critical configurations
-  echo "  Backing up dotfiles state..."
+  log_debug "Backing up dotfiles state..."
   tar -czf "$snapshot_dir/dotfiles.tar.gz" -C "$HOME" .config .local/bin .local/lib .zshrc .p10k.zsh 2>/dev/null || true
 
   # Backup current rice configuration
   if [[ -f "$HOME/.local/share/dots/rices/.current_rice" ]]; then
     cp "$HOME/.local/share/dots/rices/.current_rice" "$snapshot_dir/"
-    echo "  Current rice: $(cat "$HOME/.local/share/dots/rices/.current_rice")"
+    log_debug "Current rice: $(cat "$HOME/.local/share/dots/rices/.current_rice")"
   fi
 
   # Backup package list (if on Arch)
   if command -v pacman >/dev/null 2>&1; then
     pacman -Qqe >"$snapshot_dir/packages_explicit.txt"
     pacman -Qqm >"$snapshot_dir/packages_aur.txt"
-    echo "  Saved package lists"
+    log_debug "Saved package lists"
   fi
 
   # Save running processes
@@ -71,21 +74,20 @@ EOF
   # Calculate size
   local size
   size=$(du -sh "$snapshot_dir" | cut -f1)
-  echo "  Snapshot size: $size"
+  log_debug "Snapshot size: $size"
 
-  echo "✅ Snapshot created: $snapshot_id"
-  echo "   Location: $snapshot_dir"
+  log_info "Snapshot created: $snapshot_id"
+  log_debug "Location: $snapshot_dir"
 
   # Update latest symlink
   ln -sfn "$snapshot_dir" "$SNAPSHOTS_DIR/latest"
 }
 
 list_snapshots() {
-  echo "📋 Configuration Snapshots"
-  echo ""
+  log_info "Configuration Snapshots"
 
   if [[ ! -d $SNAPSHOTS_DIR ]] || [[ -z "$(ls -A "$SNAPSHOTS_DIR" 2>/dev/null)" ]]; then
-    echo "No snapshots found. Create one with: dots config-manager --create"
+    log_warn "No snapshots found. Create one with: dots config-manager --create"
     return
   fi
 

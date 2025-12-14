@@ -18,6 +18,23 @@
 ##         --backup-dir=BACKUPS_PATH         Backup output dir, is ~/.dotfiles/backup by default.
 ##         --backup-name=BACKUP_NAME         Backup name, is dotfiles_backup by default.
 ##
+## Examples:
+##     dots-backup                                    # Create a backup with default settings
+##     dots-backup --list                             # List all available backups
+##     dots-backup --rollback                         # Rollback to the latest backup
+##     dots-backup --backup-dir=/backup/custom        # Create backup in custom directory
+##     dots-backup --register-cron                    # Set up automatic backups via cron
+##     dots-backup --unregister-cron                  # Remove automatic backup cron job
+##
+## Troubleshooting:
+##     - If backup fails, check disk space: df -h
+##     - Verify tar is installed: which tar
+##     - Check backup directory permissions: ls -ld ~/.dotfiles/backup
+##     - View backup log: cat /tmp/dots_backup_log_*.txt
+##     - To restore manually: tar -xzf ~/.dotfiles/backup/backup_file.zip -C ~/.dotfiles
+##
+
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

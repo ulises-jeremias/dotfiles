@@ -8,6 +8,8 @@
 ## Enhanced wal-reload utility script with improved reliability and user experience
 ## No longer relies on external state files, minimizes dependencies
 
+set -euo pipefail
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -569,28 +571,44 @@ main() {
   echo -e "${PURPLE}🎨 Enhanced Wal Reload Script 🎨${NC}"
   echo ""
 
-  # Set wallpaper for Hyprland
+  # Set wallpaper for Hyprland (must be first)
   reload_hyprpaper
 
-  # Core wal reload
+  # Core wal reload (must be before smart colors)
   reload_wal
 
-  # Apply smart colors after all standard wal operations
+  # Apply smart colors after all standard wal operations (must be before app reloads)
   reload_smart_colors
 
-  # Reload applications (fast operations first)
+  # Reload applications - fast operations first (sequential for reliability)
   reload_rofi
   reload_eww
-  reload_discord
-  reload_additional_apps
 
-  # Apply GTK themes to match wallpaper
-  reload_gtk_themes
+  # Parallel operations - independent tasks that can run simultaneously
+  (
+    reload_discord
+  ) &
+  local discord_pid=$!
 
-  # Move slow operations to the end (background)
+  (
+    reload_additional_apps
+  ) &
+  local additional_pid=$!
+
+  (
+    reload_gtk_themes
+  ) &
+  local gtk_pid=$!
+
+  # Move slow operations to background (already in background)
   reload_lockscreen
 
-  # Update rice integration
+  # Wait for parallel operations to complete
+  wait $discord_pid 2>/dev/null || true
+  wait $additional_pid 2>/dev/null || true
+  wait $gtk_pid 2>/dev/null || true
+
+  # Update rice integration (after all reloads)
   update_current_rice
 
   # Show summary

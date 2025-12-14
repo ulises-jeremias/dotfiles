@@ -21,6 +21,8 @@
 ##         --generate                        Generate all smart color files in ~/.cache/dots/smart-colors/.
 ##     -v, --verbose                         Show detailed analysis.
 
+set -euo pipefail
+
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit 1
 
 # Output colors
@@ -849,21 +851,23 @@ EOF
     is_light_theme=true
   fi
   
-  # Adjust colors based on theme type
+  # Adjust colors based on theme type for better balance
   local base_bg base_fg base_alt_bg base_sel_bg base_sel_fg
   if [[ $is_light_theme == true ]]; then
-    # Light theme: use softer, lighter colors
+    # Light theme: use softer, lighter colors with subtle variations
     base_bg="$background_color"
     base_fg="$foreground_color"
-    base_alt_bg="bg - #111"
+    base_alt_bg="bg - #0a0a0a"  # More subtle difference
     base_sel_bg="$accent_color"
+    # Ensure good contrast for selection text
     base_sel_fg="$background_color"
   else
-    # Dark theme: use brighter, more contrasted colors
+    # Dark theme: use brighter, more contrasted colors but not too bright
     base_bg="$background_color"
     base_fg="$foreground_color"
-    base_alt_bg="bg + #222"
+    base_alt_bg="bg + #1a1a1a"  # More subtle difference for dark theme
     base_sel_bg="$accent_color"
+    # Use foreground for better contrast in dark themes
     base_sel_fg="$foreground_color"
   fi
   
@@ -883,30 +887,30 @@ notes_font="JetBrainsMono Nerd Font,11,-1,5,50,0,0,0,0,0"
 num_font="JetBrainsMono Nerd Font,7,-1,5,25,0,0,0,0,0"
 font_antialiasing=true
 
-# Main colors
+# Main colors - balanced and readable
 bg=$base_bg
 fg=$base_fg
 alt_bg=$base_alt_bg
-alt_fg=fg $([ "$is_light_theme" = true ] && echo "- #222" || echo "+ #222")
+alt_fg=fg $([ "$is_light_theme" = true ] && echo "- #1a1a1a" || echo "+ #1a1a1a")
 
 # Selection colors - use accent color with good contrast
 sel_bg=$base_sel_bg
 sel_fg=$base_sel_fg
 
-# Editor colors - slightly different from main bg
-edit_bg=$([ "$is_light_theme" = true ] && echo "bg - #111" || echo "bg + #111")
-edit_fg=fg $([ "$is_light_theme" = true ] && echo "- #111" || echo "+ #111")
+# Editor colors - subtle difference from main bg for better UX
+edit_bg=$([ "$is_light_theme" = true ] && echo "bg - #0a0a0a" || echo "bg + #0a0a0a")
+edit_fg=fg $([ "$is_light_theme" = true ] && echo "- #0a0a0a" || echo "+ #0a0a0a")
 
-# Find/search colors - subtle highlight
+# Find/search colors - use accent for visibility but not overwhelming
 find_bg="rgba(0,0,0,0)"
 find_fg=$accent_color
 
-# Notes colors
+# Notes colors - readable but distinct
 notes_bg=bg
-notes_fg=fg $([ "$is_light_theme" = true ] && echo "- #333" || echo "+ #333")
+notes_fg=fg $([ "$is_light_theme" = true ] && echo "- #2a2a2a" || echo "+ #2a2a2a")
 
-# Number colors - use info color for better visibility
-num_fg=$info_color
+# Number colors - use info color but adjust for theme
+num_fg=$info_color $([ "$is_light_theme" = true ] && echo "+ #111" || echo "- #111")
 
 # Show options
 show_scrollbars=false
@@ -938,9 +942,9 @@ search_bar="
 search_bar_focused="
     ;border: 1px solid \${sel_bg}"
 
-# Tab bar styling
+# Tab bar styling - balanced contrast
 tab_bar_css="
-    ;background: \${bg} $([ "$is_light_theme" = true ] && echo "- #222" || echo "+ #222")"
+    ;background: \${bg} $([ "$is_light_theme" = true ] && echo "- #1a1a1a" || echo "+ #1a1a1a")"
 
 tab_bar_tab_selected_css="
     ;padding: 0.5em
@@ -952,42 +956,42 @@ tab_bar_tab_selected_css="
 tab_bar_tab_unselected_css="
     ;border: 0.05em solid \${bg}
     ;padding: 0.5em
-    ;background: \${bg} $([ "$is_light_theme" = true ] && echo "- #222" || echo "+ #222")
-    ;color: \${fg} $([ "$is_light_theme" = true ] && echo "- #333" || echo "+ #333")"
+    ;background: \${bg} $([ "$is_light_theme" = true ] && echo "- #1a1a1a" || echo "+ #1a1a1a")
+    ;color: \${fg} $([ "$is_light_theme" = true ] && echo "- #2a2a2a" || echo "+ #2a2a2a")"
 
 tab_bar_item_counter="
-    ;color: \${num_fg} $([ "$is_light_theme" = true ] && echo "+ #222" || echo "- #222")
+    ;color: \${num_fg} $([ "$is_light_theme" = true ] && echo "+ #1a1a1a" || echo "- #1a1a1a")
     ;font-size: 7pt"
 
 tab_bar_sel_item_counter="
     ;color: \${num_fg}"
 
 tab_bar_scroll_buttons_css="
-    ;background: \${bg} $([ "$is_light_theme" = true ] && echo "- #222" || echo "+ #222")
+    ;background: \${bg} $([ "$is_light_theme" = true ] && echo "- #1a1a1a" || echo "+ #1a1a1a")
     ;color: \${fg}
     ;border: 0"
 
-# Tab tree styling
+# Tab tree styling - improved readability
 tab_tree_css="
     ;font-family: sans-serif
     ;font-size: 10pt
     ;padding: .20em
-    ;color: \${fg} $([ "$is_light_theme" = true ] && echo "+ #222" || echo "- #222")
+    ;color: \${fg} $([ "$is_light_theme" = true ] && echo "+ #1a1a1a" || echo "- #1a1a1a")
     ;background-color: \${bg}"
 
 tab_tree_sel_item_css="
-    ;color: \${fg} $([ "$is_light_theme" = true ] && echo "+ #222" || echo "- #222")
-    ;background: \${bg} $([ "$is_light_theme" = true ] && echo "- #211" || echo "+ #211")"
+    ;color: \${fg} $([ "$is_light_theme" = true ] && echo "+ #1a1a1a" || echo "- #1a1a1a")
+    ;background: \${bg} $([ "$is_light_theme" = true ] && echo "- #0f0f0f" || echo "+ #0f0f0f")"
 
 tab_tree_item_counter="
     ;padding:.33em
-    ;color: \${num_fg} $([ "$is_light_theme" = true ] && echo "+ #222" || echo "- #222")
+    ;color: \${num_fg} $([ "$is_light_theme" = true ] && echo "+ #1a1a1a" || echo "- #1a1a1a")
     ;font-size: 7pt"
 
 tab_tree_sel_item_counter="
     ;color: \${num_fg}"
 
-# Toolbar styling
+# Toolbar styling - subtle and balanced
 tool_bar_css="
     ;color: \${fg}
     ;background-color: \${bg}
@@ -997,37 +1001,37 @@ tool_button_css="
     ;background-color: transparent"
 
 tool_button_selected_css="
-    ;background-color: \${bg} $([ "$is_light_theme" = true ] && echo "- #111" || echo "+ #111")"
+    ;background-color: \${bg} $([ "$is_light_theme" = true ] && echo "- #0a0a0a" || echo "+ #0a0a0a")"
 
 tool_button_pressed_css="
     ;background-color: \${sel_bg}
     ;color: \${sel_fg}"
 
-# Menu bar styling
+# Menu bar styling - balanced contrast
 menu_bar_css="
     ;background: \${bg}
-    ;color: \${fg} $([ "$is_light_theme" = true ] && echo "+ #444" || echo "- #444")"
+    ;color: \${fg} $([ "$is_light_theme" = true ] && echo "+ #2a2a2a" || echo "- #2a2a2a")"
 
 menu_bar_disabled_css="
-    ;color: \${bg} $([ "$is_light_theme" = true ] && echo "- #666" || echo "+ #666")"
+    ;color: \${bg} $([ "$is_light_theme" = true ] && echo "- #4a4a4a" || echo "+ #4a4a4a")"
 
 menu_bar_selected_css="
     ;background: \${sel_bg}
     ;color: \${sel_fg}"
 
 menu_css="
-    ;border-top: 0.08em solid \${bg} $([ "$is_light_theme" = true ] && echo "+ #333" || echo "- #333")
-    ;border-left: 0.08em solid \${bg} $([ "$is_light_theme" = true ] && echo "+ #333" || echo "- #333")
-    ;border-bottom: 0.08em solid \${bg} $([ "$is_light_theme" = true ] && echo "- #333" || echo "+ #333")
-    ;border-right: 0.08em solid \${bg} $([ "$is_light_theme" = true ] && echo "- #333" || echo "+ #333")"
+    ;border-top: 0.08em solid \${bg} $([ "$is_light_theme" = true ] && echo "+ #2a2a2a" || echo "- #2a2a2a")
+    ;border-left: 0.08em solid \${bg} $([ "$is_light_theme" = true ] && echo "+ #2a2a2a" || echo "- #2a2a2a")
+    ;border-bottom: 0.08em solid \${bg} $([ "$is_light_theme" = true ] && echo "- #2a2a2a" || echo "+ #2a2a2a")
+    ;border-right: 0.08em solid \${bg} $([ "$is_light_theme" = true ] && echo "- #2a2a2a" || echo "+ #2a2a2a")"
 
-# Additional CSS customizations
+# Additional CSS customizations - subtle hover effects
 css="
     ClipboardBrowser::item{
         border-bottom: 1px solid \${alt_bg}
     }
     ClipboardBrowser::item:hover{
-        background: \${bg} $([ "$is_light_theme" = true ] && echo "- #111" || echo "+ #111")
+        background: \${bg} $([ "$is_light_theme" = true ] && echo "- #0a0a0a" || echo "+ #0a0a0a")
     }"
 
 notes_css=

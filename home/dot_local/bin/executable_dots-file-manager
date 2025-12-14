@@ -14,8 +14,21 @@
 ##   -s, --select        Open default applications settings
 ##   -i, --info          Show current default file manager
 ##       --path=PATH     Path to open (default: current directory)
+##
+## Examples:
+##   dots-file-manager                    # Open file manager in current directory
+##   dots-file-manager --path=~/Documents # Open file manager in ~/Documents
+##   dots-file-manager --info             # Show current default file manager
+##   dots-file-manager --select          # Open settings to change default file manager
+##
+## Troubleshooting:
+##   - If file manager doesn't open, check default app: dots-file-manager --info
+##   - Set default file manager: dots-default-apps --type=file-manager
+##   - Or manually: handlr set inode/directory thunar.desktop
+##   - Verify XDG tools: which handlr xdg-open exo-open
+##   - Check file manager is installed: which thunar nautilus dolphin
 
-set -e
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

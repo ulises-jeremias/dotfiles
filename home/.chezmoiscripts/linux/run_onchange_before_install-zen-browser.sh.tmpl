@@ -1,0 +1,16 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Install Zen Browser via AUR (zen-browser-bin)
+# Zen Browser is a privacy-focused browser based on Firefox
+
+yay -S --noconfirm --needed zen-browser-bin
+
+{{      end -}}
+
+{{ end -}}
+

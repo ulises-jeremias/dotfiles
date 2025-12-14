@@ -7,11 +7,13 @@
 ##
 ## Check for updates
 
+set -euo pipefail
+
 BAR_ICON="ﮮ"
 NOTIFIED=0
 
 get_total_updates() {
-  UPDATES=$(checkupdates 2>/dev/null | wc -l)
+  UPDATES=$(checkupdates 2>/dev/null | wc -l || echo "0")
 }
 
 while true; do
@@ -21,7 +23,7 @@ while true; do
   get_total_updates
 
   # notify user of updates
-  if ((NOTIFIED == 0)) && hash notify-send >/dev/null 2>&1; then
+  if ((NOTIFIED == 0)) && command -v notify-send >/dev/null 2>&1; then
     if ((UPDATES > 50)); then
       notify-send -u critical "Updates Available" "${UPDATES} packages"
     elif ((UPDATES > 25)); then

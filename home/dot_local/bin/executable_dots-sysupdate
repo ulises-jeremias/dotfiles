@@ -7,6 +7,8 @@
 ##
 ## Update the system
 
+set -euo pipefail
+
 if type -p yay >/dev/null; then
   yay -Syu
 elif type -p trizen >/dev/null; then

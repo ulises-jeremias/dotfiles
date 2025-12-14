@@ -23,7 +23,7 @@
 ##   dots-keyboard-layout --current # Show current layout
 ##   dots-keyboard-layout --settings # Open GUI settings
 
-set -e
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

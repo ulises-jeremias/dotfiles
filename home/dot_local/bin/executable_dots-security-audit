@@ -16,6 +16,8 @@
 ##         --secrets                         Scan for exposed secrets.
 ##
 
+set -euo pipefail
+
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 date_str="$(date +%Y-%m-%d)"

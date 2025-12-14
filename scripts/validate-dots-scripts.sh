@@ -31,9 +31,19 @@ for script in "${DOTS_BIN_DIR}"/executable_dots-*; do
       ((errors++))
     fi
 
-    # Check for easyoptions usage (warning only, not error)
+    # Check for set -euo pipefail (required for robustness)
+    if ! grep -q "^set -euo pipefail" "$script"; then
+      echo "❌ Missing 'set -euo pipefail': $script_name"
+      ((errors++))
+    fi
+
+    # Check for easyoptions usage (warning only, not error for simple scripts)
+    # Skip check for scripts that don't need argument parsing
     if ! grep -q "easyoptions.sh" "$script"; then
-      echo "⚠️  Script doesn't use easyoptions: $script_name"
+      # Check if script has any argument parsing (getopt, case statements with $1, etc.)
+      if grep -qE "(getopt|case.*\$1|parse_cmd_args|usage\(\))" "$script"; then
+        echo "⚠️  Script has argument parsing but doesn't use easyoptions: $script_name"
+      fi
     fi
 
     # Note: Script executability is handled by chezmoi when applied

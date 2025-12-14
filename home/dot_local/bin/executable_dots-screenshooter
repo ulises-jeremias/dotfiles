@@ -6,27 +6,19 @@
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
 ## Take a screenshot
+##
+## Usage:
+##   @script.name [OPTIONS]
+##
+## Options:
+##   -h, --help         Show this help message
+##   -v, --version      Display script version
+##   -f, --fullscreen   Take a screenshot of the entire screen
+##   -r, --region       Select a region to capture interactively
 
-NAME=$(basename "$0")
-VER="0.1"
+set -euo pipefail
 
-usage() {
-  cat <<-EOF
-
- USAGE:  $NAME [OPTIONS [ADDITIONAL]]
-
- OPTIONS:
-
-     -h,--help         Display this message
-
-     -v,--version      Display script version
-
-     -f,--fullscreen   Take a screenshot of the entire screen
-
-     -r,--region       Select a region to be captured by clicking a point of the screen without releasing the mouse button, dragging your mouse to the other corner of the region, and releasing the mouse button.
-
-EOF
-}
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 shoot() {
   local pictures_dir
@@ -90,14 +82,16 @@ shoot() {
   return 1
 }
 
-# Catch command line options
-case $1 in
-  -h | --help) usage ;;
-  -v | --version) echo -e "$NAME -- Version $VER" ;;
-  -f | --fullscreen) shoot ;;
-  -r | --redshift)
-    region=1
-    shoot
-    ;;
-  *) shoot ;;
-esac
+# Handle options
+if [[ -n "${version:-}" ]]; then
+  echo "dots-screenshooter -- Version 0.2"
+  exit 0
+fi
+
+# Execute screenshot
+if [[ -n "${region:-}" ]]; then
+  region=1
+  shoot
+else
+  shoot
+fi

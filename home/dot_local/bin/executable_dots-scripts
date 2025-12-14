@@ -11,6 +11,8 @@
 ##     -h, --help                            Show this help message.
 ##
 
+set -euo pipefail
+
 # if ~/.local/bin is not in the PATH, add it
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
   export PATH="$HOME/.local/bin:${PATH}"

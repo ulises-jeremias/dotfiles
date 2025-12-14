@@ -23,7 +23,7 @@
 ##     -h, --help                    Show this help message
 ##     -v, --version                 Display script version
 
-set -e
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

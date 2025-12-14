@@ -24,7 +24,7 @@
 ##   Uses poweralertd if available; otherwise falls back to polling loop
 ##   Notifications sent via notify-send (low/normal/critical urgency)
 
-set -e
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

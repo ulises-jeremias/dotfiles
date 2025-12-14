@@ -137,33 +137,54 @@ get_brightness() {
 
 ### Logging Standards
 
+**Use the standardized logging library:**
+
 ```bash
-log() {
-    local level="$1"
-    shift
-    local message="$*"
-    local timestamp
-    timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
+# Source the logging library at the top of your script
+source ~/.local/lib/dots/logging.sh || exit
 
-    # Color codes
-    case "$level" in
-        ERROR)   color="\033[0;31m" ;;  # Red
-        WARN)    color="\033[0;33m" ;;  # Yellow
-        INFO)    color="\033[0;32m" ;;  # Green
-        DEBUG)   color="\033[0;36m" ;;  # Cyan
-        *)       color="\033[0m" ;;     # Reset
-    esac
+# Use logging functions
+log_info "Processing configuration..."
+log_warn "Deprecated option detected"
+log_error "Failed to load file: $file"
+log_debug "Debug information here"
 
-    # Output to stderr for errors, stdout for others
-    if [[ "$level" == "ERROR" ]]; then
-        echo -e "${color}[$timestamp] [$level] $message\033[0m" >&2
-    else
-        echo -e "${color}[$timestamp] [$level] $message\033[0m"
+# Or use the main log function
+log "INFO" "Custom message"
+log "ERROR" "Error occurred"
+```
+
+**Logging Library Features:**
+
+- **Automatic log file**: Logs are written to `~/.cache/dots/logs/<script-name>.log`
+- **Color-coded output**: Errors (red), warnings (yellow), info (green), debug (cyan)
+- **Verbose mode**: Respects `--verbose` and `--debug` flags from EasyOptions
+- **Log levels**: ERROR, WARN, INFO, DEBUG (configurable via `DOTS_LOG_LEVEL`)
+
+**Example Usage:**
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/logging.sh || exit
+
+main() {
+    log_info "Starting script execution"
+    
+    if ! check_dependencies; then
+        log_error "Missing required dependencies"
+        exit 1
     fi
-
-    # Always log to file
-    echo "[$timestamp] [$level] $message" >> "$LOG_FILE"
+    
+    log_debug "Processing with verbose output"
+    # ... script logic ...
+    
+    log_info "Script completed successfully"
 }
+
+main "$@"
 ```
 
 ## Best Practices

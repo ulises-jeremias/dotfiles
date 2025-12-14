@@ -36,7 +36,7 @@
 ##   @script.name --set x-scheme-handler/http firefox  # Set browser
 ##   @script.name --type=file-manager                # Show file manager options
 
-set -e
+set -euo pipefail
 
 # Source EasyOptions for argument parsing
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit

@@ -19,6 +19,8 @@
 ##         --quote2                          Get weather quote.
 ##
 
+set -euo pipefail
+
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 ## Collect data
@@ -30,8 +32,15 @@ cache_weather_hex=${cache_dir}/weather-hex
 cache_weather_icon=${cache_dir}/weather-icon
 cache_weather_location=${cache_dir}/weather-location
 
-## Weather data
-KEY="0867dd59b3bfcbdf3f98937d4df8c340"
+## Weather data - API key from LastPass via chezmoi template
+readonly WEATHER_API_KEY_FILE="$HOME/.config/private_credentials/weather_api_key"
+KEY="${WEATHER_API_KEY:-$(cat "$WEATHER_API_KEY_FILE" 2>/dev/null || echo "")}"
+
+if [[ -z "$KEY" ]]; then
+  echo "Error: Weather API key not found. Set WEATHER_API_KEY environment variable or configure LastPass entry 'weather_api_key'." >&2
+  exit 1
+fi
+
 CITY_ID=""
 UNIT="metric" # Available options : 'metric' or 'imperial'
 
@@ -40,8 +49,40 @@ if [[ ! -d $cache_dir ]]; then
   mkdir -p "${cache_dir}"
 fi
 
+## Cache TTL (10 minutes in seconds)
+readonly CACHE_TTL=600
+readonly CACHE_TIMESTAMP="${cache_dir}/weather-timestamp"
+readonly CACHE_RAW="${cache_dir}/weather-raw"
+
+## Check if cache is valid
+is_cache_valid() {
+  if [[ ! -f "$CACHE_TIMESTAMP" ]] || [[ ! -f "$CACHE_RAW" ]]; then
+    return 1
+  fi
+
+  local cache_age
+  local current_time
+  current_time=$(date +%s)
+  cache_age=$(cat "$CACHE_TIMESTAMP" 2>/dev/null || echo "0")
+
+  if [[ $((current_time - cache_age)) -lt $CACHE_TTL ]]; then
+    return 0
+  fi
+
+  return 1
+}
+
 ## Get data
 get_weather_data() {
+  # Check cache first
+  if is_cache_valid; then
+    weather=$(cat "$CACHE_RAW" 2>/dev/null || echo "")
+    if [[ -n "$weather" ]]; then
+      return 0
+    fi
+  fi
+
+  # Cache miss or invalid - fetch new data
   if [ -z "$CITY_ID" ]; then
     # Use ip-api.com instead of deprecated Mozilla service
     location=$(curl -sf "http://ip-api.com/json/")
@@ -57,6 +98,13 @@ get_weather_data() {
   else
     weather="$(curl -sf "http://api.openweathermap.org/data/2.5/weather?APPID=$KEY&id=$CITY_ID&units=$UNIT")"
   fi
+
+  # Save to cache if we got valid data
+  if [[ -n "$weather" ]]; then
+    echo "$weather" >"$CACHE_RAW"
+    date +%s >"$CACHE_TIMESTAMP"
+  fi
+
   echo "${weather}"
 
   if [ -n "$weather" ]; then

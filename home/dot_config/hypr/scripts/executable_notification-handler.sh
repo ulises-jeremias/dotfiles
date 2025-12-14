@@ -80,7 +80,7 @@ handle_app_notification() {
   local body="$4"
 
   case "$app_name" in
-    brave-browser | firefox | chromium)
+    zen-browser | Zen | app.zen_browser.Zen | brave-browser | firefox | chromium)
       case "$action" in
         left)
           # Open browser if notification is about something actionable

@@ -8,6 +8,8 @@
 ## Enhanced night mode toggle with multiple backend support and better features
 ## Now detects state from running processes instead of external state files
 
+set -euo pipefail
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'

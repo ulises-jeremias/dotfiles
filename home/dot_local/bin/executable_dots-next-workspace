@@ -7,7 +7,9 @@
 ##
 ## Switch to the next existing workspace
 
-mapfile -t workspaces < <(i3-msg -t get_config | grep 'set $WS' | cut -d " " -f3)
+set -euo pipefail
+
+mapfile -t workspaces < <(i3-msg -t get_config | grep 'set $WS' | cut -d " " -f3 || echo "")
 actual=$(i3-msg -t get_workspaces | jq '.[] | select(.focused).name')
 actual_index=0
 move_left=false

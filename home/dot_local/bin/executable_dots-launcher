@@ -14,7 +14,8 @@
 ##   @script.name                  # auto chain
 ##   @script.name --backend=rofi   # force rofi
 ##   @script.name --list           # list available backends
-set -e
+
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

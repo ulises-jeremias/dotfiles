@@ -24,6 +24,8 @@
 # Depends on:
 #   Arch repositories: rofi, bluez-utils (contains bluetoothctl)
 
+set -euo pipefail
+
 if ! type -p rofi >/dev/null; then
   echo "Command not found: rofi. Please install it."
   notify-send "$0: Command not found: rofi. Please install it."

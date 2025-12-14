@@ -34,6 +34,9 @@
       "class<terminator>": "󰞷",
       "class<gnome-terminal>": "󰞷",
 
+      "class<zen-browser>": "󰖟",
+      "class<Zen>": "󰖟",
+      "class<app.zen_browser.Zen>": "󰖟",
       "class<brave-browser>": "󰖟",
       "class<firefox>": "󰈹",
       "class<Firefox>": "󰈹",

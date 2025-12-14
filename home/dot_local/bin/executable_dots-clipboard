@@ -14,7 +14,7 @@
 ##   @script.name --backend=copyq   # force copyq GUI
 ##   @script.name --backend=rofi    # force rofi clipboard mode
 
-set -e
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

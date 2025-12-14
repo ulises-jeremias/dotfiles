@@ -21,7 +21,7 @@
 ##         --valign=ALIGN      Vertical alignment: top, center, bottom (default: top)
 ##         --at-pointer        Use pointer position (shortcut for --position-mode=pointer)
 
-set -e
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

@@ -9,7 +9,8 @@
 ##   -h, --help            Show help
 ##       --gui             Open auto-cpufreq GUI if available
 ##       --backend=NAME    Menu backend: fuzzel|wofi|rofi (auto chain if omitted)
-set -e
+
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

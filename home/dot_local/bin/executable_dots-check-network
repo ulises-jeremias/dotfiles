@@ -7,14 +7,14 @@
 ##
 ## Check if the network is up
 
-wdisconnect="睊"usr/bin/env bash
+set -euo pipefail
 
 wdisconnect="睊"
 wconnected="直"
 econnected=""
 edisconnect=""
 
-network_interface="$(ip link | awk '/state UP/ {print $2}')"
+network_interface="$(ip link 2>/dev/null | awk '/state UP/ {print $2}' || echo "")"
 
 while true; do
   if ping -c 1 google.com >/dev/null 2>&1; then

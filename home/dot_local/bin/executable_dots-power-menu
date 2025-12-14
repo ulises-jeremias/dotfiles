@@ -23,7 +23,7 @@
 ##     @script.name --rofi         # Force Rofi powermenu
 ##     @script.name --mode=eww     # Force EWW powermenu (alternative)
 
-set -e
+set -euo pipefail
 
 # Source EasyOptions for argument parsing
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit

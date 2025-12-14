@@ -28,6 +28,8 @@
 ##     auto                    Auto-detect and apply optimal theme
 ##     icons                   List installed icon themes
 ##     info <theme>            Show information about a theme
+
+set -euo pipefail
 ##
 ## Examples:
 ##     @script.name list

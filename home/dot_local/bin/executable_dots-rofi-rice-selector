@@ -7,6 +7,8 @@
 ##
 ## executable_dots-rofi-rice-selector utility script
 
+set -euo pipefail
+
 # This script defines the variables: DOTS_CACHE_DIR, RICES_DIR and CURRENT_RICE_FILE
 # shellcheck disable=SC1091
 source "$HOME/.local/lib/dots/dots-rice-config.sh"

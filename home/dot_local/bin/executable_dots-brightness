@@ -25,7 +25,7 @@
 ##   @script.name "*" + 0.1 --temp  # Increase color temperature
 ##   @script.name --list            # Show all displays
 
-set -e
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

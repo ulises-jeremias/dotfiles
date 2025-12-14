@@ -1,0 +1,4 @@
+{{- if .personal -}}
+{{ (index (lastpassRaw "weather_api_key") 0).note }}
+{{- end -}}
+

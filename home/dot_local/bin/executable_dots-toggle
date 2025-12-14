@@ -6,47 +6,36 @@
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
 ## Toggle the state of some applications
+##
+## Usage:
+##   @script.name [OPTIONS]
+##
+## Options:
+##   -h, --help         Show this help message
+##   -v, --version      Display script version
+##   -w, --waybar       Toggle the configured waybar session
+##   -r, --redshift     Toggle redshift or daemon monitoring icon
+##   -f, --caffeine     Toggle caffeine or daemon monitoring icon
+##   -t, --toggle       Toggle the program off/on, without this flag a monitor process will be started
 
-NAME=$(basename "$0")
-VER="0.4"
+set -euo pipefail
 
-usage() {
-  cat <<-EOF
-
- USAGE:  $NAME [OPTIONS [ADDITIONAL]]
-
- OPTIONS:
-
-    -h,--help         Display this message
-
-    -v,--version      Display script version
-
-    -w,--waybar       Toggle the configured waybar session, can use toggle option
-
-    -r,--redshift     Toggle redshift or daemon monitoring icon, can use toggle option
-
-    -f,--caffeine     Toggle caffeine or daemon monitoring icon, can use toggle option
-
- ADDITIONAL:
-
-    -t,--toggle       Toggle the program off/on, without this flag a monitor process will be started
-
-EOF
-}
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 toggle_waybar() {
+  local opt="${toggle:-0}"
   if ((opt == 1)); then
-    if pgrep -x waybar >/dev/null; then
-      killall waybar
+    if pgrep -x waybar >/dev/null 2>&1; then
+      killall waybar || true
     else
-      ~/.config/waybar/launch.sh &
+      ~/.config/waybar/launch.sh & 
     fi
-    exit $?
+    exit 0
   fi
   on=""
   off=""
   while true; do
-    if pgrep -x waybar >/dev/null; then
+    if pgrep -x waybar >/dev/null 2>&1; then
       echo "$on"
     else
       echo "%{F#888888}$off"
@@ -56,20 +45,24 @@ toggle_waybar() {
 }
 
 toggle_redshift() {
+  local opt="${toggle:-0}"
   if ((opt == 1)); then
-    if [ "$(pidof redshift | wc -l)" -ne 0 ]; then
-      pkill redshift
+    if pidof redshift >/dev/null 2>&1 && [ "$(pidof redshift 2>/dev/null | wc -l)" -ne 0 ]; then
+      pkill redshift || true
     else
-      redshift &
+      redshift & 
     fi
     exit 0
   fi
   icon=""
+  local temp=""
   while true; do
-    if [ "$(pidof redshift | wc -l)" -ne 0 ]; then
-      temp=$(sed 's/K//g' <<<"$(grep -o '[0-9].*K' <<<"$(redshift -p 2>/dev/null)")")
+    if pidof redshift >/dev/null 2>&1 && [ "$(pidof redshift 2>/dev/null | wc -l)" -ne 0 ]; then
+      temp=$(redshift -p 2>/dev/null | grep -o '[0-9].*K' 2>/dev/null | sed 's/K//g' || echo "")
+    else
+      temp=""
     fi
-    if [ -z "${temp}" ]; then
+    if [ -z "${temp:-}" ]; then
       echo " $icon " # Greyed out (not running)
     elif [ "${temp}" -ge 5000 ]; then
       echo "%{F#8039A0} $icon " # Blue
@@ -83,37 +76,40 @@ toggle_redshift() {
 }
 
 toggle_caffeine() {
+  local opt="${toggle:-0}"
   if ((opt == 1)); then
-    if [ "$(pidof caffeine | wc -l)" -ne 0 ]; then
-      killall caffeine
+    if pidof caffeine >/dev/null 2>&1 && [ "$(pidof caffeine 2>/dev/null | wc -l)" -ne 0 ]; then
+      killall caffeine || true
     else
-      caffeine &
+      caffeine & 
     fi
     exit 0
   fi
   on=""
   off=""
   while true; do
-    [[ $(pidof caffeine) ]] && echo "%{F#0000FF}$on" || echo "%{F#FF0000}$off"
+    if pidof caffeine >/dev/null 2>&1; then
+      echo "%{F#0000FF}$on"
+    else
+      echo "%{F#FF0000}$off"
+    fi
     sleep 2
   done
 }
 
-# Catch command line options
-case $1 in
-  -h | --help) usage ;;
-  -v | --version) echo -e "${NAME} -- Version ${VER}" ;;
-  -w | --waybar)
-    [[ $2 =~ (-t|--toggle) ]] && opt=1
-    toggle_waybar
-    ;;
-  -r | --redshift)
-    [[ $2 =~ (-t|--toggle) ]] && opt=1
-    toggle_redshift
-    ;;
-  -f | --caffeine)
-    [[ $2 =~ (-t|--toggle) ]] && opt=1
-    toggle_caffeine
-    ;;
-  *) echo -e "Option does not exist: $1" && usage && exit 1 ;;
-esac
+# Handle options
+if [[ -n "${version:-}" ]]; then
+  echo "dots-toggle -- Version 0.5"
+  exit 0
+fi
+
+if [[ -n "${waybar:-}" ]]; then
+  toggle_waybar
+elif [[ -n "${redshift:-}" ]]; then
+  toggle_redshift
+elif [[ -n "${caffeine:-}" ]]; then
+  toggle_caffeine
+else
+  echo "Error: No action specified. Use --waybar, --redshift, or --caffeine" >&2
+  exit 1
+fi

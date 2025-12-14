@@ -15,7 +15,10 @@
 ##         --optional                       Include optional dependencies.
 ##
 
+set -euo pipefail
+
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/logging.sh || exit
 
 # Core dependencies required for basic functionality
 declare -A CORE_DEPS=(
@@ -61,10 +64,10 @@ check_dependency() {
   local desc="$2"
 
   if command -v "$cmd" >/dev/null 2>&1; then
-    echo "✅ $cmd - $desc"
+    log_info "$cmd - $desc (installed)"
     return 0
   else
-    echo "❌ $cmd - $desc (missing)"
+    log_warn "$cmd - $desc (missing)"
     return 1
   fi
 }
@@ -72,15 +75,14 @@ check_dependency() {
 check_all_dependencies() {
   local missing=0
 
-  echo "🔍 Checking core dependencies..."
+  log_info "Checking core dependencies..."
   for cmd in "${!CORE_DEPS[@]}"; do
     if ! check_dependency "$cmd" "${CORE_DEPS[$cmd]}"; then
       ((missing++))
     fi
   done
 
-  echo ""
-  echo "🪟 Checking Wayland environment components..."
+  log_info "Checking Wayland environment components..."
   for cmd in "${!WL_DEPS[@]}"; do
     if ! check_dependency "$cmd" "${WL_DEPS[$cmd]}"; then
       ((missing++))
@@ -88,33 +90,29 @@ check_all_dependencies() {
   done
 
   if [[ -n ${optional} ]]; then
-    echo ""
-    echo "🔧 Checking development dependencies..."
+    log_info "Checking development dependencies..."
     for cmd in "${!DEV_DEPS[@]}"; do
       check_dependency "$cmd" "${DEV_DEPS[$cmd]}" || true
     done
 
-    echo ""
-    echo "🎵 Checking media dependencies..."
+    log_info "Checking media dependencies..."
     for cmd in "${!MEDIA_DEPS[@]}"; do
       check_dependency "$cmd" "${MEDIA_DEPS[$cmd]}" || true
     done
   fi
 
   if [[ $missing -gt 0 ]]; then
-    echo ""
-    echo "⚠️  Found $missing missing core dependencies!"
-    echo "Run 'dots dependencies --install' to install them."
+    log_warn "Found $missing missing core dependencies!"
+    log_info "Run 'dots dependencies --install' to install them."
     return 1
   else
-    echo ""
-    echo "✅ All core dependencies are satisfied!"
+    log_info "All core dependencies are satisfied!"
     return 0
   fi
 }
 
 install_dependencies() {
-  echo "🔧 Installing dependencies (core + Wayland stack)..."
+  log_info "Installing dependencies (core + Wayland stack)..."
 
   if command -v pacman >/dev/null 2>&1; then
     sudo pacman -S --needed git curl wget zsh hyprland waybar rofi mako hyprpaper hyprlock kitty

@@ -7,6 +7,8 @@
 ##
 ## Show a rofi menu to manage monitor configuration in Hyprland
 
+set -euo pipefail
+
 if ! command -v hyprctl >/dev/null 2>&1; then
   echo "Command not found: hyprctl. This script requires Hyprland."
   notify-send "$0: Command not found: hyprctl. This script requires Hyprland." -u critical

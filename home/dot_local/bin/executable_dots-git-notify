@@ -7,7 +7,7 @@
 ##
 ## Notify when a git commit is made
 
-set -eu
+set -euo pipefail
 
 # Git commit msg format defaults
 declare REPOSITORY="origin/main"
@@ -141,7 +141,13 @@ run() {
   # loop forever, need to kill the process explicitly to stop.
   while true; do
     # get the latest revision SHA.
-    current_revision=$(git rev-parse "${REPOSITORY}")
+    current_revision=$(git rev-parse "${REPOSITORY}" 2>/dev/null || echo "")
+
+    # Skip if git command failed (network issue, etc.)
+    if [ -z "${current_revision}" ]; then
+      sleep "${refresh_delay}"
+      continue
+    fi
 
     # if we haven't seen that one yet, then we know there's new stuff.
     if [ "${latest_revision}" != "${current_revision}" ]; then
@@ -150,19 +156,19 @@ run() {
       latest_revision=${current_revision}
 
       # extract the details from the log.
-      commit_name=$(git log -1 ${FORMAT_NAME} "${latest_revision}")
-      commit_when=$(git log -1 ${FORMAT_WHEN} "${latest_revision}")
-      commit_summary=$(git log -1 ${FORMAT_SUMMARY} "${latest_revision}")
-      commit_body=$(git log -1 ${FORMAT_BODY} "${latest_revision}")
+      commit_name=$(git log -1 ${FORMAT_NAME} "${latest_revision}" 2>/dev/null || echo "Unknown")
+      commit_when=$(git log -1 ${FORMAT_WHEN} "${latest_revision}" 2>/dev/null || echo "")
+      commit_summary=$(git log -1 ${FORMAT_SUMMARY} "${latest_revision}" 2>/dev/null || echo "No summary")
+      commit_body=$(git log -1 ${FORMAT_BODY} "${latest_revision}" 2>/dev/null || echo "")
 
       # notify the user of the commit.
       summary="${commit_name} committed to ${REPOSITORY} $commit_when!"
       body="${commit_summary}\n\n${commit_body}"
       if [ "$(uname)" == "Darwin" ]; then
         command="osascript -e 'display notification \"${body}\" with title \"${summary}\"'"
-        eval "${command}"
+        eval "${command}" || true
       else
-        (notify-send "${summary}" "${body}")
+        (notify-send "${summary}" "${body}") || true
       fi
     fi
     sleep "${refresh_delay}"

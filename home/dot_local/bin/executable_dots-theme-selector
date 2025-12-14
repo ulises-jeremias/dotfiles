@@ -18,7 +18,7 @@
 ##   Priority: nwg-look > rofi minimal selector
 ##   Scans ~/.themes and /usr/share/themes for available themes
 
-set -e
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 

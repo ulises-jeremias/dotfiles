@@ -6,65 +6,26 @@
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
 ## Control the microphone
+##
+## Usage:
+##   @script.name [OPTIONS]
+##
+## Options:
+##   -h, --help              Show this help message
+##   -t, --toggle            Switch microphone to the opposite status
+##       --muted-color=COLOR Font color for muted icon
+##       --unmuted-color=COLOR Font color for unmuted icon
+##       --no-unmuted         Don't show icon when the microphone is enabled
+
+set -euo pipefail
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 reset=""
-muted_color=""
-unmuted_color=""
-exec_toggle=false
-no_unmuted=false
-
-show_help() {
-  cat <<EOF
-microphone: Simple bash script to monitor and toggle microphone status.
-USAGE: microphone [OPTIONS]
-
-OPTIONS:
- -h, --help               Print help and exit
- -t, --toggle             Switch microphone to the opposite status
-     --muted-color        Font color for muted icon
-     --unmuted-color      Font color for unmuted icon
-     --no-unmuted         Don't show icon when the microphone is enabled
-EOF
-}
-
-parse_cmd_args() {
-  opts=$(
-    getopt \
-      --longoptions "toggle,help,no-unmuted,muted-color:,unmuted-color:" \
-      --name "$(basename "$0")" \
-      --options "th" \
-      -- "$@"
-  )
-  eval set -- "${opts}"
-
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      --muted-color)
-        muted_color=$2
-        shift 2
-        ;;
-      --unmuted-color)
-        unmuted_color=$2
-        shift 2
-        ;;
-      --no-unmuted)
-        no_unmuted=true
-        shift 2
-        ;;
-      -t | --toggle)
-        exec_toggle=true
-        shift 2
-        ;;
-      -h | --help)
-        show_help
-        exit
-        ;;
-      *)
-        break
-        ;;
-    esac
-  done
-}
+muted_color="${muted_color:-}"
+unmuted_color="${unmuted_color:-}"
+exec_toggle="${toggle:-false}"
+no_unmuted="${no_unmuted:-false}"
 
 get_default_source() {
   # Get the ID of the default microphone (source)
@@ -96,8 +57,6 @@ toggle() {
   DEFAULT_SOURCE=$(get_default_source)
   wpctl set-mute "$DEFAULT_SOURCE" toggle
 }
-
-parse_cmd_args "$@"
 
 if [[ ${exec_toggle} == true ]]; then
   toggle
