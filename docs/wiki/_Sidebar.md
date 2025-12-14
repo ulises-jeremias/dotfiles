@@ -20,6 +20,7 @@
 - [🖼️ EWW Widgets](EWW-Widgets)
 - [🚀 Rofi Launcher](Rofi-Apps-Launcher)
 - [📁 Thunar File Manager](Thunar-Side-Panel)
+- [📋 CopyQ Clipboard Manager](CopyQ-Customization)
 
 #### **Terminal & Shell**
 
