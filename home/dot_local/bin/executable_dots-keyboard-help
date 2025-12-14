@@ -25,195 +25,194 @@ readonly ROFI_THEME="${HOME}/.config/rofi/applets.rasi"
 
 # Logging function
 log() {
-    local level="$1"
-    shift
-    local message="$*"
-    case "$level" in
-        ERROR) echo "[ERROR] $message" >&2 ;;
-        WARN)  echo "[WARN] $message" >&2 ;;
-        INFO)  echo "[INFO] $message" ;;
-        *)     echo "$message" ;;
-    esac
+  local level="$1"
+  shift
+  local message="$*"
+  case "$level" in
+    ERROR) echo "[ERROR] $message" >&2 ;;
+    WARN) echo "[WARN] $message" >&2 ;;
+    INFO) echo "[INFO] $message" ;;
+    *) echo "$message" ;;
+  esac
 }
 
 # Parse keybindings from config file
 parse_keybindings() {
-    local config_file="$1"
-    local category_filter="${category:-}"
+  local config_file="$1"
+  local category_filter="${category:-}"
 
-    if [[ ! -f "$config_file" ]]; then
-        log "ERROR" "Keybindings file not found: $config_file" >&2
-        return 0  # Return 0 to avoid breaking set -e
+  if [[ ! -f $config_file ]]; then
+    log "ERROR" "Keybindings file not found: $config_file" >&2
+    return 0 # Return 0 to avoid breaking set -e
+  fi
+
+  local current_category=""
+  local output_lines=()
+  # Match: bind = modifiers, key, action
+  # Format: bind = $mainMod, Return, exec, command
+  # Note: action can contain commas, so we capture everything after the second comma
+  local bind_pattern='^bind[em]* = ([^,]+),\s*([^,]+),\s*(.+)$'
+  # Match category headers like: # ============ Category Name ============
+  local comment_pattern='^# =+ (.+?) =+$'
+
+  while IFS= read -r line || [[ -n $line ]]; do
+    # Detect category headers
+    if [[ $line =~ $comment_pattern ]]; then
+      current_category="${BASH_REMATCH[1]}"
+      # Normalize category name (handle errors gracefully)
+      current_category=$(echo "$current_category" 2>/dev/null | tr '[:upper:]' '[:lower:]' 2>/dev/null | tr ' ' '-' 2>/dev/null | sed 's/[^a-z-]//g' 2>/dev/null || echo "")
+      continue
     fi
 
-    local current_category=""
-    local output_lines=()
-    # Match: bind = modifiers, key, action
-    # Format: bind = $mainMod, Return, exec, command
-    # Note: action can contain commas, so we capture everything after the second comma
-    local bind_pattern='^bind[em]* = ([^,]+),\s*([^,]+),\s*(.+)$'
-    # Match category headers like: # ============ Category Name ============
-    local comment_pattern='^# =+ (.+?) =+$'
+    # Skip empty lines and pure comments
+    [[ -z ${line// /} ]] && continue
+    [[ $line =~ ^# ]] && continue
 
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        # Detect category headers
-        if [[ "$line" =~ $comment_pattern ]]; then
-            current_category="${BASH_REMATCH[1]}"
-            # Normalize category name (handle errors gracefully)
-            current_category=$(echo "$current_category" 2>/dev/null | tr '[:upper:]' '[:lower:]' 2>/dev/null | tr ' ' '-' 2>/dev/null | sed 's/[^a-z-]//g' 2>/dev/null || echo "")
-            continue
+    # Parse bind lines
+    if [[ $line =~ $bind_pattern ]]; then
+      local modifiers="${BASH_REMATCH[1]}"
+      local key="${BASH_REMATCH[2]}"
+      local action="${BASH_REMATCH[3]}"
+
+      # Skip submaps and internal commands
+      [[ $action =~ ^(submap|reset)$ ]] && continue
+
+      # Format modifiers (handle errors gracefully)
+      modifiers=$(echo "$modifiers" 2>/dev/null | sed 's/\$mainMod/SUPER/g' 2>/dev/null | sed 's/CTRL/Ctrl/g' 2>/dev/null | sed 's/SHIFT/Shift/g' 2>/dev/null | sed 's/ALT/Alt/g' 2>/dev/null || echo "$modifiers")
+      # Replace spaces with + for display (but keep single modifiers as is)
+      if [[ $modifiers =~ [[:space:]] ]]; then
+        modifiers=$(echo "$modifiers" 2>/dev/null | sed 's/ / + /g' 2>/dev/null || echo "$modifiers")
+      fi
+
+      # Format key (handle errors gracefully)
+      key=$(echo "$key" 2>/dev/null | sed 's/left/←/g' 2>/dev/null | sed 's/right/→/g' 2>/dev/null | sed 's/up/↑/g' 2>/dev/null | sed 's/down/↓/g' 2>/dev/null || echo "$key")
+
+      # Build keybinding display (modifiers + key)
+      local keybinding="${modifiers} + ${key}"
+
+      # Format action description
+      # Order matters: more specific patterns first
+      local description=""
+      case "$action" in
+        *movetoworkspacesilent*) description="Move window to workspace (silent)" ;;
+        *movetoworkspace*) description="Move window to workspace" ;;
+        *togglespecialworkspace*) description="Toggle scratchpad" ;;
+        *changegroupactive*) description="Focus in group" ;;
+        *lockactivegroup*) description="Lock group" ;;
+        *focuscurrentorlast*) description="Focus toggle" ;;
+        *resizeactive*) description="Resize window" ;;
+        *movefocus*) description="Focus window" ;;
+        *movewindow*) description="Move window" ;;
+        *killactive*) description="Close window" ;;
+        *togglefloating*) description="Toggle floating" ;;
+        *togglesplit*) description="Toggle split direction" ;;
+        *centerwindow*) description="Center window" ;;
+        *togglegroup*) description="Toggle group" ;;
+        *workspace*) description="Switch to workspace" ;;
+        *fullscreen*) description="Toggle fullscreen" ;;
+        *pseudo*) description="Toggle pseudo-tiling" ;;
+        *pin*) description="Pin window" ;;
+        *reload*) description="Reload Hyprland" ;;
+        *exit*) description="Exit Hyprland" ;;
+        *exec*)
+          local cmd_part=""
+          cmd_part=$(echo "$action" 2>/dev/null | sed 's/.*exec, //' 2>/dev/null | sed 's/~/.local\/bin\//' 2>/dev/null | awk '{print $1}' 2>/dev/null || echo "")
+          if [[ -n $cmd_part ]]; then
+            description=$(basename "$cmd_part" 2>/dev/null || echo "$cmd_part")
+          else
+            description="$action"
+          fi
+          ;;
+        *) description="$action" ;;
+      esac
+
+      # Build output line
+      local output_line="${keybinding} → ${description}"
+
+      # Apply category filter if specified
+      if [[ -n $category_filter ]]; then
+        if [[ $current_category =~ $category_filter ]]; then
+          output_lines+=("$output_line")
         fi
-
-        # Skip empty lines and pure comments
-        [[ -z "${line// /}" ]] && continue
-        [[ "$line" =~ ^# ]] && continue
-
-        # Parse bind lines
-        if [[ "$line" =~ $bind_pattern ]]; then
-            local modifiers="${BASH_REMATCH[1]}"
-            local key="${BASH_REMATCH[2]}"
-            local action="${BASH_REMATCH[3]}"
-
-            # Skip submaps and internal commands
-            [[ "$action" =~ ^(submap|reset)$ ]] && continue
-
-            # Format modifiers (handle errors gracefully)
-            modifiers=$(echo "$modifiers" 2>/dev/null | sed 's/\$mainMod/SUPER/g' 2>/dev/null | sed 's/CTRL/Ctrl/g' 2>/dev/null | sed 's/SHIFT/Shift/g' 2>/dev/null | sed 's/ALT/Alt/g' 2>/dev/null || echo "$modifiers")
-            # Replace spaces with + for display (but keep single modifiers as is)
-            if [[ "$modifiers" =~ [[:space:]] ]]; then
-                modifiers=$(echo "$modifiers" 2>/dev/null | sed 's/ / + /g' 2>/dev/null || echo "$modifiers")
-            fi
-
-            # Format key (handle errors gracefully)
-            key=$(echo "$key" 2>/dev/null | sed 's/left/←/g' 2>/dev/null | sed 's/right/→/g' 2>/dev/null | sed 's/up/↑/g' 2>/dev/null | sed 's/down/↓/g' 2>/dev/null || echo "$key")
-
-            # Build keybinding display (modifiers + key)
-            local keybinding="${modifiers} + ${key}"
-
-            # Format action description
-            # Order matters: more specific patterns first
-            local description=""
-            case "$action" in
-                *movetoworkspacesilent*) description="Move window to workspace (silent)" ;;
-                *movetoworkspace*) description="Move window to workspace" ;;
-                *togglespecialworkspace*) description="Toggle scratchpad" ;;
-                *changegroupactive*) description="Focus in group" ;;
-                *lockactivegroup*) description="Lock group" ;;
-                *focuscurrentorlast*) description="Focus toggle" ;;
-                *resizeactive*) description="Resize window" ;;
-                *movefocus*) description="Focus window" ;;
-                *movewindow*) description="Move window" ;;
-                *killactive*) description="Close window" ;;
-                *togglefloating*) description="Toggle floating" ;;
-                *togglesplit*) description="Toggle split direction" ;;
-                *centerwindow*) description="Center window" ;;
-                *togglegroup*) description="Toggle group" ;;
-                *workspace*) description="Switch to workspace" ;;
-                *fullscreen*) description="Toggle fullscreen" ;;
-                *pseudo*) description="Toggle pseudo-tiling" ;;
-                *pin*) description="Pin window" ;;
-                *reload*) description="Reload Hyprland" ;;
-                *exit*) description="Exit Hyprland" ;;
-                *exec*)
-                    local cmd_part=""
-                    cmd_part=$(echo "$action" 2>/dev/null | sed 's/.*exec, //' 2>/dev/null | sed 's/~/.local\/bin\//' 2>/dev/null | awk '{print $1}' 2>/dev/null || echo "")
-                    if [[ -n "$cmd_part" ]]; then
-                        description=$(basename "$cmd_part" 2>/dev/null || echo "$cmd_part")
-                    else
-                        description="$action"
-                    fi
-                    ;;
-                *) description="$action" ;;
-            esac
-
-            # Build output line
-            local output_line="${keybinding} → ${description}"
-
-            # Apply category filter if specified
-            if [[ -n "$category_filter" ]]; then
-                if [[ "$current_category" =~ $category_filter ]]; then
-                    output_lines+=("$output_line")
-                fi
-            else
-                # Add category prefix for grouping
-                output_lines+=("[$current_category] $output_line")
-            fi
-        fi
-    done < "$config_file"
-
-    # Print all collected lines
-    if [[ ${#output_lines[@]} -gt 0 ]]; then
-        printf '%s\n' "${output_lines[@]}"
+      else
+        # Add category prefix for grouping
+        output_lines+=("[$current_category] $output_line")
+      fi
     fi
+  done <"$config_file"
+
+  # Print all collected lines
+  if [[ ${#output_lines[@]} -gt 0 ]]; then
+    printf '%s\n' "${output_lines[@]}"
+  fi
 }
 
 # Display help in Rofi
 show_help_rofi() {
-    local search_term="${search:-}"
-    local temp_file
-    local content=""
+  local search_term="${search:-}"
+  local temp_file
+  local content=""
 
-    # Use temporary file to avoid issues with set -e and command substitution
-    temp_file=$(mktemp) || {
-        log "ERROR" "Failed to create temporary file"
-        exit 1
-    }
+  # Use temporary file to avoid issues with set -e and command substitution
+  temp_file=$(mktemp) || {
+    log "ERROR" "Failed to create temporary file"
+    exit 1
+  }
 
-    # Parse and format keybindings to temp file
-    # Temporarily disable exit on error to capture output properly
-    set +e
-    parse_keybindings "$KEYBINDINGS_FILE" > "$temp_file" 2>&1
-    local parse_status=$?
-    set -e
+  # Parse and format keybindings to temp file
+  # Temporarily disable exit on error to capture output properly
+  set +e
+  parse_keybindings "$KEYBINDINGS_FILE" >"$temp_file" 2>&1
+  local parse_status=$?
+  set -e
 
-    # Check if file was written and has content
-    if [[ $parse_status -ne 0 ]] || [[ ! -s "$temp_file" ]]; then
-        rm -f "$temp_file"
-        log "ERROR" "Failed to parse keybindings or no content generated"
-        exit 1
-    fi
-
-    # Read content from temp file
-    content=$(cat "$temp_file" 2>/dev/null || echo "")
+  # Check if file was written and has content
+  if [[ $parse_status -ne 0 ]] || [[ ! -s $temp_file ]]; then
     rm -f "$temp_file"
+    log "ERROR" "Failed to parse keybindings or no content generated"
+    exit 1
+  fi
 
-    # Filter by search term if provided
-    if [[ -n "$search_term" ]]; then
-        content=$(echo "$content" | grep -i "$search_term" || true)
-    fi
+  # Read content from temp file
+  content=$(cat "$temp_file" 2>/dev/null || echo "")
+  rm -f "$temp_file"
 
-    # Check if content is empty
-    if [[ -z "$content" ]]; then
-        log "WARN" "No keybindings found"
-        exit 1
-    fi
+  # Filter by search term if provided
+  if [[ -n $search_term ]]; then
+    content=$(echo "$content" | grep -i "$search_term" || true)
+  fi
 
-    # Display in Rofi
-    if command -v rofi >/dev/null 2>&1; then
-        # Use printf to ensure proper line handling and pass to rofi
-        # Remove empty category markers for cleaner display
-        printf '%s\n' "$content" | sed 's/^\[\] //' | rofi -dmenu -i -p "Keyboard Shortcuts" \
-            -theme "$ROFI_THEME" \
-            -width 800 \
-            -lines 20 \
-            -no-custom || true
-    else
-        # Fallback to less if Rofi not available
-        printf '%s\n' "$content" | less
-    fi
+  # Check if content is empty
+  if [[ -z $content ]]; then
+    log "WARN" "No keybindings found"
+    exit 1
+  fi
+
+  # Display in Rofi
+  if command -v rofi >/dev/null 2>&1; then
+    # Use printf to ensure proper line handling and pass to rofi
+    # Remove empty category markers for cleaner display
+    printf '%s\n' "$content" | sed 's/^\[\] //' | rofi -dmenu -i -p "Keyboard Shortcuts" \
+      -theme "$ROFI_THEME" \
+      -width 800 \
+      -lines 20 \
+      -no-custom || true
+  else
+    # Fallback to less if Rofi not available
+    printf '%s\n' "$content" | less
+  fi
 }
 
 # Main function
 main() {
-    # Check dependencies
-    if [[ ! -f "$KEYBINDINGS_FILE" ]]; then
-        log "ERROR" "Keybindings configuration not found"
-        exit 1
-    fi
+  # Check dependencies
+  if [[ ! -f $KEYBINDINGS_FILE ]]; then
+    log "ERROR" "Keybindings configuration not found"
+    exit 1
+  fi
 
-    # Display help
-    show_help_rofi
+  # Display help
+  show_help_rofi
 }
 
 main "$@"
-

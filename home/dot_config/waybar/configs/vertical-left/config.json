@@ -131,7 +131,7 @@
   },
 
   "custom/apps-settings": {
-    "format": "󰒓",
+    "format": "󰒼",
     "tooltip": true,
     "tooltip-format": "Settings Hub",
     "on-click": "~/.local/bin/dots-settings-gui"
@@ -145,7 +145,7 @@
   },
 
   "custom/apps-theme": {
-    "format": "󰨞",
+    "format": "󰨟",
     "tooltip": true,
     "tooltip-format": "Theme Selector",
     "on-click": "~/.local/bin/dots-theme-selector"
@@ -435,20 +435,20 @@
   },
 
   "custom/tools-header": {
-    "format": "󰬌",
+    "format": "󰆍",
     "tooltip": true,
     "tooltip-format": "Tools\nClick to expand/collapse"
   },
 
   "custom/tools-clipboard": {
-    "format": "󰨌",
+    "format": "󰅍",
     "tooltip": true,
     "tooltip-format": "Clipboard Manager",
     "on-click": "~/.local/bin/dots-clipboard"
   },
 
   "custom/tools-keyboard-help": {
-    "format": "󰌌",
+    "format": "󰋼",
     "tooltip": true,
     "tooltip-format": "Keyboard Shortcuts Help",
     "on-click": "~/.local/bin/dots-keyboard-help"
