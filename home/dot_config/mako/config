@@ -60,6 +60,18 @@ history=1
 max-history=100
 
 # ============================================================================
+# Interactive Features
+# ============================================================================
+
+# Action buttons (via actions in format)
+# Note: Mako doesn't support action buttons natively, but we can enhance
+# notifications with click actions via notification-handler script
+
+# Enhanced interaction (via notification-handler script)
+# Note: Mako doesn't support variables in exec commands, so we use a wrapper
+# For media controls, use app-specific rules below
+
+# ============================================================================
 # Smart Colors Integration
 # ============================================================================
 # These colors will be replaced by dots-smart-colors via dots-wal-reload
@@ -99,6 +111,8 @@ on-button-right=exec makoctl dismiss --all
 [app-name="Spotify"]
 border-color=#1db954
 on-button-middle=exec playerctl play-pause
+on-button-left=exec playerctl previous
+on-button-right=exec playerctl next
 
 [app-name="volume"]
 border-color=#89dceb

@@ -6,6 +6,7 @@
 
 configuration {
     font            : "Hack Nerd Font Mono 10";
+    show-icons      : true;
 }
 
 @import "colors.rasi"

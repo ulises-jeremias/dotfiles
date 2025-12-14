@@ -27,7 +27,8 @@
 #custom-apps,
 #custom-window-switch,
 #custom-rices,
-#custom-audio-header {
+#custom-audio-header,
+#custom-tools-header {
 	font-size: 22px;
 }
 
@@ -107,10 +108,21 @@ window#waybar.bottom {
 }
 
 #workspaces button.active {
-	background-color: rgba(249, 181, 90, 0.15);
+	background-color: rgba(249, 181, 90, 0.2);
 	color: @smart-orange;
 	border-color: @smart-orange;
+	border-width: 2px;
 	font-weight: bold;
+	box-shadow: 0 0 8px rgba(249, 181, 90, 0.3);
+}
+
+#workspaces button.empty {
+	opacity: 0.4;
+	color: @fg-secondary;
+}
+
+#workspaces button.empty:hover {
+	opacity: 0.7;
 }
 
 #workspaces button.urgent {
@@ -172,7 +184,8 @@ window#waybar.bottom {
  */
 box#quick-apps,
 box#system-apps,
-box#power-actions {
+box#power-actions,
+box#tools {
 	padding: 4px 4px;
 	margin: 0 4px;
 }
@@ -191,6 +204,12 @@ box#power-actions {
 
 #custom-power-actions-header {
 	color: @smart-error;
+	font-size: 22px;
+	padding: 0 8px;
+}
+
+#custom-tools-header {
+	color: @smart-magenta;
 	font-size: 22px;
 	padding: 0 8px;
 }
@@ -223,6 +242,30 @@ box#power-actions {
 /* System Tools - Category 2 */
 #custom-apps-system {
 	color: @smart-orange;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-settings {
+	color: @smart-orange;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-bluetooth {
+	color: @smart-cyan;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-theme {
+	color: @smart-magenta;
 	padding: 0 8px;
 	border: 1px solid transparent;
 	border-radius: 6px;
@@ -283,6 +326,21 @@ box#power-actions {
 	border-color: @smart-orange;
 }
 
+#custom-apps-settings:hover {
+	background-color: @bg-hover;
+	border-color: @smart-orange;
+}
+
+#custom-apps-bluetooth:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
+#custom-apps-theme:hover {
+	background-color: @bg-hover;
+	border-color: @smart-magenta;
+}
+
 #custom-apps-audio:hover {
 	background-color: @bg-hover;
 	border-color: @smart-pink;
@@ -301,6 +359,48 @@ box#power-actions {
 #custom-apps-shutdown:hover {
 	background-color: rgba(235, 103, 152, 0.15);
 	border-color: @smart-error;
+}
+
+/* Tools - Category 4 */
+#custom-tools-clipboard {
+	color: @smart-green;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-tools-keyboard-help {
+	color: @smart-yellow;
+	padding: 0 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-tools-clipboard:hover {
+	background-color: @bg-hover;
+	border-color: @smart-green;
+}
+
+#custom-tools-keyboard-help:hover {
+	background-color: @bg-hover;
+	border-color: @smart-yellow;
+}
+
+/* Clipboard Quick Access */
+#custom-clipboard-quick {
+	color: @smart-green;
+	padding: 2px 10px;
+	margin: 4px 2px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-clipboard-quick:hover {
+	background-color: @bg-hover;
+	border-color: @smart-green;
 }
 
 #custom-separator-dot {
@@ -613,15 +713,51 @@ box#brightness > #backlight {
 }
 
 /* ==========================================================================
- * Hyprland Window (Hidden - Used for .empty detection)
+ * Hyprland Window Module
  * ==========================================================================
  */
 #window {
-	opacity: 0;
-	margin: 0;
-	padding: 0;
-	min-width: 0;
-	min-height: 0;
+	background: transparent;
+	color: @fg-primary;
+	padding: 2px 12px;
+	margin: 4px 4px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	font-size: 12px;
+	transition: all 0.2s ease;
+}
+
+#window:hover {
+	background-color: @bg-hover;
+	border-color: @smart-accent;
+}
+
+#window.empty {
+	opacity: 0.5;
+}
+
+/* ==========================================================================
+ * Hyprland Window Module
+ * ==========================================================================
+ */
+#window {
+	background: transparent;
+	color: @fg-primary;
+	padding: 2px 12px;
+	margin: 4px 4px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	font-size: 12px;
+	transition: all 0.2s ease;
+}
+
+#window:hover {
+	background-color: @bg-hover;
+	border-color: @smart-accent;
+}
+
+#window.empty {
+	opacity: 0.5;
 }
 
 /* ==========================================================================

@@ -13,7 +13,7 @@
     "group/quick-apps",
     "group/system-apps",
     "group/power-actions",
-    "hyprland/window",
+    "group/tools",
     "pulseaudio#microphone",
     "group/volume",
     "group/brightness"
@@ -48,6 +48,9 @@
     "modules": [
       "custom/system-apps-header",
       "custom/apps-system",
+      "custom/apps-settings",
+      "custom/apps-bluetooth",
+      "custom/apps-theme",
       "custom/apps-audio"
     ]
   },
@@ -72,10 +75,43 @@
     ]
   },
 
+  "group/tools": {
+    "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": true
+    },
+    "modules": [
+      "custom/tools-header",
+      "custom/tools-clipboard",
+      "custom/tools-keyboard-help"
+    ]
+  },
+
   "custom/power-actions-header": {
     "format": "󰐥",
     "tooltip": true,
     "tooltip-format": "Power Actions\nClick to expand/collapse"
+  },
+
+  "custom/tools-header": {
+    "format": "󰬌",
+    "tooltip": true,
+    "tooltip-format": "Tools\nClick to expand/collapse"
+  },
+
+  "custom/tools-clipboard": {
+    "format": "󰨌",
+    "tooltip": true,
+    "tooltip-format": "Clipboard Manager",
+    "on-click": "~/.local/bin/dots-clipboard"
+  },
+
+  "custom/tools-keyboard-help": {
+    "format": "󰌌",
+    "tooltip": true,
+    "tooltip-format": "Keyboard Shortcuts Help",
+    "on-click": "~/.local/bin/dots-keyboard-help"
   },
 
   "custom/apps-web": {
@@ -104,6 +140,27 @@
     "tooltip": true,
     "tooltip-format": "Display Settings",
     "on-click": "~/.local/bin/dots-settings-gui --category display"
+  },
+
+  "custom/apps-settings": {
+    "format": "󰒓",
+    "tooltip": true,
+    "tooltip-format": "Settings Hub",
+    "on-click": "~/.local/bin/dots-settings-gui"
+  },
+
+  "custom/apps-bluetooth": {
+    "format": "󰂯",
+    "tooltip": true,
+    "tooltip-format": "Bluetooth Manager",
+    "on-click": "~/.local/bin/dots-rofi-bluetooth"
+  },
+
+  "custom/apps-theme": {
+    "format": "󰨞",
+    "tooltip": true,
+    "tooltip-format": "Theme Selector",
+    "on-click": "~/.local/bin/dots-theme-selector"
   },
 
   "custom/apps-audio": {
@@ -192,6 +249,7 @@
     "custom/night-mode",
     "custom/performance-profile",
     "custom/github",
+    "custom/clipboard-quick",
     "tray"
   ],
 
@@ -246,6 +304,13 @@
     "tooltip": true,
     "tooltip-format": "Performance profile (click to change)",
     "on-click": "~/.local/bin/dots-performance-mode --gui"
+  },
+
+  "custom/clipboard-quick": {
+    "format": "󰨌",
+    "tooltip": true,
+    "tooltip-format": "Clipboard Manager",
+    "on-click": "~/.local/bin/dots-clipboard"
   },
 
   "battery": {
@@ -333,15 +398,5 @@
     "spacing": 12,
     "show-passive-items": true,
     "tooltip": true
-  },
-
-  "hyprland/window": {
-    "format": "",
-    "separate-outputs": false,
-    "rewrite": {
-      "": ""
-    },
-    "tooltip": true,
-    "tooltip-format": "Active Window: {title}"
   }
 }

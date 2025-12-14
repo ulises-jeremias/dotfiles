@@ -26,6 +26,7 @@
     "custom/separator",
     "group/system-controls",
     "group/system-monitors",
+    "group/tools",
     "hyprland/language",
     "custom/separator",
     "tray"
@@ -68,6 +69,9 @@
     "modules": [
       "custom/system-apps-header",
       "custom/apps-system",
+      "custom/apps-settings",
+      "custom/apps-bluetooth",
+      "custom/apps-theme",
       "custom/apps-audio"
     ]
   },
@@ -126,6 +130,27 @@
     "on-click": "~/.local/bin/dots-settings-gui --category display"
   },
 
+  "custom/apps-settings": {
+    "format": "󰒓",
+    "tooltip": true,
+    "tooltip-format": "Settings Hub",
+    "on-click": "~/.local/bin/dots-settings-gui"
+  },
+
+  "custom/apps-bluetooth": {
+    "format": "󰂯",
+    "tooltip": true,
+    "tooltip-format": "Bluetooth Manager",
+    "on-click": "~/.local/bin/dots-rofi-bluetooth"
+  },
+
+  "custom/apps-theme": {
+    "format": "󰨞",
+    "tooltip": true,
+    "tooltip-format": "Theme Selector",
+    "on-click": "~/.local/bin/dots-theme-selector"
+  },
+
   "custom/apps-audio": {
     "format": "󰕾",
     "tooltip": true,
@@ -162,6 +187,8 @@
   "hyprland/workspaces": {
     "format": "{windows}",
     "format-window-separator": "\n",
+    "format-empty": "{id}",
+    "format-special": "{id}: {windows}",
     "window-rewrite-default": "󰧞",
     "window-rewrite": {
       "class<kitty>": "󰞷",
@@ -262,8 +289,12 @@
       "class<keepassxc>": "󰌾"
     },
     "on-click": "activate",
+    "on-click-right": "hyprctl dispatch workspace empty",
     "all-outputs": true,
-    "sort-by-number": true
+    "sort-by-number": true,
+    "show-special": true,
+    "tooltip": true,
+    "tooltip-format": "Workspace {id}\n{name}\nClick: Switch workspace\nRight-click: Close all windows"
   },
 
   "group/audio": {
@@ -372,6 +403,19 @@
     ]
   },
 
+  "group/tools": {
+    "orientation": "vertical",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "custom/tools-header",
+      "custom/tools-clipboard",
+      "custom/tools-keyboard-help"
+    ]
+  },
+
   "custom/night-mode": {
     "format": "{}",
     "exec": "~/.local/bin/dots night-mode status-icon",
@@ -388,6 +432,26 @@
     "tooltip": true,
     "tooltip-format": "Performance profile (click to change)",
     "on-click": "~/.local/bin/dots-performance-mode --gui"
+  },
+
+  "custom/tools-header": {
+    "format": "󰬌",
+    "tooltip": true,
+    "tooltip-format": "Tools\nClick to expand/collapse"
+  },
+
+  "custom/tools-clipboard": {
+    "format": "󰨌",
+    "tooltip": true,
+    "tooltip-format": "Clipboard Manager",
+    "on-click": "~/.local/bin/dots-clipboard"
+  },
+
+  "custom/tools-keyboard-help": {
+    "format": "󰌌",
+    "tooltip": true,
+    "tooltip-format": "Keyboard Shortcuts Help",
+    "on-click": "~/.local/bin/dots-keyboard-help"
   },
 
   "battery": {

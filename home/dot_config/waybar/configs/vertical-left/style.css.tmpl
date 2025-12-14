@@ -72,10 +72,15 @@ window#waybar {
 #custom-apps-terminal,
 #custom-apps-files,
 #custom-apps-system,
+#custom-apps-settings,
+#custom-apps-bluetooth,
+#custom-apps-theme,
 #custom-apps-audio,
 #custom-apps-lock,
 #custom-apps-reboot,
 #custom-apps-shutdown,
+#custom-tools-clipboard,
+#custom-tools-keyboard-help,
 #custom-separator-dot,
 #pulseaudio,
 #pulseaudio.microphone,
@@ -132,7 +137,8 @@ window#waybar {
  */
 box#quick-apps,
 box#system-apps,
-box#power-actions {
+box#power-actions,
+box#tools {
 	padding: 2px 0;
 	margin: 4px 4px;
 	border: 1px solid transparent;
@@ -153,6 +159,11 @@ box#system-apps:hover {
 box#power-actions:hover {
 	background-color: @bg-hover;
 	border-color: @smart-error;
+}
+
+box#tools:hover {
+	background-color: @bg-hover;
+	border-color: @smart-magenta;
 }
 
 #custom-quick-apps-header {
@@ -185,6 +196,16 @@ box#power-actions > #custom-power-actions-header {
 	padding-left: 2px;
 }
 
+#custom-tools-header {
+	color: @smart-magenta;
+	font-size: 22px;
+	padding-left: 2px;
+}
+
+box#tools > #custom-tools-header {
+	padding-left: 2px;
+}
+
 /* Quick Apps - Category 1 (Primary actions) */
 #custom-apps-web {
 	color: @smart-cyan;
@@ -210,6 +231,27 @@ box#power-actions > #custom-power-actions-header {
 /* System Tools - Category 2 */
 #custom-apps-system {
 	color: @smart-orange;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-settings {
+	color: @smart-orange;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-bluetooth {
+	color: @smart-cyan;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-apps-theme {
+	color: @smart-magenta;
 	border: 1px solid transparent;
 	border-radius: 6px;
 	transition: all 0.2s ease;
@@ -265,6 +307,21 @@ box#power-actions > #custom-power-actions-header {
 	border-color: @smart-orange;
 }
 
+#custom-apps-settings:hover {
+	background-color: @bg-hover;
+	border-color: @smart-orange;
+}
+
+#custom-apps-bluetooth:hover {
+	background-color: @bg-hover;
+	border-color: @smart-cyan;
+}
+
+#custom-apps-theme:hover {
+	background-color: @bg-hover;
+	border-color: @smart-magenta;
+}
+
 #custom-apps-audio:hover {
 	background-color: @bg-hover;
 	border-color: @smart-pink;
@@ -283,6 +340,31 @@ box#power-actions > #custom-power-actions-header {
 #custom-apps-shutdown:hover {
 	background-color: rgba(235, 103, 152, 0.15);
 	border-color: @smart-error;
+}
+
+/* Tools - Category 4 */
+#custom-tools-clipboard {
+	color: @smart-green;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-tools-keyboard-help {
+	color: @smart-yellow;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+#custom-tools-clipboard:hover {
+	background-color: @bg-hover;
+	border-color: @smart-green;
+}
+
+#custom-tools-keyboard-help:hover {
+	background-color: @bg-hover;
+	border-color: @smart-yellow;
 }
 
 #custom-separator-dot {
@@ -400,7 +482,8 @@ box#audio,
 box#volume,
 box#backlight,
 box#system-controls,
-box#system-monitors {
+box#system-monitors,
+box#tools {
 	background: transparent;
 	margin: 0px 4px;
 	border: 1px solid transparent;
@@ -438,6 +521,11 @@ box#system-monitors:hover {
 	border-color: rgba(103, 163, 235, 0.5);
 }
 
+box#tools:hover {
+	background-color: @bg-hover;
+	border-color: rgba(235, 103, 152, 0.5);
+}
+
 box#volume:hover #pulseaudio,
 box#backlight:hover #backlight {
 	color: @smart-orange;
@@ -447,7 +535,8 @@ box#backlight:hover #backlight {
 box#audio > #audio-header,
 box#backlight > #backlight-header,
 box#system-controls > #system-controls-header,
-box#system-monitors > #system-monitors-header {
+box#system-monitors > #system-monitors-header,
+box#tools > #custom-tools-header {
 	font-size: 22px;
 	font-weight: bold;
 	border-radius: 8px;
@@ -486,10 +575,19 @@ box#system-monitors > #system-monitors-header {
 	transition: all 0.2s ease;
 }
 
+#custom-tools-header {
+	color: @smart-magenta;
+	font-size: 22px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
 /* Header hover effects - minimal */
 #custom-audio-header:hover,
 #custom-system-controls-header:hover,
-#custom-system-monitors-header:hover {
+#custom-system-monitors-header:hover,
+#custom-tools-header:hover {
 	/* No background or border changes on hover */
 }
 

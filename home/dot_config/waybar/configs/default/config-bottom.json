@@ -21,8 +21,10 @@
   ],
 
   "hyprland/workspaces": {
-    "format": "{windows}",
+    "format": "{id}: {windows}",
     "format-window-separator": " ",
+    "format-empty": "{id}",
+    "format-special": "{id}: {windows}",
     "window-rewrite-default": "󰧞",
     "window-rewrite": {
       "class<kitty>": "󰞷",
@@ -144,8 +146,11 @@
     "on-scroll-up": "hyprctl dispatch workspace e+1",
     "on-scroll-down": "hyprctl dispatch workspace e-1",
     "on-click": "activate",
+    "on-click-right": "hyprctl dispatch workspace empty",
     "all-outputs": true,
-    "show-special": true
+    "show-special": true,
+    "tooltip": true,
+    "tooltip-format": "Workspace {id}\n{name}\nClick: Switch workspace\nRight-click: Close all windows"
   },
 
   "mpris": {

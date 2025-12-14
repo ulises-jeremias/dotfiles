@@ -9,6 +9,7 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+Return` | Terminal (Kitty) |
 | `Super+D` | Application launcher (Rofi) |
 | `Alt+Ctrl+C` | Clipboard manager (Rofi) |
+| `Super+?` or `Super+/` | Keyboard shortcuts help overlay (`dots-keyboard-help`) |
 | `Super+Ctrl+Space` | AI assistant (sgpt via IBus) |
 | `Super+Shift+Tab` | Task switcher (Rofi window list) |
 | `Super+E` | File manager (Thunar) |

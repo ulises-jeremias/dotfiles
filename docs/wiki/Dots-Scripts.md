@@ -80,6 +80,27 @@ dots power-menu --mode=rofi      # Force rofi menu
 
 **Note**: wlogout is installed but disabled (styling issues)
 
+#### `keyboard-help` – Keyboard Shortcuts Help
+
+**Purpose**: Interactive keyboard shortcuts help overlay for Hyprland  
+**Features**:
+
+- Parses Hyprland keybindings from config file dynamically
+- Displays in searchable Rofi interface
+- Shows all available keybindings with human-readable descriptions
+- Supports category filtering and search functionality
+- Automatically formats modifiers and keys for readability
+
+**Usage Examples**:
+
+```bash
+dots-keyboard-help                    # Show all keybindings
+dots-keyboard-help --category=window  # Filter by category (apps|window|workspace|media|system)
+dots-keyboard-help --search=move      # Search for specific keybinding
+```
+
+**Keybindings**: `Super+?` or `Super+/` (configured in Hyprland)
+
 #### `settings-gui` – Settings Hub
 
 **Purpose**: Central GUI for system settings  

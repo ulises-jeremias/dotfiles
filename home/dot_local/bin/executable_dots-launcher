@@ -31,8 +31,12 @@ launch_wofi() {
 }
 launch_rofi() {
   command -v rofi >/dev/null 2>&1 || return 1
-  exec rofi -modi run,drun -show drun \
+  exec rofi -modi run,drun,window -show drun \
     -columns 1 -show-icons \
+    -display-drun "Applications" \
+    -display-run "Run" \
+    -display-window "Windows" \
+    -matching fuzzy \
     -theme "$HOME/.config/rofi/apps.rasi"
 }
 
