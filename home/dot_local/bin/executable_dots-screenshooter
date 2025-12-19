@@ -16,9 +16,41 @@
 ##   -f, --fullscreen   Take a screenshot of the entire screen
 ##   -r, --region       Select a region to capture interactively
 
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
 set -euo pipefail
 
-source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+# Run flameshot with optimal settings for the current environment
+run_flameshot() {
+  local mode="$1"
+
+  # Environment variables for flameshot
+  local env_vars=()
+
+  # Fix font rendering issues (QT6 changed default DPI rounding)
+  env_vars+=("QT_SCALE_FACTOR_ROUNDING_POLICY=Round")
+
+  if [[ -n ${WAYLAND_DISPLAY:-} ]]; then
+    # Wayland native mode
+    # Requires: xdg-desktop-portal, xdg-desktop-portal-hyprland (or wlr), grim
+    # Multi-monitor fix via Hyprland window rules in hyprland.conf.d/window-rules.conf
+    # Config tweaks in ~/.config/flameshot/flameshot.ini (useGrimAdapter=true)
+    env_vars+=("QT_QPA_PLATFORM=wayland")
+
+    if [[ "$mode" == "gui" ]]; then
+      env "${env_vars[@]}" flameshot gui 2>/dev/null
+    else
+      env "${env_vars[@]}" flameshot full 2>/dev/null
+    fi
+  else
+    # X11: Run flameshot normally
+    if [[ "$mode" == "gui" ]]; then
+      env "${env_vars[@]}" flameshot gui 2>/dev/null
+    else
+      env "${env_vars[@]}" flameshot full 2>/dev/null
+    fi
+  fi
+}
 
 shoot() {
   local pictures_dir
@@ -27,7 +59,18 @@ shoot() {
   timestamp=$(date +%Y%m%d_%H%M%S)
   local filename="${pictures_dir}/screenshot_${timestamp}.png"
 
-  # Priority 1: Hyprland native (grimblast) - Best for Hyprland
+  # Priority 1: Flameshot - Best GUI with editing capabilities
+  # Works on X11 natively and on Wayland via XWayland
+  if type -p flameshot >/dev/null; then
+    if [ -n "$region" ]; then
+      run_flameshot gui
+    else
+      run_flameshot full
+    fi
+    return 0
+  fi
+
+  # Priority 2: Hyprland native (grimblast) - Best for Hyprland without flameshot
   if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]] && type -p grimblast >/dev/null; then
     if [ -n "$region" ]; then
       grimblast --notify copysave area "$filename"
@@ -37,22 +80,12 @@ shoot() {
     return 0
   fi
 
-  # Priority 2: Wayland generic (grim + slurp) - Works well with multiple monitors
+  # Priority 3: Wayland generic (grim + slurp) - Works well with multiple monitors
   if [[ -n ${WAYLAND_DISPLAY:-} ]] && type -p grim >/dev/null; then
     if [ -n "$region" ] && type -p slurp >/dev/null; then
       grim -g "$(slurp)" "$filename" && notify-send -i "$filename" "Screenshot" "Saved to $filename"
     else
       grim "$filename" && notify-send -i "$filename" "Screenshot" "Saved to $filename"
-    fi
-    return 0
-  fi
-
-  # Priority 3: Flameshot (GUI with editor, but has issues with Wayland multi-monitor)
-  if type -p flameshot >/dev/null; then
-    if [ -n "$region" ]; then
-      flameshot gui
-    else
-      flameshot full
     fi
     return 0
   fi
@@ -78,13 +111,13 @@ shoot() {
   fi
 
   # No screenshot tool found
-  notify-send -u critical "Screenshot Error" "No screenshot tool available. Install grimblast, grim, or flameshot."
+  notify-send -u critical "Screenshot Error" "No screenshot tool available. Install flameshot, grimblast, grim, or scrot."
   return 1
 }
 
 # Handle options
 if [[ -n "${version:-}" ]]; then
-  echo "dots-screenshooter -- Version 0.2"
+  echo "dots-screenshooter -- Version 0.3"
   exit 0
 fi
 
