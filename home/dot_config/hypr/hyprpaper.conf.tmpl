@@ -16,13 +16,19 @@ ipc = on
 splash = false
 
 # Initial wallpaper will be set by dots-hyprpaper-set on startup
-# Preload wallpaper from wpg or wal if available
+# Hyprpaper 0.8+ uses wallpaper blocks instead of preload/wallpaper lines
 {{ if stat (joinPath .chezmoi.homeDir ".config/wpg/.current") -}}
-preload = {{ joinPath .chezmoi.homeDir ".config/wpg/.current" }}
-wallpaper = ,{{ joinPath .chezmoi.homeDir ".config/wpg/.current" }}
+wallpaper {
+    monitor =
+    path = {{ joinPath .chezmoi.homeDir ".config/wpg/.current" }}
+    fit_mode = cover
+}
 {{ else if stat (joinPath .chezmoi.homeDir ".cache/wal/wal") -}}
-preload = {{ joinPath .chezmoi.homeDir ".cache/wal/wal" }}
-wallpaper = ,{{ joinPath .chezmoi.homeDir ".cache/wal/wal" }}
+wallpaper {
+    monitor =
+    path = {{ joinPath .chezmoi.homeDir ".cache/wal/wal" }}
+    fit_mode = cover
+}
 {{ else -}}
 # No wallpaper configured yet - will be set by dots-hyprpaper-set
 {{ end -}}

@@ -59,46 +59,67 @@ fi
 
 show_status "Setting wallpaper: $WALLPAPER_PATH"
 
-# Check if hyprpaper is running
-if ! pgrep -x hyprpaper >/dev/null; then
-  show_status "Starting hyprpaper..."
-  hyprpaper &
-  sleep 2
-fi
-
-# Wait for hyprpaper to be ready (with timeout)
-MAX_RETRIES=10
-RETRY_COUNT=0
-while ! pgrep -x hyprpaper >/dev/null && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+# Function to start/restart hyprpaper
+start_hyprpaper() {
+  pkill -x hyprpaper 2>/dev/null || true
   sleep 0.5
-  RETRY_COUNT=$((RETRY_COUNT + 1))
-done
+  hyprpaper &
+  disown
 
-if ! pgrep -x hyprpaper >/dev/null; then
-  show_error "hyprpaper failed to start after ${MAX_RETRIES} retries"
-  exit 1
-fi
-
-# Use hyprctl to update wallpaper via IPC
-if command -v hyprctl >/dev/null 2>&1; then
-  # Unload previous wallpaper (ignore errors)
-  hyprctl hyprpaper unload all 2>/dev/null || true
-
-  # Preload new wallpaper
-  if hyprctl hyprpaper preload "$WALLPAPER_PATH" 2>/dev/null; then
-    # Set wallpaper for all monitors
-    if hyprctl hyprpaper wallpaper ",$WALLPAPER_PATH" 2>/dev/null; then
-      show_success "Wallpaper set successfully"
-      exit 0
-    else
-      show_error "Failed to set wallpaper"
-      exit 1
+  # Wait for hyprpaper to be ready
+  local max_retries=20
+  local retry_count=0
+  while [ $retry_count -lt $max_retries ]; do
+    if pgrep -x hyprpaper >/dev/null && \
+       hyprctl hyprpaper wallpaper ", $WALLPAPER_PATH, cover" 2>/dev/null; then
+      return 0
     fi
-  else
-    show_error "Failed to preload wallpaper"
-    exit 1
+    sleep 0.5
+    retry_count=$((retry_count + 1))
+  done
+  return 1
+}
+
+# Function to set wallpaper via IPC
+set_wallpaper_ipc() {
+  # Hyprpaper 0.8+ syntax: hyprctl hyprpaper wallpaper '[mon], [path], [fit_mode]'
+  # Empty monitor = applies to all monitors
+  if hyprctl hyprpaper wallpaper ", $WALLPAPER_PATH, cover" 2>/dev/null; then
+    return 0
   fi
-else
+  # Fallback: try without fit_mode
+  if hyprctl hyprpaper wallpaper ", $WALLPAPER_PATH" 2>/dev/null; then
+    return 0
+  fi
+  return 1
+}
+
+# Check hyprctl is available
+if ! command -v hyprctl >/dev/null 2>&1; then
   show_error "hyprctl not found - are you running Hyprland?"
   exit 1
 fi
+
+# Try to set wallpaper, restart hyprpaper if IPC fails
+if pgrep -x hyprpaper >/dev/null; then
+  if set_wallpaper_ipc; then
+    show_success "Wallpaper set successfully"
+    exit 0
+  else
+    show_status "IPC failed, restarting hyprpaper..."
+    if start_hyprpaper; then
+      show_success "Wallpaper set successfully (after restart)"
+      exit 0
+    fi
+  fi
+else
+  show_status "Starting hyprpaper..."
+  if start_hyprpaper; then
+    show_success "Wallpaper set successfully"
+    exit 0
+  fi
+fi
+
+show_error "Failed to set wallpaper"
+show_status "Hint: Check if IPC is enabled in hyprpaper.conf (ipc = on)"
+exit 1
