@@ -24,6 +24,7 @@ window {
     border-color:                transparent;
     background-color:            #1a1e2475;
 }
+
 mainbox {
     enabled:                     true;
     children:                    [ "listview" ];
@@ -33,16 +34,16 @@ mainbox {
 
 listview {
     enabled:                     true;
-    columns:                     6;
-    lines:                       1;
-    spacing:                     40px;
-    padding:                     20px;
+    columns:                     5;
+    lines:                       2;
+    spacing:                     20px;
+    padding:                     20px 30px;
     cycle:                       true;
-    dynamic:                     false;
+    dynamic:                     true;
     scrollbar:                   false;
     layout:                      vertical;
     reverse:                     false;
-    fixed-height:                true;
+    fixed-height:                false;
     fixed-columns:               true;
     cursor:                      "default";
     background-color:            transparent;
@@ -51,35 +52,70 @@ listview {
 
 element {
     enabled:                     true;
-    orientation:                 horizontal;
-    spacing:                     0px;
-    padding:                     10px;
-    border-radius:               20px;
+    orientation:                 vertical;
+    spacing:                     10px;
+    padding:                     15px;
+    border-radius:               16px;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @foreground;
 }
-@media(max-aspect-ratio: 1.8) {
-    element {
-        orientation:             vertical;
-    }
+
+element normal.normal {
+    background-color:            transparent;
 }
+
 element selected.normal {
     background-color:            @selected-active-background;
     text-color:                  @selected-active-foreground;
+    border:                      2px solid;
+    border-color:                @selected-normal-foreground;
 }
+
 element-icon {
-    size:                        33%;
+    size:                        180px;
     cursor:                      inherit;
-    border-radius:               20px;
+    border-radius:               12px;
     background-color:            transparent;
     text-color:                  inherit;
-}
-element-text {
-    vertical-align:              0.5;
     horizontal-align:            0.5;
-    padding:                     15px 0px 0px 0px;
+}
+
+element-text {
+    vertical-align:              0;
+    horizontal-align:            0.5;
+    padding:                     6px 4px 4px 4px;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;
+    markup:                      true;
+    font:                        "Hack Nerd Font 9";
+}
+
+/* Responsive adjustments */
+@media(max-aspect-ratio: 1.8) {
+    listview {
+        columns:                 4;
+    }
+    element-icon {
+        size:                    170px;
+    }
+}
+
+@media(max-aspect-ratio: 1.4) {
+    listview {
+        columns:                 3;
+    }
+    element-icon {
+        size:                    180px;
+    }
+}
+
+@media(max-aspect-ratio: 1.0) {
+    listview {
+        columns:                 2;
+    }
+    element-icon {
+        size:                    200px;
+    }
 }

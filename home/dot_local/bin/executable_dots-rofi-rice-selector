@@ -65,72 +65,107 @@ calculate_screen_parameters() {
     exit 1
   fi
 
-  # Set minimum and proportional values for element size
-  element_size_min=500
-  element_size_factor=0.5 # 5% of the screen width adjusted by scale
-  element_size=$(awk "BEGIN {size=($monitor_res * $element_size_factor / $monitor_scale); if (size < $element_size_min) size=$element_size_min; print int(size)}")
+  # Calculate element size based on screen - aim for 5-6 columns
+  # For 1920px width with 5 columns: ~300px per element, icon ~200px
+  element_size_min=150
+  element_size_max=220
+  element_size_factor=0.11 # ~11% of screen width per icon
+  element_size=$(awk "BEGIN {
+    size = ($monitor_res * $element_size_factor / ($monitor_scale / 96));
+    if (size < $element_size_min) size = $element_size_min;
+    if (size > $element_size_max) size = $element_size_max;
+    print int(size)
+  }")
 
-  # Adjust the mainbox height based on screen height
-  mainbox_height_factor=0.60 # 60% of the monitor height
+  # Adjust the mainbox to use more screen space
+  mainbox_height_factor=0.85 # 85% of the monitor height
   mainbox_height=$(awk "BEGIN {print int($monitor_height * $mainbox_height_factor)}")
 
   # Calculate vertical padding for top and bottom
   total_vertical_space=$(awk "BEGIN {print $monitor_height - $mainbox_height}")
-  padding_top_factor=0.6    # 60% of the total vertical space goes to top padding
-  padding_bottom_factor=0.5 # 50% of the total vertical space goes to bottom padding
+  padding_top_factor=0.4
+  padding_bottom_factor=0.4
 
   padding_top=$(awk "BEGIN {padding = $total_vertical_space * $padding_top_factor; if (padding < 0) padding = 0; print int(padding)}")
   padding_bottom=$(awk "BEGIN {padding = $total_vertical_space * $padding_bottom_factor; if (padding < 0) padding = 0; print int(padding)}")
 
-  # Generate dynamic styles for Rofi with separate top and bottom padding
-  rofi_override="element-icon{size:${element_size}px;} window{padding:${padding_top}px 0px ${padding_bottom}px 0px;}"
+  # Generate dynamic styles for Rofi
+  rofi_override="element-icon{size:${element_size}px;} window{padding:${padding_top}px 20px ${padding_bottom}px 20px;}"
+}
+
+# Function to get rice metadata from config.sh
+# Returns: RICE_NAME|RICE_DESCRIPTION|RICE_STYLE|WAYBAR_PROFILE|PREFER_DARK_THEME|GTK_THEME
+get_rice_metadata() {
+  local rice_name="$1"
+  local config_file="${RICES_DIR}/${rice_name}/config.sh"
+
+  local display_name="$rice_name"
+  local description=""
+  local style=""
+  local waybar_profile=""
+  local theme_mode=""
+  local gtk_theme=""
+
+  if [[ -f $config_file ]]; then
+    # Extract metadata using grep (safer than sourcing)
+    display_name=$(grep -E "^RICE_NAME=" "$config_file" 2>/dev/null | cut -d'"' -f2) || display_name="$rice_name"
+    description=$(grep -E "^RICE_DESCRIPTION=" "$config_file" 2>/dev/null | cut -d'"' -f2) || description=""
+    style=$(grep -E "^RICE_STYLE=" "$config_file" 2>/dev/null | cut -d'"' -f2) || style=""
+    waybar_profile=$(grep -E "^WAYBAR_PROFILE=" "$config_file" 2>/dev/null | cut -d'"' -f2) || waybar_profile=""
+    theme_mode=$(grep -E "^PREFER_DARK_THEME=" "$config_file" 2>/dev/null | cut -d'"' -f2) || theme_mode=""
+    gtk_theme=$(grep -E "^GTK_THEME=" "$config_file" 2>/dev/null | cut -d'"' -f2) || gtk_theme=""
+
+    # Fallback to rice_name if RICE_NAME is empty
+    [[ -z $display_name ]] && display_name="$rice_name"
+  fi
+
+  echo "${display_name}|${description}|${style}|${waybar_profile}|${theme_mode}|${gtk_theme}"
 }
 
 # Function to get rice category based on style
 get_rice_category() {
-  local rice_name="$1"
-  local config_file="${RICES_DIR}/${rice_name}/config.sh"
-  local category="Other"
+  local style="$1"
+  local category="✨ Other"
 
-  if [[ -f $config_file ]]; then
-    local style
-    style=$(grep -E "^RICE_STYLE=" "$config_file" 2>/dev/null | cut -d'"' -f2 | tr '[:upper:]' '[:lower:]')
+  style=$(echo "$style" | tr '[:upper:]' '[:lower:]')
 
-    case "$style" in
-      *cyberpunk* | *neon* | *synthwave* | *futuristic*)
-        category="🌃 Cyberpunk & Neon"
-        ;;
-      *cozy* | *kawaii* | *pastel* | *soft*)
-        category="🌸 Cozy & Cute"
-        ;;
-      *vaporwave* | *retro* | *80s* | *90s*)
-        category="🌴 Retro & Vaporwave"
-        ;;
-      *nature* | *landscape* | *fresh*)
-        category="🌿 Nature & Fresh"
-        ;;
-      *gruvbox* | *warm* | *anime*)
-        category="🎨 Warm & Artistic"
-        ;;
-      *minimal* | *clean* | *productive*)
-        category="💼 Minimal & Productive"
-        ;;
-      *space* | *cosmic* | *dark*)
-        category="🌌 Dark & Cosmic"
-        ;;
-      *)
-        category="✨ Other"
-        ;;
-    esac
-  fi
+  case "$style" in
+    *cyberpunk* | *neon* | *synthwave* | *futuristic*)
+      category="🌃 Cyberpunk & Neon"
+      ;;
+    *cozy* | *kawaii* | *pastel* | *soft*)
+      category="🌸 Cozy & Cute"
+      ;;
+    *vaporwave* | *retro* | *80s* | *90s*)
+      category="🌴 Retro & Vaporwave"
+      ;;
+    *nature* | *landscape* | *fresh*)
+      category="🌿 Nature & Fresh"
+      ;;
+    *gruvbox* | *warm* | *anime*)
+      category="🎨 Warm & Artistic"
+      ;;
+    *minimal* | *clean* | *productive*)
+      category="💼 Minimal & Productive"
+      ;;
+    *space* | *cosmic* | *dark*)
+      category="🌌 Dark & Cosmic"
+      ;;
+  esac
 
   echo "$category"
 }
 
-# Function to list available rices with categories
+# Function to list available rices with categories and metadata
 list_rices() {
   options=()
   categories=()
+  rice_display_names=()
+  rice_descriptions=()
+  rice_styles=()
+  rice_waybar_profiles=()
+  rice_theme_modes=()
+  rice_gtk_themes=()
   index=0
   selected_index=0
   current_rice=""
@@ -139,14 +174,24 @@ list_rices() {
     current_rice=$(<"$CURRENT_RICE_FILE")
   fi
 
-  # First pass: collect all rices and their categories
+  # First pass: collect all rices and their categories with metadata
   declare -A rice_by_category
+  declare -A rice_metadata_cache
+
   for rice_dir in "${RICES_DIR}"/*/; do
     rice_name=$(basename "$rice_dir")
     # Skip directories that don't have config.sh
     [[ -f "${rice_dir}/config.sh" ]] || continue
 
-    category=$(get_rice_category "$rice_name")
+    # Get metadata: RICE_NAME|RICE_DESCRIPTION|RICE_STYLE|WAYBAR_PROFILE|PREFER_DARK_THEME|GTK_THEME
+    local metadata
+    metadata=$(get_rice_metadata "$rice_name")
+    rice_metadata_cache["$rice_name"]="$metadata"
+
+    local style
+    style=$(echo "$metadata" | cut -d'|' -f3)
+    local category
+    category=$(get_rice_category "$style")
     rice_by_category["$category"]+="$rice_name "
   done
 
@@ -166,8 +211,28 @@ list_rices() {
   for category in "${preferred_order[@]}"; do
     if [[ -n ${rice_by_category[$category]:-} ]]; then
       for rice_name in ${rice_by_category[$category]}; do
+        local metadata="${rice_metadata_cache[$rice_name]}"
+        local display_name
+        display_name=$(echo "$metadata" | cut -d'|' -f1)
+        local description
+        description=$(echo "$metadata" | cut -d'|' -f2)
+        local style
+        style=$(echo "$metadata" | cut -d'|' -f3)
+        local waybar_profile
+        waybar_profile=$(echo "$metadata" | cut -d'|' -f4)
+        local theme_mode
+        theme_mode=$(echo "$metadata" | cut -d'|' -f5)
+        local gtk_theme
+        gtk_theme=$(echo "$metadata" | cut -d'|' -f6)
+
         options+=("$rice_name")
         categories+=("$category")
+        rice_display_names+=("$display_name")
+        rice_descriptions+=("$description")
+        rice_styles+=("$style")
+        rice_waybar_profiles+=("$waybar_profile")
+        rice_theme_modes+=("$theme_mode")
+        rice_gtk_themes+=("$gtk_theme")
 
         if [[ $current_rice == "$rice_name" ]]; then
           selected_index=$index
@@ -186,26 +251,54 @@ list_rices() {
 
 # Function to show rofi menu and select rice with categories
 select_rice() {
-  local last_category=""
   local menu_items=""
   local idx=0
 
   for rice_name in "${options[@]}"; do
     local category="${categories[$idx]}"
-    local display_name="$rice_name"
+    local display_name="${rice_display_names[$idx]}"
+    local style="${rice_styles[$idx]}"
+    local waybar="${rice_waybar_profiles[$idx]}"
+    local theme_mode="${rice_theme_modes[$idx]}"
+    local gtk="${rice_gtk_themes[$idx]}"
 
-    # Add category prefix for display (compact format)
-    # The category is embedded in the display name for visual grouping
-    if [[ $category != "$last_category" ]]; then
-      # New category - add visual separator
-      display_name="$(echo "$category" | cut -d' ' -f1) $rice_name"
-      last_category="$category"
-    else
-      # Same category - indent for grouping effect
-      display_name="   $rice_name"
+    # Get category emoji
+    local category_emoji
+    category_emoji=$(echo "$category" | cut -d' ' -f1)
+
+    # Get theme mode icon
+    local mode_icon=""
+    case "$theme_mode" in
+      dark) mode_icon="🌙" ;;
+      light) mode_icon="☀️" ;;
+      auto) mode_icon="🔄" ;;
+      *) mode_icon="" ;;
+    esac
+
+    # Build display text with useful info
+    # Format: Name 🌃 · Style · 󰍜 waybar · �ostrom gtk · 🌙
+    local display_text="${display_name} ${category_emoji}"
+
+    # Add style if available
+    [[ -n $style ]] && display_text="${display_text} · ${style}"
+
+    # Add waybar profile if available (with icon)
+    [[ -n $waybar ]] && display_text="${display_text} · 󰍜 ${waybar}"
+
+    # Add GTK theme if available (with icon, shortened)
+    if [[ -n $gtk ]]; then
+      # Shorten long GTK theme names
+      local gtk_short="$gtk"
+      if [[ ${#gtk} -gt 20 ]]; then
+        gtk_short="${gtk:0:17}..."
+      fi
+      display_text="${display_text} ·  ${gtk_short}"
     fi
 
-    menu_items+="${display_name}\x00icon\x1f${RICES_DIR}/${rice_name}/preview.png\x1fmeta\x1f${rice_name} ${category}\n"
+    # Add mode icon at the end
+    [[ -n $mode_icon ]] && display_text="${display_text} ${mode_icon}"
+
+    menu_items+="${display_text}\x00icon\x1f${RICES_DIR}/${rice_name}/preview.png\x1fmeta\x1f${rice_name}\n"
     idx=$((idx + 1))
   done
 
@@ -213,20 +306,37 @@ select_rice() {
 
   [[ -n $selected ]] || exit 1
 
-  # Extract actual rice name (remove category emoji and spaces)
-  selected=$(echo "$selected" | sed 's/^[^a-zA-Z]*//' | xargs)
+  # Extract display name (first part before emoji/separator)
+  local selected_display
+  selected_display=$(echo "$selected" | sed 's/ [🌃🌴🌸🎨🌿🌌💼✨].*$//' | xargs)
 
-  # Verify the selected rice exists
-  if [[ ! -d "${RICES_DIR}/${selected}" ]]; then
-    # Try to find the rice by partial match
+  # Find matching rice by display name
+  local matched_rice=""
+  for i in "${!options[@]}"; do
+    local rice="${options[$i]}"
+    local disp="${rice_display_names[$i]}"
+    if [[ $selected_display == "$disp" ]]; then
+      matched_rice="$rice"
+      break
+    fi
+  done
+
+  # Fallback: try to match by rice folder name
+  if [[ -z $matched_rice ]]; then
     for rice in "${options[@]}"; do
-      if [[ $selected == *"$rice"* ]] || [[ $rice == *"$selected"* ]]; then
-        selected="$rice"
+      if [[ $selected_display == *"$rice"* ]] || [[ $rice == *"$selected_display"* ]]; then
+        matched_rice="$rice"
         break
       fi
     done
   fi
 
+  if [[ -z $matched_rice ]]; then
+    echo "Could not determine selected rice from: $selected"
+    exit 1
+  fi
+
+  selected="$matched_rice"
   echo "$selected" >"$CURRENT_RICE_FILE"
 }
 
