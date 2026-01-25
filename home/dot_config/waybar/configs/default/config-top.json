@@ -83,6 +83,7 @@
     },
     "modules": [
       "custom/tools-header",
+      "custom/tools-rice",
       "custom/tools-clipboard",
       "custom/tools-keyboard-help",
       "custom/tools-screenshot",
@@ -101,6 +102,13 @@
     "format": "󰆍",
     "tooltip": true,
     "tooltip-format": "Tools\nClick to expand/collapse"
+  },
+
+  "custom/tools-rice": {
+    "format": "󰟪",
+    "tooltip": true,
+    "tooltip-format": "Rice Selector",
+    "on-click": "~/.local/bin/dots-rofi-rice-selector"
   },
 
   "custom/tools-clipboard": {

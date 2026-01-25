@@ -60,7 +60,7 @@
   },
 
   "custom/tools-rice": {
-    "format": "🎨",
+    "format": "󰟪",
     "tooltip": true,
     "tooltip-format": "Rice Selector",
     "on-click": "~/.local/bin/dots-rofi-rice-selector"
