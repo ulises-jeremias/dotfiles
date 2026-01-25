@@ -25,4 +25,3 @@ waybar_profile_init() {
 waybar_profile_cleanup() {
   return 0
 }
-

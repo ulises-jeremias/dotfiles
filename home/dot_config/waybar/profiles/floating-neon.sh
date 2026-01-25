@@ -28,4 +28,3 @@ waybar_profile_cleanup() {
   # Cleanup handled by centralized system
   return 0
 }
-

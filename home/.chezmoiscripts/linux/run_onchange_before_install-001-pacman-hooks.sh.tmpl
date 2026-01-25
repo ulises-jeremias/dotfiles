@@ -1,0 +1,51 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+#
+# Install pacman hooks for system maintenance
+# - pipx-reinstall.hook: Reinstalls pipx packages after Python updates
+#
+# This prevents pipx packages from breaking when Arch updates Python
+# (e.g., 3.13 → 3.14) by automatically running `pipx reinstall-all`
+
+set -euo pipefail
+
+echo "🔧 Setting up pacman hooks..."
+
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+{{   $sudo = "" -}}
+{{ end -}}
+
+HOOKS_SOURCE_DIR="{{ .chezmoi.sourceDir }}/dot_local/share/chezmoi-system/hooks"
+HOOKS_TARGET_DIR="/etc/pacman.d/hooks"
+
+# Create hooks directory if it doesn't exist
+{{ $sudo }}mkdir -p "$HOOKS_TARGET_DIR"
+
+# Install pipx-reinstall hook
+HOOK_NAME="pipx-reinstall.hook"
+if [ -f "$HOOKS_TARGET_DIR/$HOOK_NAME" ]; then
+  # Check if hook content is the same (idempotent)
+  if cmp -s "$HOOKS_SOURCE_DIR/$HOOK_NAME" "$HOOKS_TARGET_DIR/$HOOK_NAME" 2>/dev/null; then
+    echo "✓ $HOOK_NAME already installed and up to date"
+  else
+    echo "Updating $HOOK_NAME..."
+    {{ $sudo }}cp "$HOOKS_SOURCE_DIR/$HOOK_NAME" "$HOOKS_TARGET_DIR/$HOOK_NAME"
+    {{ $sudo }}chmod 644 "$HOOKS_TARGET_DIR/$HOOK_NAME"
+    echo "✓ $HOOK_NAME updated"
+  fi
+else
+  echo "Installing $HOOK_NAME..."
+  {{ $sudo }}cp "$HOOKS_SOURCE_DIR/$HOOK_NAME" "$HOOKS_TARGET_DIR/$HOOK_NAME"
+  {{ $sudo }}chmod 644 "$HOOKS_TARGET_DIR/$HOOK_NAME"
+  echo "✓ $HOOK_NAME installed"
+fi
+
+echo "✅ Pacman hooks configured successfully!"
+echo "📦 pipx packages will now automatically reinstall after Python updates"
+
+{{      end -}}
+
+{{ end -}}

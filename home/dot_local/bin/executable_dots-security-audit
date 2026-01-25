@@ -140,8 +140,8 @@ scan_for_secrets() {
       for pattern in "${patterns[@]}"; do
         local matches
         if [[ -d $location ]]; then
-          matches=$(find "$location" -type f -name "*.conf" -o -name "*.config" -o -name "*.sh" -o -name "*.zsh" -o -name "*.bash" 2>/dev/null |
-            xargs grep -lEi "$pattern" 2>/dev/null || true)
+          matches=$(find "$location" -type f \( -name "*.conf" -o -name "*.config" -o -name "*.sh" -o -name "*.zsh" -o -name "*.bash" \) -print0 2>/dev/null |
+            xargs -0 grep -lEi "$pattern" 2>/dev/null || true)
         else
           matches=$(grep -lEi "$pattern" "$location" 2>/dev/null || true)
         fi
@@ -161,8 +161,8 @@ scan_for_secrets() {
     if [[ -e $location ]]; then
       local ip_matches
       if [[ -d $location ]]; then
-        ip_matches=$(find "$location" -type f 2>/dev/null |
-          xargs grep -lE "\b(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|127\.0\.0\.1)\b" 2>/dev/null || true)
+        ip_matches=$(find "$location" -type f -print0 2>/dev/null |
+          xargs -0 grep -lE "\b(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|127\.0\.0\.1)\b" 2>/dev/null || true)
       else
         ip_matches=$(grep -lE "\b(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|127\.0\.0\.1)\b" "$location" 2>/dev/null || true)
       fi

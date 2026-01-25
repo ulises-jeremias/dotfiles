@@ -39,7 +39,7 @@ count() {
 
 git_curr_branch() {
   # Get current git branch; form: "remote"/"branch"
-  git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null
+  git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null
 }
 
 show_help() {
@@ -65,7 +65,7 @@ EOF
 }
 
 parse_cmd_args() {
-  local args=$@
+  local args=("$@")
   # Parses command line options; see help file for options
   local OPTIND opts a
   branch=$(git_curr_branch || echo "origin/main")

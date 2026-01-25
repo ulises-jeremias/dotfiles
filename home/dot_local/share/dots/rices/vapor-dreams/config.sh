@@ -33,5 +33,3 @@ HYPRLAND_ANIMATIONS="cozy"
 
 # Rice-specific Rofi theme
 ROFI_THEME="cyberpunk"
-
-

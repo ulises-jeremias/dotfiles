@@ -172,15 +172,15 @@ source ~/.local/lib/dots/logging.sh || exit
 
 main() {
     log_info "Starting script execution"
-    
+
     if ! check_dependencies; then
         log_error "Missing required dependencies"
         exit 1
     fi
-    
+
     log_debug "Processing with verbose output"
     # ... script logic ...
-    
+
     log_info "Script completed successfully"
 }
 

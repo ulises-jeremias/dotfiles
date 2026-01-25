@@ -70,8 +70,8 @@ start_hyprpaper() {
   local max_retries=20
   local retry_count=0
   while [ $retry_count -lt $max_retries ]; do
-    if pgrep -x hyprpaper >/dev/null && \
-       hyprctl hyprpaper wallpaper ", $WALLPAPER_PATH, cover" 2>/dev/null; then
+    if pgrep -x hyprpaper >/dev/null &&
+      hyprctl hyprpaper wallpaper ", $WALLPAPER_PATH, cover" 2>/dev/null; then
       return 0
     fi
     sleep 0.5

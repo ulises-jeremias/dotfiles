@@ -163,4 +163,3 @@ color1 ${COLOR_RED}
 - [Development Standards](Development-Standards.md)
 - [Kitty Configuration](https://sw.kovidgoyal.net/kitty/conf.html)
 - [Rofi Theme Format](https://github.com/davatorium/rofi/blob/next/doc/rofi-theme.5.markdown)
-

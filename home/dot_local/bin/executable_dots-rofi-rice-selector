@@ -92,30 +92,30 @@ get_rice_category() {
   local config_file="${RICES_DIR}/${rice_name}/config.sh"
   local category="Other"
 
-  if [[ -f "$config_file" ]]; then
+  if [[ -f $config_file ]]; then
     local style
     style=$(grep -E "^RICE_STYLE=" "$config_file" 2>/dev/null | cut -d'"' -f2 | tr '[:upper:]' '[:lower:]')
 
     case "$style" in
-      *cyberpunk*|*neon*|*synthwave*|*futuristic*)
+      *cyberpunk* | *neon* | *synthwave* | *futuristic*)
         category="🌃 Cyberpunk & Neon"
         ;;
-      *cozy*|*kawaii*|*pastel*|*soft*)
+      *cozy* | *kawaii* | *pastel* | *soft*)
         category="🌸 Cozy & Cute"
         ;;
-      *vaporwave*|*retro*|*80s*|*90s*)
+      *vaporwave* | *retro* | *80s* | *90s*)
         category="🌴 Retro & Vaporwave"
         ;;
-      *nature*|*landscape*|*fresh*)
+      *nature* | *landscape* | *fresh*)
         category="🌿 Nature & Fresh"
         ;;
-      *gruvbox*|*warm*|*anime*)
+      *gruvbox* | *warm* | *anime*)
         category="🎨 Warm & Artistic"
         ;;
-      *minimal*|*clean*|*productive*)
+      *minimal* | *clean* | *productive*)
         category="💼 Minimal & Productive"
         ;;
-      *space*|*cosmic*|*dark*)
+      *space* | *cosmic* | *dark*)
         category="🌌 Dark & Cosmic"
         ;;
       *)
@@ -135,7 +135,7 @@ list_rices() {
   selected_index=0
   current_rice=""
 
-  if [[ -f "$CURRENT_RICE_FILE" ]]; then
+  if [[ -f $CURRENT_RICE_FILE ]]; then
     current_rice=$(<"$CURRENT_RICE_FILE")
   fi
 
@@ -164,7 +164,7 @@ list_rices() {
 
   # Build options array in category order
   for category in "${preferred_order[@]}"; do
-    if [[ -n "${rice_by_category[$category]:-}" ]]; then
+    if [[ -n ${rice_by_category[$category]:-} ]]; then
       for rice_name in ${rice_by_category[$category]}; do
         options+=("$rice_name")
         categories+=("$category")
@@ -196,7 +196,7 @@ select_rice() {
 
     # Add category prefix for display (compact format)
     # The category is embedded in the display name for visual grouping
-    if [[ "$category" != "$last_category" ]]; then
+    if [[ $category != "$last_category" ]]; then
       # New category - add visual separator
       display_name="$(echo "$category" | cut -d' ' -f1) $rice_name"
       last_category="$category"
@@ -220,7 +220,7 @@ select_rice() {
   if [[ ! -d "${RICES_DIR}/${selected}" ]]; then
     # Try to find the rice by partial match
     for rice in "${options[@]}"; do
-      if [[ "$selected" == *"$rice"* ]] || [[ "$rice" == *"$selected"* ]]; then
+      if [[ $selected == *"$rice"* ]] || [[ $rice == *"$selected"* ]]; then
         selected="$rice"
         break
       fi

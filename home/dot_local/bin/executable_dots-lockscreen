@@ -133,16 +133,16 @@ get_rice_style() {
   local rice_style="default"
 
   # Try to get current rice name
-  if [[ -f "$CURRENT_RICE_FILE" ]]; then
+  if [[ -f $CURRENT_RICE_FILE ]]; then
     local rice_name
     rice_name=$(cat "$CURRENT_RICE_FILE")
     local rice_config="$RICE_CONFIG_DIR/$rice_name/config.sh"
 
-    if [[ -f "$rice_config" ]]; then
+    if [[ -f $rice_config ]]; then
       # Extract RICE_STYLE from config
       local style
       style=$(grep -E "^RICE_STYLE=" "$rice_config" 2>/dev/null | cut -d'"' -f2)
-      [[ -n "$style" ]] && rice_style="$style"
+      [[ -n $style ]] && rice_style="$style"
     fi
   fi
 
@@ -157,16 +157,16 @@ get_layout_config() {
 
   # Determine layout based on aesthetic category
   case "$style_lower" in
-    *cyberpunk*|*neon*|*synthwave*)
+    *cyberpunk* | *neon* | *synthwave*)
       echo "cyberpunk"
       ;;
-    *cozy*|*kawaii*|*pastel*|*soft*)
+    *cozy* | *kawaii* | *pastel* | *soft*)
       echo "cozy"
       ;;
-    *vaporwave*|*retro*|*80s*|*90s*)
+    *vaporwave* | *retro* | *80s* | *90s*)
       echo "vaporwave"
       ;;
-    *minimal*|*clean*)
+    *minimal* | *clean*)
       echo "minimal"
       ;;
     *)
@@ -763,19 +763,19 @@ lock_screen() {
   # Generate layout-specific config
   case "$layout" in
     cyberpunk)
-      generate_cyberpunk_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" > "$temp_config"
+      generate_cyberpunk_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
       ;;
     cozy)
-      generate_cozy_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" > "$temp_config"
+      generate_cozy_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
       ;;
     vaporwave)
-      generate_vaporwave_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" > "$temp_config"
+      generate_vaporwave_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
       ;;
     minimal)
-      generate_minimal_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" > "$temp_config"
+      generate_minimal_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
       ;;
     *)
-      generate_default_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" > "$temp_config"
+      generate_default_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
       ;;
   esac
 

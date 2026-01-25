@@ -22,19 +22,17 @@ fi
 wpg -s "$wallpaper"
 
 # Apply rice-specific Kitty settings if Kitty is running
-if pgrep -x "kitty" > /dev/null; then
+if pgrep -x "kitty" >/dev/null; then
   source "$RICE_DIR/config.sh"
-  if [[ -n "$KITTY_OPACITY" ]]; then
+  if [[ -n $KITTY_OPACITY ]]; then
     kitty @ set-colors --all background_opacity="$KITTY_OPACITY" 2>/dev/null || true
   fi
 fi
 
 # Apply cyberpunk animations if the profile exists
 ANIMATIONS_FILE="$HOME/.config/hypr/hyprland.conf.d/animations-cyberpunk.conf"
-if [[ -f "$ANIMATIONS_FILE" ]]; then
+if [[ -f $ANIMATIONS_FILE ]]; then
   ln -sf "$ANIMATIONS_FILE" "$HOME/.config/hypr/hyprland.conf.d/animations-current.conf"
 fi
 
 notify-send "HorneroConfig" "Neon City rice applied successfully! 🌆"
-
-

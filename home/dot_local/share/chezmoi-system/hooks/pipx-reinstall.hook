@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = python
+
+[Action]
+Description = Reinstalling pipx packages for new Python version...
+When = PostTransaction
+Exec = /usr/bin/env bash -c 'if command -v pipx &>/dev/null; then pipx reinstall-all --python /usr/bin/python3 || true; fi'

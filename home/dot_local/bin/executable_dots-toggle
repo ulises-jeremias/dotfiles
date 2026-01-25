@@ -28,7 +28,7 @@ toggle_waybar() {
     if pgrep -x waybar >/dev/null 2>&1; then
       killall waybar || true
     else
-      ~/.config/waybar/launch.sh & 
+      ~/.config/waybar/launch.sh &
     fi
     exit 0
   fi
@@ -50,7 +50,7 @@ toggle_redshift() {
     if pidof redshift >/dev/null 2>&1 && [ "$(pidof redshift 2>/dev/null | wc -l)" -ne 0 ]; then
       pkill redshift || true
     else
-      redshift & 
+      redshift &
     fi
     exit 0
   fi
@@ -81,7 +81,7 @@ toggle_caffeine() {
     if pidof caffeine >/dev/null 2>&1 && [ "$(pidof caffeine 2>/dev/null | wc -l)" -ne 0 ]; then
       killall caffeine || true
     else
-      caffeine & 
+      caffeine &
     fi
     exit 0
   fi
@@ -98,16 +98,16 @@ toggle_caffeine() {
 }
 
 # Handle options
-if [[ -n "${version:-}" ]]; then
+if [[ -n ${version:-} ]]; then
   echo "dots-toggle -- Version 0.5"
   exit 0
 fi
 
-if [[ -n "${waybar:-}" ]]; then
+if [[ -n ${waybar:-} ]]; then
   toggle_waybar
-elif [[ -n "${redshift:-}" ]]; then
+elif [[ -n ${redshift:-} ]]; then
   toggle_redshift
-elif [[ -n "${caffeine:-}" ]]; then
+elif [[ -n ${caffeine:-} ]]; then
   toggle_caffeine
 else
   echo "Error: No action specified. Use --waybar, --redshift, or --caffeine" >&2

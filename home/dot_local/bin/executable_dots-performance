@@ -96,7 +96,8 @@ check_memory_usage() {
 run_benchmark() {
   echo "🏃 Running comprehensive benchmark..."
 
-  local bench_file="$PERF_LOG_DIR/benchmark_$(date +%Y%m%d_%H%M%S).log"
+  local bench_file
+  bench_file="$PERF_LOG_DIR/benchmark_$(date +%Y%m%d_%H%M%S).log"
 
   {
     echo "# HorneroConfig Performance Benchmark"
@@ -135,7 +136,8 @@ run_benchmark() {
 generate_report() {
   echo "📋 Generating performance report..."
 
-  local report_file="$PERF_LOG_DIR/performance_report_$(date +%Y%m%d).md"
+  local report_file
+  report_file="$PERF_LOG_DIR/performance_report_$(date +%Y%m%d).md"
 
   cat >"$report_file" <<EOF
 # HorneroConfig Performance Report

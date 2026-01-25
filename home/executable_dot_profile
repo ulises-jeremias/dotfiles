@@ -3,7 +3,7 @@
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
-export QT_QPA_PLATFORMTHEME="qt5ct"	# Have QT use qt5ct theme
+export QT_QPA_PLATFORMTHEME="qt5ct" # Have QT use qt5ct theme
 export PASSWORD_STORE_DIR="${XDG_DATA_HOME}/pass-store"
 export GTK_IM_MODULE=ibus
 export QT_IM_MODULE=ibus
@@ -23,7 +23,7 @@ if [ -z "$GNOME_KEYRING_CONTROL" ] && command -v gnome-keyring-daemon >/dev/null
 fi
 
 # add /usr/local/bin to PATH if it exists and is not already in path
-[[ -d "/usr/local/bin" && ! "$PATH" =~ "/usr/local/bin" ]] && export PATH="/usr/local/bin:$PATH"
+[[ -d "/usr/local/bin" && ! $PATH =~ "/usr/local/bin" ]] && export PATH="/usr/local/bin:$PATH"
 
 # add ~/.local/bin to PATH if it exists and is not already in path
 [[ -d "${HOME}/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="${HOME}/.local/bin:${PATH}"
@@ -33,5 +33,5 @@ fi
 
 # add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
 if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
-    export PATH="${HOME}/.pyenv/shims:${PATH}"
+  export PATH="${HOME}/.pyenv/shims:${PATH}"
 fi

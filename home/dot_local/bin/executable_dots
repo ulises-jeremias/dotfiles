@@ -13,26 +13,26 @@
 ##
 
 show_message_with_usage() {
-    [[ -z "$documentation" ]] && parse_documentation
-    echo "$documentation"
-    echo
-    echo "$1"
-    exit 1
+  [[ -z $documentation ]] && parse_documentation
+  echo "$documentation"
+  echo
+  echo "$1"
+  exit 1
 }
 
 # if ~/.local/bin is not in the PATH, add it
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    export PATH="$HOME/.local/bin:${PATH}"
+  export PATH="$HOME/.local/bin:${PATH}"
 fi
 
 # if ~/bin is not in the PATH, add it
 if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
-    export PATH="$HOME/bin:${PATH}"
+  export PATH="$HOME/bin:${PATH}"
 fi
 
 # Add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
 if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
-    export PATH="${HOME}/.pyenv/shims:${PATH}"
+  export PATH="${HOME}/.pyenv/shims:${PATH}"
 fi
 
 NO_HELP=true
@@ -44,34 +44,34 @@ source ~/.local/lib/dots/dots-scripts.sh || exit
 
 script=${arguments[0]}
 
-if [[ -n "${script}" ]]; then
-    if [[ ! "${scripts_list[*]}" =~ ${script} ]]; then
-        show_message_with_usage "Invalid script specified."
-    fi
+if [[ -n ${script} ]]; then
+  if [[ ! ${scripts_list[*]} =~ ${script} ]]; then
+    show_message_with_usage "Invalid script specified."
+  fi
 
-    LOCAL_BIN_DIR="${HOME}/.local/bin"
+  LOCAL_BIN_DIR="${HOME}/.local/bin"
 
-    if [[ ! -x "${LOCAL_BIN_DIR}/dots-${script}" ]]; then
-        show_message_with_usage "Script not found: ${LOCAL_BIN_DIR}/dots-${script}"
-    fi
+  if [[ ! -x "${LOCAL_BIN_DIR}/dots-${script}" ]]; then
+    show_message_with_usage "Script not found: ${LOCAL_BIN_DIR}/dots-${script}"
+  fi
 
-    "${LOCAL_BIN_DIR}/dots-${script}" "${@:2}"
-    exit $?
+  "${LOCAL_BIN_DIR}/dots-${script}" "${@:2}"
+  exit $?
 fi
 
-if [[ -n "${list}" ]]; then
-    for script in "${scripts_list[@]}"; do
-        script_name_with_icon=$(echo "${script}" | cut -d ':' -f 1)
-        script_desc=$(echo "${script}" | cut -d ':' -f 2)
-        echo -e "$(tput setaf 3)${script_name_with_icon}$(tput sgr0)$(tput setaf 7)${script_desc}$(tput sgr0)"
-    done
-    exit
+if [[ -n ${list} ]]; then
+  for script in "${scripts_list[@]}"; do
+    script_name_with_icon=$(echo "${script}" | cut -d ':' -f 1)
+    script_desc=$(echo "${script}" | cut -d ':' -f 2)
+    echo -e "$(tput setaf 3)${script_name_with_icon}$(tput sgr0)$(tput setaf 7)${script_desc}$(tput sgr0)"
+  done
+  exit
 fi
 
-if [[ -n "${help}" ]]; then
-    [[ -z "$documentation" ]] && parse_documentation
-    echo "$documentation"
-    exit
+if [[ -n ${help} ]]; then
+  [[ -z $documentation ]] && parse_documentation
+  echo "$documentation"
+  exit
 fi
 
 show_message_with_usage "No script specified."

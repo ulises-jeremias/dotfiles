@@ -22,13 +22,11 @@ fi
 wpg -s "$wallpaper"
 
 # Apply rice-specific Kitty settings if Kitty is running
-if pgrep -x "kitty" > /dev/null; then
+if pgrep -x "kitty" >/dev/null; then
   source "$RICE_DIR/config.sh"
-  if [[ -n "$KITTY_OPACITY" ]]; then
+  if [[ -n $KITTY_OPACITY ]]; then
     kitty @ set-colors --all background_opacity="$KITTY_OPACITY" 2>/dev/null || true
   fi
 fi
 
 notify-send "HorneroConfig" "Vapor Dreams rice applied successfully! 🎮"
-
-

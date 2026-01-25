@@ -269,7 +269,7 @@ show_gui_selector() {
   local selected_label="${selected%% (*}"
   local category=""
   for category_pair in "${categories[@]}"; do
-    if [[ "${category_pair%%:*}" == "$selected_label" ]]; then
+    if [[ ${category_pair%%:*} == "$selected_label" ]]; then
       category="${category_pair#*:}"
       break
     fi
@@ -340,7 +340,7 @@ show_terminal_selector() {
   if [[ -f ~/.config/xfce4/helpers.rc ]]; then
     sed -i "s/^TerminalEmulator=.*/TerminalEmulator=$term_cmd/" ~/.config/xfce4/helpers.rc
   else
-    echo "TerminalEmulator=$term_cmd" > ~/.config/xfce4/helpers.rc
+    echo "TerminalEmulator=$term_cmd" >~/.config/xfce4/helpers.rc
   fi
 
   log "INFO" "Set $term_cmd as default terminal emulator"
@@ -391,7 +391,7 @@ show_app_selector() {
     else
       menu+="  $app_name|$desktop_file\n"
     fi
-  done <<< "$apps"
+  done <<<"$apps"
 
   local selected
   selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \

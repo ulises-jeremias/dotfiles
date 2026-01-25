@@ -249,4 +249,3 @@ CopyQ's theme aligns with HorneroConfig's design principles:
 - The generated theme is cached in `~/.cache/dots/smart-colors/` and symlinked to CopyQ's themes directory
 - CopyQ must reload the theme (via Preferences → Appearance → OK) or restart for changes to take effect
 - The theme file follows CopyQ's standard `.ini` format with placeholders for colors, fonts, and CSS customizations
-

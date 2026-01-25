@@ -23,7 +23,23 @@ repos:
       - id: check-case-conflict
       - id: check-symlinks
       - id: check-executables-have-shebangs
+        exclude: |
+          (?x)^(
+            home/\.chezmoiscripts/.*\.tmpl$|
+            home/dot_zsh.*|
+            home/dot_p10k\.zsh$|
+            home/dot_bashrc$
+          )$
       - id: check-shebang-scripts-are-executable
+        exclude: |
+          (?x)^(
+            home/\.chezmoiscripts/.*\.tmpl$|
+            home/dot_zsh.*|
+            home/dot_p10k\.zsh$|
+            home/dot_bashrc$|
+            lib/.*|
+            playground/.*
+          )$
       - id: detect-private-key
       - id: mixed-line-ending
         args: [--fix=lf]
@@ -34,7 +50,12 @@ repos:
     hooks:
       - id: shellcheck
         args: [--severity=warning, --shell=bash]
-        exclude: ^home/dot_zsh/
+        exclude: |
+          (?x)^(
+            home/dot_zsh/.*|
+            home/dot_p10k\.zsh$|
+            PKGBUILD.*
+          )$
 
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.10.0-1
@@ -65,6 +86,7 @@ repos:
         entry: ./scripts/validate-dots-scripts.sh
         language: script
         files: '^home/dot_local/bin/executable_dots-.*$'
+        exclude: '^home/dot_local/bin/executable_dots-checkupdates$'
         pass_filenames: false
 
       - id: no-commit-to-main

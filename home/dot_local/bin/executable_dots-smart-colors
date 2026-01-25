@@ -838,27 +838,27 @@ EOF
   local COPYQ_THEME_FILE="${SMART_COLORS_DIR}/colors-copyq.ini"
   local COPYQ_CONFIG_DIR="${HOME}/.config/copyq"
   local COPYQ_THEMES_DIR="${COPYQ_CONFIG_DIR}/themes"
-  
+
   # Create themes directory if it doesn't exist
   mkdir -p "$COPYQ_THEMES_DIR"
-  
+
   # Detect if theme is light or dark based on background luminance
   local bg_luminance
   bg_luminance=$(calculate_luminance "$background_color")
-  
+
   # Determine if light or dark theme (threshold: 128)
   local is_light_theme=false
   if [[ $bg_luminance -gt 128 ]]; then
     is_light_theme=true
   fi
-  
+
   # Adjust colors based on theme type for better balance
   local base_bg base_fg base_alt_bg base_sel_bg base_sel_fg
   if [[ $is_light_theme == true ]]; then
     # Light theme: use softer, lighter colors with subtle variations
     base_bg="$background_color"
     base_fg="$foreground_color"
-    base_alt_bg="bg - #0a0a0a"  # More subtle difference
+    base_alt_bg="bg - #0a0a0a" # More subtle difference
     base_sel_bg="$accent_color"
     # Ensure good contrast for selection text
     base_sel_fg="$background_color"
@@ -866,12 +866,12 @@ EOF
     # Dark theme: use brighter, more contrasted colors but not too bright
     base_bg="$background_color"
     base_fg="$foreground_color"
-    base_alt_bg="bg + #1a1a1a"  # More subtle difference for dark theme
+    base_alt_bg="bg + #1a1a1a" # More subtle difference for dark theme
     base_sel_bg="$accent_color"
     # Use foreground for better contrast in dark themes
     base_sel_fg="$foreground_color"
   fi
-  
+
   # Generate theme .ini file with smart-colors placeholders
   cat >"$COPYQ_THEME_FILE" <<EOF
 [General]
@@ -1040,7 +1040,7 @@ EOF
 
   # Create symlink to theme file in copyq themes directory
   local copyq_theme_link="${COPYQ_THEMES_DIR}/hornero-smart-colors.ini"
-  if [[ ! -L "$copyq_theme_link" ]] || [[ "$(readlink -f "$copyq_theme_link" 2>/dev/null)" != "$(readlink -f "$COPYQ_THEME_FILE" 2>/dev/null)" ]]; then
+  if [[ ! -L $copyq_theme_link ]] || [[ "$(readlink -f "$copyq_theme_link" 2>/dev/null)" != "$(readlink -f "$COPYQ_THEME_FILE" 2>/dev/null)" ]]; then
     ln -sf "$COPYQ_THEME_FILE" "$copyq_theme_link" 2>/dev/null || true
   fi
 
@@ -1100,14 +1100,14 @@ EOF
     smart-bg-alt:       $background_alt_color;
     smart-fg:           $foreground_color;
     smart-fg-alt:       $foreground_alt_color;
-    
+
     /* Semantic colors */
     smart-error:        $error_color;
     smart-warning:      $warning_color;
     smart-success:      $success_color;
     smart-info:         $info_color;
     smart-accent:       $accent_color;
-    
+
     /* Basic colors */
     smart-red:          $red_color;
     smart-green:        $green_color;
@@ -1117,7 +1117,7 @@ EOF
     smart-magenta:      $magenta_color;
     smart-orange:       $orange_color;
     smart-pink:         $pink_color;
-    
+
     /* Computed colors for common use cases */
     smart-selected-bg:  $accent_color;
     smart-selected-fg:  $background_color;
@@ -1125,7 +1125,7 @@ EOF
     smart-urgent-fg:    $foreground_color;
     smart-active-bg:    $success_color;
     smart-active-fg:    $background_color;
-    
+
     /* Border and separator colors */
     smart-border:       ${base_colors[8]};
     smart-separator:    ${base_colors[8]};
@@ -1192,14 +1192,14 @@ EOF
     --smart-bg-alt: $background_alt_color;
     --smart-fg: $foreground_color;
     --smart-fg-alt: $foreground_alt_color;
-    
+
     /* Semantic colors */
     --smart-error: $error_color;
     --smart-warning: $warning_color;
     --smart-success: $success_color;
     --smart-info: $info_color;
     --smart-accent: $accent_color;
-    
+
     /* Basic colors */
     --smart-red: $red_color;
     --smart-green: $green_color;
@@ -1209,7 +1209,7 @@ EOF
     --smart-magenta: $magenta_color;
     --smart-orange: $orange_color;
     --smart-pink: $pink_color;
-    
+
     /* Base16 colors */
     --color0: ${base_colors[0]};
     --color1: ${base_colors[1]};

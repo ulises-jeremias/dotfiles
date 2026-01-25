@@ -37,14 +37,14 @@ run_flameshot() {
     # Config tweaks in ~/.config/flameshot/flameshot.ini (useGrimAdapter=true)
     env_vars+=("QT_QPA_PLATFORM=wayland")
 
-    if [[ "$mode" == "gui" ]]; then
+    if [[ $mode == "gui" ]]; then
       env "${env_vars[@]}" flameshot gui 2>/dev/null
     else
       env "${env_vars[@]}" flameshot full 2>/dev/null
     fi
   else
     # X11: Run flameshot normally
-    if [[ "$mode" == "gui" ]]; then
+    if [[ $mode == "gui" ]]; then
       env "${env_vars[@]}" flameshot gui 2>/dev/null
     else
       env "${env_vars[@]}" flameshot full 2>/dev/null
@@ -116,13 +116,13 @@ shoot() {
 }
 
 # Handle options
-if [[ -n "${version:-}" ]]; then
+if [[ -n ${version:-} ]]; then
   echo "dots-screenshooter -- Version 0.3"
   exit 0
 fi
 
 # Execute screenshot
-if [[ -n "${region:-}" ]]; then
+if [[ -n ${region:-} ]]; then
   region=1
   shoot
 else

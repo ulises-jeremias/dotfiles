@@ -10,14 +10,37 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 DOTS_BIN_DIR="${DOTFILES_ROOT}/home/dot_local/bin"
 
+# Scripts to exclude from validation (third-party or special cases)
+EXCLUDED_SCRIPTS=(
+  "executable_dots-checkupdates"       # Third-party script from pacman-contrib
+  "executable_dots-rofi-rice-selector" # Uses set -e only due to specific requirements
+  "executable_dots-git-notify"         # Third-party script with custom argument parsing
+)
+
 errors=0
 
 echo "🔍 Validating dots scripts..."
+
+# Check if script should be excluded
+is_excluded() {
+  local script_name="$1"
+  for excluded in "${EXCLUDED_SCRIPTS[@]}"; do
+    if [[ $script_name == "$excluded" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
 
 # Check if all scripts have proper headers
 for script in "${DOTS_BIN_DIR}"/executable_dots-*; do
   if [[ -f $script ]]; then
     script_name=$(basename "$script")
+
+    # Skip excluded scripts
+    if is_excluded "$script_name"; then
+      continue
+    fi
 
     # Check for copyright header
     if ! head -n 10 "$script" | grep -q "Copyright"; then
