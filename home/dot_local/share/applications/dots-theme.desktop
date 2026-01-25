@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Theme Selector
+Comment=Select GTK and icon themes
+Exec=dots-theme-selector
+Icon=preferences-desktop-theme
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=theme;gtk;icons;appearance;dots;
+
+

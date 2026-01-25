@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Monitors
+Comment=Configure display and monitor settings
+Exec=dots-hypr-monitors
+Icon=video-display
+Terminal=false
+Type=Application
+Categories=Settings;HardwareSettings;
+Keywords=monitor;display;screen;resolution;dots;
+
+

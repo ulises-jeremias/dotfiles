@@ -45,7 +45,7 @@
 ### ✨ Highlights
 
 🧠 **Smart Color Intelligence** — Automatic theme-aware color adaptation  
-🎨 **12+ Beautiful Themes** — Stunning pre-configured rice themes  
+🎨 **13 Beautiful Themes** — Cyberpunk, Cozy, Vaporwave, Nature & more  
 ⚡ **One-Command Setup** — From zero to hero in minutes  
 🌊 **Hyprland/Wayland** — Modern compositor with smooth animations  
 🔧 **100+ Automation Scripts** — Comprehensive tooling ecosystem  
@@ -140,7 +140,7 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 
 ### 🎨 Rice System & Themes
 
-Choose from **12+ stunning themes** spanning nature, retro, cyberpunk, and cosmic aesthetics:
+Choose from **13 stunning themes** organized by aesthetic: Cyberpunk, Cozy, Vaporwave, Nature, and Cosmic:
 
 ```bash
 dots rofi-rice-selector     # Interactive theme picker 🎯

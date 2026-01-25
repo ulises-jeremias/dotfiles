@@ -4,11 +4,11 @@
 # Rice Metadata
 # ================================
 RICE_NAME="Gruvbox Anime"
-RICE_DESCRIPTION="Retro warm colors with anime aesthetics"
+RICE_DESCRIPTION="Retro warm colors with anime aesthetics and artistic wallpapers"
 RICE_STYLE="Retro Anime"
-RICE_PALETTE="Warm earth tones + anime colors"
-RICE_TAGS="retro,anime,warm,cozy"
-RICE_BEST_FOR="Long coding sessions, anime lovers, warm aesthetic"
+RICE_PALETTE="Warm earth tones + anime and artistic colors"
+RICE_TAGS="retro,anime,warm,cozy,artistic,painting"
+RICE_BEST_FOR="Long coding sessions, anime lovers, warm aesthetic, creative work"
 
 # Theme Components Information
 GTK_THEME="Orchis-Light"

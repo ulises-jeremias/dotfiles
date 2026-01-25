@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Performance
+Comment=Select CPU performance profile
+Exec=dots-performance-mode
+Icon=power-profile-performance-symbolic
+Terminal=false
+Type=Application
+Categories=Settings;System;
+Keywords=performance;power;cpu;battery;dots;
+
+

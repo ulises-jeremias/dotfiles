@@ -1,0 +1,143 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 38,
+  "spacing": 0,
+  "margin-top": 0,
+  "margin-left": 0,
+  "margin-right": 0,
+  "margin-bottom": 0,
+
+  "modules-left": [
+    "custom/palm",
+    "hyprland/workspaces"
+  ],
+
+  "modules-center": [
+    "clock"
+  ],
+
+  "modules-right": [
+    "group/tools",
+    "pulseaudio",
+    "battery",
+    "custom/sun",
+    "tray"
+  ],
+
+  "group/tools": {
+    "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "custom/tools-header",
+      "custom/tools-screenshot",
+      "custom/tools-clipboard",
+      "custom/tools-rice"
+    ]
+  },
+
+  "custom/tools-header": {
+    "format": "⌨",
+    "tooltip": true,
+    "tooltip-format": "T O O L S"
+  },
+
+  "custom/tools-screenshot": {
+    "format": "📷",
+    "tooltip": true,
+    "tooltip-format": "Screenshot",
+    "on-click": "~/.local/bin/dots-screenshooter --rofi"
+  },
+
+  "custom/tools-clipboard": {
+    "format": "📋",
+    "tooltip": true,
+    "tooltip-format": "Clipboard",
+    "on-click": "~/.local/bin/dots-clipboard"
+  },
+
+  "custom/tools-rice": {
+    "format": "🎨",
+    "tooltip": true,
+    "tooltip-format": "Rice Selector",
+    "on-click": "~/.local/bin/dots-rofi-rice-selector"
+  },
+
+  "custom/palm": {
+    "format": "🌴",
+    "tooltip": true,
+    "tooltip-format": "V A P O R W A V E",
+    "on-click": "dots-launcher"
+  },
+
+  "custom/sun": {
+    "format": "☀",
+    "tooltip": true,
+    "tooltip-format": "A E S T H E T I C"
+  },
+
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "1": "Ⅰ",
+      "2": "Ⅱ",
+      "3": "Ⅲ",
+      "4": "Ⅳ",
+      "5": "Ⅴ",
+      "default": "○"
+    },
+    "on-click": "activate",
+    "persistent-workspaces": {
+      "*": 5
+    }
+  },
+
+  "clock": {
+    "interval": 1,
+    "format": "▌{:%H:%M:%S}▐",
+    "format-alt": "▌{:%m/%d/%y}▐",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col": 3,
+      "format": {
+        "months": "<span color='#ff71ce'><b>{}</b></span>",
+        "days": "<span color='#01cdfe'><b>{}</b></span>",
+        "weeks": "<span color='#05ffa1'><b>W{}</b></span>",
+        "weekdays": "<span color='#b967ff'><b>{}</b></span>",
+        "today": "<span color='#ff71ce'><b><u>{}</u></b></span>"
+      }
+    }
+  },
+
+  "pulseaudio": {
+    "format": "♪ {volume}",
+    "format-muted": "♪ ×",
+    "scroll-step": 1,
+    "on-click": "pamixer -t",
+    "on-click-right": "pavucontrol",
+    "tooltip-format": "Volume: {volume}%"
+  },
+
+  "battery": {
+    "interval": 30,
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "⚡{capacity}",
+    "format-charging": "⚡{capacity}↑",
+    "format-plugged": "⚡{capacity}●",
+    "tooltip-format": "Battery: {capacity}%"
+  },
+
+  "tray": {
+    "icon-size": 18,
+    "spacing": 10,
+    "show-passive-items": true
+  }
+}
+

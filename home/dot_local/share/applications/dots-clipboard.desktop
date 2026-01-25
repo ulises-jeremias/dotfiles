@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Clipboard
+Comment=View and manage clipboard history
+Exec=dots-clipboard
+Icon=edit-paste
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=clipboard;paste;copy;history;dots;
+
+

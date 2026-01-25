@@ -372,7 +372,7 @@ dots night-mode status           # Check current status
 - `rofi-run` – Convenience wrapper (delegates to `dots-launcher`)
 - `rofi-bluetooth` – Bluetooth management via Rofi (use `dots settings-gui` for GUI)
 - `rofi-randr` – Display config via Rofi (use `dots settings-gui` for GUI)
-- `rofi-rice-selector` – Rice selector (use `dots rice` for full features)
+- `rofi-rice-selector` – Visual rice selector with category grouping (Cyberpunk, Cozy, Vaporwave, etc.), preview images, and multi-monitor support
 - `rofi-xrandr` – Advanced display config (use `nwg-displays` or `arandr`)
 
 ---

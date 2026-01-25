@@ -194,6 +194,41 @@ input-field {
 }
 ```
 
+## Rice-Style-Aware Layouts
+
+The lockscreen automatically adapts its layout based on your current rice's `RICE_STYLE`. This provides a cohesive aesthetic experience across your entire desktop.
+
+### Available Layouts
+
+| Layout | Rice Styles | Description |
+|--------|-------------|-------------|
+| **Default** | Any unlisted style | Clean, centered layout with standard typography |
+| **Cyberpunk** | cyberpunk, neon, futuristic | Glowing neon elements, tech-inspired fonts |
+| **Cozy** | cozy, kawaii, cute, warm | Soft, rounded elements with pastel accents |
+| **Vaporwave** | vaporwave, retro, synthwave | Gradient effects, 80s-inspired typography |
+| **Minimal** | minimal, clean, productive | Ultra-clean with minimal UI elements |
+
+### How It Works
+
+1. When locking, the script reads `RICE_STYLE` from your current rice's `config.sh`
+2. Based on the style, it selects the appropriate layout template
+3. Colors are pulled from the smart-colors cache
+4. The hyprlock configuration is generated dynamically
+
+### Rice Configuration
+
+To enable style-aware layouts, add `RICE_STYLE` to your rice's `config.sh`:
+
+```bash
+# Example for cyberpunk rice
+RICE_STYLE="Cyberpunk"
+
+# Example for cozy rice
+RICE_STYLE="Cozy"
+```
+
+The style matching is case-insensitive and supports partial matches (e.g., "cozy warm" matches the Cozy layout).
+
 ## Comparison with Betterlockscreen
 
 | Feature | betterlockscreen | dots-lockscreen |

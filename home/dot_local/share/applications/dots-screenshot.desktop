@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Screenshot
+Comment=Capture screenshots with various modes
+Exec=dots-screenshooter --rofi
+Icon=accessories-screenshot
+Terminal=false
+Type=Application
+Categories=Utility;Graphics;
+Keywords=screenshot;capture;screen;dots;
+
+

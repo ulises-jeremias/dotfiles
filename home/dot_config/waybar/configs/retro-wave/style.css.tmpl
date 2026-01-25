@@ -1,0 +1,201 @@
+/* ============================================================================
+ * Retro Wave Waybar - Vaporwave Aesthetic
+ * ============================================================================
+ * 80s/90s inspired bar with pink-to-cyan gradients and retro typography
+ * ============================================================================ */
+
+@import "{{ joinPath .chezmoi.homeDir ".cache/wal/colors-waybar.css" }}";
+@import "{{ joinPath .chezmoi.homeDir ".cache/dots/smart-colors/colors-waybar.css" }}";
+
+/* ==========================================================================
+ * Vaporwave Color Definitions
+ * ========================================================================== */
+@define-color vapor-pink #ff71ce;
+@define-color vapor-cyan #01cdfe;
+@define-color vapor-yellow #05ffa1;
+@define-color vapor-purple #b967ff;
+@define-color vapor-orange #fffb96;
+@define-color vapor-dark #1a0a2e;
+
+/* ==========================================================================
+ * Global
+ * ========================================================================== */
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "VCR OSD Mono", "Press Start 2P", "Hack Nerd Font Mono", monospace;
+    font-size: 12px;
+    font-weight: normal;
+    min-height: 0;
+}
+
+/* ==========================================================================
+ * Window - Gradient Bar
+ * ========================================================================== */
+window#waybar {
+    background: linear-gradient(90deg, 
+        @vapor-pink 0%,
+        @vapor-purple 25%,
+        @vapor-cyan 50%,
+        @vapor-purple 75%,
+        @vapor-pink 100%);
+    color: @vapor-dark;
+    border-bottom: 3px solid @vapor-yellow;
+}
+
+/* ==========================================================================
+ * Palm & Sun Icons
+ * ========================================================================== */
+#custom-palm {
+    background: transparent;
+    color: @vapor-dark;
+    padding: 0 16px;
+    font-size: 18px;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+#custom-palm:hover {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#custom-sun {
+    background: transparent;
+    color: @vapor-orange;
+    padding: 0 12px;
+    font-size: 16px;
+    text-shadow: 0 0 10px @vapor-orange;
+}
+
+/* ==========================================================================
+ * Workspaces - Roman Numerals
+ * ========================================================================== */
+#workspaces {
+    background: rgba(26, 10, 46, 0.4);
+    margin: 4px 8px;
+    padding: 0 4px;
+    border-radius: 4px;
+}
+
+#workspaces button {
+    background: transparent;
+    color: @vapor-dark;
+    padding: 4px 10px;
+    margin: 2px 2px;
+    border: none;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#workspaces button:hover {
+    color: white;
+    text-shadow: 0 0 8px white;
+}
+
+#workspaces button.active {
+    background: @vapor-dark;
+    color: @vapor-cyan;
+    border-radius: 4px;
+    text-shadow: 0 0 10px @vapor-cyan;
+}
+
+#workspaces button.empty {
+    opacity: 0.4;
+}
+
+#workspaces button.urgent {
+    background: @vapor-pink;
+    color: white;
+}
+
+/* ==========================================================================
+ * Clock - VHS Style
+ * ========================================================================== */
+#clock {
+    background: @vapor-dark;
+    color: @vapor-cyan;
+    padding: 4px 20px;
+    margin: 4px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-shadow: 
+        0 0 5px @vapor-cyan,
+        0 0 10px @vapor-cyan;
+    border: 1px solid @vapor-cyan;
+}
+
+#clock:hover {
+    background: rgba(1, 205, 254, 0.2);
+}
+
+/* ==========================================================================
+ * Audio - Retro Style
+ * ========================================================================== */
+#pulseaudio {
+    background: rgba(26, 10, 46, 0.5);
+    color: @vapor-yellow;
+    padding: 4px 14px;
+    margin: 4px 2px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-shadow: 0 0 5px @vapor-yellow;
+}
+
+#pulseaudio:hover {
+    background: rgba(26, 10, 46, 0.7);
+}
+
+#pulseaudio.muted {
+    color: @vapor-purple;
+    opacity: 0.6;
+}
+
+/* ==========================================================================
+ * Battery - Energy Bar
+ * ========================================================================== */
+#battery {
+    background: rgba(26, 10, 46, 0.5);
+    color: @vapor-yellow;
+    padding: 4px 14px;
+    margin: 4px 2px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-shadow: 0 0 5px @vapor-yellow;
+}
+
+#battery:hover {
+    background: rgba(26, 10, 46, 0.7);
+}
+
+#battery.charging {
+    color: @vapor-cyan;
+    text-shadow: 0 0 8px @vapor-cyan;
+}
+
+#battery.warning:not(.charging) {
+    color: @vapor-orange;
+}
+
+#battery.critical:not(.charging) {
+    color: @vapor-pink;
+}
+
+/* ==========================================================================
+ * Tray
+ * ========================================================================== */
+#tray {
+    background: rgba(26, 10, 46, 0.4);
+    padding: 4px 10px;
+    margin: 4px 8px 4px 2px;
+    border-radius: 4px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+

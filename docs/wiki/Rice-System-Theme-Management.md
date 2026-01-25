@@ -19,21 +19,51 @@ The rice system manages:
 
 ### Current Available Rices
 
-Your dotfiles include these beautiful rice themes:
+Your dotfiles include these beautiful rice themes, organized by aesthetic category:
 
-- **flowers**: Vibrant floral-inspired nature theme
+#### 🌃 Cyberpunk & Neon
+
+- **machines**: Cyberpunk industrial technology theme
+- **neon-city**: Neon-lit cityscape with hot pink and electric cyan
+
+#### 🌴 Retro & Vaporwave
+
+- **vapor-dreams**: Vaporwave aesthetic with sunset gradients and retro vibes
+
+#### 🌸 Cozy & Cute
+
+- **cozy-corner**: Warm, comforting kawaii aesthetic with soft pastels
+- **pastel-dreams**: Soft pastel color palette
+- **warm-sunset**: Cozy warm sunset tones
+
+#### 🎨 Warm & Artistic
+
 - **gruvbox-anime**: Retro warm colors with anime aesthetics
 - **gruvbox-light**: Light variant of classic gruvbox theme
 - **gruvbox-minimalistic**: Clean and simplified gruvbox aesthetic
-- **gruvbox-mix**: Mixed gruvbox palette with varied earth tones
-- **gruvbox-painting**: Artistic gruvbox with painterly aesthetics
 - **gruvbox-pixelart**: 8-bit inspired gruvbox with pixel art styling
-- **gruvbox-videogame-3d-art**: Modern gaming gruvbox with 3D art elements
-- **landscape-dark**: Dark nature-inspired earth tones
-- **landscape-light**: Light variant with natural colors
-- **machines**: Cyberpunk industrial technology theme
-- **red-blue**: High contrast red and blue color scheme
+- **flowers**: Vibrant floral-inspired nature theme
+
+#### 🌿 Nature & Fresh
+
+- **landscape**: Nature-inspired earth tones with scenic wallpapers
+
+#### 🌌 Dark & Cosmic
+
 - **space**: Cosmic theme with deep blues and starry aesthetics
+
+### Rice Categories
+
+The rice selector now organizes themes into categories for easier browsing:
+
+| Category | Description | Rices |
+|----------|-------------|-------|
+| 🌃 Cyberpunk & Neon | Futuristic, neon-lit aesthetics | machines, neon-city |
+| 🌴 Retro & Vaporwave | 80s/90s inspired, synthwave | vapor-dreams |
+| 🌸 Cozy & Cute | Warm, comfortable, kawaii | cozy-corner, pastel-dreams, warm-sunset |
+| 🎨 Warm & Artistic | Gruvbox family, artistic themes | gruvbox-*, flowers |
+| 🌿 Nature & Fresh | Natural landscapes, earth tones | landscape |
+| 🌌 Dark & Cosmic | Space, cosmic, deep themes | space |
 
 ---
 
@@ -446,7 +476,7 @@ done
 **Minimal Productivity** (gruvbox):
 
 - Warm, easy-on-eyes colors
-- Clean polybar with essential modules
+- Clean status bar with essential modules
 - Perfect for long coding sessions
 
 **Vibrant Creative** (flowers):
@@ -461,11 +491,23 @@ done
 - Minimal distractions
 - Ideal for night sessions
 
-**High Contrast** (red-blue):
+**Cyberpunk Immersion** (neon-city):
 
-- Bold, attention-grabbing colors
-- Perfect for presentations
-- High visibility interface
+- Hot pink and electric cyan neon colors
+- Futuristic cityscape wallpapers
+- Perfect for late-night coding sessions
+
+**Cozy Comfort** (cozy-corner):
+
+- Soft pastel colors with kawaii aesthetics
+- Warm, inviting atmosphere
+- Great for relaxed browsing and creative work
+
+**Retro Vibes** (vapor-dreams):
+
+- Vaporwave sunset gradients
+- 80s/90s inspired aesthetics
+- Ideal for music and creative sessions
 
 ---
 

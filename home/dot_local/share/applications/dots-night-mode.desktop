@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Night Mode
+Comment=Toggle blue light filter for eye comfort
+Exec=dots-night-mode toggle
+Icon=weather-clear-night
+Terminal=false
+Type=Application
+Categories=Settings;Utility;
+Keywords=night;blue light;eye;comfort;dots;
+
+

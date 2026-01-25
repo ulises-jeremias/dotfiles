@@ -165,7 +165,7 @@ The `--generate` flag is the **core command** that creates all smart color files
 dots-smart-colors --generate
 ```
 
-This single command analyzes your current palette and generates **5 specialized files** that different applications can use immediately.
+This single command analyzes your current palette and generates **9 specialized files** that different applications can use immediately.
 
 ### Cache Directory Structure
 
@@ -177,7 +177,11 @@ All generated files are stored in `~/.cache/dots/smart-colors/`:
 ├── colors-eww.scss         # EWW widgets SCSS variables
 ├── colors.sh               # Shell script variables
 ├── colors.env              # Environment variables (export format)
-└── colors-polybar.conf     # Polybar color configuration
+├── colors-polybar.conf     # Polybar color configuration
+├── colors-hyprlock.env     # Hyprlock lockscreen color variables
+├── colors-rofi.rasi        # Rofi launcher color definitions
+├── colors-kitty.conf       # Kitty terminal color configuration
+└── colors.css              # Generic CSS variables for web/GTK
 ```
 
 ### Generated Files Explained
@@ -285,7 +289,11 @@ Each application type uses its preferred format:
 | **Hyprland**      | `colors.env`                | Environment variables in config     |
 | **Waybar**        | `colors-waybar.css`         | CSS import in stylesheet            |
 | **EWW Widgets**   | `colors-eww.scss`           | SCSS import in stylesheets          |
+| **Hyprlock**      | `colors-hyprlock.env`       | Source in lockscreen config         |
+| **Rofi**          | `colors-rofi.rasi`          | Import in rofi theme files          |
+| **Kitty**         | `colors-kitty.conf`         | Include in kitty.conf               |
 | **Shell Scripts** | `colors.sh` or `colors.env` | Source in scripts or profiles       |
+| **GTK/Web**       | `colors.css`                | CSS variables for styling           |
 | **Custom Apps**   | Any format                  | Choose the most appropriate format  |
 
 ### 🔧 Manual Cache Management

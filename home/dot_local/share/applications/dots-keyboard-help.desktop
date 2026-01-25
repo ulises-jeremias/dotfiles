@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Keyboard Help
+Comment=View keyboard shortcuts and keybindings
+Exec=dots-keyboard-help
+Icon=input-keyboard
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=keyboard;shortcuts;keybindings;help;dots;
+
+

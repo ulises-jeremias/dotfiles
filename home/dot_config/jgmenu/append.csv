@@ -1,3 +1,22 @@
 ^sep()
+^tag(dots-tools)
+Dots Tools,^checkout(dots-tools),applications-utilities
+
+^tag(dots-tools)
+Rice Selector,dots-rofi-rice-selector,preferences-desktop-theme
+Screenshot,dots-screenshooter --rofi,accessories-screenshot
+Clipboard,dots-clipboard,edit-paste
+Keyboard Help,dots-keyboard-help,input-keyboard
+Night Mode,dots-night-mode toggle,weather-clear-night
+Performance,dots-performance-mode,power-profile-performance-symbolic
+Bluetooth,dots-rofi-bluetooth,bluetooth
+Monitors,dots-hypr-monitors,video-display
+Theme Selector,dots-theme-selector,preferences-desktop-theme
+Backup,dots-backup,document-save
+Security Audit,dots-security-audit,security-high
+^sep()
+^back(Back)
+
+^sep()
 Settings,dots-settings-gui,preferences-system
 Power Menu,dots power-menu --rofi,system-log-out

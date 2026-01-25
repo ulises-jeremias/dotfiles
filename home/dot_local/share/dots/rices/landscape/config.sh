@@ -3,22 +3,22 @@
 # ================================
 # Rice Metadata
 # ================================
-RICE_NAME="Gruvbox Pixelart"
-RICE_DESCRIPTION="8-bit gruvbox nostalgia with pixelated and 3D game art aesthetics"
-RICE_STYLE="Retro Gaming"
-RICE_PALETTE="Pixelated warm earth tones with gaming art"
-RICE_TAGS="retro,gaming,8bit,pixelart,gruvbox,3d,videogame"
-RICE_BEST_FOR="Retro gaming enthusiasts, pixel art lovers, gamers, nostalgia"
+RICE_NAME="Landscape"
+RICE_DESCRIPTION="Natural earth tones with scenic landscapes for light and dark environments"
+RICE_STYLE="Nature"
+RICE_PALETTE="Earth tones and natural colors with light/dark variants"
+RICE_TAGS="nature,professional,elegant,landscape,scenic"
+RICE_BEST_FOR="Professional work, nature lovers, versatile day/night usage"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light"
+GTK_THEME="auto"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
 PREFER_DARK_THEME="auto"
 
 # Color Scheme Preview
-RICE_ACCENT_COLOR="#d79921"
+RICE_ACCENT_COLOR="#689d6a"
 RICE_PRIMARY_COLOR="#458588"
 RICE_SECONDARY_COLOR="#689d6a"
 

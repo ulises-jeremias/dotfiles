@@ -63,6 +63,15 @@
 - Launch script: Window manager aware, multi-monitor capable
 - Configuration hierarchy: Profiles → Bars → Modules → Colors
 
+**Available Profiles:**
+
+- `default`: Standard dual-bar layout (top + bottom)
+- `vertical-left`: Vertical bar on left side
+- `floating-neon`: Floating centered bar with neon glow effects (cyberpunk)
+- `cozy-minimal`: Minimal floating bar with rounded corners (cozy)
+- `dock-bottom`: macOS-style dock at bottom (clean)
+- `retro-wave`: Synthwave-inspired with gradient effects (vaporwave)
+
 **Module Categories:**
 
 - System monitoring (CPU, memory, temperature, battery)
@@ -77,6 +86,26 @@
 - Scripts must handle missing dependencies
 - Update intervals must be configurable
 - Colors must use smart colors or xrdb references
+
+## 3.1 Hyprland Animations
+
+**Purpose**: Rice-specific animation profiles for window transitions.
+
+**Available Profiles:**
+
+- `animations-default.conf`: Standard smooth animations
+- `animations-cyberpunk.conf`: Glitchy, tech-inspired effects
+- `animations-cozy.conf`: Soft, gentle transitions
+- `animations-vaporwave.conf`: Retro-style with bounce effects
+- `animations-minimal.conf`: Quick, subtle animations
+
+**Integration:**
+
+Rices specify their animation profile via `HYPRLAND_ANIMATIONS` in `config.sh`:
+
+```bash
+HYPRLAND_ANIMATIONS="cyberpunk"  # Uses animations-cyberpunk.conf
+```
 
 ## 4. EWW Widget System
 

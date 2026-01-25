@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Config Manager
+Comment=Manage configuration files and settings
+Exec=dots-config-manager
+Icon=preferences-other
+Terminal=false
+Type=Application
+Categories=Settings;System;
+Keywords=config;configuration;manager;dots;
+
+

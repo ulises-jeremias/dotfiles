@@ -1,0 +1,170 @@
+/* ============================================================================
+ * Cozy Minimal Waybar - Soft & Comfortable
+ * ============================================================================
+ * A gentle, minimal bar with soft colors and extra rounded corners
+ * Inspired by Catppuccin and cozy aesthetics
+ * ============================================================================ */
+
+@import "{{ joinPath .chezmoi.homeDir ".cache/wal/colors-waybar.css" }}";
+@import "{{ joinPath .chezmoi.homeDir ".cache/dots/smart-colors/colors-waybar.css" }}";
+
+/* ==========================================================================
+ * Cozy Color Definitions
+ * ========================================================================== */
+@define-color cozy-pink #f5c2e7;
+@define-color cozy-lavender #cba6f7;
+@define-color cozy-peach #fab387;
+@define-color cozy-green #a6e3a1;
+@define-color cozy-cream #f5e0dc;
+@define-color cozy-surface rgba(30, 30, 46, 0.85);
+@define-color cozy-overlay rgba(49, 50, 68, 0.9);
+
+/* ==========================================================================
+ * Global
+ * ========================================================================== */
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "Quicksand", "Comfortaa", "Noto Color Emoji", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 0;
+}
+
+/* ==========================================================================
+ * Window - Soft Ribbon Effect
+ * ========================================================================== */
+window#waybar {
+    background: @cozy-surface;
+    color: @cozy-cream;
+    border-radius: 16px;
+    border: 1px solid rgba(245, 194, 231, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
+ * Workspaces - Soft Dots
+ * ========================================================================== */
+#workspaces {
+    background: transparent;
+    margin: 0 8px;
+    padding: 0;
+}
+
+#workspaces button {
+    background: transparent;
+    color: @cozy-lavender;
+    padding: 3px 10px;
+    margin: 5px 2px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    opacity: 0.5;
+}
+
+#workspaces button:hover {
+    background: rgba(203, 166, 247, 0.15);
+    opacity: 0.8;
+}
+
+#workspaces button.active {
+    background: rgba(245, 194, 231, 0.2);
+    color: @cozy-pink;
+    opacity: 1;
+    font-size: 15px;
+}
+
+#workspaces button.empty {
+    opacity: 0.25;
+}
+
+#workspaces button.urgent {
+    background: rgba(250, 179, 135, 0.3);
+    color: @cozy-peach;
+}
+
+/* ==========================================================================
+ * Clock - Soft Display
+ * ========================================================================== */
+#clock {
+    background: rgba(245, 194, 231, 0.1);
+    color: @cozy-cream;
+    padding: 3px 16px;
+    margin: 5px 4px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+#clock:hover {
+    background: rgba(245, 194, 231, 0.2);
+}
+
+/* ==========================================================================
+ * Audio - Soft Icon
+ * ========================================================================== */
+#pulseaudio {
+    background: transparent;
+    color: @cozy-lavender;
+    padding: 3px 12px;
+    margin: 5px 2px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+#pulseaudio:hover {
+    background: rgba(203, 166, 247, 0.15);
+}
+
+#pulseaudio.muted {
+    color: @cozy-peach;
+    opacity: 0.5;
+}
+
+/* ==========================================================================
+ * Battery - Soft Status
+ * ========================================================================== */
+#battery {
+    background: transparent;
+    color: @cozy-green;
+    padding: 3px 12px;
+    margin: 5px 2px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+#battery:hover {
+    background: rgba(166, 227, 161, 0.15);
+}
+
+#battery.charging {
+    color: @cozy-green;
+}
+
+#battery.warning:not(.charging) {
+    color: @cozy-peach;
+}
+
+#battery.critical:not(.charging) {
+    color: #f38ba8;
+}
+
+/* ==========================================================================
+ * Tray - Subtle
+ * ========================================================================== */
+#tray {
+    background: transparent;
+    padding: 3px 8px;
+    margin: 5px 8px 5px 2px;
+    border-radius: 10px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+

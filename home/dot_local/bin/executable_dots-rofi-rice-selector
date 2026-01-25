@@ -7,15 +7,14 @@
 ##
 ## executable_dots-rofi-rice-selector utility script
 
-set -euo pipefail
+set -e
 
 # This script defines the variables: DOTS_CACHE_DIR, RICES_DIR and CURRENT_RICE_FILE
 # shellcheck disable=SC1091
 source "$HOME/.local/lib/dots/dots-rice-config.sh"
 
-# Variables
-ROFI_COMMAND="rofi -dmenu -theme ~/.config/rofi/riceselector.rasi"
-PREVIEWS_DIR="${RICES_DIR}/${options[*]}"
+# Rofi theme path
+ROFI_THEME="$HOME/.config/rofi/riceselector.rasi"
 
 # Function to check dependencies
 check_dependencies() {
@@ -30,8 +29,8 @@ check_dependencies() {
 calculate_screen_parameters() {
   # Detect if running on Wayland (Hyprland) or X11
   if command -v hyprctl >/dev/null 2>&1 && [ "$XDG_SESSION_TYPE" = "wayland" ]; then
-    # Wayland/Hyprland method
-    monitor_info=$(hyprctl monitors -j | jq -r '.[0]')
+    # Wayland/Hyprland method - use focused monitor, fallback to first
+    monitor_info=$(hyprctl monitors -j | jq -r '(map(select(.focused == true)) | .[0]) // .[0]')
     monitor_res=$(echo "$monitor_info" | jq -r '.width')
     monitor_height=$(echo "$monitor_info" | jq -r '.height')
     monitor_scale=$(echo "$monitor_info" | jq -r '.scale')
@@ -87,22 +86,96 @@ calculate_screen_parameters() {
   rofi_override="element-icon{size:${element_size}px;} window{padding:${padding_top}px 0px ${padding_bottom}px 0px;}"
 }
 
-# Function to list available rices
+# Function to get rice category based on style
+get_rice_category() {
+  local rice_name="$1"
+  local config_file="${RICES_DIR}/${rice_name}/config.sh"
+  local category="Other"
+
+  if [[ -f "$config_file" ]]; then
+    local style
+    style=$(grep -E "^RICE_STYLE=" "$config_file" 2>/dev/null | cut -d'"' -f2 | tr '[:upper:]' '[:lower:]')
+
+    case "$style" in
+      *cyberpunk*|*neon*|*synthwave*|*futuristic*)
+        category="🌃 Cyberpunk & Neon"
+        ;;
+      *cozy*|*kawaii*|*pastel*|*soft*)
+        category="🌸 Cozy & Cute"
+        ;;
+      *vaporwave*|*retro*|*80s*|*90s*)
+        category="🌴 Retro & Vaporwave"
+        ;;
+      *nature*|*landscape*|*fresh*)
+        category="🌿 Nature & Fresh"
+        ;;
+      *gruvbox*|*warm*|*anime*)
+        category="🎨 Warm & Artistic"
+        ;;
+      *minimal*|*clean*|*productive*)
+        category="💼 Minimal & Productive"
+        ;;
+      *space*|*cosmic*|*dark*)
+        category="🌌 Dark & Cosmic"
+        ;;
+      *)
+        category="✨ Other"
+        ;;
+    esac
+  fi
+
+  echo "$category"
+}
+
+# Function to list available rices with categories
 list_rices() {
   options=()
+  categories=()
   index=0
   selected_index=0
-  current_rice=$(<"$CURRENT_RICE_FILE")
+  current_rice=""
 
+  if [[ -f "$CURRENT_RICE_FILE" ]]; then
+    current_rice=$(<"$CURRENT_RICE_FILE")
+  fi
+
+  # First pass: collect all rices and their categories
+  declare -A rice_by_category
   for rice_dir in "${RICES_DIR}"/*/; do
     rice_name=$(basename "$rice_dir")
-    options+=("$rice_name")
+    # Skip directories that don't have config.sh
+    [[ -f "${rice_dir}/config.sh" ]] || continue
 
-    if [[ $current_rice == "$rice_name" ]]; then
-      selected_index=$index
+    category=$(get_rice_category "$rice_name")
+    rice_by_category["$category"]+="$rice_name "
+  done
+
+  # Sort categories in preferred order
+  local preferred_order=(
+    "🌃 Cyberpunk & Neon"
+    "🌴 Retro & Vaporwave"
+    "🌸 Cozy & Cute"
+    "🎨 Warm & Artistic"
+    "🌿 Nature & Fresh"
+    "🌌 Dark & Cosmic"
+    "💼 Minimal & Productive"
+    "✨ Other"
+  )
+
+  # Build options array in category order
+  for category in "${preferred_order[@]}"; do
+    if [[ -n "${rice_by_category[$category]:-}" ]]; then
+      for rice_name in ${rice_by_category[$category]}; do
+        options+=("$rice_name")
+        categories+=("$category")
+
+        if [[ $current_rice == "$rice_name" ]]; then
+          selected_index=$index
+        fi
+
+        index=$((index + 1))
+      done
     fi
-
-    ((index++))
   done
 
   if [ ${#options[@]} -eq 0 ]; then
@@ -111,11 +184,49 @@ list_rices() {
   fi
 }
 
-# Function to show rofi menu and select rice
+# Function to show rofi menu and select rice with categories
 select_rice() {
-  selected=$(printf "%s\n" "${options[@]}" | while read -r A; do echo -en "$A\x00icon\x1f${PREVIEWS_DIR}$A/preview.png\n"; done | $ROFI_COMMAND -theme-str "$rofi_override" -selected-row "$selected_index")
+  local last_category=""
+  local menu_items=""
+  local idx=0
+
+  for rice_name in "${options[@]}"; do
+    local category="${categories[$idx]}"
+    local display_name="$rice_name"
+
+    # Add category prefix for display (compact format)
+    # The category is embedded in the display name for visual grouping
+    if [[ "$category" != "$last_category" ]]; then
+      # New category - add visual separator
+      display_name="$(echo "$category" | cut -d' ' -f1) $rice_name"
+      last_category="$category"
+    else
+      # Same category - indent for grouping effect
+      display_name="   $rice_name"
+    fi
+
+    menu_items+="${display_name}\x00icon\x1f${RICES_DIR}/${rice_name}/preview.png\x1fmeta\x1f${rice_name} ${category}\n"
+    idx=$((idx + 1))
+  done
+
+  selected=$(echo -en "$menu_items" | rofi -dmenu -theme "$ROFI_THEME" -theme-str "$rofi_override" -selected-row "$selected_index" -p "Select Rice")
 
   [[ -n $selected ]] || exit 1
+
+  # Extract actual rice name (remove category emoji and spaces)
+  selected=$(echo "$selected" | sed 's/^[^a-zA-Z]*//' | xargs)
+
+  # Verify the selected rice exists
+  if [[ ! -d "${RICES_DIR}/${selected}" ]]; then
+    # Try to find the rice by partial match
+    for rice in "${options[@]}"; do
+      if [[ "$selected" == *"$rice"* ]] || [[ "$rice" == *"$selected"* ]]; then
+        selected="$rice"
+        break
+      fi
+    done
+  fi
+
   echo "$selected" >"$CURRENT_RICE_FILE"
 }
 
@@ -132,7 +243,7 @@ select_background_image() {
     images+=("$(basename "$image")")
   done
 
-  selected_image=$(printf "%s\n" "${images[@]}" | while read -r A; do echo -en "$A\x00icon\x1f$backgrounds_dir/$A\n"; done | $ROFI_COMMAND -theme-str "$rofi_override")
+  selected_image=$(printf "%s\n" "${images[@]}" | while read -r A; do echo -en "$A\x00icon\x1f$backgrounds_dir/$A\n"; done | rofi -dmenu -theme "$ROFI_THEME" -theme-str "$rofi_override")
   [[ -n $selected_image ]] || exit 1
 }
 

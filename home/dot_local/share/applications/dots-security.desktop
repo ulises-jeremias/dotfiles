@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Security Audit
+Comment=Run security checks on your system
+Exec=dots-security-audit
+Icon=security-high
+Terminal=false
+Type=Application
+Categories=System;Security;
+Keywords=security;audit;check;system;dots;
+
+

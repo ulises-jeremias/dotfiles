@@ -84,7 +84,10 @@
     "modules": [
       "custom/tools-header",
       "custom/tools-clipboard",
-      "custom/tools-keyboard-help"
+      "custom/tools-keyboard-help",
+      "custom/tools-screenshot",
+      "custom/tools-monitors",
+      "custom/tools-security"
     ]
   },
 
@@ -112,6 +115,27 @@
     "tooltip": true,
     "tooltip-format": "Keyboard Shortcuts Help",
     "on-click": "~/.local/bin/dots-keyboard-help"
+  },
+
+  "custom/tools-screenshot": {
+    "format": "󰹑",
+    "tooltip": true,
+    "tooltip-format": "Screenshot Tool",
+    "on-click": "~/.local/bin/dots-screenshooter --rofi"
+  },
+
+  "custom/tools-monitors": {
+    "format": "󰍹",
+    "tooltip": true,
+    "tooltip-format": "Monitor Configuration",
+    "on-click": "~/.local/bin/dots-hypr-monitors"
+  },
+
+  "custom/tools-security": {
+    "format": "󰒃",
+    "tooltip": true,
+    "tooltip-format": "Security Audit",
+    "on-click": "~/.local/bin/dots-security-audit"
   },
 
   "custom/apps-web": {

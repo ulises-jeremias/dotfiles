@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Power Menu
+Comment=Shutdown, restart, logout, and more
+Exec=dots-power-menu --rofi
+Icon=system-shutdown
+Terminal=false
+Type=Application
+Categories=System;
+Keywords=power;shutdown;restart;logout;lock;dots;
+
+

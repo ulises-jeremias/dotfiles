@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Rice Selector
+Comment=Select and apply desktop themes (rices)
+Exec=dots-rofi-rice-selector
+Icon=preferences-desktop-theme
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=rice;theme;wallpaper;colors;dots;
+
+

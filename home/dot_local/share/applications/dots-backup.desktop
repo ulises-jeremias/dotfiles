@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Dots Backup
+Comment=Backup your dotfiles configuration
+Exec=dots-backup
+Icon=document-save
+Terminal=false
+Type=Application
+Categories=Utility;System;
+Keywords=backup;save;dotfiles;config;dots;
+
+
