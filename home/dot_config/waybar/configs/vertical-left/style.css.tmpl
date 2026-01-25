@@ -58,7 +58,7 @@ window#waybar {
 	color: @fg-secondary;
 	border-radius: 12px;
 	border: 1px solid rgba(255, 255, 255, 0.1);
-	padding: 2px 6px;
+	padding: 8px 6px;
 	transition: all 0.3s ease;
 }
 
@@ -139,7 +139,7 @@ box#quick-apps,
 box#system-apps,
 box#power-actions,
 box#tools {
-	padding: 2px 0;
+	padding: 4px 0;
 	margin: 4px 4px;
 	border: 1px solid transparent;
 	border-radius: 6px;
@@ -343,23 +343,51 @@ box#tools > #custom-tools-header {
 }
 
 /* Tools - Category 4 */
-#custom-tools-clipboard {
+#custom-tools-clipboard,
+#custom-tools-screenshot,
+#custom-tools-rice,
+#custom-tools-monitors,
+#custom-tools-security {
 	color: @smart-green;
+	padding: 4px 0;
+	margin: 2px 4px;
 	border: 1px solid transparent;
 	border-radius: 6px;
 	transition: all 0.2s ease;
+}
+
+#custom-tools-screenshot {
+	color: @smart-cyan;
+}
+
+#custom-tools-rice {
+	color: @smart-magenta;
+}
+
+#custom-tools-monitors {
+	color: @smart-orange;
+}
+
+#custom-tools-security {
+	color: @smart-pink;
 }
 
 #custom-tools-keyboard-help {
 	color: @smart-yellow;
+	padding: 4px 0;
+	margin: 2px 4px;
 	border: 1px solid transparent;
 	border-radius: 6px;
 	transition: all 0.2s ease;
 }
 
-#custom-tools-clipboard:hover {
+#custom-tools-clipboard:hover,
+#custom-tools-screenshot:hover,
+#custom-tools-rice:hover,
+#custom-tools-monitors:hover,
+#custom-tools-security:hover {
 	background-color: @bg-hover;
-	border-color: @smart-green;
+	border-color: currentColor;
 }
 
 #custom-tools-keyboard-help:hover {

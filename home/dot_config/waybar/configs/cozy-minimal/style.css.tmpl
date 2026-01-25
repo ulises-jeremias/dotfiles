@@ -40,6 +40,69 @@ window#waybar {
     border-radius: 16px;
     border: 1px solid rgba(245, 194, 231, 0.2);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 0 12px;
+}
+
+/* ==========================================================================
+ * Launcher - Edge Spacing
+ * ========================================================================== */
+#custom-launcher {
+    background: transparent;
+    color: @cozy-pink;
+    padding: 3px 12px;
+    margin: 5px 2px 5px 4px;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+#custom-launcher:hover {
+    background: rgba(245, 194, 231, 0.15);
+}
+
+/* ==========================================================================
+ * Collapsible Groups - Drawer Styles
+ * ========================================================================== */
+box#tools,
+box#quick-apps,
+box#system-apps,
+box#power-actions {
+    background: transparent;
+    padding: 0 6px;
+    margin: 0 3px;
+    border-radius: 10px;
+}
+
+box#tools:hover,
+box#quick-apps:hover,
+box#system-apps:hover,
+box#power-actions:hover {
+    background: rgba(203, 166, 247, 0.1);
+}
+
+/* Drawer header icons */
+#custom-tools-header {
+    color: @cozy-lavender;
+    font-size: 16px;
+    padding: 3px 6px;
+}
+
+/* Items inside drawers */
+#custom-tools-screenshot,
+#custom-tools-clipboard,
+#custom-tools-rice {
+    color: @cozy-cream;
+    padding: 3px 8px;
+    margin: 0 3px;
+    border-radius: 8px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+#custom-tools-screenshot:hover,
+#custom-tools-clipboard:hover,
+#custom-tools-rice:hover {
+    background: rgba(245, 194, 231, 0.15);
+    opacity: 1;
 }
 
 /* ==========================================================================
@@ -156,8 +219,12 @@ window#waybar {
 #tray {
     background: transparent;
     padding: 3px 8px;
-    margin: 5px 8px 5px 2px;
+    margin: 5px 4px 5px 2px;
     border-radius: 10px;
+}
+
+#tray:hover {
+    background: rgba(203, 166, 247, 0.1);
 }
 
 #tray > .passive {

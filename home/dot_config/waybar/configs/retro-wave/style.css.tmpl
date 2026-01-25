@@ -50,6 +50,7 @@ window#waybar {
     background: transparent;
     color: @vapor-dark;
     padding: 0 16px;
+    margin-left: 8px;
     font-size: 18px;
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -64,6 +65,51 @@ window#waybar {
     padding: 0 12px;
     font-size: 16px;
     text-shadow: 0 0 10px @vapor-orange;
+}
+
+/* ==========================================================================
+ * Collapsible Groups - Drawer Styles
+ * ========================================================================== */
+box#tools,
+box#quick-apps,
+box#system-apps,
+box#power-actions {
+    background: rgba(26, 10, 46, 0.4);
+    padding: 0 8px;
+    margin: 4px;
+    border-radius: 4px;
+}
+
+box#tools:hover,
+box#quick-apps:hover,
+box#system-apps:hover,
+box#power-actions:hover {
+    background: rgba(26, 10, 46, 0.6);
+}
+
+/* Drawer header icons */
+#custom-tools-header {
+    color: @vapor-dark;
+    font-size: 14px;
+    padding: 4px 8px;
+    font-weight: bold;
+}
+
+/* Items inside drawers */
+#custom-tools-screenshot,
+#custom-tools-clipboard,
+#custom-tools-rice {
+    color: @vapor-dark;
+    padding: 4px 10px;
+    margin: 0 4px;
+    font-size: 14px;
+}
+
+#custom-tools-screenshot:hover,
+#custom-tools-clipboard:hover,
+#custom-tools-rice:hover {
+    color: white;
+    text-shadow: 0 0 6px white;
 }
 
 /* ==========================================================================
@@ -187,8 +233,12 @@ window#waybar {
 #tray {
     background: rgba(26, 10, 46, 0.4);
     padding: 4px 10px;
-    margin: 4px 8px 4px 2px;
+    margin: 4px 12px 4px 2px;
     border-radius: 4px;
+}
+
+#tray:hover {
+    background: rgba(26, 10, 46, 0.6);
 }
 
 #tray > .passive {

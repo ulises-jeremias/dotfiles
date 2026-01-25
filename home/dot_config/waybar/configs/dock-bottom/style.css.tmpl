@@ -30,6 +30,7 @@ window#waybar {
     box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    padding: 0 12px;
 }
 
 /* ==========================================================================
@@ -39,7 +40,7 @@ window#waybar {
     background: transparent;
     color: @smart-cyan;
     padding: 4px 14px;
-    margin: 8px 4px;
+    margin: 8px 4px 8px 2px;
     border-radius: 12px;
     font-size: 24px;
 }
@@ -124,6 +125,27 @@ window#waybar {
 }
 
 /* ==========================================================================
+ * Tools Icons
+ * ========================================================================== */
+#custom-tools-screenshot,
+#custom-tools-clipboard,
+#custom-tools-rice {
+    background: transparent;
+    color: @smart-magenta;
+    padding: 4px 12px;
+    margin: 8px 2px;
+    border-radius: 12px;
+    font-size: 20px;
+}
+
+#custom-tools-screenshot:hover,
+#custom-tools-clipboard:hover,
+#custom-tools-rice:hover {
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 24px;
+}
+
+/* ==========================================================================
  * Clock - Icon Only
  * ========================================================================== */
 #clock {
@@ -187,8 +209,12 @@ window#waybar {
 #tray {
     background: transparent;
     padding: 4px 10px;
-    margin: 8px 10px 8px 4px;
+    margin: 8px 2px 8px 4px;
     border-radius: 12px;
+}
+
+#tray:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 #tray > .passive {

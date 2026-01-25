@@ -44,6 +44,76 @@ window#waybar {
         0 0 20px @neon-glow,
         0 0 40px rgba(0, 255, 255, 0.2),
         inset 0 0 20px rgba(255, 0, 255, 0.1);
+    padding: 0 12px;
+}
+
+/* ==========================================================================
+ * Launcher - Edge Spacing
+ * ========================================================================== */
+#custom-launcher {
+    background: transparent;
+    color: @neon-pink;
+    padding: 4px 12px;
+    margin: 6px 3px 6px 4px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font-size: 20px;
+    text-shadow: 0 0 10px @neon-pink;
+}
+
+#custom-launcher:hover {
+    background: rgba(255, 0, 255, 0.15);
+    border-color: @neon-pink;
+    box-shadow: 0 0 15px @neon-glow;
+}
+
+/* ==========================================================================
+ * Collapsible Groups - Drawer Styles
+ * ========================================================================== */
+box#tools,
+box#quick-apps,
+box#system-apps,
+box#power-actions {
+    background: transparent;
+    padding: 0 8px;
+    margin: 0 4px;
+    border-radius: 12px;
+}
+
+box#tools:hover,
+box#quick-apps:hover,
+box#system-apps:hover,
+box#power-actions:hover {
+    background: rgba(157, 0, 255, 0.1);
+}
+
+/* Drawer header icons */
+#custom-tools-header {
+    color: @neon-purple;
+    font-size: 18px;
+    padding: 4px 8px;
+    text-shadow: 0 0 8px @neon-purple;
+}
+
+/* Items inside drawers */
+#custom-tools-screenshot,
+#custom-tools-clipboard,
+#custom-tools-rice {
+    color: @neon-cyan;
+    padding: 4px 10px;
+    margin: 0 4px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 16px;
+    text-shadow: 0 0 6px @neon-cyan;
+}
+
+#custom-tools-screenshot:hover,
+#custom-tools-clipboard:hover,
+#custom-tools-rice:hover {
+    background: rgba(0, 255, 255, 0.15);
+    border-color: @neon-cyan;
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.4);
 }
 
 /* ==========================================================================
@@ -188,8 +258,12 @@ window#waybar {
 #tray {
     background: transparent;
     padding: 4px 10px;
-    margin: 6px 8px 6px 3px;
+    margin: 6px 4px 6px 3px;
     border-radius: 12px;
+}
+
+#tray:hover {
+    background: rgba(157, 0, 255, 0.1);
 }
 
 #tray > .passive {
