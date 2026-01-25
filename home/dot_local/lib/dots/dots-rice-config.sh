@@ -6,7 +6,7 @@ DOTS_CACHE_DIR="$HOME/.cache/dots"
 RICES_DIR="$HOME/.local/share/dots/rices"
 
 CURRENT_RICE_FILE="$RICES_DIR/.current_rice"
-[[ ! -f $CURRENT_RICE_FILE ]] && echo "landscape-light" >"$CURRENT_RICE_FILE"
+[[ ! -f $CURRENT_RICE_FILE ]] && echo "machines" >"$CURRENT_RICE_FILE"
 
 RICE_CONFIG_FILE="$RICES_DIR/$(<"$CURRENT_RICE_FILE")/config.sh"
 if [[ ! -f $RICE_CONFIG_FILE ]]; then
