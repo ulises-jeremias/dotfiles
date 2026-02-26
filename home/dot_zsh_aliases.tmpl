@@ -48,3 +48,19 @@ alias ll='ls -lh'
 alias ls='ls --color=tty'
 alias lsa='ls -lah'
 {{- end }}
+
+# ── Ranger (terminal file manager) ──────────────────────────────────────────
+{{- if lookPath "ranger" }}
+# ra: launch ranger (quick alias)
+alias ra='ranger'
+# rcd: launch ranger and cd to last directory on exit
+# This is the killer feature — seamlessly navigate in ranger then land
+# in that directory in your shell when you quit.
+rcd() {
+  local dir
+  dir="$(dots-ranger --last-dir "$@")"
+  if [[ -n "$dir" ]] && [[ -d "$dir" ]]; then
+    cd "$dir" || return
+  fi
+}
+{{- end }}

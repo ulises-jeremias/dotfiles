@@ -7,7 +7,7 @@
 ##
 ## executable_dots-rofi-rice-selector utility script
 
-set -e
+set -euo pipefail
 
 # This script defines the variables: DOTS_CACHE_DIR, RICES_DIR and CURRENT_RICE_FILE
 # shellcheck disable=SC1091
@@ -28,7 +28,7 @@ check_dependencies() {
 # Function to calculate screen parameters
 calculate_screen_parameters() {
   # Detect if running on Wayland (Hyprland) or X11
-  if command -v hyprctl >/dev/null 2>&1 && [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+  if command -v hyprctl >/dev/null 2>&1 && [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
     # Wayland/Hyprland method - use focused monitor, fallback to first
     monitor_info=$(hyprctl monitors -j | jq -r '(map(select(.focused == true)) | .[0]) // .[0]')
     monitor_res=$(echo "$monitor_info" | jq -r '.width')
@@ -361,6 +361,9 @@ select_background_image() {
 apply_rice() {
   if [[ -x "${RICES_DIR}"/"$selected"/apply.sh ]]; then
     BACKGROUND_IMAGE="$selected_image" "${RICES_DIR}"/"$selected"/apply.sh
+    if command -v dots-snappy-switcher >/dev/null 2>&1; then
+      dots-snappy-switcher apply-rice-theme "$selected" >/dev/null 2>&1 || true
+    fi
     exit 0
   else
     echo "Apply script not found or not executable for $selected"

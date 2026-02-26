@@ -112,6 +112,9 @@ cmd_apply() {
     echo "Applying rice: $rice_name"
     echo "$rice_name" >"${CURRENT_RICE_FILE:-$HOME/.local/share/dots/rices/.current_rice}"
     "$rice_dir/apply.sh"
+    if command -v dots-snappy-switcher >/dev/null 2>&1; then
+      dots-snappy-switcher apply-rice-theme "$rice_name" >/dev/null 2>&1 || true
+    fi
   else
     echo "Error: Apply script not found for rice '$rice_name'"
     exit 1

@@ -121,8 +121,12 @@ reload_rofi() {
 
   show_status "Updating Rofi colors..."
 
-  local rofi_colors_source="$HOME/.cache/wal/colors-rofi-dark.rasi"
+  local rofi_colors_source="$HOME/.cache/dots/smart-colors/colors-rofi.rasi"
   local rofi_colors_dest="$HOME/.config/rofi/colors.rasi"
+
+  if [[ ! -f $rofi_colors_source ]]; then
+    rofi_colors_source="$HOME/.cache/wal/colors-rofi-dark.rasi"
+  fi
 
   if [[ -f $rofi_colors_source ]]; then
     if cp "$rofi_colors_source" "$rofi_colors_dest" 2>/dev/null; then
@@ -387,13 +391,14 @@ apply_smart_colors_to_apps() {
   if pgrep waybar >/dev/null 2>&1; then
     show_status "Waybar detected, restarting with smart colors..."
 
-    # Link Waybar colors
-    local waybar_configs=("$HOME/.config/waybar/configs/default")
-    for config_dir in "${waybar_configs[@]}"; do
-      if [[ -d $config_dir ]]; then
+    # Link Waybar colors for all profile config directories
+    local waybar_configs_root="$HOME/.config/waybar/configs"
+    if [[ -d $waybar_configs_root ]]; then
+      local config_dir
+      while IFS= read -r -d '' config_dir; do
         ln -sf "$HOME/.cache/dots/smart-colors/colors-waybar.css" "$config_dir/colors.css" 2>/dev/null || true
-      fi
-    done
+      done < <(find "$waybar_configs_root" -mindepth 1 -maxdepth 1 -type d -print0)
+    fi
 
     if ~/.config/waybar/launch.sh restart >/dev/null 2>&1 || killall -q waybar && ~/.config/waybar/launch.sh & then
       show_success "Waybar restarted with smart colors"
@@ -444,7 +449,12 @@ reload_additional_apps() {
 
   # Reload Kitty if it's running
   if pgrep kitty >/dev/null && command -v kitty >/dev/null 2>&1; then
-    if kitty @ set-colors --all --configured ~/.cache/wal/colors-kitty.conf 2>/dev/null; then
+    local kitty_colors_file="$HOME/.cache/dots/smart-colors/colors-kitty.conf"
+    if [[ ! -f $kitty_colors_file ]]; then
+      kitty_colors_file="$HOME/.cache/wal/colors-kitty.conf"
+    fi
+
+    if kitty @ set-colors --all --configured "$kitty_colors_file" 2>/dev/null; then
       show_success "Kitty colors reloaded"
     fi
   fi
@@ -455,6 +465,19 @@ reload_additional_apps() {
   fi
 
   # Note: Polybar smart color integration is handled by the smart colors section
+}
+
+# Function to reload ranger colorscheme
+reload_ranger() {
+  if pgrep -x ranger >/dev/null 2>&1; then
+    show_status "Reloading ranger colors..."
+    # Ranger doesn't support live config reload via signal, but the smart
+    # colorscheme reads colors at startup. Users will see new colors on next
+    # launch. If ranger is running, we can notify via its IPC if available.
+    show_info "Ranger smart colors updated (will apply on next launch or :reload_cwd)"
+  else
+    show_info "Ranger colors updated (not currently running)"
+  fi
 }
 
 # Function to reload GTK themes
@@ -476,6 +499,25 @@ reload_gtk_themes() {
   else
     show_warning "GTK theme manager not found, skipping GTK theme update"
     SKIPPED_APPS+=("GTK themes")
+  fi
+}
+
+# Function to reload snappy-switcher theme
+reload_snappy_switcher() {
+  show_status "Syncing snappy-switcher theme with current rice..."
+
+  if ! command -v dots-snappy-switcher >/dev/null 2>&1; then
+    show_warning "dots-snappy-switcher not found, skipping switcher theme sync"
+    SKIPPED_APPS+=("Snappy Switcher")
+    return 0
+  fi
+
+  if dots-snappy-switcher apply-rice-theme >/dev/null 2>&1; then
+    show_success "Snappy switcher theme synchronized"
+    UPDATED_APPS+=("Snappy Switcher")
+  else
+    show_warning "Could not synchronize snappy switcher theme"
+    FAILED_APPS+=("Snappy Switcher")
   fi
 }
 
@@ -584,6 +626,9 @@ main() {
   reload_rofi
   reload_eww
 
+  # Reload ranger colors (fast — just needs config reload)
+  reload_ranger
+
   # Parallel operations - independent tasks that can run simultaneously
   (
     reload_discord
@@ -600,6 +645,11 @@ main() {
   ) &
   local gtk_pid=$!
 
+  (
+    reload_snappy_switcher
+  ) &
+  local snappy_pid=$!
+
   # Move slow operations to background (already in background)
   reload_lockscreen
 
@@ -607,6 +657,7 @@ main() {
   wait $discord_pid 2>/dev/null || true
   wait $additional_pid 2>/dev/null || true
   wait $gtk_pid 2>/dev/null || true
+  wait $snappy_pid 2>/dev/null || true
 
   # Update rice integration (after all reloads)
   update_current_rice

@@ -9,11 +9,15 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 DOTS_BIN_DIR="${DOTFILES_ROOT}/home/dot_local/bin"
+ENTRYPOINT_SCRIPTS=(
+  "${DOTFILES_ROOT}/home/dot_local/bin/executable_dots"
+  "${DOTFILES_ROOT}/home/dot_config/waybar/executable_launch.sh"
+  "${DOTFILES_ROOT}/home/dot_config/eww/executable_eww-manager.sh"
+)
 
 # Scripts to exclude from validation (third-party or special cases)
 EXCLUDED_SCRIPTS=(
   "executable_dots-checkupdates"       # Third-party script from pacman-contrib
-  "executable_dots-rofi-rice-selector" # Uses set -e only due to specific requirements
   "executable_dots-git-notify"         # Third-party script with custom argument parsing
 )
 
@@ -71,6 +75,27 @@ for script in "${DOTS_BIN_DIR}"/executable_dots-*; do
 
     # Note: Script executability is handled by chezmoi when applied
     # No need to check executable bit in source directory
+  fi
+done
+
+# Validate critical entrypoint scripts (strict mode + EasyOptions)
+for script in "${ENTRYPOINT_SCRIPTS[@]}"; do
+  if [[ ! -f $script ]]; then
+    echo "❌ Missing critical entrypoint script: $script"
+    ((errors++))
+    continue
+  fi
+
+  script_name=$(basename "$script")
+
+  if ! grep -q "^set -euo pipefail" "$script"; then
+    echo "❌ Missing 'set -euo pipefail' in entrypoint: $script_name"
+    ((errors++))
+  fi
+
+  if ! grep -q "easyoptions.sh" "$script"; then
+    echo "❌ Missing EasyOptions usage in entrypoint: $script_name"
+    ((errors++))
   fi
 done
 

@@ -146,10 +146,13 @@ Each rice can specify GTK preferences in its `config.sh`:
 GTK_THEME="Orchis-Dark-Compact"    # Specific theme name
 ICON_THEME="Numix-Circle"          # Icon theme
 PREFER_DARK_THEME="true"           # Dark preference
+SNAPPY_SWITCHER_THEME="tokyo-night.ini" # Snappy switcher skin file
 
 # Auto-detection (recommended)
 GTK_THEME="auto"                   # Auto-detect based on wallpaper
 PREFER_DARK_THEME="auto"           # Auto-detect light/dark preference
+# Optional compatibility key (also supported by rice integration)
+THEME="catppuccin-mocha.ini"
 ```
 
 ### Manual GTK Management
@@ -169,6 +172,12 @@ dots gtk-theme auto
 
 # Apply GTK theme for specific rice
 dots gtk-theme rice space
+
+# Apply snappy-switcher theme for current rice
+dots snappy-switcher apply-rice-theme
+
+# Apply a specific snappy-switcher theme
+dots snappy-switcher apply-theme nord.ini
 ```
 
 ---

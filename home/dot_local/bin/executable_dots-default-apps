@@ -40,19 +40,24 @@ set -euo pipefail
 
 # Source EasyOptions for argument parsing
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/logging.sh || exit
 
 SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_NAME
 readonly CACHE_DIR="$HOME/.cache/dots/default-apps"
 readonly CONFIG_FILE="$HOME/.config/dots/default-apps.conf"
 
-# Logging function
+# Logging adapter to preserve existing call sites.
 log() {
   local level="$1"
   shift
-  if [[ ${verbose:-no} == yes ]] || [[ $level == "ERROR" ]]; then
-    echo "[$level] $*" >&2
-  fi
+  case "$level" in
+    ERROR) log_error "$*" ;;
+    WARNING|WARN) log_warn "$*" ;;
+    INFO) log_info "$*" ;;
+    DEBUG) log_debug "$*" ;;
+    *) log_info "$*" ;;
+  esac
 }
 
 # Check dependencies

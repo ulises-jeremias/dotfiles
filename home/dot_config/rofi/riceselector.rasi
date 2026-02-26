@@ -22,7 +22,7 @@ window {
     border:                      0px;
     border-radius:               0px;
     border-color:                transparent;
-    background-color:            #1a1e2475;
+    background-color:            @background;
 }
 
 mainbox {

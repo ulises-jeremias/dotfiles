@@ -38,6 +38,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      - name: Validate script standards
+        run: ./scripts/validate-dots-scripts.sh
+
       - name: Install Dotfiles
         run: ./install.sh
 

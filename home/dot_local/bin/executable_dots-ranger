@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Ranger Terminal File Manager — Smart launcher with Wayland integration
+## Wraps ranger with directory sync, diagnostics, and environment setup.
+##
+## Usage:
+##   @script.name [OPTIONS] [PATH]
+##
+## Options:
+##   -h, --help           Show this help
+##   -l, --last-dir       On exit, cd shell to last ranger directory
+##   -s, --select=FILE    Open ranger with FILE selected
+##       --cheatsheet     Show keybinding cheatsheet
+##       --fix-previews   Diagnose and fix preview issues
+##       --path=PATH      Path to open (default: current directory)
+##
+## Examples:
+##   dots-ranger                          # Open ranger in current directory
+##   dots-ranger --last-dir               # Open ranger, cd to last dir on exit
+##   dots-ranger --select=~/file.txt      # Open ranger with file selected
+##   dots-ranger --cheatsheet             # Show keybinding reference
+##   dots-ranger --fix-previews           # Check preview dependencies
+
+set -euo pipefail
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+# ─── Colors ──────────────────────────────────────────────────────────────────
+
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly CYAN='\033[0;36m'
+readonly BOLD='\033[1m'
+readonly NC='\033[0m'
+
+# ─── Cheatsheet ──────────────────────────────────────────────────────────────
+
+show_cheatsheet() {
+  cat <<'EOF'
+╔══════════════════════════════════════════════════════════════════════════════════╗
+║                         RANGER CHEATSHEET — HorneroConfig                     ║
+╠══════════════════════════════════════════════════════════════════════════════════╣
+║                                                                                ║
+║  ─── NAVIGATION ─────────────────────────────────────────────────────────────  ║
+║    h / ←         Go to parent directory                                        ║
+║    l / → / Enter Enter directory or open file                                  ║
+║    j / ↓ / k / ↑ Move down / up                                               ║
+║    J / Ctrl-D    Page half-down    K / Ctrl-U    Page half-up                  ║
+║    H / L         History back / forward                                        ║
+║    ~             Toggle miller / multipane view                                ║
+║                                                                                ║
+║  ─── QUICK DIRS (g + key) ───────────────────────────────────────────────────  ║
+║    gh Home    gp Projects    gd Downloads    gD Documents                      ║
+║    gP Pics    gm Music       gv Videos       gc ~/.config                      ║
+║    gl .local  gr Rices       gw Wallpapers   gb Scripts                        ║
+║                                                                                ║
+║  ─── FILE OPS ───────────────────────────────────────────────────────────────  ║
+║    Space  Mark    yy Copy    dd Cut    pp Paste    DD Trash (safe)             ║
+║    cw  Rename (or bulk rename if files marked)                                 ║
+║    yp/yd/yn  Yank path/dir/name to clipboard                                  ║
+║                                                                                ║
+║  ─── POWER ──────────────────────────────────────────────────────────────────  ║
+║    Ctrl-f  Fuzzy search (fzf)     Ctrl-g  Content search (ripgrep)            ║
+║    C  Compress selection          X  Extract archive                           ║
+║    Alt-t  Open in Thunar          :cheatsheet  This reference                  ║
+║                                                                                ║
+║  ─── SORTING (o + key) ─────────────────────────────────────────────────────   ║
+║    os Size   on Name   om Modified   ot Type   oe Extension   or Reverse      ║
+║                                                                                ║
+║  ─── TABS ───────────────────────────────────────────────────────────────────  ║
+║    Ctrl-n New    Ctrl-w Close    Tab/S-Tab Switch    Alt-1..9 Jump             ║
+║                                                                                ║
+╚══════════════════════════════════════════════════════════════════════════════════╝
+EOF
+}
+
+# ─── Preview Diagnostics ────────────────────────────────────────────────────
+
+fix_previews() {
+  echo -e "${BOLD}${CYAN}🔍 Ranger Preview Diagnostics${NC}"
+  echo ""
+  local issues=0
+
+  check_dep() {
+    local cmd="$1" pkg="$2" purpose="$3" required="${4:-optional}"
+    if command -v "$cmd" >/dev/null 2>&1; then
+      echo -e "  ${GREEN}✓${NC} $cmd — $purpose"
+    else
+      if [[ "$required" == "required" ]]; then
+        echo -e "  ${RED}✗${NC} $cmd — $purpose ${RED}(REQUIRED — install: $pkg)${NC}"
+        ((issues++))
+      else
+        echo -e "  ${YELLOW}○${NC} $cmd — $purpose ${YELLOW}(optional — install: $pkg)${NC}"
+      fi
+    fi
+  }
+
+  echo -e "${BOLD}Core (required for image preview):${NC}"
+  check_dep ranger        "ranger"        "File manager"           required
+  check_dep python3       "python"        "Python runtime"         required
+
+  # Check python-pillow
+  if python3 -c "from PIL import Image" 2>/dev/null; then
+    echo -e "  ${GREEN}✓${NC} python-pillow — Kitty image protocol support"
+  else
+    echo -e "  ${RED}✗${NC} python-pillow — ${RED}REQUIRED for image previews (install: python-pillow)${NC}"
+    ((issues++))
+  fi
+
+  echo ""
+  echo -e "${BOLD}Terminal:${NC}"
+  if [[ "$TERM" == "xterm-kitty" ]] || [[ -n "${KITTY_PID:-}" ]]; then
+    echo -e "  ${GREEN}✓${NC} Running in Kitty terminal (native image protocol)"
+  else
+    echo -e "  ${YELLOW}○${NC} Not running in Kitty — image previews may be limited"
+  fi
+
+  echo ""
+  echo -e "${BOLD}Preview tools:${NC}"
+  check_dep bat                 "bat"                 "Syntax highlighting"        required
+  check_dep pdftoppm            "poppler"             "PDF previews"               optional
+  check_dep ffmpegthumbnailer   "ffmpegthumbnailer"   "Video thumbnails"           optional
+  check_dep mediainfo           "mediainfo"           "Media file info"            optional
+  check_dep atool               "atool"               "Archive listing"            optional
+  check_dep exiftool            "perl-image-exiftool" "EXIF metadata"              optional
+  check_dep glow                "glow (AUR)"          "Markdown rendering"         optional
+  check_dep jq                  "jq"                  "JSON formatting"            optional
+  check_dep w3m                 "w3m"                  "HTML rendering"            optional
+  check_dep odt2txt             "odt2txt"             "OpenDocument text"          optional
+  check_dep rsvg-convert        "librsvg"             "SVG conversion"             optional
+
+  echo ""
+  echo -e "${BOLD}Power features:${NC}"
+  check_dep fzf         "fzf"             "Fuzzy file search (Ctrl-f)"       optional
+  check_dep rg          "ripgrep"         "Content search (Ctrl-g)"          optional
+  check_dep fd          "fd"              "Fast file finder"                 optional
+  check_dep trash-put   "trash-cli"       "Safe delete (DD)"                 optional
+  check_dep dragon-drop "dragon-drop-git (AUR)" "Drag & drop to GUI"        optional
+  check_dep wl-copy     "wl-clipboard"    "Wayland clipboard (yp/yd/yn)"    optional
+
+  echo ""
+  echo -e "${BOLD}Colorscheme:${NC}"
+  if [[ -f "$HOME/.cache/dots/smart-colors/colors-ranger.py" ]]; then
+    echo -e "  ${GREEN}✓${NC} Smart colors file exists"
+  else
+    echo -e "  ${YELLOW}○${NC} Smart colors not generated (run: dots-smart-colors --generate)"
+  fi
+
+  echo ""
+  if [[ $issues -gt 0 ]]; then
+    echo -e "${RED}Found $issues required issues. Fix them for best experience.${NC}"
+    echo -e "Quick fix: ${BOLD}yay -S --noconfirm python-pillow bat${NC}"
+  else
+    echo -e "${GREEN}All required dependencies are installed! 🎉${NC}"
+  fi
+}
+
+# ─── Launch Ranger ───────────────────────────────────────────────────────────
+
+launch_ranger() {
+  local target="${path:-${1:-$(pwd)}}"
+  local ranger_args=()
+
+  # Disable loading default rc.conf (we provide a complete one)
+  export RANGER_LOAD_DEFAULT_RC=FALSE
+
+  # Select specific file if requested
+  if [[ -n "${select:-}" ]]; then
+    ranger_args+=("--selectfile=${select}")
+  elif [[ -d "$target" ]]; then
+    ranger_args+=("$target")
+  elif [[ -f "$target" ]]; then
+    ranger_args+=("--selectfile=$target")
+  fi
+
+  if [[ "${last_dir:-}" == "yes" ]]; then
+    # Save last directory on exit — shell will cd there
+    local tmp
+    tmp="$(mktemp -t ranger_cd.XXXXXX)"
+    ranger --choosedir="$tmp" "${ranger_args[@]}"
+    if [[ -f "$tmp" ]]; then
+      local chosen_dir
+      chosen_dir="$(cat "$tmp")"
+      rm -f "$tmp"
+      if [[ -n "$chosen_dir" ]] && [[ "$chosen_dir" != "$(pwd)" ]]; then
+        # Write to stdout so the shell function can cd
+        echo "$chosen_dir"
+      fi
+    fi
+  else
+    ranger "${ranger_args[@]}"
+  fi
+}
+
+# ─── Main ────────────────────────────────────────────────────────────────────
+
+main() {
+  if [[ "${help:-}" == "yes" ]]; then
+    show_help
+    exit 0
+  fi
+
+  if [[ "${cheatsheet:-}" == "yes" ]]; then
+    show_cheatsheet
+    exit 0
+  fi
+
+  if [[ "${fix_previews:-}" == "yes" ]]; then
+    fix_previews
+    exit 0
+  fi
+
+  launch_ranger "$@"
+}
+
+main "$@"

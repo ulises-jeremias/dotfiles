@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2026 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Program: dots-snappy-switcher
+## Description: Snappy Switcher wrapper with rice theme integration
+##
+## Usage:
+##   dots-snappy-switcher [COMMAND] [ARG]
+##
+## Commands:
+##   daemon                    Start daemon in background mode
+##   next                      Focus next window (Alt+Tab)
+##   prev                      Focus previous window (Alt+Shift+Tab)
+##   toggle                    Toggle switcher visibility
+##   hide                      Hide switcher overlay
+##   select                    Confirm current selection
+##   quit                      Stop snappy-switcher daemon
+##   apply-theme <theme>       Apply explicit theme file (e.g. nord.ini)
+##   apply-rice-theme [rice]   Apply theme from rice config (SNAPPY_SWITCHER_THEME/THEME)
+##   status                    Show whether daemon is running
+##
+
+set -euo pipefail
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+source ~/.local/lib/dots/snappy-switcher-manager.sh || exit
+
+run_snappy() {
+  local cmd="$1"
+  shift || true
+
+  if ! command -v snappy-switcher >/dev/null 2>&1; then
+    echo "snappy-switcher is not installed."
+    echo "Install it with your package manager (AUR: snappy-switcher)."
+    return 1
+  fi
+
+  snappy-switcher "$cmd" "$@"
+}
+
+cmd="${arguments[0]:-toggle}"
+arg="${arguments[1]:-}"
+
+case "$cmd" in
+  daemon)
+    run_snappy --daemon
+    ;;
+  next | prev | toggle | hide | select | quit)
+    run_snappy "$cmd"
+    ;;
+  apply-theme)
+    if [[ -z $arg ]]; then
+      echo "Usage: dots-snappy-switcher apply-theme <theme>"
+      exit 1
+    fi
+    apply_snappy_switcher_theme "$arg"
+    ;;
+  apply-rice-theme)
+    apply_rice_snappy_switcher_theme "$arg"
+    ;;
+  status)
+    if pgrep -x snappy-switcher >/dev/null 2>&1; then
+      echo "snappy-switcher daemon: running"
+    else
+      echo "snappy-switcher daemon: not running"
+    fi
+    ;;
+  help | --help | -h)
+    show_help
+    ;;
+  *)
+    echo "Unknown command: $cmd"
+    show_help
+    exit 1
+    ;;
+esac

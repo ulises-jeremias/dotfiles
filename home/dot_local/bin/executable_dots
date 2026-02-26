@@ -12,6 +12,8 @@
 ##     -l, --list                            List all available scripts.
 ##
 
+set -euo pipefail
+
 show_message_with_usage() {
   [[ -z $documentation ]] && parse_documentation
   echo "$documentation"
@@ -30,11 +32,6 @@ if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
   export PATH="$HOME/bin:${PATH}"
 fi
 
-# Add pyenv shims to PATH if pyenv is installed and shims exist and it's not already in the PATH
-if [[ -d "${HOME}/.pyenv/shims" && ":$PATH:" != *":$HOME/.pyenv/shims:"* ]]; then
-  export PATH="${HOME}/.pyenv/shims:${PATH}"
-fi
-
 NO_HELP=true
 NO_CHECK=true
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
@@ -42,10 +39,24 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 # Include the dots-scripts.sh file to get the list of scripts
 source ~/.local/lib/dots/dots-scripts.sh || exit
 
-script=${arguments[0]}
+is_valid_script() {
+  local requested_script="$1"
+  local script_entry script_name
+
+  for script_entry in "${scripts_list[@]}"; do
+    script_name=$(echo "${script_entry}" | cut -d ':' -f 1)
+    if [[ $script_name == "$requested_script" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+script="${arguments[0]:-}"
 
 if [[ -n ${script} ]]; then
-  if [[ ! ${scripts_list[*]} =~ ${script} ]]; then
+  if ! is_valid_script "$script"; then
     show_message_with_usage "Invalid script specified."
   fi
 
@@ -59,16 +70,16 @@ if [[ -n ${script} ]]; then
   exit $?
 fi
 
-if [[ -n ${list} ]]; then
-  for script in "${scripts_list[@]}"; do
-    script_name_with_icon=$(echo "${script}" | cut -d ':' -f 1)
-    script_desc=$(echo "${script}" | cut -d ':' -f 2)
+if [[ -n ${list:-} ]]; then
+  for script_entry in "${scripts_list[@]}"; do
+    script_name_with_icon=$(echo "${script_entry}" | cut -d ':' -f 1)
+    script_desc=$(echo "${script_entry}" | cut -d ':' -f 2)
     echo -e "$(tput setaf 3)${script_name_with_icon}$(tput sgr0)$(tput setaf 7)${script_desc}$(tput sgr0)"
   done
   exit
 fi
 
-if [[ -n ${help} ]]; then
+if [[ -n ${help:-} ]]; then
   [[ -z $documentation ]] && parse_documentation
   echo "$documentation"
   exit

@@ -10,4 +10,14 @@
 	<startup-notify/>
 	<directories/>
 </action>
+<action>
+	<icon>folder</icon>
+	<name>Open in Ranger</name>
+	<unique-id>1661052768169841-2</unique-id>
+	<command>kitty --class ranger-popup -e ranger %f</command>
+	<description>Browse this directory in Ranger file manager</description>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+</action>
 </actions>

@@ -36,7 +36,7 @@
 ##     @script.name --list-profiles          # List available profiles
 ##     @script.name profiles                  # List available profiles (alternative)
 
-set -e
+set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
@@ -50,22 +50,9 @@ readonly LOG_DIR="$HOME/.cache/waybar"
 readonly LOG_FILE="$LOG_DIR/waybar.log"
 readonly PID_FILE="$LOG_DIR/waybar.pid"
 
-# Setup logging
 mkdir -p "$LOG_DIR"
-
-log() {
-  local level="$1"
-  shift
-  local message="$*"
-  local timestamp
-  timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
-
-  if [[ ${verbose:-no} == yes ]] || [[ $level == "ERROR" ]] || [[ $level == "INFO" ]]; then
-    echo "[$timestamp] [$level] $message" | tee -a "$LOG_FILE"
-  else
-    echo "[$timestamp] [$level] $message" >>"$LOG_FILE"
-  fi
-}
+export DOTS_LOG_FILE="$LOG_FILE"
+source ~/.local/lib/dots/logging.sh || exit
 
 # Load rice configuration
 load_rice_config() {

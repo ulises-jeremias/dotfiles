@@ -1,11 +1,47 @@
 {{- if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
-yay -S --noconfirm --needed \
-  ranger \
-  ueberzug \
-  ranger_devicons-git
+set -euo pipefail
 
+# ── Core ranger + image preview (kitty protocol) ───────────────────────────
+# python-pillow is REQUIRED for ranger's kitty image preview method.
+# We no longer install ueberzug (X11-only, broken on Wayland).
+sudo pacman -S --noconfirm --needed \
+  ranger \
+  python-pillow
+
+# ── Preview dependencies ───────────────────────────────────────────────────
+# Each is optional — scope.sh gracefully falls back if any is missing.
+# Grouped by purpose for clarity.
+sudo pacman -S --noconfirm --needed \
+  bat \
+  ffmpegthumbnailer \
+  mediainfo \
+  atool \
+  odt2txt \
+  imagemagick \
+  perl-image-exiftool \
+  w3m \
+  trash-cli \
+  fzf \
+  ripgrep \
+  fd
+
+# poppler provides pdftoppm for PDF previews — installed separately because
+# it can conflict with poppler-qt6 version pins during partial upgrades.
+sudo pacman -S --noconfirm --needed poppler 2>/dev/null || true
+
+# ── AUR packages ──────────────────────────────────────────────────────────
+yay -S --noconfirm --needed \
+  ranger_devicons-git \
+  dragon-drop-git
+
+# ── Optional enhanced preview tools (graceful if missing) ─────────────────
+yay -S --noconfirm --needed glow 2>/dev/null || true
+
+# ── Plugin setup ──────────────────────────────────────────────────────────
 mkdir -p ~/.config/ranger/plugins
-ln -fsT /usr/share/ranger/plugins/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
+if [[ -d /usr/share/ranger/plugins/ranger_devicons ]]; then
+  ln -fsT /usr/share/ranger/plugins/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
+fi
 {{- end -}}

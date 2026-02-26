@@ -240,15 +240,15 @@ scale trough highlight {
   font-weight: normal;
 }
 .iconmail {
-  color: #df584e;
+  color: $error;
 }
 
 .github {
-  background-color: #24292e;
+  background-color: $background-alt;
   border-radius: 20px;
 }
 .youtube {
-  background-color: #df584e;
+  background-color: $error;
   border-radius: 20px;
 }
 .mail {
@@ -302,7 +302,7 @@ scale trough highlight {
   padding: 8px;
 }
 .hddicon {
-  color: #81a1c1;
+  color: $info;
   font-family: Hack Nerd Font Mono;
   opacity: 1;
   font-size: 80px;
@@ -310,7 +310,7 @@ scale trough highlight {
   margin: 25px 20px 25px 35px;
 }
 .hdd_label {
-  color: #e5e9f0;
+  color: $foreground;
   opacity: 1;
   font-size: 35px;
   font-weight: bold;

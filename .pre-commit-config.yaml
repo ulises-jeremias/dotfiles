@@ -85,9 +85,8 @@ repos:
         name: Validate dots scripts
         entry: ./scripts/validate-dots-scripts.sh
         language: script
-        files: '^home/dot_local/bin/executable_dots-.*$'
-        exclude: '^home/dot_local/bin/executable_dots-checkupdates$'
         pass_filenames: false
+        always_run: true
 
       - id: no-commit-to-main
         name: Don't commit directly to main
