@@ -467,16 +467,13 @@ reload_additional_apps() {
   # Note: Polybar smart color integration is handled by the smart colors section
 }
 
-# Function to reload ranger colorscheme
-reload_ranger() {
-  if pgrep -x ranger >/dev/null 2>&1; then
-    show_status "Reloading ranger colors..."
-    # Ranger doesn't support live config reload via signal, but the smart
-    # colorscheme reads colors at startup. Users will see new colors on next
-    # launch. If ranger is running, we can notify via its IPC if available.
-    show_info "Ranger smart colors updated (will apply on next launch or :reload_cwd)"
+# Function to reload yazi colors
+reload_yazi() {
+  if pgrep -x yazi >/dev/null 2>&1; then
+    show_status "Reloading yazi colors..."
+    show_info "Yazi inherits terminal colors — will update on next launch"
   else
-    show_info "Ranger colors updated (not currently running)"
+    show_info "Yazi colors updated (not currently running)"
   fi
 }
 
@@ -626,8 +623,8 @@ main() {
   reload_rofi
   reload_eww
 
-  # Reload ranger colors (fast — just needs config reload)
-  reload_ranger
+  # Reload yazi colors (inherits terminal palette)
+  reload_yazi
 
   # Parallel operations - independent tasks that can run simultaneously
   (

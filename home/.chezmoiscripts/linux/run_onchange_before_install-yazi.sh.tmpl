@@ -1,0 +1,37 @@
+{{- if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# ── Core yazi (official Arch extra repo) ─────────────────────────────────────
+sudo pacman -S --noconfirm --needed \
+  yazi
+
+# ── Preview and power-feature dependencies ───────────────────────────────────
+# Each is optional — yazi gracefully falls back if any is missing.
+sudo pacman -S --noconfirm --needed \
+  bat \
+  ffmpegthumbnailer \
+  p7zip \
+  poppler \
+  fd \
+  ripgrep \
+  fzf \
+  imagemagick \
+  jq \
+  mediainfo \
+  perl-image-exiftool \
+  trash-cli \
+  zoxide
+
+# ── Optional enhanced preview tools (graceful if missing) ────────────────────
+yay -S --noconfirm --needed glow 2>/dev/null || true
+
+# ── Yazi flavors (Catppuccin themes) ─────────────────────────────────────────
+if command -v ya >/dev/null 2>&1; then
+  ya pkg add yazi-rs/flavors:catppuccin-mocha 2>/dev/null || true
+  ya pkg add yazi-rs/flavors:catppuccin-latte 2>/dev/null || true
+  ya pkg add yazi-rs/plugins:git 2>/dev/null || true
+  ya pkg install 2>/dev/null || true
+fi
+{{- end -}}

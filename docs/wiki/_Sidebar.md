@@ -20,7 +20,7 @@
 - [🖼️ EWW Widgets](EWW-Widgets)
 - [🚀 Rofi Launcher](Rofi-Apps-Launcher)
 - [📁 Thunar File Manager](Thunar-Side-Panel)
-- [📁 Ranger File Manager](Ranger)
+- [📁 Yazi File Manager](Yazi)
 - [📋 CopyQ Clipboard Manager](CopyQ-Customization)
 
 #### **Terminal & Shell**
@@ -57,7 +57,7 @@
 - [⌨️ Keyboard Layout](Dots-Scripts#keyboard-layout--keyboard-layout-switcher) - 13 layouts
 - [🔋 Battery Monitor](Dots-Scripts#battery-monitor--battery-alert-daemon) - poweralertd
 - [📁 File Manager](Dots-Scripts#file-manager--file-manager-launcher) - thunar → nautilus
-- [📁 Ranger](Dots-Scripts#ranger--terminal-file-manager) - terminal file manager
+- [📁 Yazi](Dots-Scripts#yazi--terminal-file-manager) - terminal file manager
 
 ### 🛡️ **System & Hardware**
 

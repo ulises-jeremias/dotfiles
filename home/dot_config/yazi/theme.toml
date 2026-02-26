@@ -1,0 +1,11 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                     HorneroConfig — Yazi Theme                             ║
+# ║                                                                            ║
+# ║  Yazi inherits terminal colors automatically via escape sequences.         ║
+# ║  Smart-colors / pywal set the terminal palette, and yazi picks it up.      ║
+# ║  This file only needs flavor selection and minor overrides.                ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+[flavor]
+dark  = "catppuccin-mocha"
+light = "catppuccin-latte"

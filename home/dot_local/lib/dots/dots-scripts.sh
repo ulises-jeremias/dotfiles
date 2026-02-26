@@ -29,7 +29,7 @@ scripts_list=(
   "⚡ performance: Monitor system performance and run benchmarks"
   "🎚️ performance-mode: Select CPU performance profiles (auto-cpufreq)"
   "🔌 power-menu: System power menu (shutdown, reboot, logout, suspend)"
-  "📁 ranger: Launch ranger with smart defaults, preview diagnostics, and last-dir support"
+  "📁 yazi: Launch yazi with smart defaults, preview diagnostics, and last-dir support"
   "🌾 rice: Manage and apply desktop rice themes with metadata support"
   "🔵 rofi-bluetooth: Rofi menu to manage Bluetooth device connections"
   "🎨 rofi-rice-selector: Rofi menu to select and apply desktop rice themes"

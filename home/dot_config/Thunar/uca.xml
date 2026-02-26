@@ -12,10 +12,10 @@
 </action>
 <action>
 	<icon>folder</icon>
-	<name>Open in Ranger</name>
+	<name>Open in Yazi</name>
 	<unique-id>1661052768169841-2</unique-id>
-	<command>kitty --class ranger-popup -e ranger %f</command>
-	<description>Browse this directory in Ranger file manager</description>
+	<command>kitty --class yazi-popup -e yazi %f</command>
+	<description>Browse this directory in Yazi file manager</description>
 	<patterns>*</patterns>
 	<startup-notify/>
 	<directories/>

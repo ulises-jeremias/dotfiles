@@ -1,0 +1,87 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                     HorneroConfig — Yazi Configuration                     ║
+# ║                                                                            ║
+# ║  A curated, theme-adaptive terminal file manager configuration.            ║
+# ║  Managed by chezmoi — edit the source, not the generated file.             ║
+# ║                                                                            ║
+# ║  Colors auto-adapt to your current rice via terminal escape sequences.     ║
+# ║  Image previews use Kitty protocol (native Wayland support).               ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+[mgr]
+ratio         = [2, 4, 4]
+sort_by       = "natural"
+sort_sensitive = false
+sort_reverse  = false
+sort_dir_first = true
+show_hidden   = true
+show_symlink  = true
+linemode      = "size"
+scrolloff     = 8
+
+[preview]
+wrap            = "no"
+tab_size        = 2
+max_width       = 1000
+max_height      = 1000
+image_quality   = 75
+image_filter    = "lanczos3"
+
+[opener]
+edit = [
+  { run = '${EDITOR:-nvim} "$@"', block = true, for = "unix" },
+]
+open = [
+  { run = 'xdg-open "$@"', orphan = true, for = "unix" },
+]
+thunar = [
+  { run = 'thunar "$@"', orphan = true, for = "unix" },
+]
+play = [
+  { run = 'mpv --force-window "$@"', orphan = true, for = "unix" },
+  { run = 'xdg-open "$@"', orphan = true, for = "unix" },
+]
+archive = [
+  { run = 'xdg-open "$@"', for = "unix" },
+]
+
+[open]
+rules = [
+  { name = "*/", use = ["edit", "open", "thunar"] },
+
+  { mime = "text/*", use = ["edit", "open"] },
+  { mime = "application/json", use = ["edit", "open"] },
+  { mime = "application/x-ndjson", use = ["edit", "open"] },
+  { mime = "application/xml", use = ["edit", "open"] },
+  { mime = "application/x-shellscript", use = ["edit", "open"] },
+  { mime = "application/x-yaml", use = ["edit", "open"] },
+
+  { mime = "image/*", use = ["open"] },
+  { mime = "video/*", use = ["play", "open"] },
+  { mime = "audio/*", use = ["play", "open"] },
+
+  { mime = "application/zip", use = ["archive", "open"] },
+  { mime = "application/gzip", use = ["archive", "open"] },
+  { mime = "application/x-tar", use = ["archive", "open"] },
+  { mime = "application/x-bzip2", use = ["archive", "open"] },
+  { mime = "application/x-xz", use = ["archive", "open"] },
+  { mime = "application/x-7z-compressed", use = ["archive", "open"] },
+  { mime = "application/x-rar", use = ["archive", "open"] },
+
+  { mime = "application/pdf", use = ["open"] },
+
+  { name = "*", use = ["open", "edit"] },
+]
+
+[tasks]
+micro_workers    = 10
+macro_workers    = 25
+bizarre_retry    = 5
+image_alloc      = 536870912  # 512 MB
+image_bound      = [0, 0]
+
+[plugin]
+prepend_fetchers = [
+  { id = "git", name = "*", run = "git" },
+  { id = "git", name = "*/", run = "git" },
+]

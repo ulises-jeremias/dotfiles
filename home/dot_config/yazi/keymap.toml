@@ -1,0 +1,165 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                     HorneroConfig — Yazi Keybindings                       ║
+# ║                                                                            ║
+# ║  Custom keybindings layered on top of yazi defaults.                       ║
+# ║  Only additions/overrides go here — defaults are inherited.                ║
+# ║                                                                            ║
+# ║  Quick Reference:                                                          ║
+# ║    g + key     Quick directory navigation                                  ║
+# ║    o + key     Sorting options                                             ║
+# ║    D D         Safe delete (trash)                                         ║
+# ║    y p / y d   Yank path / directory to clipboard                          ║
+# ║    Alt-t       Open current dir in Thunar                                  ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+[[mgr.prepend_keymap]]
+on   = ["D", "D"]
+run  = "remove --permanently=false"
+desc = "Trash selected files (safe delete)"
+
+# ── Quick Directory Navigation (g + key) ─────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = ["g", "h"]
+run  = "cd ~"
+desc = "Go to Home"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "p"]
+run  = "cd ~/Projects"
+desc = "Go to Projects"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "d"]
+run  = "cd ~/Downloads"
+desc = "Go to Downloads"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "D"]
+run  = "cd ~/Documents"
+desc = "Go to Documents"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "P"]
+run  = "cd ~/Pictures"
+desc = "Go to Pictures"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "m"]
+run  = "cd ~/Music"
+desc = "Go to Music"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "v"]
+run  = "cd ~/Videos"
+desc = "Go to Videos"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "c"]
+run  = "cd ~/.config"
+desc = "Go to ~/.config"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "l"]
+run  = "cd ~/.local"
+desc = "Go to ~/.local"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "r"]
+run  = "cd ~/.local/share/dots/rices"
+desc = "Go to Rices"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "w"]
+run  = "cd ~/.local/share/dots/rices/$(cat ~/.local/share/dots/rices/.current_rice 2>/dev/null || echo machines)/backgrounds"
+desc = "Go to current rice Wallpapers"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "b"]
+run  = "cd ~/.local/bin"
+desc = "Go to Scripts (~/.local/bin)"
+
+[[mgr.prepend_keymap]]
+on   = ["g", "t"]
+run  = "cd /tmp"
+desc = "Go to /tmp"
+
+# ── Yank to Wayland Clipboard ────────────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = ["y", "p"]
+run  = '''
+  shell 'for f in "$@"; do echo -n "$f"; done | wl-copy' --confirm
+'''
+desc = "Yank file path(s) to clipboard"
+
+[[mgr.prepend_keymap]]
+on   = ["y", "d"]
+run  = '''
+  shell 'echo -n "$(dirname "$1")" | wl-copy' --confirm
+'''
+desc = "Yank directory to clipboard"
+
+[[mgr.prepend_keymap]]
+on   = ["y", "n"]
+run  = '''
+  shell 'for f in "$@"; do echo -n "$(basename "$f")"; done | wl-copy' --confirm
+'''
+desc = "Yank file name(s) to clipboard"
+
+# ── Open in Thunar (GUI File Manager) ────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = ["<A-t>"]
+run  = '''
+  shell 'thunar "$@" &' --confirm
+'''
+desc = "Open in Thunar"
+
+# ── Sorting (o + key) ────────────────────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = ["o", "n"]
+run  = "sort natural --reverse=no"
+desc = "Sort by name"
+
+[[mgr.prepend_keymap]]
+on   = ["o", "s"]
+run  = "sort size --reverse=yes"
+desc = "Sort by size (largest first)"
+
+[[mgr.prepend_keymap]]
+on   = ["o", "m"]
+run  = "sort modified --reverse=yes"
+desc = "Sort by modified (newest first)"
+
+[[mgr.prepend_keymap]]
+on   = ["o", "t"]
+run  = "sort mime"
+desc = "Sort by type"
+
+[[mgr.prepend_keymap]]
+on   = ["o", "e"]
+run  = "sort extension"
+desc = "Sort by extension"
+
+[[mgr.prepend_keymap]]
+on   = ["o", "r"]
+run  = "sort natural --reverse"
+desc = "Reverse current sort"
+
+# ── Archive Operations ───────────────────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = ["C"]
+run  = '''
+  shell 'archive_name="$(basename "$1").tar.gz"; tar czf "$archive_name" "$@" && echo "Created $archive_name"' --confirm --block
+'''
+desc = "Compress selected files"
+
+[[mgr.prepend_keymap]]
+on   = ["X"]
+run  = '''
+  shell 'for f in "$@"; do case "$f" in *.tar.gz|*.tgz) tar xzf "$f" ;; *.tar.bz2|*.tbz2) tar xjf "$f" ;; *.tar.xz|*.txz) tar xJf "$f" ;; *.zip) unzip "$f" ;; *.rar) unrar x "$f" ;; *.7z) 7z x "$f" ;; *.tar) tar xf "$f" ;; *) echo "Unknown archive: $f" ;; esac; done' --confirm --block
+'''
+desc = "Extract archive(s)"
