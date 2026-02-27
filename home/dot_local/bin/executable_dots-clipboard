@@ -3,8 +3,8 @@
 ## dots-clipboard: Clipboard manager wrapper
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
-## Wayland order (auto): quickshell > copyq > cliphist+(fuzzel|wofi) > minimal
-## X11 order (auto): quickshell > copyq > minimal
+## Wayland order (auto): copyq > cliphist+(fuzzel|wofi) > quickshell > minimal
+## X11 order (auto): copyq > quickshell > minimal
 ## Usage:
 ##   @script.name [OPTIONS]
 ## Options:
@@ -25,7 +25,7 @@ is_wayland() { [[ ${XDG_SESSION_TYPE:-} == wayland ]]; }
 menu_pick() {
   local title="$1"
   if command -v fuzzel >/dev/null 2>&1; then
-    fuzzel --prompt "$title> "
+    fuzzel --dmenu --prompt "$title> " || wofi --dmenu --prompt "$title> "
   elif command -v wofi >/dev/null 2>&1; then
     wofi --dmenu --prompt "$title> "
   else
@@ -39,8 +39,13 @@ do_copyq() {
 }
 do_quickshell() {
   pgrep -x quickshell >/dev/null 2>&1 || return 1
-  dots-quickshell ipc utilities toggle
-  return 0
+  # New Quickshell stack currently has no dedicated clipboard history drawer.
+  # Keep this backend as a last-resort utility panel toggle only.
+  if quickshell ipc show 2>/dev/null | rg -q "^target drawers$"; then
+    dots-quickshell ipc utilities toggle
+    return 0
+  fi
+  return 1
 }
 do_cliphist() {
   command -v cliphist >/dev/null 2>&1 || return 1
@@ -76,16 +81,15 @@ case "$BACKEND" in
     }
     ;;
   quickshell) do_quickshell || {
-    echo "quickshell is not running" >&2
+    echo "quickshell clipboard target unavailable (use cliphist/copyq)" >&2
     exit 1
   } ;;
   minimal) minimal_fallback ;;
   auto | *)
-    do_quickshell && exit 0
     if is_wayland; then
-      do_copyq || do_cliphist || minimal_fallback
+      do_copyq || do_cliphist || do_quickshell || minimal_fallback
     else
-      do_copyq || minimal_fallback
+      do_copyq || do_quickshell || minimal_fallback
     fi
     ;;
 esac

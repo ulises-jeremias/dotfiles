@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Safe Eyes
+Comment=Break reminder to reduce eye strain
+Exec=safeeyes
+Terminal=false
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+StartupNotify=false
+Categories=Utility;Health;
