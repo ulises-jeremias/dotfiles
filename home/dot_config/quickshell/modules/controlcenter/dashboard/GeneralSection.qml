@@ -39,6 +39,34 @@ SectionContainer {
     }
 
     SectionContainer {
+        contentSpacing: Appearance.spacing.small
+
+        StyledText {
+            text: qsTr("Temperature Units")
+            font.pointSize: Appearance.font.size.small
+            color: Colours.palette.m3outline
+        }
+
+        SwitchRow {
+            label: qsTr("Use Fahrenheit for weather")
+            checked: root.rootItem.useFahrenheit
+            onToggled: checked => {
+                root.rootItem.useFahrenheit = checked;
+                root.rootItem.saveConfig();
+            }
+        }
+
+        SwitchRow {
+            label: qsTr("Use Fahrenheit for performance")
+            checked: root.rootItem.useFahrenheitPerformance
+            onToggled: checked => {
+                root.rootItem.useFahrenheitPerformance = checked;
+                root.rootItem.saveConfig();
+            }
+        }
+    }
+
+    SectionContainer {
         contentSpacing: Appearance.spacing.normal
 
         SliderInput {

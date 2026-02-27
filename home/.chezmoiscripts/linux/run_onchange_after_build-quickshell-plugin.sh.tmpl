@@ -10,7 +10,7 @@ source "${HOME}/.local/lib/dots/logging.sh"
 SHELL_DIR="${HOME}/.config/quickshell"
 PLUGIN_DIR="${SHELL_DIR}/plugin"
 BUILD_ROOT_DIR="${SHELL_DIR}"
-BUILD_DIR="${BUILD_ROOT_DIR}/build"
+BUILD_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/dots/quickshell/build"
 INSTALL_PREFIX="${HOME}/.local/lib/quickshell"
 
 if [[ ! -d "$SHELL_DIR" ]]; then
@@ -30,10 +30,23 @@ if [[ ! -f "${BUILD_ROOT_DIR}/CMakeLists.txt" ]]; then
     exit 0
 fi
 
+mkdir -p "$BUILD_DIR"
+
+VERSION_FROM_GIT="v0.0.0"
+GIT_REVISION_FROM_GIT="unknown"
+if command -v git &>/dev/null; then
+    if git -C "$HOME/.dotfiles" rev-parse --is-inside-work-tree &>/dev/null; then
+        VERSION_FROM_GIT="$(git -C "$HOME/.dotfiles" describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")"
+        GIT_REVISION_FROM_GIT="$(git -C "$HOME/.dotfiles" rev-parse HEAD 2>/dev/null || echo "unknown")"
+    fi
+fi
+
 cmake -S "$BUILD_ROOT_DIR" -B "$BUILD_DIR" -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DINSTALL_QMLDIR="$INSTALL_PREFIX/qml" 2>&1 | while IFS= read -r line; do
+    -DINSTALL_QMLDIR="$INSTALL_PREFIX/qml" \
+    -DVERSION="$VERSION_FROM_GIT" \
+    -DGIT_REVISION="$GIT_REVISION_FROM_GIT" 2>&1 | while IFS= read -r line; do
     log_debug "$line"
 done
 

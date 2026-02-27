@@ -32,6 +32,8 @@ Item {
     property bool showMemory: Config.dashboard.performance.showMemory ?? true
     property bool showStorage: Config.dashboard.performance.showStorage ?? true 
     property bool showNetwork: Config.dashboard.performance.showNetwork ?? true
+    property bool useFahrenheit: Config.services.useFahrenheit ?? false
+    property bool useFahrenheitPerformance: Config.services.useFahrenheitPerformance ?? false
 
     anchors.fill: parent
 
@@ -46,6 +48,8 @@ Item {
         Config.dashboard.performance.showMemory = root.showMemory;
         Config.dashboard.performance.showStorage = root.showStorage;
         Config.dashboard.performance.showNetwork = root.showNetwork;
+        Config.services.useFahrenheit = root.useFahrenheit;
+        Config.services.useFahrenheitPerformance = root.useFahrenheitPerformance;
         // Note: sizes properties are readonly and cannot be modified
         Config.save();
     }
