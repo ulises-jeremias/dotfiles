@@ -8,19 +8,31 @@ import Quickshell
 Searcher {
     id: root
 
+    function shellQuote(arg: var): string {
+        return `'${String(arg).replace(/'/g, `'"'"'`)}'`;
+    }
+
+    function runDetachedWithFallback(commandArgs: list<string>, workingDirectory: string): void {
+        const quoted = commandArgs.map(a => shellQuote(a)).join(" ");
+        const script = `if command -v app2unit >/dev/null 2>&1; then exec app2unit -- ${quoted}; else exec ${quoted}; fi`;
+        Quickshell.execDetached({
+            command: ["sh", "-lc", script],
+            workingDirectory: workingDirectory
+        });
+    }
+
     function launch(entry: DesktopEntry): void {
         appDb.incrementFrequency(entry.id);
 
-        if (entry.runInTerminal)
-            Quickshell.execDetached({
-                command: ["app2unit", "--", ...Config.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...entry.command],
-                workingDirectory: entry.workingDirectory
-            });
-        else
-            Quickshell.execDetached({
-                command: ["app2unit", "--", ...entry.command],
-                workingDirectory: entry.workingDirectory
-            });
+        if (entry.runInTerminal) {
+            runDetachedWithFallback([
+                ...Config.general.apps.terminal,
+                `${Quickshell.shellDir}/assets/wrap_term_launch.sh`,
+                ...entry.command
+            ], entry.workingDirectory);
+        } else {
+            runDetachedWithFallback([...entry.command], entry.workingDirectory);
+        }
     }
 
     function search(search: string): list<var> {
