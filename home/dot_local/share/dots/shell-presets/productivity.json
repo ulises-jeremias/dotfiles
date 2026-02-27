@@ -1,0 +1,20 @@
+{
+  "_name": "Productivity",
+  "_description": "Top bar optimized for focused work — no distractions",
+  "_icon": "💼",
+  "bar": {
+    "position": "top",
+    "entries": ["workspaces", "spacer", "clock", "spacer", "statusIcons"],
+    "statusIcons": ["audio", "network", "battery"],
+    "scrollActions": { "up": "volume", "down": "volume" }
+  },
+  "appearance": {
+    "rounding": 8,
+    "padding": 4,
+    "spacing": 8
+  },
+  "notifications": {
+    "maxPopups": 3,
+    "expireTimeout": 3000
+  }
+}

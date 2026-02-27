@@ -34,3 +34,11 @@ HYPRLAND_ANIMATIONS="cozy"
 
 # Rice-specific Rofi theme
 ROFI_THEME="cozy"
+
+# ================================
+# Quickshell Configuration
+# ================================
+SCHEME_TYPE="neutral"           # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+DARK_MODE=false
+ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="top"             # left/top/bottom/right

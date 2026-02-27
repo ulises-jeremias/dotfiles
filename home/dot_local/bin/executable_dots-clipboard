@@ -3,16 +3,16 @@
 ## dots-clipboard: Clipboard manager wrapper
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
-## Wayland order (auto): copyq > cliphist+(fuzzel|wofi|rofi) > rofi greenclip > minimal
-## X11 order (auto): copyq > rofi greenclip > minimal
+## Wayland order (auto): quickshell > copyq > cliphist+(fuzzel|wofi) > minimal
+## X11 order (auto): quickshell > copyq > minimal
 ## Usage:
 ##   @script.name [OPTIONS]
 ## Options:
 ##   -h, --help            Show help
-##       --backend=NAME    Force backend: copyq|cliphist|rofi|minimal
+##       --backend=NAME    Force backend: quickshell|copyq|cliphist|minimal
 ## Examples:
 ##   @script.name --backend=copyq   # force copyq GUI
-##   @script.name --backend=rofi    # force rofi clipboard mode
+##   @script.name --backend=cliphist # force cliphist picker
 
 set -euo pipefail
 
@@ -28,8 +28,6 @@ menu_pick() {
     fuzzel --prompt "$title> "
   elif command -v wofi >/dev/null 2>&1; then
     wofi --dmenu --prompt "$title> "
-  elif command -v rofi >/dev/null 2>&1; then
-    rofi -dmenu -p "$title" -theme "$HOME/.config/rofi/applets.rasi"
   else
     cat
   fi
@@ -39,9 +37,10 @@ do_copyq() {
   command -v copyq >/dev/null 2>&1 || return 1
   exec copyq show
 }
-do_rofi_clip() {
-  command -v rofi >/dev/null 2>&1 || return 1
-  rofi -modi "clipboard:greenclip print" -show "clipboard:greenclip print" -theme "$HOME/.config/rofi/applets.rasi"
+do_quickshell() {
+  pgrep -x quickshell >/dev/null 2>&1 || return 1
+  dots-quickshell ipc utilities toggle
+  return 0
 }
 do_cliphist() {
   command -v cliphist >/dev/null 2>&1 || return 1
@@ -76,16 +75,17 @@ case "$BACKEND" in
       exit 1
     }
     ;;
-  rofi) do_rofi_clip || {
-    echo "rofi clipboard mode not available" >&2
+  quickshell) do_quickshell || {
+    echo "quickshell is not running" >&2
     exit 1
   } ;;
   minimal) minimal_fallback ;;
   auto | *)
+    do_quickshell && exit 0
     if is_wayland; then
-      do_copyq || do_cliphist || do_rofi_clip || minimal_fallback
+      do_copyq || do_cliphist || minimal_fallback
     else
-      do_copyq || do_rofi_clip || minimal_fallback
+      do_copyq || minimal_fallback
     fi
     ;;
 esac

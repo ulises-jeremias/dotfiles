@@ -1,0 +1,294 @@
+#!/usr/bin/env bash
+
+## Unified appearance manager for Quickshell themes/rices.
+## Provides a stable CLI contract for UI integrations.
+
+set -euo pipefail
+
+RICES_DIR="${RICES_DIR:-$HOME/.local/share/dots/rices}"
+CURRENT_RICE_FILE="${RICES_DIR}/.current_rice"
+STATE_DIR="${HOME}/.local/state/dots/appearance"
+STATE_FILE="${STATE_DIR}/current.json"
+cmd="${1:-}"
+shift 2>/dev/null || true
+
+mkdir -p "$STATE_DIR"
+
+json_escape() {
+  python3 - "$1" <<'PY'
+import json
+import sys
+print(json.dumps(sys.argv[1]))
+PY
+}
+
+truthy_to_bool() {
+  case "${1:-}" in
+    true|TRUE|1|yes|YES|on|ON) echo "true" ;;
+    *) echo "false" ;;
+  esac
+}
+
+first_wallpaper_for_rice() {
+  local rice_dir="$1"
+  local bg_dir="${rice_dir}/backgrounds"
+  local wp=""
+  if [[ -d "$bg_dir" ]]; then
+    shopt -s nullglob
+    local files=("$bg_dir"/*)
+    shopt -u nullglob
+    if [[ ${#files[@]} -gt 0 ]]; then
+      wp="${files[0]}"
+    fi
+  fi
+  printf '%s\n' "$wp"
+}
+
+read_current_id() {
+  if [[ -f "$STATE_FILE" ]]; then
+    python3 - "$STATE_FILE" <<'PY'
+import json
+import pathlib
+import sys
+p = pathlib.Path(sys.argv[1])
+try:
+    data = json.loads(p.read_text(encoding="utf-8"))
+    print(data.get("id", ""))
+except Exception:
+    print("")
+PY
+    return 0
+  fi
+
+  if [[ -f "$CURRENT_RICE_FILE" ]]; then
+    cat "$CURRENT_RICE_FILE"
+    return 0
+  fi
+
+  printf '\n'
+}
+
+write_state() {
+  local id="$1"
+  local scheme_type="$2"
+  local dark_mode="$3"
+  local bar_position="$4"
+
+  python3 - "$STATE_FILE" "$id" "$scheme_type" "$dark_mode" "$bar_position" <<'PY'
+import json
+import pathlib
+import sys
+path = pathlib.Path(sys.argv[1])
+payload = {
+    "id": sys.argv[2],
+    "schemeType": sys.argv[3],
+    "darkMode": sys.argv[4].lower() in ("true", "1", "yes", "on"),
+    "barPosition": sys.argv[5],
+}
+path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+PY
+}
+
+emit_rice_json() {
+  local rice_dir="$1"
+  local rice_id
+  rice_id="$(basename "$rice_dir")"
+  local config="${rice_dir}/config.sh"
+
+  local RICE_NAME="$rice_id"
+  local RICE_DESCRIPTION="No description available"
+  local RICE_STYLE="Unknown"
+  local RICE_TAGS=""
+  local SCHEME_TYPE="tonal-spot"
+  local DARK_MODE="true"
+  local BAR_POSITION="left"
+
+  if [[ -f "$config" ]]; then
+    # shellcheck disable=SC1090
+    source "$config"
+  fi
+
+  local preview="${rice_dir}/preview.png"
+  [[ -f "$preview" ]] || preview=""
+  local first_wp
+  first_wp="$(first_wallpaper_for_rice "$rice_dir")"
+
+  local tags_json="[]"
+  if [[ -n "${RICE_TAGS:-}" ]]; then
+    tags_json="$(python3 - "${RICE_TAGS}" <<'PY'
+import json
+import sys
+tags = [t.strip() for t in sys.argv[1].split(",") if t.strip()]
+print(json.dumps(tags))
+PY
+)"
+  fi
+
+  printf '{'
+  printf '"id":%s,' "$(json_escape "$rice_id")"
+  printf '"name":%s,' "$(json_escape "${RICE_NAME:-$rice_id}")"
+  printf '"description":%s,' "$(json_escape "${RICE_DESCRIPTION:-}")"
+  printf '"style":%s,' "$(json_escape "${RICE_STYLE:-Unknown}")"
+  printf '"schemeType":%s,' "$(json_escape "${SCHEME_TYPE:-tonal-spot}")"
+  printf '"darkMode":%s,' "$(truthy_to_bool "${DARK_MODE:-true}")"
+  printf '"barPosition":%s,' "$(json_escape "${BAR_POSITION:-left}")"
+  printf '"preview":%s,' "$(json_escape "$preview")"
+  printf '"wallpaper":%s,' "$(json_escape "$first_wp")"
+  printf '"tags":%s' "$tags_json"
+  printf '}'
+}
+
+cmd_list() {
+  [[ -d "$RICES_DIR" ]] || {
+    echo "[]"
+    return 0
+  }
+
+  local first=1
+  printf '['
+  for rice_dir in "$RICES_DIR"/*; do
+    [[ -d "$rice_dir" ]] || continue
+    if [[ $first -eq 0 ]]; then
+      printf ','
+    fi
+    emit_rice_json "$rice_dir"
+    first=0
+  done
+  printf ']\n'
+}
+
+cmd_current() {
+  local current=""
+  if [[ -f "$CURRENT_RICE_FILE" ]]; then
+    current="$(<"$CURRENT_RICE_FILE")"
+  else
+    current="$(read_current_id)"
+  fi
+  if [[ "${1:-}" == "--json" ]]; then
+    printf '{"id":%s}\n' "$(json_escape "$current")"
+  else
+    printf '%s\n' "$current"
+  fi
+}
+
+cmd_apply() {
+  local id="${1:-}"
+  [[ -n "$id" ]] || {
+    echo "Usage: dots-appearance apply <id>" >&2
+    exit 1
+  }
+
+  local rice_dir="${RICES_DIR}/${id}"
+  [[ -d "$rice_dir" ]] || {
+    echo "Appearance not found: $id" >&2
+    exit 1
+  }
+
+  local config="${rice_dir}/config.sh"
+  local SCHEME_TYPE="tonal-spot"
+  local DARK_MODE="true"
+  local BAR_POSITION="left"
+  if [[ -f "$config" ]]; then
+    # shellcheck disable=SC1090
+    source "$config"
+  fi
+
+  if command -v dots-rice >/dev/null 2>&1; then
+    dots-rice apply "$id"
+  elif [[ -x "${rice_dir}/apply.sh" ]]; then
+    "${rice_dir}/apply.sh"
+  else
+    echo "No apply backend found for appearance: $id" >&2
+    exit 1
+  fi
+
+  # Optional compatibility state (disabled by default to avoid side-effects).
+  if [[ "${DOTS_APPEARANCE_WRITE_STATE:-0}" == "1" ]]; then
+    write_state "$id" "${SCHEME_TYPE:-tonal-spot}" "${DARK_MODE:-true}" "${BAR_POSITION:-left}"
+  fi
+
+  if command -v dots-color-scheme >/dev/null 2>&1; then
+    dots-color-scheme set -n dynamic -f "${SCHEME_TYPE:-tonal-spot}" >/dev/null 2>&1 || true
+    if [[ "$(truthy_to_bool "${DARK_MODE:-true}")" == "true" ]]; then
+      dots-color-scheme mode dark >/dev/null 2>&1 || true
+    else
+      dots-color-scheme mode light >/dev/null 2>&1 || true
+    fi
+  fi
+}
+
+cmd_preview() {
+  local id="${1:-}"
+  [[ -n "$id" ]] || {
+    echo "Usage: dots-appearance preview <id>" >&2
+    exit 1
+  }
+  local rice_dir="${RICES_DIR}/${id}"
+  [[ -d "$rice_dir" ]] || {
+    echo "Appearance not found: $id" >&2
+    exit 1
+  }
+  emit_rice_json "$rice_dir"
+  printf '\n'
+}
+
+cmd_set_variant() {
+  local variant="${1:-}"
+  [[ -n "$variant" ]] || {
+    echo "Usage: dots-appearance set-variant <variant>" >&2
+    exit 1
+  }
+  dots-color-scheme variant "$variant"
+}
+
+cmd_set_mode() {
+  local mode="${1:-}"
+  [[ "$mode" == "dark" || "$mode" == "light" ]] || {
+    echo "Usage: dots-appearance set-mode <dark|light>" >&2
+    exit 1
+  }
+  dots-color-scheme mode "$mode"
+}
+
+cmd_set_wallpaper() {
+  local wallpaper="${1:-}"
+  [[ -n "$wallpaper" ]] || {
+    echo "Usage: dots-appearance set-wallpaper <path>" >&2
+    exit 1
+  }
+  dots-hyprpaper-set "$wallpaper"
+}
+
+cmd_sync() {
+  dots-smart-colors --generate --m3 >/dev/null 2>&1 || true
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    dots-quickshell ipc colours reload >/dev/null 2>&1 || true
+  fi
+}
+
+case "${cmd:-}" in
+  list) cmd_list ;;
+  current) cmd_current "${1:-}" ;;
+  apply) shift 0; cmd_apply "${1:-}" ;;
+  preview) cmd_preview "${1:-}" ;;
+  set-variant) cmd_set_variant "${1:-}" ;;
+  set-mode) cmd_set_mode "${1:-}" ;;
+  set-wallpaper) cmd_set_wallpaper "${1:-}" ;;
+  sync) cmd_sync ;;
+  *)
+    cat <<'EOF' >&2
+Usage: dots-appearance <command> [args]
+
+Commands:
+  list
+  current [--json]
+  apply <id>
+  preview <id>
+  set-variant <variant>
+  set-mode <dark|light>
+  set-wallpaper <path>
+  sync
+EOF
+    exit 1
+    ;;
+esac

@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Dots Bluetooth
-Comment=Manage Bluetooth devices and connections
-Exec=dots-rofi-bluetooth
-Icon=bluetooth
-Terminal=false
-Type=Application
-Categories=Settings;HardwareSettings;
-Keywords=bluetooth;wireless;connect;dots;

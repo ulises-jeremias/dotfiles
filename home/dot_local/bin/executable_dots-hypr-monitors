@@ -5,7 +5,7 @@
 ##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
-## Show a rofi menu to manage monitor configuration in Hyprland
+## Show a menu to manage monitor configuration in Hyprland
 
 set -euo pipefail
 
@@ -15,9 +15,9 @@ if ! command -v hyprctl >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! command -v rofi >/dev/null 2>&1; then
-  echo "Command not found: rofi. Please install it."
-  notify-send "$0: Command not found: rofi. Please install it." -u critical
+if ! command -v fuzzel >/dev/null 2>&1 && ! command -v wofi >/dev/null 2>&1; then
+  echo "Command not found: fuzzel/wofi. Please install one menu backend."
+  notify-send "$0: Command not found: fuzzel/wofi. Please install one menu backend." -u critical
   exit 1
 fi
 
@@ -62,53 +62,59 @@ if [ -z "$external" ]; then
 fi
 
 # Execute monitor configuration
-case "$(print_menu | rofi -dmenu -i -p "Monitor Setup" -format i -theme ~/.config/rofi/applets.rasi)" in
-  0) # Internal Only
+if command -v fuzzel >/dev/null 2>&1; then
+  selection="$(print_menu | fuzzel --dmenu --prompt "Monitor Setup> ")"
+else
+  selection="$(print_menu | wofi --dmenu --prompt "Monitor Setup" --insensitive)"
+fi
+
+case "$selection" in
+  "󰍺 Internal Only") # Internal Only
     if [ -n "$external" ]; then
       hyprctl keyword monitor "$external,disable"
     fi
     hyprctl keyword monitor "$internal,preferred,auto,1"
     ;;
-  1) # External Only
+  "󰍹 External Only") # External Only
     if [ -n "$external" ]; then
       hyprctl keyword monitor "$internal,disable"
       hyprctl keyword monitor "$external,preferred,auto,1"
     fi
     ;;
-  2) # Extend Right
+  "󰹑 Extend Right") # Extend Right
     if [ -n "$external" ]; then
       internal_width=$(hyprctl monitors -j | jq -r ".[] | select(.name == \"$internal\") | .width")
       hyprctl keyword monitor "$internal,preferred,0x0,1"
       hyprctl keyword monitor "$external,preferred,${internal_width}x0,1"
     fi
     ;;
-  3) # Extend Left
+  "󰹑 Extend Left") # Extend Left
     if [ -n "$external" ]; then
       external_width=$(hyprctl monitors -j | jq -r ".[] | select(.name == \"$external\") | .width")
       hyprctl keyword monitor "$external,preferred,0x0,1"
       hyprctl keyword monitor "$internal,preferred,${external_width}x0,1"
     fi
     ;;
-  4) # Extend Above
+  "󰹑 Extend Above") # Extend Above
     if [ -n "$external" ]; then
       external_height=$(hyprctl monitors -j | jq -r ".[] | select(.name == \"$external\") | .height")
       hyprctl keyword monitor "$external,preferred,0x0,1"
       hyprctl keyword monitor "$internal,preferred,0x${external_height},1"
     fi
     ;;
-  5) # Extend Below
+  "󰹑 Extend Below") # Extend Below
     if [ -n "$external" ]; then
       internal_height=$(hyprctl monitors -j | jq -r ".[] | select(.name == \"$internal\") | .height")
       hyprctl keyword monitor "$internal,preferred,0x0,1"
       hyprctl keyword monitor "$external,preferred,0x${internal_height},1"
     fi
     ;;
-  6) # Mirror
+  "󰍷 Mirror Displays") # Mirror
     if [ -n "$external" ]; then
       hyprctl keyword monitor "$internal,preferred,0x0,1,mirror,$external"
     fi
     ;;
-  7) # Disable All External
+  "󰑊 Disable All External") # Disable All External
     hyprctl monitors -j | jq -r '.[] | select(.name | startswith("eDP") | not) | .name' | while read -r mon; do
       hyprctl keyword monitor "$mon,disable"
     done

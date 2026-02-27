@@ -8,7 +8,7 @@
 ## Options:
 ##   -h, --help            Show help
 ##       --gui             Open auto-cpufreq GUI if available
-##       --backend=NAME    Menu backend: fuzzel|wofi|rofi (auto chain if omitted)
+##       --backend=NAME    Menu backend: fuzzel|wofi (auto chain if omitted)
 
 set -euo pipefail
 
@@ -16,6 +16,11 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 GUI=${gui:-no}
 BACKEND=${backend:-auto}
+
+if pgrep -x quickshell > /dev/null 2>&1; then
+  dots-quickshell ipc utilities toggle
+  exit 0
+fi
 
 if [[ $GUI == yes ]]; then
   if command -v auto-cpufreq-gtk >/dev/null 2>&1; then
@@ -56,10 +61,6 @@ choose_menu() {
       command -v wofi >/dev/null 2>&1 || return 1
       echo -e "$menu" | wofi --dmenu --prompt "Performance> "
       ;;
-    rofi)
-      command -v rofi >/dev/null 2>&1 || return 1
-      echo -e "$menu" | rofi -dmenu -i -p "Performance" -mesg "Current: $current" -theme ~/.config/rofi/applets.rasi -no-custom
-      ;;
     auto | *)
       if command -v fuzzel >/dev/null 2>&1; then
         echo -e "$menu" | fuzzel --prompt "Performance> "
@@ -67,10 +68,6 @@ choose_menu() {
       fi
       if command -v wofi >/dev/null 2>&1; then
         echo -e "$menu" | wofi --dmenu --prompt "Performance> "
-        return
-      fi
-      if command -v rofi >/dev/null 2>&1; then
-        echo -e "$menu" | rofi -dmenu -i -p "Performance" -mesg "Current: $current" -theme ~/.config/rofi/applets.rasi -no-custom
         return
       fi
       return 1

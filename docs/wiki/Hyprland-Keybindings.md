@@ -7,11 +7,11 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | Keybinding | Function |
 |------------|----------|
 | `Super+Return` | Terminal (Kitty) |
-| `Super+D` | Application launcher (Rofi) |
-| `Alt+Ctrl+C` | Clipboard manager (Rofi) |
+| `Super+D` | Application launcher (Quickshell) |
+| `Alt+Ctrl+C` | Clipboard manager (`dots-clipboard`) |
 | `Super+?` or `Super+/` | Keyboard shortcuts help overlay (`dots-keyboard-help`) |
 | `Super+Ctrl+Space` | AI assistant (sgpt via IBus) |
-| `Super+Shift+Tab` | Task switcher (Rofi window list) |
+| `Super+Shift+Tab` | Task switcher (`dots-snappy-switcher prev`) |
 | `Super+E` | File manager (Thunar) |
 | `Super+Shift+S` | Screenshot tool (grimblast/grim) |
 | `Print` | Screenshot (area selection) |
@@ -106,11 +106,11 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 
 | Keybinding | Function |
 |------------|----------|
-| `Super+Ctrl+P` | Toggle Waybar |
-| `Super+Ctrl+M` | Toggle Mako notifications |
+| `Super+Ctrl+P` | Toggle Bar (Quickshell) |
+| `Super+Ctrl+M` | Toggle Notification Center (Quickshell) |
 | `Super+Shift+R` | Reload Hyprland configuration |
 | `Super+Shift+E` | Exit Hyprland |
-| `Super+X` | System power menu (Rofi) |
+| `Super+X` | System power menu (Quickshell) |
 | `Super+L` | Lock screen (Hyprlock) |
 
 ## Media Controls

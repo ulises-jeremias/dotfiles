@@ -17,15 +17,28 @@ get_outer_gaps() {
   hyprctl getoption general:gaps_out -j | jq -r '.custom' | awk '{print $1}'
 }
 
-# Show rofi menu for gap selection
+# Show menu for gap selection
 show_menu() {
   local title="$1"
-  echo -e "Increase (+5)\nDecrease (-5)\nIncrease All (Shift +5)\nDecrease All (Shift -5)\nReset (0)" |
-    rofi -dmenu -p "$title" -theme ~/.config/rofi/applets.rasi
+  local options="Increase (+5)\nDecrease (-5)\nIncrease All (Shift +5)\nDecrease All (Shift -5)\nReset (0)"
+  if command -v fuzzel >/dev/null 2>&1; then
+    echo -e "$options" | fuzzel --dmenu --prompt "$title> "
+  elif command -v wofi >/dev/null 2>&1; then
+    echo -e "$options" | wofi --dmenu --prompt "$title" --insensitive
+  else
+    return 1
+  fi
 }
 
 # Main menu
-main_choice=$(echo -e "Inner Gaps\nOuter Gaps" | rofi -dmenu -p "Gaps Mode" -theme ~/.config/rofi/applets.rasi)
+if command -v fuzzel >/dev/null 2>&1; then
+  main_choice=$(echo -e "Inner Gaps\nOuter Gaps" | fuzzel --dmenu --prompt "Gaps Mode> ")
+elif command -v wofi >/dev/null 2>&1; then
+  main_choice=$(echo -e "Inner Gaps\nOuter Gaps" | wofi --dmenu --prompt "Gaps Mode" --insensitive)
+else
+  echo "No menu backend available (requires fuzzel or wofi)." >&2
+  exit 1
+fi
 
 case "$main_choice" in
   "Inner Gaps")

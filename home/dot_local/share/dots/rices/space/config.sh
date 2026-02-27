@@ -27,3 +27,11 @@ WAYBAR_PROFILE="vertical-left"
 
 # Waybar profile to use for this rice
 WAYBAR_PROFILE="vertical-left"
+
+# ================================
+# Quickshell Configuration
+# ================================
+SCHEME_TYPE="vibrant"           # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+DARK_MODE=true
+ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="left"            # left/top/bottom/right

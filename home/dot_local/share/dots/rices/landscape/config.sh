@@ -24,3 +24,11 @@ RICE_SECONDARY_COLOR="#689d6a"
 
 # Waybar profile to use for this rice
 WAYBAR_PROFILE="vertical-left"
+
+# ================================
+# Quickshell Configuration
+# ================================
+SCHEME_TYPE="fidelity"          # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+DARK_MODE=true
+ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="top"             # left/top/bottom/right

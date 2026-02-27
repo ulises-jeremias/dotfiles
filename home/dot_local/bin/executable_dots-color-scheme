@@ -1,0 +1,308 @@
+#!/usr/bin/env bash
+
+## Colour scheme manager for Quickshell without Caelestia dependency.
+## Uses dots smart-colors scheme.json as runtime source of truth.
+
+set -euo pipefail
+
+SCHEME_FILE="${HOME}/.cache/dots/smart-colors/scheme.json"
+STATE_DIR="${HOME}/.local/state/dots/scheme"
+STATE_FILE="${STATE_DIR}/state.json"
+WALL_STATE_FILE="${HOME}/.local/state/dots/wallpaper/path.txt"
+CURRENT_WALL_CACHE="${HOME}/.cache/current_wallpaper"
+WAL_WALL_LINK="${HOME}/.cache/wal/wal"
+M3_SCRIPT="${HOME}/.local/lib/dots/generate-m3-colors.py"
+CAELESTIA_STATE_DIR="${HOME}/.local/state/caelestia"
+CAELESTIA_SCHEME_LINK="${CAELESTIA_STATE_DIR}/scheme.json"
+
+SCHEME_TYPES=("vibrant" "tonal-spot" "expressive" "fidelity" "content" "neutral" "monochrome")
+
+cmd="${1:-}"
+shift 2>/dev/null || true
+
+normalize_scheme_type() {
+  local raw="${1:-tonal-spot}"
+  local normalized
+  normalized=$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | tr -d ' ')
+  case "$normalized" in
+    vibrant) echo "vibrant" ;;
+    tonalspot | tonal-spot) echo "tonal-spot" ;;
+    expressive) echo "expressive" ;;
+    fidelity) echo "fidelity" ;;
+    content) echo "content" ;;
+    neutral) echo "neutral" ;;
+    monochrome) echo "monochrome" ;;
+    fruitsalad | rainbow) echo "expressive" ;;
+    auto | *) echo "tonal-spot" ;;
+  esac
+}
+
+normalize_variant() {
+  local raw="${1:-tonalspot}"
+  local normalized
+  normalized=$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | tr -d ' ')
+  case "$normalized" in
+    tonal-spot | tonalspot) echo "tonalspot" ;;
+    vibrant | expressive | fidelity | content | neutral | monochrome | fruitsalad | rainbow) echo "$normalized" ;;
+    *) echo "tonalspot" ;;
+  esac
+}
+
+variant_to_scheme_type() {
+  local variant
+  variant=$(normalize_variant "${1:-}")
+  case "$variant" in
+    tonalspot) echo "tonal-spot" ;;
+    fruitsalad | rainbow) echo "expressive" ;;
+    *) echo "$variant" ;;
+  esac
+}
+
+resolve_wallpaper() {
+  local wall=""
+  if [[ -f "$WALL_STATE_FILE" ]]; then
+    wall=$(<"$WALL_STATE_FILE")
+  elif [[ -f "$CURRENT_WALL_CACHE" ]]; then
+    wall=$(<"$CURRENT_WALL_CACHE")
+  elif [[ -e "$WAL_WALL_LINK" ]]; then
+    wall=$(readlink -f "$WAL_WALL_LINK" 2>/dev/null || true)
+  fi
+
+  if [[ -n "${wall:-}" && -f "$wall" ]]; then
+    printf '%s\n' "$wall"
+    return 0
+  fi
+  return 1
+}
+
+ensure_state_dir() {
+  mkdir -p "$STATE_DIR"
+  mkdir -p "$CAELESTIA_STATE_DIR"
+}
+
+read_scheme_meta() {
+  local field="${1:-}"
+  [[ -f "$SCHEME_FILE" ]] || return 1
+  python3 - "$SCHEME_FILE" "$field" <<'PY'
+import json
+import sys
+path, field = sys.argv[1], sys.argv[2]
+with open(path, "r", encoding="utf-8") as f:
+    data = json.load(f)
+print(data.get(field, ""))
+PY
+}
+
+write_state() {
+  local name="$1"
+  local flavour="$2"
+  local mode="$3"
+  local variant="$4"
+  ensure_state_dir
+  python3 - "$STATE_FILE" "$name" "$flavour" "$mode" "$variant" <<'PY'
+import json
+import pathlib
+import sys
+path = pathlib.Path(sys.argv[1])
+name, flavour, mode, variant = sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
+state = {
+    "name": name,
+    "flavour": flavour,
+    "mode": mode,
+    "variant": variant,
+}
+path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+PY
+}
+
+ensure_state() {
+  ensure_state_dir
+  if [[ -f "$STATE_FILE" ]]; then
+    return 0
+  fi
+
+  local flavour="tonal-spot"
+  local mode="dark"
+  local variant="tonalspot"
+
+  if [[ -f "$SCHEME_FILE" ]]; then
+    local f m
+    f="$(read_scheme_meta flavour || true)"
+    m="$(read_scheme_meta mode || true)"
+    [[ -n "${f:-}" ]] && flavour="$(normalize_scheme_type "$f")"
+    [[ "$m" == "light" || "$m" == "dark" ]] && mode="$m"
+    variant="$(normalize_variant "$flavour")"
+  fi
+
+  write_state "dynamic" "$flavour" "$mode" "$variant"
+}
+
+read_state_field() {
+  local field="$1"
+  ensure_state
+  python3 - "$STATE_FILE" "$field" <<'PY'
+import json
+import sys
+path, field = sys.argv[1], sys.argv[2]
+with open(path, "r", encoding="utf-8") as f:
+    data = json.load(f)
+print(data.get(field, ""))
+PY
+}
+
+ensure_scheme_file() {
+  if [[ -f "$SCHEME_FILE" ]]; then
+    return 0
+  fi
+  regenerate_scheme >/dev/null 2>&1 || true
+}
+
+link_compat_scheme() {
+  ensure_state_dir
+  ln -snf "$SCHEME_FILE" "$CAELESTIA_SCHEME_LINK" 2>/dev/null || true
+}
+
+regenerate_scheme() {
+  ensure_state
+  command -v python3 >/dev/null 2>&1 || return 1
+  [[ -f "$M3_SCRIPT" ]] || return 1
+
+  local wallpaper
+  wallpaper="$(resolve_wallpaper)" || return 1
+
+  local flavour mode
+  flavour="$(read_state_field flavour)"
+  mode="$(read_state_field mode)"
+  flavour="$(normalize_scheme_type "$flavour")"
+  [[ "$mode" == "light" || "$mode" == "dark" ]] || mode="dark"
+
+  mkdir -p "$(dirname "$SCHEME_FILE")"
+  python3 "$M3_SCRIPT" \
+    --image "$wallpaper" \
+    --output "$SCHEME_FILE" \
+    --mode "$mode" \
+    --scheme-type "$flavour" >/dev/null 2>&1 || return 1
+
+  link_compat_scheme
+
+  if pgrep -x quickshell >/dev/null 2>&1 && command -v dots-quickshell >/dev/null 2>&1; then
+    dots-quickshell ipc colours reload >/dev/null 2>&1 || true
+  fi
+}
+
+cmd_list() {
+  ensure_state
+  ensure_scheme_file
+
+  python3 - "$SCHEME_FILE" "${SCHEME_TYPES[@]}" <<'PY'
+import json
+import pathlib
+import sys
+
+scheme_path = pathlib.Path(sys.argv[1])
+flavours = sys.argv[2:]
+
+colours = {}
+if scheme_path.exists():
+    try:
+        data = json.loads(scheme_path.read_text(encoding="utf-8"))
+        colours = data.get("colours", {}) or {}
+    except Exception:
+        colours = {}
+
+out = {"dynamic": {fl: colours for fl in flavours}}
+print(json.dumps(out))
+PY
+}
+
+cmd_current() {
+  ensure_state
+  local name flavour variant
+  name="$(read_state_field name)"
+  flavour="$(read_state_field flavour)"
+  variant="$(read_state_field variant)"
+  [[ -n "$name" ]] || name="dynamic"
+  [[ -n "$flavour" ]] || flavour="tonal-spot"
+  [[ -n "$variant" ]] || variant="tonalspot"
+  printf '%s\n' "$name"
+  printf '%s\n' "$flavour"
+  printf '%s\n' "$variant"
+}
+
+cmd_set() {
+  ensure_state
+  local name flavour mode variant
+  name="$(read_state_field name)"
+  flavour="$(read_state_field flavour)"
+  mode="$(read_state_field mode)"
+  variant="$(read_state_field variant)"
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -n|--name)
+        name="${2:-$name}"
+        shift 2
+        ;;
+      -f|--flavour|--flavor)
+        flavour="$(normalize_scheme_type "${2:-$flavour}")"
+        variant="$(normalize_variant "$flavour")"
+        shift 2
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+
+  write_state "$name" "$flavour" "$mode" "$variant"
+  regenerate_scheme || true
+}
+
+cmd_variant() {
+  ensure_state
+  local variant_in="${1:-tonalspot}"
+  local variant flavour name mode
+  variant="$(normalize_variant "$variant_in")"
+  flavour="$(variant_to_scheme_type "$variant")"
+  name="$(read_state_field name)"
+  mode="$(read_state_field mode)"
+  write_state "${name:-dynamic}" "$flavour" "${mode:-dark}" "$variant"
+  regenerate_scheme || true
+}
+
+cmd_mode() {
+  ensure_state
+  local mode="${1:-}"
+  if [[ "$mode" != "light" && "$mode" != "dark" ]]; then
+    echo "Usage: dots-color-scheme mode {light|dark}" >&2
+    exit 1
+  fi
+  local name flavour variant
+  name="$(read_state_field name)"
+  flavour="$(normalize_scheme_type "$(read_state_field flavour)")"
+  variant="$(read_state_field variant)"
+  write_state "${name:-dynamic}" "$flavour" "$mode" "${variant:-tonalspot}"
+  regenerate_scheme || true
+}
+
+if command -v caelestia >/dev/null 2>&1; then
+  case "$cmd" in
+    list) exec caelestia scheme list ;;
+    current) exec caelestia scheme get -nfv ;;
+    set) exec caelestia scheme set "$@" ;;
+    variant) exec caelestia scheme set -v "${1:-}" ;;
+    mode) exec caelestia scheme set -m "${1:-}" ;;
+  esac
+fi
+
+case "$cmd" in
+  list) cmd_list ;;
+  current) cmd_current ;;
+  set) cmd_set "$@" ;;
+  variant) cmd_variant "${1:-}" ;;
+  mode) cmd_mode "${1:-}" ;;
+  *)
+    echo "Usage: dots-color-scheme {list|current|set [-n name] [-f flavour]|variant <name>|mode <light|dark>}" >&2
+    exit 1
+    ;;
+esac

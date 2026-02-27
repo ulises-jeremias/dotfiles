@@ -4,6 +4,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 export QT_QPA_PLATFORMTHEME="qt5ct" # Have QT use qt5ct theme
+export QML_IMPORT_PATH="${HOME}/.local/lib/quickshell/qml"
 export PASSWORD_STORE_DIR="${XDG_DATA_HOME}/pass-store"
 export GTK_IM_MODULE=ibus
 export QT_IM_MODULE=ibus

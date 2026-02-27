@@ -26,6 +26,12 @@
   </a>
 </div>
 
+<div align="center">
+  <a href="https://github.com/ulises-jeremias/dotfiles/tree/wayland-hyprland-waybar-rofi-eww">
+    <img src="./static/wayland-legacy-branch-banner.svg" alt="Looking for the classic Wayland stack (Hyprland + Waybar + Rofi + EWW)? Check this branch!" width="800"/>
+  </a>
+</div>
+
 [![Awesome](https://awesome.re/mentioned-badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
 [![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable&style=for-the-badge)](https://aur.archlinux.org/packages/dots-stable)
 [![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development&style=for-the-badge)](https://aur.archlinux.org/packages/dots-git)
@@ -73,7 +79,7 @@
 
 ### 🚀 Application Launchers
 
-<img src="./static/screenshot-launchpad.png" alt="Rofi Launcher" width="400px"/> <img src="./static/screenshot-spotlight-dark.png" alt="Spotlight Dark" width="400px"/>
+<img src="./static/screenshot-launchpad.png" alt="Application Launcher" width="400px"/> <img src="./static/screenshot-spotlight-dark.png" alt="Spotlight Dark" width="400px"/>
 
 </div>
 
@@ -133,7 +139,7 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 
 ✨ **Semantic Intelligence** — Error, success, warning, info colors that make sense  
 🎨 **Theme Adaptation** — Perfect contrast and readability on any background  
-⚡ **Auto-Application** — Instantly applies to Waybar, EWW, Hyprland, and scripts  
+⚡ **Auto-Application** — Instantly applies to Quickshell, Hyprland, and scripts via Material Design 3  
 🔄 **Live Updates** — Colors refresh automatically when you change wallpapers
 
 > 📖 [Learn more about Smart Colors →](https://github.com/ulises-jeremias/dotfiles/wiki/Smart-Colors-System)
@@ -153,15 +159,12 @@ dots rice list              # See all available themes
 ### 🔧 Core Stack
 
 🌊 **[Hyprland](https://hyprland.org)** — Dynamic tiling Wayland compositor  
-📊 **[Waybar](https://github.com/Alexays/Waybar)** — Beautiful dual-bar status bar with 20+ modules  
-🚀 **[Rofi](https://github.com/lbonn/rofi)** — Lightning-fast app launcher (Wayland fork)  
-🔔 **[Mako](https://github.com/emersion/mako)** — Lightweight notification daemon  
+🐚 **[Quickshell](https://quickshell.org)** — Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)  
 🐾 **[Kitty](https://sw.kovidgoyal.net/kitty)** — GPU-accelerated terminal emulator  
 🐚 **[Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Feature-rich shell with beautiful prompt  
-🎛️ **[EWW](https://github.com/elkowar/eww)** — Modern system widgets (dashboard & powermenu)  
 🔒 **[Hyprlock](https://github.com/hyprwm/hyprlock)** — Secure lock screen  
 🖼️ **[Hyprpaper](https://github.com/hyprwm/hyprpaper)** — Fast wallpaper daemon  
-🎨 **Rice System** — Instant theme switching
+🎨 **Rice System** — Instant theme switching with Material Design 3 colors
 
 > 📖 [Complete component list →](https://github.com/ulises-jeremias/dotfiles/wiki/Home)
 
@@ -220,8 +223,7 @@ pre-commit run --all-files        # Run all checks
 🏠 [**Getting Started**](https://github.com/ulises-jeremias/dotfiles/wiki/Home) — First steps and basic setup  
 🎨 [**Rice System**](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management) — Theme management  
 🧠 [**Smart Colors**](https://github.com/ulises-jeremias/dotfiles/wiki/Smart-Colors-System) — Intelligent theming  
-📊 [**Waybar**](https://github.com/ulises-jeremias/dotfiles/wiki/Waybar-Configuration) — Status bar configuration  
-🎛️ [**EWW Widgets**](https://github.com/ulises-jeremias/dotfiles/wiki/EWW-Widgets) — System widgets  
+🐚 [**Quickshell**](https://github.com/ulises-jeremias/dotfiles/wiki/Quickshell-Shell) — Desktop shell configuration  
 🔧 [**Scripts**](https://github.com/ulises-jeremias/dotfiles/wiki/Dots-Scripts) — Automation tools  
 🛡️ [**Security**](https://github.com/ulises-jeremias/dotfiles/wiki/Security) — Privacy and security
 

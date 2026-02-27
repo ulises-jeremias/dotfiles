@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="320" viewBox="0 0 1600 320" role="img" aria-labelledby="title desc">
+  <title id="title">Wayland legacy branch banner</title>
+  <desc id="desc">Banner linking to branch with Hyprland, Waybar, Rofi, and EWW stack.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10223a"/>
+      <stop offset="100%" stop-color="#1f4f7a"/>
+    </linearGradient>
+    <linearGradient id="pill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#67d7ff"/>
+      <stop offset="100%" stop-color="#8ef0b5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="320" rx="26" fill="url(#bg)"/>
+  <rect x="28" y="28" width="1544" height="264" rx="20" fill="none" stroke="#8fd3ff" stroke-opacity="0.25" stroke-width="2"/>
+  <text x="80" y="120" fill="#f5fbff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="800">
+    Looking for the classic Wayland stack?
+  </text>
+  <text x="80" y="176" fill="#d7ecff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="38" font-weight="600">
+    Hyprland + Waybar + Rofi + EWW branch
+  </text>
+  <rect x="80" y="214" width="820" height="56" rx="28" fill="url(#pill)"/>
+  <text x="108" y="250" fill="#052134" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800">
+    branch: wayland-hyprland-waybar-rofi-eww
+  </text>
+</svg>

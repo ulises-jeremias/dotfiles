@@ -61,14 +61,24 @@ show_help() {
 }
 
 cmd_selector() {
-  local rice_selector="$HOME/.local/bin/dots-rofi-rice-selector"
+  local rices_dir="${RICES_DIR:-$HOME/.local/share/dots/rices}"
+  [[ -d "$rices_dir" ]] || {
+    echo "Error: Rices directory not found: $rices_dir" >&2
+    exit 1
+  }
 
-  if [[ -x $rice_selector ]]; then
-    exec "$rice_selector" "$@"
+  local selected=""
+  if command -v fuzzel >/dev/null 2>&1; then
+    selected=$(ls -1 "$rices_dir" | fuzzel --dmenu --prompt "Rice> ")
+  elif command -v wofi >/dev/null 2>&1; then
+    selected=$(ls -1 "$rices_dir" | wofi --dmenu --prompt "Rice" --insensitive)
   else
-    echo "Error: Rice selector not found at $rice_selector"
+    echo "Error: no selector backend available (fuzzel/wofi)" >&2
     exit 1
   fi
+
+  [[ -z ${selected:-} ]] && exit 0
+  cmd_apply "$selected"
 }
 
 cmd_list() {

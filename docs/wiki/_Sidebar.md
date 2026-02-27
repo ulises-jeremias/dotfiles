@@ -17,8 +17,8 @@
 
 #### **Visual Components**
 
-- [🖼️ EWW Widgets](EWW-Widgets)
-- [🚀 Rofi Launcher](Rofi-Apps-Launcher)
+- [🐚 Quickshell Shell](Quickshell-Shell) ⭐
+- [✅ Quickshell Parity Checklist](Quickshell-Parity-Checklist)
 - [📁 Thunar File Manager](Thunar-Side-Panel)
 - [📁 Yazi File Manager](Yazi)
 - [📋 CopyQ Clipboard Manager](CopyQ-Customization)
@@ -40,9 +40,9 @@
 
 **GUI Launchers:**
 
-- [🚀 App Launcher](Dots-Scripts#launcher--application-launcher) - fuzzel → wofi → rofi
+- [🚀 App Launcher](Dots-Scripts#launcher) - quickshell → fuzzel/wofi
 - [📋 Clipboard](Dots-Scripts#clipboard--clipboard-manager) - copyq → cliphist → greenclip
-- [⚡ Power Menu](Dots-Scripts#power-menu--power-management-menu) - nwg-bar → eww → rofi
+- [⚡ Power Menu](Dots-Scripts#power-menu) - quickshell
 - [⚙️ Settings Hub](Dots-Scripts#settings-gui--settings-hub) - unified GUI settings
 
 **Media & Screen:**

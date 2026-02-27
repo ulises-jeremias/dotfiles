@@ -1,0 +1,16 @@
+{
+  "_name": "Caelestia Left",
+  "_description": "Left sidebar — full featured, reference shell style",
+  "_icon": "🌙",
+  "bar": {
+    "position": "left",
+    "entries": ["logo", "workspaces", "spacer", "clock", "spacer", "statusIcons", "power"],
+    "statusIcons": ["audio", "mic", "network", "bluetooth", "battery"],
+    "scrollActions": { "up": "volume", "down": "volume" }
+  },
+  "appearance": {
+    "rounding": 16,
+    "padding": 8,
+    "spacing": 8
+  }
+}

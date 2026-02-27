@@ -1,0 +1,521 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Program: dots-quickshell
+## Description: Quickshell desktop shell management
+##
+## Usage: dots-quickshell [OPTIONS] <command> [args...]
+##
+## Commands:
+##     start              Start Quickshell daemon
+##     stop               Stop Quickshell daemon
+##     restart            Restart Quickshell daemon
+##     status             Show Quickshell status
+##     ipc <target> <action>  Send IPC command to Quickshell
+##     preset list        List available shell presets
+##     preset apply <name>  Apply a shell preset
+##     preset select      Interactive preset selector (fuzzel/wofi)
+##     preset current     Show currently active preset
+##     config get <key>   Get a config value (dot-notation, e.g. bar.position)
+##     config set <key> <value>  Set a config value
+##
+## IPC Targets and Actions:
+##     launcher toggle    Toggle application launcher
+##     dashboard toggle   Toggle dashboard panel
+##     session toggle     Toggle session/power menu
+##     sidebar toggle     Toggle notification sidebar
+##     utilities toggle   Toggle utilities panel
+##     bar toggle         Toggle bar visibility
+##     colours reload     Reload color scheme
+##     wallpaper set <path>  Set wallpaper
+##     wallpaper get      Get current wallpaper path
+##
+## Options:
+##     -v, --verbose      Verbose output
+##     -h, --help         Show this help message
+##
+## Examples:
+##     dots-quickshell start
+##     dots-quickshell ipc launcher toggle
+##     dots-quickshell ipc colours reload
+##     dots-quickshell ipc wallpaper set ~/Pictures/wall.png
+##     dots-quickshell preset list
+##     dots-quickshell preset apply caelestia-left
+##     dots-quickshell preset select
+##     dots-quickshell config get bar.position
+##     dots-quickshell config set bar.position top
+
+set -euo pipefail
+
+source "${HOME}/.local/lib/dots/logging.sh"
+source "${HOME}/.local/lib/dots/easy-options/easyoptions.sh" || exit
+
+QUICKSHELL_BIN="quickshell"
+QUICKSHELL_CONFIG_DIR="${HOME}/.config/quickshell"
+SHELL_CONFIG="${HOME}/.config/hornero/shell.json"
+PRESETS_DIR="${HOME}/.local/share/dots/shell-presets"
+CURRENT_PRESET_FILE="${HOME}/.local/state/dots/current-shell-preset"
+
+export QML_IMPORT_PATH="${QML_IMPORT_PATH:-${HOME}/.local/lib/quickshell/qml}"
+export QML2_IMPORT_PATH="${QML2_IMPORT_PATH:-${QML_IMPORT_PATH}:${HOME}/.config/quickshell}"
+export QS_PLUGIN_PATH="${QS_PLUGIN_PATH:-${HOME}/.local/lib/quickshell}"
+
+is_running() {
+    pgrep -x quickshell > /dev/null 2>&1
+}
+
+ensure_config_dir() {
+    mkdir -p "$(dirname "$SHELL_CONFIG")"
+    mkdir -p "$(dirname "$CURRENT_PRESET_FILE")"
+    [[ -f "$SHELL_CONFIG" ]] || echo '{}' > "$SHELL_CONFIG"
+}
+
+cmd_start() {
+    if is_running; then
+        log_warn "Quickshell is already running"
+        return 0
+    fi
+
+    if [[ ! -d "$QUICKSHELL_CONFIG_DIR" ]]; then
+        log_error "Quickshell config directory not found: ${QUICKSHELL_CONFIG_DIR}"
+        return 1
+    fi
+
+    log_info "Starting Quickshell..."
+    nohup "$QUICKSHELL_BIN" > /dev/null 2>&1 &
+    sleep 1
+
+    if is_running; then
+        log_info "Quickshell started successfully (PID: $(pgrep -x quickshell))"
+    else
+        log_error "Failed to start Quickshell"
+        return 1
+    fi
+}
+
+cmd_stop() {
+    if ! is_running; then
+        log_warn "Quickshell is not running"
+        return 0
+    fi
+
+    log_info "Stopping Quickshell..."
+    pkill -x quickshell || true
+    sleep 1
+
+    if ! is_running; then
+        log_info "Quickshell stopped"
+    else
+        log_warn "Quickshell did not stop gracefully, sending SIGKILL..."
+        pkill -9 -x quickshell || true
+    fi
+}
+
+cmd_restart() {
+    cmd_stop
+    sleep 1
+    cmd_start
+}
+
+cmd_status() {
+    if is_running; then
+        local pid
+        pid=$(pgrep -x quickshell)
+        log_info "Quickshell is running (PID: ${pid})"
+
+        if command -v ps > /dev/null 2>&1; then
+            local mem
+            mem=$(ps -p "$pid" -o rss= 2>/dev/null | awk '{printf "%.1f MiB", $1/1024}')
+            local uptime_val
+            uptime_val=$(ps -p "$pid" -o etime= 2>/dev/null | xargs)
+            log_info "  Memory: ${mem}"
+            log_info "  Uptime: ${uptime_val}"
+        fi
+    else
+        log_info "Quickshell is not running"
+    fi
+}
+
+cmd_ipc() {
+    local target="${1:-}"
+    local action="${2:-}"
+    shift 2 2>/dev/null || true
+
+    if [[ -z "$target" ]] || [[ -z "$action" ]]; then
+        log_error "Usage: dots-quickshell ipc <target> <action> [args...]"
+        return 1
+    fi
+
+    if ! is_running; then
+        log_error "Quickshell is not running"
+        return 1
+    fi
+
+    case "$target" in
+        colors) target="colours" ;;
+        notifications) target="notifs" ;;
+        power|power-menu) target="session" ;;
+        monitor-idle|idle|caffeine) target="idleInhibitor" ;;
+        gamemode) target="gameMode" ;;
+    esac
+
+    case "$action" in
+        show|open) action="toggle" ;;
+    esac
+
+    local drawer_targets="launcher session dashboard sidebar bar osd utilities"
+    if [[ " $drawer_targets " == *" $target "* ]]; then
+        log_debug "Sending IPC (drawer): drawers $action $target $*"
+        quickshell ipc call drawers "$action" "$target" "$@"
+        return $?
+    fi
+
+    if [[ "$target" == "colours" && "$action" == "reload" ]]; then
+        local scheme_file="${HOME}/.cache/dots/smart-colors/scheme.json"
+        if [[ -f "$scheme_file" ]]; then
+            log_debug "Triggering colour reload via file touch"
+            touch "$scheme_file"
+        else
+            log_warn "Scheme file not found: $scheme_file"
+        fi
+        return 0
+    fi
+
+    log_debug "Sending IPC: target=$target action=$action args=$*"
+
+    quickshell ipc call "$target" "$action" "$@"
+}
+
+cmd_preset() {
+    local action="${1:-}"
+    shift 2>/dev/null || true
+
+    case "$action" in
+        list)    preset_list ;;
+        apply)   preset_apply "${1:-}" ;;
+        select)  preset_select ;;
+        current) preset_current ;;
+        *)
+            log_error "Usage: dots-quickshell preset {list|apply <name>|select|current}"
+            return 1
+            ;;
+    esac
+}
+
+preset_list() {
+    if [[ ! -d "$PRESETS_DIR" ]]; then
+        log_error "Presets directory not found: $PRESETS_DIR"
+        return 1
+    fi
+
+    local current=""
+    [[ -f "$CURRENT_PRESET_FILE" ]] && current=$(<"$CURRENT_PRESET_FILE")
+
+    local count=0
+    for preset_file in "$PRESETS_DIR"/*.json; do
+        [[ -f "$preset_file" ]] || continue
+        local name
+        name=$(basename "$preset_file" .json)
+        local display_name description icon
+        display_name=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_name',''))" "$preset_file" 2>/dev/null || echo "$name")
+        description=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_description',''))" "$preset_file" 2>/dev/null || echo "")
+        icon=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_icon','📦'))" "$preset_file" 2>/dev/null || echo "📦")
+
+        local marker=""
+        [[ "$name" == "$current" ]] && marker=" ← active"
+
+        echo -e "${icon} \033[1m${display_name}\033[0m (${name})${marker}"
+        [[ -n "$description" ]] && echo -e "   ${description}"
+
+        local position entries
+        position=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('bar',{}).get('position',''))" "$preset_file" 2>/dev/null || echo "")
+        entries=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(', '.join(d.get('bar',{}).get('entries',[])))" "$preset_file" 2>/dev/null || echo "")
+        [[ -n "$position" ]] && echo -e "   bar: ${position} | ${entries}"
+        echo ""
+        count=$((count + 1))
+    done
+
+    if [[ $count -eq 0 ]]; then
+        log_warn "No presets found in $PRESETS_DIR"
+    fi
+}
+
+preset_current() {
+    if [[ -f "$CURRENT_PRESET_FILE" ]]; then
+        echo "$(<"$CURRENT_PRESET_FILE")"
+    else
+        echo "none"
+    fi
+}
+
+preset_apply() {
+    local name="${1:-}"
+    if [[ -z "$name" ]]; then
+        log_error "Usage: dots-quickshell preset apply <name>"
+        return 1
+    fi
+
+    local preset_file="${PRESETS_DIR}/${name}.json"
+    if [[ ! -f "$preset_file" ]]; then
+        log_error "Preset not found: ${name}"
+        log_info "Available presets:"
+        preset_list
+        return 1
+    fi
+
+    ensure_config_dir
+
+    local display_name
+    display_name=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_name', sys.argv[2]))" "$preset_file" "$name" 2>/dev/null || echo "$name")
+
+    log_info "Applying preset: ${display_name}..."
+
+    python3 -c "
+import json, sys
+
+def deep_merge(base, override):
+    result = dict(base)
+    for k, v in override.items():
+        if k.startswith('_'):
+            continue
+        if k in result and isinstance(result[k], dict) and isinstance(v, dict):
+            result[k] = deep_merge(result[k], v)
+        else:
+            result[k] = v
+    return result
+
+config_path = sys.argv[1]
+preset_path = sys.argv[2]
+
+try:
+    with open(config_path) as f:
+        config = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    config = {}
+
+with open(preset_path) as f:
+    preset = json.load(f)
+
+merged = deep_merge(config, preset)
+# Remove meta keys from top level
+for k in list(merged.keys()):
+    if k.startswith('_'):
+        del merged[k]
+
+with open(config_path, 'w') as f:
+    json.dump(merged, f, indent=2)
+    f.write('\n')
+" "$SHELL_CONFIG" "$preset_file"
+
+    echo "$name" > "$CURRENT_PRESET_FILE"
+    log_info "Preset applied: ${display_name}"
+
+    if is_running; then
+        log_info "Quickshell will reload automatically"
+    fi
+}
+
+preset_select() {
+    if [[ ! -d "$PRESETS_DIR" ]]; then
+        log_error "Presets directory not found: $PRESETS_DIR"
+        return 1
+    fi
+
+    local current=""
+    [[ -f "$CURRENT_PRESET_FILE" ]] && current=$(<"$CURRENT_PRESET_FILE")
+
+    local names=()
+    local menu_items=""
+    local selected_index=0
+    local idx=0
+
+    for preset_file in "$PRESETS_DIR"/*.json; do
+        [[ -f "$preset_file" ]] || continue
+        local name
+        name=$(basename "$preset_file" .json)
+        names+=("$name")
+
+        local display_name description icon position
+        display_name=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_name',''))" "$preset_file" 2>/dev/null || echo "$name")
+        description=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_description',''))" "$preset_file" 2>/dev/null || echo "")
+        icon=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_icon','📦'))" "$preset_file" 2>/dev/null || echo "📦")
+        position=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('bar',{}).get('position',''))" "$preset_file" 2>/dev/null || echo "")
+
+        local label="${icon} ${display_name}"
+        [[ -n "$position" ]] && label="${label} · ${position} bar"
+        [[ -n "$description" ]] && label="${label} — ${description}"
+
+        menu_items+="${label}\n"
+
+        [[ "$name" == "$current" ]] && selected_index=$idx
+        idx=$((idx + 1))
+    done
+
+    if [[ ${#names[@]} -eq 0 ]]; then
+        log_error "No presets found in $PRESETS_DIR"
+        return 1
+    fi
+
+    local selected
+    if command -v fuzzel > /dev/null 2>&1; then
+        selected=$(echo -en "$menu_items" | fuzzel --dmenu --prompt "Shell Preset> ") || return 0
+    elif command -v wofi > /dev/null 2>&1; then
+        selected=$(echo -en "$menu_items" | wofi --dmenu --prompt "Shell Preset" --insensitive) || return 0
+    else
+        log_error "No interactive selector available (need fuzzel or wofi)"
+        log_info "Use 'dots-quickshell preset list' and 'dots-quickshell preset apply <name>' instead"
+        return 1
+    fi
+
+    local chosen_icon chosen_name
+    chosen_icon=$(echo "$selected" | cut -d' ' -f1)
+    chosen_name=""
+
+    for i in "${!names[@]}"; do
+        local check_name check_icon
+        check_name="${names[$i]}"
+        local pf="${PRESETS_DIR}/${check_name}.json"
+        check_icon=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_icon','📦'))" "$pf" 2>/dev/null || echo "📦")
+        local check_display
+        check_display=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_name',''))" "$pf" 2>/dev/null || echo "$check_name")
+
+        if [[ "$selected" == "${check_icon} ${check_display}"* ]]; then
+            chosen_name="$check_name"
+            break
+        fi
+    done
+
+    if [[ -z "$chosen_name" ]]; then
+        log_error "Could not match selection"
+        return 1
+    fi
+
+    preset_apply "$chosen_name"
+}
+
+cmd_config() {
+    local action="${1:-}"
+    shift 2>/dev/null || true
+
+    case "$action" in
+        get) config_get "${1:-}" ;;
+        set) config_set "${1:-}" "${1+${2:-}}" ;;
+        *)
+            log_error "Usage: dots-quickshell config {get <key>|set <key> <value>}"
+            return 1
+            ;;
+    esac
+}
+
+config_get() {
+    local key="${1:-}"
+    if [[ -z "$key" ]]; then
+        log_error "Usage: dots-quickshell config get <key>"
+        log_info "Key uses dot-notation: bar.position, appearance.rounding, etc."
+        return 1
+    fi
+
+    ensure_config_dir
+
+    python3 -c "
+import json, sys
+
+key = sys.argv[1]
+try:
+    with open(sys.argv[2]) as f:
+        config = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    config = {}
+
+parts = key.split('.')
+val = config
+for p in parts:
+    if isinstance(val, dict) and p in val:
+        val = val[p]
+    else:
+        print(f'Key not found: {key}', file=sys.stderr)
+        sys.exit(1)
+
+if isinstance(val, (dict, list)):
+    print(json.dumps(val, indent=2))
+else:
+    print(val)
+" "$key" "$SHELL_CONFIG"
+}
+
+config_set() {
+    local key="${1:-}"
+    local value="${2:-}"
+    if [[ -z "$key" ]]; then
+        log_error "Usage: dots-quickshell config set <key> <value>"
+        log_info "Key uses dot-notation: bar.position, appearance.rounding, etc."
+        return 1
+    fi
+
+    ensure_config_dir
+
+    python3 -c "
+import json, sys
+
+key = sys.argv[1]
+raw_value = sys.argv[2]
+config_path = sys.argv[3]
+
+try:
+    value = json.loads(raw_value)
+except json.JSONDecodeError:
+    value = raw_value
+
+try:
+    with open(config_path) as f:
+        config = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    config = {}
+
+parts = key.split('.')
+obj = config
+for p in parts[:-1]:
+    if p not in obj or not isinstance(obj[p], dict):
+        obj[p] = {}
+    obj = obj[p]
+obj[parts[-1]] = value
+
+with open(config_path, 'w') as f:
+    json.dump(config, f, indent=2)
+    f.write('\n')
+
+print(f'{key} = {json.dumps(value)}')
+" "$key" "$value" "$SHELL_CONFIG"
+
+    log_info "Config updated"
+    if is_running; then
+        log_info "Quickshell will reload automatically"
+    fi
+}
+
+main() {
+    local command="${1:-}"
+    shift 2>/dev/null || true
+
+    case "$command" in
+        start)   cmd_start ;;
+        stop)    cmd_stop ;;
+        restart) cmd_restart ;;
+        status)  cmd_status ;;
+        ipc)     cmd_ipc "$@" ;;
+        preset)  cmd_preset "$@" ;;
+        config)  cmd_config "$@" ;;
+        "")
+            log_error "No command specified. Use --help for usage."
+            exit 1
+            ;;
+        *)
+            log_error "Unknown command: $command. Use --help for usage."
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

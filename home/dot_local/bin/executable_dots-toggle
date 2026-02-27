@@ -13,36 +13,19 @@
 ## Options:
 ##   -h, --help         Show this help message
 ##   -v, --version      Display script version
-##   -w, --waybar       Toggle the configured waybar session
 ##   -r, --redshift     Toggle redshift or daemon monitoring icon
 ##   -f, --caffeine     Toggle caffeine or daemon monitoring icon
 ##   -t, --toggle       Toggle the program off/on, without this flag a monitor process will be started
+##       --bar          Toggle Quickshell bar
+##       --launcher     Toggle Quickshell launcher
+##       --dashboard    Toggle Quickshell dashboard
+##       --sidebar      Toggle Quickshell sidebar
+##       --session      Toggle Quickshell session menu
+##       --utilities    Toggle Quickshell utilities panel
 
 set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
-
-toggle_waybar() {
-  local opt="${toggle:-0}"
-  if ((opt == 1)); then
-    if pgrep -x waybar >/dev/null 2>&1; then
-      killall waybar || true
-    else
-      ~/.config/waybar/launch.sh &
-    fi
-    exit 0
-  fi
-  on=""
-  off=""
-  while true; do
-    if pgrep -x waybar >/dev/null 2>&1; then
-      echo "$on"
-    else
-      echo "%{F#888888}$off"
-    fi
-    sleep 2
-  done
-}
 
 toggle_redshift() {
   local opt="${toggle:-0}"
@@ -75,6 +58,16 @@ toggle_redshift() {
   done
 }
 
+toggle_quickshell_component() {
+  local component="$1"
+  if ! pgrep -x quickshell >/dev/null 2>&1; then
+    echo "Quickshell is not running" >&2
+    exit 1
+  fi
+  dots-quickshell ipc "$component" toggle
+  exit 0
+}
+
 toggle_caffeine() {
   local opt="${toggle:-0}"
   if ((opt == 1)); then
@@ -103,13 +96,23 @@ if [[ -n ${version:-} ]]; then
   exit 0
 fi
 
-if [[ -n ${waybar:-} ]]; then
-  toggle_waybar
+if [[ -n ${bar:-} ]]; then
+  toggle_quickshell_component bar
+elif [[ -n ${launcher:-} ]]; then
+  toggle_quickshell_component launcher
+elif [[ -n ${dashboard:-} ]]; then
+  toggle_quickshell_component dashboard
+elif [[ -n ${sidebar:-} ]]; then
+  toggle_quickshell_component sidebar
+elif [[ -n ${session:-} ]]; then
+  toggle_quickshell_component session
+elif [[ -n ${utilities:-} ]]; then
+  toggle_quickshell_component utilities
 elif [[ -n ${redshift:-} ]]; then
   toggle_redshift
 elif [[ -n ${caffeine:-} ]]; then
   toggle_caffeine
 else
-  echo "Error: No action specified. Use --waybar, --redshift, or --caffeine" >&2
+  echo "Error: No action specified. Use --bar, --launcher, --dashboard, --sidebar, --session, --utilities, --redshift, or --caffeine" >&2
   exit 1
 fi

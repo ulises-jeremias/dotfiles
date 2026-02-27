@@ -4,7 +4,7 @@
 ## Licensed under MIT.
 ##
 ## Power Menu Wrapper
-## Delegates to existing power menu implementations without re-implementing actions
+## Quickshell-first entrypoint for session/power drawer
 ##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
@@ -13,127 +13,56 @@
 ##
 ## Options:
 ##     -h, --help              Show this help message
-##     -e, --eww               Force EWW powermenu
-##     -r, --rofi              Force Rofi powermenu
-##         --mode=MODE         Set mode: auto (default), eww, rofi
+##         --mode=MODE         Set mode: auto (default), quickshell, minimal
 ##
 ## Examples:
-##     @script.name                # Auto delegation (EWW -> Rofi)
-##     @script.name --eww          # Force EWW powermenu
-##     @script.name --rofi         # Force Rofi powermenu
-##     @script.name --mode=eww     # Force EWW powermenu (alternative)
+##     @script.name
+##     @script.name --mode=minimal
 
 set -euo pipefail
 
 # Source EasyOptions for argument parsing
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
-SCRIPT_NAME="$(basename "$0")"
-readonly SCRIPT_NAME
-
-# Determine mode preference from flags
 MODE=${mode:-auto}
-[[ ${wlogout:-} == "yes" ]] && MODE="wlogout"
-[[ ${nwgbar:-} == "yes" ]] && MODE="nwgbar"
-[[ ${eww:-} == "yes" ]] && MODE="eww"
-[[ ${rofi:-} == "yes" ]] && MODE="rofi"
-
-eww_manager="$HOME/.config/eww/executable_eww-manager.sh"
-eww_powermenu_launcher="$HOME/.config/eww/powermenu/executable_launch.sh"
-rofi_theme="$HOME/.config/rofi/powermenu.rasi"
-rofi_fallback="$HOME/.config/rofi/themes/launcher.rasi"
-
-launch_wlogout() {
-  command -v wlogout >/dev/null 2>&1 || return 1
-  wlogout &>/dev/null &
-  disown || true
+launch_quickshell() {
+  pgrep -x quickshell >/dev/null 2>&1 || return 1
+  dots-quickshell ipc session toggle
   return 0
 }
 
-launch_nwgbar() {
-  command -v nwg-bar >/dev/null 2>&1 || return 1
-  nwg-bar &>/dev/null &
-  disown || true
-  return 0
-}
-
-launch_eww() {
-  command -v eww >/dev/null 2>&1 || return 1
-  if [[ -x $eww_manager ]]; then
-    "$eww_manager" toggle powermenu && return 0
-  fi
-  if [[ -x $eww_powermenu_launcher ]]; then
-    "$eww_powermenu_launcher" toggle && return 0
-  fi
-  return 1
-}
-
-launch_rofi() {
-  command -v rofi >/dev/null 2>&1 || return 1
-  local theme="$rofi_theme"
-  [[ ! -f $theme ]] && theme="$rofi_fallback"
-
-  local uptime
-  uptime="$(uptime -p | sed -e 's/up //g')"
-
-  # Icons matching original rofi script
-  # 󰌾 | 󰤄 | 󰗽 |  | 󰐥
-  local lock="󰌾"
-  local sleep="󰤄"
-  local logout="󰗽"
-  local reboot=""
-  local shutdown="󰐥"
-
-  local chosen
-  chosen=$(rofi -dmenu -theme "$theme" \
-    -p "Uptime: $uptime" \
-    -mesg "Uptime: $uptime" \
-    -sep "|" <<<"$lock|$sleep|$logout|$reboot|$shutdown") || return 0
-
-  case "$chosen" in
-    "$lock") ~/.local/bin/dots-lockscreen --lock ;;
-    "$reboot") systemctl -i reboot ;;
-    "$shutdown") systemctl -i poweroff ;;
-    "$sleep") systemctl suspend ;;
-    "$logout") loginctl terminate-session "${XDG_SESSION_ID-}" ;;
+launch_minimal() {
+  cat <<EOF
+1) Lock
+2) Suspend
+3) Logout
+4) Reboot
+5) Shutdown
+EOF
+  read -r -p "Select action [1-5]: " choice
+  case "$choice" in
+    1) ~/.local/bin/dots-lockscreen --lock ;;
+    2) systemctl suspend ;;
+    3) loginctl terminate-session "${XDG_SESSION_ID-}" ;;
+    4) systemctl -i reboot ;;
+    5) systemctl -i poweroff ;;
+    *) exit 0 ;;
   esac
-
-  return 0
 }
 
 main() {
   case "$MODE" in
-    wlogout)
-      launch_wlogout || {
-        echo "wlogout not available" >&2
+    quickshell)
+      launch_quickshell || {
+        echo "quickshell is not running" >&2
         exit 1
       }
       ;;
-    nwgbar)
-      launch_nwgbar || {
-        echo "nwg-bar not available" >&2
-        exit 1
-      }
-      ;;
-    eww)
-      launch_eww || {
-        echo "EWW powermenu not available" >&2
-        exit 1
-      }
-      ;;
-    rofi)
-      launch_rofi || {
-        echo "Rofi powermenu not available" >&2
-        exit 1
-      }
+    minimal)
+      launch_minimal
       ;;
     auto | *)
-      # if launch_wlogout; then exit 0; fi  # Disabled - needs better styling
-      if launch_nwgbar; then exit 0; fi
-      if launch_eww; then exit 0; fi
-      if launch_rofi; then exit 0; fi
-      echo "No powermenu implementation available (nwg-bar, eww, rofi)." >&2
-      exit 2
+      launch_quickshell || launch_minimal
       ;;
   esac
 }

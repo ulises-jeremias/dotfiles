@@ -43,8 +43,21 @@ execute_command() {
   eval "$command"
 }
 
-# Create the menu with rofi
-selected=$(printf '%s\n' "${scripts_list[@]}" | rofi -dmenu -i -p "Select Script:" -theme ~/.config/rofi/applets.rasi)
+# Use Quickshell if running
+if pgrep -x quickshell > /dev/null 2>&1; then
+  dots-quickshell ipc launcher toggle
+  exit 0
+fi
+
+# Create the menu with fuzzel/wofi
+if command -v fuzzel >/dev/null 2>&1; then
+  selected=$(printf '%s\n' "${scripts_list[@]}" | fuzzel --dmenu --prompt "Select Script> ")
+elif command -v wofi >/dev/null 2>&1; then
+  selected=$(printf '%s\n' "${scripts_list[@]}" | wofi --dmenu --prompt "Select Script" --insensitive)
+else
+  echo "No menu backend available (requires fuzzel or wofi)" >&2
+  exit 1
+fi
 
 # If a script is selected, execute or display its command
 if [ -n "$selected" ]; then

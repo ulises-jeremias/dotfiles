@@ -36,7 +36,9 @@
 
 ```bash
 detect_wm() {
-    if pgrep -x "i3" &>/dev/null; then
+    if pgrep -x "Hyprland" &>/dev/null; then
+        echo "hyprland"
+    elif pgrep -x "i3" &>/dev/null; then
         echo "i3"
     elif pgrep -x "openbox" &>/dev/null; then
         echo "openbox"
@@ -193,3 +195,26 @@ load_config() {
 1. Smart colors (semantic, theme-adaptive)
 2. xrdb colors (base16 palette)
 3. Hardcoded fallbacks (last resort)
+
+Note: For Quickshell components, use M3 tokens from scheme.json instead of smart colors or xrdb.
+
+### Material Design 3 Integration (Quickshell)
+
+Quickshell uses Material Design 3 (M3) color palettes generated from wallpaper analysis:
+
+**Pipeline:**
+1. Wallpaper change triggers `dots-smart-colors --m3`
+2. `generate-m3-colors.py` extracts M3 palette using `materialyoucolor`
+3. Palette saved to `~/.cache/dots/smart-colors/scheme.json`
+4. Quickshell `Colours` service watches the file and reloads automatically
+
+**Color Reference Priority (Quickshell):**
+1. M3 scheme.json (primary, surface, onSurface, etc.)
+2. Smart colors (semantic fallback)
+3. Hardcoded defaults (last resort)
+
+**Key M3 Tokens:**
+- `primary`, `onPrimary`, `primaryContainer`, `onPrimaryContainer`
+- `secondary`, `tertiary`, `error`
+- `surface`, `onSurface`, `surfaceVariant`
+- `outline`, `shadow`

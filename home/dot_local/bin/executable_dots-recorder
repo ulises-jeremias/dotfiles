@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+## Recorder wrapper used by Quickshell runtime.
+## Prefer Caelestia backend when available, otherwise graceful fallback.
+
+set -euo pipefail
+
+STATE_DIR="${HOME}/.local/state/dots/recorder"
+mkdir -p "$STATE_DIR"
+PAUSE_STATE_FILE="${STATE_DIR}/paused"
+
+cmd="${1:-}"
+shift 2>/dev/null || true
+
+has_running() {
+  pidof gpu-screen-recorder >/dev/null 2>&1
+}
+
+if command -v caelestia >/dev/null 2>&1; then
+  case "$cmd" in
+    start) exec caelestia record "$@" ;;
+    stop) exec caelestia record ;;
+    pause) exec caelestia record -p ;;
+  esac
+fi
+
+case "$cmd" in
+  start)
+    if has_running; then
+      exit 0
+    fi
+    if command -v gpu-screen-recorder >/dev/null 2>&1; then
+      gpu-screen-recorder "$@" >/dev/null 2>&1 &
+      disown || true
+    fi
+    ;;
+  stop)
+    pkill -x gpu-screen-recorder >/dev/null 2>&1 || true
+    rm -f "$PAUSE_STATE_FILE"
+    ;;
+  pause)
+    if ! has_running; then
+      exit 0
+    fi
+    if [[ -f "$PAUSE_STATE_FILE" ]]; then
+      pkill -CONT -x gpu-screen-recorder >/dev/null 2>&1 || true
+      rm -f "$PAUSE_STATE_FILE"
+    else
+      pkill -STOP -x gpu-screen-recorder >/dev/null 2>&1 || true
+      : > "$PAUSE_STATE_FILE"
+    fi
+    ;;
+  *)
+    echo "Usage: dots-recorder {start [args...]|stop|pause}" >&2
+    exit 1
+    ;;
+esac

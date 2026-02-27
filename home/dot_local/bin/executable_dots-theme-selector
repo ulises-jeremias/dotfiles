@@ -12,10 +12,10 @@
 ##   -h, --help          Show this help message
 ##
 ## Examples:
-##   dots-theme-selector             # Launch theme selector (nwg-look or rofi fallback)
+##   dots-theme-selector             # Launch theme selector (nwg-look or picker fallback)
 ##
 ## Notes:
-##   Priority: nwg-look > rofi minimal selector
+##   Priority: nwg-look > fuzzel > wofi
 ##   Scans ~/.themes and /usr/share/themes for available themes
 
 set -euo pipefail
@@ -36,12 +36,14 @@ if [[ -z ${THEMES} ]]; then
   exit 1
 fi
 
-if ! command -v rofi >/dev/null 2>&1; then
-  echo "Error: rofi not installed" >&2
+if command -v fuzzel >/dev/null 2>&1; then
+  SELECTED=$(echo "$THEMES" | fuzzel --dmenu --prompt "GTK Theme> ")
+elif command -v wofi >/dev/null 2>&1; then
+  SELECTED=$(echo "$THEMES" | wofi --dmenu --prompt "GTK Theme" --insensitive)
+else
+  echo "Error: no menu backend available (fuzzel/wofi)" >&2
   exit 1
 fi
-
-SELECTED=$(echo "$THEMES" | rofi -dmenu -i -p "GTK Theme" -theme ~/.config/rofi/applets.rasi)
 [[ -z $SELECTED ]] && exit 0
 
 gsettings set org.gnome.desktop.interface gtk-theme "$SELECTED" || {

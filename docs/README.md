@@ -29,7 +29,7 @@
 The `wiki/` directory contains comprehensive user-facing guides:
 
 - **Window Manager**: Hyprland
-- **Components**: Waybar, EWW, Rofi, Kitty
+- **Components**: Quickshell (primary shell), Hyprland, Kitty
 - **Theming**: Rice system, smart colors, wallpapers
 - **Tools**: Dots scripts, backup, security
 - **Customization**: Personalization guides
@@ -82,8 +82,7 @@ docs/
 - [Chezmoi Documentation](https://www.chezmoi.io/)
 - [Arch Wiki - Window Manager](https://wiki.archlinux.org/title/Window_manager)
 - [Hyprland Wiki](https://wiki.hyprland.org/)
-- [Waybar Wiki](https://github.com/Alexays/Waybar/wiki)
-- [EWW Documentation](https://elkowar.github.io/eww/)
+- [Quickshell Documentation](https://quickshell.org/docs/)
 - [Arch Wiki](https://wiki.archlinux.org/)
 
 ---

@@ -3,16 +3,16 @@
 ## dots-launcher: Unified application launcher wrapper
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
-## Preference order (auto): fuzzel > wofi > rofi > minimal prompt
+## Preference order (auto): quickshell > fuzzel > wofi > minimal prompt
 ## Usage:
 ##   @script.name [OPTIONS]
 ## Options:
 ##   -h, --help            Show help (auto by EasyOptions)
-##       --backend=NAME    Force backend: fuzzel|wofi|rofi|minimal
+##       --backend=NAME    Force backend: quickshell|fuzzel|wofi|minimal
 ##       --list            Print detected backends (in priority order) then exit
 ## Examples:
 ##   @script.name                  # auto chain
-##   @script.name --backend=rofi   # force rofi
+##   @script.name --backend=fuzzel # force fuzzel
 ##   @script.name --list           # list available backends
 
 set -euo pipefail
@@ -30,15 +30,11 @@ launch_wofi() {
   command -v wofi >/dev/null 2>&1 || return 1
   exec wofi --show drun
 }
-launch_rofi() {
-  command -v rofi >/dev/null 2>&1 || return 1
-  exec rofi -modi run,drun,window -show drun \
-    -columns 1 -show-icons \
-    -display-drun "Applications" \
-    -display-run "Run" \
-    -display-window "Windows" \
-    -matching fuzzy \
-    -theme "$HOME/.config/rofi/apps.rasi"
+
+launch_quickshell() {
+  pgrep -x quickshell >/dev/null 2>&1 || return 1
+  dots-quickshell ipc launcher toggle
+  return 0
 }
 
 minimal_fallback() {
@@ -49,7 +45,7 @@ minimal_fallback() {
 }
 
 if [[ $LIST == yes ]]; then
-  order=(fuzzel wofi rofi minimal)
+  order=(quickshell fuzzel wofi minimal)
   avail=()
   for t in "${order[@]}"; do
     if [[ $t == minimal ]]; then
@@ -71,12 +67,12 @@ case "$BACKEND" in
     echo "wofi not available" >&2
     exit 1
   } ;;
-  rofi) launch_rofi || {
-    echo "rofi not available" >&2
+  quickshell) launch_quickshell || {
+    echo "quickshell is not running" >&2
     exit 1
   } ;;
   minimal) minimal_fallback ;;
   auto | *)
-    launch_fuzzel || launch_wofi || launch_rofi || minimal_fallback
+    launch_quickshell || launch_fuzzel || launch_wofi || minimal_fallback
     ;;
 esac

@@ -14,10 +14,9 @@
 
 **Integration Points:**
 
-- Polybar (profile selection via `POLYBAR_PROFILE`)
-- EWW widgets (config paths)
-- Window managers (i3, Openbox, XFCE4)
-- Wallpaper system (wpg/pywal)
+- Quickshell (M3 color scheme via scheme.json)
+- Hyprland (compositor animations and settings)
+- Wallpaper system (hyprpaper)
 - GTK themes (automatic light/dark selection)
 
 **Design Constraints:**
@@ -35,8 +34,8 @@
 
 - Analysis engine: Color science algorithms for semantic mapping
 - Cache system: Pre-generated format-specific files in `~/.cache/dots/smart-colors/`
-- Export formats: Hyprland, EWW (SCSS), Waybar (CSS), shell, environment variables
-- Integration: Automatic reload on wallpaper change
+- Export formats: Material Design 3 scheme.json (Quickshell), Hyprland, shell, environment variables
+- Integration: Automatic M3 palette regeneration on wallpaper change, watched by Quickshell Colours service
 
 **Key Algorithms:**
 
@@ -52,40 +51,46 @@
 - Automatic invalidation on palette change
 - No hardcoded color values anywhere
 
-## 3. Waybar Integration
+## 3. Quickshell Desktop Shell
 
-**Purpose**: Modular status bar system with profile-based configuration.
+**Purpose**: Unified desktop shell for bar, launcher, dashboard, notifications, and controls.
 
 **Architecture:**
 
-- Profile system: Different bar layouts for different rices
-- Module system: 20+ independent, reusable components
-- Launch script: Window manager aware, multi-monitor capable
-- Configuration hierarchy: Profiles → Bars → Modules → Colors
+- QML/QtQuick-based shell using Quickshell framework
+- Unified drawers composition (`Drawers`, `Exclusions`, `BorderFrame`, `Interactions`, `Panels`)
+- C++ plugin (Hornero) for performance-critical features: image analysis, audio visualization, calculator
+- Services layer (QML singletons) for system integration
+- Modules for UI components: left rail bar, launcher, dashboard, notifications, right-notch controls
 
-**Available Profiles:**
+**Key Modules:**
 
-- `default`: Standard dual-bar layout (top + bottom)
-- `vertical-left`: Vertical bar on left side
-- `floating-neon`: Floating centered bar with neon glow effects (cyberpunk)
-- `cozy-minimal`: Minimal floating bar with rounded corners (cozy)
-- `dock-bottom`: macOS-style dock at bottom (clean)
-- `retro-wave`: Synthwave-inspired with gradient effects (vaporwave)
+- **Left Rail Bar**: Status rail with workspaces, clock, status icons and power controls
+- **Launcher**: App search, calculator, wallpaper browser, rice selector
+- **Dashboard**: Tabbed system overview (media, performance, weather)
+- **Notifications**: Popup and sidebar notification center
+- **Session Rail**: Right-edge quick actions menu
+- **Lock**: PAM-authenticated lock screen
+- **OSD Notch**: Right-edge volume/brightness controls
+- **AI Chat**: Multi-provider AI assistant
+- **Background**: Wallpaper with optional visualizer
+- **AreaPicker**: Screenshot region selector
+- **Utilities**: Quick toggles panel
 
-**Module Categories:**
+**Services:**
 
-- System monitoring (CPU, memory, temperature, battery)
-- User interaction (volume, brightness, microphone)
-- Information display (date, weather, music player)
-- Navigation (workspaces, windows, jgmenu)
-- Communication (network, Bluetooth, GitHub notifications)
+- Time, Hypr (Hyprland IPC), Audio (PipeWire), Players (MPRIS)
+- Brightness, Network (nmcli), SystemUsage, Weather (Open-Meteo)
+- Wallpapers, Notifs (NotificationServer), Colours (M3 theming)
+- Visibilities (panel state management), Ai (multi-provider)
 
 **Design Constraints:**
 
-- Modules must be independently toggleable
-- Scripts must handle missing dependencies
-- Update intervals must be configurable
-- Colors must use smart colors or xrdb references
+- All services are QML singletons with `pragma Singleton`
+- UI delegates to dots-* scripts via Process components
+- Theming uses Material Design 3 via wallpaper-driven `scheme.json`
+- Edge exclusions must reserve shell space in Hyprland
+- C++ plugin built with CMake, installed by Chezmoi script
 
 ## 3.1 Hyprland Animations
 
@@ -107,33 +112,9 @@ Rices specify their animation profile via `HYPRLAND_ANIMATIONS` in `config.sh`:
 HYPRLAND_ANIMATIONS="cyberpunk"  # Uses animations-cyberpunk.conf
 ```
 
-## 4. EWW Widget System
+## 4. Legacy Removal Note
 
-**Purpose**: Modern, declarative system widgets with custom styling.
-
-**Architecture:**
-
-- Widget types: Dashboard, powermenu, sidebar, music player
-- Launch scripts: Daemon management, state tracking, lock files
-- Styling: SCSS with smart colors integration
-- State management: Environment variables, scripts, IPC
-
-**Component Structure:**
-
-```
-~/.config/eww/<widget-name>/
-├── eww.yuck           # Widget definitions
-├── eww.scss           # Styles with smart colors
-├── launch.sh          # Enhanced launcher
-└── scripts/           # Helper scripts
-```
-
-**Design Principles:**
-
-- Single daemon for all widgets
-- Atomic widget opening/closing
-- Lock files prevent conflicts
-- Automatic cleanup on exit
+Waybar, EWW, and Rofi integration was intentionally removed from runtime and install flows. Quickshell is the only desktop-shell UI stack.
 
 ## 5. Script Management (dots)
 
@@ -151,7 +132,7 @@ HYPRLAND_ANIMATIONS="cyberpunk"  # Uses animations-cyberpunk.conf
 - System management (updates, backups, monitoring)
 - Theme control (rice application, color management)
 - Security (auditing, hardening, secret scanning)
-- User interaction (Rofi menus, notifications)
+- User interaction (Quickshell IPC, notifications, launcher)
 - Development (testing, validation, debugging)
 
 **Mandatory Standards:**

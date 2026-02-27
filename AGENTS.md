@@ -1,7 +1,7 @@
 # AI Agent Guidelines for HorneroConfig
 
 > **For AI coding assistants and automated tools**  
-> **Last Updated**: 2025-10-18
+> **Last Updated**: 2026-02-27
 
 ## Purpose
 
@@ -34,8 +34,8 @@ See [Development Standards](docs/Development-Standards.md) for complete requirem
 
 - **Rice System** - Self-contained themes in `~/.local/share/dots/rices/`
 - **Smart Colors** - Semantic color adaptation cached in `~/.cache/dots/smart-colors/`
-- **Polybar** - Profile-based modular status bar
-- **EWW** - Declarative widgets with SCSS styling
+- **Quickshell** - Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)
+- **Hornero C++ Plugin** - Performance-critical Quickshell extensions (image analysis, audio, calculator)
 - **Dots CLI** - Unified script interface
 - **Chaotic-AUR** - Precompiled AUR packages for faster installation
 

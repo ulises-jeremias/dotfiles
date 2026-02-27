@@ -19,6 +19,7 @@
 ##         --concept=CONCEPT                 Get best color for specific concept (error|warning|success|info|accent|red|green|blue|yellow|cyan|magenta|orange|pink|brown|white|black|gray|background|background-alt|foreground|foreground-alt).
 ##         --format=FORMAT                   Output format: hex, rgb, eww, scss, files (default: hex).
 ##         --generate                        Generate all smart color files in ~/.cache/dots/smart-colors/.
+##         --m3                              Also generate M3 Material Design scheme.json via generate-m3-colors.py.
 ##     -v, --verbose                         Show detailed analysis.
 
 set -euo pipefail
@@ -45,6 +46,7 @@ readonly ENV_COLORS_FILE="${SMART_COLORS_DIR}/colors.env"
 show_status() { echo -e "${CYAN}🎨${NC} $1"; }
 show_success() { echo -e "${GREEN}✅${NC} $1"; }
 show_error() { echo -e "${RED}❌${NC} $1"; }
+show_warning() { echo -e "${YELLOW}⚠️${NC} $1"; }
 show_info() { echo -e "${BLUE}ℹ️${NC} $1"; }
 
 # Convert hex to RGB values
@@ -1245,8 +1247,27 @@ EOF
   local CURRENT_ENV_FILE="${SMART_COLORS_DIR}/current.env"
   cp "$HYPRLOCK_COLORS_FILE" "$CURRENT_ENV_FILE"
 
+  # Generate M3 Material Design scheme if --m3 flag is set
+  if [[ -n ${m3:-} ]]; then
+    show_status "Generating M3 Material Design color scheme..."
+    local m3_script="${HOME}/.local/lib/dots/generate-m3-colors.py"
+    if [[ -f "$m3_script" ]]; then
+      local wall_path
+      wall_path=$(cat "${HOME}/.cache/wal/wal" 2>/dev/null || echo "")
+      if [[ -z "$wall_path" || ! -f "$wall_path" ]]; then
+        show_error "No wallpaper found in ~/.cache/wal/wal for M3 generation"
+      elif python3 "$m3_script" --image "$wall_path" --output "${SMART_COLORS_DIR}/scheme.json" 2>&1; then
+        show_success "M3 scheme.json generated"
+      else
+        show_error "Failed to generate M3 scheme.json"
+      fi
+    else
+      show_warning "M3 generator not found: $m3_script"
+    fi
+  fi
+
   show_success "Smart color files generated in $SMART_COLORS_DIR"
-  show_info "Generated: EWW, Waybar, Mako, Hyprland, Hyprlock, Wlogout, CopyQ, Rofi, Kitty, CSS"
+  show_info "Generated: EWW, Waybar, Mako, Hyprland, Hyprlock, Wlogout, CopyQ, Rofi, Kitty, CSS$([ -n "${m3:-}" ] && echo ", M3 scheme")"
 }
 
 # Main script logic
@@ -1298,7 +1319,7 @@ main() {
     esac
   elif [[ -n ${concept:-} ]]; then
     find_best_color_for_concept "$concept"
-  elif [[ -n ${generate:-} ]]; then
+  elif [[ -n ${generate:-} ]] || [[ -n ${m3:-} && -z ${concept:-} && -z ${analyze:-} && -z ${colors:-} && -z ${export:-} ]]; then
     generate_smart_color_files
   else
     # Default: show quick palette

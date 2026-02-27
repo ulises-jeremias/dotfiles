@@ -27,6 +27,27 @@ show_status() {
   echo -e "${CYAN}🎨${NC} $1"
 }
 
+sync_shell_theme() {
+  mkdir -p "$HOME/.cache/dots/smart-colors" "$HOME/.local/state/dots/wallpaper"
+  printf '%s\n' "$WALLPAPER_PATH" >"$HOME/.cache/dots/smart-colors/wallpaper"
+  printf '%s\n' "$WALLPAPER_PATH" >"$HOME/.local/state/dots/wallpaper/path.txt"
+  printf '%s\n' "$WALLPAPER_PATH" >"$HOME/.cache/current_wallpaper"
+
+  # When invoked from a broader pipeline (e.g. dots-wal-reload),
+  # avoid duplicate color generation/reload work.
+  if [[ "${DOTS_THEME_PIPELINE:-0}" == "1" ]]; then
+    return 0
+  fi
+
+  if command -v dots-smart-colors >/dev/null 2>&1; then
+    dots-smart-colors --generate --m3 >/dev/null 2>&1 || true
+  fi
+
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    dots-quickshell ipc colours reload >/dev/null 2>&1 || true
+  fi
+}
+
 # Get wallpaper path from arguments or auto-detect
 WALLPAPER_PATH=""
 
@@ -104,11 +125,13 @@ fi
 if pgrep -x hyprpaper >/dev/null; then
   if set_wallpaper_ipc; then
     show_success "Wallpaper set successfully"
+    sync_shell_theme
     exit 0
   else
     show_status "IPC failed, restarting hyprpaper..."
     if start_hyprpaper; then
       show_success "Wallpaper set successfully (after restart)"
+      sync_shell_theme
       exit 0
     fi
   fi
@@ -116,6 +139,7 @@ else
   show_status "Starting hyprpaper..."
   if start_hyprpaper; then
     show_success "Wallpaper set successfully"
+    sync_shell_theme
     exit 0
   fi
 fi

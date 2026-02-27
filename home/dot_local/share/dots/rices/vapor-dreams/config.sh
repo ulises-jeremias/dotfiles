@@ -33,3 +33,11 @@ HYPRLAND_ANIMATIONS="cozy"
 
 # Rice-specific Rofi theme
 ROFI_THEME="cyberpunk"
+
+# ================================
+# Quickshell Configuration
+# ================================
+SCHEME_TYPE="expressive"        # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+DARK_MODE=true
+ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="left"            # left/top/bottom/right

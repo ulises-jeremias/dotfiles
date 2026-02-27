@@ -1,0 +1,16 @@
+{
+  "_name": "Minimal Left",
+  "_description": "Clean left sidebar — workspaces and power only",
+  "_icon": "✨",
+  "bar": {
+    "position": "left",
+    "entries": ["logo", "workspaces", "spacer", "power"],
+    "statusIcons": [],
+    "scrollActions": { "up": "volume", "down": "volume" }
+  },
+  "appearance": {
+    "rounding": 20,
+    "padding": 6,
+    "spacing": 6
+  }
+}

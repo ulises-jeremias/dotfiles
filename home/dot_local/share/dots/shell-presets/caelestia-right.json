@@ -1,0 +1,16 @@
+{
+  "_name": "Caelestia Right",
+  "_description": "Right sidebar — mirrored reference shell style",
+  "_icon": "🌙",
+  "bar": {
+    "position": "right",
+    "entries": ["logo", "workspaces", "spacer", "clock", "spacer", "statusIcons", "power"],
+    "statusIcons": ["audio", "mic", "network", "bluetooth", "battery"],
+    "scrollActions": { "up": "volume", "down": "volume" }
+  },
+  "appearance": {
+    "rounding": 16,
+    "padding": 8,
+    "spacing": 8
+  }
+}

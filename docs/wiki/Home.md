@@ -35,8 +35,8 @@ into a harmonious blend of elegance and efficiency.
 
 - **🎨 Advanced Rice System**: Switch between beautiful desktop themes instantly
 - **🧠 Smart Colors**: Intelligent color adaptation for optimal readability and theme consistency  
-- **📊 Waybar**: Beautiful dual-bar status configuration with 20+ modules
-- **🎛️ EWW Widgets**: Modern system widgets (dashboard, powermenu, sidebar)
+- **🐚 Quickshell**: Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)
+- **🎨 Material Design 3**: Intelligent color theming from wallpaper analysis
 - **🌊 Hyprland**: Dynamic tiling Wayland compositor with smooth animations
 - **📦 Easy Management**: Simple installation and configuration via chezmoi
 - **🔧 100+ Scripts**: Comprehensive automation and utility scripts
@@ -46,15 +46,14 @@ into a harmonious blend of elegance and efficiency.
 Most were written from scratch. Core stack:
 
 - **Compositor** 🌊 [Hyprland](https://hyprland.org) - Dynamic tiling Wayland compositor
-- **Status Bar** 📊 [Waybar](https://github.com/Alexays/Waybar) - Beautiful, customizable status bar
-- **Application Launcher** 🚀 [Rofi](https://github.com/lbonn/rofi) - Blazing fast app launcher (Wayland fork)
-- **Notifications** 🔔 [Mako](https://github.com/emersion/mako) - Lightweight notification daemon
+- **Desktop Shell** 🐚 [Quickshell](https://quickshell.org) - Unified QML shell (bar, launcher, notifications, dashboard)
+- **Launcher Fallbacks** 🚀 fuzzel / wofi - lightweight fallback launchers
+- **Notifications** 🔔 Built into Quickshell (replaces Mako)
 - **Terminal Emulator** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/) - GPU-accelerated terminal
 - **Shell** 🐚 [Zsh](https://zsh.org) with Powerlevel10k prompt
 - **Lockscreen** 🔒 [Hyprlock](https://github.com/hyprwm/hyprlock) - Secure lock screen
 - **Wallpaper** 🖼️ [Hyprpaper](https://github.com/hyprwm/hyprpaper) - Fast wallpaper daemon
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with customized side pane
-- **Widgets** 🎨 [EWW](https://github.com/elkowar/eww) with dashboard and powermenu
 - and many more!
 
 ![Dotfiles Screen Overview](https://github.com/ulises-jeremias/dotfiles/blob/main/static/screen.png?raw=true)

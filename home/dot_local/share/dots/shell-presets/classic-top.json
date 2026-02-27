@@ -1,0 +1,16 @@
+{
+  "_name": "Classic Top",
+  "_description": "Traditional top bar with all status icons",
+  "_icon": "🖥️",
+  "bar": {
+    "position": "top",
+    "entries": ["logo", "workspaces", "spacer", "clock", "spacer", "statusIcons", "power"],
+    "statusIcons": ["audio", "mic", "network", "bluetooth", "battery"],
+    "scrollActions": { "up": "volume", "down": "volume" }
+  },
+  "appearance": {
+    "rounding": 12,
+    "padding": 6,
+    "spacing": 10
+  }
+}

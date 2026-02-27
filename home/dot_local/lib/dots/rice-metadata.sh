@@ -36,6 +36,10 @@ get_rice_metadata() {
   local RICE_SECONDARY_COLOR="#d79921"
   local RICE_TAGS=""
   local RICE_BEST_FOR=""
+  local SCHEME_TYPE="auto"
+  local DARK_MODE=true
+  local ACCENT_COLOR=""
+  local BAR_POSITION="left"
 
   # Load rice configuration if available
   if [[ -f $rice_config ]]; then
@@ -67,6 +71,10 @@ get_rice_metadata() {
   echo "secondary_color:${RICE_SECONDARY_COLOR}"
   echo "tags:${RICE_TAGS}"
   echo "best_for:${RICE_BEST_FOR}"
+  echo "scheme_type:${SCHEME_TYPE}"
+  echo "dark_mode:${DARK_MODE}"
+  echo "accent_color_override:${ACCENT_COLOR}"
+  echo "bar_position:${BAR_POSITION}"
 }
 
 # Function to format rice metadata for display
@@ -134,7 +142,11 @@ EOF
   "primary_color": "${meta[primary_color]}",
   "secondary_color": "${meta[secondary_color]}",
   "tags": "${meta[tags]}",
-  "best_for": "${meta[best_for]}"
+  "best_for": "${meta[best_for]}",
+  "scheme_type": "${meta[scheme_type]}",
+  "dark_mode": ${meta[dark_mode]},
+  "accent_color_override": "${meta[accent_color_override]}",
+  "bar_position": "${meta[bar_position]}"
 }
 EOF
       ;;

@@ -173,6 +173,7 @@ All generated files are stored in `~/.cache/dots/smart-colors/`:
 
 ```text
 ~/.cache/dots/smart-colors/
+├── scheme.json             # Material Design 3 palette for Quickshell
 ├── colors-i3.conf          # i3 window manager color configuration
 ├── colors-eww.scss         # EWW widgets SCSS variables
 ├── colors.sh               # Shell script variables
@@ -267,10 +268,12 @@ The centralized cache system works seamlessly with the dotfiles workflow:
 graph LR
     A[Wallpaper Change] --> B[wpg/pywal]
     B --> C[dots-wal-reload]
-    C --> D[dots-smart-colors --generate]
+    C --> D[dots-smart-colors --generate --m3]
     D --> E[Cache Updated]
+    E --> E2[Quickshell IPC reload]
+    E2 --> G[Colors Applied]
     E --> F[Applications Reload]
-    F --> G[Colors Applied]
+    F --> G
 ```
 
 **Key Benefits:**
@@ -287,8 +290,9 @@ Each application type uses its preferred format:
 | Application       | File Used                   | Integration Method                  |
 | ----------------- | --------------------------- | ----------------------------------- |
 | **Hyprland**      | `colors.env`                | Environment variables in config     |
-| **Waybar**        | `colors-waybar.css`         | CSS import in stylesheet            |
-| **EWW Widgets**   | `colors-eww.scss`           | SCSS import in stylesheets          |
+| **Quickshell**    | `scheme.json`               | Watched by Colours service (auto-reload) |
+| **Waybar**        | `colors-waybar.css`         | CSS import (legacy fallback)        |
+| **EWW Widgets**   | `colors-eww.scss`           | SCSS import (legacy fallback)       |
 | **Hyprlock**      | `colors-hyprlock.env`       | Source in lockscreen config         |
 | **Rofi**          | `colors-rofi.rasi`          | Import in rofi theme files          |
 | **Kitty**         | `colors-kitty.conf`         | Include in kitty.conf               |
@@ -325,8 +329,10 @@ graph LR
     A[wpg wallpaper change] --> B[wal-reload]
     B --> C[pywal generation]
     C --> D[smart-colors analysis]
-    D --> E[EWW colors.scss]
-    D --> F[waybar colors.css]
+    D --> QS[scheme.json]
+    QS --> QSR[Quickshell auto-reload]
+    D --> E[EWW colors.scss (fallback)]
+    D --> F[waybar colors.css (fallback)]
     D --> G[hyprland colors.env]
     E --> H[EWW restart]
     F --> I[waybar restart]
@@ -336,13 +342,20 @@ graph LR
 
 ### What Gets Updated Automatically
 
-**EWW Widgets:**
+**Quickshell (Primary):**
+
+- M3 scheme.json generated from wallpaper
+- Colours service auto-reloads via file watcher
+- All UI components update immediately
+- No restart required
+
+**EWW Widgets (Legacy Fallback):**
 
 - Replaces pywal symlinks with smart-generated `colors.scss`
 - Includes semantic variables (`$error`, `$success`)
 - Maintains compatibility with existing configs
 
-**Waybar:**
+**Waybar (Legacy Fallback):**
 
 - Generates CSS variables file for theming
 - All modules automatically use optimal colors
@@ -529,5 +542,6 @@ dots-smart-colors --concept=success
 
 - [Rice System Theme Management](Rice-System-Theme-Management.md) - Complete theme switching
 - [Polybar Configuration Structure](Polybar-Configuration-Structure.md) - Polybar color system
-- [EWW Widgets](EWW-Widgets.md) - EWW theming integration
+- [Quickshell Shell](Quickshell-Shell.md) - Primary desktop shell
+- [EWW Widgets](EWW-Widgets.md) - EWW theming integration (legacy)
 - [Dots Scripts](Dots-Scripts.md) - Available dots commands

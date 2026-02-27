@@ -1,0 +1,47 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Quickshell desktop shell and dependencies
+# Many runtime deps (brightnessctl, pipewire, lm_sensors, etc.) are already
+# installed by other chezmoi scripts; --needed avoids duplication.
+
+yay -S --noconfirm --needed \
+  quickshell-git
+
+# Material Design 3 color generation
+yay -S --noconfirm --needed \
+  python-materialyoucolor
+
+# Fonts required by the shell
+yay -S --noconfirm --needed \
+  ttf-material-symbols-variable-git \
+  ttf-rubik-vf \
+  ttf-cascadia-code-nerd
+
+# Runtime dependencies (some may already exist)
+yay -S --noconfirm --needed \
+  brightnessctl \
+  lm_sensors \
+  libqalculate \
+  swappy \
+  playerctl \
+  networkmanager
+
+# Build dependencies for the Hornero C++ plugin
+# Note: pipewire is already a system package; don't list it here to avoid
+# partial-upgrade version conflicts. Run `sudo pacman -Syu` separately.
+yay -S --noconfirm --needed \
+  cmake \
+  ninja \
+  qt6-base \
+  qt6-declarative \
+  aubio \
+  cava
+
+{{      end -}}
+
+{{ end -}}

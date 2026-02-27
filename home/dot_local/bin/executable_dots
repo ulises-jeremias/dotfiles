@@ -15,7 +15,7 @@
 set -euo pipefail
 
 show_message_with_usage() {
-  [[ -z $documentation ]] && parse_documentation
+  [[ -z ${documentation:-} ]] && parse_documentation
   echo "$documentation"
   echo
   echo "$1"
@@ -41,10 +41,12 @@ source ~/.local/lib/dots/dots-scripts.sh || exit
 
 is_valid_script() {
   local requested_script="$1"
-  local script_entry script_name
+  local script_entry raw_name script_name
 
   for script_entry in "${scripts_list[@]}"; do
-    script_name=$(echo "${script_entry}" | cut -d ':' -f 1)
+    raw_name=$(echo "${script_entry}" | cut -d ':' -f 1)
+    # Strip emoji prefix (first word) to get the actual script name
+    script_name="${raw_name##* }"
     if [[ $script_name == "$requested_script" ]]; then
       return 0
     fi
@@ -80,7 +82,7 @@ if [[ -n ${list:-} ]]; then
 fi
 
 if [[ -n ${help:-} ]]; then
-  [[ -z $documentation ]] && parse_documentation
+  [[ -z ${documentation:-} ]] && parse_documentation
   echo "$documentation"
   exit
 fi

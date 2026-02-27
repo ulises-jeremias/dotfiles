@@ -1,0 +1,23 @@
+{
+  "_name": "Gaming",
+  "_description": "Bottom bar — minimal footprint, no logo",
+  "_icon": "🎮",
+  "bar": {
+    "position": "bottom",
+    "entries": ["workspaces", "spacer", "statusIcons"],
+    "statusIcons": ["audio", "network"],
+    "scrollActions": { "up": "volume", "down": "volume" }
+  },
+  "appearance": {
+    "rounding": 8,
+    "padding": 4,
+    "spacing": 6
+  },
+  "notifications": {
+    "maxPopups": 2,
+    "expireTimeout": 2000
+  },
+  "osd": {
+    "hideDelay": 1000
+  }
+}

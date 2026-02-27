@@ -1,0 +1,16 @@
+{
+  "_name": "Minimal Top",
+  "_description": "Minimal top bar — workspaces + clock",
+  "_icon": "✨",
+  "bar": {
+    "position": "top",
+    "entries": ["workspaces", "spacer", "clock", "spacer", "power"],
+    "statusIcons": [],
+    "scrollActions": { "up": "volume", "down": "volume" }
+  },
+  "appearance": {
+    "rounding": 20,
+    "padding": 4,
+    "spacing": 12
+  }
+}

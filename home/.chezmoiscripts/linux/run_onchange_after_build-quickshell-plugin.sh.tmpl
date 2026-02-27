@@ -1,0 +1,52 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source "${HOME}/.local/lib/dots/logging.sh"
+
+SHELL_DIR="${HOME}/.config/quickshell"
+PLUGIN_DIR="${SHELL_DIR}/plugin"
+BUILD_ROOT_DIR="${SHELL_DIR}"
+BUILD_DIR="${BUILD_ROOT_DIR}/build"
+INSTALL_PREFIX="${HOME}/.local/lib/quickshell"
+
+if [[ ! -d "$SHELL_DIR" ]]; then
+    log_warn "Quickshell directory not found, skipping build"
+    exit 0
+fi
+
+if ! command -v cmake &>/dev/null; then
+    log_warn "cmake not found, skipping plugin build"
+    exit 0
+fi
+
+log_info "Building Hornero Quickshell plugin..."
+
+if [[ ! -f "${BUILD_ROOT_DIR}/CMakeLists.txt" ]]; then
+    log_warn "Missing CMakeLists.txt in ${BUILD_ROOT_DIR}, skipping plugin build"
+    exit 0
+fi
+
+cmake -S "$BUILD_ROOT_DIR" -B "$BUILD_DIR" -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DINSTALL_QMLDIR="$INSTALL_PREFIX/qml" 2>&1 | while IFS= read -r line; do
+    log_debug "$line"
+done
+
+cmake --build "$BUILD_DIR" 2>&1 | while IFS= read -r line; do
+    log_debug "$line"
+done
+
+cmake --install "$BUILD_DIR" 2>&1 | while IFS= read -r line; do
+    log_debug "$line"
+done
+
+log_info "Hornero Quickshell plugin built and installed to ${INSTALL_PREFIX}"
+
+{{      end -}}
+
+{{ end -}}
