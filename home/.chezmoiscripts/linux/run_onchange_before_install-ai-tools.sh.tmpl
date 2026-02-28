@@ -3,18 +3,17 @@
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 sudo pacman -S --noconfirm --needed \
-  ollama
+  nodejs \
+  npm
 
 yay -S --noconfirm --needed \
-  litellm
-
-sudo systemctl enable --now ollama
-
-# ollama pull llama3.1
-ollama pull mistral:7b-instruct
-
-pipx install shell-gpt[litellm]
+  visual-studio-code-bin \
+  cursor-bin \
+  claude-code-stable \
+  pi-coding-agent
 {{      end -}}
 
 {{ end -}}

@@ -157,7 +157,7 @@ parse_options() {
 
   # Parse the provided options
   while getopts ":${short_options}-:" option; do
-    option="${option}${OPTARG}"
+    option="${option}${OPTARG-}"
     option_value=""
 
     # Set the corresponding variable for known options

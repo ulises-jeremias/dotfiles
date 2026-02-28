@@ -44,7 +44,7 @@ declare -A DEV_DEPS=(
   ["kitty"]="Terminal emulator"
   ["nvim"]="Text editor"
   ["tmux"]="Terminal multiplexer"
-  ["ranger"]="File manager"
+  ["yazi"]="File manager"
   ["btop"]="System monitor"
   ["fastfetch"]="System info"
 )
@@ -55,6 +55,14 @@ declare -A MEDIA_DEPS=(
   ["spotify"]="Music player"
   ["mpv"]="Video player"
   ["cava"]="Audio visualizer"
+)
+
+# AI development tools (optional)
+declare -A AI_DEPS=(
+  ["code"]="Visual Studio Code"
+  ["cursor"]="Cursor AI IDE"
+  ["claude"]="Claude Code CLI"
+  ["pi"]="Pi coding agent"
 )
 
 check_dependency() {
@@ -97,6 +105,11 @@ check_all_dependencies() {
     for cmd in "${!MEDIA_DEPS[@]}"; do
       check_dependency "$cmd" "${MEDIA_DEPS[$cmd]}" || true
     done
+
+    log_info "Checking AI dependencies..."
+    for cmd in "${!AI_DEPS[@]}"; do
+      check_dependency "$cmd" "${AI_DEPS[$cmd]}" || true
+    done
   fi
 
   if [[ $missing -gt 0 ]]; then
@@ -130,6 +143,24 @@ install_dependencies() {
     echo "📦 Installing chezmoi..."
     sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin
   fi
+
+  if [[ -n ${optional} ]]; then
+    log_info "Installing optional AI dependencies..."
+    if command -v pacman >/dev/null 2>&1; then
+      sudo pacman -S --needed nodejs npm
+      if command -v yay >/dev/null 2>&1; then
+        yay -S --noconfirm --needed \
+          visual-studio-code-bin \
+          cursor-bin \
+          claude-code-stable \
+          pi-coding-agent
+      else
+        echo "⚠️  yay is not installed. Install Cursor/VSCode/Claude/pi manually."
+      fi
+    else
+      echo "ℹ️  Install AI tools manually on this distribution."
+    fi
+  fi
 }
 
 list_dependencies() {
@@ -158,6 +189,12 @@ list_dependencies() {
     echo "Media Dependencies (Optional):"
     for cmd in "${!MEDIA_DEPS[@]}"; do
       echo "  - $cmd: ${MEDIA_DEPS[$cmd]}"
+    done
+
+    echo ""
+    echo "AI Dependencies (Optional):"
+    for cmd in "${!AI_DEPS[@]}"; do
+      echo "  - $cmd: ${AI_DEPS[$cmd]}"
     done
   fi
 }
