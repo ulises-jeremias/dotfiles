@@ -44,7 +44,7 @@ Launch Layer
    - Improved UX for XDG MIME management
 
 2. **dots-default-apps** - HorneroConfig wrapper
-   - GUI with rofi for category-based selection (no MIME types needed)
+   - GUI/CLI wrapper for category-based selection (no MIME types needed)
    - CLI interface matching dots-* standards (EasyOptions, error handling)
    - Categories: file-manager, terminal, web-browser, text-editor, etc.
    - Integrated into `dots-settings-gui`
@@ -53,7 +53,7 @@ Launch Layer
    - Already installed (XFCE dependency)
    - Respects XDG MIME associations
    - Simple API: `exo-open --launch FileManager`
-   - Used in: JGMenu, Hyprland keybindings, Waybar, EWW
+   - Used in: Hyprland keybindings and scripts
 
 4. **dots-file-manager** - Simplified wrapper
    - Delegates to `exo-open --launch FileManager`
@@ -63,10 +63,7 @@ Launch Layer
 
 ### Integration Points
 
-- **JGMenu**: Uses `exo-open --launch {FileManager|TerminalEmulator|WebBrowser}`
 - **Hyprland**: Keybindings use `exo-open` for quick access
-- **Waybar**: Module actions use `exo-open`
-- **EWW Dashboard**: Widgets use `exo-open`
 - **dots-settings-gui**: "Default Applications" entry launches `dots-default-apps`
 
 ## Consequences
@@ -78,7 +75,7 @@ Launch Layer
 - ✅ **Consistency** - System-wide defaults work everywhere (Thunar, file dialogs, etc.)
 - ✅ **Less code** - Removed ~200 lines of custom fallback logic
 - ✅ **Better UX** - GUI hides MIME type complexity behind categories
-- ✅ **Flexibility** - Users can use `handlr` CLI, `nwg-look` GUI, or `dots-default-apps`
+- ✅ **Flexibility** - Users can use `handlr` CLI or `dots-default-apps`
 - ✅ **Lightweight** - `exo-open` is fast and small (~50KB)
 
 ### Negative
@@ -115,12 +112,7 @@ Launch Layer
      - Added "🎯 Default Applications" entry
      - Launches `dots-default-apps --gui`
 
-4. **Configuration**:
-   - `home/dot_config/jgmenu/prepend.csv`
-     - Changed to `exo-open --launch {FileManager|TerminalEmulator|WebBrowser}`
-     - Removed `dots launcher --type=webbrowser` (redundant)
-
-5. **Documentation**:
+4. **Documentation**:
    - `docs/wiki/Dots-Scripts.md`
      - Added `default-apps` section with examples
      - Updated `file-manager` to reflect new architecture
@@ -154,7 +146,6 @@ handlr open ~/Documents
 
 Users can also configure defaults with:
 
-- **nwg-look** - GTK settings GUI with "Default Applications" tab
 - **handlr** - Direct CLI: `handlr set <MIME> <APP.desktop>`
 - **xdg-mime** - CLI tool: `xdg-mime default <APP.desktop> <MIME>`
 

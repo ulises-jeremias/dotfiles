@@ -11,8 +11,6 @@ DOTFILES_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 DOTS_BIN_DIR="${DOTFILES_ROOT}/home/dot_local/bin"
 ENTRYPOINT_SCRIPTS=(
   "${DOTFILES_ROOT}/home/dot_local/bin/executable_dots"
-  "${DOTFILES_ROOT}/home/dot_config/waybar/executable_launch.sh"
-  "${DOTFILES_ROOT}/home/dot_config/eww/executable_eww-manager.sh"
 )
 
 # Scripts to exclude from validation (third-party or special cases)

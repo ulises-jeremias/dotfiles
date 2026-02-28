@@ -9,13 +9,11 @@ set -eufo pipefail
   "copyq"
   "dbus-python"
   "direnv"
-  "fuzzel"
   "exa"
   "jq"
   "fastfetch"
   "github-cli"
   "gnome-keyring"
-  "mako"
   "pacman-contrib"
   "python"
   "python-pip"
@@ -28,7 +26,6 @@ set -eufo pipefail
   "slurp"
   "cliphist"
   "pavucontrol"
-  "wofi"
   "power-profiles-daemon"
 -}}
 
@@ -36,8 +33,6 @@ set -eufo pipefail
   "cava"
   "auto-cpufreq"
   "safeeyes"
-  "nwg-bar"
-  "nwg-drawer"
 -}}
 
 {{ if and (not .ephemeral) (not .headless) -}}
@@ -65,11 +60,7 @@ set -eufo pipefail
   "numix-circle-icon-theme-git"
   "pamac-aur"
   "pwvucontrol"
-  "skippy-xd"
   "snappy-switcher"
-  "wlogout"
-  "nwg-look"
-  "nwg-displays"
   "poweralertd"
 ) -}}
 {{ end -}}

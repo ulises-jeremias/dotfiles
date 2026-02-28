@@ -7,6 +7,7 @@ import "appearance"
 import "taskbar"
 import "launcher"
 import "dashboard"
+import "system"
 import qs.components
 import qs.services
 import qs.config

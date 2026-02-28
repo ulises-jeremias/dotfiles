@@ -3,16 +3,15 @@
 ## dots-launcher: Unified application launcher wrapper
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
-## Preference order (auto): quickshell > fuzzel > wofi > minimal prompt
+## Preference order (auto): quickshell > minimal prompt
 ## Usage:
 ##   @script.name [OPTIONS]
 ## Options:
 ##   -h, --help            Show help (auto by EasyOptions)
-##       --backend=NAME    Force backend: quickshell|fuzzel|wofi|minimal
+##       --backend=NAME    Force backend: quickshell|minimal
 ##       --list            Print detected backends (in priority order) then exit
 ## Examples:
 ##   @script.name                  # auto chain
-##   @script.name --backend=fuzzel # force fuzzel
 ##   @script.name --list           # list available backends
 
 set -euo pipefail
@@ -21,15 +20,6 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 BACKEND=${backend:-auto}
 LIST=${list:-no}
-
-launch_fuzzel() {
-  command -v fuzzel >/dev/null 2>&1 || return 1
-  exec fuzzel
-}
-launch_wofi() {
-  command -v wofi >/dev/null 2>&1 || return 1
-  exec wofi --show drun
-}
 
 launch_quickshell() {
   pgrep -x quickshell >/dev/null 2>&1 || return 1
@@ -45,7 +35,7 @@ minimal_fallback() {
 }
 
 if [[ $LIST == yes ]]; then
-  order=(quickshell fuzzel wofi minimal)
+  order=(quickshell minimal)
   avail=()
   for t in "${order[@]}"; do
     if [[ $t == minimal ]]; then
@@ -59,20 +49,12 @@ if [[ $LIST == yes ]]; then
 fi
 
 case "$BACKEND" in
-  fuzzel) launch_fuzzel || {
-    echo "fuzzel not available" >&2
-    exit 1
-  } ;;
-  wofi) launch_wofi || {
-    echo "wofi not available" >&2
-    exit 1
-  } ;;
   quickshell) launch_quickshell || {
     echo "quickshell is not running" >&2
     exit 1
   } ;;
   minimal) minimal_fallback ;;
   auto | *)
-    launch_quickshell || launch_fuzzel || launch_wofi || minimal_fallback
+    launch_quickshell || minimal_fallback
     ;;
 esac

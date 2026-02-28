@@ -8,17 +8,14 @@
 ## Options:
 ##   -h, --help            Show help
 ##       --gui             Open auto-cpufreq GUI if available
-##       --backend=NAME    Menu backend: fuzzel|wofi (auto chain if omitted)
 
 set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 GUI=${gui:-no}
-BACKEND=${backend:-auto}
-
-if pgrep -x quickshell > /dev/null 2>&1; then
-  dots-quickshell ipc utilities toggle
+if [[ ${DOTS_BYPASS_QUICKSHELL:-0} != 1 ]] && pgrep -x quickshell > /dev/null 2>&1; then
+  dots-settings-gui --pane=system menu
   exit 0
 fi
 
@@ -51,34 +48,30 @@ for p in $profiles; do
 done
 menu=${menu%\n}
 
-choose_menu() {
-  case "$BACKEND" in
-    fuzzel)
-      command -v fuzzel >/dev/null 2>&1 || return 1
-      echo -e "$menu" | fuzzel --prompt "Performance> "
-      ;;
-    wofi)
-      command -v wofi >/dev/null 2>&1 || return 1
-      echo -e "$menu" | wofi --dmenu --prompt "Performance> "
-      ;;
-    auto | *)
-      if command -v fuzzel >/dev/null 2>&1; then
-        echo -e "$menu" | fuzzel --prompt "Performance> "
-        return
-      fi
-      if command -v wofi >/dev/null 2>&1; then
-        echo -e "$menu" | wofi --dmenu --prompt "Performance> "
-        return
-      fi
-      return 1
-      ;;
-  esac
-}
-
-selected=$(choose_menu || true)
-[[ -z $selected ]] && exit 0
-selected=${selected#✓ }
-selected=${selected#  }
+echo "Performance profiles:"
+i=1
+selected=""
+for p in $profiles; do
+  if [[ $p == "$current" ]]; then
+    echo "$i) $p (current)"
+  else
+    echo "$i) $p"
+  fi
+  i=$((i + 1))
+done
+printf "Select profile [1-%d, empty to cancel]: " "$((i - 1))"
+read -r idx || exit 1
+[[ -z ${idx:-} ]] && exit 0
+[[ "$idx" =~ ^[0-9]+$ ]] || exit 1
+(( idx >= 1 && idx < i )) || exit 1
+i=1
+for p in $profiles; do
+  if (( i == idx )); then
+    selected="$p"
+    break
+  fi
+  i=$((i + 1))
+done
 
 powerprofilesctl set "$selected"
 notify-send "Performance Mode" "Set to $selected" -u low || true

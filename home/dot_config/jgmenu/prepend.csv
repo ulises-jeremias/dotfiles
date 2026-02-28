@@ -1,9 +1,0 @@
-Dotfiles Config,kitty -e sh -c 'cd ~/.dotfiles && $EDITOR .',gnome-control-center
-Dotfiles Documentation,xdg-open https://github.com/ulises-jeremias/dotfiles/wiki,help
-^sep()
-Web Browser,exo-open --launch WebBrowser,web-browser
-File Manager,exo-open --launch FileManager,system-file-manager
-Terminal,exo-open --launch TerminalEmulator,utilities-terminal
-^sep()
-User Dashboard,~/.config/eww/dashboard/launch.sh,system-users
-^sep()

@@ -61,21 +61,32 @@ show_help() {
 }
 
 cmd_selector() {
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    dots-quickshell ipc launcher toggle
+    exit 0
+  fi
+
   local rices_dir="${RICES_DIR:-$HOME/.local/share/dots/rices}"
   [[ -d "$rices_dir" ]] || {
     echo "Error: Rices directory not found: $rices_dir" >&2
     exit 1
   }
 
-  local selected=""
-  if command -v fuzzel >/dev/null 2>&1; then
-    selected=$(ls -1 "$rices_dir" | fuzzel --dmenu --prompt "Rice> ")
-  elif command -v wofi >/dev/null 2>&1; then
-    selected=$(ls -1 "$rices_dir" | wofi --dmenu --prompt "Rice" --insensitive)
-  else
-    echo "Error: no selector backend available (fuzzel/wofi)" >&2
-    exit 1
-  fi
+  echo "Quickshell not running. Falling back to terminal selector." >&2
+  mapfile -t rices < <(ls -1 "$rices_dir")
+  [[ ${#rices[@]} -eq 0 ]] && exit 1
+  local i=1
+  for rice in "${rices[@]}"; do
+    printf "%2d) %s\n" "$i" "$rice"
+    i=$((i + 1))
+  done
+  printf "Select rice [1-%d, empty to cancel]: " "${#rices[@]}"
+  local idx selected=""
+  read -r idx || exit 1
+  [[ -z ${idx:-} ]] && exit 0
+  [[ "$idx" =~ ^[0-9]+$ ]] || exit 1
+  (( idx >= 1 && idx <= ${#rices[@]} )) || exit 1
+  selected="${rices[$((idx - 1))]}"
 
   [[ -z ${selected:-} ]] && exit 0
   cmd_apply "$selected"

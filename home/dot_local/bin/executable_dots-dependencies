@@ -29,16 +29,14 @@ declare -A CORE_DEPS=(
   ["zsh"]="Primary shell"
 )
 
-# (Legacy X11 components removed: i3, openbox, polybar, picom, feh, dunst)
-# Wayland environment components (canonical stack)
+# Quickshell-first Wayland environment components (canonical stack)
 declare -A WL_DEPS=(
   ["hyprland"]="Wayland compositor"
-  ["waybar"]="Status bar"
-  ["eww"]="Widget system"
-  ["rofi"]="Application launcher"
-  ["mako"]="Notification daemon"
+  ["quickshell"]="Desktop shell (bar/launcher/dashboard/control center)"
   ["hyprpaper"]="Wallpaper daemon"
   ["hyprlock"]="Lock screen"
+  ["hypridle"]="Idle daemon"
+  ["cliphist"]="Clipboard history"
 )
 
 # Development tools (optional)
@@ -112,20 +110,17 @@ check_all_dependencies() {
 }
 
 install_dependencies() {
-  log_info "Installing dependencies (core + Wayland stack)..."
+  log_info "Installing dependencies (core + Quickshell Wayland stack)..."
 
   if command -v pacman >/dev/null 2>&1; then
-    sudo pacman -S --needed git curl wget zsh hyprland waybar rofi mako hyprpaper hyprlock kitty
-    if ! command -v eww >/dev/null 2>&1; then
-      echo "ℹ️  Install 'eww' via AUR (e.g. yay -S eww) for widgets."
-    fi
+    sudo pacman -S --needed git curl wget zsh hyprland quickshell hyprpaper hyprlock hypridle cliphist kitty
   elif command -v apt >/dev/null 2>&1; then
     sudo apt update
-    sudo apt install -y git curl wget zsh kitty rofi mako
-    echo "⚠️  Install hyprland/waybar/hyprpaper/hyprlock/eww manually (not all in apt)."
+    sudo apt install -y git curl wget zsh kitty
+    echo "⚠️  Install hyprland/quickshell/hyprpaper/hyprlock/hypridle/cliphist manually (not all in apt)."
   elif command -v dnf >/dev/null 2>&1; then
-    sudo dnf install -y git curl wget zsh hyprland waybar rofi mako hyprpaper kitty
-    echo "ℹ️  Install hyprlock & eww separately if unavailable."
+    sudo dnf install -y git curl wget zsh hyprland hyprpaper kitty
+    echo "ℹ️  Install quickshell, hyprlock, hypridle and cliphist separately if unavailable."
   else
     echo "❌ Unsupported package manager. Install packages manually."
     exit 1

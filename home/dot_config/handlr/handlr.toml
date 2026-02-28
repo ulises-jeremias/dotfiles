@@ -4,9 +4,6 @@
 # Enable interactive selector when multiple handlers available
 enable_selector = false
 
-# Selector command (rofi integration)
-selector = "rofi -dmenu -i -p 'Open With: '"
-
 # Terminal execution arguments
 term_exec_args = '-e'
 

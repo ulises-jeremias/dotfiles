@@ -20,25 +20,36 @@ get_outer_gaps() {
 # Show menu for gap selection
 show_menu() {
   local title="$1"
-  local options="Increase (+5)\nDecrease (-5)\nIncrease All (Shift +5)\nDecrease All (Shift -5)\nReset (0)"
-  if command -v fuzzel >/dev/null 2>&1; then
-    echo -e "$options" | fuzzel --dmenu --prompt "$title> "
-  elif command -v wofi >/dev/null 2>&1; then
-    echo -e "$options" | wofi --dmenu --prompt "$title" --insensitive
-  else
-    return 1
-  fi
+  echo "$title"
+  echo "1) Increase (+5)"
+  echo "2) Decrease (-5)"
+  echo "3) Increase All (Shift +5)"
+  echo "4) Decrease All (Shift -5)"
+  echo "5) Reset (0)"
+  printf "Choice [1-5]: "
+  local n
+  read -r n || return 1
+  case "$n" in
+    1) echo "Increase (+5)" ;;
+    2) echo "Decrease (-5)" ;;
+    3) echo "Increase All (Shift +5)" ;;
+    4) echo "Decrease All (Shift -5)" ;;
+    5) echo "Reset (0)" ;;
+    *) return 1 ;;
+  esac
 }
 
 # Main menu
-if command -v fuzzel >/dev/null 2>&1; then
-  main_choice=$(echo -e "Inner Gaps\nOuter Gaps" | fuzzel --dmenu --prompt "Gaps Mode> ")
-elif command -v wofi >/dev/null 2>&1; then
-  main_choice=$(echo -e "Inner Gaps\nOuter Gaps" | wofi --dmenu --prompt "Gaps Mode" --insensitive)
-else
-  echo "No menu backend available (requires fuzzel or wofi)." >&2
-  exit 1
-fi
+echo "Gaps Mode"
+echo "1) Inner Gaps"
+echo "2) Outer Gaps"
+printf "Choice [1-2]: "
+read -r main_n || exit 1
+case "$main_n" in
+  1) main_choice="Inner Gaps" ;;
+  2) main_choice="Outer Gaps" ;;
+  *) exit 1 ;;
+esac
 
 case "$main_choice" in
   "Inner Gaps")

@@ -1,5 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Eww Daemon
-Exec=eww daemon
-X-GNOME-Autostart-enabled=true

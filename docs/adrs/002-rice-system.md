@@ -23,13 +23,13 @@ We implemented a modular rice system with the following architecture:
 - **Configuration Files**: Each rice has a `config.sh` with theme-specific settings
 - **Apply Scripts**: Each rice has an `apply.sh` script for theme activation
 - **Central Management**: A `.current_rice` file tracks the active theme
-- **Rofi Integration**: `dots rofi-rice-selector` provides visual theme switching
+- **Quickshell Integration**: `dots appearance ...` and control-center appearance panel provide theme switching
 
 Key components:
 
 - `dots-rice-config.sh` - Core rice management library
 - Individual rice directories with modular configurations
-- Integration with pywal, waybar, and other theming tools
+- Integration with pywal/Smart Colors and Quickshell theming
 
 ## Consequences
 

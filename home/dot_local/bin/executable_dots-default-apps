@@ -68,10 +68,6 @@ check_dependencies() {
     missing_deps+=("handlr-regex")
   fi
 
-  if [[ ${gui:-yes} == yes ]] && ! command -v rofi >/dev/null 2>&1; then
-    missing_deps+=("rofi")
-  fi
-
   if [[ ${#missing_deps[@]} -gt 0 ]]; then
     log "ERROR" "Missing dependencies: ${missing_deps[*]}"
     log "ERROR" "Install with: sudo pacman -S ${missing_deps[*]}"
@@ -83,6 +79,27 @@ check_dependencies() {
 init_cache() {
   mkdir -p "$CACHE_DIR"
   mkdir -p "$(dirname "$CONFIG_FILE")"
+}
+
+menu_select() {
+  local prompt="$1"
+  local options_text="$2"
+  mapfile -t options < <(printf '%s\n' "$options_text" | awk 'NF')
+  [[ ${#options[@]} -eq 0 ]] && return 1
+
+  echo "$prompt"
+  local i=1
+  for option in "${options[@]}"; do
+    printf "%2d) %s\n" "$i" "$option"
+    i=$((i + 1))
+  done
+  printf "Select option [1-%d, empty to cancel]: " "${#options[@]}"
+  local idx
+  read -r idx || return 1
+  [[ -z ${idx:-} ]] && return 1
+  [[ "$idx" =~ ^[0-9]+$ ]] || return 1
+  (( idx >= 1 && idx <= ${#options[@]} )) || return 1
+  printf '%s\n' "${options[$((idx - 1))]}"
 }
 
 # MIME type mappings for common categories
@@ -263,10 +280,7 @@ show_gui_selector() {
   done
 
   local selected
-  selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
-    -p "Default Applications" \
-    -theme ~/.config/rofi/applets.rasi \
-    -no-custom) || return 0
+  selected=$(menu_select "Default Applications" "$(echo -e "${menu%\\n}")") || return 0
 
   [[ -z $selected ]] && return 0
 
@@ -328,10 +342,7 @@ show_terminal_selector() {
   fi
 
   local selected
-  selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
-    -p "Select Terminal Emulator" \
-    -theme ~/.config/rofi/applets.rasi \
-    -no-custom) || return 0
+  selected=$(menu_select "Select Terminal Emulator" "$(echo -e "${menu%\\n}")") || return 0
 
   [[ -z $selected ]] && return 0
 
@@ -399,10 +410,7 @@ show_app_selector() {
   done <<<"$apps"
 
   local selected
-  selected=$(echo -e "${menu%\\n}" | rofi -dmenu -i \
-    -p "Select ${category//-/ }" \
-    -theme ~/.config/rofi/applets.rasi \
-    -no-custom) || return 0
+  selected=$(menu_select "Select ${category//-/ }" "$(echo -e "${menu%\\n}")") || return 0
 
   [[ -z $selected ]] && return 0
 
@@ -463,6 +471,12 @@ show_info() {
 main() {
   check_dependencies
   init_cache
+
+  if pgrep -x quickshell >/dev/null 2>&1 && [[ ${gui:-yes} == yes ]] && [[ ${list:-no} != yes ]] && [[ ${info:-no} != yes ]] && [[ -z ${set:-} ]] && [[ -z ${type:-} ]]; then
+    ~/.local/bin/dots-settings-gui --pane=launcher menu >/dev/null 2>&1 || true
+    notify-send "Default Applications" "Use Launcher settings in Quickshell control center." -u low || true
+    exit 0
+  fi
 
   # Handle commands
   if [[ ${info:-no} == yes ]]; then

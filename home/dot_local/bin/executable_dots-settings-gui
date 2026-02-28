@@ -9,8 +9,17 @@ set -euo pipefail
 
 SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_NAME
+PANE=""
+
+set_start_pane() {
+  local pane="$1"
+  [[ -z "$pane" ]] && return 0
+  ~/.local/bin/dots-quickshell config set controlCenter.startPane "$pane" >/dev/null 2>&1 || true
+}
 
 open_settings() {
+  set_start_pane "$PANE"
+
   if ! pgrep -x quickshell >/dev/null 2>&1; then
     ~/.local/bin/dots-quickshell start >/dev/null 2>&1 || true
     sleep 1
@@ -27,6 +36,22 @@ open_settings() {
 
 # Main
 main() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --pane=*)
+        PANE="${1#*=}"
+        shift
+        ;;
+      --pane)
+        PANE="${2:-}"
+        shift 2
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
   case "${1:-menu}" in
     menu | --menu | -m | "")
       open_settings
@@ -39,11 +64,16 @@ Central settings hub for system configuration.
 
 Commands:
   menu, -m        Show settings menu (default)
+  --pane=NAME     Set initial control-center pane (network|bluetooth|audio|appearance|taskbar|launcher|dashboard|system)
   help, -h        Show this help message
 
 Keybinding suggestion (hyprland):
   bind = SUPER, I, exec, $SCRIPT_NAME menu
   bind = SUPER SHIFT, S, exec, $SCRIPT_NAME menu
+
+Examples:
+  $SCRIPT_NAME --pane=appearance
+  $SCRIPT_NAME --pane=launcher menu
 EOF
       ;;
     *)

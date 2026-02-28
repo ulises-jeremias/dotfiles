@@ -4,7 +4,7 @@
 ## Licensed under MIT.
 ##
 ## Program: dots-theme-selector
-## Description: GTK theme selector with community tool priority
+## Description: GTK theme selector for Quickshell-first setup
 ##
 ## Usage: dots-theme-selector [OPTIONS]
 ##
@@ -12,21 +12,20 @@
 ##   -h, --help          Show this help message
 ##
 ## Examples:
-##   dots-theme-selector             # Launch theme selector (nwg-look or picker fallback)
+##   dots-theme-selector             # Launch theme selector (terminal picker)
 ##
 ## Notes:
-##   Priority: nwg-look > fuzzel > wofi
 ##   Scans ~/.themes and /usr/share/themes for available themes
 
 set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
-if command -v nwg-look >/dev/null 2>&1; then
-  exec nwg-look
+if pgrep -x quickshell >/dev/null 2>&1; then
+  exec ~/.local/bin/dots-settings-gui --pane=appearance menu
 fi
 
-# Minimal list-based selector for GTK theme if nwg-look is absent
+# Minimal list-based selector for GTK theme
 THEMES=$( (
   ls -1 ~/.themes 2>/dev/null
   ls -1 /usr/share/themes 2>/dev/null
@@ -36,14 +35,20 @@ if [[ -z ${THEMES} ]]; then
   exit 1
 fi
 
-if command -v fuzzel >/dev/null 2>&1; then
-  SELECTED=$(echo "$THEMES" | fuzzel --dmenu --prompt "GTK Theme> ")
-elif command -v wofi >/dev/null 2>&1; then
-  SELECTED=$(echo "$THEMES" | wofi --dmenu --prompt "GTK Theme" --insensitive)
-else
-  echo "Error: no menu backend available (fuzzel/wofi)" >&2
-  exit 1
-fi
+mapfile -t THEME_LIST < <(printf '%s\n' "$THEMES" | awk 'NF')
+[[ ${#THEME_LIST[@]} -eq 0 ]] && exit 1
+echo "GTK themes:"
+i=1
+for t in "${THEME_LIST[@]}"; do
+  printf "%2d) %s\n" "$i" "$t"
+  i=$((i + 1))
+done
+printf "Select theme [1-%d, empty to cancel]: " "${#THEME_LIST[@]}"
+read -r idx || exit 1
+[[ -z ${idx:-} ]] && exit 0
+[[ "$idx" =~ ^[0-9]+$ ]] || exit 1
+(( idx >= 1 && idx <= ${#THEME_LIST[@]} )) || exit 1
+SELECTED="${THEME_LIST[$((idx - 1))]}"
 [[ -z $SELECTED ]] && exit 0
 
 gsettings set org.gnome.desktop.interface gtk-theme "$SELECTED" || {

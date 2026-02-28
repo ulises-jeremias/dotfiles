@@ -47,7 +47,7 @@ Most were written from scratch. Core stack:
 
 - **Compositor** 🌊 [Hyprland](https://hyprland.org) - Dynamic tiling Wayland compositor
 - **Desktop Shell** 🐚 [Quickshell](https://quickshell.org) - Unified QML shell (bar, launcher, notifications, dashboard)
-- **Launcher Fallbacks** 🚀 fuzzel / wofi - lightweight fallback launchers
+- **Launcher Fallback** 🚀 terminal prompt - lightweight rescue launcher
 - **Notifications** 🔔 Built into Quickshell (replaces Mako)
 - **Terminal Emulator** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/) - GPU-accelerated terminal
 - **Shell** 🐚 [Zsh](https://zsh.org) with Powerlevel10k prompt
@@ -77,7 +77,7 @@ HorneroConfig automatically configures the [Chaotic-AUR](https://aur.chaotic.cx/
 - **⚡ Precompiled Binaries**: Skip building AUR packages from source
 - **🎯 Faster Setup**: Reduce installation time by 50-70%
 - **🔄 Regular Updates**: Automatically maintained packages
-- **📦 Popular Packages**: Hyprland ecosystem, nwg-* tools, pamac-aur, auto-cpufreq, and more
+- **📦 Popular Packages**: Hyprland + Quickshell ecosystem, pamac-aur, auto-cpufreq, and more
 
 The repository is configured automatically by the chezmoi script at:
 

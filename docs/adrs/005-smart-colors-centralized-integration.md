@@ -26,25 +26,18 @@ We implemented a centralized smart colors system with the following architecture
 
 ### 2. Format-Specific Files
 
-- `colors-eww.scss`: SCSS variables for EWW widgets
-- `colors-waybar.css`: CSS variables for Waybar styling
+- `scheme.json`: Material Design 3 palette for Quickshell
 - `colors.sh`: Shell variables for scripts
 - `colors.env`: Environment variables for applications
 
-### 3. Symbolic Links Strategy
-
-- `~/.config/waybar/smart-colors.css` → centralized Waybar file
-- `~/.config/eww/dashboard/smart-colors.scss` → centralized EWW file
-- `~/.config/eww/powermenu/smart-colors.scss` → centralized EWW file
-
-### 4. Application Integration
+### 3. Application Integration
 
 Smart colors are integrated with different applications using their native formats:
 
 ```css
-/* CSS variables for Waybar and web-based widgets */
-@define-color accent #2e9ef4;
-@define-color info #83a598;
+/* Generic CSS export variables for web-based widgets */
+--accent: #2e9ef4;
+--info: #83a598;
 ```
 
 ## Implementation Details
@@ -63,17 +56,7 @@ Smart colors are integrated with different applications using their native forma
    - Sources `colors.env` for environment variables
    - Enhanced application reloading logic
 
-3. **Waybar Configuration**:
-
-   - Imports `smart-colors.css` for theme variables
-   - CSS variables provide instant color updates
-
-4. **EWW Configuration**:
-
-   - Dashboard and powermenu import `smart-colors.scss`
-   - SCSS variables work correctly with @import
-
-5. **Hyprland Configuration**:
+3. **Hyprland Configuration**:
    - Colors loaded via environment variables
    - Immediate application without restart
 
@@ -96,9 +79,7 @@ Smart colors are integrated with different applications using their native forma
 A comprehensive test script (`scripts/test-smart-colors-integration.sh`) verifies:
 
 - Smart color file generation
-- Symbolic link creation
-- Waybar configuration syntax validation
-- EWW configuration validation
+- Quickshell scheme generation
 - Hyprland integration verification
 
 ## Future Considerations

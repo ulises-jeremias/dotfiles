@@ -102,7 +102,7 @@ yay -S dots-stable      # Stable release
 yay -S dots-git         # Latest features
 ```
 
-> 💡 **Performance Tip**: HorneroConfig automatically configures [Chaotic-AUR](https://aur.chaotic.cx/) during installation, providing precompiled binaries for popular AUR packages (Hyprland ecosystem, nwg-* tools, etc.) to significantly reduce installation time.
+> 💡 **Performance Tip**: HorneroConfig automatically configures [Chaotic-AUR](https://aur.chaotic.cx/) during installation, providing precompiled binaries for popular AUR packages in the Hyprland + Quickshell ecosystem to significantly reduce installation time.
 
 <details>
 <summary>🛠 <b>More installation methods</b></summary>
@@ -149,7 +149,8 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 Choose from **13 stunning themes** organized by aesthetic: Cyberpunk, Cozy, Vaporwave, Nature, and Cosmic:
 
 ```bash
-dots rofi-rice-selector     # Interactive theme picker 🎯
+dots appearance list        # List available appearances 🎯
+dots appearance apply flowers
 dots rice apply flowers     # Apply a specific theme
 dots rice list              # See all available themes
 ```
@@ -173,11 +174,11 @@ dots rice list              # See all available themes
 Access **100+ built-in scripts** via the `dots` command:
 
 ```bash
-dots scripts            # Interactive script browser
+dots --list             # List all available scripts
 dots sysupdate          # Comprehensive system updates
 dots smart-colors       # Intelligent color analysis
 dots security-audit     # Security analysis and hardening
-dots rofi-rice-selector # Visual theme picker
+dots appearance apply neon-city
 ```
 
 📂 `dots-eject` — Export configs for manual use  

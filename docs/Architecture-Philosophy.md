@@ -34,9 +34,8 @@ Components are self-contained units that can be:
 
 **Example Applications:**
 
-- Waybar modules (20+ independent modules)
 - Rice themes (12+ self-contained themes)
-- EWW widgets (dashboard, powermenu, sidebar)
+- Quickshell modules (bar, launcher, dashboard, session, control center)
 - Utility scripts (100+ independent tools)
 
 ### 3. Single Source of Truth
@@ -80,8 +79,7 @@ Security is not optional or afterthought:
 
 1. **Theme System (Rice)** - Complete desktop theme management
 2. **Smart Colors System** - Intelligent color adaptation
-3. **Waybar Integration** - Modular status bar system
-4. **EWW Widget System** - Modern declarative widgets
-5. **Script Management (dots)** - Unified utility interface
+3. **Quickshell Shell** - Unified status bar, launcher, dashboard, notifications, and control center
+4. **Script Management (dots)** - Unified utility interface
 
 For detailed architecture of each subsystem, see [System Architecture](System-Architecture.md).

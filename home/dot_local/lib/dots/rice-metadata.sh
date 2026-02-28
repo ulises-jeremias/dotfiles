@@ -30,7 +30,6 @@ get_rice_metadata() {
   local CURSOR_THEME="elementary"
   local WALLPAPER_COUNT="Unknown"
   local SMART_COLORS="true"
-  local WAYBAR_PROFILE="default"
   local RICE_ACCENT_COLOR="#bb77ff"
   local RICE_PRIMARY_COLOR="#458588"
   local RICE_SECONDARY_COLOR="#d79921"
@@ -63,7 +62,6 @@ get_rice_metadata() {
   echo "gtk_theme:${GTK_THEME}"
   echo "icon_theme:${ICON_THEME}"
   echo "cursor_theme:${CURSOR_THEME}"
-  echo "waybar_profile:${WAYBAR_PROFILE}"
   echo "wallpaper_count:${WALLPAPER_COUNT}"
   echo "smart_colors:${SMART_COLORS}"
   echo "accent_color:${RICE_ACCENT_COLOR}"
@@ -93,7 +91,7 @@ format_rice_metadata() {
 
   case "$format" in
     "simple")
-      # Single line format for rofi
+      # Single line selector format
       echo "${meta[style]} • ${meta[palette]} • GTK: ${meta[gtk_theme]} • Icons: ${meta[icon_theme]}"
       ;;
     "detailed")
@@ -110,7 +108,6 @@ format_rice_metadata() {
    • GTK Theme: ${meta[gtk_theme]}
    • Icon Theme: ${meta[icon_theme]}
    • Cursor Theme: ${meta[cursor_theme]}
-   • Waybar Profile: ${meta[waybar_profile]}
 
 🧠 Smart Features
    • Smart Colors: $([ "${meta[smart_colors]}" = "true" ] && echo "✅ Enabled" || echo "❌ Disabled")
@@ -121,7 +118,7 @@ $([ -n "${meta[best_for]}" ] && echo "🎯 Best For: ${meta[best_for]}")
 EOF
       ;;
     "compact")
-      # Compact format for rofi message
+      # Compact selector message format
       echo "🎨 ${meta[name]} | ${meta[style]} | GTK: ${meta[gtk_theme]} | ${meta[wallpaper_count]} wallpapers"
       ;;
     "json")
@@ -135,7 +132,6 @@ EOF
   "gtk_theme": "${meta[gtk_theme]}",
   "icon_theme": "${meta[icon_theme]}",
   "cursor_theme": "${meta[cursor_theme]}",
-  "waybar_profile": "${meta[waybar_profile]}",
   "wallpaper_count": "${meta[wallpaper_count]}",
   "smart_colors": ${meta[smart_colors]},
   "accent_color": "${meta[accent_color]}",

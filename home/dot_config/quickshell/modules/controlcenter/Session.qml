@@ -1,6 +1,7 @@
 import QtQuick
 import "./state"
 import qs.modules.controlcenter
+import qs.config
 import Quickshell
 
 QtObject {
@@ -8,7 +9,10 @@ QtObject {
 
     required property var root
     property bool floating: false
-    property string active: "network"
+    property string active: {
+        const pane = Config.controlCenter.startPane ?? "network";
+        return PaneRegistry.getById(pane) ? pane : "network";
+    }
     property int activeIndex: 0
     property bool navExpanded: false
 

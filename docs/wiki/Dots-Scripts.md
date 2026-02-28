@@ -15,18 +15,19 @@ dots <script> [options]
 ### launcher
 
 - Primary: `dots-quickshell ipc launcher toggle`
-- Fallbacks: `fuzzel`, `wofi`, minimal prompt
+- Rescue path: minimal prompt
 
 ```bash
 dots launcher
 dots launcher --backend=quickshell
-dots launcher --backend=fuzzel
 ```
 
 ### clipboard
 
 - Primary: `dots-quickshell ipc utilities toggle`
-- Fallbacks: `copyq`, `cliphist` (+ fuzzel/wofi), minimal
+- Secondary (Wayland): `cliphist` terminal picker
+- X11 fallback: `copyq`
+- Rescue path: minimal output
 
 ```bash
 dots clipboard
@@ -57,7 +58,7 @@ dots settings-gui
 ### keyboard-help
 
 - Parses Hyprland keybindings dynamically
-- Picker backend: `fuzzel` or `wofi`
+- Viewer backend: terminal (`less`)
 
 ```bash
 dots keyboard-help
@@ -111,6 +112,6 @@ dots hyprpaper-set /path/to/wallpaper.jpg
 
 ## Notes
 
-- Legacy Waybar/EWW/Rofi integration was intentionally removed.
+- Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.
 - `dots rice` remains available as legacy-compatible naming; `dots appearance` is the canonical contract.
 - `dots-*` scripts remain modular and can be called directly.

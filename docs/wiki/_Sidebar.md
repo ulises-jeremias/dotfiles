@@ -36,20 +36,20 @@
 - [💾 Backup System](Dots-Backup)
 - [🚀 Eject System](Dots-Eject)
 
-#### 🎯 **Key Tools (with Fallback Chains)**
+#### 🎯 **Key Tools**
 
-**GUI Launchers:**
+**Quickshell-first flows:**
 
-- [🚀 App Launcher](Dots-Scripts#launcher) - quickshell → fuzzel/wofi
-- [📋 Clipboard](Dots-Scripts#clipboard--clipboard-manager) - copyq → cliphist → greenclip
+- [🚀 App Launcher](Dots-Scripts#launcher) - quickshell → minimal
+- [📋 Clipboard](Dots-Scripts#clipboard) - cliphist/copyq → minimal
 - [⚡ Power Menu](Dots-Scripts#power-menu) - quickshell
 - [⚙️ Settings Hub](Dots-Scripts#settings-gui--settings-hub) - unified GUI settings
 
 **Media & Screen:**
 
 - [📸 Screenshots](Dots-Scripts#screenshooter--screenshot-tool) - flameshot → grimblast → grim
-- [🔒 Screen Lock](Dots-Scripts#lockscreen--screen-lock) - hyprlock → i3lock
-- [🔆 Brightness](Dots-Scripts#brightness--screen-brightness-control) - brightnessctl → blight
+- [🔒 Screen Lock](Dots-Scripts#lockscreen--screen-lock) - hyprlock
+- [🔆 Brightness](Dots-Scripts#brightness--screen-brightness-control) - brightnessctl
 
 **System:**
 
@@ -86,6 +86,6 @@
 
 **Recent Updates:**
 
-- ⭐ **Dots Scripts** - Complete tool documentation with fallback chains
+- ⭐ **Dots Scripts** - Quickshell-first command reference
 - 🆕 **Hybrid GPU** - NVIDIA/Intel power management
 - 🆕 **Changelog 2025** - Latest changes

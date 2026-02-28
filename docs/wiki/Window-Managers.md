@@ -44,8 +44,8 @@ For more info, check the [Hyprland documentation](https://wiki.hyprland.org/).
 ## 🔧 Pro Tips
 
 - Add compositor-specific autostart scripts
-- Use Waybar for status bar integration
-- Leverage Rofi for application launching
+- Use Quickshell as the primary shell (bar/launcher/dashboard/control center)
+- Keep launcher and power keybinds routed through `dots-quickshell ipc ...`
 - Use `chezmoi diff` to preview config changes
 
 ---

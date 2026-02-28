@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # dots-scripts.sh - Registry of available dots scripts
-# This file is sourced by dots and dots-scripts commands
+# This file is sourced by dots command
 
 scripts_list=(
   "💾 backup: Create, list, and rollback dotfiles backups with cron scheduling support"
@@ -8,7 +8,7 @@ scripts_list=(
   "💡 brightness: Control screen brightness using xbacklight, brightnessctl, blight, or xrandr"
   "🌐 check-network: Check network connectivity status"
   "📦 checkupdates: Check for available system package updates"
-  "📋 clipboard: Unified clipboard manager (quickshell > copyq > cliphist > minimal)"
+  "📋 clipboard: Unified clipboard manager (quickshell > cliphist/copyq > minimal)"
   "🎛️ appearance: Unified appearance manager (list/current/apply/variant/mode/wallpaper/sync)"
   "⚙️ config-manager: Manage configuration snapshots and backups"
   "🎯 default-apps: Configure XDG default applications using handlr"
@@ -18,11 +18,10 @@ scripts_list=(
   "🎨 gtk-theme: Intelligent GTK theme management with rice integration and auto-detection"
   "🖥️ hypr-monitors: Manage Hyprland monitor configurations and layouts"
   "🖼️ hyprpaper-set: Set wallpapers on Wayland with hyprpaper"
-  "📋 jgmenu: Launch jgmenu application launcher with smart positioning"
   "🔠 keyboard-help: Interactive keyboard shortcuts help overlay for Hyprland"
   "⌨️ keyboard-layout: Toggle keyboard layouts for Hyprland/Wayland/X11"
   "⚙️ keyboard-settings: Open LXQt keyboard configuration GUI"
-  "🚀 launcher: Unified application launcher (quickshell > fuzzel > wofi > minimal)"
+  "🚀 launcher: Unified application launcher (quickshell > minimal)"
   "🔒 lockscreen: Wayland lockscreen with hyprlock (betterlockscreen alternative)"
   "🎤 microphone: Monitor and toggle microphone mute status with visual indicators"
   "🔄 next-workspace: Switch to the next existing Hyprland workspace"
@@ -33,13 +32,12 @@ scripts_list=(
   "📁 yazi: Launch yazi with smart defaults, preview diagnostics, and last-dir support"
   "🌾 rice: Legacy-compatible alias for appearance themes/rices"
   "📸 screenshooter: Take screenshots with various options and formats"
-  "📜 scripts: Interactive menu to browse and launch available dots scripts"
   "🔐 security-audit: Run comprehensive security audits and apply security fixes"
   "⚙️ settings-gui: Central configuration hub with unified access to system settings"
   "🎨 smart-colors: Analyze color palettes and generate M3/semantic colors"
   "⚡ snappy-switcher: Animated Alt+Tab window switcher with rice theme integration"
   "⬆️ sysupdate: Perform comprehensive system updates"
-  "🎨 theme-selector: GTK theme selector (nwg-look > fuzzel > wofi)"
+  "🎨 theme-selector: GTK theme selector (terminal picker)"
   "🔄 toggle: Toggle state of Quickshell components, compositor, and notifications"
   "🔔 updates: Check and display available package updates with notifications"
   "🎨 wal-reload: Reload pywal colorscheme and apply M3 smart colors to Quickshell, Hyprland, Kitty"

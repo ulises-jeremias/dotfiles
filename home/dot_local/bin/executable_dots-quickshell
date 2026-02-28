@@ -16,7 +16,7 @@
 ##     ipc <target> <action>  Send IPC command to Quickshell
 ##     preset list        List available shell presets
 ##     preset apply <name>  Apply a shell preset
-##     preset select      Interactive preset selector (fuzzel/wofi)
+##     preset select      Interactive preset selector
 ##     preset current     Show currently active preset
 ##     config get <key>   Get a config value (dot-notation, e.g. bar.position)
 ##     config set <key> <value>  Set a config value
@@ -358,41 +358,29 @@ preset_select() {
         return 1
     fi
 
-    local selected
-    if command -v fuzzel > /dev/null 2>&1; then
-        selected=$(echo -en "$menu_items" | fuzzel --dmenu --prompt "Shell Preset> ") || return 0
-    elif command -v wofi > /dev/null 2>&1; then
-        selected=$(echo -en "$menu_items" | wofi --dmenu --prompt "Shell Preset" --insensitive) || return 0
-    else
-        log_error "No interactive selector available (need fuzzel or wofi)"
-        log_info "Use 'dots-quickshell preset list' and 'dots-quickshell preset apply <name>' instead"
-        return 1
-    fi
-
-    local chosen_icon chosen_name
-    chosen_icon=$(echo "$selected" | cut -d' ' -f1)
-    chosen_name=""
-
-    for i in "${!names[@]}"; do
-        local check_name check_icon
-        check_name="${names[$i]}"
-        local pf="${PRESETS_DIR}/${check_name}.json"
-        check_icon=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_icon','📦'))" "$pf" 2>/dev/null || echo "📦")
-        local check_display
-        check_display=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_name',''))" "$pf" 2>/dev/null || echo "$check_name")
-
-        if [[ "$selected" == "${check_icon} ${check_display}"* ]]; then
-            chosen_name="$check_name"
-            break
+    echo "Shell Preset"
+    i=1
+    for item in "${names[@]}"; do
+        local pf="${PRESETS_DIR}/${item}.json"
+        local icon display_name
+        icon=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_icon','📦'))" "$pf" 2>/dev/null || echo "📦")
+        display_name=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('_name',''))" "$pf" 2>/dev/null || echo "$item")
+        if [[ "$item" == "$current" ]]; then
+            printf "%2d) %s %s (active)\n" "$i" "$icon" "$display_name"
+        else
+            printf "%2d) %s %s\n" "$i" "$icon" "$display_name"
         fi
+        i=$((i + 1))
     done
+    printf "Select preset [1-%d, empty to cancel]: " "${#names[@]}"
+    local idx
+    read -r idx || return 1
+    [[ -z ${idx:-} ]] && return 0
+    [[ "$idx" =~ ^[0-9]+$ ]] || return 1
+    (( idx >= 1 && idx <= ${#names[@]} )) || return 1
+    local selected="${names[$((idx - 1))]}"
 
-    if [[ -z "$chosen_name" ]]; then
-        log_error "Could not match selection"
-        return 1
-    fi
-
-    preset_apply "$chosen_name"
+    preset_apply "$selected"
 }
 
 cmd_config() {

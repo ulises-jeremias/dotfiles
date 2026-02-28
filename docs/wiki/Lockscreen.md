@@ -147,7 +147,7 @@ The lockscreen is integrated into the EWW powermenu:
 (defwidget lock []
   (box :class "genwin" :vexpand "false" :hexpand "false"
     (button :class "btn_lock"
-            :onclick "~/.config/eww/powermenu/launch.sh; dots-lockscreen -l blur"
+            :onclick "~/.local/bin/dots-power-menu --mode=minimal; dots-lockscreen -l blur"
             "")))
 ```
 
