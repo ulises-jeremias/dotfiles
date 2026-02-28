@@ -43,18 +43,6 @@ yay -S --noconfirm --needed \
   brightnessctl \
   hyprpicker
 
-# Hyprland plugin: EasyMotion
-# Note: hyprpm needs a compatible Hyprland runtime; if unavailable during
-# installation, the user can run these commands manually later.
-if command -v hyprpm >/dev/null 2>&1; then
-  hyprpm add https://github.com/zakk4223/hyprland-easymotion || true
-  hyprpm enable hyprEasymotion || true
-else
-  echo "hyprpm not found. Run later:"
-  echo "  hyprpm add https://github.com/zakk4223/hyprland-easymotion"
-  echo "  hyprpm enable hyprEasymotion"
-fi
-
 # NOTE: playerctl and pamixer are installed by run_onchange_before_install-packages.sh.tmpl
 #       to avoid duplication here. Both are Wayland/X11 agnostic utilities.
 
