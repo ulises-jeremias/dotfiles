@@ -12,6 +12,9 @@ import QtQuick
 import QtQuick.Layouts
 
 CollapsibleSection {
+    required property var previewController
+    required property var session
+
     title: qsTr("Appearances")
     description: qsTr("Apply full desktop appearance presets")
     showBackground: true
@@ -30,7 +33,7 @@ CollapsibleSection {
 
                 Layout.fillWidth: true
 
-                readonly property bool isCurrent: modelData.id === Appearances.currentId
+                readonly property bool isCurrent: modelData.id === previewController.pendingAppearanceId
 
                 color: Qt.alpha(Colours.tPalette.m3surfaceContainer, isCurrent ? Colours.tPalette.m3surfaceContainer.a : 0)
                 radius: Appearance.rounding.normal
@@ -40,13 +43,16 @@ CollapsibleSection {
                 StateLayer {
                     function onClicked(): void {
                         const appearanceId = modelData.id;
-                        Appearances.currentId = appearanceId;
-                        Quickshell.execDetached(["dots-appearance", "apply", appearanceId]);
-                        Qt.callLater(() => {
-                            Appearances.reload();
-                            Schemes.reload();
-                        });
+                        previewController.startAppearancePreview(modelData);
+                        previewController.stageAppearanceApply(appearanceId);
                     }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    hoverEnabled: true
+                    onEntered: previewController.startAppearancePreview(modelData)
                 }
 
                 RowLayout {

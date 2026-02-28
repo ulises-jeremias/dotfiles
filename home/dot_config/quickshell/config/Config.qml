@@ -27,11 +27,53 @@ Singleton {
     property alias services: adapter.services
     property alias paths: adapter.paths
 
+    property bool editSessionActive: false
+    property bool hasPendingChanges: false
+
+    function beginEditSession(): void {
+        editSessionActive = true;
+    }
+
+    function endEditSession(): void {
+        editSessionActive = false;
+    }
+
+    function writeNow(): void {
+        timer.restart();
+        try {
+            let config = {};
+            try {
+                config = JSON.parse(fileView.text());
+            } catch (e) {
+                config = {};
+            }
+
+            config = serializeConfig();
+            fileView.setText(JSON.stringify(config, null, 2));
+            recentlySaved = true;
+            recentSaveCooldown.restart();
+            hasPendingChanges = false;
+        } catch (e) {
+            Toaster.toast(qsTr("Failed to serialize config"), e.message, "settings_alert", Toast.Error);
+        }
+    }
+
+    function revertChanges(): void {
+        hasPendingChanges = false;
+        recentlySaved = false;
+        fileView.reload();
+    }
+
     // Public save function - call this to persist config changes
     function save(): void {
+        if (editSessionActive) {
+            hasPendingChanges = true;
+            return;
+        }
         saveTimer.restart();
         recentlySaved = true;
         recentSaveCooldown.restart();
+        hasPendingChanges = false;
     }
 
     property bool recentlySaved: false
@@ -45,25 +87,7 @@ Singleton {
 
         interval: 500
         onTriggered: {
-            timer.restart();
-            try {
-                // Parse current config to preserve structure and comments if possible
-                let config = {};
-                try {
-                    config = JSON.parse(fileView.text());
-                } catch (e) {
-                    // If parsing fails, start with empty object
-                    config = {};
-                }
-
-                // Update config with current values
-                config = serializeConfig();
-
-                // Save to file with pretty printing
-                fileView.setText(JSON.stringify(config, null, 2));
-            } catch (e) {
-                Toaster.toast(qsTr("Failed to serialize config"), e.message, "settings_alert", Toast.Error);
-            }
+            writeNow();
         }
     }
 

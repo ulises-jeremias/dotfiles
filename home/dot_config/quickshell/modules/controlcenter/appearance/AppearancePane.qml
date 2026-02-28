@@ -15,6 +15,7 @@ import qs.utils
 import Caelestia.Models
 import Quickshell
 import Quickshell.Widgets
+import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 
@@ -53,8 +54,266 @@ Item {
     property bool visualiserAutoHide: Config.background.visualiser.autoHide ?? true
     property real visualiserRounding: Config.background.visualiser.rounding ?? 1
     property real visualiserSpacing: Config.background.visualiser.spacing ?? 1
+    property string pendingAppearanceId: Appearances.currentId
+    property string pendingSchemeKey: Schemes.currentScheme
+    property string pendingVariant: Schemes.currentVariant
+    property string pendingMode: Colours.currentLight ? "light" : "dark"
+    property string pendingWallpaperPath: Wallpapers.actualCurrent
+    property bool previewActive: false
+    property string previewSource: ""
+    property string previewTitle: ""
+    property string previewSubtitle: ""
+    property string previewVariant: ""
+    property string previewMode: ""
+    property string previewWallpaperPath: ""
+    property string previewSchemeType: ""
+    property string previewGenWallpaper: ""
+    property string previewGenMode: "dark"
+    property string previewGenSchemeType: "tonal-spot"
+    property bool previewPaletteQueued: false
+    property var previewPalette: ({})
+    property var previewPaletteCache: ({})
+    property string previewRequestKey: ""
+    property string previewRunningKey: ""
+    property int previewQuality: 8
+    readonly property string m3ScriptPath: `${Quickshell.env("HOME")}/.local/lib/dots/generate-m3-colors.py`
 
     anchors.fill: parent
+
+    function normalizeVariantKey(value: string): string {
+        return (value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
+    function normalizeSchemeType(value: string): string {
+        const v = (value ?? "").toLowerCase().replace(/[_\s]/g, "-");
+        switch (v) {
+        case "tonalspot":
+        case "tonal-spot":
+            return "tonal-spot";
+        case "fruitsalad":
+        case "fruit-salad":
+        case "rainbow":
+            return "expressive";
+        case "vibrant":
+        case "expressive":
+        case "fidelity":
+        case "content":
+        case "neutral":
+        case "monochrome":
+            return v;
+        default:
+            return "tonal-spot";
+        }
+    }
+
+    function currentSchemeEntry(): var {
+        for (const scheme of Schemes.list) {
+            if (`${scheme.name} ${scheme.flavour}` === Schemes.currentScheme)
+                return scheme;
+        }
+        return null;
+    }
+
+    function findSchemeByVariant(variant: string, preferredName: string): var {
+        const target = normalizeVariantKey(variant);
+        if (!target)
+            return null;
+
+        if (preferredName) {
+            for (const scheme of Schemes.list) {
+                if (scheme.name === preferredName && normalizeVariantKey(scheme.flavour) === target)
+                    return scheme;
+            }
+        }
+
+        for (const scheme of Schemes.list) {
+            if (normalizeVariantKey(scheme.flavour) === target)
+                return scheme;
+        }
+
+        return null;
+    }
+
+    function normalizePreviewPalette(colours: var): var {
+        const out = {};
+        for (const [name, value] of Object.entries(colours ?? {})) {
+            const key = name.startsWith("term") ? name : `m3${name}`;
+            out[key] = `#${String(value).replace(/^#/, "")}`;
+        }
+        return out;
+    }
+
+    function buildPreviewKey(wallpaperPath: string, mode: string, schemeType: string): string {
+        return `${wallpaperPath}::${mode === "light" ? "light" : "dark"}::${normalizeSchemeType(schemeType)}`;
+    }
+
+    function applyPreviewFromCache(key: string): bool {
+        if (!key)
+            return false;
+        if (!Object.prototype.hasOwnProperty.call(previewPaletteCache, key))
+            return false;
+
+        const entry = previewPaletteCache[key];
+        if (!entry || !entry.palette)
+            return false;
+
+        previewPalette = entry.palette;
+        previewMode = entry.mode === "light" ? "light" : "dark";
+        previewRequestKey = key;
+        return true;
+    }
+
+    function scheduleGeneratedPreview(wallpaperPath: string, mode: string, schemeType: string): void {
+        if (!wallpaperPath)
+            return;
+
+        const normalizedMode = mode === "light" ? "light" : "dark";
+        const normalizedSchemeType = normalizeSchemeType(schemeType);
+        const key = buildPreviewKey(wallpaperPath, normalizedMode, normalizedSchemeType);
+
+        if (applyPreviewFromCache(key))
+            return;
+
+        previewRequestKey = key;
+        previewGenWallpaper = wallpaperPath;
+        previewGenMode = normalizedMode;
+        previewGenSchemeType = normalizedSchemeType;
+        previewPaletteQueued = true;
+        previewPaletteDebounce.restart();
+    }
+
+    function startSchemePreview(modelData: var): void {
+        if (!modelData)
+            return;
+
+        previewActive = true;
+        previewSource = "scheme";
+        previewTitle = `${modelData.name ?? ""} ${modelData.flavour ?? ""}`.trim();
+        previewSubtitle = qsTr("Color scheme");
+        previewVariant = modelData.flavour ?? "";
+        previewSchemeType = normalizeSchemeType(modelData.flavour ?? "");
+        scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, pendingMode, previewSchemeType);
+    }
+
+    function startVariantPreview(variant: string): void {
+        const current = currentSchemeEntry();
+        const scheme = findSchemeByVariant(variant, current?.name ?? "");
+        if (!scheme)
+            return;
+
+        previewActive = true;
+        previewSource = "variant";
+        previewTitle = scheme.flavour ?? variant;
+        previewSubtitle = qsTr("Color variant");
+        previewVariant = scheme.flavour ?? variant;
+        previewSchemeType = normalizeSchemeType(scheme.flavour ?? variant);
+        scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, pendingMode, previewSchemeType);
+    }
+
+    function startModePreview(mode: string): void {
+        const current = currentSchemeEntry();
+        if (!current)
+            return;
+
+        previewActive = true;
+        previewSource = "mode";
+        previewTitle = mode === "light" ? qsTr("Light mode") : qsTr("Dark mode");
+        previewSubtitle = qsTr("Theme mode");
+        previewMode = mode;
+        previewSchemeType = normalizeSchemeType(previewVariant || current.flavour || pendingVariant);
+        scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, mode, previewSchemeType);
+    }
+
+    function startWallpaperPreview(path: string, label: string): void {
+        if (!path)
+            return;
+
+        previewActive = true;
+        previewSource = "wallpaper";
+        previewTitle = label || path.split("/").pop();
+        previewSubtitle = qsTr("Wallpaper");
+        previewWallpaperPath = path;
+        previewSchemeType = normalizeSchemeType(previewVariant || pendingVariant);
+        scheduleGeneratedPreview(path, previewMode || pendingMode, previewSchemeType);
+    }
+
+    function startAppearancePreview(modelData: var): void {
+        if (!modelData)
+            return;
+
+        previewActive = true;
+        previewSource = "appearance";
+        previewTitle = modelData.name ?? modelData.id ?? qsTr("Appearance");
+        previewSubtitle = modelData.style ?? modelData.description ?? qsTr("Appearance preset");
+        previewVariant = modelData.schemeType ?? "";
+        previewMode = (modelData.darkMode ?? true) ? "dark" : "light";
+        previewWallpaperPath = modelData.wallpaper ?? "";
+        previewSchemeType = normalizeSchemeType(modelData.schemeType ?? "");
+
+        scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, previewMode, previewSchemeType);
+    }
+
+    function clearPreviewFor(source: string): void {
+        if (previewSource === source)
+            clearPreview();
+    }
+
+    function clearPreview(): void {
+        previewActive = false;
+        previewSource = "";
+        previewTitle = "";
+        previewSubtitle = "";
+        previewVariant = "";
+        previewMode = "";
+        previewWallpaperPath = "";
+        previewSchemeType = "";
+        previewPalette = {};
+        previewRequestKey = "";
+        previewRunningKey = "";
+    }
+
+    function commitSelection(): void {
+        clearPreview();
+    }
+
+    function stageAppearanceApply(appearanceId: string): void {
+        pendingAppearanceId = appearanceId;
+        session.queueAction("appearance.apply", ["dots-appearance", "apply", appearanceId]);
+    }
+
+    function stageSchemeApply(name: string, flavour: string): void {
+        pendingSchemeKey = `${name} ${flavour}`;
+        session.queueAction("appearance.scheme", ["dots-color-scheme", "set", "-n", name, "-f", flavour]);
+    }
+
+    function stageVariantApply(variant: string): void {
+        pendingVariant = variant;
+        session.queueAction("appearance.variant", ["dots-color-scheme", "variant", variant]);
+    }
+
+    function stageModeApply(mode: string): void {
+        pendingMode = mode;
+        session.queueAction("appearance.mode", ["dots-color-scheme", "mode", mode]);
+    }
+
+    function stageWallpaperApply(path: string): void {
+        pendingWallpaperPath = path;
+        session.queueAction("appearance.wallpaper", ["dots-hyprpaper-set", path]);
+    }
+
+    function resetPendingSelections(): void {
+        pendingAppearanceId = Appearances.currentId;
+        pendingSchemeKey = Schemes.currentScheme;
+        pendingVariant = Schemes.currentVariant;
+        pendingMode = Colours.currentLight ? "light" : "dark";
+        pendingWallpaperPath = Wallpapers.actualCurrent;
+        if (!previewActive) {
+            previewWallpaperPath = pendingWallpaperPath;
+            previewVariant = pendingVariant;
+            previewMode = pendingMode;
+            previewSchemeType = normalizeSchemeType(pendingVariant);
+        }
+    }
 
     function saveConfig() {
         Config.appearance.anim.durations.scale = root.animDurationsScale;
@@ -112,9 +371,24 @@ Item {
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.bottomMargin: Appearance.spacing.normal
-                    text: qsTr("Wallpaper")
+                    text: qsTr("Preview")
                     font.pointSize: Appearance.font.size.extraLarge
                     font.weight: 600
+                }
+
+                AppearancePreviewPane {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 320
+                    Layout.bottomMargin: Appearance.spacing.normal
+
+                    active: root.previewActive
+                    source: root.previewSource
+                    titleText: root.previewTitle
+                    subtitleText: root.previewSubtitle
+                    variantText: root.previewVariant
+                    modeText: root.previewMode
+                    wallpaperPath: root.previewWallpaperPath || root.pendingWallpaperPath
+                    rootPane: root
                 }
 
                 Loader {
@@ -141,8 +415,63 @@ Item {
 
                     sourceComponent: WallpaperGrid {
                         session: root.session
+                        previewController: root
                     }
                 }
+            }
+        }
+    }
+
+    Timer {
+        id: previewPaletteDebounce
+        interval: 60
+        onTriggered: {
+            if (!previewPaletteQueued || !previewGenWallpaper)
+                return;
+            if (!previewPaletteProc.running) {
+                previewPaletteQueued = false;
+                previewRunningKey = previewRequestKey;
+                previewPaletteProc.running = true;
+            }
+        }
+    }
+
+    Process {
+        id: previewPaletteProc
+        command: [
+            "python3",
+            root.m3ScriptPath,
+            "--image",
+            root.previewGenWallpaper,
+            "--mode",
+            root.previewGenMode,
+            "--scheme-type",
+            root.previewGenSchemeType,
+            "--quality",
+            String(root.previewQuality)
+        ]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const parsed = JSON.parse(text);
+                    const palette = normalizePreviewPalette(parsed.colours ?? {});
+                    root.previewPalette = palette;
+                    root.previewMode = parsed.mode === "light" ? "light" : "dark";
+                    if (root.previewRunningKey) {
+                        root.previewPaletteCache[root.previewRunningKey] = {
+                            palette,
+                            mode: root.previewMode
+                        };
+                    }
+                } catch (e) {
+                    // Keep previous preview if parse fails.
+                }
+            }
+        }
+        onRunningChanged: {
+            if (!running && previewPaletteQueued) {
+                previewPaletteQueued = false;
+                running = true;
             }
         }
     }
@@ -207,18 +536,26 @@ Item {
 
                     AppearancesSection {
                         id: appearancesSection
+                        session: root.session
+                        previewController: root
                     }
 
                     ThemeModeSection {
                         id: themeModeSection
+                        session: root.session
+                        previewController: root
                     }
 
                     ColorVariantSection {
                         id: colorVariantSection
+                        session: root.session
+                        previewController: root
                     }
 
                     ColorSchemeSection {
                         id: colorSchemeSection
+                        session: root.session
+                        previewController: root
                     }
 
                     AnimationsSection {
@@ -256,4 +593,21 @@ Item {
 
         rightContent: appearanceRightContentComponent
     }
+
+    Connections {
+        target: root.session
+
+        function onActiveIndexChanged(): void {
+            if (root.session.activeIndex !== 3)
+                root.clearPreview();
+        }
+
+        function onPendingActionsChanged(): void {
+            if (!root.session.hasPendingActions)
+                root.resetPendingSelections();
+        }
+    }
+
+    Component.onDestruction: clearPreview()
+    Component.onCompleted: resetPendingSelections()
 }

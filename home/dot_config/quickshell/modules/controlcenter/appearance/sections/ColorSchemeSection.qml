@@ -12,6 +12,9 @@ import QtQuick
 import QtQuick.Layouts
 
 CollapsibleSection {
+    required property var previewController
+    required property var session
+
     title: qsTr("Color scheme")
     description: qsTr("Available color schemes")
     showBackground: true
@@ -29,7 +32,7 @@ CollapsibleSection {
                 Layout.fillWidth: true
 
                 readonly property string schemeKey: `${modelData.name} ${modelData.flavour}`
-                readonly property bool isCurrent: schemeKey === Schemes.currentScheme
+                readonly property bool isCurrent: schemeKey === previewController.pendingSchemeKey
 
                 color: Qt.alpha(Colours.tPalette.m3surfaceContainer, isCurrent ? Colours.tPalette.m3surfaceContainer.a : 0)
                 radius: Appearance.rounding.normal
@@ -40,23 +43,16 @@ CollapsibleSection {
                     function onClicked(): void {
                         const name = modelData.name;
                         const flavour = modelData.flavour;
-                        const schemeKey = `${name} ${flavour}`;
-
-                        Schemes.currentScheme = schemeKey;
-                        Quickshell.execDetached(["dots-color-scheme", "set", "-n", name, "-f", flavour]);
-
-                        Qt.callLater(() => {
-                            reloadTimer.restart();
-                        });
+                        previewController.startSchemePreview(modelData);
+                        previewController.stageSchemeApply(name, flavour);
                     }
                 }
 
-                Timer {
-                    id: reloadTimer
-                    interval: 300
-                    onTriggered: {
-                        Schemes.reload();
-                    }
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    hoverEnabled: true
+                    onEntered: previewController.startSchemePreview(modelData)
                 }
 
                 RowLayout {

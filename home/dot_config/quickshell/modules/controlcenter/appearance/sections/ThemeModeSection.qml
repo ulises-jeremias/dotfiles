@@ -9,15 +9,29 @@ import qs.config
 import QtQuick
 
 CollapsibleSection {
+    required property var previewController
+    required property var session
+
     title: qsTr("Theme mode")
     description: qsTr("Light or dark theme")
     showBackground: true
 
+    readonly property bool darkChecked: previewController.pendingMode === "dark"
+
     SwitchRow {
         label: qsTr("Dark mode")
-        checked: !Colours.currentLight
+        checked: darkChecked
         onToggled: checked => {
-            Colours.setMode(checked ? "dark" : "light");
+            const mode = checked ? "dark" : "light";
+            previewController.startModePreview(mode);
+            previewController.stageModeApply(mode);
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.NoButton
+            hoverEnabled: true
+            onEntered: previewController.startModePreview(root.darkChecked ? "dark" : "light")
         }
     }
 }

@@ -4,6 +4,7 @@ import qs.components
 import qs.components.controls
 import qs.services
 import qs.config
+import qs.modules.launcher.services
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
@@ -24,11 +25,42 @@ Item {
         root: root
     }
 
+    readonly property bool hasPendingChanges: Config.hasPendingChanges || session.hasPendingActions
+
     function close(): void {
+    }
+
+    function applyChanges(): void {
+        session.applyPendingActions();
+        Schemes.reload();
+        Appearances.reload();
+        Wallpapers.stopPreview();
+        Colours.showPreview = false;
+    }
+
+    function saveChanges(): void {
+        session.applyPendingActions();
+        Config.writeNow();
+        Schemes.reload();
+        Appearances.reload();
+        Wallpapers.stopPreview();
+        Colours.showPreview = false;
+    }
+
+    function revertChanges(): void {
+        session.clearPendingActions();
+        Config.revertChanges();
+        Schemes.reload();
+        Appearances.reload();
+        Wallpapers.stopPreview();
+        Colours.showPreview = false;
     }
 
     implicitWidth: implicitHeight * Config.controlCenter.sizes.ratio
     implicitHeight: screen.height * Config.controlCenter.sizes.heightMult
+
+    Component.onCompleted: Config.beginEditSession()
+    Component.onDestruction: Config.endEditSession()
 
     GridLayout {
         anchors.fill: parent
@@ -93,6 +125,51 @@ Item {
             topRightRadius: root.rounding
             bottomRightRadius: root.rounding
             session: root.session
+        }
+    }
+
+    StyledRect {
+        id: actionBar
+        z: 20
+
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: Appearance.padding.large
+        anchors.bottomMargin: Appearance.padding.large
+
+        color: Colours.tPalette.m3surfaceContainerHigh
+        radius: Appearance.rounding.full
+        visible: true
+        opacity: root.hasPendingChanges ? 1 : 0.9
+
+        implicitHeight: actionsRow.implicitHeight + Appearance.padding.small * 2
+        implicitWidth: actionsRow.implicitWidth + Appearance.padding.small * 2
+
+        RowLayout {
+            id: actionsRow
+            anchors.centerIn: parent
+            spacing: Appearance.spacing.small
+
+            TextButton {
+                type: TextButton.Tonal
+                text: qsTr("Apply")
+                enabled: root.hasPendingChanges
+                onClicked: root.applyChanges()
+            }
+
+            TextButton {
+                type: TextButton.Filled
+                text: qsTr("Save")
+                enabled: root.hasPendingChanges
+                onClicked: root.saveChanges()
+            }
+
+            TextButton {
+                type: TextButton.Text
+                text: qsTr("Revert")
+                enabled: root.hasPendingChanges
+                onClicked: root.revertChanges()
+            }
         }
     }
 

@@ -14,9 +14,12 @@ GridView {
     id: root
 
     required property Session session
+    required property var previewController
 
     readonly property int minCellWidth: 200 + Appearance.spacing.normal
     readonly property int columnsCount: Math.max(1, Math.floor(width / minCellWidth))
+    property string pendingPreviewPath: ""
+    property string pendingPreviewName: ""
 
     cellWidth: width / columnsCount
     cellHeight: 140 + Appearance.spacing.normal
@@ -29,6 +32,15 @@ GridView {
         flickable: root
     }
 
+    Timer {
+        id: previewDebounce
+        interval: 120
+        onTriggered: {
+            if (root.pendingPreviewPath)
+                root.previewController.startWallpaperPreview(root.pendingPreviewPath, root.pendingPreviewName);
+        }
+    }
+
     delegate: Item {
         required property var modelData
         required property int index
@@ -36,7 +48,7 @@ GridView {
         width: root.cellWidth
         height: root.cellHeight
 
-        readonly property bool isCurrent: modelData && modelData.path === Wallpapers.actualCurrent
+        readonly property bool isCurrent: modelData && modelData.path === previewController.pendingWallpaperPath
         readonly property real itemMargin: Appearance.spacing.normal / 2
         readonly property real itemRadius: Appearance.rounding.normal
 
@@ -49,7 +61,24 @@ GridView {
             radius: itemRadius
 
             function onClicked(): void {
-                Wallpapers.setWallpaper(modelData.path);
+                root.previewController.startWallpaperPreview(modelData.path, modelData.name);
+                root.previewController.stageWallpaperApply(modelData.path);
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.NoButton
+            hoverEnabled: true
+            onEntered: {
+                root.pendingPreviewPath = modelData.path;
+                root.pendingPreviewName = modelData.name;
+                previewDebounce.restart();
+            }
+            onExited: {
+                root.pendingPreviewPath = "";
+                root.pendingPreviewName = "";
+                previewDebounce.stop();
             }
         }
 
@@ -230,4 +259,6 @@ GridView {
             }
         }
     }
+
+    Component.onDestruction: root.previewController.clearPreviewFor("wallpaper")
 }
