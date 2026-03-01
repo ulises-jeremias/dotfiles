@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-## Recorder wrapper used by Quickshell runtime.
+## dots-recorder: Recorder wrapper used by Quickshell runtime.
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
 ## Prefer Caelestia backend when available, otherwise graceful fallback.
 
 set -euo pipefail
@@ -42,12 +44,12 @@ case "$cmd" in
     if ! has_running; then
       exit 0
     fi
-    if [[ -f "$PAUSE_STATE_FILE" ]]; then
+    if [[ -f $PAUSE_STATE_FILE ]]; then
       pkill -CONT -x gpu-screen-recorder >/dev/null 2>&1 || true
       rm -f "$PAUSE_STATE_FILE"
     else
       pkill -STOP -x gpu-screen-recorder >/dev/null 2>&1 || true
-      : > "$PAUSE_STATE_FILE"
+      : >"$PAUSE_STATE_FILE"
     fi
     ;;
   *)

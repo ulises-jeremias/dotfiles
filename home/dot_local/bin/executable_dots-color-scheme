@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-## Colour scheme manager for Quickshell without Caelestia dependency.
+## dots-color-scheme: Colour scheme manager for Quickshell without Caelestia dependency.
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
 ## Uses dots smart-colors scheme.json as runtime source of truth.
 
 set -euo pipefail
@@ -60,15 +62,15 @@ variant_to_scheme_type() {
 
 resolve_wallpaper() {
   local wall=""
-  if [[ -f "$WALL_STATE_FILE" ]]; then
+  if [[ -f $WALL_STATE_FILE ]]; then
     wall=$(<"$WALL_STATE_FILE")
-  elif [[ -f "$CURRENT_WALL_CACHE" ]]; then
+  elif [[ -f $CURRENT_WALL_CACHE ]]; then
     wall=$(<"$CURRENT_WALL_CACHE")
-  elif [[ -e "$WAL_WALL_LINK" ]]; then
+  elif [[ -e $WAL_WALL_LINK ]]; then
     wall=$(readlink -f "$WAL_WALL_LINK" 2>/dev/null || true)
   fi
 
-  if [[ -n "${wall:-}" && -f "$wall" ]]; then
+  if [[ -n ${wall:-} && -f $wall ]]; then
     printf '%s\n' "$wall"
     return 0
   fi
@@ -82,7 +84,7 @@ ensure_state_dir() {
 
 read_scheme_meta() {
   local field="${1:-}"
-  [[ -f "$SCHEME_FILE" ]] || return 1
+  [[ -f $SCHEME_FILE ]] || return 1
   python3 - "$SCHEME_FILE" "$field" <<'PY'
 import json
 import sys
@@ -117,7 +119,7 @@ PY
 
 ensure_state() {
   ensure_state_dir
-  if [[ -f "$STATE_FILE" ]]; then
+  if [[ -f $STATE_FILE ]]; then
     return 0
   fi
 
@@ -125,12 +127,12 @@ ensure_state() {
   local mode="dark"
   local variant="tonalspot"
 
-  if [[ -f "$SCHEME_FILE" ]]; then
+  if [[ -f $SCHEME_FILE ]]; then
     local f m
     f="$(read_scheme_meta flavour || true)"
     m="$(read_scheme_meta mode || true)"
-    [[ -n "${f:-}" ]] && flavour="$(normalize_scheme_type "$f")"
-    [[ "$m" == "light" || "$m" == "dark" ]] && mode="$m"
+    [[ -n ${f:-} ]] && flavour="$(normalize_scheme_type "$f")"
+    [[ $m == "light" || $m == "dark" ]] && mode="$m"
     variant="$(normalize_variant "$flavour")"
   fi
 
@@ -151,7 +153,7 @@ PY
 }
 
 ensure_scheme_file() {
-  if [[ -f "$SCHEME_FILE" ]]; then
+  if [[ -f $SCHEME_FILE ]]; then
     return 0
   fi
   regenerate_scheme >/dev/null 2>&1 || true
@@ -165,7 +167,7 @@ link_compat_scheme() {
 regenerate_scheme() {
   ensure_state
   command -v python3 >/dev/null 2>&1 || return 1
-  [[ -f "$M3_SCRIPT" ]] || return 1
+  [[ -f $M3_SCRIPT ]] || return 1
 
   local wallpaper
   wallpaper="$(resolve_wallpaper)" || return 1
@@ -174,7 +176,7 @@ regenerate_scheme() {
   flavour="$(read_state_field flavour)"
   mode="$(read_state_field mode)"
   flavour="$(normalize_scheme_type "$flavour")"
-  [[ "$mode" == "light" || "$mode" == "dark" ]] || mode="dark"
+  [[ $mode == "light" || $mode == "dark" ]] || mode="dark"
 
   mkdir -p "$(dirname "$SCHEME_FILE")"
   python3 "$M3_SCRIPT" \
@@ -221,9 +223,9 @@ cmd_current() {
   name="$(read_state_field name)"
   flavour="$(read_state_field flavour)"
   variant="$(read_state_field variant)"
-  [[ -n "$name" ]] || name="dynamic"
-  [[ -n "$flavour" ]] || flavour="tonal-spot"
-  [[ -n "$variant" ]] || variant="tonalspot"
+  [[ -n $name ]] || name="dynamic"
+  [[ -n $flavour ]] || flavour="tonal-spot"
+  [[ -n $variant ]] || variant="tonalspot"
   printf '%s\n' "$name"
   printf '%s\n' "$flavour"
   printf '%s\n' "$variant"
@@ -239,11 +241,11 @@ cmd_set() {
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      -n|--name)
+      -n | --name)
         name="${2:-$name}"
         shift 2
         ;;
-      -f|--flavour|--flavor)
+      -f | --flavour | --flavor)
         flavour="$(normalize_scheme_type "${2:-$flavour}")"
         variant="$(normalize_variant "$flavour")"
         shift 2
@@ -273,7 +275,7 @@ cmd_variant() {
 cmd_mode() {
   ensure_state
   local mode="${1:-}"
-  if [[ "$mode" != "light" && "$mode" != "dark" ]]; then
+  if [[ $mode != "light" && $mode != "dark" ]]; then
     echo "Usage: dots-color-scheme mode {light|dark}" >&2
     exit 1
   fi

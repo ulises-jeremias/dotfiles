@@ -8,6 +8,7 @@ scripts_list=(
   "💡 brightness: Control screen brightness using xbacklight, brightnessctl, blight, or xrandr"
   "🌐 check-network: Check network connectivity status"
   "📦 checkupdates: Check for available system package updates"
+  "🎨 color-scheme: Manage colour schemes, variants, and dark/light mode for Quickshell"
   "📋 clipboard: Unified clipboard manager (quickshell > cliphist/copyq > minimal)"
   "🎛️ appearance: Unified appearance manager (list/current/apply/variant/mode/wallpaper/sync)"
   "⚙️ config-manager: Manage configuration snapshots and backups"
@@ -42,5 +43,6 @@ scripts_list=(
   "🔔 updates: Check and display available package updates with notifications"
   "🎨 wal-reload: Reload pywal colorscheme and apply M3 smart colors to Quickshell, Hyprland, Kitty"
   "🐚 quickshell: Quickshell desktop shell management (start, stop, restart, status, IPC, presets, config)"
+  "🎥 recorder: Screen recorder wrapper (Caelestia backend or graceful fallback)"
   "🌤️ weather-info: Display current weather information and forecasts"
 )

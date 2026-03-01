@@ -19,14 +19,16 @@ Item {
     required property int padding
     required property int rounding
 
+    readonly property bool showRiceSelector: search.text.startsWith(`${Config.launcher.actionPrefix}rice `)
     readonly property bool showWallpapers: search.text.startsWith(`${Config.launcher.actionPrefix}wallpaper `)
-    readonly property Item currentList: showWallpapers ? wallpaperList.item : appList.item
+    readonly property Item currentList: showRiceSelector ? riceSelectorLoader.item?.currentList ?? null : showWallpapers ? wallpaperList.item : appList.item
+    readonly property var riceSelector: riceSelectorLoader.item
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
 
     clip: true
-    state: showWallpapers ? "wallpapers" : "apps"
+    state: showRiceSelector ? "riceSelector" : showWallpapers ? "wallpapers" : "apps"
 
     states: [
         State {
@@ -50,6 +52,15 @@ Item {
                 root.implicitWidth: Math.max(Config.launcher.sizes.itemWidth * 1.2, wallpaperList.implicitWidth)
                 root.implicitHeight: Config.launcher.sizes.wallpaperHeight
                 wallpaperList.active: true
+            }
+        },
+        State {
+            name: "riceSelector"
+
+            PropertyChanges {
+                root.implicitWidth: riceSelectorLoader.item?.implicitWidth ?? Config.launcher.sizes.itemWidth
+                root.implicitHeight: Math.min(root.maxHeight, riceSelectorLoader.item?.implicitHeight ?? Config.launcher.sizes.wallpaperHeight)
+                riceSelectorLoader.active: true
             }
         }
     ]
@@ -104,6 +115,21 @@ Item {
         }
     }
 
+    Loader {
+        id: riceSelectorLoader
+
+        active: false
+
+        anchors.fill: parent
+
+        sourceComponent: RiceSelector {
+            search: root.search
+            visibilities: root.visibilities
+            panels: root.panels
+            content: root.content
+        }
+    }
+
     Row {
         id: empty
 
@@ -117,7 +143,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
 
         MaterialIcon {
-            text: root.state === "wallpapers" ? "wallpaper_slideshow" : "manage_search"
+            text: root.state === "wallpapers" ? "wallpaper_slideshow" : root.state === "riceSelector" ? "palette" : "manage_search"
             color: Colours.palette.m3onSurfaceVariant
             font.pointSize: Appearance.font.size.extraLarge
 
@@ -128,7 +154,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             StyledText {
-                text: root.state === "wallpapers" ? qsTr("No wallpapers found") : qsTr("No results")
+                text: root.state === "wallpapers" ? qsTr("No wallpapers found") : root.state === "riceSelector" ? qsTr("No appearances found") : qsTr("No results")
                 color: Colours.palette.m3onSurfaceVariant
                 font.pointSize: Appearance.font.size.larger
                 font.weight: 500

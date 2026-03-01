@@ -82,6 +82,24 @@ Item {
             placeholderText: qsTr("Type \"%1\" for commands").arg(Config.launcher.actionPrefix)
 
             onAccepted: {
+                if (list.showRiceSelector) {
+                    const rs = list.riceSelector;
+                    if (!rs)
+                        return;
+                    if (rs.step === "wallpapers") {
+                        const wp = rs.currentWallpaperPath;
+                        if (wp) {
+                            if (Colours.scheme === "dynamic")
+                                Wallpapers.previewColourLock = true;
+                            Quickshell.execDetached(["dots-appearance", "apply", rs.selectedRice.id, "--wallpaper", wp]);
+                            root.visibilities.launcher = false;
+                        }
+                    } else {
+                        rs.confirmCurrentRice();
+                    }
+                    return;
+                }
+
                 const currentItem = list.currentList?.currentItem;
                 if (currentItem) {
                     if (list.showWallpapers) {
@@ -104,7 +122,12 @@ Item {
             Keys.onUpPressed: list.currentList?.decrementCurrentIndex()
             Keys.onDownPressed: list.currentList?.incrementCurrentIndex()
 
-            Keys.onEscapePressed: root.visibilities.launcher = false
+            Keys.onEscapePressed: {
+                if (list.showRiceSelector && list.riceSelector?.step === "wallpapers")
+                    list.riceSelector.goBack();
+                else
+                    root.visibilities.launcher = false;
+            }
 
             Keys.onPressed: event => {
                 if (!Config.launcher.vimKeybinds)

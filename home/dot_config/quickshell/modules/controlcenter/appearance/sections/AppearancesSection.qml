@@ -5,6 +5,7 @@ import "../../../launcher/services"
 import qs.components
 import qs.components.controls
 import qs.components.containers
+import qs.components.images
 import qs.services
 import qs.config
 import Quickshell
@@ -64,6 +65,24 @@ CollapsibleSection {
                     anchors.margins: Appearance.padding.normal
 
                     spacing: Appearance.spacing.normal
+
+                    Loader {
+                        active: (modelData.preview ?? "") !== ""
+                        Layout.alignment: Qt.AlignVCenter
+
+                        sourceComponent: StyledClippingRect {
+                            implicitWidth: 56
+                            implicitHeight: 32
+                            radius: Appearance.rounding.small
+                            color: Colours.tPalette.m3surfaceContainer
+
+                            CachingImage {
+                                anchors.fill: parent
+                                path: modelData.preview ?? ""
+                                cache: true
+                            }
+                        }
+                    }
 
                     MaterialIcon {
                         text: Appearances.styleIcon(modelData.style || "")
