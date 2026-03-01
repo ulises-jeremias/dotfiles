@@ -281,6 +281,12 @@ Item {
         session.queueAction("appearance.apply", ["dots-appearance", "apply", appearanceId]);
     }
 
+    function stageAppearanceApplyWithWallpaper(appearanceId: string, wallpaperPath: string): void {
+        pendingAppearanceId = appearanceId;
+        pendingWallpaperPath = wallpaperPath;
+        session.queueAction("appearance.apply", ["dots-appearance", "apply", appearanceId, "--wallpaper", wallpaperPath]);
+    }
+
     function stageSchemeApply(name: string, flavour: string): void {
         pendingSchemeKey = `${name} ${flavour}`;
         session.queueAction("appearance.scheme", ["dots-color-scheme", "set", "-n", name, "-f", flavour]);

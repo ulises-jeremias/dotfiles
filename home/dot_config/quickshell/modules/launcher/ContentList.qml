@@ -19,7 +19,7 @@ Item {
     required property int padding
     required property int rounding
 
-    readonly property bool showRiceSelector: search.text.startsWith(`${Config.launcher.actionPrefix}rice `)
+    readonly property bool showRiceSelector: search.text.startsWith(`${Config.launcher.actionPrefix}rice `) || search.text.startsWith(`${Config.launcher.actionPrefix}appearance `)
     readonly property bool showWallpapers: search.text.startsWith(`${Config.launcher.actionPrefix}wallpaper `)
     readonly property Item currentList: showRiceSelector ? riceSelectorLoader.item?.currentList ?? null : showWallpapers ? wallpaperList.item : appList.item
     readonly property var riceSelector: riceSelectorLoader.item
