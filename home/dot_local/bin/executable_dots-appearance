@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-## Unified appearance manager for Quickshell themes/rices.
+## dots-appearance: Unified appearance manager for Quickshell themes/rices.
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
 ## Provides a stable CLI contract for UI integrations.
 
 set -euo pipefail
@@ -24,7 +26,7 @@ PY
 
 truthy_to_bool() {
   case "${1:-}" in
-    true|TRUE|1|yes|YES|on|ON) echo "true" ;;
+    true | TRUE | 1 | yes | YES | on | ON) echo "true" ;;
     *) echo "false" ;;
   esac
 }
@@ -33,7 +35,7 @@ first_wallpaper_for_rice() {
   local rice_dir="$1"
   local bg_dir="${rice_dir}/backgrounds"
   local wp=""
-  if [[ -d "$bg_dir" ]]; then
+  if [[ -d $bg_dir ]]; then
     shopt -s nullglob
     local files=("$bg_dir"/*)
     shopt -u nullglob
@@ -45,7 +47,7 @@ first_wallpaper_for_rice() {
 }
 
 read_current_id() {
-  if [[ -f "$STATE_FILE" ]]; then
+  if [[ -f $STATE_FILE ]]; then
     python3 - "$STATE_FILE" <<'PY'
 import json
 import pathlib
@@ -60,7 +62,7 @@ PY
     return 0
   fi
 
-  if [[ -f "$CURRENT_RICE_FILE" ]]; then
+  if [[ -f $CURRENT_RICE_FILE ]]; then
     cat "$CURRENT_RICE_FILE"
     return 0
   fi
@@ -103,25 +105,43 @@ emit_rice_json() {
   local DARK_MODE="true"
   local BAR_POSITION="left"
 
-  if [[ -f "$config" ]]; then
+  if [[ -f $config ]]; then
     # shellcheck disable=SC1090
     source "$config"
   fi
 
   local preview="${rice_dir}/preview.png"
-  [[ -f "$preview" ]] || preview=""
+  [[ -f $preview ]] || preview=""
   local first_wp
   first_wp="$(first_wallpaper_for_rice "$rice_dir")"
 
+  local wallpapers_json="[]"
+  local bg_dir="${rice_dir}/backgrounds"
+  if [[ -d $bg_dir ]]; then
+    wallpapers_json="$(
+      python3 - "$bg_dir" <<'PY2'
+import json, os, sys
+bg = sys.argv[1]
+exts = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'}
+files = sorted([
+    os.path.join(bg, f) for f in os.listdir(bg)
+    if os.path.splitext(f)[1].lower() in exts
+])
+print(json.dumps(files))
+PY2
+    )"
+  fi
+
   local tags_json="[]"
-  if [[ -n "${RICE_TAGS:-}" ]]; then
-    tags_json="$(python3 - "${RICE_TAGS}" <<'PY'
+  if [[ -n ${RICE_TAGS:-} ]]; then
+    tags_json="$(
+      python3 - "${RICE_TAGS}" <<'PY'
 import json
 import sys
 tags = [t.strip() for t in sys.argv[1].split(",") if t.strip()]
 print(json.dumps(tags))
 PY
-)"
+    )"
   fi
 
   printf '{'
@@ -134,12 +154,13 @@ PY
   printf '"barPosition":%s,' "$(json_escape "${BAR_POSITION:-left}")"
   printf '"preview":%s,' "$(json_escape "$preview")"
   printf '"wallpaper":%s,' "$(json_escape "$first_wp")"
-  printf '"tags":%s' "$tags_json"
+  printf '"tags":%s,' "$tags_json"
+  printf '"wallpapers":%s' "$wallpapers_json"
   printf '}'
 }
 
 cmd_list() {
-  [[ -d "$RICES_DIR" ]] || {
+  [[ -d $RICES_DIR ]] || {
     echo "[]"
     return 0
   }
@@ -147,7 +168,7 @@ cmd_list() {
   local first=1
   printf '['
   for rice_dir in "$RICES_DIR"/*; do
-    [[ -d "$rice_dir" ]] || continue
+    [[ -d $rice_dir ]] || continue
     if [[ $first -eq 0 ]]; then
       printf ','
     fi
@@ -159,12 +180,12 @@ cmd_list() {
 
 cmd_current() {
   local current=""
-  if [[ -f "$CURRENT_RICE_FILE" ]]; then
+  if [[ -f $CURRENT_RICE_FILE ]]; then
     current="$(<"$CURRENT_RICE_FILE")"
   else
     current="$(read_current_id)"
   fi
-  if [[ "${1:-}" == "--json" ]]; then
+  if [[ ${1:-} == "--json" ]]; then
     printf '{"id":%s}\n' "$(json_escape "$current")"
   else
     printf '%s\n' "$current"
@@ -173,13 +194,13 @@ cmd_current() {
 
 cmd_apply() {
   local id="${1:-}"
-  [[ -n "$id" ]] || {
+  [[ -n $id ]] || {
     echo "Usage: dots-appearance apply <id>" >&2
     exit 1
   }
 
   local rice_dir="${RICES_DIR}/${id}"
-  [[ -d "$rice_dir" ]] || {
+  [[ -d $rice_dir ]] || {
     echo "Appearance not found: $id" >&2
     exit 1
   }
@@ -188,7 +209,7 @@ cmd_apply() {
   local SCHEME_TYPE="tonal-spot"
   local DARK_MODE="true"
   local BAR_POSITION="left"
-  if [[ -f "$config" ]]; then
+  if [[ -f $config ]]; then
     # shellcheck disable=SC1090
     source "$config"
   fi
@@ -203,7 +224,7 @@ cmd_apply() {
   fi
 
   # Optional compatibility state (disabled by default to avoid side-effects).
-  if [[ "${DOTS_APPEARANCE_WRITE_STATE:-0}" == "1" ]]; then
+  if [[ ${DOTS_APPEARANCE_WRITE_STATE:-0} == "1" ]]; then
     write_state "$id" "${SCHEME_TYPE:-tonal-spot}" "${DARK_MODE:-true}" "${BAR_POSITION:-left}"
   fi
 
@@ -219,12 +240,12 @@ cmd_apply() {
 
 cmd_preview() {
   local id="${1:-}"
-  [[ -n "$id" ]] || {
+  [[ -n $id ]] || {
     echo "Usage: dots-appearance preview <id>" >&2
     exit 1
   }
   local rice_dir="${RICES_DIR}/${id}"
-  [[ -d "$rice_dir" ]] || {
+  [[ -d $rice_dir ]] || {
     echo "Appearance not found: $id" >&2
     exit 1
   }
@@ -234,7 +255,7 @@ cmd_preview() {
 
 cmd_set_variant() {
   local variant="${1:-}"
-  [[ -n "$variant" ]] || {
+  [[ -n $variant ]] || {
     echo "Usage: dots-appearance set-variant <variant>" >&2
     exit 1
   }
@@ -243,7 +264,7 @@ cmd_set_variant() {
 
 cmd_set_mode() {
   local mode="${1:-}"
-  [[ "$mode" == "dark" || "$mode" == "light" ]] || {
+  [[ $mode == "dark" || $mode == "light" ]] || {
     echo "Usage: dots-appearance set-mode <dark|light>" >&2
     exit 1
   }
@@ -252,7 +273,7 @@ cmd_set_mode() {
 
 cmd_set_wallpaper() {
   local wallpaper="${1:-}"
-  [[ -n "$wallpaper" ]] || {
+  [[ -n $wallpaper ]] || {
     echo "Usage: dots-appearance set-wallpaper <path>" >&2
     exit 1
   }
@@ -269,7 +290,10 @@ cmd_sync() {
 case "${cmd:-}" in
   list) cmd_list ;;
   current) cmd_current "${1:-}" ;;
-  apply) shift 0; cmd_apply "${1:-}" ;;
+  apply)
+    shift 0
+    cmd_apply "${1:-}"
+    ;;
   preview) cmd_preview "${1:-}" ;;
   set-variant) cmd_set_variant "${1:-}" ;;
   set-mode) cmd_set_mode "${1:-}" ;;
