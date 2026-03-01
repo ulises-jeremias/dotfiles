@@ -194,8 +194,21 @@ cmd_current() {
 
 cmd_apply() {
   local id="${1:-}"
+  local wallpaper=""
+
+  shift 2>/dev/null || true
+  while [[ $# -gt 0 ]]; do
+    case "${1:-}" in
+      --wallpaper)
+        wallpaper="${2:-}"
+        shift 2
+        ;;
+      *) shift ;;
+    esac
+  done
+
   [[ -n $id ]] || {
-    echo "Usage: dots-appearance apply <id>" >&2
+    echo "Usage: dots-appearance apply <id> [--wallpaper <path>]" >&2
     exit 1
   }
 
@@ -212,6 +225,10 @@ cmd_apply() {
   if [[ -f $config ]]; then
     # shellcheck disable=SC1090
     source "$config"
+  fi
+
+  if [[ -n $wallpaper ]]; then
+    export BACKGROUND_IMAGE="$wallpaper"
   fi
 
   if command -v dots-rice >/dev/null 2>&1; then
@@ -290,10 +307,7 @@ cmd_sync() {
 case "${cmd:-}" in
   list) cmd_list ;;
   current) cmd_current "${1:-}" ;;
-  apply)
-    shift 0
-    cmd_apply "${1:-}"
-    ;;
+  apply) cmd_apply "$@" ;;
   preview) cmd_preview "${1:-}" ;;
   set-variant) cmd_set_variant "${1:-}" ;;
   set-mode) cmd_set_mode "${1:-}" ;;
@@ -306,7 +320,7 @@ Usage: dots-appearance <command> [args]
 Commands:
   list
   current [--json]
-  apply <id>
+  apply <id> [--wallpaper <path>]
   preview <id>
   set-variant <variant>
   set-mode <dark|light>
