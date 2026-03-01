@@ -59,7 +59,7 @@ Item {
 
             PropertyChanges {
                 root.implicitWidth: riceSelectorLoader.item?.implicitWidth ?? Config.launcher.sizes.itemWidth
-                root.implicitHeight: Math.min(root.maxHeight, riceSelectorLoader.item?.implicitHeight ?? Config.launcher.sizes.wallpaperHeight)
+                root.implicitHeight: Math.min(root.maxHeight, (riceSelectorLoader.item?.implicitHeight ?? 0) > 0 ? riceSelectorLoader.item.implicitHeight : empty.implicitHeight)
                 riceSelectorLoader.active: true
             }
         }
