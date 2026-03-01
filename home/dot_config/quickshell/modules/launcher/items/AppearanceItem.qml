@@ -1,5 +1,6 @@
 import "../services"
 import qs.components
+import qs.components.images
 import qs.services
 import qs.config
 import QtQuick
@@ -29,12 +30,35 @@ Item {
         anchors.rightMargin: Appearance.padding.larger
         anchors.margins: Appearance.padding.smaller
 
+        Loader {
+            id: previewThumb
+
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            active: (root.modelData?.preview ?? "") !== ""
+
+            sourceComponent: StyledClippingRect {
+                implicitWidth: 40
+                implicitHeight: 22
+                radius: Appearance.rounding.small
+                color: Colours.tPalette.m3surfaceContainer
+
+                CachingImage {
+                    anchors.fill: parent
+                    path: root.modelData?.preview ?? ""
+                    cache: true
+                }
+            }
+        }
+
         MaterialIcon {
             id: icon
 
             text: root.modelData?.icon ?? "palette"
             font.pointSize: Appearance.font.size.extraLarge
 
+            anchors.left: previewThumb.active ? previewThumb.right : parent.left
+            anchors.leftMargin: previewThumb.active ? Appearance.spacing.small : 0
             anchors.verticalCenter: parent.verticalCenter
         }
 
@@ -43,7 +67,7 @@ Item {
             anchors.leftMargin: Appearance.spacing.larger
             anchors.verticalCenter: icon.verticalCenter
 
-            width: parent.width - icon.width - anchors.leftMargin - (current.active ? current.width + Appearance.spacing.normal : 0)
+            width: parent.width - icon.implicitWidth - anchors.leftMargin - (previewThumb.active ? previewThumb.implicitWidth + Appearance.spacing.small : 0) - (current.active ? current.width + Appearance.spacing.normal : 0)
             spacing: 0
 
             StyledText {
