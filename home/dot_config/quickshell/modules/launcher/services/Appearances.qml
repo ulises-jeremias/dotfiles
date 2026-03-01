@@ -90,6 +90,8 @@ Searcher {
         readonly property string style: modelData.style
         readonly property string desc: modelData.description
         readonly property string icon: root.styleIcon(style)
+        readonly property string preview: modelData.preview ?? ""
+        readonly property var wallpapers: modelData.wallpapers ?? []
 
         function onClicked(list: AppList): void {
             list.visibilities.launcher = false;
