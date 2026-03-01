@@ -55,6 +55,7 @@ CollapsibleSection {
                     StateLayer {
                         function onClicked(): void {
                             sectionRoot.selectedRiceId = riceItem.modelData.id;
+                            previewController.stageAppearanceApply(riceItem.modelData.id);
                             previewController.startAppearancePreview(riceItem.modelData);
                         }
                     }

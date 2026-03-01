@@ -88,12 +88,7 @@ Item {
                         return;
                     if (rs.step === "wallpapers") {
                         const wp = rs.currentWallpaperPath;
-                        if (wp) {
-                            if (Colours.scheme === "dynamic")
-                                Wallpapers.previewColourLock = true;
-                            Quickshell.execDetached(["dots-appearance", "apply", rs.selectedRice.id, "--wallpaper", wp]);
-                            root.visibilities.launcher = false;
-                        }
+                        rs.applySelectedWallpaper(wp);
                     } else {
                         rs.confirmCurrentRice();
                     }

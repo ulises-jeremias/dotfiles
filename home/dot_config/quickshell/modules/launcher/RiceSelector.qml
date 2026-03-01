@@ -55,7 +55,39 @@ Item {
         root.step = "rices";
     }
 
-    Component.onCompleted: Appearances.reload()
+    function applySelectedWallpaper(path: string): void {
+        if (!root.selectedRice?.id || !path)
+            return;
+        if (Colours.scheme === "dynamic")
+            Wallpapers.previewColourLock = true;
+        Quickshell.execDetached(["dots-appearance", "apply", root.selectedRice.id, "--wallpaper", path]);
+        root.visibilities.launcher = false;
+    }
+
+    function refreshRiceModel(): void {
+        riceModel.values = Appearances.query(root.search.text);
+    }
+
+    Component.onCompleted: {
+        Appearances.reload();
+        refreshRiceModel();
+    }
+
+    Connections {
+        target: Appearances
+
+        function onListChanged(): void {
+            root.refreshRiceModel();
+        }
+    }
+
+    Connections {
+        target: root.search
+
+        function onTextChanged(): void {
+            root.refreshRiceModel();
+        }
+    }
 
     // ── Step 1: rice list ────────────────────────────────────────────────────
 
@@ -69,7 +101,7 @@ Item {
         model: ScriptModel {
             id: riceModel
 
-            values: Appearances.list
+            values: []
             onValuesChanged: riceList.currentIndex = 0
         }
 
@@ -305,6 +337,7 @@ Item {
 
             delegate: RiceWallpaperItem {
                 visibilities: root.visibilities
+                onActivated: path => root.applySelectedWallpaper(path)
             }
 
             path: Path {

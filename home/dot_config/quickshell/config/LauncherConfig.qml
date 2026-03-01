@@ -67,7 +67,7 @@ JsonObject {
             name: "Appearance",
             icon: "style",
             description: "Apply a full desktop appearance/rice",
-            command: ["autocomplete", "appearance"],
+            command: ["autocomplete", "rice"],
             enabled: true,
             dangerous: false
         },

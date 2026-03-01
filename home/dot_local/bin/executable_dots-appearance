@@ -165,17 +165,127 @@ cmd_list() {
     return 0
   }
 
-  local first=1
-  printf '['
+  local fs=$'\x1f'
+  local ws=$'\x1d'
+  local rs=$'\x1e'
+  local output=""
   for rice_dir in "$RICES_DIR"/*; do
     [[ -d $rice_dir ]] || continue
-    if [[ $first -eq 0 ]]; then
-      printf ','
+
+    local rice_id
+    rice_id="$(basename "$rice_dir")"
+    local config="${rice_dir}/config.sh"
+
+    local RICE_NAME="$rice_id"
+    local RICE_DESCRIPTION="No description available"
+    local RICE_STYLE="Unknown"
+    local RICE_TAGS=""
+    local SCHEME_TYPE="tonal-spot"
+    local DARK_MODE="true"
+    local BAR_POSITION="left"
+
+    if [[ -f $config ]]; then
+      # shellcheck disable=SC1090
+      source "$config"
     fi
-    emit_rice_json "$rice_dir"
-    first=0
+
+    local preview="${rice_dir}/preview.png"
+    [[ -f $preview ]] || preview=""
+
+    local first_wp=""
+    local wallpapers_joined=""
+    local bg_dir="${rice_dir}/backgrounds"
+    if [[ -d $bg_dir ]]; then
+      local wallpapers=()
+      local f ext
+      shopt -s nullglob
+      for f in "$bg_dir"/*; do
+        ext="${f##*.}"
+        ext="${ext,,}"
+        case "$ext" in
+          jpg | jpeg | png | gif | webp | bmp) wallpapers+=("$f") ;;
+        esac
+      done
+      shopt -u nullglob
+
+      if [[ ${#wallpapers[@]} -gt 0 ]]; then
+        first_wp="${wallpapers[0]}"
+        wallpapers_joined="${wallpapers[0]}"
+        local i
+        for ((i = 1; i < ${#wallpapers[@]}; i++)); do
+          wallpapers_joined+="${ws}${wallpapers[i]}"
+        done
+      fi
+    fi
+
+    output+="${rice_id}${fs}"
+    output+="${RICE_NAME:-$rice_id}${fs}"
+    output+="${RICE_DESCRIPTION:-}${fs}"
+    output+="${RICE_STYLE:-Unknown}${fs}"
+    output+="${SCHEME_TYPE:-tonal-spot}${fs}"
+    output+="${DARK_MODE:-true}${fs}"
+    output+="${BAR_POSITION:-left}${fs}"
+    output+="${preview}${fs}"
+    output+="${first_wp}${fs}"
+    output+="${RICE_TAGS:-}${fs}"
+    output+="${wallpapers_joined}${rs}"
   done
-  printf ']\n'
+
+  if [[ -z $output ]]; then
+    echo "[]"
+    return 0
+  fi
+
+  OUTPUT="$output" python3 - <<'PY'
+import json
+fs = "\x1f"
+ws = "\x1d"
+rs = "\x1e"
+import os
+raw = os.environ.get("OUTPUT", "")
+if not raw:
+    print("[]")
+    raise SystemExit(0)
+
+truthy = {"true", "1", "yes", "on"}
+records = []
+for row in [r for r in raw.split(rs) if r]:
+    fields = row.split(fs)
+    if len(fields) != 11:
+        continue
+    (
+        rice_id,
+        name,
+        description,
+        style,
+        scheme_type,
+        dark_mode,
+        bar_position,
+        preview,
+        wallpaper,
+        tags_raw,
+        wallpapers_raw,
+    ) = fields
+
+    tags = [t.strip() for t in tags_raw.split(",") if t.strip()]
+    wallpapers = [w for w in wallpapers_raw.split(ws) if w]
+
+    records.append({
+        "id": rice_id,
+        "name": name or rice_id,
+        "description": description,
+        "style": style or "Unknown",
+        "schemeType": scheme_type or "tonal-spot",
+        "darkMode": (dark_mode or "").strip().lower() in truthy,
+        "barPosition": bar_position or "left",
+        "preview": preview,
+        "wallpaper": wallpaper,
+        "tags": tags,
+        "wallpapers": wallpapers,
+    })
+
+print(json.dumps(records, separators=(",", ":")))
+PY
 }
 
 cmd_current() {

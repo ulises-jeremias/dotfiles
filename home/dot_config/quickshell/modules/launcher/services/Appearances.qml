@@ -13,7 +13,18 @@ Searcher {
     property string currentId: ""
 
     function transformSearch(search: string): string {
-        return search.slice(`${Config.launcher.actionPrefix}appearance `.length);
+        const prefix = Config.launcher.actionPrefix;
+        const riceCmd = `${prefix}rice`;
+        const appearanceCmd = `${prefix}appearance`;
+        if (search === riceCmd)
+            return "";
+        if (search.startsWith(`${riceCmd} `))
+            return search.slice(riceCmd.length + 1);
+        if (search === appearanceCmd)
+            return "";
+        if (search.startsWith(`${appearanceCmd} `))
+            return search.slice(appearanceCmd.length + 1);
+        return search;
     }
 
     function selector(item: var): string {

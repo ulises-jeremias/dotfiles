@@ -16,6 +16,7 @@ Item {
 
     required property string modelData
     required property PersistentProperties visibilities
+    signal activated(string path)
 
     scale: 0.5
     opacity: 0
@@ -33,7 +34,7 @@ Item {
         radius: Appearance.rounding.normal
 
         function onClicked(): void {
-            root.visibilities.launcher = false;
+            root.activated(root.modelData);
         }
     }
 
