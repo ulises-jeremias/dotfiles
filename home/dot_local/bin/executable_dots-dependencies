@@ -63,6 +63,7 @@ declare -A AI_DEPS=(
   ["cursor"]="Cursor AI IDE"
   ["claude"]="Claude Code CLI"
   ["opencode"]="OpenCode CLI"
+  ["ollama"]="Ollama local LLM runner"
   ["pi"]="Pi coding agent"
 )
 
@@ -148,7 +149,15 @@ install_dependencies() {
   if [[ -n ${optional} ]]; then
     log_info "Installing optional AI dependencies..."
     if command -v pacman >/dev/null 2>&1; then
-      sudo pacman -S --needed nodejs npm opencode
+      sudo pacman -S --needed nodejs npm opencode ollama
+
+      if command -v lspci >/dev/null 2>&1 && lspci | grep -qiE "nvidia|geforce|quadro"; then
+        log_info "NVIDIA GPU detected. Installing CUDA/OpenCL runtime dependencies..."
+        if ! sudo pacman -S --needed cuda cudnn opencl-nvidia opencl-headers; then
+          log_warn "Failed to install CUDA/OpenCL packages automatically. Please verify repos and install manually."
+        fi
+      fi
+
       if command -v yay >/dev/null 2>&1; then
         yay -S --noconfirm --needed \
           visual-studio-code-bin \

@@ -5,16 +5,71 @@
 
 set -euo pipefail
 
+warn() {
+  echo "[WARN] $*"
+}
+
+info() {
+  echo "[INFO] $*"
+}
+
+has_nvidia_gpu() {
+  command -v lspci >/dev/null 2>&1 && lspci | grep -qiE "nvidia|geforce|quadro"
+}
+
+pull_ollama_models_if_available() {
+  local models=(
+    "qwen2.5-coder:14b"
+    "deepseek-coder-v2:lite"
+    "qwen2.5:14b"
+  )
+
+  if ! command -v ollama >/dev/null 2>&1; then
+    info "Ollama is not installed yet, skipping model pulls."
+    return 0
+  fi
+
+  # Do not start the Ollama server automatically; only pull if daemon is reachable.
+  if ! ollama list >/dev/null 2>&1; then
+    info "Ollama daemon is not running, skipping model pulls."
+    return 0
+  fi
+
+  info "Pulling default Ollama models (best effort)..."
+  local model
+  for model in "${models[@]}"; do
+    if ollama pull "$model"; then
+      info "Model ready: $model"
+    else
+      warn "Could not pull model: $model"
+    fi
+  done
+}
+
 sudo pacman -S --noconfirm --needed \
   nodejs \
   npm \
-  opencode
+  opencode \
+  ollama
 
-yay -S --noconfirm --needed \
-  visual-studio-code-bin \
-  cursor-bin \
-  claude-code-stable \
-  pi-coding-agent
+if has_nvidia_gpu; then
+  info "NVIDIA GPU detected, ensuring CUDA/OpenCL runtime packages..."
+  if ! sudo pacman -S --noconfirm --needed cuda cudnn opencl-nvidia opencl-headers; then
+    warn "Failed to install CUDA/OpenCL packages automatically. Please verify repositories and retry manually."
+  fi
+fi
+
+if command -v yay >/dev/null 2>&1; then
+  yay -S --noconfirm --needed \
+    visual-studio-code-bin \
+    cursor-bin \
+    claude-code-stable \
+    pi-coding-agent
+else
+  warn "yay is not installed. Install VSCode/Cursor/Claude/pi manually."
+fi
+
+pull_ollama_models_if_available
 {{      end -}}
 
 {{ end -}}
