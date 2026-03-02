@@ -26,9 +26,11 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+Shift+F` | Smart floating (toggle + center + resize) |
 | `Super+Shift+Space` | Focus toggle (floating ↔ tiled) |
 | `Super+Ctrl+C` | Center floating window |
-| `Super+T` | Toggle tiling/floating |
+| `Super+Space` | Toggle tiling/floating |
 | `Super+P` | Focus parent (group) |
 | `Super+C` | Focus child (group) |
+| `Super+U` | Promote focused window to its own column (scrolling layout) |
+| `Super+'` | Toggle focus fit mode (center ↔ fit) |
 
 ## Window Focus
 
@@ -84,14 +86,18 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+Z` | Toggle scratchpad visibility |
 | `Super+Shift+Z` | Move window to scratchpad |
 
-## Layouts and Splits
+## Scrolling Layout (Niri-style)
 
 | Keybinding | Function |
 |------------|----------|
-| `Super+Alt+H` | Set horizontal split direction |
-| `Super+Alt+V` | Set vertical split direction |
-| `Super+W` | Toggle layout (dwindle/master) |
-| `Super+S` | Toggle split direction |
+| `Super+Alt+H` | Move layout viewport one column to the left |
+| `Super+Alt+L` | Move layout viewport one column to the right |
+| `Super+Alt+,` | Swap active column with left neighbor |
+| `Super+Alt+.` | Swap active column with right neighbor |
+| `Super+Alt+-` / `Super+Alt+=` | Decrease/increase column width preset |
+| `Super+Alt+Shift+-` / `Super+Alt+Shift+=` | Fine resize column width |
+| `Super+Alt+F` | Fit active column into view |
+| `Super+Alt+Shift+F` | Fit visible columns into view |
 
 ## Gaps Control
 

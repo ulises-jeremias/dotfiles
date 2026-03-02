@@ -4,6 +4,7 @@
 
 HorneroConfig uses a Hyprland + Quickshell stack.
 Quickshell is the primary shell surface for launcher, session menu, dashboard, notifications, and control center.
+The default tiling behavior is Hyprland `scrolling` layout (Niri-style column workflow).
 
 ## Installation
 
