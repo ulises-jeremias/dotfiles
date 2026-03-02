@@ -62,6 +62,7 @@ declare -A AI_DEPS=(
   ["code"]="Visual Studio Code"
   ["cursor"]="Cursor AI IDE"
   ["claude"]="Claude Code CLI"
+  ["opencode"]="OpenCode CLI"
   ["pi"]="Pi coding agent"
 )
 
@@ -147,7 +148,7 @@ install_dependencies() {
   if [[ -n ${optional} ]]; then
     log_info "Installing optional AI dependencies..."
     if command -v pacman >/dev/null 2>&1; then
-      sudo pacman -S --needed nodejs npm
+      sudo pacman -S --needed nodejs npm opencode
       if command -v yay >/dev/null 2>&1; then
         yay -S --noconfirm --needed \
           visual-studio-code-bin \
