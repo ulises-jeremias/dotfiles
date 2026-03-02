@@ -9,7 +9,7 @@ scripts_list=(
   "🌐 check-network: Check network connectivity status"
   "📦 checkupdates: Check for available system package updates"
   "🎨 color-scheme: Manage colour schemes, variants, and dark/light mode for Quickshell"
-  "📋 clipboard: Unified clipboard manager (quickshell > cliphist/copyq > minimal)"
+  "📋 clipboard: Unified clipboard manager (copyq-first, with cliphist/minimal fallback)"
   "🎛️ appearance: Unified appearance manager (list/current/apply/variant/mode/wallpaper/sync)"
   "⚙️ config-manager: Manage configuration snapshots and backups"
   "🎯 default-apps: Configure XDG default applications using handlr"
