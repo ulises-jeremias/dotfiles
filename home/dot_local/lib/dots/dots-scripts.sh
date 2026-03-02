@@ -17,6 +17,7 @@ scripts_list=(
   "📁 file-manager: Launch XDG default file manager"
   "📨 git-notify: Send notifications when git commits are made"
   "🎨 gtk-theme: Intelligent GTK theme management with rice integration and auto-detection"
+  "🧭 hypr-layout: Manage Hyprland layout profiles with persistence and restore support"
   "🖥️ hypr-monitors: Manage Hyprland monitor configurations and layouts"
   "🖼️ hyprpaper-set: Set wallpapers on Wayland with hyprpaper"
   "🔠 keyboard-help: Interactive keyboard shortcuts help overlay for Hyprland"

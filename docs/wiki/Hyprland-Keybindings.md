@@ -31,6 +31,9 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+C` | Focus child (group) |
 | `Super+U` | Promote focused window to its own column (scrolling layout) |
 | `Super+'` | Toggle focus fit mode (center ↔ fit) |
+| `Super+Ctrl+W` | Toggle layout profile (scrolling ↔ dwindle) |
+| `Super+Ctrl+Shift+W` | Force scrolling profile |
+| `Super+Ctrl+Alt+W` | Force dwindle profile |
 
 ## Window Focus
 

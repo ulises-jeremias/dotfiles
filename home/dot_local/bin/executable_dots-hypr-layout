@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Layout profile manager for Hyprland.
+## Provides a stable way to switch between scrolling/dwindle/master profiles.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Usage:
+##     @script.name [OPTIONS]
+##
+## Options:
+##     -h, --help              Show this help message
+##         --toggle            Toggle between scrolling and dwindle (default action)
+##         --set=LAYOUT        Set explicit layout profile (scrolling|dwindle|master)
+##         --current           Print current active layout
+##         --restore           Restore persisted layout from state file
+##         --ephemeral         Do not persist selected layout to disk
+##         --quiet             Disable desktop notifications
+
+set -euo pipefail
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+readonly STATE_DIR="${HOME}/.local/state/dots/hypr-layout"
+readonly STATE_FILE="${STATE_DIR}/current"
+readonly DEFAULT_LAYOUT="scrolling"
+readonly TOGGLE_FALLBACK="dwindle"
+
+notify_layout() {
+  local message="$1"
+
+  if [[ ${quiet:-no} == yes ]]; then
+    return 0
+  fi
+
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -u low -i preferences-desktop "Hyprland Layout" "$message" || true
+  fi
+}
+
+is_valid_layout() {
+  case "${1:-}" in
+    scrolling | dwindle | master) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+ensure_hyprctl() {
+  if ! command -v hyprctl >/dev/null 2>&1; then
+    echo "[ERROR] hyprctl not found. This command requires Hyprland." >&2
+    return 1
+  fi
+}
+
+current_layout() {
+  local value=""
+
+  if command -v jq >/dev/null 2>&1; then
+    value="$(hyprctl getoption general:layout -j 2>/dev/null | jq -r '.str // empty')"
+  fi
+
+  if [[ -z $value ]]; then
+    value="$(hyprctl getoption general:layout 2>/dev/null | awk -F': ' '/str:/{print $2; exit}')"
+  fi
+
+  if [[ -z $value ]]; then
+    value="$DEFAULT_LAYOUT"
+  fi
+
+  printf '%s\n' "$value"
+}
+
+save_state() {
+  local layout="$1"
+  mkdir -p "$STATE_DIR"
+  printf '%s\n' "$layout" >"$STATE_FILE"
+}
+
+load_state() {
+  if [[ -f $STATE_FILE ]]; then
+    awk 'NF {print $1; exit}' "$STATE_FILE"
+    return 0
+  fi
+
+  printf '%s\n' "$DEFAULT_LAYOUT"
+}
+
+apply_scrolling_profile() {
+  hyprctl keyword general:layout scrolling >/dev/null
+  hyprctl keyword scrolling:fullscreen_on_one_column true >/dev/null
+  hyprctl keyword scrolling:column_width 0.62 >/dev/null
+  hyprctl keyword scrolling:focus_fit_method 1 >/dev/null
+  hyprctl keyword scrolling:follow_focus true >/dev/null
+  hyprctl keyword scrolling:follow_min_visible 0.45 >/dev/null
+  hyprctl keyword scrolling:explicit_column_widths "0.333, 0.5, 0.618, 0.75, 1.0" >/dev/null
+  hyprctl keyword scrolling:direction right >/dev/null
+}
+
+apply_layout() {
+  local layout="$1"
+
+  case "$layout" in
+    scrolling) apply_scrolling_profile ;;
+    dwindle | master) hyprctl keyword general:layout "$layout" >/dev/null ;;
+    *)
+      echo "[ERROR] Unsupported layout: $layout" >&2
+      return 1
+      ;;
+  esac
+
+  if [[ ${ephemeral:-no} != yes ]]; then
+    save_state "$layout"
+  fi
+
+  notify_layout "Switched to ${layout}"
+}
+
+restore_layout() {
+  local saved_layout
+  saved_layout="$(load_state)"
+
+  if ! is_valid_layout "$saved_layout"; then
+    saved_layout="$DEFAULT_LAYOUT"
+  fi
+
+  apply_layout "$saved_layout"
+}
+
+toggle_layout() {
+  local active
+  active="$(current_layout)"
+
+  case "$active" in
+    scrolling) apply_layout "$TOGGLE_FALLBACK" ;;
+    *) apply_layout scrolling ;;
+  esac
+}
+
+main() {
+  ensure_hyprctl || exit 1
+
+  if [[ ${current:-no} == yes ]]; then
+    current_layout
+    exit 0
+  fi
+
+  if [[ ${restore:-no} == yes ]]; then
+    restore_layout
+    exit 0
+  fi
+
+  if [[ -n ${set:-} ]]; then
+    if ! is_valid_layout "$set"; then
+      echo "[ERROR] Invalid layout: $set" >&2
+      echo "Valid values: scrolling, dwindle, master" >&2
+      exit 1
+    fi
+
+    apply_layout "$set"
+    exit 0
+  fi
+
+  if [[ ${toggle:-no} == yes || $# -eq 0 ]]; then
+    toggle_layout
+    exit 0
+  fi
+
+  echo "[ERROR] Invalid arguments. Use --help for usage." >&2
+  exit 1
+}
+
+main "$@"
