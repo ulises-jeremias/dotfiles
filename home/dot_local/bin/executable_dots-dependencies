@@ -65,6 +65,7 @@ declare -A AI_DEPS=(
   ["opencode"]="OpenCode CLI"
   ["ollama"]="Ollama local LLM runner"
   ["pi"]="Pi coding agent"
+  ["llmfit"]="LLMfit CLI"
 )
 
 check_dependency() {
@@ -163,9 +164,10 @@ install_dependencies() {
           visual-studio-code-bin \
           cursor-bin \
           claude-code-stable \
-          pi-coding-agent
+          pi-coding-agent \
+          llmfit-bin
       else
-        echo "⚠️  yay is not installed. Install Cursor/VSCode/Claude/pi manually."
+        echo "⚠️  yay is not installed. Install Cursor/VSCode/Claude/pi/llmfit manually."
       fi
     else
       echo "ℹ️  Install AI tools manually on this distribution."

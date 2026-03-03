@@ -64,9 +64,10 @@ if command -v yay >/dev/null 2>&1; then
     visual-studio-code-bin \
     cursor-bin \
     claude-code-stable \
-    pi-coding-agent
+    pi-coding-agent \
+    llmfit-bin
 else
-  warn "yay is not installed. Install VSCode/Cursor/Claude/pi manually."
+  warn "yay is not installed. Install VSCode/Cursor/Claude/pi/llmfit manually."
 fi
 
 pull_ollama_models_if_available
