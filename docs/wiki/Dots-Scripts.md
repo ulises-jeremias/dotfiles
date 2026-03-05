@@ -100,14 +100,14 @@ dots smart-colors --concept=error
 dots wal-reload
 ```
 
-### hyprpaper-set
+### wallpaper-set
 
-- Sets wallpaper through Hyprpaper IPC
-- Persists wallpaper state
-- Triggers smart-colors regeneration and Quickshell palette reload (unless invoked from an outer theme pipeline)
+- Unified wallpaper entrypoint used by Quickshell and scripts
+- Delegates to `wpg -s` when available
+- Fallback path writes wallpaper state files and triggers smart-colors + Quickshell palette reload
 
 ```bash
-dots hyprpaper-set /path/to/wallpaper.jpg
+dots wallpaper-set /path/to/wallpaper.jpg
 ```
 
 ## Notes

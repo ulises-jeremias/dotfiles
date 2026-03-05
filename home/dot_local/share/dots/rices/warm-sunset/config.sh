@@ -4,11 +4,11 @@
 # Rice Metadata
 # ================================
 RICE_NAME="Warm Sunset"
-RICE_DESCRIPTION="Warm sunset hues creating a cozy, inviting atmosphere reminiscent of golden hour"
-RICE_STYLE="Cozy Warm"
-RICE_PALETTE="Warm oranges, soft corals, and golden yellows"
-RICE_TAGS="warm,sunset,cozy,golden,inviting,light"
-RICE_BEST_FOR="Evening work, creative inspiration, warm cozy vibes, relaxing environment"
+RICE_DESCRIPTION="Stylized golden-hour landscapes with warm cinematic sunset tones"
+RICE_STYLE="Warm Cinematic"
+RICE_PALETTE="Amber glow, magenta dusk gradients, and deep violet horizons"
+RICE_TAGS="warm,sunset,cinematic,golden-hour,stylized,landscape"
+RICE_BEST_FOR="Creative sessions, evening focus, immersive warm ambience"
 
 # Theme Components Information
 GTK_THEME="Orchis-Light"
@@ -28,7 +28,7 @@ WAYBAR_PROFILE="default"
 # ================================
 # Quickshell Configuration
 # ================================
-SCHEME_TYPE="vibrant"           # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
-DARK_MODE=true
-ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
-BAR_POSITION="left"            # left/top/bottom/right
+SCHEME_TYPE="vibrant" # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+DARK_MODE=false
+ACCENT_COLOR=""    # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="top" # left/top/bottom/right

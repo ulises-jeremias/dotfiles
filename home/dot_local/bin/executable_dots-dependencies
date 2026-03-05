@@ -33,7 +33,6 @@ declare -A CORE_DEPS=(
 declare -A WL_DEPS=(
   ["hyprland"]="Wayland compositor"
   ["quickshell"]="Desktop shell (bar/launcher/dashboard/control center)"
-  ["hyprpaper"]="Wallpaper daemon"
   ["hyprlock"]="Lock screen"
   ["hypridle"]="Idle daemon"
   ["cliphist"]="Clipboard history"
@@ -129,13 +128,13 @@ install_dependencies() {
   log_info "Installing dependencies (core + Quickshell Wayland stack)..."
 
   if command -v pacman >/dev/null 2>&1; then
-    sudo pacman -S --needed git curl wget zsh hyprland quickshell hyprpaper hyprlock hypridle cliphist kitty
+    sudo pacman -S --needed git curl wget zsh hyprland quickshell hyprlock hypridle cliphist kitty
   elif command -v apt >/dev/null 2>&1; then
     sudo apt update
     sudo apt install -y git curl wget zsh kitty
-    echo "⚠️  Install hyprland/quickshell/hyprpaper/hyprlock/hypridle/cliphist manually (not all in apt)."
+    echo "⚠️  Install hyprland/quickshell/hyprlock/hypridle/cliphist manually (not all in apt)."
   elif command -v dnf >/dev/null 2>&1; then
-    sudo dnf install -y git curl wget zsh hyprland hyprpaper kitty
+    sudo dnf install -y git curl wget zsh hyprland kitty
     echo "ℹ️  Install quickshell, hyprlock, hypridle and cliphist separately if unavailable."
   else
     echo "❌ Unsupported package manager. Install packages manually."

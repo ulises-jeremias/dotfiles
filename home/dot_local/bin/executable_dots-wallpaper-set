@@ -23,6 +23,13 @@ show_info() {
   echo "ℹ️ $1"
 }
 
+sync_wallpaper_state() {
+  mkdir -p "$HOME/.cache/dots/smart-colors" "$HOME/.local/state/dots/wallpaper"
+  printf '%s\n' "$WALLPAPER_PATH" >"$HOME/.cache/dots/smart-colors/wallpaper"
+  printf '%s\n' "$WALLPAPER_PATH" >"$HOME/.local/state/dots/wallpaper/path.txt"
+  printf '%s\n' "$WALLPAPER_PATH" >"$HOME/.cache/current_wallpaper"
+}
+
 usage() {
   echo "Usage: $0 <wallpaper_path>"
 }
@@ -52,16 +59,11 @@ if command -v wpg >/dev/null 2>&1; then
     show_info "Wallpaper set via wpgtk"
     exit 0
   fi
-  show_info "wpgtk failed, using fallback pipeline"
+  show_info "wpgtk failed, using state fallback pipeline"
 fi
 
-if ! command -v dots-hyprpaper-set >/dev/null 2>&1; then
-  show_error "dots-hyprpaper-set not found"
-  exit 1
-fi
-
-# Fallback path: set wallpaper and keep minimum shell synchronization.
-DOTS_THEME_PIPELINE=1 dots-hyprpaper-set "$WALLPAPER_PATH"
+# Fallback path without wpgtk: keep state and colors synchronized.
+sync_wallpaper_state
 
 if command -v dots-smart-colors >/dev/null 2>&1; then
   dots-smart-colors --generate --m3 >/dev/null 2>&1 || true
@@ -71,4 +73,4 @@ if pgrep -x quickshell >/dev/null 2>&1 && command -v dots-quickshell >/dev/null 
   dots-quickshell ipc colours reload >/dev/null 2>&1 || true
 fi
 
-show_info "Wallpaper set via fallback pipeline"
+show_info "Wallpaper state set via fallback pipeline"

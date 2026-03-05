@@ -5,15 +5,15 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 ## Primary Contract
 
 - Quickshell is the main consumer through `~/.cache/dots/smart-colors/scheme.json`.
-- `dots-wal-reload` and `dots-hyprpaper-set` trigger palette refresh and Quickshell IPC reload.
+- `dots-wal-reload` and `dots-wallpaper-set` trigger palette refresh and Quickshell IPC reload.
 - Script consumers can source shell/env exports from the same cache directory.
 
 ## Wallpaper Pipeline Contract
 
 ### Historical pipelines
 
-- **wpgtk pipeline**: `wpg -s <image>` -> `wpg.conf` runs `dots-wal-reload` -> `dots-hyprpaper-set` updates runtime wallpaper state.
-- **Quickshell direct pipeline**: UI actions used to call `dots-hyprpaper-set` directly, bypassing `wpg` and global reload orchestration.
+- **wpgtk pipeline**: `wpg -s <image>` -> `wpg.conf` runs `dots-wal-reload` and refreshes shell colors.
+- **Legacy Quickshell direct pipeline**: UI actions used to call compositor-specific wallpaper setters directly, bypassing `wpg` and global reload orchestration.
 
 The direct pipeline could desynchronize `~/.config/wpg/.current` from shell/runtime state and miss some app reloads that are centralized in `dots-wal-reload`.
 

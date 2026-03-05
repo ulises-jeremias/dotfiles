@@ -278,33 +278,33 @@ Item {
 
     function stageAppearanceApply(appearanceId: string): void {
         pendingAppearanceId = appearanceId;
-        session.queueAction("appearance.apply", ["dots-appearance", "apply", appearanceId]);
+        session.runAction(["dots-appearance", "apply", appearanceId]);
     }
 
     function stageAppearanceApplyWithWallpaper(appearanceId: string, wallpaperPath: string): void {
         pendingAppearanceId = appearanceId;
         pendingWallpaperPath = wallpaperPath;
-        session.queueAction("appearance.apply", ["dots-appearance", "apply", appearanceId, "--wallpaper", wallpaperPath]);
+        session.runAction(["dots-appearance", "apply", appearanceId, "--wallpaper", wallpaperPath]);
     }
 
     function stageSchemeApply(name: string, flavour: string): void {
         pendingSchemeKey = `${name} ${flavour}`;
-        session.queueAction("appearance.scheme", ["dots-color-scheme", "set", "-n", name, "-f", flavour]);
+        session.runAction(["dots-color-scheme", "set", "-n", name, "-f", flavour]);
     }
 
     function stageVariantApply(variant: string): void {
         pendingVariant = variant;
-        session.queueAction("appearance.variant", ["dots-color-scheme", "variant", variant]);
+        session.runAction(["dots-color-scheme", "variant", variant]);
     }
 
     function stageModeApply(mode: string): void {
         pendingMode = mode;
-        session.queueAction("appearance.mode", ["dots-color-scheme", "mode", mode]);
+        session.runAction(["dots-color-scheme", "mode", mode]);
     }
 
     function stageWallpaperApply(path: string): void {
         pendingWallpaperPath = path;
-        session.queueAction("appearance.wallpaper", ["dots-wallpaper-set", path]);
+        session.runAction(["dots-wallpaper-set", path]);
     }
 
     function resetPendingSelections(): void {
@@ -606,11 +606,6 @@ Item {
         function onActiveIndexChanged(): void {
             if (root.session.activeIndex !== 3)
                 root.clearPreview();
-        }
-
-        function onPendingActionsChanged(): void {
-            if (!root.session.hasPendingActions)
-                root.resetPendingSelections();
         }
     }
 

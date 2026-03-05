@@ -4,11 +4,11 @@
 # Rice Metadata
 # ================================
 RICE_NAME="Machines"
-RICE_DESCRIPTION="Futuristic cyberpunk theme with industrial aesthetics and bold contrasts"
-RICE_STYLE="Cyberpunk"
-RICE_PALETTE="Industrial grays, metallic accents with vibrant contrast colors"
-RICE_TAGS="cyberpunk,industrial,futuristic,dark,bold,contrast"
-RICE_BEST_FOR="Coding, terminal work, cyberpunk enthusiasts, modern aesthetics"
+RICE_DESCRIPTION="Futuristic city-night and synthwave roads with bold neon contrast"
+RICE_STYLE="Cyberpunk Synthwave"
+RICE_PALETTE="Neon magentas, electric blues, and dark cinematic shadows"
+RICE_TAGS="cyberpunk,synthwave,neon,futuristic,night,cinematic"
+RICE_BEST_FOR="Night coding, cyberpunk vibes, high-contrast desktop setups"
 
 # Theme Components Information
 GTK_THEME="auto"
@@ -28,7 +28,7 @@ WAYBAR_PROFILE="vertical-left"
 # ================================
 # Quickshell Configuration
 # ================================
-SCHEME_TYPE="tonal-spot"        # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+SCHEME_TYPE="tonal-spot" # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
 DARK_MODE=true
-ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
-BAR_POSITION="left"            # left/top/bottom/right
+ACCENT_COLOR=""     # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="left" # left/top/bottom/right

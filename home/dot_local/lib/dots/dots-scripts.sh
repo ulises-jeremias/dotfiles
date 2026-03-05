@@ -19,7 +19,6 @@ scripts_list=(
   "🎨 gtk-theme: Intelligent GTK theme management with rice integration and auto-detection"
   "🧭 hypr-layout: Manage Hyprland layout profiles with persistence and restore support"
   "🖥️ hypr-monitors: Manage Hyprland monitor configurations and layouts"
-  "🖼️ hyprpaper-set: Set wallpapers on Wayland with hyprpaper"
   "🔠 keyboard-help: Interactive keyboard shortcuts help overlay for Hyprland"
   "⌨️ keyboard-layout: Toggle keyboard layouts for Hyprland/Wayland/X11"
   "⚙️ keyboard-settings: Open LXQt keyboard configuration GUI"

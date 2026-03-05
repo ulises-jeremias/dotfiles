@@ -4,11 +4,11 @@
 # Rice Metadata
 # ================================
 RICE_NAME="Pastel Dreams"
-RICE_DESCRIPTION="Soft pastel colors creating a dreamy, cozy atmosphere perfect for all-day comfort"
-RICE_STYLE="Cozy Pastel"
-RICE_PALETTE="Soft pastel pinks, blues, and lavenders"
-RICE_TAGS="pastel,cozy,soft,dreamy,light,comfortable"
-RICE_BEST_FOR="All-day work, creative tasks, gentle on the eyes, cozy environment"
+RICE_DESCRIPTION="Dreamy abstract pastels with smooth gradients and playful color flow"
+RICE_STYLE="Abstract Pastel"
+RICE_PALETTE="Bubblegum pinks, soft cyans, and creamy rainbow fades"
+RICE_TAGS="pastel,abstract,gradient,dreamy,soft,colorful"
+RICE_BEST_FOR="Creative ideation, playful desktops, low-contrast colorful ambience"
 
 # Theme Components Information
 GTK_THEME="Orchis-Light"
@@ -28,7 +28,7 @@ WAYBAR_PROFILE="default"
 # ================================
 # Quickshell Configuration
 # ================================
-SCHEME_TYPE="neutral"           # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+SCHEME_TYPE="neutral" # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
 DARK_MODE=false
-ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
-BAR_POSITION="top"             # left/top/bottom/right
+ACCENT_COLOR=""    # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="top" # left/top/bottom/right

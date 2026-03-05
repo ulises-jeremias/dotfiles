@@ -4,11 +4,11 @@
 # Rice Metadata
 # ================================
 RICE_NAME="Soft Morning"
-RICE_DESCRIPTION="Gentle morning light colors creating a fresh, calm, and cozy start to your day"
-RICE_STYLE="Cozy Fresh"
-RICE_PALETTE="Soft creams, gentle greens, and morning blues"
-RICE_TAGS="morning,fresh,calm,cozy,light,gentle"
-RICE_BEST_FOR="Morning work, fresh start, calm environment, productivity with comfort"
+RICE_DESCRIPTION="Calm early-day mountain and mist landscapes with soft natural light"
+RICE_STYLE="Morning Landscape"
+RICE_PALETTE="Pale sky blues, foggy grays, and muted alpine greens"
+RICE_TAGS="morning,calm,mist,mountains,nature,light"
+RICE_BEST_FOR="Quiet mornings, low-stimulation focus, calm desktop sessions"
 
 # Theme Components Information
 GTK_THEME="Orchis-Light"
@@ -28,7 +28,7 @@ WAYBAR_PROFILE="default"
 # ================================
 # Quickshell Configuration
 # ================================
-SCHEME_TYPE="neutral"           # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+SCHEME_TYPE="neutral" # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
 DARK_MODE=false
-ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
-BAR_POSITION="top"             # left/top/bottom/right
+ACCENT_COLOR=""    # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="top" # left/top/bottom/right

@@ -16,7 +16,7 @@
 
 - Quickshell (M3 color scheme via scheme.json)
 - Hyprland (compositor animations and settings)
-- Wallpaper system (hyprpaper)
+- Wallpaper system (Quickshell background + wpgtk contract)
 - GTK themes (automatic light/dark selection)
 
 **Design Constraints:**

@@ -4,11 +4,11 @@
 # Rice Metadata
 # ================================
 RICE_NAME="Landscape"
-RICE_DESCRIPTION="Natural earth tones with scenic landscapes for light and dark environments"
-RICE_STYLE="Nature"
-RICE_PALETTE="Earth tones and natural colors with light/dark variants"
-RICE_TAGS="nature,professional,elegant,landscape,scenic"
-RICE_BEST_FOR="Professional work, nature lovers, versatile day/night usage"
+RICE_DESCRIPTION="Cinematic nature vistas with rich forests, lakes, and fantasy cabins"
+RICE_STYLE="Nature Cinematic"
+RICE_PALETTE="Deep forest greens, lake blues, and twilight violets"
+RICE_TAGS="nature,cinematic,landscape,fantasy,scenic,immersive"
+RICE_BEST_FOR="Focused work, nature immersion, high-detail scenic setups"
 
 # Theme Components Information
 GTK_THEME="auto"
@@ -28,7 +28,7 @@ WAYBAR_PROFILE="vertical-left"
 # ================================
 # Quickshell Configuration
 # ================================
-SCHEME_TYPE="fidelity"          # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+SCHEME_TYPE="fidelity" # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
 DARK_MODE=true
-ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
-BAR_POSITION="top"             # left/top/bottom/right
+ACCENT_COLOR=""    # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="top" # left/top/bottom/right

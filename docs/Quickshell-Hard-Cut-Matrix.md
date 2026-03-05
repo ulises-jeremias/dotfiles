@@ -9,7 +9,7 @@ It defines what stays, what is removed, and why.
 - `home/dot_local/bin/executable_dots-appearance`
 - `home/dot_local/bin/executable_dots-color-scheme`
 - `home/dot_local/bin/executable_dots-smart-colors`
-- `home/dot_local/bin/executable_dots-hyprpaper-set`
+- `home/dot_local/bin/executable_dots-wallpaper-set`
 - `home/dot_local/bin/executable_dots-wal-reload`
 - `home/dot_local/bin/executable_dots-settings-gui`
 - `home/dot_local/bin/executable_dots-launcher` (Quickshell-first, minimal rescue)
@@ -43,7 +43,7 @@ It defines what stays, what is removed, and why.
 
 Core install should represent Quickshell + Hyprland only:
 
-- Keep: `hyprland`, `quickshell`, `hyprpaper`, `hyprlock`, `hypridle`, `cliphist`, `wl-clipboard`, `copyq`, core media/network/system packages.
+- Keep: `hyprland`, `quickshell`, `hyprlock`, `hypridle`, `cliphist`, `wl-clipboard`, `copyq`, core media/network/system packages.
 - Remove from core defaults: `mako`, `wofi`, `nwg-bar`, `nwg-drawer`, `wlogout`, and other legacy menu/widget stack assumptions.
 
 ## Call-Site Cleanup Requirement

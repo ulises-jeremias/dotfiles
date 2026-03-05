@@ -28,7 +28,18 @@ Singleton {
     }
 
     function absolutePath(path: string): string {
-        return toLocalFile(path.replace(/~|(\$({?)HOME(}?))+/, home));
+        const expanded = path.replace(/~|(\$({?)HOME(}?))+/, home);
+
+        // Keep plain absolute paths untouched. Resolving them as QML URLs can
+        // produce non-local schemes depending on import context.
+        if (expanded.startsWith("/"))
+            return expanded;
+
+        // Already a file URL.
+        if (expanded.startsWith("file://"))
+            return CUtils.toLocalFile(expanded);
+
+        return toLocalFile(expanded);
     }
 
     function shortenHome(path: string): string {

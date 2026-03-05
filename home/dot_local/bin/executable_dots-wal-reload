@@ -414,37 +414,6 @@ reload_snappy_switcher() {
   fi
 }
 
-# Function to reload hyprpaper (Hyprland wallpaper daemon)
-reload_hyprpaper() {
-  # Only run on Hyprland
-  if [[ ${XDG_SESSION_TYPE:-} != "wayland" ]] || [[ ${XDG_CURRENT_DESKTOP:-} != *"Hyprland"* ]]; then
-    return 0
-  fi
-
-  if ! check_command hyprpaper "Hyprpaper" false; then
-    return 0
-  fi
-
-  show_status "Updating wallpaper with hyprpaper..."
-
-  # Use dots-hyprpaper-set helper if available
-  if command -v dots-hyprpaper-set >/dev/null 2>&1; then
-    if DOTS_THEME_PIPELINE=1 dots-hyprpaper-set; then
-      show_success "Hyprpaper wallpaper updated"
-      UPDATED_APPS+=("Hyprpaper")
-      return 0
-    else
-      show_warning "Hyprpaper update failed"
-      FAILED_APPS+=("Hyprpaper")
-      return 1
-    fi
-  else
-    show_warning "dots-hyprpaper-set not found, skipping hyprpaper update"
-    SKIPPED_APPS+=("Hyprpaper")
-    return 1
-  fi
-}
-
 # Function to update current rice if applicable
 update_current_rice() {
   local rice_config="$HOME/.cache/dots/current_rice"
@@ -505,9 +474,6 @@ show_summary() {
 main() {
   echo -e "${PURPLE}🎨 Enhanced Wal Reload Script 🎨${NC}"
   echo ""
-
-  # Set wallpaper for Hyprland (must be first)
-  reload_hyprpaper
 
   # Core wal reload (must be before smart colors)
   reload_wal

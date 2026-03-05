@@ -52,7 +52,7 @@ Most were written from scratch. Core stack:
 - **Terminal Emulator** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/) - GPU-accelerated terminal
 - **Shell** 🐚 [Zsh](https://zsh.org) with Powerlevel10k prompt
 - **Lockscreen** 🔒 [Hyprlock](https://github.com/hyprwm/hyprlock) - Secure lock screen
-- **Wallpaper** 🖼️ [Hyprpaper](https://github.com/hyprwm/hyprpaper) - Fast wallpaper daemon
+- **Wallpaper** 🖼️ Quickshell + wpgtk integration via `dots-wallpaper-set`
 - **File Manager** 🃏 [Thunar](https://docs.xfce.org/xfce/thunar/start) with customized side pane
 - and many more!
 
