@@ -267,6 +267,20 @@ We welcome all contributions! 🎉
 
 ---
 
+## 🙏 Credits & Attribution
+
+### Quickshell Desktop Shell
+
+The **Quickshell** implementation in HorneroConfig was highly inspired by and adapted from the amazing work of the [**caelestia-dots/shell**](https://github.com/caelestia-dots/shell) project by [@soramane](https://github.com/soramane).
+
+- **Original Project**: [caelestia-dots/shell](https://github.com/caelestia-dots/shell)
+- **License**: GNU General Public License v3.0 (GPL-3.0)
+- **What we adapted**: UI/UX design, desktop shell architecture, C++ plugin structure
+
+The original GPL-3.0 license is preserved in `home/dot_config/quickshell/LICENSE`. We are deeply grateful for the beautiful and functional desktop shell that inspired our implementation.
+
+---
+
 <div align="center">
 
 ### 💝 Show Your Support

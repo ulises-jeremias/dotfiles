@@ -1,4 +1,20 @@
-                    GNU GENERAL PUBLIC LICENSE
+                    ================================================================================
+ATTRIBUTION NOTICE
+================================================================================
+
+This Quickshell implementation in HorneroConfig is adapted from and inspired by
+the caelestia-dots/shell project:
+
+    Original Project: https://github.com/caelestia-dots/shell
+    Original Author:  soramane (https://github.com/soramane)
+    Original License: GNU General Public License v3.0
+
+The original work is licensed under the GPL-3.0 license (below), and our
+modifications and adaptations maintain the same license as required.
+
+================================================================================
+
+GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>

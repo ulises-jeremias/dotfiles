@@ -12,7 +12,7 @@ import qs.components.images
 import qs.services
 import qs.config
 import qs.utils
-import Caelestia.Models
+import Hornero.Models
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Io

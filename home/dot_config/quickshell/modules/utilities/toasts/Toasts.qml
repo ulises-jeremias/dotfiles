@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import qs.components
 import qs.config
-import Caelestia
+import Hornero
 import Quickshell
 import QtQuick
 

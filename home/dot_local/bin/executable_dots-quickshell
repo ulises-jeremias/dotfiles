@@ -58,8 +58,8 @@ SHELL_CONFIG="${HOME}/.config/hornero/shell.json"
 PRESETS_DIR="${HOME}/.local/share/dots/shell-presets"
 CURRENT_PRESET_FILE="${HOME}/.local/state/dots/current-shell-preset"
 
-export QML_IMPORT_PATH="${QML_IMPORT_PATH:-${HOME}/.local/lib/quickshell/qml}"
-export QML2_IMPORT_PATH="${QML2_IMPORT_PATH:-${QML_IMPORT_PATH}:${HOME}/.config/quickshell}"
+export QML_IMPORT_PATH="${QML_IMPORT_PATH:-${HOME}/.local/lib/quickshell/qml:${HOME}/.local/usr/lib/qt6/qml}"
+export QML2_IMPORT_PATH="${QML2_IMPORT_PATH:-${HOME}/.local/usr/lib/qt6/qml:${HOME}/.config/quickshell}"
 export QS_PLUGIN_PATH="${QS_PLUGIN_PATH:-${HOME}/.local/lib/quickshell}"
 
 is_running() {
@@ -84,7 +84,10 @@ cmd_start() {
     fi
 
     log_info "Starting Quickshell..."
-    nohup "$QUICKSHELL_BIN" > /dev/null 2>&1 &
+    env QML2_IMPORT_PATH="${QML2_IMPORT_PATH}" \
+        QML_IMPORT_PATH="${QML_IMPORT_PATH}" \
+        QS_PLUGIN_PATH="${QS_PLUGIN_PATH}" \
+        nohup "$QUICKSHELL_BIN" > /dev/null 2>&1 &
     sleep 1
 
     if is_running; then

@@ -4,7 +4,7 @@ pragma ComponentBehavior: Bound
 import qs.components.misc
 import qs.config
 import qs.utils
-import Caelestia
+import Hornero
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Notifications

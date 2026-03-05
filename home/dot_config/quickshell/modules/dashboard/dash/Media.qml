@@ -2,7 +2,7 @@ import qs.components
 import qs.services
 import qs.config
 import qs.utils
-import Caelestia.Services
+import Hornero.Services
 import QtQuick
 import QtQuick.Shapes
 

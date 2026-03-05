@@ -2,7 +2,7 @@ pragma Singleton
 
 import qs.config
 import qs.utils
-import Caelestia
+import Hornero
 import Quickshell
 
 Searcher {

@@ -1,7 +1,7 @@
 pragma Singleton
 
 import qs.config
-import Caelestia
+import Hornero
 import Quickshell
 
 Singleton {
@@ -20,7 +20,7 @@ Singleton {
     readonly property string notifimagecache: `${imagecache}/notifs`
     readonly property string wallsdir: Quickshell.env("CAELESTIA_WALLPAPERS_DIR") || absolutePath(Config.paths.wallpaperDir)
     readonly property string recsdir: Quickshell.env("CAELESTIA_RECORDINGS_DIR") || `${videos}/Recordings`
-    readonly property string libdir: Quickshell.env("DOTS_LIB_DIR") || Quickshell.env("CAELESTIA_LIB_DIR") || "/usr/lib/caelestia"
+    readonly property string libdir: Quickshell.env("DOTS_LIB_DIR") || Quickshell.env("HORNERO_LIB_DIR") || "/usr/lib/hornero"
 
     function toLocalFile(path: url): string {
         path = Qt.resolvedUrl(path);

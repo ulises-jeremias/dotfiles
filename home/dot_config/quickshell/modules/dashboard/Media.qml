@@ -5,7 +5,7 @@ import qs.components.controls
 import qs.services
 import qs.utils
 import qs.config
-import Caelestia.Services
+import Hornero.Services
 import Quickshell
 import Quickshell.Services.Mpris
 import QtQuick

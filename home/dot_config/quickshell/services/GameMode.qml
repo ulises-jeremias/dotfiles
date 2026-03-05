@@ -2,7 +2,7 @@ pragma Singleton
 
 import qs.services
 import qs.config
-import Caelestia
+import Hornero
 import Quickshell
 import Quickshell.Io
 import QtQuick

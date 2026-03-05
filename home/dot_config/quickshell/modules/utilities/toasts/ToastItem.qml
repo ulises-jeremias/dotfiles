@@ -2,7 +2,7 @@ import qs.components
 import qs.components.effects
 import qs.services
 import qs.config
-import Caelestia
+import Hornero
 import QtQuick
 import QtQuick.Layouts
 

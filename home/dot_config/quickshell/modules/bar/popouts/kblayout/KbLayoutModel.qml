@@ -6,7 +6,7 @@ import Quickshell
 import Quickshell.Io
 
 import qs.config
-import Caelestia
+import Hornero
 
 Item {
     id: model

@@ -65,9 +65,10 @@ if command -v yay >/dev/null 2>&1; then
     cursor-bin \
     claude-code-stable \
     pi-coding-agent \
-    llmfit-bin
+    llmfit-bin \
+    github-copilot-cli
 else
-  warn "yay is not installed. Install VSCode/Cursor/Claude/pi/llmfit manually."
+  warn "yay is not installed. Install VSCode/Cursor/Claude/pi/llmfit/github-copilot-cli manually."
 fi
 
 pull_ollama_models_if_available

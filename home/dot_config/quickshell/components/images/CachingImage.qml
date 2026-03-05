@@ -1,5 +1,5 @@
 import qs.utils
-import Caelestia.Internal
+import Hornero.Internal
 import Quickshell
 import QtQuick
 

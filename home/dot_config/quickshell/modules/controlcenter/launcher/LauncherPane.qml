@@ -10,7 +10,7 @@ import qs.components.containers
 import qs.services
 import qs.config
 import qs.utils
-import Caelestia
+import Hornero
 import Quickshell
 import Quickshell.Widgets
 import QtQuick

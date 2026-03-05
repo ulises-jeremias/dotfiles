@@ -36,7 +36,7 @@ Singleton {
             root.osIdLike = fd("ID_LIKE").split(" ");
 
             const logo = Quickshell.iconPath(fd("LOGO"), true);
-            if (Config.general.logo === "caelestia") {
+            if (Config.general.logo === "hornero") {
                 root.osLogo = Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logo.svg`);
                 root.isDefaultLogo = true;
             } else if (Config.general.logo) {

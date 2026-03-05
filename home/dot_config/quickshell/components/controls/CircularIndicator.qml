@@ -1,7 +1,7 @@
 import ".."
 import qs.services
 import qs.config
-import Caelestia.Internal
+import Hornero.Internal
 import QtQuick
 import QtQuick.Templates
 
