@@ -404,7 +404,7 @@ cmd_set_wallpaper() {
     echo "Usage: dots-appearance set-wallpaper <path>" >&2
     exit 1
   }
-  dots-hyprpaper-set "$wallpaper"
+  dots-wallpaper-set "$wallpaper"
 }
 
 cmd_sync() {

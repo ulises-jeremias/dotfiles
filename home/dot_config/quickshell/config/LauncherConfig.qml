@@ -83,7 +83,7 @@ JsonObject {
             name: "Random",
             icon: "casino",
             description: "Switch to a random wallpaper",
-            command: ["sh", "-c", "dots-hyprpaper-set \"$(find \"$HOME/Pictures/Wallpapers\" -type f | shuf -n 1)\""],
+            command: ["sh", "-c", "dots-wallpaper-set \"$(find \"$HOME/Pictures/Wallpapers\" -type f | shuf -n 1)\""],
             enabled: true,
             dangerous: false
         },

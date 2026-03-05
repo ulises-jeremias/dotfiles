@@ -20,7 +20,7 @@ Searcher {
 
     function setWallpaper(path: string): void {
         actualCurrent = path;
-        Quickshell.execDetached(["dots-hyprpaper-set", path]);
+        Quickshell.execDetached(["dots-wallpaper-set", path]);
     }
 
     function preview(path: string): void {

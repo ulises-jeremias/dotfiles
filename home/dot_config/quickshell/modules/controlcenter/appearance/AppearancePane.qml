@@ -304,7 +304,7 @@ Item {
 
     function stageWallpaperApply(path: string): void {
         pendingWallpaperPath = path;
-        session.queueAction("appearance.wallpaper", ["dots-hyprpaper-set", path]);
+        session.queueAction("appearance.wallpaper", ["dots-wallpaper-set", path]);
     }
 
     function resetPendingSelections(): void {

@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import qs.components
+import qs.components.images
 import qs.services
 import qs.config
 import Quickshell.Wayland
@@ -159,11 +160,11 @@ WlSessionLockSurface {
         }
     }
 
-    ScreencopyView {
+    CachingImage {
         id: background
 
         anchors.fill: parent
-        captureSource: root.screen
+        path: Wallpapers.current
         opacity: 0
 
         layer.enabled: true

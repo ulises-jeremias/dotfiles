@@ -7,6 +7,11 @@
 
 set -euo pipefail
 
+if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+fi
+
 SCHEME_FILE="${HOME}/.cache/dots/smart-colors/scheme.json"
 STATE_DIR="${HOME}/.local/state/dots/scheme"
 STATE_FILE="${STATE_DIR}/state.json"
@@ -61,6 +66,15 @@ variant_to_scheme_type() {
 }
 
 resolve_wallpaper() {
+  if declare -f dots_current_wallpaper >/dev/null 2>&1; then
+    local unified=""
+    unified="$(dots_current_wallpaper 2>/dev/null || true)"
+    if [[ -n ${unified:-} && -f $unified ]]; then
+      printf '%s\n' "$unified"
+      return 0
+    fi
+  fi
+
   local wall=""
   if [[ -f $WALL_STATE_FILE ]]; then
     wall=$(<"$WALL_STATE_FILE")

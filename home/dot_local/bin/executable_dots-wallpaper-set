@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Unified wallpaper entrypoint for Quickshell and scripts.
+## Prefers wpgtk integration when available, with graceful fallback.
+##
+set -euo pipefail
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit 1
+
+if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+fi
+
+show_error() {
+  echo "❌ $1" >&2
+}
+
+show_info() {
+  echo "ℹ️ $1"
+}
+
+usage() {
+  echo "Usage: $0 <wallpaper_path>"
+}
+
+if [[ ${help:-} == "yes" || ${h:-} == "yes" ]]; then
+  usage
+  exit 0
+fi
+
+WALLPAPER_INPUT="${1:-}"
+if [[ -z $WALLPAPER_INPUT ]]; then
+  usage
+  exit 1
+fi
+
+WALLPAPER_PATH="$WALLPAPER_INPUT"
+if declare -f dots_current_wallpaper >/dev/null 2>&1; then
+  WALLPAPER_PATH="$(dots_current_wallpaper "$WALLPAPER_INPUT" 2>/dev/null || true)"
+fi
+if [[ -z ${WALLPAPER_PATH:-} || ! -f $WALLPAPER_PATH ]]; then
+  show_error "Wallpaper file not found: $WALLPAPER_INPUT"
+  exit 1
+fi
+
+if command -v wpg >/dev/null 2>&1; then
+  if wpg -s "$WALLPAPER_PATH" >/dev/null 2>&1; then
+    show_info "Wallpaper set via wpgtk"
+    exit 0
+  fi
+  show_info "wpgtk failed, using fallback pipeline"
+fi
+
+if ! command -v dots-hyprpaper-set >/dev/null 2>&1; then
+  show_error "dots-hyprpaper-set not found"
+  exit 1
+fi
+
+# Fallback path: set wallpaper and keep minimum shell synchronization.
+DOTS_THEME_PIPELINE=1 dots-hyprpaper-set "$WALLPAPER_PATH"
+
+if command -v dots-smart-colors >/dev/null 2>&1; then
+  dots-smart-colors --generate --m3 >/dev/null 2>&1 || true
+fi
+
+if pgrep -x quickshell >/dev/null 2>&1 && command -v dots-quickshell >/dev/null 2>&1; then
+  dots-quickshell ipc colours reload >/dev/null 2>&1 || true
+fi
+
+show_info "Wallpaper set via fallback pipeline"

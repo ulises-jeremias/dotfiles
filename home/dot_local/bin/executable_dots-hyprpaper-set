@@ -8,6 +8,11 @@
 
 set -euo pipefail
 
+if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+fi
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -35,7 +40,7 @@ sync_shell_theme() {
 
   # When invoked from a broader pipeline (e.g. dots-wal-reload),
   # avoid duplicate color generation/reload work.
-  if [[ "${DOTS_THEME_PIPELINE:-0}" == "1" ]]; then
+  if [[ ${DOTS_THEME_PIPELINE:-0} == "1" ]]; then
     return 0
   fi
 
@@ -52,29 +57,23 @@ sync_shell_theme() {
 WALLPAPER_PATH=""
 
 if [[ $# -eq 1 ]]; then
-  WALLPAPER_PATH="$1"
+  WALLPAPER_PATH="${1:-}"
 else
-  # Auto-detect from wpg or wal
-  if [[ -L "$HOME/.config/wpg/.current" ]] || [[ -f "$HOME/.config/wpg/.current" ]]; then
-    # .current is typically a symlink, resolve it
-    WALLPAPER_PATH=$(readlink -f "$HOME/.config/wpg/.current" 2>/dev/null || echo "")
-  fi
+  WALLPAPER_PATH=""
+fi
 
-  if [[ -z $WALLPAPER_PATH ]] && { [[ -L "$HOME/.cache/wal/wal" ]] || [[ -f "$HOME/.cache/wal/wal" ]]; }; then
-    # wal is also a symlink
-    WALLPAPER_PATH=$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || echo "")
-  fi
-
-  if [[ -z $WALLPAPER_PATH ]]; then
-    show_error "No wallpaper path provided and could not auto-detect"
-    echo "Usage: $0 [wallpaper_path]"
-    exit 1
-  fi
+# Unified wallpaper resolution:
+# explicit argument -> wpgtk current -> dots state -> wal cache.
+if [[ -n ${WALLPAPER_PATH:-} ]] && declare -f dots_current_wallpaper >/dev/null 2>&1; then
+  WALLPAPER_PATH="$(dots_current_wallpaper "$WALLPAPER_PATH" 2>/dev/null || true)"
+elif [[ -z ${WALLPAPER_PATH:-} ]] && declare -f dots_current_wallpaper >/dev/null 2>&1; then
+  WALLPAPER_PATH="$(dots_current_wallpaper 2>/dev/null || true)"
 fi
 
 # Validate wallpaper exists
-if [[ ! -f $WALLPAPER_PATH ]]; then
+if [[ -z ${WALLPAPER_PATH:-} || ! -f $WALLPAPER_PATH ]]; then
   show_error "Wallpaper file not found: $WALLPAPER_PATH"
+  echo "Usage: $0 [wallpaper_path]"
   exit 1
 fi
 

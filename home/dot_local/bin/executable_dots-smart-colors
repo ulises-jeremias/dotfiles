@@ -25,6 +25,10 @@
 set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit 1
+if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+fi
 
 # Output colors
 readonly RED='\033[0;31m'
@@ -585,9 +589,12 @@ generate_smart_color_files() {
 
   # Get wallpaper path
   local wallpaper_path=""
-  if [[ -f ~/.cache/wal/wal ]]; then
+  if declare -f dots_current_wallpaper >/dev/null 2>&1; then
+    wallpaper_path="$(dots_current_wallpaper 2>/dev/null || true)"
+  fi
+  if [[ -z ${wallpaper_path:-} && -f ~/.cache/wal/wal ]]; then
     wallpaper_path=$(cat ~/.cache/wal/wal)
-  elif [[ -f ~/.config/wpg/wp_init.py ]]; then
+  elif [[ -z ${wallpaper_path:-} && -f ~/.config/wpg/wp_init.py ]]; then
     wallpaper_path=$(python3 -c "import os; exec(open(os.path.expanduser('~/.config/wpg/wp_init.py')).read()); print(wallpaper)" 2>/dev/null || echo "")
   fi
   [[ -z $wallpaper_path ]] && wallpaper_path="/home/$(whoami)/.wallpaper"
@@ -1195,11 +1202,18 @@ EOF
   if [[ -n ${m3:-} ]]; then
     show_status "Generating M3 Material Design color scheme..."
     local m3_script="${HOME}/.local/lib/dots/generate-m3-colors.py"
-    if [[ -f "$m3_script" ]]; then
+    if [[ -f $m3_script ]]; then
       local wall_path
-      wall_path=$(cat "${HOME}/.cache/wal/wal" 2>/dev/null || echo "")
-      if [[ -z "$wall_path" || ! -f "$wall_path" ]]; then
-        show_error "No wallpaper found in ~/.cache/wal/wal for M3 generation"
+      if declare -f dots_current_wallpaper >/dev/null 2>&1; then
+        wall_path="$(dots_current_wallpaper 2>/dev/null || true)"
+      else
+        wall_path=""
+      fi
+      if [[ -z ${wall_path:-} ]]; then
+        wall_path=$(cat "${HOME}/.cache/wal/wal" 2>/dev/null || echo "")
+      fi
+      if [[ -z $wall_path || ! -f $wall_path ]]; then
+        show_error "No wallpaper found (wpg/.current, dots state, or wal cache) for M3 generation"
       elif python3 "$m3_script" --image "$wall_path" --output "${SMART_COLORS_DIR}/scheme.json" 2>&1; then
         show_success "M3 scheme.json generated"
       else

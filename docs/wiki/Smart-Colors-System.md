@@ -8,6 +8,26 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 - `dots-wal-reload` and `dots-hyprpaper-set` trigger palette refresh and Quickshell IPC reload.
 - Script consumers can source shell/env exports from the same cache directory.
 
+## Wallpaper Pipeline Contract
+
+### Historical pipelines
+
+- **wpgtk pipeline**: `wpg -s <image>` -> `wpg.conf` runs `dots-wal-reload` -> `dots-hyprpaper-set` updates runtime wallpaper state.
+- **Quickshell direct pipeline**: UI actions used to call `dots-hyprpaper-set` directly, bypassing `wpg` and global reload orchestration.
+
+The direct pipeline could desynchronize `~/.config/wpg/.current` from shell/runtime state and miss some app reloads that are centralized in `dots-wal-reload`.
+
+### Unified contract
+
+- Use `dots-wallpaper-set` as the single entrypoint for wallpaper changes from shell UI/actions.
+- When `wpg` is available, `dots-wallpaper-set` delegates to `wpg -s` so wpgtk remains source-compatible.
+- Wallpaper resolution priority is unified across scripts:
+  1. Explicit argument
+  2. `~/.config/wpg/.current`
+  3. `~/.local/state/dots/wallpaper/path.txt`
+  4. `~/.cache/current_wallpaper`
+  5. `~/.cache/wal/wal`
+
 ## Main Commands
 
 ```bash
@@ -36,7 +56,8 @@ Compatibility files may exist for external tooling, but they are not part of the
 
 ```mermaid
 flowchart LR
-  wallpaper[WallpaperChange] --> wal[dots-wal-reload]
+  wallpaper[WallpaperChange] --> set[dots-wallpaper-set]
+  set --> wal[dots-wal-reload]
   wal --> smart[dots-smart-colorsGenerate]
   smart --> scheme[schemeJson]
   scheme --> colours[QuickshellColoursService]

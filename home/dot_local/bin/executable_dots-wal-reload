@@ -10,6 +10,11 @@
 
 set -euo pipefail
 
+if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -148,26 +153,27 @@ reload_lockscreen() {
     # Move to background to not block the reload process
     (
       local current_wallpaper="$HOME/.cache/current_wallpaper"
+      local wallpaper_path=""
 
-      if [[ -f $current_wallpaper ]]; then
-        local wallpaper_path
+      if declare -f dots_current_wallpaper >/dev/null 2>&1; then
+        wallpaper_path="$(dots_current_wallpaper 2>/dev/null || true)"
+      fi
+
+      if [[ -z ${wallpaper_path:-} && -f $current_wallpaper ]]; then
         wallpaper_path=$(cat "$current_wallpaper")
+      fi
 
-        if [[ -f $wallpaper_path ]]; then
-          show_status "Updating lockscreen with current wallpaper (background)..."
-          if dots-lockscreen --update="$wallpaper_path" >/dev/null 2>&1; then
-            show_success "Lockscreen updated"
-            UPDATED_APPS+=("Lockscreen")
-          else
-            show_error "Lockscreen update failed"
-            FAILED_APPS+=("Lockscreen")
-          fi
+      if [[ -f ${wallpaper_path:-} ]]; then
+        show_status "Updating lockscreen with current wallpaper (background)..."
+        if dots-lockscreen --update="$wallpaper_path" >/dev/null 2>&1; then
+          show_success "Lockscreen updated"
+          UPDATED_APPS+=("Lockscreen")
         else
-          show_warning "Current wallpaper file not found: $wallpaper_path"
-          SKIPPED_APPS+=("Lockscreen")
+          show_error "Lockscreen update failed"
+          FAILED_APPS+=("Lockscreen")
         fi
       else
-        show_warning "Current wallpaper cache not found: $current_wallpaper"
+        show_warning "Current wallpaper not found from unified state"
         # Fallback: try to use wal wallpaper
         local wal_wallpaper
         wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
@@ -194,10 +200,19 @@ reload_lockscreen() {
     # Move to background to not block the reload process
     (
       local current_wallpaper="$HOME/.config/wpg/.current"
+      local wallpaper_path=""
 
-      if [[ -f $current_wallpaper ]]; then
+      if declare -f dots_current_wallpaper >/dev/null 2>&1; then
+        wallpaper_path="$(dots_current_wallpaper 2>/dev/null || true)"
+      fi
+
+      if [[ -z ${wallpaper_path:-} && -f $current_wallpaper ]]; then
+        wallpaper_path="$(readlink -f "$current_wallpaper" 2>/dev/null || echo "$current_wallpaper")"
+      fi
+
+      if [[ -f ${wallpaper_path:-} ]]; then
         show_status "Updating betterlockscreen with current wallpaper (background)..."
-        if betterlockscreen -u "$current_wallpaper" >/dev/null 2>&1; then
+        if betterlockscreen -u "$wallpaper_path" >/dev/null 2>&1; then
           show_success "Betterlockscreen updated"
           UPDATED_APPS+=("Betterlockscreen")
         else
@@ -205,7 +220,7 @@ reload_lockscreen() {
           FAILED_APPS+=("Betterlockscreen")
         fi
       else
-        show_warning "Current wallpaper not found: $current_wallpaper"
+        show_warning "Current wallpaper not found from unified state"
         # Fallback: try to use wal wallpaper
         local wal_wallpaper
         wal_wallpaper=$(grep "wallpaper" "$HOME/.cache/wal/colors.sh" 2>/dev/null | cut -d"'" -f2)
