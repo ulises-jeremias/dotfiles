@@ -783,7 +783,7 @@ into a harmonious blend of elegance and efficiency.</p>
 <li><strong>Terminal Emulator</strong> 🐾 <a href="https://sw.kovidgoyal.net/kitty/">Kitty</a> - GPU-accelerated terminal</li>
 <li><strong>Shell</strong> 🐚 <a href="https://zsh.org">Zsh</a> with Powerlevel10k prompt</li>
 <li><strong>Lockscreen</strong> 🔒 <a href="https://github.com/hyprwm/hyprlock">Hyprlock</a> - Secure lock screen</li>
-<li><strong>Wallpaper</strong> 🖼️ <a href="https://github.com/hyprwm/hyprpaper">Hyprpaper</a> - Fast wallpaper daemon</li>
+<li><strong>Wallpaper</strong> 🖼️ Quickshell + wpgtk integration via <code>dots-wallpaper-set</code></li>
 <li><strong>File Manager</strong> 🃏 <a href="https://docs.xfce.org/xfce/thunar/start">Thunar</a> with customized side pane</li>
 <li>and many more!</li>
 </ul>
@@ -917,14 +917,14 @@ dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...
 <h2 id="primary-contract">Primary Contract</h2>
 <ul>
 <li>Quickshell is the main consumer through <code>~/.cache/dots/smart-colors/scheme.json</code>.</li>
-<li><code>dots-wal-reload</code> and <code>dots-hyprpaper-set</code> trigger palette refresh and Quickshell IPC reload.</li>
+<li><code>dots-wal-reload</code> and <code>dots-wallpaper-set</code> trigger palette refresh and Quickshell IPC reload.</li>
 <li>Script consumers can source shell/env exports from the same cache directory.</li>
 </ul>
 <h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
 <h3 id="historical-pipelines">Historical pipelines</h3>
 <ul>
-<li><strong>wpgtk pipeline</strong>: <code>wpg -s &lt;image&gt;</code> -&gt; <code>wpg.conf</code> runs <code>dots-wal-reload</code> -&gt; <code>dots-hyprpaper-set</code> updates runtime wallpaper state.</li>
-<li><strong>Quickshell direct pipeline</strong>: UI actions used to call <code>dots-hyprpaper-set</code> directly, bypassing <code>wpg</code> and global reload orchestration.</li>
+<li><strong>wpgtk pipeline</strong>: <code>wpg -s &lt;image&gt;</code> -&gt; <code>wpg.conf</code> runs <code>dots-wal-reload</code> and refreshes shell colors.</li>
+<li><strong>Legacy Quickshell direct pipeline</strong>: UI actions used to call compositor-specific wallpaper setters directly, bypassing <code>wpg</code> and global reload orchestration.</li>
 </ul>
 <p>The direct pipeline could desynchronize <code>~/.config/wpg/.current</code> from shell/runtime state and miss some app reloads that are centralized in <code>dots-wal-reload</code>.</p>
 <h3 id="unified-contract">Unified contract</h3>
@@ -2870,13 +2870,13 @@ dots smart-colors --concept=error</pre><h3 id="wal-reload">wal-reload</h3>
 <li>Regenerates smart colors</li>
 <li>Reloads Quickshell palette through IPC</li>
 </ul>
-<pre class="hljs">dots wal-reload</pre><h3 id="hyprpaper-set">hyprpaper-set</h3>
+<pre class="hljs">dots wal-reload</pre><h3 id="wallpaper-set">wallpaper-set</h3>
 <ul>
-<li>Sets wallpaper through Hyprpaper IPC</li>
-<li>Persists wallpaper state</li>
-<li>Triggers smart-colors regeneration and Quickshell palette reload (unless invoked from an outer theme pipeline)</li>
+<li>Unified wallpaper entrypoint used by Quickshell and scripts</li>
+<li>Delegates to <code>wpg -s</code> when available</li>
+<li>Fallback path writes wallpaper state files and triggers smart-colors + Quickshell palette reload</li>
 </ul>
-<pre class="hljs">dots hyprpaper-set /path/to/wallpaper.jpg</pre><h2 id="notes">Notes</h2>
+<pre class="hljs">dots wallpaper-set /path/to/wallpaper.jpg</pre><h2 id="notes">Notes</h2>
 <ul>
 <li>Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.</li>
 <li><code>dots rice</code> remains available as legacy-compatible naming; <code>dots appearance</code> is the canonical contract.</li>
@@ -4049,7 +4049,7 @@ into a harmonious blend of elegance and efficiency.</p>
 <li><strong>Terminal Emulator</strong> 🐾 <a href="https://sw.kovidgoyal.net/kitty/">Kitty</a> - GPU-accelerated terminal</li>
 <li><strong>Shell</strong> 🐚 <a href="https://zsh.org">Zsh</a> with Powerlevel10k prompt</li>
 <li><strong>Lockscreen</strong> 🔒 <a href="https://github.com/hyprwm/hyprlock">Hyprlock</a> - Secure lock screen</li>
-<li><strong>Wallpaper</strong> 🖼️ <a href="https://github.com/hyprwm/hyprpaper">Hyprpaper</a> - Fast wallpaper daemon</li>
+<li><strong>Wallpaper</strong> 🖼️ Quickshell + wpgtk integration via <code>dots-wallpaper-set</code></li>
 <li><strong>File Manager</strong> 🃏 <a href="https://docs.xfce.org/xfce/thunar/start">Thunar</a> with customized side pane</li>
 <li>and many more!</li>
 </ul>
@@ -4132,13 +4132,13 @@ dots smart-colors --concept=error</pre><h3 id="wal-reload">wal-reload</h3>
 <li>Regenerates smart colors</li>
 <li>Reloads Quickshell palette through IPC</li>
 </ul>
-<pre class="hljs">dots wal-reload</pre><h3 id="hyprpaper-set">hyprpaper-set</h3>
+<pre class="hljs">dots wal-reload</pre><h3 id="wallpaper-set">wallpaper-set</h3>
 <ul>
-<li>Sets wallpaper through Hyprpaper IPC</li>
-<li>Persists wallpaper state</li>
-<li>Triggers smart-colors regeneration and Quickshell palette reload (unless invoked from an outer theme pipeline)</li>
+<li>Unified wallpaper entrypoint used by Quickshell and scripts</li>
+<li>Delegates to <code>wpg -s</code> when available</li>
+<li>Fallback path writes wallpaper state files and triggers smart-colors + Quickshell palette reload</li>
 </ul>
-<pre class="hljs">dots hyprpaper-set /path/to/wallpaper.jpg</pre><h2 id="notes">Notes</h2>
+<pre class="hljs">dots wallpaper-set /path/to/wallpaper.jpg</pre><h2 id="notes">Notes</h2>
 <ul>
 <li>Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.</li>
 <li><code>dots rice</code> remains available as legacy-compatible naming; <code>dots appearance</code> is the canonical contract.</li>
@@ -4190,14 +4190,14 @@ dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...
 <h2 id="primary-contract">Primary Contract</h2>
 <ul>
 <li>Quickshell is the main consumer through <code>~/.cache/dots/smart-colors/scheme.json</code>.</li>
-<li><code>dots-wal-reload</code> and <code>dots-hyprpaper-set</code> trigger palette refresh and Quickshell IPC reload.</li>
+<li><code>dots-wal-reload</code> and <code>dots-wallpaper-set</code> trigger palette refresh and Quickshell IPC reload.</li>
 <li>Script consumers can source shell/env exports from the same cache directory.</li>
 </ul>
 <h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
 <h3 id="historical-pipelines">Historical pipelines</h3>
 <ul>
-<li><strong>wpgtk pipeline</strong>: <code>wpg -s &lt;image&gt;</code> -&gt; <code>wpg.conf</code> runs <code>dots-wal-reload</code> -&gt; <code>dots-hyprpaper-set</code> updates runtime wallpaper state.</li>
-<li><strong>Quickshell direct pipeline</strong>: UI actions used to call <code>dots-hyprpaper-set</code> directly, bypassing <code>wpg</code> and global reload orchestration.</li>
+<li><strong>wpgtk pipeline</strong>: <code>wpg -s &lt;image&gt;</code> -&gt; <code>wpg.conf</code> runs <code>dots-wal-reload</code> and refreshes shell colors.</li>
+<li><strong>Legacy Quickshell direct pipeline</strong>: UI actions used to call compositor-specific wallpaper setters directly, bypassing <code>wpg</code> and global reload orchestration.</li>
 </ul>
 <p>The direct pipeline could desynchronize <code>~/.config/wpg/.current</code> from shell/runtime state and miss some app reloads that are centralized in <code>dots-wal-reload</code>.</p>
 <h3 id="unified-contract">Unified contract</h3>
