@@ -920,6 +920,26 @@ dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...
 <li><code>dots-wal-reload</code> and <code>dots-hyprpaper-set</code> trigger palette refresh and Quickshell IPC reload.</li>
 <li>Script consumers can source shell/env exports from the same cache directory.</li>
 </ul>
+<h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
+<h3 id="historical-pipelines">Historical pipelines</h3>
+<ul>
+<li><strong>wpgtk pipeline</strong>: <code>wpg -s &lt;image&gt;</code> -&gt; <code>wpg.conf</code> runs <code>dots-wal-reload</code> -&gt; <code>dots-hyprpaper-set</code> updates runtime wallpaper state.</li>
+<li><strong>Quickshell direct pipeline</strong>: UI actions used to call <code>dots-hyprpaper-set</code> directly, bypassing <code>wpg</code> and global reload orchestration.</li>
+</ul>
+<p>The direct pipeline could desynchronize <code>~/.config/wpg/.current</code> from shell/runtime state and miss some app reloads that are centralized in <code>dots-wal-reload</code>.</p>
+<h3 id="unified-contract">Unified contract</h3>
+<ul>
+<li>Use <code>dots-wallpaper-set</code> as the single entrypoint for wallpaper changes from shell UI/actions.</li>
+<li>When <code>wpg</code> is available, <code>dots-wallpaper-set</code> delegates to <code>wpg -s</code> so wpgtk remains source-compatible.</li>
+<li>Wallpaper resolution priority is unified across scripts:<ol>
+<li>Explicit argument</li>
+<li><code>~/.config/wpg/.current</code></li>
+<li><code>~/.local/state/dots/wallpaper/path.txt</code></li>
+<li><code>~/.cache/current_wallpaper</code></li>
+<li><code>~/.cache/wal/wal</code></li>
+</ol>
+</li>
+</ul>
 <h2 id="main-commands">Main Commands</h2>
 <pre class="hljs">dots-smart-colors --generate --m3
 dots-smart-colors --analyze
@@ -938,7 +958,8 @@ dots-wal-reload</pre><h2 id="generated-cache">Generated Cache</h2>
 <p>Compatibility files may exist for external tooling, but they are not part of the primary UX contract.</p>
 <h2 id="data-flow">Data Flow</h2>
 <pre class="hljs">flowchart LR
-  <span class="hljs-function"><span class="hljs-title">wallpaper</span>[WallpaperChange] --&gt;</span> wal[dots-wal-reload]
+  <span class="hljs-function"><span class="hljs-title">wallpaper</span>[WallpaperChange] --&gt;</span> set[dots-wallpaper-set]
+  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> wal[dots-wal-reload]
   <span class="hljs-function"><span class="hljs-title">wal</span> --&gt;</span> smart[dots-smart-colorsGenerate]
   <span class="hljs-function"><span class="hljs-title">smart</span> --&gt;</span> scheme[schemeJson]
   <span class="hljs-function"><span class="hljs-title">scheme</span> --&gt;</span> colours[QuickshellColoursService]
@@ -4172,6 +4193,26 @@ dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...
 <li><code>dots-wal-reload</code> and <code>dots-hyprpaper-set</code> trigger palette refresh and Quickshell IPC reload.</li>
 <li>Script consumers can source shell/env exports from the same cache directory.</li>
 </ul>
+<h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
+<h3 id="historical-pipelines">Historical pipelines</h3>
+<ul>
+<li><strong>wpgtk pipeline</strong>: <code>wpg -s &lt;image&gt;</code> -&gt; <code>wpg.conf</code> runs <code>dots-wal-reload</code> -&gt; <code>dots-hyprpaper-set</code> updates runtime wallpaper state.</li>
+<li><strong>Quickshell direct pipeline</strong>: UI actions used to call <code>dots-hyprpaper-set</code> directly, bypassing <code>wpg</code> and global reload orchestration.</li>
+</ul>
+<p>The direct pipeline could desynchronize <code>~/.config/wpg/.current</code> from shell/runtime state and miss some app reloads that are centralized in <code>dots-wal-reload</code>.</p>
+<h3 id="unified-contract">Unified contract</h3>
+<ul>
+<li>Use <code>dots-wallpaper-set</code> as the single entrypoint for wallpaper changes from shell UI/actions.</li>
+<li>When <code>wpg</code> is available, <code>dots-wallpaper-set</code> delegates to <code>wpg -s</code> so wpgtk remains source-compatible.</li>
+<li>Wallpaper resolution priority is unified across scripts:<ol>
+<li>Explicit argument</li>
+<li><code>~/.config/wpg/.current</code></li>
+<li><code>~/.local/state/dots/wallpaper/path.txt</code></li>
+<li><code>~/.cache/current_wallpaper</code></li>
+<li><code>~/.cache/wal/wal</code></li>
+</ol>
+</li>
+</ul>
 <h2 id="main-commands">Main Commands</h2>
 <pre class="hljs">dots-smart-colors --generate --m3
 dots-smart-colors --analyze
@@ -4190,7 +4231,8 @@ dots-wal-reload</pre><h2 id="generated-cache">Generated Cache</h2>
 <p>Compatibility files may exist for external tooling, but they are not part of the primary UX contract.</p>
 <h2 id="data-flow">Data Flow</h2>
 <pre class="hljs">flowchart LR
-  <span class="hljs-function"><span class="hljs-title">wallpaper</span>[WallpaperChange] --&gt;</span> wal[dots-wal-reload]
+  <span class="hljs-function"><span class="hljs-title">wallpaper</span>[WallpaperChange] --&gt;</span> set[dots-wallpaper-set]
+  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> wal[dots-wal-reload]
   <span class="hljs-function"><span class="hljs-title">wal</span> --&gt;</span> smart[dots-smart-colorsGenerate]
   <span class="hljs-function"><span class="hljs-title">smart</span> --&gt;</span> scheme[schemeJson]
   <span class="hljs-function"><span class="hljs-title">scheme</span> --&gt;</span> colours[QuickshellColoursService]
