@@ -141,7 +141,7 @@ Configured via Hyprland global shortcuts. Default HorneroConfig bindings:
 
 ### File Structure
 
-```
+```text
 quickshell/
 ├── components/      # Reusable QML components
 ├── config/          # Configuration files

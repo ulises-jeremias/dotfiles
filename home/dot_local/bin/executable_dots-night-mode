@@ -424,9 +424,9 @@ case "${1:-auto}" in
     # Output detailed text for Waybar tooltip
     if is_night_mode_active; then
       backend=$(get_active_backend)
-      echo "Night Mode Active\nBackend: ${backend}\nClick to toggle"
+      printf 'Night Mode Active\nBackend: %s\nClick to toggle\n' "${backend}"
     else
-      echo "Day Mode\nClick to enable night mode"
+      printf 'Day Mode\nClick to enable night mode\n'
     fi
     ;;
   "backends")

@@ -79,7 +79,7 @@ dots-smart-colors --analyze --colors
 ```conf
 # Hyprland floating window rules are configured in hyprland.conf
 ```
-```
+```text
 
 # Global floating window constraints
 floating_minimum_size 400 x 300

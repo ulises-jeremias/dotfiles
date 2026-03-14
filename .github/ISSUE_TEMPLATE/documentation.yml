@@ -2,7 +2,6 @@ name: "📕 Documentation Issue"
 description: Report an issue in the Reference documentation or Developer Guide
 title: "(short issue description)"
 labels: [documentation]
-assignees: []
 body:
   - type: textarea
     id: description

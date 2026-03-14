@@ -122,7 +122,7 @@ Before you start, make sure you have:
 
 ### Creating a Good Bug Report
 
-Use our [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) and include:
+Use our [bug report template](.github/ISSUE_TEMPLATE/bug-report.yml) and include:
 
 1. **Clear title** - Briefly describe the issue
 2. **Environment details** - OS, window manager, versions
@@ -152,7 +152,7 @@ Use our [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) and include:
 
 ## 💡 Suggesting Features
 
-### Before Submitting
+### Before Suggesting a Feature
 
 - **Check existing suggestions** - Someone might have had the same idea
 - **Consider the scope** - Does it fit HorneroConfig's philosophy?
@@ -160,7 +160,7 @@ Use our [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) and include:
 
 ### Creating a Feature Request
 
-Use our [feature request template](.github/ISSUE_TEMPLATE/feature_request.md) and include:
+Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) and include:
 
 1. **Clear title** - What's the feature?
 2. **Problem statement** - What need does this address?
@@ -252,7 +252,7 @@ We follow conventional commits for clarity:
 - `chore:` - Maintenance tasks
 
 **Examples:**
-```
+```text
 feat: add weather forecast to polybar module
 fix: correct color contrast in light themes
 docs: update installation guide for Ubuntu
@@ -269,7 +269,7 @@ Want to share your beautiful desktop theme? Here's how:
 
 Create a new directory in `home/dot_local/share/dots/rices/`:
 
-```
+```text
 your-rice-name/
 ├── config.sh          # Theme configuration
 ├── apply.sh           # Application script
@@ -398,7 +398,7 @@ Good documentation helps everyone! You can help by:
 
 Understanding the repository layout helps you navigate:
 
-```
+```text
 .
 ├── .github/               # GitHub workflows, templates, copilot instructions
 ├── docs/                  # Documentation and wiki content
@@ -540,4 +540,4 @@ Every contribution, no matter how small, makes HorneroConfig better. We apprecia
 
 ---
 
-*Built with ❤️ by the HorneroConfig community*
+### Built with ❤️ by the HorneroConfig community

@@ -144,6 +144,8 @@ reload_quickshell() {
 
 # Function to reload lockscreen
 reload_lockscreen() {
+  # Arrays updated inside background subshells are intentionally best-effort only.
+  # shellcheck disable=SC2030,SC2031
   # Use dots-lockscreen for Wayland, betterlockscreen for X11
   if [[ ${XDG_SESSION_TYPE:-} == "wayland" ]]; then
     if ! check_command dots-lockscreen "dots-lockscreen"; then
@@ -283,12 +285,14 @@ reload_smart_colors() {
 
   # Load smart colors into current environment
   if [[ -f "$HOME/.cache/dots/smart-colors/colors.env" ]]; then
+    # shellcheck disable=SC2031
     source "$HOME/.cache/dots/smart-colors/colors.env" 2>/dev/null && show_success "Smart colors loaded into environment"
   fi
 
   # Apply smart colors to applications
   apply_smart_colors_to_apps
 
+  # shellcheck disable=SC2031
   UPDATED_APPS+=("Smart Colors Integration")
 }
 
@@ -305,6 +309,7 @@ apply_smart_colors_to_apps() {
       smart_colors_applied=true
     else
       show_warning "Quickshell color reload failed"
+      # shellcheck disable=SC2031
       FAILED_APPS+=("Quickshell color reload")
     fi
   fi
@@ -391,6 +396,7 @@ reload_gtk_themes() {
     fi
   else
     show_warning "GTK theme manager not found, skipping GTK theme update"
+    # shellcheck disable=SC2031
     SKIPPED_APPS+=("GTK themes")
   fi
 }

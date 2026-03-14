@@ -22,6 +22,24 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 PERF_LOG_DIR="$HOME/.cache/dots/performance"
 [[ ! -d $PERF_LOG_DIR ]] && mkdir -p "$PERF_LOG_DIR"
 
+list_stack_processes() {
+  ps -C Hyprland,quickshell,mako,hyprlock,kitty -o pid=,comm=,rss= 2>/dev/null || true
+}
+
+sum_process_rss_mb() {
+  local process_name="$1"
+  local rss_kib
+  rss_kib="$(ps -C "$process_name" -o rss= 2>/dev/null | awk '{sum+=$1} END {print sum+0}')"
+  awk -v kib="${rss_kib:-0}" 'BEGIN {printf "%.2f MB", kib / 1024}'
+}
+
+recent_benchmark_files() {
+  find "$PERF_LOG_DIR" -maxdepth 1 -type f -name 'benchmark_*.log' -printf '%T@ %f\n' 2>/dev/null |
+    sort -nr |
+    head -3 |
+    awk '{print "- " $2}'
+}
+
 measure_shell_startup() {
   echo "🚀 Measuring shell startup performance..."
 
@@ -60,28 +78,28 @@ check_memory_usage() {
   echo "💾 Analyzing memory usage (Wayland stack)..."
 
   echo "Current relevant processes:"
-  ps aux | grep -E "(Hyprland|quickshell|mako|hyprlock|kitty)" | grep -v grep || echo "  (none)"
+  list_stack_processes || echo "  (none)"
 
   echo ""
   echo "Memory usage by component:"
 
-  hypr_mem=$(ps aux | grep Hyprland | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  hypr_mem="$(sum_process_rss_mb Hyprland)"
   echo "  Hyprland: ${hypr_mem:-0 MB}"
 
-  quickshell_mem=$(ps aux | grep quickshell | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  quickshell_mem="$(sum_process_rss_mb quickshell)"
   echo "  Quickshell: ${quickshell_mem:-0 MB}"
 
-  mako_mem=$(ps aux | grep mako | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  mako_mem="$(sum_process_rss_mb mako)"
   echo "  Mako: ${mako_mem:-0 MB}"
 
-  hyprlock_mem=$(ps aux | grep hyprlock | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  hyprlock_mem="$(sum_process_rss_mb hyprlock)"
   echo "  Hyprlock: ${hyprlock_mem:-0 MB}"
 
-  term_mem=$(ps aux | grep kitty | grep -v grep | awk '{sum+=$6} END {print sum/1024 " MB"}')
+  term_mem="$(sum_process_rss_mb kitty)"
   echo "  Kitty: ${term_mem:-0 MB}"
 
-  total_mem=$(ps aux | grep -E "(Hyprland|quickshell|mako|hyprlock|kitty)" | grep -v grep | awk '{sum+=$6} END {print sum/1024}')
-  echo "  Total stack memory: ${total_mem:-0} MB"
+  total_mem="$(list_stack_processes | awk '{sum+=$3} END {print sum+0}')"
+  awk -v kib="${total_mem:-0}" 'BEGIN {printf "  Total stack memory: %.2f MB\n", kib / 1024}'
 }
 
 run_benchmark() {
@@ -158,7 +176,7 @@ Based on the analysis:
 
 ## Historical Data
 Recent benchmark files:
-$(ls -lt "$PERF_LOG_DIR"/benchmark_*.log 2>/dev/null | head -3 | awk '{print "- " $9 " (" $6 " " $7 " " $8 ")"}')
+$(recent_benchmark_files)
 EOF
 
   echo "📄 Report generated: $report_file"
@@ -167,7 +185,8 @@ EOF
   echo ""
   echo "📊 Quick Summary:"
   echo "  Latest startup time: $(tail -1 "$PERF_LOG_DIR"/startup_*.log 2>/dev/null | grep -o '[0-9.]*s' | tail -1 || echo 'N/A')"
-  echo "  Current memory usage: $(ps aux | grep -E "(Hyprland|quickshell|mako|hyprlock|kitty)" | grep -v grep | awk '{sum+=$6} END {print sum/1024}' || echo '0') MB"
+  current_mem_kib="$(list_stack_processes | awk '{sum+=$3} END {print sum+0}')"
+  awk -v kib="${current_mem_kib:-0}" 'BEGIN {printf "  Current memory usage: %.2f MB\n", kib / 1024}'
 }
 
 # Main execution

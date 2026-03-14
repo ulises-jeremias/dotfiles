@@ -284,7 +284,7 @@ check_system_security() {
   echo "  Checking for suspicious network connections..."
   if command -v netstat >/dev/null 2>&1; then
     local suspicious_ports
-    suspicious_ports=$(netstat -tulnp 2>/dev/null | grep -E ":22[0-9][0-9]|:31[0-9][0-9]|:44[0-9][0-9]" | wc -l)
+    suspicious_ports=$(netstat -tulnp 2>/dev/null | grep -Ec ":22[0-9][0-9]|:31[0-9][0-9]|:44[0-9][0-9]")
     if [[ $suspicious_ports -gt 0 ]]; then
       echo "⚠️  Found $suspicious_ports potentially suspicious listening ports"
     fi

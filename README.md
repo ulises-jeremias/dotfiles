@@ -7,7 +7,7 @@
 <h1>🏠 HorneroConfig</h1>
 <h3>✨ The Ultimate Linux Desktop Configuration Framework ✨</h3>
 
-**Intelligent • Beautiful • Powerful • Seamless**
+<p><strong>Intelligent • Beautiful • Powerful • Seamless</strong></p>
 
 [📖 Documentation](https://github.com/ulises-jeremias/dotfiles/wiki) •
 [🎨 Gallery](#-gallery) •

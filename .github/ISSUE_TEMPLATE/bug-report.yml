@@ -3,7 +3,6 @@ name: "🐛 Bug Report"
 description: Report a bug
 title: "(short issue description)"
 labels: [bug]
-assignees: []
 body:
   - type: textarea
     id: description
@@ -40,7 +39,7 @@ body:
         For more complex issues provide a repo with the smallest sample that reproduces the bug.
 
         Avoid including business logic or unrelated code, it makes diagnosis more difficult.
-        The code sample should be an SSCCE. See http://sscce.org/ for details. In short, please provide a code sample that we can copy/paste, run and reproduce.
+        The code sample should be an SSCCE. See https://sscce.org/ for details. In short, please provide a code sample that we can copy/paste, run and reproduce.
     validations:
       required: true
   - type: textarea

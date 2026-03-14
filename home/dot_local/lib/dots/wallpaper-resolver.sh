@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Shared wallpaper resolution helpers for dots scripts.
 # Priority: explicit path > wpgtk (.current) > dots state > wal cache.
 

@@ -21,6 +21,21 @@ APPLY_FIXES: all
 SHOW_ELAPSED_TIME: true
 
 FILEIO_REPORTER: false
+FLAVOR_SUGGESTIONS: false
+
+DISABLE:
+  - COPYPASTE
+  - CPP
+  - JAVASCRIPT
+  - PYTHON
+  - SPELL
+
+DISABLE_LINTERS:
+  - REPOSITORY_GITLEAKS
+  - REPOSITORY_KICS
+
+BASH_EXEC_FILTER_REGEX_EXCLUDE: >-
+  (^|/)(lib/.*\.sh|home/dot_local/lib/dots/.*\.sh|playground/config/\.bashrc)$
 
 # Uncomment if you want MegaLinter to detect errors but not block CI to pass
 # DISABLE_ERRORS: true

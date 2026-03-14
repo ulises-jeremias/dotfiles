@@ -120,7 +120,7 @@ dots backup --rollback
 
 Default backup location: `~/.dotfiles/backup/`
 
-```
+```text
 backup/
 ├── dotfiles_backup_20250109_143022/
 │   ├── dotfiles/          # Complete .dotfiles directory
@@ -192,21 +192,21 @@ chezmoi apply
 
 ### Common Issues
 
-**Permission Denied**
+#### Permission Denied
 
 ```sh
 # Ensure proper permissions for backup directory
 chmod 755 ~/.dotfiles/backup
 ```
 
-**Large Backup Sizes**
+#### Large Backup Sizes
 
 ```sh
 # Exclude large files or directories by editing the script
 # Add exclusions for cache directories, logs, etc.
 ```
 
-**Failed Restores**
+#### Failed Restores
 
 ```sh
 # Check backup integrity

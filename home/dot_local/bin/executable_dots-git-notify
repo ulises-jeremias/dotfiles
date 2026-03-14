@@ -27,9 +27,12 @@ log() {
 
 ps_jobs() {
   # Search for current job in running processes
+  local pattern="${1:-}"
+  shift
   local curr_comm
   curr_comm=$(ps -o command -p "$$" | grep -v COMMAND)
-  ps $2 | grep -v "$curr_comm" | grep "$1" | grep -v "grep $1" || true
+  # shellcheck disable=SC2009
+  ps "$@" | grep -v "$curr_comm" | grep "$pattern" | grep -v "grep $pattern" || true
 }
 
 count() {
@@ -95,7 +98,7 @@ parse_cmd_args() {
         REPOSITORY="${OPTARG}"
         ;;
       l)
-        bg_jobs=$(ps_jobs "$0" "-eaf")
+        bg_jobs=$(ps_jobs "$0" -eaf)
         bg_count=$(count "${bg_jobs}")
         log "Running background jobs: ${bg_count}"
         if [ "${bg_count}" -gt 0 ]; then
@@ -106,7 +109,7 @@ parse_cmd_args() {
         ;;
       k)
         curr_comm=$(ps -o command -p "$$" | grep -v COMMAND)
-        bg_jobs=$(ps_jobs "$0" "-eao pid,command" | cut -f 1 -d ' ')
+        bg_jobs=$(ps_jobs "$0" -eao pid,command | awk '{print $1}')
         bg_count=$(count "${bg_jobs}")
         if [ "${bg_count}" -eq 0 ]; then
           log "No jobs running!"

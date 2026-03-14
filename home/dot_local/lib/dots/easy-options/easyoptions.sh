@@ -110,7 +110,7 @@ parse_options() {
   # Initialize all option variables to prevent unbound variable errors
   for option in "${options[@]}"; do
     option_var=${option#*=}
-    option_name=${option%=$option_var}
+    option_name=${option%="$option_var"}
     # Convert dashes to underscores in variable names
     var_name=$(echo "$option_var" | tr "-" "_")
     # Initialize variable if not already set
@@ -120,7 +120,7 @@ parse_options() {
   # Prepare known options
   for option in "${options[@]}"; do
     option_var=${option#*=}
-    option_name=${option%=$option_var}
+    option_name=${option%="$option_var"}
     if [[ ${#option_name} == "1" ]]; then
       short_options="${short_options}${option_name}"
       if [[ ${#option_var} -gt 1 ]]; then
@@ -137,7 +137,7 @@ parse_options() {
       parameters+=("$argument")
       for known_option in "${options[@]}"; do
         known_option_var=${known_option#*=}
-        known_option_name=${known_option%=$known_option_var}
+        known_option_name=${known_option%="$known_option_var"}
         if [[ $known_option_var == "?" && $argument == --$known_option_name ]]; then
           next_is_value="yes"
           break
@@ -163,7 +163,7 @@ parse_options() {
     # Set the corresponding variable for known options
     for known_option in "${options[@]}" "${short_option_vars[@]}"; do
       known_option_var=${known_option#*=}
-      known_option_name=${known_option%=$known_option_var}
+      known_option_name=${known_option%="$known_option_var"}
 
       # Short option
       if [[ $option == "$known_option_name" ]]; then

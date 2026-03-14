@@ -12,7 +12,7 @@
 
 When your external monitor is connected **directly to the NVIDIA HDMI port**, it creates a **Reverse PRIME** situation:
 
-```
+```text
 ┌──────────────────────────────────────────────────────┐
 │                                                      │
 │  Intel iGPU (renders everything)                    │

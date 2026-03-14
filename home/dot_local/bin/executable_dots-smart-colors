@@ -113,7 +113,7 @@ get_optimal_foreground() {
 hex_to_ansi_bg() {
   local rgb
   rgb=$(hex_to_rgb "$1")
-  echo "\033[48;2;${rgb// /;}m"
+  printf '\033[48;2;%sm\n' "${rgb// /;}"
 }
 
 # Show color block in terminal
