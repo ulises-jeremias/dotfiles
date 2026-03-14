@@ -6,9 +6,6 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{v,js,css}]
-indent_style = tab
-
 [*.{bat,cmd}]
 # BAT/CMD ~ DOS/Win requires BAT/CMD files to have CRLF EOLNs
 end_of_line = crlf

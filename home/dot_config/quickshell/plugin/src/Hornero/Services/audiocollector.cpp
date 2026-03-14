@@ -195,7 +195,7 @@ quint32 AudioCollector::readChunk(float* out, quint32 count) {
     }
 
     auto* readBuffer = m_readBuffer.load(std::memory_order_acquire);
-    std::memcpy(out, readBuffer->data(), count * sizeof(float));
+    std::copy_n(readBuffer->cbegin(), count, out);
 
     return count;
 }
