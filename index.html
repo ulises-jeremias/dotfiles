@@ -2966,13 +2966,13 @@ dots backup --rollback
 <p>Default backup location: <code>~/.dotfiles/backup/</code></p>
 <pre class="hljs">backup/
 ├── dotfiles_backup_20250109_143022/
-│   ├── dotfiles/          <span class="hljs-comment"># Complete .dotfiles directory</span>
-│   ├── configs/           <span class="hljs-comment"># Applied configurations</span>
-│   ├── ssh/              <span class="hljs-comment"># SSH configurations (encrypted)</span>
-│   ├── scripts/          <span class="hljs-comment"># Custom scripts</span>
-│   └── metadata.json     <span class="hljs-comment"># Backup metadata and checksums</span>
+│   ├── dotfiles/          # Complete .dotfiles directory
+│   ├── configs/           # Applied configurations
+│   ├── ssh/              # SSH configurations (encrypted)
+│   ├── scripts/          # Custom scripts
+│   └── metadata.json     # Backup metadata and checksums
 ├── dotfiles_backup_20250108_140000/
-└── <span class="hljs-string">...</span></pre><hr>
+└── ...</pre><hr>
 <h2 id="-security-features">🛡️ Security Features</h2>
 <h3 id="permission-preservation">Permission Preservation</h3>
 <ul>
@@ -3014,11 +3014,11 @@ chezmoi edit ~/.<span class="hljs-built_in">local</span>/bin/executable_dots-bac
 chezmoi apply</pre><hr>
 <h2 id="-troubleshooting">🆘 Troubleshooting</h2>
 <h3 id="common-issues">Common Issues</h3>
-<p><strong>Permission Denied</strong></p>
+<h4 id="permission-denied">Permission Denied</h4>
 <pre class="hljs"><span class="hljs-comment"># Ensure proper permissions for backup directory</span>
-chmod 755 ~/.dotfiles/backup</pre><p><strong>Large Backup Sizes</strong></p>
+chmod 755 ~/.dotfiles/backup</pre><h4 id="large-backup-sizes">Large Backup Sizes</h4>
 <pre class="hljs"><span class="hljs-comment"># Exclude large files or directories by editing the script</span>
-<span class="hljs-comment"># Add exclusions for cache directories, logs, etc.</span></pre><p><strong>Failed Restores</strong></p>
+<span class="hljs-comment"># Add exclusions for cache directories, logs, etc.</span></pre><h4 id="failed-restores">Failed Restores</h4>
 <pre class="hljs"><span class="hljs-comment"># Check backup integrity</span>
 dots backup --verify backup_name
 
@@ -3457,16 +3457,16 @@ sudo reboot</pre><hr>
 <p>When your external monitor is connected <strong>directly to the NVIDIA HDMI port</strong>, it creates a <strong>Reverse PRIME</strong> situation:</p>
 <pre class="hljs">┌──────────────────────────────────────────────────────┐
 │                                                      │
-│  <span class="hljs-selector-tag">Intel</span> <span class="hljs-selector-tag">iGPU</span> (renders everything)                    │
+│  Intel iGPU (renders everything)                    │
 │         │                                            │
-│         ├──► <span class="hljs-selector-tag">eDP-1</span> (laptop) ✓ <span class="hljs-selector-tag">Direct</span>                │
+│         ├──► eDP-1 (laptop) ✓ Direct                │
 │         │                                            │
-│         └──► <span class="hljs-selector-attr">[Frame Copy]</span> ──► <span class="hljs-selector-tag">NVIDIA</span> <span class="hljs-selector-tag">dGPU</span>           │
+│         └──► [Frame Copy] ──► NVIDIA dGPU           │
 │                                    │                 │
-│                                    └──► <span class="hljs-selector-tag">HDMI-A-5</span>     │
+│                                    └──► HDMI-A-5     │
 │                                         (external)   │
 │                                                      │
-│  <span class="hljs-selector-tag">Overhead</span>: ~<span class="hljs-selector-tag">5-15ms</span> <span class="hljs-selector-tag">latency</span> <span class="hljs-selector-tag">per</span> <span class="hljs-selector-tag">frame</span> <span class="hljs-selector-tag">copy</span>           │
+│  Overhead: ~5-15ms latency per frame copy           │
 └──────────────────────────────────────────────────────┘</pre><h3 id="impacts">Impacts</h3>
 <ul>
 <li>❌ <strong>Additional latency</strong>: 5-15ms per frame copy</li>
@@ -3894,9 +3894,9 @@ dots-smart-colors --concept=foreground-alt
 <pre class="hljs"><span class="hljs-comment"># Smart floating script integration</span>
 ```conf</pre><p><strong>Hyprland Floating Window Configuration</strong>:</p>
 <pre class="hljs"><span class="hljs-comment"># Hyprland floating window rules are configured in hyprland.conf</span></pre><pre class="hljs">
-<span class="hljs-comment"># Global floating window constraints</span>
-<span class="hljs-attribute">floating_minimum_size</span> <span class="hljs-number">400</span> x <span class="hljs-number">300</span>
-<span class="hljs-attribute">floating_maximum_size</span> <span class="hljs-number">1400</span> x <span class="hljs-number">900</span></pre><h4 id="-intelligent-sizing-algorithm">📏 <strong>Intelligent Sizing Algorithm</strong></h4>
+# Global floating window constraints
+floating_minimum_size 400 x 300
+floating_maximum_size 1400 x 900</pre><h4 id="-intelligent-sizing-algorithm">📏 <strong>Intelligent Sizing Algorithm</strong></h4>
 <pre class="hljs"><span class="hljs-comment"># Automatically calculates optimal dimensions</span>
 width = screen_width × 70%
 height = screen_height × 65%
