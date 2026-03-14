@@ -109,16 +109,8 @@ var go = (search, targets, options) => {
         tmpResults[keyI] = algorithm(preparedSearch, target, /*allowSpaces=*/false, /*allowPartialMatch=*/containsSpace)
         if(tmpResults[keyI] === NULL) { tmpResults[keyI] = noTarget; continue }
 
-        // todo: this seems weird and wrong. like what if our first match wasn't good. this should just replace it instead of averaging with it
-        // if our second match isn't good we ignore it instead of averaging with it
         if(containsSpace) for(let i=0; i<preparedSearch.spaceSearches.length; i++) {
-            if(allowPartialMatchScores[i] > -1000) {
-            if(keysSpacesBestScores[i] > NEGATIVE_INFINITY) {
-                var tmp = (keysSpacesBestScores[i] + allowPartialMatchScores[i]) / 4/*bonus score for having multiple matches*/
-                if(tmp > keysSpacesBestScores[i]) keysSpacesBestScores[i] = tmp
-            }
-            }
-            if(allowPartialMatchScores[i] > keysSpacesBestScores[i]) keysSpacesBestScores[i] = allowPartialMatchScores[i]
+            keysSpacesBestScores[i] = scoreWithMatchBonus(keysSpacesBestScores[i], allowPartialMatchScores[i])
         }
         }
 
@@ -137,18 +129,10 @@ var go = (search, targets, options) => {
         var score = 0
         for(let i=0; i<preparedSearch.spaceSearches.length; i++) score += keysSpacesBestScores[i]
         } else {
-        // todo could rewrite this scoring to be more similar to when there's spaces
-        // if we match multiple keys give us bonus points
         var score = NEGATIVE_INFINITY
         for(let i=0; i<keysLen; i++) {
             var result = objResults[i]
-            if(result._score > -1000) {
-            if(score > NEGATIVE_INFINITY) {
-                var tmp = (score + result._score) / 4/*bonus score for having multiple matches*/
-                if(tmp > score) score = tmp
-            }
-            }
-            if(result._score > score) score = result._score
+            score = scoreWithMatchBonus(score, result._score)
         }
         }
 
@@ -291,6 +275,18 @@ var denormalizeScore = normalizedScore => {
     if(normalizedScore === 0) return NEGATIVE_INFINITY
     if(normalizedScore > 1) return normalizedScore
     return 1 - Math.pow((Math.log(normalizedScore) / -2 + 1), 1 / 0.04307)
+}
+var scoreWithMatchBonus = (score, candidateScore) => {
+    if(candidateScore <= NEGATIVE_INFINITY) return score
+    if(score <= NEGATIVE_INFINITY) return candidateScore
+
+    var bestScore = score > candidateScore ? score : candidateScore
+    var otherScore = score > candidateScore ? candidateScore : score
+    var boostedScore = normalizeScore(bestScore) + normalizeScore(otherScore) * 0.25
+    if(boostedScore > 1) boostedScore = 1
+
+    var bonusScore = denormalizeScore(boostedScore)
+    return bonusScore > bestScore ? bonusScore : bestScore
 }
 
 
@@ -702,4 +698,3 @@ var noTarget = prepare('')
 // Hacked version of https://github.com/lemire/FastPriorityQueue.js
 var fastpriorityqueue=r=>{var e=[],o=0,a={},v=r=>{for(var a=0,v=e[a],c=1;c<o;){var s=c+1;a=c,s<o&&e[s]._score<e[c]._score&&(a=s),e[a-1>>1]=e[a],c=1+(a<<1)}for(var f=a-1>>1;a>0&&v._score<e[f]._score;f=(a=f)-1>>1)e[a]=e[f];e[a]=v};return a.add=(r=>{var a=o;e[o++]=r;for(var v=a-1>>1;a>0&&r._score<e[v]._score;v=(a=v)-1>>1)e[a]=e[v];e[a]=r}),a.poll=(r=>{if(0!==o){var a=e[0];return e[0]=e[--o],v(),a}}),a.peek=(r=>{if(0!==o)return e[0]}),a.replaceTop=(r=>{e[0]=r,v()}),a}
 var q = fastpriorityqueue() // reuse this
-
