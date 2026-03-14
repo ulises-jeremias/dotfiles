@@ -28,8 +28,14 @@ charset            = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.{txt,out}]
+[*.out]
 insert_final_newline = false
+
+[*.qsb]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
 
 [{Makefile,GNUmakefile}]
 indent_style = tab

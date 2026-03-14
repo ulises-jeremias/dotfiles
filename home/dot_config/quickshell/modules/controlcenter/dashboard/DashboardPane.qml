@@ -24,13 +24,13 @@ Item {
     property bool showOnHover: Config.dashboard.showOnHover ?? true
     property int updateInterval: Config.dashboard.updateInterval ?? 1000
     property int dragThreshold: Config.dashboard.dragThreshold ?? 50
-    
+
     // Performance Resources
     property bool showBattery: Config.dashboard.performance.showBattery ?? false
     property bool showGpu: Config.dashboard.performance.showGpu ?? true
     property bool showCpu: Config.dashboard.performance.showCpu ?? true
     property bool showMemory: Config.dashboard.performance.showMemory ?? true
-    property bool showStorage: Config.dashboard.performance.showStorage ?? true 
+    property bool showStorage: Config.dashboard.performance.showStorage ?? true
     property bool showNetwork: Config.dashboard.performance.showNetwork ?? true
     property bool useFahrenheit: Config.services.useFahrenheit ?? false
     property bool useFahrenheitPerformance: Config.services.useFahrenheitPerformance ?? false
