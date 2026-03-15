@@ -101,6 +101,9 @@ emit_rice_json() {
   local RICE_DESCRIPTION="No description available"
   local RICE_STYLE="Unknown"
   local RICE_TAGS=""
+  local RICE_ACCENT_COLOR=""
+  local RICE_PRIMARY_COLOR=""
+  local RICE_SECONDARY_COLOR=""
   local SCHEME_TYPE="tonal-spot"
   local DARK_MODE="true"
   local BAR_POSITION="left"
@@ -155,6 +158,9 @@ PY
   printf '"preview":%s,' "$(json_escape "$preview")"
   printf '"wallpaper":%s,' "$(json_escape "$first_wp")"
   printf '"tags":%s,' "$tags_json"
+  printf '"accentColor":%s,' "$(json_escape "${RICE_ACCENT_COLOR:-}")"
+  printf '"primaryColor":%s,' "$(json_escape "${RICE_PRIMARY_COLOR:-}")"
+  printf '"secondaryColor":%s,' "$(json_escape "${RICE_SECONDARY_COLOR:-}")"
   printf '"wallpapers":%s' "$wallpapers_json"
   printf '}'
 }

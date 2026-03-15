@@ -11,8 +11,99 @@ Item {
     implicitHeight: layout.implicitHeight
 
     readonly property var today: Weather.forecast && Weather.forecast.length > 0 ? Weather.forecast[0] : null
+    readonly property bool isLoading: !Weather.city || Weather.forecast.length === 0
 
     Component.onCompleted: Weather.reload()
+
+    // ── Loading skeleton (shown while weather data is fetching) ───────────────
+    Loader {
+        active: root.isLoading
+        visible: active
+        anchors.fill: parent
+
+        sourceComponent: ColumnLayout {
+            id: skeleton
+
+            anchors.fill: parent
+            spacing: Appearance.spacing.smaller
+
+            SequentialAnimation on opacity {
+                running: true
+                loops: Animation.Infinite
+                NumberAnimation { to: 0.4; duration: 900; easing.type: Easing.InOutSine }
+                NumberAnimation { to: 1.0; duration: 900; easing.type: Easing.InOutSine }
+            }
+
+            // Header skeleton
+            RowLayout {
+                Layout.leftMargin: Appearance.padding.large
+                Layout.rightMargin: Appearance.padding.large
+                Layout.fillWidth: true
+                spacing: Appearance.spacing.normal
+
+                ColumnLayout {
+                    spacing: Appearance.spacing.small / 2
+
+                    StyledRect {
+                        implicitWidth: 200
+                        implicitHeight: Appearance.font.size.extraLarge + 4
+                        radius: Appearance.rounding.small
+                        color: Colours.tPalette.m3surfaceContainerHigh
+                    }
+                    StyledRect {
+                        implicitWidth: 130
+                        implicitHeight: Appearance.font.size.small + 4
+                        radius: Appearance.rounding.small
+                        color: Colours.tPalette.m3surfaceContainerHigh
+                    }
+                }
+                Item { Layout.fillWidth: true }
+
+                // Sunrise/sunset skeleton
+                Row {
+                    spacing: Appearance.spacing.large
+                    Repeater {
+                        model: 2
+                        StyledRect {
+                            implicitWidth: 70
+                            implicitHeight: 40
+                            radius: Appearance.rounding.small
+                            color: Colours.tPalette.m3surfaceContainerHigh
+                        }
+                    }
+                }
+            }
+
+            // Big info row skeleton
+            StyledRect {
+                Layout.fillWidth: true
+                implicitHeight: 90
+                radius: Appearance.rounding.normal
+                color: Colours.tPalette.m3surfaceContainerHigh
+            }
+
+            // Forecast cards skeleton
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Appearance.spacing.small
+                Layout.leftMargin: Appearance.padding.large
+                Layout.rightMargin: Appearance.padding.large
+                Repeater {
+                    model: 5
+                    StyledRect {
+                        Layout.fillWidth: true
+                        implicitHeight: 100
+                        radius: Appearance.rounding.normal
+                        color: Colours.tPalette.m3surfaceContainerHigh
+                    }
+                }
+            }
+        }
+    }
+
+    // ── Real content (shown when data is ready) ───────────────────────────────
+    opacity: root.isLoading ? 0 : 1
+    Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
 
     ColumnLayout {
         id: layout

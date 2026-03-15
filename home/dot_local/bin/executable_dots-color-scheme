@@ -201,6 +201,11 @@ regenerate_scheme() {
 
   link_compat_scheme
 
+  # Regenerate hyprlock theme colors from the new scheme
+  if command -v dots-hyprlock-theme >/dev/null 2>&1; then
+    dots-hyprlock-theme >/dev/null 2>&1 || true
+  fi
+
   if pgrep -x quickshell >/dev/null 2>&1 && command -v dots-quickshell >/dev/null 2>&1; then
     dots-quickshell ipc colours reload >/dev/null 2>&1 || true
   fi

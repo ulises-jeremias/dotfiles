@@ -125,6 +125,14 @@ Item {
                 Layout.topMargin: index === 0 ? Appearance.spacing.large * 2 : 0
                 icon: PaneRegistry.getByIndex(index).icon
                 label: PaneRegistry.getByIndex(index).label
+                // Badge logic: show alert for specific panes
+                badgeVisible: {
+                    const pane = PaneRegistry.getByIndex(index);
+                    if (!pane) return false;
+                    if (pane.id === "network")
+                        return !Network.active && !Network.activeEthernet;
+                    return false;
+                }
             }
         }
     }
@@ -134,6 +142,7 @@ Item {
 
         required property string icon
         required property string label
+        property bool badgeVisible: false
         readonly property bool active: root.session.active === label
 
         implicitWidth: background.implicitWidth
@@ -200,6 +209,28 @@ Item {
 
                 Behavior on fill {
                     Anim {}
+                }
+            }
+
+            // Alert badge — shown when badgeVisible is true
+            StyledRect {
+                id: alertBadge
+
+                anchors.top: icon.top
+                anchors.right: icon.right
+
+                implicitWidth: 8
+                implicitHeight: 8
+                radius: Appearance.rounding.full
+                color: Colours.palette.m3error
+                visible: item.badgeVisible
+
+                // Gentle pulse animation to draw attention
+                SequentialAnimation on scale {
+                    running: item.badgeVisible
+                    loops: Animation.Infinite
+                    NumberAnimation { to: 1.2; duration: 900; easing.type: Easing.InOutSine }
+                    NumberAnimation { to: 1.0; duration: 900; easing.type: Easing.InOutSine }
                 }
             }
 

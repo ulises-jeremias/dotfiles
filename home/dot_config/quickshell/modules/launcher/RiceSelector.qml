@@ -27,6 +27,21 @@ Item {
 
     property string step: "rices"
     property var selectedRice: null
+    property string activeTag: ""  // Currently selected tag filter ("" = show all)
+
+    // Compute unique tags across all rices for the tag filter chips
+    readonly property var allTags: {
+        const tagSet = new Set();
+        for (const rice of (Appearances.list ?? [])) {
+            const tags = (rice.tags ?? "").split(",");
+            for (const t of tags) {
+                const trimmed = t.trim();
+                if (trimmed)
+                    tagSet.add(trimmed);
+            }
+        }
+        return Array.from(tagSet).sort();
+    }
 
     // Exposed for Content.qml keyboard handling.
     // In step "rices" this is the rice ListView; in "wallpapers" the PathView.
@@ -37,7 +52,7 @@ Item {
 
     implicitWidth: step === "wallpapers" ? Math.max(Config.launcher.sizes.itemWidth, wallpaperCarouselArea.implicitWidth) : Config.launcher.sizes.itemWidth
 
-    implicitHeight: step === "wallpapers" ? headerRow.implicitHeight + Appearance.spacing.normal + wallpaperCarousel.implicitHeight : riceList.implicitHeight
+    implicitHeight: step === "wallpapers" ? headerRow.implicitHeight + Appearance.spacing.normal + wallpaperCarousel.implicitHeight : tagChips.implicitHeight + Appearance.spacing.small + riceList.implicitHeight
 
     function confirmCurrentRice(): void {
         if (step === "rices" && riceList.currentIndex >= 0) {
@@ -65,7 +80,14 @@ Item {
     }
 
     function refreshRiceModel(): void {
-        riceModel.values = Appearances.query(root.search.text);
+        let results = Appearances.query(root.search.text);
+        if (root.activeTag) {
+            results = results.filter(r => {
+                const tags = (r.tags ?? "").split(",").map(t => t.trim());
+                return tags.includes(root.activeTag);
+            });
+        }
+        riceModel.values = results;
     }
 
     Component.onCompleted: {
@@ -89,6 +111,98 @@ Item {
         }
     }
 
+    // ── Step 1: tag filter chips ─────────────────────────────────────────────
+
+    Item {
+        id: tagChips
+
+        visible: step === "rices"
+        opacity: step === "rices" ? 1 : 0
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        implicitHeight: allTags.length > 0 ? chipRow.implicitHeight : 0
+
+        Behavior on opacity { Anim { duration: Appearance.anim.durations.small } }
+
+        Flickable {
+            id: chipFlick
+            anchors.fill: parent
+            contentWidth: chipRow.implicitWidth
+            implicitHeight: chipRow.implicitHeight
+            clip: true
+            flickableDirection: Flickable.HorizontalFlick
+
+            Row {
+                id: chipRow
+                spacing: Appearance.spacing.small
+
+                // "All" chip to reset filter
+                StyledRect {
+                    id: allChip
+                    readonly property bool isActive: root.activeTag === ""
+                    implicitHeight: allChipText.implicitHeight + Appearance.padding.small * 2
+                    implicitWidth: allChipText.implicitWidth + Appearance.padding.normal * 2
+                    radius: Appearance.rounding.full
+                    color: isActive ? Colours.tPalette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
+                    border.width: isActive ? 0 : 1
+                    border.color: Colours.palette.m3outlineVariant
+
+                    StateLayer {
+                        radius: parent.radius
+                        function onClicked(): void {
+                            root.activeTag = "";
+                            root.refreshRiceModel();
+                        }
+                    }
+
+                    StyledText {
+                        id: allChipText
+                        anchors.centerIn: parent
+                        text: qsTr("All")
+                        font.pointSize: Appearance.font.size.small
+                        color: allChip.isActive ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
+                    }
+                }
+
+                // Dynamic tag chips
+                Repeater {
+                    model: ScriptModel { values: root.allTags }
+
+                    delegate: StyledRect {
+                        required property string modelData
+                        readonly property bool isActive: root.activeTag === modelData
+
+                        implicitHeight: chipLabel.implicitHeight + Appearance.padding.small * 2
+                        implicitWidth: chipLabel.implicitWidth + Appearance.padding.normal * 2
+                        radius: Appearance.rounding.full
+                        color: isActive ? Colours.tPalette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
+                        border.width: isActive ? 0 : 1
+                        border.color: Colours.palette.m3outlineVariant
+
+                        Behavior on color { ColorAnimation { duration: Appearance.anim.durations.small } }
+
+                        StateLayer {
+                            radius: parent.radius
+                            function onClicked(): void {
+                                root.activeTag = isActive ? "" : modelData;
+                                root.refreshRiceModel();
+                            }
+                        }
+
+                        StyledText {
+                            id: chipLabel
+                            anchors.centerIn: parent
+                            text: modelData
+                            font.pointSize: Appearance.font.size.small
+                            color: isActive ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurfaceVariant
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // ── Step 1: rice list ────────────────────────────────────────────────────
 
     StyledListView {
@@ -96,6 +210,8 @@ Item {
 
         visible: step === "rices"
         opacity: step === "rices" ? 1 : 0
+        anchors.top: tagChips.bottom
+        anchors.topMargin: tagChips.implicitHeight > 0 ? Appearance.spacing.small : 0
         anchors.fill: parent
 
         model: ScriptModel {
@@ -149,10 +265,34 @@ Item {
             anchors.right: parent?.right
             implicitHeight: riceList.cardHeight
 
+            // Hover preview timer — previews the first wallpaper after brief hover
+            Timer {
+                id: hoverPreviewTimer
+                interval: 350
+                onTriggered: {
+                    const wps = riceCard.modelData.wallpapers ?? [];
+                    if (wps.length > 0)
+                        Wallpapers.preview(wps[0]);
+                }
+            }
+
+            HoverHandler {
+                id: hoverHandler
+                onHoveredChanged: {
+                    if (hovered) {
+                        hoverPreviewTimer.restart();
+                    } else {
+                        hoverPreviewTimer.stop();
+                        Wallpapers.stopPreview();
+                    }
+                }
+            }
+
             StateLayer {
                 radius: Appearance.rounding.normal
 
                 function onClicked(): void {
+                    hoverPreviewTimer.stop();
                     riceList.currentIndex = riceCard.index;
                     root.selectedRice = riceCard.modelData;
                     root.step = "wallpapers";
@@ -191,7 +331,7 @@ Item {
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - thumbnail.width - parent.spacing - (currentCheck.active ? currentCheck.width + Appearance.spacing.normal : 0)
-                    spacing: 0
+                    spacing: Appearance.spacing.small / 2
 
                     StyledText {
                         text: riceCard.modelData.name ?? riceCard.modelData.id ?? ""
@@ -205,6 +345,33 @@ Item {
                         elide: Text.ElideRight
                         anchors.left: parent.left
                         anchors.right: parent.right
+                    }
+
+                    // Color swatches row: accent, primary, secondary
+                    Row {
+                        spacing: 4
+                        visible: (riceCard.modelData.accentColor ?? "") !== "" ||
+                                 (riceCard.modelData.primaryColor ?? "") !== "" ||
+                                 (riceCard.modelData.secondaryColor ?? "") !== ""
+
+                        Repeater {
+                            model: [
+                                riceCard.modelData.accentColor ?? "",
+                                riceCard.modelData.primaryColor ?? "",
+                                riceCard.modelData.secondaryColor ?? ""
+                            ]
+
+                            delegate: StyledRect {
+                                required property string modelData
+                                implicitWidth: 10
+                                implicitHeight: 10
+                                radius: Appearance.rounding.full
+                                color: modelData || "transparent"
+                                visible: modelData !== ""
+                                border.width: 1
+                                border.color: Qt.alpha(Colours.palette.m3outline, 0.3)
+                            }
+                        }
                     }
                 }
             }

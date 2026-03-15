@@ -119,6 +119,24 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
 
+        // Spring pop-in animation on the content
+        opacity: root.shouldBeActive ? 1 : 0
+        scale: root.shouldBeActive ? 1 : 0.88
+
+        Behavior on opacity {
+            Anim {
+                duration: Appearance.anim.durations.expressiveFastSpatial
+                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+            }
+        }
+
+        Behavior on scale {
+            Anim {
+                duration: Appearance.anim.durations.expressiveFastSpatial
+                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+            }
+        }
+
         Component.onCompleted: active = Qt.binding(() => root.shouldBeActive || root.visible)
 
         sourceComponent: Content {

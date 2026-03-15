@@ -18,6 +18,28 @@ CollapsibleSection {
     title: qsTr("Animations")
     showBackground: true
 
+    // Accessibility toggles: semantic shortcuts for the animation scale slider
+    SwitchRow {
+        label: qsTr("Disable animations")
+        description: qsTr("Set animation scale to near-zero for maximum responsiveness")
+        checked: rootPane.animDurationsScale <= 0.05
+        onToggled: checked => {
+            rootPane.animDurationsScale = checked ? 0.01 : 1.0;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: qsTr("Reduce motion")
+        description: qsTr("Shorten all animations to 30% of their normal duration")
+        checked: rootPane.animDurationsScale > 0.05 && rootPane.animDurationsScale <= 0.35
+        enabled: rootPane.animDurationsScale > 0.05
+        onToggled: checked => {
+            rootPane.animDurationsScale = checked ? 0.3 : 1.0;
+            rootPane.saveConfig();
+        }
+    }
+
     SectionContainer {
         contentSpacing: Appearance.spacing.normal
 
@@ -26,12 +48,12 @@ CollapsibleSection {
 
             label: qsTr("Animation duration scale")
             value: rootPane.animDurationsScale
-            from: 0.1
+            from: 0.01
             to: 5.0
-            decimals: 1
+            decimals: 2
             suffix: "×"
             validator: DoubleValidator {
-                bottom: 0.1
+                bottom: 0.01
                 top: 5.0
             }
 

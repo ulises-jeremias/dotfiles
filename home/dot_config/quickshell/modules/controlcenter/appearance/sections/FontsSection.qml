@@ -62,7 +62,7 @@ CollapsibleSection {
                         }
                     }
 
-                    RowLayout {
+                    ColumnLayout {
                         id: fontFamilyMaterialRow
 
                         anchors.left: parent.left
@@ -70,25 +70,39 @@ CollapsibleSection {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.margins: Appearance.padding.normal
 
-                        spacing: Appearance.spacing.normal
+                        spacing: 1
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: Appearance.spacing.normal
+
+                            StyledText {
+                                text: modelData
+                                font.pointSize: Appearance.font.size.normal
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                            }
+
+                            Loader {
+                                active: isCurrent
+
+                                sourceComponent: MaterialIcon {
+                                    text: "check"
+                                    color: Colours.palette.m3onSurfaceVariant
+                                    font.pointSize: Appearance.font.size.large
+                                }
+                            }
+                        }
 
                         StyledText {
-                            text: modelData
-                            font.pointSize: Appearance.font.size.normal
-                        }
-
-                        Item {
                             Layout.fillWidth: true
-                        }
-
-                        Loader {
-                            active: isCurrent
-
-                            sourceComponent: MaterialIcon {
-                                text: "check"
-                                color: Colours.palette.m3onSurfaceVariant
-                                font.pointSize: Appearance.font.size.large
-                            }
+                            text: "The quick brown fox · 0123 ABC"
+                            font.family: modelData
+                            font.pointSize: Appearance.font.size.small
+                            color: Colours.palette.m3onSurfaceVariant
+                            elide: Text.ElideRight
                         }
                     }
 
@@ -141,7 +155,7 @@ CollapsibleSection {
                         }
                     }
 
-                    RowLayout {
+                    ColumnLayout {
                         id: fontFamilyMonoRow
 
                         anchors.left: parent.left
@@ -149,25 +163,39 @@ CollapsibleSection {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.margins: Appearance.padding.normal
 
-                        spacing: Appearance.spacing.normal
+                        spacing: 1
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: Appearance.spacing.normal
+
+                            StyledText {
+                                text: modelData
+                                font.pointSize: Appearance.font.size.normal
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                            }
+
+                            Loader {
+                                active: isCurrent
+
+                                sourceComponent: MaterialIcon {
+                                    text: "check"
+                                    color: Colours.palette.m3onSurfaceVariant
+                                    font.pointSize: Appearance.font.size.large
+                                }
+                            }
+                        }
 
                         StyledText {
-                            text: modelData
-                            font.pointSize: Appearance.font.size.normal
-                        }
-
-                        Item {
                             Layout.fillWidth: true
-                        }
-
-                        Loader {
-                            active: isCurrent
-
-                            sourceComponent: MaterialIcon {
-                                text: "check"
-                                color: Colours.palette.m3onSurfaceVariant
-                                font.pointSize: Appearance.font.size.large
-                            }
+                            text: "fn main() { println!(\"hello\"); } // 0x1A2B"
+                            font.family: modelData
+                            font.pointSize: Appearance.font.size.small
+                            color: Colours.palette.m3onSurfaceVariant
+                            elide: Text.ElideRight
                         }
                     }
 
@@ -220,7 +248,7 @@ CollapsibleSection {
                         }
                     }
 
-                    RowLayout {
+                    ColumnLayout {
                         id: fontFamilySansRow
 
                         anchors.left: parent.left
@@ -228,25 +256,39 @@ CollapsibleSection {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.margins: Appearance.padding.normal
 
-                        spacing: Appearance.spacing.normal
+                        spacing: 1
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: Appearance.spacing.normal
+
+                            StyledText {
+                                text: modelData
+                                font.pointSize: Appearance.font.size.normal
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                            }
+
+                            Loader {
+                                active: isCurrent
+
+                                sourceComponent: MaterialIcon {
+                                    text: "check"
+                                    color: Colours.palette.m3onSurfaceVariant
+                                    font.pointSize: Appearance.font.size.large
+                                }
+                            }
+                        }
 
                         StyledText {
-                            text: modelData
-                            font.pointSize: Appearance.font.size.normal
-                        }
-
-                        Item {
                             Layout.fillWidth: true
-                        }
-
-                        Loader {
-                            active: isCurrent
-
-                            sourceComponent: MaterialIcon {
-                                text: "check"
-                                color: Colours.palette.m3onSurfaceVariant
-                                font.pointSize: Appearance.font.size.large
-                            }
+                            text: "The quick brown fox · 0123 ABC"
+                            font.family: modelData
+                            font.pointSize: Appearance.font.size.small
+                            color: Colours.palette.m3onSurfaceVariant
+                            elide: Text.ElideRight
                         }
                     }
 
