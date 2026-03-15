@@ -193,11 +193,19 @@ regenerate_scheme() {
   [[ $mode == "light" || $mode == "dark" ]] || mode="dark"
 
   mkdir -p "$(dirname "$SCHEME_FILE")"
+  local accent_args=()
+  local accent_override="${XDG_CACHE_HOME:-${HOME}/.cache}/dots/smart-colors/accent-override"
+  if [[ -f $accent_override ]]; then
+    local accent_hex
+    accent_hex="$(cat "$accent_override")"
+    [[ -n $accent_hex ]] && accent_args=(--source-color "$accent_hex")
+  fi
   python3 "$M3_SCRIPT" \
     --image "$wallpaper" \
     --output "$SCHEME_FILE" \
     --mode "$mode" \
-    --scheme-type "$flavour" >/dev/null 2>&1 || return 1
+    --scheme-type "$flavour" \
+    "${accent_args[@]}" >/dev/null 2>&1 || return 1
 
   link_compat_scheme
 

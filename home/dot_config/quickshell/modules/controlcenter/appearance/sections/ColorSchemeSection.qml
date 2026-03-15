@@ -63,42 +63,26 @@ CollapsibleSection {
 
                     spacing: Appearance.spacing.normal
 
-                    StyledRect {
-                        id: preview
+                    Row {
+                        id: paletteDots
 
                         Layout.alignment: Qt.AlignVCenter
+                        spacing: 4
 
-                        border.width: 1
-                        border.color: Qt.alpha(`#${modelData.colours?.outline}`, 0.5)
+                        readonly property var schemeColours: modelData.colours
 
-                        color: `#${modelData.colours?.surface}`
-                        radius: Appearance.rounding.full
-                        implicitWidth: iconPlaceholder.implicitWidth
-                        implicitHeight: iconPlaceholder.implicitWidth
+                        Repeater {
+                            model: ["primary", "secondary", "tertiary", "surface", "error", "onBackground"]
 
-                        MaterialIcon {
-                            id: iconPlaceholder
-                            visible: false
-                            text: "circle"
-                            font.pointSize: Appearance.font.size.large
-                        }
+                            delegate: StyledRect {
+                                required property string modelData
 
-                        Item {
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            anchors.right: parent.right
-
-                            implicitWidth: parent.implicitWidth / 2
-                            clip: true
-
-                            StyledRect {
-                                anchors.top: parent.top
-                                anchors.bottom: parent.bottom
-                                anchors.right: parent.right
-
-                                implicitWidth: preview.implicitWidth
-                                color: `#${modelData.colours?.primary}`
+                                width: 12
+                                height: 12
                                 radius: Appearance.rounding.full
+                                color: paletteDots.schemeColours?.[modelData] ? `#${paletteDots.schemeColours[modelData]}` : Colours.palette.m3surfaceContainerHigh
+                                border.width: modelData === "surface" ? 1 : 0
+                                border.color: Qt.alpha(Colours.palette.m3outline, 0.4)
                             }
                         }
                     }

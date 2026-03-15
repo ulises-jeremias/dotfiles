@@ -361,6 +361,75 @@ Item {
             color: Qt.alpha(heroCard.accentColor, 0.15)
         }
 
+        // Sparkline: 60-sample history graph shown along the bottom of the card
+        Canvas {
+            id: sparklineCanvas
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 40
+
+            property var history: []
+            readonly property int maxSamples: 60
+
+            function recordSample(value: real): void {
+                history.push(value);
+                if (history.length > maxSamples)
+                    history.shift();
+                requestPaint();
+            }
+
+            onPaint: {
+                const ctx = getContext("2d");
+                ctx.reset();
+
+                const pts = history;
+                if (pts.length < 2)
+                    return;
+
+                const w = width;
+                const h = height;
+                const step = w / (maxSamples - 1);
+
+                ctx.beginPath();
+                for (let i = 0; i < pts.length; i++) {
+                    const x = (maxSamples - pts.length + i) * step;
+                    const y = h - pts[i] * (h - 4) - 2;
+                    if (i === 0)
+                        ctx.moveTo(x, y);
+                    else
+                        ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = Qt.alpha(heroCard.accentColor, 0.7).toString();
+                ctx.lineWidth = 1.5;
+                ctx.lineJoin = "round";
+                ctx.lineCap = "round";
+                ctx.stroke();
+
+                // Fill area under line
+                ctx.lineTo((maxSamples - 1) * step, h);
+                ctx.lineTo((maxSamples - pts.length) * step, h);
+                ctx.closePath();
+                ctx.fillStyle = Qt.alpha(heroCard.accentColor, 0.12).toString();
+                ctx.fill();
+            }
+
+            Connections {
+                target: heroCard
+                function onUsageChanged(): void {
+                    sparklineCanvas.recordSample(heroCard.usage);
+                }
+            }
+
+            Connections {
+                target: Colours
+                function onPaletteChanged(): void {
+                    sparklineCanvas.requestPaint();
+                }
+            }
+        }
+
         ColumnLayout {
             anchors.fill: parent
             anchors.leftMargin: Appearance.padding.large

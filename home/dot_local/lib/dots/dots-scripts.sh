@@ -17,6 +17,7 @@ scripts_list=(
   "📁 file-manager: Launch XDG default file manager"
   "📨 git-notify: Send notifications when git commits are made"
   "🎨 gtk-theme: Intelligent GTK theme management with rice integration and auto-detection"
+  "🎨 accent-override: Set or clear a hex accent color override for the M3 color scheme"
   "🧭 hypr-layout: Manage Hyprland layout profiles with persistence and restore support"
   "🖥️ hypr-monitors: Manage Hyprland monitor configurations and layouts"
   "🎨 hyprlock-theme: Generate hyprlock color overrides from the current smart-colors M3 palette"

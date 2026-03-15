@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## dots-accent-override: Set or clear a hex accent color override for the M3 color scheme.
+##
+## The override is stored in ~/.cache/dots/smart-colors/accent-override and is
+## read by dots-color-scheme's regenerate_scheme() to seed --source-color in
+## generate-m3-colors.py, overriding wallpaper-based color extraction.
+##
+## Usage:
+##   dots-accent-override <#RRGGBB>   Set accent color (hex, with or without #)
+##   dots-accent-override --clear     Clear the override and regenerate from wallpaper
+##   dots-accent-override --show      Print current override (empty if none)
+
+# shellcheck source=dots-lib
+source "${DOTS_LIB:-${HOME}/.local/lib/dots}/dots-lib.sh" 2>/dev/null || true
+
+set -euo pipefail
+
+OVERRIDE_FILE="${XDG_CACHE_HOME:-${HOME}/.cache}/dots/smart-colors/accent-override"
+
+usage() {
+  cat <<EOF
+Usage: dots-accent-override <#RRGGBB | RRGGBB>
+       dots-accent-override --clear
+       dots-accent-override --show
+
+Options:
+  <color>    Hex color to use as M3 seed (e.g. #8839ef or 8839ef)
+  --clear    Remove the accent override and regenerate from wallpaper
+  --show     Print the current accent override (empty if none)
+EOF
+}
+
+validate_hex() {
+  local color="${1#\#}"
+  if [[ ! $color =~ ^[0-9a-fA-F]{6}$ ]]; then
+    echo "Error: '$1' is not a valid 6-digit hex color." >&2
+    return 1
+  fi
+  echo "$color"
+}
+
+mkdir -p "$(dirname "$OVERRIDE_FILE")"
+
+case "${1:-}" in
+  --clear)
+    rm -f "$OVERRIDE_FILE"
+    echo "Accent override cleared."
+    if command -v dots-color-scheme >/dev/null 2>&1; then
+      dots-color-scheme regenerate >/dev/null 2>&1 || true
+    fi
+    ;;
+  --show)
+    if [[ -f $OVERRIDE_FILE ]]; then
+      cat "$OVERRIDE_FILE"
+    fi
+    ;;
+  --help | -h)
+    usage
+    ;;
+  "")
+    usage
+    exit 1
+    ;;
+  *)
+    hex=$(validate_hex "$1") || exit 1
+    echo "#${hex}" >"$OVERRIDE_FILE"
+    echo "Accent override set to #${hex}."
+    if command -v dots-color-scheme >/dev/null 2>&1; then
+      dots-color-scheme regenerate >/dev/null 2>&1 || true
+    fi
+    ;;
+esac

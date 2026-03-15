@@ -41,6 +41,11 @@ def parse_args():
     )
     parser.add_argument("--image", required=True, help="Path to wallpaper image")
     parser.add_argument(
+        "--source-color",
+        default=None,
+        help="Hex color (#RRGGBB or RRGGBB) to use as M3 seed instead of extracting from image",
+    )
+    parser.add_argument(
         "--scheme-type",
         default="auto",
         choices=["auto", *SCHEME_MODULES],
@@ -268,6 +273,13 @@ def main() -> None:
         sys.exit(1)
 
     source_argb = extract_source_color(str(image_path), args.quality)
+    if args.source_color:
+        hex_color = args.source_color.lstrip("#")
+        if len(hex_color) == 6:
+            r = int(hex_color[0:2], 16)
+            g = int(hex_color[2:4], 16)
+            b = int(hex_color[4:6], 16)
+            source_argb = 0xFF000000 | (r << 16) | (g << 8) | b
     source_hct = Hct.from_int(source_argb)
 
     dark = args.mode == "dark"

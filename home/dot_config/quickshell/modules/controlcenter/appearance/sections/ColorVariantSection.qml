@@ -85,5 +85,128 @@ CollapsibleSection {
                 implicitHeight: variantRow.implicitHeight + Appearance.padding.normal * 2
             }
         }
+
+        // Accent color override
+        Item {
+            Layout.fillWidth: true
+            implicitHeight: Appearance.spacing.normal
+        }
+
+        StyledRect {
+            Layout.fillWidth: true
+            color: Colours.tPalette.m3surfaceContainer
+            radius: Appearance.rounding.normal
+            implicitHeight: accentOverrideLayout.implicitHeight + Appearance.padding.normal * 2
+
+            ColumnLayout {
+                id: accentOverrideLayout
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.margins: Appearance.padding.normal
+                spacing: Appearance.spacing.small
+
+                StyledText {
+                    text: qsTr("Accent color override")
+                    font.pointSize: Appearance.font.size.normal
+                }
+
+                StyledText {
+                    Layout.fillWidth: true
+                    text: qsTr("Seed the M3 palette from a custom hex color instead of the wallpaper")
+                    font.pointSize: Appearance.font.size.small
+                    color: Colours.palette.m3onSurfaceVariant
+                    wrapMode: Text.WordWrap
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Appearance.spacing.small
+
+                    // Color preview swatch
+                    StyledRect {
+                        id: accentSwatch
+                        width: 32
+                        height: 32
+                        radius: Appearance.rounding.small
+                        border.width: 1
+                        border.color: Qt.alpha(Colours.palette.m3outline, 0.4)
+                        color: accentField.isValidHex ? `#${accentField.hexValue}` : Colours.palette.m3surfaceContainerHigh
+
+                        Behavior on color {
+                            CAnim {}
+                        }
+                    }
+
+                    // Hex input field
+                    StyledRect {
+                        Layout.fillWidth: true
+                        implicitHeight: 36
+                        color: accentField.activeFocus
+                            ? Colours.layer(Colours.palette.m3surfaceContainer, 3)
+                            : Colours.layer(Colours.palette.m3surfaceContainer, 2)
+                        radius: Appearance.rounding.small
+                        border.width: 1
+                        border.color: accentField.activeFocus ? Colours.palette.m3primary : Qt.alpha(Colours.palette.m3outline, 0.3)
+
+                        Behavior on color { CAnim {} }
+                        Behavior on border.color { CAnim {} }
+
+                        StyledTextField {
+                            id: accentField
+
+                            anchors.centerIn: parent
+                            width: parent.width - Appearance.padding.normal * 2
+                            horizontalAlignment: TextInput.AlignLeft
+                            placeholderText: qsTr("#RRGGBB — leave empty to use wallpaper")
+                            maximumLength: 7
+
+                            readonly property string hexValue: text.startsWith("#") ? text.slice(1) : text
+                            readonly property bool isValidHex: /^[0-9a-fA-F]{6}$/.test(hexValue)
+
+                            Keys.onReturnPressed: applyButton.applyAccent()
+                            Keys.onEnterPressed: applyButton.applyAccent()
+                        }
+                    }
+
+                    // Apply button
+                    TextButton {
+                        id: applyButton
+
+                        text: qsTr("Apply")
+                        enabled: accentField.isValidHex
+                        buttonColor: Colours.palette.m3primary
+                        textColor: Colours.palette.m3onPrimary
+
+                        function applyAccent(): void {
+                            if (accentField.isValidHex) {
+                                Quickshell.execDetached(["dots-accent-override", `#${accentField.hexValue}`]);
+                            }
+                        }
+
+                        StateLayer {
+                            function onClicked(): void {
+                                applyButton.applyAccent();
+                            }
+                        }
+                    }
+
+                    // Clear button
+                    TextButton {
+                        text: qsTr("Clear")
+                        buttonColor: Colours.palette.m3surfaceContainerHigh
+                        textColor: Colours.palette.m3onSurface
+
+                        StateLayer {
+                            function onClicked(): void {
+                                accentField.text = "";
+                                Quickshell.execDetached(["dots-accent-override", "--clear"]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
