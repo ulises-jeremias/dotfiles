@@ -64,24 +64,28 @@ CollapsibleSection {
                     spacing: Appearance.spacing.normal
 
                     Row {
-                        id: paletteDots
-
                         Layout.alignment: Qt.AlignVCenter
                         spacing: 4
 
-                        readonly property var schemeColours: modelData.colours
-
                         Repeater {
-                            model: ["primary", "secondary", "tertiary", "surface", "error", "onBackground"]
+                            // Compute colour strings in outer scope (modelData = scheme object here)
+                            model: [
+                                modelData.colours?.primary,
+                                modelData.colours?.secondary,
+                                modelData.colours?.tertiary,
+                                modelData.colours?.surface,
+                                modelData.colours?.error,
+                                modelData.colours?.onBackground
+                            ].map((c, i) => ({ hex: c ? `#${c}` : "", isSurface: i === 3 }))
 
                             delegate: StyledRect {
-                                required property string modelData
+                                required property var modelData
 
                                 width: 12
                                 height: 12
                                 radius: Appearance.rounding.full
-                                color: paletteDots.schemeColours?.[modelData] ? `#${paletteDots.schemeColours[modelData]}` : Colours.palette.m3surfaceContainerHigh
-                                border.width: modelData === "surface" ? 1 : 0
+                                color: modelData.hex || Colours.palette.m3surfaceContainerHigh
+                                border.width: modelData.isSurface ? 1 : 0
                                 border.color: Qt.alpha(Colours.palette.m3outline, 0.4)
                             }
                         }

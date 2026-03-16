@@ -165,8 +165,14 @@ CollapsibleSection {
                             readonly property string hexValue: text.startsWith("#") ? text.slice(1) : text
                             readonly property bool isValidHex: /^[0-9a-fA-F]{6}$/.test(hexValue)
 
-                            Keys.onReturnPressed: applyButton.applyAccent()
-                            Keys.onEnterPressed: applyButton.applyAccent()
+                            Keys.onReturnPressed: {
+                                if (isValidHex)
+                                    Quickshell.execDetached(["dots-accent-override", `#${hexValue}`]);
+                            }
+                            Keys.onEnterPressed: {
+                                if (isValidHex)
+                                    Quickshell.execDetached(["dots-accent-override", `#${hexValue}`]);
+                            }
                         }
                     }
 
@@ -176,18 +182,14 @@ CollapsibleSection {
 
                         text: qsTr("Apply")
                         enabled: accentField.isValidHex
-                        buttonColor: Colours.palette.m3primary
-                        textColor: Colours.palette.m3onPrimary
+                        activeColour: Colours.palette.m3primary
+                        activeOnColour: Colours.palette.m3onPrimary
+                        inactiveColour: Colours.palette.m3primary
+                        inactiveOnColour: Colours.palette.m3onPrimary
 
-                        function applyAccent(): void {
+                        onClicked: {
                             if (accentField.isValidHex) {
                                 Quickshell.execDetached(["dots-accent-override", `#${accentField.hexValue}`]);
-                            }
-                        }
-
-                        StateLayer {
-                            function onClicked(): void {
-                                applyButton.applyAccent();
                             }
                         }
                     }
@@ -195,14 +197,11 @@ CollapsibleSection {
                     // Clear button
                     TextButton {
                         text: qsTr("Clear")
-                        buttonColor: Colours.palette.m3surfaceContainerHigh
-                        textColor: Colours.palette.m3onSurface
+                        type: TextButton.Tonal
 
-                        StateLayer {
-                            function onClicked(): void {
-                                accentField.text = "";
-                                Quickshell.execDetached(["dots-accent-override", "--clear"]);
-                            }
+                        onClicked: {
+                            accentField.text = "";
+                            Quickshell.execDetached(["dots-accent-override", "--clear"]);
                         }
                     }
                 }
