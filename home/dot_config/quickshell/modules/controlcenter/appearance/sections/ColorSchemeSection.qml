@@ -15,8 +15,8 @@ CollapsibleSection {
     required property var previewController
     required property var session
 
-    title: qsTr("Color scheme")
-    description: qsTr("Available color schemes")
+    title: qsTr("Saved palettes")
+    description: qsTr("Pre-generated M3 color palettes. Each was extracted from a specific wallpaper.")
     showBackground: true
 
     ColumnLayout {

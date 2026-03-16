@@ -15,8 +15,8 @@ CollapsibleSection {
     required property var previewController
     required property var session
 
-    title: qsTr("Color variant")
-    description: qsTr("Material theme variant")
+    title: qsTr("Generation mode")
+    description: qsTr("Algorithm used to derive colors from the wallpaper seed. Changes how vivid or muted the palette feels.")
     showBackground: true
 
     ColumnLayout {
@@ -108,13 +108,13 @@ CollapsibleSection {
                 spacing: Appearance.spacing.small
 
                 StyledText {
-                    text: qsTr("Accent color override")
+                    text: qsTr("Seed color override")
                     font.pointSize: Appearance.font.size.normal
                 }
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: qsTr("Seed the M3 palette from a custom hex color instead of the wallpaper")
+                    text: qsTr("Force palette generation from a specific hex color instead of auto-detecting from the wallpaper")
                     font.pointSize: Appearance.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                     wrapMode: Text.WordWrap
