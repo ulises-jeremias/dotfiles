@@ -21,7 +21,6 @@ CollapsibleSection {
     // Accessibility toggles: semantic shortcuts for the animation scale slider
     SwitchRow {
         label: qsTr("Disable animations")
-        description: qsTr("Set animation scale to near-zero for maximum responsiveness")
         checked: rootPane.animDurationsScale <= 0.05
         onToggled: checked => {
             rootPane.animDurationsScale = checked ? 0.01 : 1.0;
@@ -31,7 +30,6 @@ CollapsibleSection {
 
     SwitchRow {
         label: qsTr("Reduce motion")
-        description: qsTr("Shorten all animations to 30% of their normal duration")
         checked: rootPane.animDurationsScale > 0.05 && rootPane.animDurationsScale <= 0.35
         enabled: rootPane.animDurationsScale > 0.05
         onToggled: checked => {
