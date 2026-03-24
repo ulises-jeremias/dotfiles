@@ -718,7 +718,8 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <p><strong>Quickshell-first flows:</strong></p>
 <ul class="nav"><li><a href="Dots-Scripts#launcher">🚀 App Launcher</a> - quickshell → minimal</li><li><a href="Dots-Scripts#clipboard">📋 Clipboard</a> - cliphist/copyq → minimal</li><li><a href="Dots-Scripts#power-menu">⚡ Power Menu</a> - quickshell</li><li><a href="Dots-Scripts#settings-gui--settings-hub">⚙️ Settings Hub</a> - unified GUI settings</li></ul><p><strong>Media &amp; Screen:</strong></p>
 <ul class="nav"><li><a href="Dots-Scripts#screenshooter--screenshot-tool">📸 Screenshots</a> - flameshot → grimblast → grim</li><li><a href="Dots-Scripts#lockscreen--screen-lock">🔒 Screen Lock</a> - hyprlock</li><li><a href="Dots-Scripts#brightness--screen-brightness-control">🔆 Brightness</a> - brightnessctl</li></ul><p><strong>System:</strong></p>
-<ul class="nav"><li><a href="Dots-Scripts#performance-mode--cpu-performance-profiles">⚡ Performance</a> - powerprofilesctl</li><li><a href="Dots-Scripts#keyboard-layout--keyboard-layout-switcher">⌨️ Keyboard Layout</a> - 13 layouts</li><li><a href="Dots-Scripts#battery-monitor--battery-alert-daemon">🔋 Battery Monitor</a> - poweralertd</li><li><a href="Dots-Scripts#file-manager--file-manager-launcher">📁 File Manager</a> - thunar → nautilus</li><li><a href="Dots-Scripts#yazi--terminal-file-manager">📁 Yazi</a> - terminal file manager</li></ul><h3 id="-system-hardware">🛡️ <strong>System &amp; Hardware</strong></h3>
+<ul class="nav"><li><a href="Dots-Scripts#performance-mode--cpu-performance-profiles">⚡ Performance</a> - powerprofilesctl</li><li><a href="Dots-Scripts#keyboard-layout--keyboard-layout-switcher">⌨️ Keyboard Layout</a> - 13 layouts</li><li><a href="Dots-Scripts#battery-monitor--battery-alert-daemon">🔋 Battery Monitor</a> - poweralertd</li><li><a href="Dots-Scripts#file-manager--file-manager-launcher">📁 File Manager</a> - thunar → nautilus</li><li><a href="Dots-Scripts#yazi--terminal-file-manager">📁 Yazi</a> - terminal file manager</li></ul><h3 id="-studio-audio">🎵 <strong>Studio &amp; Audio</strong></h3>
+<ul class="nav"><li><a href="#Studio">🎵 Studio Setup</a></li></ul><h3 id="-system-hardware">🛡️ <strong>System &amp; Hardware</strong></h3>
 <ul class="nav"><li><a href="#Security">🛡️ Security</a></li><li><a href="#Hardware">🖥️ Hardware</a></li><li><a href="#Hardware-nvidia-troubleshooting">🎮 NVIDIA Troubleshooting</a></li><li><a href="#Hybrid-GPU-Performance">⚡ Hybrid GPU Performance</a></li><li><a href="#Network-Manager">📶 Network Manager</a></li></ul><h3 id="-development">🧪 <strong>Development</strong></h3>
 <ul class="nav"><li><a href="#CONTRIBUTING">🤝 Contributing</a></li><li><a href="#Testing">🧪 Testing</a></li><li><a href="#Changelog-2025">📅 Changelog 2025</a></li></ul><hr>
 <h3 id="-quick-access">🔍 <strong>Quick Access</strong></h3>
@@ -933,10 +934,9 @@ dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...
 <li>When <code>wpg</code> is available, <code>dots-wallpaper-set</code> delegates to <code>wpg -s</code> so wpgtk remains source-compatible.</li>
 <li>Wallpaper resolution priority is unified across scripts:<ol>
 <li>Explicit argument</li>
-<li><code>~/.config/wpg/.current</code></li>
-<li><code>~/.local/state/dots/wallpaper/path.txt</code></li>
-<li><code>~/.cache/current_wallpaper</code></li>
-<li><code>~/.cache/wal/wal</code></li>
+<li><code>~/.local/state/dots/wallpaper/path</code> (canonical persistent pointer; respects <code>DOTS_STATE_DIR</code> / <code>XDG_STATE_HOME</code>)</li>
+<li><code>~/.cache/wal/wal</code> (pywal)</li>
+<li><code>~/.config/wpg/.current</code> (optional, when using wpgtk)</li>
 </ol>
 </li>
 </ul>
@@ -1743,7 +1743,7 @@ convert --version</pre><h3 id="hyprlock-not-found">Hyprlock not found</h3>
 <p>Install hyprlock:</p>
 <pre class="hljs">yay -S hyprlock</pre><h3 id="lock-command-fails">Lock command fails</h3>
 <p>Generate lockscreen images first:</p>
-<pre class="hljs">dots lockscreen --update=~/.cache/current_wallpaper</pre><h2 id="dependencies">Dependencies</h2>
+<pre class="hljs">dots lockscreen --update=~/.<span class="hljs-built_in">local</span>/state/dots/wallpaper/path</pre><h2 id="dependencies">Dependencies</h2>
 <ul>
 <li><code>hyprlock</code> (required)</li>
 <li><code>imagemagick</code> (required)</li>
@@ -1754,7 +1754,7 @@ convert --version</pre><h3 id="hyprlock-not-found">Hyprlock not found</h3>
 <ul>
 <li>Script: <code>~/.local/bin/dots-lockscreen</code></li>
 <li>Cache: <code>~/.cache/dots-lockscreen/current/</code></li>
-<li>Current wallpaper: <code>~/.cache/current_wallpaper</code></li>
+<li>Current wallpaper pointer: <code>~/.local/state/dots/wallpaper/path</code></li>
 <li>Smart colors: <code>~/.cache/dots/smart-colors/current.env</code></li>
 </ul>
 <h2 id="see-also">See Also</h2>
@@ -2103,7 +2103,7 @@ dots-quickshell restart</pre><h2 id="hyprland-layout-and-exclusions">Hyprland la
 <ul>
 <li>[ ] <code>dots-smart-colors --m3</code> regenerates <code>~/.cache/dots/smart-colors/scheme.json</code>.</li>
 <li>[ ] <code>dots-quickshell ipc colours reload</code> updates shell palette live.</li>
-<li>[ ] Wallpaper changes update <code>~/.local/state/dots/wallpaper/path.txt</code>.</li>
+<li>[ ] Wallpaper changes update <code>~/.local/state/dots/wallpaper/path</code>.</li>
 <li>[ ] Light/dark mode follows generated scheme and keeps readable contrast.</li>
 </ul>
 <h2 id="notifications-and-session">Notifications and session</h2>
@@ -3096,6 +3096,214 @@ chezmoi managed --include=all | xargs -I {} cp --parents {} ~/my-dotfiles/
 <li><a href="https://github.com/ulises-jeremias/dotfiles/discussions">Dotfiles Discussions</a></li>
 </ul>
 <p>Whether you stay with chezmoi or go fully manual, the goal is the same: <strong>dotfiles that reflect your ideal workflow</strong>. Choose the path that works best for you. 🛠️</p>
+<p class="page" id="Studio"></p><h1>🎵 Studio Setup</h1>
+<h1 id="-studio-audio-production-setup">🎵 Studio — Audio Production Setup</h1>
+<p>This section covers the <strong>audio production</strong> stack installed by HorneroConfig, including DAW, guitar amp simulation, plugins, and Windows VST bridge support.</p>
+<blockquote>
+<p>[!TIP]
+The full studio stack is installed automatically via chezmoi on Arch Linux. The install script lives at:
+<code>home/.chezmoiscripts/linux/run_onchange_before_install-studio.sh.tmpl</code></p>
+</blockquote>
+<hr>
+<h2 id="-managed-config-files">📁 Managed Config Files</h2>
+<p>The following REAPER files are tracked by chezmoi under <code>home/dot_config/REAPER/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reaper-fxtags.ini</code></td>
+<td>FX plugin tags — user-curated organization of all plugins</td>
+</tr>
+<tr>
+<td><code>ProjectTemplates/Basic Vocal Tracking - Linux Scarlett.RPP</code></td>
+<td>Project template for vocal recording with Scarlett interface</td>
+</tr>
+</tbody>
+</table>
+<p>Everything else in <code>~/.config/REAPER/</code> (plugin scan caches, window positions, recent files, license info) is <strong>intentionally excluded</strong> — it is either machine-specific, auto-generated, or sensitive.</p>
+<hr>
+<h2 id="-audio-server-pipewire">🔊 Audio Server — PipeWire</h2>
+<p>PipeWire is the foundation of the audio stack. It replaces PulseAudio and JACK while maintaining compatibility with both.</p>
+<h3 id="installed-packages">Installed packages</h3>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pipewire</code></td>
+<td>Core audio/video server</td>
+</tr>
+<tr>
+<td><code>pipewire-alsa</code></td>
+<td>ALSA compatibility layer</td>
+</tr>
+<tr>
+<td><code>pipewire-pulse</code></td>
+<td>PulseAudio compatibility layer</td>
+</tr>
+<tr>
+<td><code>pipewire-jack</code></td>
+<td>JACK compatibility layer (low-latency audio)</td>
+</tr>
+<tr>
+<td><code>wireplumber</code></td>
+<td>Session/policy manager for PipeWire</td>
+</tr>
+<tr>
+<td><code>pavucontrol</code></td>
+<td>GTK volume control GUI</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manual-install">Manual install</h3>
+<pre class="hljs">sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol</pre><h3 id="enable-start">Enable &amp; start</h3>
+<pre class="hljs">systemctl --user <span class="hljs-built_in">enable</span> --now pipewire pipewire-pulse wireplumber</pre><blockquote>
+<p>[!NOTE]
+On a fresh install, chezmoi handles package installation but you may need to log out and back in for PipeWire to fully replace PulseAudio.</p>
+</blockquote>
+<h3 id="verify-pipewire-is-active">Verify PipeWire is active</h3>
+<p>After logging back in, confirm that PipeWire is serving as the PulseAudio backend:</p>
+<pre class="hljs">pactl info</pre><p>Look for this line in the output:</p>
+<pre class="hljs"><span class="hljs-keyword">Server</span> <span class="hljs-type">Name</span>: PulseAudio (<span class="hljs-keyword">on</span> PipeWire)</pre><p>If you see <code>PulseAudio (on PipeWire)</code>, everything is wired up correctly. Any other value (e.g., plain <code>PulseAudio</code>) means PipeWire is not active — check that <code>pipewire-pulse</code> is installed and <code>wireplumber</code> is running:</p>
+<pre class="hljs">systemctl --user status pipewire pipewire-pulse wireplumber</pre><hr>
+<h2 id="-daw-reaper">🎛️ DAW — REAPER</h2>
+<p><a href="https://www.reaper.fm/">REAPER</a> is a professional, lightweight, and highly customizable Digital Audio Workstation.</p>
+<h3 id="installed-via">Installed via</h3>
+<pre class="hljs">sudo pacman -S reaper</pre><h3 id="notes">Notes</h3>
+<ul>
+<li>On Arch Linux, REAPER uses <strong>PipeWire-JACK</strong> for low-latency audio.</li>
+<li>Configure the audio device under <code>Options → Preferences → Audio → Device</code>.</li>
+<li>Set the device to <strong>JACK</strong> and start the session via PipeWire&#39;s JACK layer (no separate JACK daemon needed).</li>
+</ul>
+<hr>
+<h2 id="-guitar-amp-simulation-guitarix">🎸 Guitar Amp Simulation — Guitarix</h2>
+<p><a href="https://guitarix.org/">Guitarix</a> is a virtual guitar amplifier running through the JACK audio system.</p>
+<h3 id="installed-packages">Installed packages</h3>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>guitarix</code></td>
+<td>Virtual guitar amp</td>
+</tr>
+<tr>
+<td><code>gxplugins.lv2</code></td>
+<td>Guitarix LV2 plugin set</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manual-install">Manual install</h3>
+<pre class="hljs">sudo pacman -S guitarix gxplugins.lv2</pre><h3 id="usage">Usage</h3>
+<p>Guitarix connects to the JACK graph. With PipeWire-JACK active, simply launch:</p>
+<pre class="hljs">guitarix</pre><p>Use <code>qpwgraph</code> or <code>helvum</code> to visualize and patch audio connections in the PipeWire graph.</p>
+<hr>
+<h2 id="-lv2-audio-plugins">🔌 LV2 / Audio Plugins</h2>
+<p>A curated set of open-source LV2 plugins is installed for mixing, mastering, and effects.</p>
+<h3 id="installed-packages">Installed packages</h3>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calf</code></td>
+<td>Studio-quality LV2 effects (EQ, reverb, compressor, chorus…)</td>
+</tr>
+<tr>
+<td><code>lsp-plugins</code></td>
+<td>Linux Studio Plugins — professional mixing/mastering suite</td>
+</tr>
+<tr>
+<td><code>lsp-plugins-docs</code></td>
+<td>Documentation for LSP Plugins</td>
+</tr>
+<tr>
+<td><code>x42-plugins</code></td>
+<td>Collection of LV2 plugins by Robin Gareus (meters, MIDI tools…)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manual-install">Manual install</h3>
+<pre class="hljs">sudo pacman -S calf lsp-plugins lsp-plugins-docs x42-plugins</pre><hr>
+<h2 id="-windows-vst-bridge-yabridge-yabridgectl">🪟 Windows VST Bridge — yabridge + yabridgectl</h2>
+<p><a href="https://github.com/robbert-vd-beest/yabridge">yabridge</a> lets you run Windows VST2/VST3 plugins natively in Linux via Wine.</p>
+<h3 id="installed-packages-aur-">Installed packages (AUR)</h3>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yabridge</code></td>
+<td>Wine-based VST bridge</td>
+</tr>
+<tr>
+<td><code>yabridgectl</code></td>
+<td>CLI tool to manage yabridge plugin installations</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manual-install">Manual install</h3>
+<pre class="hljs">yay -S yabridge yabridgectl</pre><h3 id="basic-setup">Basic setup</h3>
+<ol>
+<li>Install Wine and your Windows VST plugins as usual.</li>
+<li><p>Add plugin directories to yabridgectl:</p>
+<pre class="hljs">yabridgectl add <span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/.wine/drive_c/Program Files/Steinberg/VstPlugins&quot;</span></pre></li>
+<li><p>Sync to generate bridge files:</p>
+<pre class="hljs">yabridgectl sync</pre></li>
+<li><p>Verify the setup:</p>
+<pre class="hljs">yabridgectl status</pre></li>
+</ol>
+<blockquote>
+<p>[!TIP]
+Use <code>yabridgectl sync --prune</code> to remove bridges for plugins you&#39;ve uninstalled.</p>
+</blockquote>
+<h3 id="references">References</h3>
+<ul>
+<li><a href="https://github.com/robbert-vd-beest/yabridge">yabridge GitHub</a></li>
+<li><a href="https://wiki.archlinux.org/title/Yabridge">Arch Wiki — yabridge</a></li>
+</ul>
+<hr>
+<h2 id="-full-package-summary">📦 Full Package Summary</h2>
+<p>All packages installed by the studio chezmoi script:</p>
+<pre class="hljs"><span class="hljs-comment"># Audio server</span>
+sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
+
+<span class="hljs-comment"># DAW + Guitar amp + LV2 plugins</span>
+sudo pacman -S guitarix gxplugins.lv2 reaper calf lsp-plugins lsp-plugins-docs x42-plugins
+
+<span class="hljs-comment"># Windows VST bridge (AUR)</span>
+yay -S yabridge yabridgectl</pre><hr>
+<h2 id="-resources">🆘 Resources</h2>
+<ul>
+<li><a href="https://www.reaper.fm/purchase.php">REAPER Linux Guide</a></li>
+<li><a href="https://guitarix.org/manual/">Guitarix Docs</a></li>
+<li><a href="https://wiki.archlinux.org/title/PipeWire">Arch Wiki — PipeWire</a></li>
+<li><a href="https://wiki.archlinux.org/title/JACK_Audio_Connection_Kit">Arch Wiki — JACK</a></li>
+<li><a href="https://lsp-plug.in/">Linux Studio Plugins</a></li>
+<li><a href="https://calf-studio-gear.org/">Calf Studio Gear</a></li>
+<li><a href="https://x42-plugins.com/">x42 Plugins</a></li>
+</ul>
 <p class="page" id="Security"></p><h1>🛡️ Security</h1>
 <h1 id="-security-guide">🛡️ Security Guide</h1>
 <p>While these dotfiles are designed to provide a beautiful and personalized setup, <strong>privacy and security</strong> are just as important. This is an evolving journey — not a one-time setup — and we’re always open to suggestions.</p>
@@ -4206,10 +4414,9 @@ dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...
 <li>When <code>wpg</code> is available, <code>dots-wallpaper-set</code> delegates to <code>wpg -s</code> so wpgtk remains source-compatible.</li>
 <li>Wallpaper resolution priority is unified across scripts:<ol>
 <li>Explicit argument</li>
-<li><code>~/.config/wpg/.current</code></li>
-<li><code>~/.local/state/dots/wallpaper/path.txt</code></li>
-<li><code>~/.cache/current_wallpaper</code></li>
-<li><code>~/.cache/wal/wal</code></li>
+<li><code>~/.local/state/dots/wallpaper/path</code> (canonical persistent pointer; respects <code>DOTS_STATE_DIR</code> / <code>XDG_STATE_HOME</code>)</li>
+<li><code>~/.cache/wal/wal</code> (pywal)</li>
+<li><code>~/.config/wpg/.current</code> (optional, when using wpgtk)</li>
 </ol>
 </li>
 </ul>
