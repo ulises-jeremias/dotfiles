@@ -78,7 +78,7 @@ Searcher {
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                const t = text().trim();
+                const t = text.trim();
                 if (t.length > 0)
                     root.actualCurrent = t;
                 root.previewColourLock = false;
