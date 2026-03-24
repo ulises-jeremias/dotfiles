@@ -99,6 +99,20 @@ safe_execute() {
   fi
 }
 
+# Align persistent pointer (~/.local/state/dots/wallpaper/path) with dots_current_wallpaper
+sync_wallpaper_pointer_cache() {
+  if ! declare -f dots_current_wallpaper >/dev/null 2>&1; then
+    return 0
+  fi
+  local wp
+  wp="$(dots_current_wallpaper 2>/dev/null || true)"
+  if [[ -n ${wp:-} && -f $wp ]]; then
+    mkdir -p "$(dirname "${DOTS_WALLPAPER_POINTER_FILE}")" "${HOME}/.cache/dots/smart-colors" 2>/dev/null || true
+    printf '%s\n' "$wp" >"${DOTS_WALLPAPER_POINTER_FILE}"
+    printf '%s\n' "$wp" >"${HOME}/.cache/dots/smart-colors/wallpaper"
+  fi
+}
+
 # Function to reload wal
 reload_wal() {
   show_status "Reloading pywal colorscheme..."
@@ -154,15 +168,15 @@ reload_lockscreen() {
 
     # Move to background to not block the reload process
     (
-      local current_wallpaper="$HOME/.cache/current_wallpaper"
+      local wallpaper_pointer_file="${DOTS_WALLPAPER_POINTER_FILE:-$HOME/.local/state/dots/wallpaper/path}"
       local wallpaper_path=""
 
       if declare -f dots_current_wallpaper >/dev/null 2>&1; then
         wallpaper_path="$(dots_current_wallpaper 2>/dev/null || true)"
       fi
 
-      if [[ -z ${wallpaper_path:-} && -f $current_wallpaper ]]; then
-        wallpaper_path=$(cat "$current_wallpaper")
+      if [[ -z ${wallpaper_path:-} && -f $wallpaper_pointer_file ]]; then
+        wallpaper_path=$(cat "$wallpaper_pointer_file")
       fi
 
       if [[ -f ${wallpaper_path:-} ]]; then
@@ -201,15 +215,15 @@ reload_lockscreen() {
 
     # Move to background to not block the reload process
     (
-      local current_wallpaper="$HOME/.config/wpg/.current"
+      local wpg_pointer_file="$HOME/.config/wpg/.current"
       local wallpaper_path=""
 
       if declare -f dots_current_wallpaper >/dev/null 2>&1; then
         wallpaper_path="$(dots_current_wallpaper 2>/dev/null || true)"
       fi
 
-      if [[ -z ${wallpaper_path:-} && -f $current_wallpaper ]]; then
-        wallpaper_path="$(readlink -f "$current_wallpaper" 2>/dev/null || echo "$current_wallpaper")"
+      if [[ -z ${wallpaper_path:-} && -f $wpg_pointer_file ]]; then
+        wallpaper_path="$(readlink -f "$wpg_pointer_file" 2>/dev/null || echo "$wpg_pointer_file")"
       fi
 
       if [[ -f ${wallpaper_path:-} ]]; then
@@ -481,8 +495,12 @@ main() {
   echo -e "${PURPLE}🎨 Enhanced Wal Reload Script 🎨${NC}"
   echo ""
 
+  sync_wallpaper_pointer_cache
+
   # Core wal reload (must be before smart colors)
   reload_wal
+
+  sync_wallpaper_pointer_cache
 
   # Apply smart colors after all standard wal operations (must be before app reloads)
   reload_smart_colors

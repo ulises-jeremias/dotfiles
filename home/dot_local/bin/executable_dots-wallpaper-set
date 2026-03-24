@@ -4,7 +4,7 @@
 ## Licensed under MIT.
 ##
 ## Unified wallpaper entrypoint for Quickshell and scripts.
-## Prefers wpgtk integration when available, with graceful fallback.
+## wpgtk is optional (opt-in via having `wpg` succeed); pywal + state pointer are canonical.
 ##
 set -euo pipefail
 
@@ -15,6 +15,10 @@ if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
   source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
 fi
 
+# Quickshell launcher calls this script; dirs must exist without chezmoi or manual mkdir.
+mkdir -p "$(dirname "${DOTS_WALLPAPER_POINTER_FILE:-${XDG_STATE_HOME:-$HOME/.local/state}/dots/wallpaper/path}")" \
+  "${HOME}/.cache/dots/smart-colors" 2>/dev/null || true
+
 show_error() {
   echo "❌ $1" >&2
 }
@@ -23,11 +27,23 @@ show_info() {
   echo "ℹ️ $1"
 }
 
+# One-time migration: older installs used ~/.cache/dots/wallpaper/path only.
+migrate_legacy_pointer_if_needed() {
+  local state_p="${DOTS_WALLPAPER_POINTER_FILE:-}"
+  local legacy_p="${DOTS_LEGACY_WALLPAPER_POINTER:-}"
+  [[ -n $state_p && -n $legacy_p ]] || return 0
+  [[ -f $state_p ]] && return 0
+  [[ -f $legacy_p ]] || return 0
+  mkdir -p "$(dirname "$state_p")"
+  cp -a "$legacy_p" "$state_p"
+}
+
+# Persistent state pointer + smart-colors input copy (under cache).
 sync_wallpaper_state() {
-  mkdir -p "$HOME/.cache/dots/smart-colors" "$HOME/.local/state/dots/wallpaper"
+  migrate_legacy_pointer_if_needed
+  mkdir -p "$(dirname "${DOTS_WALLPAPER_POINTER_FILE}")" "$HOME/.cache/dots/smart-colors"
+  printf '%s\n' "$WALLPAPER_PATH" >"${DOTS_WALLPAPER_POINTER_FILE}"
   printf '%s\n' "$WALLPAPER_PATH" >"$HOME/.cache/dots/smart-colors/wallpaper"
-  printf '%s\n' "$WALLPAPER_PATH" >"$HOME/.local/state/dots/wallpaper/path.txt"
-  printf '%s\n' "$WALLPAPER_PATH" >"$HOME/.cache/current_wallpaper"
 }
 
 usage() {
@@ -57,12 +73,29 @@ fi
 if command -v wpg >/dev/null 2>&1; then
   if wpg -s "$WALLPAPER_PATH" >/dev/null 2>&1; then
     show_info "Wallpaper set via wpgtk"
+    if declare -f dots_current_wallpaper >/dev/null 2>&1; then
+      resolved="$(dots_current_wallpaper 2>/dev/null || true)"
+      if [[ -n ${resolved:-} && -f $resolved ]]; then
+        WALLPAPER_PATH="$resolved"
+      fi
+    fi
+    sync_wallpaper_state
+    if command -v dots-smart-colors >/dev/null 2>&1; then
+      dots-smart-colors --generate --m3 >/dev/null 2>&1 || true
+    fi
+    if pgrep -x quickshell >/dev/null 2>&1 && command -v dots-quickshell >/dev/null 2>&1; then
+      dots-quickshell ipc colours reload >/dev/null 2>&1 || true
+    fi
     exit 0
   fi
-  show_info "wpgtk failed, using state fallback pipeline"
+  show_info "wpgtk failed, using pywal pipeline"
 fi
 
-# Fallback path without wpgtk: keep state and colors synchronized.
+# Core pipeline (no wpg): pywal + persistent pointer + smart colors.
+if command -v wal >/dev/null 2>&1; then
+  wal -i "$WALLPAPER_PATH" -q 2>/dev/null || true
+fi
+
 sync_wallpaper_state
 
 if command -v dots-smart-colors >/dev/null 2>&1; then
@@ -73,4 +106,4 @@ if pgrep -x quickshell >/dev/null 2>&1 && command -v dots-quickshell >/dev/null 
   dots-quickshell ipc colours reload >/dev/null 2>&1 || true
 fi
 
-show_info "Wallpaper state set via fallback pipeline"
+show_info "Wallpaper state set (pywal + state pointer)"

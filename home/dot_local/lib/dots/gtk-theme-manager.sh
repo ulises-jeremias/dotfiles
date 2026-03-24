@@ -358,12 +358,12 @@ apply_rice_gtk_theme() {
 
   # If no explicit theme set in rice, detect based on wallpaper
   if [[ -z $gtk_theme ]] || [[ $gtk_theme == "auto" ]]; then
-    local current_wallpaper
-    current_wallpaper=$(cat "$HOME/.cache/wal/wal" 2>/dev/null || echo "")
+    local wal_wallpaper
+    wal_wallpaper=$(cat "$HOME/.cache/wal/wal" 2>/dev/null || echo "")
 
-    if [[ -n $current_wallpaper && -f $current_wallpaper ]]; then
+    if [[ -n $wal_wallpaper && -f $wal_wallpaper ]]; then
       local theme_info
-      theme_info=$(detect_optimal_gtk_theme "$current_wallpaper")
+      theme_info=$(detect_optimal_gtk_theme "$wal_wallpaper")
       gtk_theme="${theme_info%:*}"
       if [[ $prefer_dark == "auto" ]]; then
         prefer_dark="${theme_info#*:}"

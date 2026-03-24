@@ -13,6 +13,8 @@ Singleton {
 
     readonly property string data: `${Quickshell.env("DOTS_DATA_DIR") || `${Quickshell.env("XDG_DATA_HOME") || `${home}/.local/share`}/dots`}`
     readonly property string state: `${Quickshell.env("DOTS_STATE_DIR") || `${Quickshell.env("XDG_STATE_HOME") || `${home}/.local/state`}/dots`}`
+    /** Persistent wallpaper path pointer (one line); must match wallpaper-resolver.sh */
+    readonly property string wallpaperPointer: `${state}/wallpaper/path`
     readonly property string cache: `${Quickshell.env("DOTS_CACHE_DIR") || `${Quickshell.env("XDG_CACHE_HOME") || `${home}/.cache`}/dots`}`
     readonly property string config: `${Quickshell.env("DOTS_CONFIG_DIR") || `${Quickshell.env("XDG_CONFIG_HOME") || `${home}/.config`}/hornero`}`
 

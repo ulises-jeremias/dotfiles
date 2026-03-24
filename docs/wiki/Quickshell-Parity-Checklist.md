@@ -35,7 +35,7 @@ dots-quickshell restart
 
 - [ ] `dots-smart-colors --m3` regenerates `~/.cache/dots/smart-colors/scheme.json`.
 - [ ] `dots-quickshell ipc colours reload` updates shell palette live.
-- [ ] Wallpaper changes update `~/.local/state/dots/wallpaper/path.txt`.
+- [ ] Wallpaper changes update `~/.local/state/dots/wallpaper/path`.
 - [ ] Light/dark mode follows generated scheme and keeps readable contrast.
 
 ## Notifications and session

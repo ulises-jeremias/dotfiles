@@ -34,7 +34,7 @@
 {{- end -}}
 
 {{- if not $ephemeral -}}
-{{-   if eq $hostname "hornero" -}}
+{{-   if or (eq $hostname "hornero") (eq $hostname "colibri") -}}
 {{-     $personal = true -}}
 {{-     $docker = true -}}
 {{-   else if $interactive -}}

@@ -45,6 +45,7 @@ scripts_list=(
   "🔔 updates: Check and display available package updates with notifications"
   "🎨 wal-reload: Reload pywal colorscheme and apply M3 smart colors to Quickshell, Hyprland, Kitty"
   "🖼️ wallpaper-set: Unified wallpaper setter (wpgtk-first with reliable fallback pipeline)"
+  "🖼️ wallpaper-current: Print the resolved absolute path to the current wallpaper"
   "🐚 quickshell: Quickshell desktop shell management (start, stop, restart, status, IPC, presets, config)"
   "🎥 recorder: Screen recorder wrapper (Caelestia backend or graceful fallback)"
   "🌤️ weather-info: Display current weather information and forecasts"

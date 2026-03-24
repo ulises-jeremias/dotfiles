@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Print the resolved absolute path to the current wallpaper (same rules as wallpaper-resolver).
+set -euo pipefail
+
+if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+fi
+
+if ! declare -f dots_current_wallpaper >/dev/null 2>&1; then
+  exit 1
+fi
+
+path="$(dots_current_wallpaper "${1:-}" 2>/dev/null || true)"
+if [[ -n ${path:-} && -f $path ]]; then
+  printf '%s\n' "$path"
+  exit 0
+fi
+
+exit 1

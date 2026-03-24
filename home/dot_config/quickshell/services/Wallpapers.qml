@@ -11,7 +11,8 @@ import QtQuick
 Searcher {
     id: root
 
-    readonly property string currentNamePath: `${Paths.state}/wallpaper/path.txt`
+    readonly property string wallpaperPointerPath: Paths.wallpaperPointer
+    readonly property string wpgPointerPath: `${Quickshell.env("HOME")}/.config/wpg/.current`
     property bool showPreview: false
     readonly property string current: showPreview ? previewPath : actualCurrent
     property string previewPath
@@ -37,6 +38,17 @@ Searcher {
             Colours.showPreview = false;
     }
 
+    function reloadWallpaperPath(): void {
+        resolveProc.running = true;
+    }
+
+    /** Raw pointer file content; avoids empty UI if dots-wallpaper-current fails (env/PATH). */
+    function applyPointerFromFileView(pointerReadout: string): void {
+        const t = pointerReadout.trim();
+        if (t.length > 0)
+            actualCurrent = t;
+    }
+
     list: wallpapers.entries
     key: "relativePath"
     useFuzzy: Config.launcher.useFuzzy.wallpapers
@@ -60,13 +72,46 @@ Searcher {
         }
     }
 
+    Process {
+        id: resolveProc
+
+        command: [`${Quickshell.env("HOME")}/.local/bin/dots-wallpaper-current`]
+        running: false
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const t = text().trim();
+                if (t.length > 0)
+                    root.actualCurrent = t;
+                root.previewColourLock = false;
+            }
+        }
+    }
+
     FileView {
-        path: root.currentNamePath
+        path: root.wallpaperPointerPath
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.applyPointerFromFileView(text());
+            reloadWallpaperPath();
+        }
         onLoaded: {
-            root.actualCurrent = text().trim();
-            root.previewColourLock = false;
+            root.applyPointerFromFileView(text());
+            reloadWallpaperPath();
+        }
+        onLoadFailed: err => {
+            if (err === FileViewError.FileNotFound)
+                reloadWallpaperPath();
+        }
+    }
+
+    FileView {
+        path: root.wpgPointerPath
+        watchChanges: true
+        onFileChanged: reloadWallpaperPath()
+        onLoaded: reloadWallpaperPath()
+        onLoadFailed: err => {
+            if (err === FileViewError.FileNotFound)
+                reloadWallpaperPath();
         }
     }
 
@@ -77,6 +122,8 @@ Searcher {
         path: Paths.wallsdir
         filter: FileSystemModel.Images
     }
+
+    Component.onCompleted: Qt.callLater(() => reloadWallpaperPath())
 
     Process {
         id: getPreviewColoursProc

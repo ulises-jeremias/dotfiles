@@ -15,10 +15,16 @@
 
 set -euo pipefail
 
+if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+fi
+
 SMART_COLORS_DIR="${HOME}/.cache/dots/smart-colors"
 SCHEME_FILE="${SMART_COLORS_DIR}/scheme.json"
 OUTPUT_FILE="${SMART_COLORS_DIR}/colors-hyprlock.conf"
 WALLPAPER_CACHE="${SMART_COLORS_DIR}/wallpaper"
+DOTS_WALLPAPER_POINTER="${DOTS_WALLPAPER_POINTER_FILE:-${DOTS_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dots}/wallpaper/path}"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -73,8 +79,8 @@ if [[ $# -ge 1 && -n ${1:-} ]]; then
   wallpaper="$1"
 elif [[ -f $WALLPAPER_CACHE ]]; then
   wallpaper="$(cat "$WALLPAPER_CACHE")"
-elif [[ -f "${HOME}/.cache/current_wallpaper" ]]; then
-  wallpaper="$(cat "${HOME}/.cache/current_wallpaper")"
+elif [[ -f $DOTS_WALLPAPER_POINTER ]]; then
+  wallpaper="$(cat "$DOTS_WALLPAPER_POINTER")"
 fi
 
 # ── generate hyprlock colour override file ────────────────────────────────────

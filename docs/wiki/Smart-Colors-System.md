@@ -23,10 +23,9 @@ The direct pipeline could desynchronize `~/.config/wpg/.current` from shell/runt
 - When `wpg` is available, `dots-wallpaper-set` delegates to `wpg -s` so wpgtk remains source-compatible.
 - Wallpaper resolution priority is unified across scripts:
   1. Explicit argument
-  2. `~/.config/wpg/.current`
-  3. `~/.local/state/dots/wallpaper/path.txt`
-  4. `~/.cache/current_wallpaper`
-  5. `~/.cache/wal/wal`
+  2. `~/.local/state/dots/wallpaper/path` (canonical persistent pointer; respects `DOTS_STATE_DIR` / `XDG_STATE_HOME`)
+  3. `~/.cache/wal/wal` (pywal)
+  4. `~/.config/wpg/.current` (optional, when using wpgtk)
 
 ## Main Commands
 

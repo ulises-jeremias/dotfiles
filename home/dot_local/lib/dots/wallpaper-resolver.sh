@@ -1,10 +1,25 @@
-#!/usr/bin/env bash
-
 # Shared wallpaper resolution helpers for dots scripts.
-# Priority: explicit path > wpgtk (.current) > dots state > wal cache.
+#
+# Canonical pointer (one line, absolute path), PERSISTENT across reboots:
+#   $DOTS_WALLPAPER_POINTER_FILE  (default: ~/.local/state/dots/wallpaper/path)
+# Must match Quickshell Paths.state + "/wallpaper/path".
+#
+# Optional legacy (older installs): ~/.cache/dots/wallpaper/path — read-only fallback.
+DOTS_STATE_DIR="${DOTS_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dots}"
+DOTS_WALLPAPER_POINTER_FILE="${DOTS_WALLPAPER_POINTER_FILE:-$DOTS_STATE_DIR/wallpaper/path}"
+DOTS_CACHE_DIR="${DOTS_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/dots}"
+DOTS_LEGACY_WALLPAPER_POINTER="${DOTS_LEGACY_WALLPAPER_POINTER:-$DOTS_CACHE_DIR/wallpaper/path}"
+# Priority: explicit path > canonical state pointer > legacy cache pointer > wal > wpg > wp_init.
+
+dots_strip_file_uri() {
+  local s="${1:-}"
+  s="${s#file://}"
+  printf '%s\n' "$s"
+}
 
 dots_resolve_path_candidate() {
-  local candidate="${1:-}"
+  local candidate=""
+  candidate="$(dots_strip_file_uri "${1:-}")"
   [[ -n $candidate ]] || return 1
 
   # Resolve symlink-style candidates first to normalize paths.
@@ -39,6 +54,7 @@ dots_resolve_from_pointer_file() {
     local line=""
     line="$(head -n 1 "$pointer_file" 2>/dev/null || true)"
     line="${line%$'\r'}"
+    line="$(dots_strip_file_uri "$line")"
     if [[ -n $line ]]; then
       local from_line=""
       from_line="$(readlink -f "$line" 2>/dev/null || true)"
@@ -69,10 +85,10 @@ dots_current_wallpaper() {
   fi
 
   local candidates=(
-    "$HOME/.config/wpg/.current"
-    "$HOME/.local/state/dots/wallpaper/path.txt"
-    "$HOME/.cache/current_wallpaper"
+    "$DOTS_WALLPAPER_POINTER_FILE"
+    "$DOTS_LEGACY_WALLPAPER_POINTER"
     "$HOME/.cache/wal/wal"
+    "$HOME/.config/wpg/.current"
   )
 
   local candidate=""
@@ -84,7 +100,6 @@ dots_current_wallpaper() {
     fi
   done
 
-  # Last compatibility fallback for older wpgtk state.
   if [[ -f "$HOME/.config/wpg/wp_init.py" ]] && command -v python3 >/dev/null 2>&1; then
     local py_wallpaper=""
     py_wallpaper="$(python3 -c "import os; exec(open(os.path.expanduser('~/.config/wpg/wp_init.py')).read()); print(wallpaper)" 2>/dev/null || true)"

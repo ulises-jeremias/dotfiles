@@ -15,8 +15,7 @@ fi
 SCHEME_FILE="${HOME}/.cache/dots/smart-colors/scheme.json"
 STATE_DIR="${HOME}/.local/state/dots/scheme"
 STATE_FILE="${STATE_DIR}/state.json"
-WALL_STATE_FILE="${HOME}/.local/state/dots/wallpaper/path.txt"
-CURRENT_WALL_CACHE="${HOME}/.cache/current_wallpaper"
+CURRENT_WALL_CACHE="${DOTS_WALLPAPER_POINTER_FILE:-$HOME/.local/state/dots/wallpaper/path}"
 WAL_WALL_LINK="${HOME}/.cache/wal/wal"
 M3_SCRIPT="${HOME}/.local/lib/dots/generate-m3-colors.py"
 CAELESTIA_STATE_DIR="${HOME}/.local/state/caelestia"
@@ -76,9 +75,7 @@ resolve_wallpaper() {
   fi
 
   local wall=""
-  if [[ -f $WALL_STATE_FILE ]]; then
-    wall=$(<"$WALL_STATE_FILE")
-  elif [[ -f $CURRENT_WALL_CACHE ]]; then
+  if [[ -f $CURRENT_WALL_CACHE ]]; then
     wall=$(<"$CURRENT_WALL_CACHE")
   elif [[ -e $WAL_WALL_LINK ]]; then
     wall=$(readlink -f "$WAL_WALL_LINK" 2>/dev/null || true)

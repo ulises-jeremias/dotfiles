@@ -274,7 +274,7 @@ yay -S hyprlock
 Generate lockscreen images first:
 
 ```bash
-dots lockscreen --update=~/.cache/current_wallpaper
+dots lockscreen --update=~/.local/state/dots/wallpaper/path
 ```
 
 ## Dependencies
@@ -288,7 +288,7 @@ dots lockscreen --update=~/.cache/current_wallpaper
 
 - Script: `~/.local/bin/dots-lockscreen`
 - Cache: `~/.cache/dots-lockscreen/current/`
-- Current wallpaper: `~/.cache/current_wallpaper`
+- Current wallpaper pointer: `~/.local/state/dots/wallpaper/path`
 - Smart colors: `~/.cache/dots/smart-colors/current.env`
 
 ## See Also

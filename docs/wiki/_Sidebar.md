@@ -59,6 +59,10 @@
 - [📁 File Manager](Dots-Scripts#file-manager--file-manager-launcher) - thunar → nautilus
 - [📁 Yazi](Dots-Scripts#yazi--terminal-file-manager) - terminal file manager
 
+### 🎵 **Studio & Audio**
+
+- [🎵 Studio Setup](Studio)
+
 ### 🛡️ **System & Hardware**
 
 - [🛡️ Security](Security)

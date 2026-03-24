@@ -27,13 +27,17 @@ set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 source ~/.local/lib/dots/logging.sh || exit
+if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+fi
 
 VER="1.0.0"
 
 # Configuration
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dots-lockscreen"
 CURRENT_DIR="$CACHE_DIR/current"
-CURRENT_WALLPAPER="$HOME/.cache/current_wallpaper"
+CURRENT_WALLPAPER="${DOTS_WALLPAPER_POINTER_FILE:-$HOME/.local/state/dots/wallpaper/path}"
 
 # Default values from options
 DIM_LEVEL="${dim:-40}"
