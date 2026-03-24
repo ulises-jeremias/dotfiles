@@ -112,13 +112,17 @@ void CachingImageManager::updateSource(const QString& path) {
     connect(watcher, &QFutureWatcher<QString>::finished, this, [watcher, path, this]() {
         if (m_path != path) {
             // Object is destroyed or path has changed, ignore
+            m_shaPath = QString();
             watcher->deleteLater();
             return;
         }
 
         const QSize size = effectiveSize();
 
+        // Item not laid out yet: clear m_shaPath so width/height signals can retry updateSource().
+        // Otherwise path == m_shaPath blocks forever and the image never loads after restart.
         if (!m_item || !size.width() || !size.height()) {
+            m_shaPath = QString();
             watcher->deleteLater();
             return;
         }
@@ -132,6 +136,10 @@ void CachingImageManager::updateSource(const QString& path) {
 
         const QUrl cache = m_cacheDir.resolved(QUrl(filename));
         if (m_cachePath == cache) {
+            m_item->setProperty("source", cache);
+            if (m_shaPath == path) {
+                m_shaPath = QString();
+            }
             watcher->deleteLater();
             return;
         }
@@ -141,6 +149,9 @@ void CachingImageManager::updateSource(const QString& path) {
 
         if (!cache.isLocalFile()) {
             qWarning() << "CachingImageManager::updateSource: cachePath" << cache << "is not a local file";
+            if (m_shaPath == path) {
+                m_shaPath = QString();
+            }
             watcher->deleteLater();
             return;
         }

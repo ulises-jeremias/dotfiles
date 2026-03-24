@@ -1,0 +1,18 @@
+{
+  "id": "gruvbox-minimalistic",
+  "name": "Gruvbox Minimalistic",
+  "description": "Clean and simplified gruvbox aesthetic with minimal polybar",
+  "style": "Retro Minimal",
+  "tags": ["minimal", "clean", "gruvbox", "productivity"],
+  "schemeType": "tonal-spot",
+  "darkMode": true,
+  "barPosition": "top",
+  "accentColor": "#d79921",
+  "primaryColor": "#458588",
+  "secondaryColor": "#d65d0e",
+  "gtkTheme": "Orchis-Light",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

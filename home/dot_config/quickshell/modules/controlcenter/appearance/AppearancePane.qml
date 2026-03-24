@@ -278,13 +278,13 @@ Item {
 
     function stageAppearanceApply(appearanceId: string): void {
         pendingAppearanceId = appearanceId;
-        session.runAction(["dots-appearance", "apply", appearanceId]);
+        Rice.apply(appearanceId, "");
     }
 
     function stageAppearanceApplyWithWallpaper(appearanceId: string, wallpaperPath: string): void {
         pendingAppearanceId = appearanceId;
         pendingWallpaperPath = wallpaperPath;
-        session.runAction(["dots-appearance", "apply", appearanceId, "--wallpaper", wallpaperPath]);
+        Rice.apply(appearanceId, wallpaperPath);
     }
 
     function stageSchemeApply(name: string, flavour: string): void {
@@ -304,7 +304,7 @@ Item {
 
     function stageWallpaperApply(path: string): void {
         pendingWallpaperPath = path;
-        session.runAction(["dots-wallpaper-set", path]);
+        Rice.setWallpaper(path);
     }
 
     function resetPendingSelections(): void {

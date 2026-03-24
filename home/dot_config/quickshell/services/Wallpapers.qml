@@ -12,7 +12,6 @@ Searcher {
     id: root
 
     readonly property string wallpaperPointerPath: Paths.wallpaperPointer
-    readonly property string wpgPointerPath: `${Quickshell.env("HOME")}/.config/wpg/.current`
     property bool showPreview: false
     readonly property string current: showPreview ? previewPath : actualCurrent
     property string previewPath
@@ -21,7 +20,7 @@ Searcher {
 
     function setWallpaper(path: string): void {
         actualCurrent = path;
-        Quickshell.execDetached(["dots-wallpaper-set", path]);
+        Rice.setWallpaper(path);
     }
 
     function preview(path: string): void {
@@ -98,17 +97,6 @@ Searcher {
             root.applyPointerFromFileView(text());
             reloadWallpaperPath();
         }
-        onLoadFailed: err => {
-            if (err === FileViewError.FileNotFound)
-                reloadWallpaperPath();
-        }
-    }
-
-    FileView {
-        path: root.wpgPointerPath
-        watchChanges: true
-        onFileChanged: reloadWallpaperPath()
-        onLoaded: reloadWallpaperPath()
         onLoadFailed: err => {
             if (err === FileViewError.FileNotFound)
                 reloadWallpaperPath();

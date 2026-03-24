@@ -1,0 +1,18 @@
+{
+  "id": "space",
+  "name": "Space",
+  "description": "Mystical and calming cosmic theme with deep blues and purples",
+  "style": "Cosmic",
+  "tags": ["cosmic", "space", "mystical", "calming", "dark"],
+  "schemeType": "vibrant",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#b16286",
+  "primaryColor": "#458588",
+  "secondaryColor": "#88c0d0",
+  "gtkTheme": "Orchis-Light",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

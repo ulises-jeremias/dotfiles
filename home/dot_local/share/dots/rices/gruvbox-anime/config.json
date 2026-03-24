@@ -1,0 +1,18 @@
+{
+  "id": "gruvbox-anime",
+  "name": "Gruvbox Anime",
+  "description": "Retro warm colors with anime aesthetics and artistic wallpapers",
+  "style": "Retro Anime",
+  "tags": ["retro", "anime", "warm", "cozy", "artistic", "painting"],
+  "schemeType": "expressive",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#d79921",
+  "primaryColor": "#458588",
+  "secondaryColor": "#689d6a",
+  "gtkTheme": "Orchis-Light",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

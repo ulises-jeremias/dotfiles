@@ -594,8 +594,6 @@ generate_smart_color_files() {
   fi
   if [[ -z ${wallpaper_path:-} && -f ~/.cache/wal/wal ]]; then
     wallpaper_path=$(cat ~/.cache/wal/wal)
-  elif [[ -z ${wallpaper_path:-} && -f ~/.config/wpg/wp_init.py ]]; then
-    wallpaper_path=$(python3 -c "import os; exec(open(os.path.expanduser('~/.config/wpg/wp_init.py')).read()); print(wallpaper)" 2>/dev/null || echo "")
   fi
   [[ -z $wallpaper_path ]] && wallpaper_path="/home/$(whoami)/.wallpaper"
 
@@ -1213,7 +1211,7 @@ EOF
         wall_path=$(cat "${HOME}/.cache/wal/wal" 2>/dev/null || echo "")
       fi
       if [[ -z $wall_path || ! -f $wall_path ]]; then
-        show_error "No wallpaper found (wpg/.current, dots state, or wal cache) for M3 generation"
+        show_error "No wallpaper found (dots state pointer or wal cache) for M3 generation"
       elif python3 "$m3_script" --image "$wall_path" --output "${SMART_COLORS_DIR}/scheme.json" 2>&1; then
         show_success "M3 scheme.json generated"
       else

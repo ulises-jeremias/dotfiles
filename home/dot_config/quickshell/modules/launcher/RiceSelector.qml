@@ -33,9 +33,11 @@ Item {
     readonly property var allTags: {
         const tagSet = new Set();
         for (const rice of (Appearances.list ?? [])) {
-            const tags = (rice.tags ?? "").split(",");
+            const rawTags = rice.tags ?? [];
+            // tags may be an array (config.json) or a legacy comma-string
+            const tags = Array.isArray(rawTags) ? rawTags : String(rawTags).split(",");
             for (const t of tags) {
-                const trimmed = t.trim();
+                const trimmed = String(t).trim();
                 if (trimmed)
                     tagSet.add(trimmed);
             }
@@ -75,7 +77,7 @@ Item {
             return;
         if (Colours.scheme === "dynamic")
             Wallpapers.previewColourLock = true;
-        Quickshell.execDetached(["dots-appearance", "apply", root.selectedRice.id, "--wallpaper", path]);
+        Rice.apply(root.selectedRice.id, path);
         root.visibilities.launcher = false;
     }
 

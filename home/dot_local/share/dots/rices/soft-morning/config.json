@@ -1,0 +1,18 @@
+{
+  "id": "soft-morning",
+  "name": "Soft Morning",
+  "description": "Calm early-day mountain and mist landscapes with soft natural light",
+  "style": "Morning Landscape",
+  "tags": ["morning", "calm", "mist", "mountains", "nature", "light"],
+  "schemeType": "neutral",
+  "darkMode": false,
+  "barPosition": "top",
+  "accentColor": "#b8dbd9",
+  "primaryColor": "#c4dfe6",
+  "secondaryColor": "#b8bb26",
+  "gtkTheme": "Orchis-Light",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

@@ -1,0 +1,18 @@
+{
+  "id": "flowers",
+  "name": "Flowers",
+  "description": "Fresh and energizing nature theme with vibrant florals",
+  "style": "Nature",
+  "tags": ["nature", "vibrant", "fresh", "colorful"],
+  "schemeType": "fidelity",
+  "darkMode": false,
+  "barPosition": "top",
+  "accentColor": "#d3869b",
+  "primaryColor": "#458588",
+  "secondaryColor": "#689d6a",
+  "gtkTheme": "auto",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

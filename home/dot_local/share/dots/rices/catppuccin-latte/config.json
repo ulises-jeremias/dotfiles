@@ -1,0 +1,18 @@
+{
+  "id": "catppuccin-latte",
+  "name": "Catppuccin Latte",
+  "description": "The warm light variant of Catppuccin — soft pastels and gentle purples on a creamy base",
+  "style": "Pastel Light",
+  "tags": ["catppuccin", "pastel", "light", "minimal", "purple", "clean", "warm", "productive"],
+  "schemeType": "tonal-spot",
+  "darkMode": false,
+  "barPosition": "top",
+  "accentColor": "#8839ef",
+  "primaryColor": "#1e66f5",
+  "secondaryColor": "#dc8a78",
+  "gtkTheme": "catppuccin-latte-mauve-compact",
+  "iconTheme": "Papirus-Light",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "minimal",
+  "kittyOpacity": 0.95
+}

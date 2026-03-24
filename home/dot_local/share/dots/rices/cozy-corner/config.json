@@ -1,0 +1,18 @@
+{
+  "id": "cozy-corner",
+  "name": "Cozy Corner",
+  "description": "Warm and cute aesthetic with soft pastels and kawaii vibes",
+  "style": "Cozy Kawaii",
+  "tags": ["cozy", "cute", "kawaii", "pastel", "warm", "soft", "comfortable"],
+  "schemeType": "neutral",
+  "darkMode": false,
+  "barPosition": "top",
+  "accentColor": "#f5c2e7",
+  "primaryColor": "#cba6f7",
+  "secondaryColor": "#a6e3a1",
+  "gtkTheme": "Catppuccin-Latte-Standard-Pink-Light",
+  "iconTheme": "Papirus-Light",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "cozy",
+  "kittyOpacity": 0.95
+}

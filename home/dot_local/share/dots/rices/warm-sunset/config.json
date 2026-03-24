@@ -1,0 +1,18 @@
+{
+  "id": "warm-sunset",
+  "name": "Warm Sunset",
+  "description": "Stylized golden-hour landscapes with warm cinematic sunset tones",
+  "style": "Warm Cinematic",
+  "tags": ["warm", "sunset", "cinematic", "golden-hour", "stylized", "landscape"],
+  "schemeType": "vibrant",
+  "darkMode": false,
+  "barPosition": "top",
+  "accentColor": "#ffb347",
+  "primaryColor": "#f4a460",
+  "secondaryColor": "#ff8c00",
+  "gtkTheme": "Orchis-Light",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

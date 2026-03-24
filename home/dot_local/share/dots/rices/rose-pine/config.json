@@ -1,0 +1,18 @@
+{
+  "id": "rose-pine",
+  "name": "Rose Pine",
+  "description": "Elegant dark soho aesthetic with muted rose, iris purple, and foam teal on deep base",
+  "style": "Elegant Dark",
+  "tags": ["rosepine", "elegant", "dark", "purple", "pink", "sophisticated", "cozy", "muted"],
+  "schemeType": "expressive",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#eb6f92",
+  "primaryColor": "#c4a7e7",
+  "secondaryColor": "#9ccfd8",
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Papirus-Dark",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "standard",
+  "kittyOpacity": 0.90
+}

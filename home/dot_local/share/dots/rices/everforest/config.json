@@ -1,0 +1,18 @@
+{
+  "id": "everforest",
+  "name": "Everforest",
+  "description": "Warm, earthy forest palette — deep greens and amber tones for a nature-grounded desktop",
+  "style": "Nature Deep",
+  "tags": ["forest", "nature", "green", "earthy", "cozy", "dark", "warm", "organic", "calm"],
+  "schemeType": "fidelity",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#a7c080",
+  "primaryColor": "#83c092",
+  "secondaryColor": "#e69875",
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Papirus-Dark",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "nature",
+  "kittyOpacity": 0.93
+}

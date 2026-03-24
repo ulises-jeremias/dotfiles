@@ -1,0 +1,18 @@
+{
+  "id": "pastel-dreams",
+  "name": "Pastel Dreams",
+  "description": "Dreamy abstract pastels with smooth gradients and playful color flow",
+  "style": "Abstract Pastel",
+  "tags": ["pastel", "abstract", "gradient", "dreamy", "soft", "colorful"],
+  "schemeType": "neutral",
+  "darkMode": false,
+  "barPosition": "top",
+  "accentColor": "#d3a9e3",
+  "primaryColor": "#a8dadc",
+  "secondaryColor": "#d4a6e8",
+  "gtkTheme": "Orchis-Light",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

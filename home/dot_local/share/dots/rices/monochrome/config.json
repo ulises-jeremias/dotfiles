@@ -1,0 +1,18 @@
+{
+  "id": "monochrome",
+  "name": "Monochrome",
+  "description": "High contrast black and white minimal aesthetic — pure clarity, zero distraction",
+  "style": "High Contrast Minimal",
+  "tags": ["monochrome", "highcontrast", "minimal", "clean", "black", "white", "accessibility", "focus"],
+  "schemeType": "monochrome",
+  "darkMode": true,
+  "barPosition": "top",
+  "accentColor": "#e0e0e0",
+  "primaryColor": "#ffffff",
+  "secondaryColor": "#aaaaaa",
+  "gtkTheme": "Adwaita-dark",
+  "iconTheme": "Papirus-Dark",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "minimal",
+  "kittyOpacity": 0.95
+}

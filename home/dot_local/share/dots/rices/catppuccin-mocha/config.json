@@ -1,0 +1,18 @@
+{
+  "id": "catppuccin-mocha",
+  "name": "Catppuccin Mocha",
+  "description": "The cozy dark variant of Catppuccin — warm purples and soft pastels over a latte-dark base",
+  "style": "Pastel Dark",
+  "tags": ["catppuccin", "pastel", "cozy", "dark", "purple", "modern", "popular"],
+  "schemeType": "tonal-spot",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#cba6f7",
+  "primaryColor": "#89b4fa",
+  "secondaryColor": "#a6e3a1",
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Papirus-Dark",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "cozy",
+  "kittyOpacity": 0.90
+}

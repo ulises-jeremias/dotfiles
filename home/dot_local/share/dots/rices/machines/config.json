@@ -1,0 +1,18 @@
+{
+  "id": "machines",
+  "name": "Machines",
+  "description": "Futuristic city-night and synthwave roads with bold neon contrast",
+  "style": "Cyberpunk Synthwave",
+  "tags": ["cyberpunk", "synthwave", "neon", "futuristic", "night", "cinematic"],
+  "schemeType": "tonal-spot",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#83a598",
+  "primaryColor": "#458588",
+  "secondaryColor": "#8be9fd",
+  "gtkTheme": "auto",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

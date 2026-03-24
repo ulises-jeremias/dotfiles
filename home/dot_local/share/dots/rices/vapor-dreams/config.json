@@ -1,0 +1,18 @@
+{
+  "id": "vapor-dreams",
+  "name": "Vapor Dreams",
+  "description": "Nostalgic 80s/90s vaporwave aesthetic with retro gradients",
+  "style": "Vaporwave",
+  "tags": ["vaporwave", "retro", "80s", "90s", "aesthetic", "nostalgic", "synthwave"],
+  "schemeType": "expressive",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#ff71ce",
+  "primaryColor": "#01cdfe",
+  "secondaryColor": "#b967ff",
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "cozy",
+  "kittyOpacity": 0.90
+}

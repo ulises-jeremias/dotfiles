@@ -1,0 +1,18 @@
+{
+  "id": "landscape",
+  "name": "Landscape",
+  "description": "Cinematic nature vistas with rich forests, lakes, and fantasy cabins",
+  "style": "Nature Cinematic",
+  "tags": ["nature", "cinematic", "landscape", "fantasy", "scenic", "immersive"],
+  "schemeType": "fidelity",
+  "darkMode": true,
+  "barPosition": "top",
+  "accentColor": "#689d6a",
+  "primaryColor": "#458588",
+  "secondaryColor": "#689d6a",
+  "gtkTheme": "auto",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

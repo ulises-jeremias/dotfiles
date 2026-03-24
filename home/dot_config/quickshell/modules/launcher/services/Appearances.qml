@@ -2,6 +2,7 @@ pragma Singleton
 
 import ".."
 import qs.config
+import qs.services
 import qs.utils
 import Quickshell
 import Quickshell.Io
@@ -10,7 +11,10 @@ import QtQuick
 Searcher {
     id: root
 
-    property string currentId: ""
+    property string currentId: Rice.currentId
+
+    readonly property string ricesDir: `${Quickshell.env("HOME")}/.local/share/dots/rices`
+    readonly property string loaderScript: `${Quickshell.env("HOME")}/.local/lib/dots/list-rices.py`
 
     function transformSearch(search: string): string {
         const prefix = Config.launcher.actionPrefix;
@@ -32,8 +36,7 @@ Searcher {
     }
 
     function reload(): void {
-        getAppearances.running = true;
-        getCurrent.running = true;
+        loadProc.running = true;
     }
 
     function styleIcon(style: string): string {
@@ -62,35 +65,32 @@ Searcher {
         Appearance {}
     }
 
+    // Load all rice config.json files via dedicated Python script (no heredoc escaping issues)
     Process {
-        id: getAppearances
+        id: loadProc
 
         running: true
-        command: ["dots-appearance", "list"]
+        command: ["python3", root.loaderScript, root.ricesDir]
+
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
                     const parsed = JSON.parse(text);
-                    if (Array.isArray(parsed))
-                        appearances.model = parsed;
-                    else
-                        appearances.model = [];
+                    appearances.model = Array.isArray(parsed) ? parsed : [];
                 } catch (e) {
+                    console.warn("Appearances.qml: failed to parse rice list:", e);
                     appearances.model = [];
                 }
             }
         }
     }
 
-    Process {
-        id: getCurrent
+    // Reload when Rice applies a new rice
+    Connections {
+        target: Rice
 
-        running: true
-        command: ["dots-appearance", "current"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                root.currentId = text.trim();
-            }
+        function onCurrentIdChanged(): void {
+            root.currentId = Rice.currentId;
         }
     }
 
@@ -103,14 +103,12 @@ Searcher {
         readonly property string icon: root.styleIcon(style)
         readonly property string preview: modelData.preview ?? ""
         readonly property var wallpapers: modelData.wallpapers ?? []
+        readonly property var tags: modelData.tags ?? []
 
         function onClicked(list: AppList): void {
             list.visibilities.launcher = false;
             root.currentId = id;
-            Quickshell.execDetached(["dots-appearance", "apply", id]);
-            Qt.callLater(() => {
-                root.reload();
-            });
+            Rice.apply(id, "");
         }
     }
 }

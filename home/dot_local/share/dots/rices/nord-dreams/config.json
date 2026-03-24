@@ -1,0 +1,18 @@
+{
+  "id": "nord-dreams",
+  "name": "Nord Dreams",
+  "description": "Clean arctic aesthetic with cool Nordic blues, misty whites, and crisp contrasts",
+  "style": "Arctic Minimal",
+  "tags": ["nordic", "arctic", "minimal", "clean", "blue", "cold", "professional", "productivity"],
+  "schemeType": "tonal-spot",
+  "darkMode": true,
+  "barPosition": "top",
+  "accentColor": "#88c0d0",
+  "primaryColor": "#81a1c1",
+  "secondaryColor": "#b48ead",
+  "gtkTheme": "Orchis-Dark-Compact",
+  "iconTheme": "Papirus-Dark",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "minimal",
+  "kittyOpacity": 0.92
+}

@@ -1,0 +1,18 @@
+{
+  "id": "gruvbox-light",
+  "name": "Gruvbox Light",
+  "description": "Bright and comfortable gruvbox with light warm earth tones",
+  "style": "Retro Light",
+  "tags": ["light", "gruvbox", "warm", "comfortable", "bright"],
+  "schemeType": "tonal-spot",
+  "darkMode": false,
+  "barPosition": "top",
+  "accentColor": "#d79921",
+  "primaryColor": "#076678",
+  "secondaryColor": "#689d6a",
+  "gtkTheme": "Orchis-Light",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}

@@ -1,0 +1,18 @@
+{
+  "id": "neon-city",
+  "name": "Neon City",
+  "description": "Cyberpunk aesthetic with neon lights, dark streets, and futuristic vibes",
+  "style": "Cyberpunk",
+  "tags": ["cyberpunk", "synthwave", "neon", "dark", "futuristic", "night", "city"],
+  "schemeType": "vibrant",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#ff00ff",
+  "primaryColor": "#00ffff",
+  "secondaryColor": "#9d00ff",
+  "gtkTheme": "Orchis-Dark-Compact",
+  "iconTheme": "Numix-Circle",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "cyberpunk",
+  "kittyOpacity": 0.85
+}
