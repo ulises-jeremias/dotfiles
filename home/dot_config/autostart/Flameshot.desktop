@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=flameshot
+Icon=flameshot
+Exec=env QT_QPA_PLATFORM=wayland QT_SCALE_FACTOR_ROUNDING_POLICY=Round flameshot
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
