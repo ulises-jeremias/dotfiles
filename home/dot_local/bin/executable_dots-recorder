@@ -35,125 +35,125 @@ mkdir -p "$STATE_DIR"
 PAUSE_STATE_FILE="${STATE_DIR}/paused"
 
 has_running() {
-  pgrep -f "gpu-screen-recorder" >/dev/null 2>&1
+	pgrep -f "gpu-screen-recorder" >/dev/null 2>&1
 }
 
 get_primary_monitor() {
-  gpu-screen-recorder --list-monitors 2>/dev/null | head -1 | cut -d'|' -f1
+	gpu-screen-recorder --list-monitors 2>/dev/null | head -1 | cut -d'|' -f1
 }
 
 get_output_dir() {
-  local videos_dir="${XDG_VIDEOS_DIR:-${HOME}/Videos}"
-  local recs_dir="${CAELESTIA_RECORDINGS_DIR:-${videos_dir}/Recordings}"
-  mkdir -p "$recs_dir"
-  echo "$recs_dir"
+	local videos_dir="${XDG_VIDEOS_DIR:-${HOME}/Videos}"
+	local recs_dir="${CAELESTIA_RECORDINGS_DIR:-${videos_dir}/Recordings}"
+	mkdir -p "$recs_dir"
+	echo "$recs_dir"
 }
 
 notify_start() {
-  local file="$1"
-  notify-send -i "media-record" -a "dots-recorder" \
-    "Recording started" "$file" 2>/dev/null || true
+	local file="$1"
+	notify-send -i "media-record" -a "dots-recorder" \
+		"Recording started" "$file" 2>/dev/null || true
 }
 
 notify_stop() {
-  local file="$1"
-  notify-send -i "media-playback-stop" -a "dots-recorder" \
-    "Recording saved" "$file" 2>/dev/null || true
+	local file="$1"
+	notify-send -i "media-playback-stop" -a "dots-recorder" \
+		"Recording saved" "$file" 2>/dev/null || true
 }
 
 notify_error() {
-  local msg="$1"
-  notify-send -u critical -i "dialog-error" -a "dots-recorder" \
-    "Recording failed" "$msg" 2>/dev/null || true
+	local msg="$1"
+	notify-send -u critical -i "dialog-error" -a "dots-recorder" \
+		"Recording failed" "$msg" 2>/dev/null || true
 }
 
 # ── subcommands ───────────────────────────────────────────────────────────────
 
 do_start() {
-  # --sr expands into both --region and --sound
-  if [[ -n ${sr:-} ]]; then
-    region="yes"
-    sound="yes"
-  fi
+	# --sr expands into both --region and --sound
+	if [[ -n ${sr:-} ]]; then
+		region="yes"
+		sound="yes"
+	fi
 
-  local use_region="${region:-}"
-  local use_sound="${sound:-}"
-  local rec_fps="${fps:-30}"
-  local monitor
+	local use_region="${region:-}"
+	local use_sound="${sound:-}"
+	local rec_fps="${fps:-30}"
+	local monitor
 
-  local -a gsr_args=()
+	local -a gsr_args=()
 
-  # Capture target
-  if [[ -n $use_region ]]; then
-    gsr_args+=("-w" "region")
-  else
-    monitor=$(get_primary_monitor)
-    gsr_args+=("-w" "${monitor:-eDP-1}")
-  fi
+	# Capture target
+	if [[ -n $use_region ]]; then
+		gsr_args+=("-w" "region")
+	else
+		monitor=$(get_primary_monitor)
+		gsr_args+=("-w" "${monitor:-eDP-1}")
+	fi
 
-  # Video settings — no explicit -k, let GSR pick best available codec
-  gsr_args+=("-f" "$rec_fps")
-  gsr_args+=("-c" "mp4")
-  gsr_args+=("-cursor" "yes")
+	# Video settings — no explicit -k, let GSR pick best available codec
+	gsr_args+=("-f" "$rec_fps")
+	gsr_args+=("-c" "mp4")
+	gsr_args+=("-cursor" "yes")
 
-  # Always allow CPU fallback if VA-API / NVENC is unavailable
-  gsr_args+=("-fallback-cpu-encoding" "yes")
+	# Always allow CPU fallback if VA-API / NVENC is unavailable
+	gsr_args+=("-fallback-cpu-encoding" "yes")
 
-  # Desktop audio
-  if [[ -n $use_sound ]]; then
-    gsr_args+=("-a" "default_output")
-  fi
+	# Desktop audio
+	if [[ -n $use_sound ]]; then
+		gsr_args+=("-a" "default_output")
+	fi
 
-  # Output file: recording_YYYYMMDD_HH-MM-SS.mp4  (matches RecordingList regex)
-  local timestamp
-  local output_dir
-  local filename
-  timestamp=$(date +%Y%m%d_%H-%M-%S)
-  output_dir=$(get_output_dir)
-  filename="${output_dir}/recording_${timestamp}.mp4"
-  gsr_args+=("-o" "$filename")
+	# Output file: recording_YYYYMMDD_HH-MM-SS.mp4  (matches RecordingList regex)
+	local timestamp
+	local output_dir
+	local filename
+	timestamp=$(date +%Y%m%d_%H-%M-%S)
+	output_dir=$(get_output_dir)
+	filename="${output_dir}/recording_${timestamp}.mp4"
+	gsr_args+=("-o" "$filename")
 
-  # Launch detached
-  gpu-screen-recorder "${gsr_args[@]}" >/dev/null 2>&1 &
-  disown || true
+	# Launch detached
+	gpu-screen-recorder "${gsr_args[@]}" >/dev/null 2>&1 &
+	disown || true
 
-  # Store filename for stop notification
-  echo "$filename" >"${STATE_DIR}/current_file"
+	# Store filename for stop notification
+	echo "$filename" >"${STATE_DIR}/current_file"
 
-  # Confirm it started
-  sleep 1
-  if has_running; then
-    notify_start "$filename"
-  else
-    rm -f "${STATE_DIR}/current_file"
-    notify_error "gpu-screen-recorder failed to start"
-    exit 1
-  fi
+	# Confirm it started
+	sleep 1
+	if has_running; then
+		notify_start "$filename"
+	else
+		rm -f "${STATE_DIR}/current_file"
+		notify_error "gpu-screen-recorder failed to start"
+		exit 1
+	fi
 }
 
 do_stop() {
-  local current_file=""
-  [[ -f "${STATE_DIR}/current_file" ]] && current_file=$(cat "${STATE_DIR}/current_file")
+	local current_file=""
+	[[ -f "${STATE_DIR}/current_file" ]] && current_file=$(cat "${STATE_DIR}/current_file")
 
-  pkill -f "gpu-screen-recorder" >/dev/null 2>&1 || true
-  rm -f "$PAUSE_STATE_FILE" "${STATE_DIR}/current_file"
+	pkill -f "gpu-screen-recorder" >/dev/null 2>&1 || true
+	rm -f "$PAUSE_STATE_FILE" "${STATE_DIR}/current_file"
 
-  if [[ -n $current_file ]]; then
-    notify_stop "$current_file"
-  fi
+	if [[ -n $current_file ]]; then
+		notify_stop "$current_file"
+	fi
 }
 
 do_pause() {
-  if ! has_running; then
-    exit 0
-  fi
-  if [[ -f $PAUSE_STATE_FILE ]]; then
-    pkill -CONT -f "gpu-screen-recorder" >/dev/null 2>&1 || true
-    rm -f "$PAUSE_STATE_FILE"
-  else
-    pkill -STOP -f "gpu-screen-recorder" >/dev/null 2>&1 || true
-    : >"$PAUSE_STATE_FILE"
-  fi
+	if ! has_running; then
+		exit 0
+	fi
+	if [[ -f $PAUSE_STATE_FILE ]]; then
+		pkill -CONT -f "gpu-screen-recorder" >/dev/null 2>&1 || true
+		rm -f "$PAUSE_STATE_FILE"
+	else
+		pkill -STOP -f "gpu-screen-recorder" >/dev/null 2>&1 || true
+		: >"$PAUSE_STATE_FILE"
+	fi
 }
 
 # ── dispatch ──────────────────────────────────────────────────────────────────
@@ -161,30 +161,30 @@ do_pause() {
 cmd="${arguments[0]:-}"
 
 case "$cmd" in
-  start)
-    if has_running; then
-      exit 0
-    fi
-    if ! command -v gpu-screen-recorder >/dev/null 2>&1; then
-      notify_error "gpu-screen-recorder is not installed"
-      exit 1
-    fi
-    do_start
-    ;;
-  stop)
-    do_stop
-    ;;
-  pause)
-    do_pause
-    ;;
-  "")
-    echo "Error: no command given." >&2
-    echo "Usage: dots-recorder {start|stop|pause} [OPTIONS]" >&2
-    exit 1
-    ;;
-  *)
-    echo "Error: unknown command '$cmd'." >&2
-    echo "Usage: dots-recorder {start|stop|pause} [OPTIONS]" >&2
-    exit 1
-    ;;
+start)
+	if has_running; then
+		exit 0
+	fi
+	if ! command -v gpu-screen-recorder >/dev/null 2>&1; then
+		notify_error "gpu-screen-recorder is not installed"
+		exit 1
+	fi
+	do_start
+	;;
+stop)
+	do_stop
+	;;
+pause)
+	do_pause
+	;;
+"")
+	echo "Error: no command given." >&2
+	echo "Usage: dots-recorder {start|stop|pause} [OPTIONS]" >&2
+	exit 1
+	;;
+*)
+	echo "Error: unknown command '$cmd'." >&2
+	echo "Usage: dots-recorder {start|stop|pause} [OPTIONS]" >&2
+	exit 1
+	;;
 esac
