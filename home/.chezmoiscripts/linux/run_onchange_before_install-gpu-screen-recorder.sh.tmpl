@@ -1,0 +1,15 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+# GPU-accelerated screen recording
+yay -S --noconfirm --needed \
+  gpu-screen-recorder \
+  gpu-screen-recorder-ui \
+  intel-media-driver \
+  libva-utils
+
+{{      end -}}
+
+{{ end -}}
