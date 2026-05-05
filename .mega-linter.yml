@@ -34,6 +34,8 @@ DISABLE_LINTERS:
   - REPOSITORY_GITLEAKS
   - REPOSITORY_KICS
 
+BASH_SHELLCHECK_ARGUMENTS: --exclude=SC2317
+
 BASH_EXEC_FILTER_REGEX_EXCLUDE: >-
   (^|/)(lib/.*\.sh|home/dot_local/lib/dots/.*\.sh|playground/config/\.bashrc)$
 
