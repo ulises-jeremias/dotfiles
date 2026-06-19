@@ -23,8 +23,11 @@ Item {
     anchors.fill: parent
 
     function run(command: var): void {
-        if (Array.isArray(command) && command.length > 0)
+        if (Array.isArray(command) && command.length > 0) {
+            // Close the control center first so rofi/wofi tools appear in foreground
+            root.session.root.close();
             Quickshell.execDetached(command);
+        }
     }
 
     // Activate SystemUsage polling while this pane is visible
@@ -350,10 +353,10 @@ Item {
                         }
 
                         ActionTile {
-                            icon: "apps"
-                            label: qsTr("Default apps")
-                            description: qsTr("Set default applications")
-                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-default-apps"])
+                            icon: "palette"
+                            label: qsTr("GTK theme")
+                            description: qsTr("Pick GTK theme, icons and cursors")
+                            action: () => root.run(["dots-gtk-theme"])
                         }
 
                         ActionTile {
