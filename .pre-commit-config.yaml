@@ -13,12 +13,19 @@ repos:
         args: [--markdown-linebreak-ext=md]
       - id: end-of-file-fixer
       - id: check-yaml
-        args: [--unsafe]  # Allow custom YAML tags
+        args: [--unsafe] # Allow custom YAML tags
       - id: check-json
       - id: check-toml
       - id: check-xml
       - id: check-added-large-files
         args: [--maxkb=1000]
+        exclude: |
+          (?x)^(
+            home/dot_local/share/dots/rices/.*/backgrounds/.*|
+            home/dot_local/share/dots/rices/.*/preview\.png|
+            home/dot_local/share/dots/wallpapers/curated/.*|
+            static/.*
+          )$
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: check-symlinks
@@ -61,7 +68,7 @@ repos:
     rev: v3.10.0-1
     hooks:
       - id: shfmt
-        args: [-w, -s, -i, '2', -ci]
+        args: [-w, -s, -i, "2", -ci]
         exclude: ^home/dot_zsh/
 
   # Markdown linting

@@ -1,0 +1,56 @@
+{{- if not .ephemeral -}}
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Symlinks curated wallpapers into ~/Pictures/Wallpapers so the Quickshell
+## launcher's random-wallpaper pool sees them. Theme-specific wallpapers stay
+## with their rice under dot_local/share/dots/rices/<rice>/backgrounds/.
+
+set -euo pipefail
+
+SRC="${HOME}/.local/share/dots/wallpapers/curated"
+DEST="${HOME}/Pictures/Wallpapers"
+
+# Trigger: re-run this script when the curated/ filename set changes.
+# {{- range (glob (joinPath .chezmoi.sourceDir "dot_local/share/dots/wallpapers/curated/*")) }}
+# {{ base . }}
+# {{- end }}
+
+if [[ ! -d "$SRC" ]]; then
+  echo "[wallpapers] curated source missing: $SRC" >&2
+  exit 0
+fi
+
+mkdir -p "$DEST"
+
+linked=0
+skipped=0
+
+shopt -s nullglob
+for src in "$SRC"/*.{png,jpg,jpeg,webp}; do
+  name="$(basename "$src")"
+  target="$DEST/$name"
+
+  if [[ -L "$target" ]]; then
+    # Existing symlink: refresh if it points elsewhere.
+    current="$(readlink -f -- "$target" || true)"
+    if [[ "$current" != "$(readlink -f -- "$src")" ]]; then
+      ln -sfn "$src" "$target"
+      linked=$((linked + 1))
+    else
+      skipped=$((skipped + 1))
+    fi
+  elif [[ -e "$target" ]]; then
+    # Real file with the same name: leave it alone, don't clobber user data.
+    skipped=$((skipped + 1))
+  else
+    ln -s "$src" "$target"
+    linked=$((linked + 1))
+  fi
+done
+shopt -u nullglob
+
+echo "[wallpapers] linked=$linked skipped=$skipped (source: $SRC)"
+{{- end -}}

@@ -15,8 +15,8 @@ APPLY_FIXES: all
 # ENABLE_LINTERS:
 
 # DISABLE:
-  # - COPYPASTE # Uncomment to disable checks of excessive copy-pastes
-  # - SPELL # Uncomment to disable checks of spelling mistakes
+# - COPYPASTE # Uncomment to disable checks of excessive copy-pastes
+# - SPELL # Uncomment to disable checks of spelling mistakes
 
 SHOW_ELAPSED_TIME: true
 
@@ -33,6 +33,10 @@ DISABLE:
 DISABLE_LINTERS:
   - REPOSITORY_GITLEAKS
   - REPOSITORY_KICS
+  # osv-scanner scans dependency manifests (package.json, Cargo.toml, etc.).
+  # This repo has none, so the scanner exits with "No package sources found"
+  # and fails the run on every commit. Nothing for it to do here.
+  - REPOSITORY_OSV_SCANNER
 
 BASH_SHELLCHECK_ARGUMENTS: --exclude=SC2317,SC2086,SC2155,SC2030,SC2031,SC2181
 
