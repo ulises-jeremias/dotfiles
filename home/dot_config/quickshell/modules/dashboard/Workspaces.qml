@@ -11,8 +11,10 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    implicitWidth: layout.implicitWidth
-    implicitHeight: layout.implicitHeight
+    // Minimum matches dashboard panel width — avoids circular dependency
+    // with anchors.fill on the inner ColumnLayout
+    implicitWidth: 800
+    implicitHeight: layout.implicitHeight + Appearance.padding.large * 2
 
     readonly property var regularWorkspaces: {
         const all = Hypr.workspaces.values;
@@ -21,7 +23,9 @@ Item {
 
     ColumnLayout {
         id: layout
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
         anchors.margins: Appearance.padding.large
         spacing: Appearance.spacing.normal
 
