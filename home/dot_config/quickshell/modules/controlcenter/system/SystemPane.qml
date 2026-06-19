@@ -10,6 +10,7 @@ import qs.services
 import qs.config
 import Quickshell
 import Quickshell.Widgets
+import Quickshell.Services.UPower
 import QtQuick
 import QtQuick.Layouts
 
@@ -20,25 +21,33 @@ Item {
 
     anchors.fill: parent
 
-    function runTool(command: var): void {
+    function run(command: var): void {
         if (Array.isArray(command) && command.length > 0)
             Quickshell.execDetached(command);
     }
 
+    // Activate SystemUsage polling while this pane is visible
+    Ref {
+        service: SystemUsage
+    }
+
+    // ── Reusable tile ────────────────────────────────────────────────────────
     component ActionTile: StyledRect {
         id: tile
+
         required property string icon
-        required property string title
-        required property string subtitle
+        required property string label
+        required property string description
         required property var action
 
         Layout.fillWidth: true
         radius: Appearance.rounding.normal
         color: Colours.layer(Colours.palette.m3surfaceContainerHigh, 2)
-        implicitHeight: actionRow.implicitHeight + Appearance.padding.normal * 2
+        implicitHeight: row.implicitHeight + Appearance.padding.normal * 2
 
         RowLayout {
-            id: actionRow
+            id: row
+
             anchors.fill: parent
             anchors.margins: Appearance.padding.normal
             spacing: Appearance.spacing.normal
@@ -62,13 +71,14 @@ Item {
                 spacing: 2
 
                 StyledText {
-                    text: tile.title
+                    text: tile.label
                     font.pointSize: Appearance.font.size.normal
                     font.weight: 600
                 }
 
                 StyledText {
-                    text: tile.subtitle
+                    Layout.fillWidth: true
+                    text: tile.description
                     color: Colours.palette.m3onSurfaceVariant
                     font.pointSize: Appearance.font.size.smaller
                     elide: Text.ElideRight
@@ -76,15 +86,71 @@ Item {
             }
 
             TextButton {
-                text: qsTr("Open")
+                text: qsTr("Run")
                 type: TextButton.Tonal
                 onClicked: tile.action()
             }
         }
     }
 
+    // ── Stat row ─────────────────────────────────────────────────────────────
+    component StatBar: ColumnLayout {
+        id: bar
+
+        required property string label
+        required property real value  // 0–1
+        required property string detail
+
+        Layout.fillWidth: true
+        spacing: 4
+
+        RowLayout {
+            Layout.fillWidth: true
+
+            StyledText {
+                text: bar.label
+                font.pointSize: Appearance.font.size.smaller
+                color: Colours.palette.m3onSurfaceVariant
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+
+            StyledText {
+                text: bar.detail
+                font.pointSize: Appearance.font.size.smaller
+                color: Colours.palette.m3onSurfaceVariant
+            }
+        }
+
+        StyledRect {
+            Layout.fillWidth: true
+            implicitHeight: 6
+            radius: Appearance.rounding.full
+            color: Colours.layer(Colours.palette.m3surfaceContainerHighest, 1)
+
+            StyledRect {
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: parent.width * Math.min(bar.value, 1)
+                radius: parent.radius
+                color: bar.value > 0.85 ? Colours.palette.m3error : bar.value > 0.6 ? Colours.palette.m3tertiary : Colours.palette.m3primary
+
+                Behavior on width {
+                    Anim {
+                        duration: Appearance.anim.durations.large
+                    }
+                }
+            }
+        }
+    }
+
+    // ── Main layout ──────────────────────────────────────────────────────────
     ClippingRectangle {
         id: clipRect
+
         anchors.fill: parent
         anchors.margins: Appearance.padding.normal
         anchors.leftMargin: 0
@@ -94,6 +160,7 @@ Item {
 
         StyledFlickable {
             id: flick
+
             anchors.fill: parent
             anchors.margins: Appearance.padding.large + Appearance.padding.normal
             anchors.leftMargin: Appearance.padding.large
@@ -107,130 +174,192 @@ Item {
 
             ColumnLayout {
                 id: content
+
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
                 spacing: Appearance.spacing.normal
 
-                RowLayout {
-                    spacing: Appearance.spacing.smaller
-                    StyledText {
-                        text: qsTr("System")
-                        font.pointSize: Appearance.font.size.large
-                        font.weight: 500
-                    }
+                StyledText {
+                    text: qsTr("System")
+                    font.pointSize: Appearance.font.size.large
+                    font.weight: 500
                 }
 
+                // ── Live stats ───────────────────────────────────────────────
                 StyledRect {
                     Layout.fillWidth: true
                     radius: Appearance.rounding.normal
                     color: Colours.layer(Colours.palette.m3surfaceContainer, 1)
-                    implicitHeight: introContent.implicitHeight + Appearance.padding.large * 2
+                    implicitHeight: statsCol.implicitHeight + Appearance.padding.large * 2
 
                     ColumnLayout {
-                        id: introContent
+                        id: statsCol
+
                         anchors.fill: parent
                         anchors.margins: Appearance.padding.large
-                        spacing: Appearance.spacing.smaller
+                        spacing: Appearance.spacing.normal
 
-                        RowLayout {
-                            spacing: Appearance.spacing.small
-                            MaterialIcon {
-                                text: "build"
-                                font.pointSize: Appearance.font.size.large
-                            }
-                            StyledText {
-                                text: qsTr("System Tools")
-                                font.pointSize: Appearance.font.size.normal
-                                font.weight: 600
+                        StyledText {
+                            text: qsTr("Resources")
+                            font.pointSize: Appearance.font.size.normal
+                            font.weight: 500
+                        }
+
+                        StatBar {
+                            label: SystemUsage.cpuName !== "" ? `CPU — ${SystemUsage.cpuName}` : qsTr("CPU")
+                            value: SystemUsage.cpuPerc
+                            detail: {
+                                const pct = `${Math.round(SystemUsage.cpuPerc * 100)}%`;
+                                return SystemUsage.cpuTemp > 0 ? `${pct} · ${Math.round(SystemUsage.cpuTemp)}°C` : pct;
                             }
                         }
 
-                        StyledText {
-                            Layout.fillWidth: true
-                            text: qsTr("Fast access to monitor, power-profile and shortcuts utilities without leaving Control Center.")
-                            color: Colours.palette.m3onSurfaceVariant
-                            wrapMode: Text.Wrap
-                            font.pointSize: Appearance.font.size.smaller
+                        StatBar {
+                            visible: SystemUsage.gpuType !== "NONE"
+                            label: SystemUsage.gpuName !== "" ? `GPU — ${SystemUsage.gpuName}` : qsTr("GPU")
+                            value: SystemUsage.gpuPerc
+                            detail: {
+                                const pct = `${Math.round(SystemUsage.gpuPerc * 100)}%`;
+                                return SystemUsage.gpuTemp > 0 ? `${pct} · ${Math.round(SystemUsage.gpuTemp)}°C` : pct;
+                            }
+                        }
+
+                        StatBar {
+                            label: qsTr("RAM")
+                            value: SystemUsage.memPerc
+                            detail: {
+                                const used = SystemUsage.formatKib(SystemUsage.memUsed);
+                                const total = SystemUsage.formatKib(SystemUsage.memTotal);
+                                return `${used.value.toFixed(1)} / ${total.value.toFixed(1)} ${total.unit}`;
+                            }
+                        }
+
+                        StatBar {
+                            label: qsTr("Disk")
+                            value: SystemUsage.storagePerc
+                            detail: {
+                                if (SystemUsage.disks.length === 0)
+                                    return "—";
+                                const disk = SystemUsage.disks[0];
+                                const used = SystemUsage.formatKib(disk.used);
+                                const total = SystemUsage.formatKib(disk.total);
+                                return `${used.value.toFixed(1)} / ${total.value.toFixed(1)} ${total.unit}`;
+                            }
                         }
                     }
                 }
 
+                // ── Actions ──────────────────────────────────────────────────
                 StyledRect {
                     Layout.fillWidth: true
                     radius: Appearance.rounding.normal
                     color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
-                    implicitHeight: toolsColumn.implicitHeight + Appearance.padding.large * 2
+                    implicitHeight: actionsCol.implicitHeight + Appearance.padding.large * 2
 
                     ColumnLayout {
-                        id: toolsColumn
+                        id: actionsCol
+
                         anchors.fill: parent
                         anchors.margins: Appearance.padding.large
                         spacing: Appearance.spacing.small
 
                         StyledText {
-                            text: qsTr("Actions")
+                            text: qsTr("Quick actions")
+                            font.pointSize: Appearance.font.size.normal
+                            font.weight: 500
+                        }
+
+                        ActionTile {
+                            icon: "lock"
+                            label: qsTr("Lock screen")
+                            description: qsTr("Activate hyprlock immediately")
+                            action: () => root.run(["dots-lockscreen"])
+                        }
+
+                        ActionTile {
+                            icon: "screenshot_monitor"
+                            label: qsTr("Screenshot")
+                            description: qsTr("Capture the screen with selection")
+                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-screenshooter"])
+                        }
+
+                        ActionTile {
+                            icon: "fiber_manual_record"
+                            label: qsTr("Screen recorder")
+                            description: qsTr("Start or stop screen recording")
+                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-recorder"])
+                        }
+
+                        ActionTile {
+                            icon: "content_paste"
+                            label: qsTr("Clipboard")
+                            description: qsTr("Open clipboard history")
+                            action: () => root.run(["dots-clipboard"])
+                        }
+
+                        ActionTile {
+                            icon: "dark_mode"
+                            label: qsTr("Night mode")
+                            description: qsTr("Toggle blue-light filter")
+                            action: () => root.run(["dots-night-mode", "toggle"])
+                        }
+
+                        ActionTile {
+                            icon: "system_update_alt"
+                            label: qsTr("Check updates")
+                            description: qsTr("Look for pending system updates")
+                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-sysupdate"])
+                        }
+                    }
+                }
+
+                // ── Tools ────────────────────────────────────────────────────
+                StyledRect {
+                    Layout.fillWidth: true
+                    radius: Appearance.rounding.normal
+                    color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
+                    implicitHeight: toolsCol.implicitHeight + Appearance.padding.large * 2
+
+                    ColumnLayout {
+                        id: toolsCol
+
+                        anchors.fill: parent
+                        anchors.margins: Appearance.padding.large
+                        spacing: Appearance.spacing.small
+
+                        StyledText {
+                            text: qsTr("Tools")
                             font.pointSize: Appearance.font.size.normal
                             font.weight: 500
                         }
 
                         ActionTile {
                             icon: "monitor"
-                            title: qsTr("Monitor layout")
-                            subtitle: qsTr("Open monitor layout tool")
-                            action: () => root.runTool(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-hypr-monitors"])
+                            label: qsTr("Monitor layout")
+                            description: qsTr("Configure display arrangement")
+                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-hypr-monitors"])
                         }
 
                         ActionTile {
-                            icon: "battery_charging_full"
-                            title: qsTr("Performance profile")
-                            subtitle: qsTr("Change power profile quickly")
-                            action: () => root.runTool(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-performance-mode"])
+                            icon: "bolt"
+                            label: qsTr("Performance profile")
+                            description: qsTr("Switch power/performance mode")
+                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-performance-mode"])
+                        }
+
+                        ActionTile {
+                            icon: "apps"
+                            label: qsTr("Default apps")
+                            description: qsTr("Set default applications")
+                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-default-apps"])
                         }
 
                         ActionTile {
                             icon: "keyboard"
-                            title: qsTr("Keyboard shortcuts help")
-                            subtitle: qsTr("Open current keybinding reference")
-                            action: () => root.runTool(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-keyboard-help"])
-                        }
-                    }
-                }
-
-                StyledRect {
-                    Layout.fillWidth: true
-                    radius: Appearance.rounding.normal
-                    color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
-                    implicitHeight: navButtons.implicitHeight + Appearance.padding.large * 2
-
-                    ColumnLayout {
-                        id: navButtons
-                        anchors.fill: parent
-                        anchors.margins: Appearance.padding.large
-                        spacing: Appearance.spacing.small
-
-                        StyledText {
-                            text: qsTr("Navigate")
-                            font.pointSize: Appearance.font.size.normal
-                            font.weight: 500
-                        }
-
-                        TextButton {
-                            Layout.fillWidth: true
-                            text: qsTr("Open Appearance pane")
-                            onClicked: root.session.active = "appearance"
-                        }
-
-                        TextButton {
-                            Layout.fillWidth: true
-                            text: qsTr("Open Launcher pane")
-                            onClicked: root.session.active = "launcher"
-                        }
-
-                        TextButton {
-                            Layout.fillWidth: true
-                            text: qsTr("Open Dashboard pane")
-                            onClicked: root.session.active = "dashboard"
+                            label: qsTr("Keyboard shortcuts")
+                            description: qsTr("Show current keybinding reference")
+                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-keyboard-help"])
                         }
                     }
                 }
@@ -240,6 +369,7 @@ Item {
 
     InnerBorder {
         id: border
+
         leftThickness: 0
         rightThickness: Appearance.padding.normal
     }
