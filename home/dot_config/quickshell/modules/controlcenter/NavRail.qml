@@ -16,123 +16,171 @@ Item {
     required property Session session
     required property bool initialOpeningComplete
 
+    // implicitWidth drives the parent StyledRect's width allocation
     implicitWidth: layout.implicitWidth + Appearance.padding.larger * 4
-    implicitHeight: layout.implicitHeight + Appearance.padding.large * 2
 
-    ColumnLayout {
-        id: layout
+    // Fill the parent container and clip overflowing items
+    anchors.fill: parent
+    clip: true
 
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: Appearance.padding.larger * 2
-        spacing: Appearance.spacing.normal
+    // Auto-scrolling Flickable — interactive:false so the outer
+    // CustomMouseArea on the left panel keeps handling wheel events
+    // for pane switching. contentY animates to keep active item visible.
+    Flickable {
+        id: navScroll
 
-        states: State {
-            name: "expanded"
-            when: root.session.navExpanded
+        anchors.fill: parent
+        flickableDirection: Flickable.VerticalFlick
+        interactive: false
+        contentHeight: layout.implicitHeight + Appearance.padding.large * 2
 
-            PropertyChanges {
-                layout.spacing: Appearance.spacing.small
-            }
+        contentY: {
+            const viewH = height;
+            const totalH = contentHeight;
+            if (totalH <= viewH)
+                return 0;
+
+            // Estimate position of the active item.
+            // The layout has: topMargin + optional floatButton + spacing + items.
+            // Each item takes a consistent slice — we scroll so the active one
+            // lands roughly in the center of the visible area.
+            const floatButtonSpace = root.session.floating ? 0 : Appearance.spacing.large + Appearance.padding.large * 2;
+            const itemArea = totalH - Appearance.padding.large - floatButtonSpace;
+            const perItem = PaneRegistry.count > 0 ? itemArea / PaneRegistry.count : 60;
+            const activeY = Appearance.padding.large + floatButtonSpace + root.session.activeIndex * perItem;
+            const target = activeY - viewH / 2 + perItem / 2;
+            return Math.max(0, Math.min(target, totalH - viewH));
         }
 
-        transitions: Transition {
+        Behavior on contentY {
             Anim {
-                properties: "spacing"
+                duration: Appearance.anim.durations.normal
             }
         }
 
-        Loader {
-            Layout.topMargin: Appearance.spacing.large
-            active: !root.session.floating
-            visible: active
+        ColumnLayout {
+            id: layout
 
-            sourceComponent: StyledRect {
-                readonly property int nonAnimWidth: normalWinIcon.implicitWidth + (root.session.navExpanded ? normalWinLabel.anchors.leftMargin + normalWinLabel.implicitWidth : 0) + normalWinIcon.anchors.leftMargin * 2
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.leftMargin: Appearance.padding.larger * 2
+            anchors.topMargin: Appearance.padding.large
+            spacing: Appearance.spacing.normal
 
-                implicitWidth: nonAnimWidth
-                implicitHeight: root.session.navExpanded ? normalWinIcon.implicitHeight + Appearance.padding.normal * 2 : nonAnimWidth
+            states: State {
+                name: "expanded"
+                when: root.session.navExpanded
 
-                color: Colours.palette.m3primaryContainer
-                radius: Appearance.rounding.small
+                PropertyChanges {
+                    layout.spacing: Appearance.spacing.small
+                }
+            }
 
-                StateLayer {
-                    id: normalWinState
+            transitions: Transition {
+                Anim {
+                    properties: "spacing"
+                }
+            }
 
-                    color: Colours.palette.m3onPrimaryContainer
+            Loader {
+                Layout.topMargin: Appearance.spacing.large
+                active: !root.session.floating
+                visible: active
 
-                    function onClicked(): void {
-                        root.session.root.close();
-                        WindowFactory.create(null, {
-                            active: root.session.active,
-                            navExpanded: root.session.navExpanded
-                        });
+                sourceComponent: StyledRect {
+                    readonly property int nonAnimWidth: normalWinIcon.implicitWidth + (root.session.navExpanded ? normalWinLabel.anchors.leftMargin + normalWinLabel.implicitWidth : 0) + normalWinIcon.anchors.leftMargin * 2
+
+                    implicitWidth: nonAnimWidth
+                    implicitHeight: root.session.navExpanded ? normalWinIcon.implicitHeight + Appearance.padding.normal * 2 : nonAnimWidth
+
+                    color: Colours.palette.m3primaryContainer
+                    radius: Appearance.rounding.small
+
+                    StateLayer {
+                        id: normalWinState
+
+                        color: Colours.palette.m3onPrimaryContainer
+
+                        function onClicked(): void {
+                            root.session.root.close();
+                            WindowFactory.create(null, {
+                                active: root.session.active,
+                                navExpanded: root.session.navExpanded
+                            });
+                        }
                     }
-                }
 
-                MaterialIcon {
-                    id: normalWinIcon
+                    MaterialIcon {
+                        id: normalWinIcon
 
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: Appearance.padding.large
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.leftMargin: Appearance.padding.large
 
-                    text: "select_window"
-                    color: Colours.palette.m3onPrimaryContainer
-                    font.pointSize: Appearance.font.size.large
-                    fill: 1
-                }
+                        text: "select_window"
+                        color: Colours.palette.m3onPrimaryContainer
+                        font.pointSize: Appearance.font.size.large
+                        fill: 1
+                    }
 
-                StyledText {
-                    id: normalWinLabel
+                    StyledText {
+                        id: normalWinLabel
 
-                    anchors.left: normalWinIcon.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: Appearance.spacing.normal
+                        anchors.left: normalWinIcon.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.leftMargin: Appearance.spacing.normal
 
-                    text: qsTr("Float window")
-                    color: Colours.palette.m3onPrimaryContainer
-                    opacity: root.session.navExpanded ? 1 : 0
+                        text: qsTr("Float window")
+                        color: Colours.palette.m3onPrimaryContainer
+                        opacity: root.session.navExpanded ? 1 : 0
 
-                    Behavior on opacity {
+                        Behavior on opacity {
+                            Anim {
+                                duration: Appearance.anim.durations.small
+                            }
+                        }
+                    }
+
+                    Behavior on implicitWidth {
                         Anim {
-                            duration: Appearance.anim.durations.small
+                            duration: Appearance.anim.durations.expressiveDefaultSpatial
+                            easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+                        }
+                    }
+
+                    Behavior on implicitHeight {
+                        Anim {
+                            duration: Appearance.anim.durations.expressiveDefaultSpatial
+                            easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
                         }
                     }
                 }
+            }
 
-                Behavior on implicitWidth {
-                    Anim {
-                        duration: Appearance.anim.durations.expressiveDefaultSpatial
-                        easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-                    }
-                }
+            Repeater {
+                model: PaneRegistry.count
 
-                Behavior on implicitHeight {
-                    Anim {
-                        duration: Appearance.anim.durations.expressiveDefaultSpatial
-                        easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+                NavItem {
+                    required property int index
+                    Layout.topMargin: index === 0 ? Appearance.spacing.large * 2 : 0
+                    icon: PaneRegistry.getByIndex(index).icon
+                    label: PaneRegistry.getByIndex(index).label
+                    badgeVisible: {
+                        const pane = PaneRegistry.getByIndex(index);
+                        if (!pane)
+                            return false;
+                        if (pane.id === "network")
+                            return !Network.active && !Network.activeEthernet;
+                        if (pane.id === "notifications")
+                            return Notifs.notClosed.length > 0;
+                        return false;
                     }
                 }
             }
-        }
 
-        Repeater {
-            model: PaneRegistry.count
-
-            NavItem {
-                required property int index
-                Layout.topMargin: index === 0 ? Appearance.spacing.large * 2 : 0
-                icon: PaneRegistry.getByIndex(index).icon
-                label: PaneRegistry.getByIndex(index).label
-                // Badge logic: show alert for specific panes
-                badgeVisible: {
-                    const pane = PaneRegistry.getByIndex(index);
-                    if (!pane) return false;
-                    if (pane.id === "network")
-                        return !Network.active && !Network.activeEthernet;
-                    return false;
-                }
+            // Bottom padding so the last item is never flush against the edge
+            Item {
+                implicitHeight: Appearance.padding.large
             }
         }
     }
@@ -187,10 +235,8 @@ Item {
                 color: item.active ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
 
                 function onClicked(): void {
-                    // Prevent tab switching during initial opening animation to avoid blank pages
-                    if (!root.initialOpeningComplete) {
+                    if (!root.initialOpeningComplete)
                         return;
-                    }
                     root.session.active = item.label;
                 }
             }
@@ -212,7 +258,6 @@ Item {
                 }
             }
 
-            // Alert badge — shown when badgeVisible is true
             StyledRect {
                 id: alertBadge
 
@@ -225,7 +270,6 @@ Item {
                 color: Colours.palette.m3error
                 visible: item.badgeVisible
 
-                // Gentle pulse animation to draw attention
                 SequentialAnimation on scale {
                     running: item.badgeVisible
                     loops: Animation.Infinite
