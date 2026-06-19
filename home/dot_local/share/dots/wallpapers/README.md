@@ -2,7 +2,7 @@
 
 This directory holds the generic wallpaper pool — images that don't belong to a specific rice but are still part of the rotation.
 
-```
+```text
 wallpapers/
 └── curated/   # generic pool, linked to ~/Pictures/Wallpapers on `chezmoi apply`
 ```
