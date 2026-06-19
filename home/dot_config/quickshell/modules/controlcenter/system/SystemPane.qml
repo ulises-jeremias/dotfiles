@@ -24,9 +24,8 @@ Item {
 
     function run(command: var): void {
         if (Array.isArray(command) && command.length > 0) {
-            // Close the control center first so rofi/wofi tools appear in foreground
-            root.session.root.close();
             Quickshell.execDetached(command);
+            root.session.root.close();
         }
     }
 
