@@ -64,6 +64,30 @@ SectionContainer {
                 root.rootItem.saveConfig();
             }
         }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Appearance.spacing.normal
+
+            StyledText {
+                text: qsTr("Weather location")
+                font.pointSize: Appearance.font.size.normal
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+
+            StyledTextField {
+                implicitWidth: 180
+                placeholderText: qsTr("City or lat,lon")
+                text: Config.services.weatherLocation
+                onEditingFinished: {
+                    Config.services.weatherLocation = text;
+                    Config.services.saveConfig();
+                }
+            }
+        }
     }
 
     SectionContainer {

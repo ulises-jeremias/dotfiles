@@ -29,9 +29,13 @@ Item {
         }
     }
 
-    // Activate SystemUsage polling while this pane is visible
+    // Activate polling services while this pane is visible
     Ref {
         service: SystemUsage
+    }
+
+    Ref {
+        service: NetworkUsage
     }
 
     // ── Reusable tile ────────────────────────────────────────────────────────
@@ -238,17 +242,47 @@ Item {
                             }
                         }
 
-                        StatBar {
-                            label: qsTr("Disk")
-                            value: SystemUsage.storagePerc
-                            detail: {
-                                if (SystemUsage.disks.length === 0)
-                                    return "—";
-                                const disk = SystemUsage.disks[0];
-                                const used = SystemUsage.formatKib(disk.used);
-                                const total = SystemUsage.formatKib(disk.total);
-                                return `${used.value.toFixed(1)} / ${total.value.toFixed(1)} ${total.unit}`;
+                        Repeater {
+                            model: SystemUsage.disks
+
+                            StatBar {
+                                required property var modelData
+
+                                label: qsTr("Disk — %1").arg(modelData.mount)
+                                value: modelData.perc
+                                detail: {
+                                    const used = SystemUsage.formatKib(modelData.used);
+                                    const total = SystemUsage.formatKib(modelData.total);
+                                    return `${used.value.toFixed(1)} / ${total.value.toFixed(1)} ${total.unit}`;
+                                }
                             }
+                        }
+
+                        StatBar {
+                            visible: UPower.displayDevice.isLaptopBattery
+                            label: UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.PendingCharge ? qsTr("Battery — Charging") : UPower.displayDevice.state === UPowerDeviceState.FullyCharged ? qsTr("Battery — Full") : qsTr("Battery")
+                            value: UPower.displayDevice.percentage
+                            detail: {
+                                const pct = `${Math.round(UPower.displayDevice.percentage * 100)}%`;
+                                const s = UPower.displayDevice.timeToEmpty;
+                                if (s > 0)
+                                    return `${pct} · ~${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m`;
+                                return pct;
+                            }
+                        }
+
+                        StatBar {
+                            readonly property real dl: NetworkUsage.downloadSpeed
+                            readonly property real ul: NetworkUsage.uploadSpeed
+
+                            function fmtSpeed(bps: real): string {
+                                const fmt = NetworkUsage.formatBytes(bps);
+                                return `${fmt.value.toFixed(1)} ${fmt.unit}`;
+                            }
+
+                            label: qsTr("Network")
+                            value: Math.min(dl / 125000000, 1)
+                            detail: `↓ ${fmtSpeed(dl)}  ↑ ${fmtSpeed(ul)}`
                         }
                     }
                 }
