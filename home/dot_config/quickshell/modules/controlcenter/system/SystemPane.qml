@@ -277,28 +277,28 @@ Item {
                             icon: "lock"
                             label: qsTr("Lock screen")
                             description: qsTr("Activate hyprlock immediately")
-                            action: () => root.run(["dots-lockscreen"])
+                            action: () => root.run(["dots-lockscreen", "--lock"])
                         }
 
                         ActionTile {
                             icon: "screenshot_monitor"
                             label: qsTr("Screenshot")
                             description: qsTr("Capture the screen with selection")
-                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-screenshooter"])
+                            action: () => root.run(["dots-screenshooter"])
                         }
 
                         ActionTile {
                             icon: "fiber_manual_record"
                             label: qsTr("Screen recorder")
-                            description: qsTr("Start or stop screen recording")
-                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-recorder"])
+                            description: qsTr("Open GPU screen recorder")
+                            action: () => root.run(["gsr-ui", "launch-hide-announce"])
                         }
 
                         ActionTile {
                             icon: "content_paste"
                             label: qsTr("Clipboard")
                             description: qsTr("Open clipboard history")
-                            action: () => root.run(["dots-clipboard"])
+                            action: () => root.run(["copyq", "show"])
                         }
 
                         ActionTile {
@@ -311,8 +311,8 @@ Item {
                         ActionTile {
                             icon: "system_update_alt"
                             label: qsTr("Check updates")
-                            description: qsTr("Look for pending system updates")
-                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-sysupdate"])
+                            description: qsTr("Open terminal with system update")
+                            action: () => root.run(["foot", "-e", "sh", "-c", "dots-sysupdate"])
                         }
                     }
                 }
@@ -341,28 +341,28 @@ Item {
                             icon: "monitor"
                             label: qsTr("Monitor layout")
                             description: qsTr("Configure display arrangement")
-                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-hypr-monitors"])
+                            action: () => root.run(["nwg-displays"])
                         }
 
                         ActionTile {
                             icon: "bolt"
                             label: qsTr("Performance profile")
-                            description: qsTr("Switch power/performance mode")
-                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-performance-mode"])
+                            description: qsTr("CPU frequency and power mode")
+                            action: () => root.run(["auto-cpufreq-gtk"])
                         }
 
                         ActionTile {
                             icon: "palette"
                             label: qsTr("GTK theme")
                             description: qsTr("Pick GTK theme, icons and cursors")
-                            action: () => root.run(["dots-gtk-theme"])
+                            action: () => root.run(["nwg-look"])
                         }
 
                         ActionTile {
                             icon: "keyboard"
                             label: qsTr("Keyboard shortcuts")
                             description: qsTr("Show current keybinding reference")
-                            action: () => root.run(["env", "DOTS_BYPASS_QUICKSHELL=1", "dots-keyboard-help"])
+                            action: () => root.run(["foot", "-e", "sh", "-c", "DOTS_BYPASS_QUICKSHELL=1 dots-keyboard-help"])
                         }
                     }
                 }
