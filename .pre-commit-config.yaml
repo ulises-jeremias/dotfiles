@@ -13,7 +13,7 @@ repos:
         args: [--markdown-linebreak-ext=md]
       - id: end-of-file-fixer
       - id: check-yaml
-        args: [--unsafe]  # Allow custom YAML tags
+        args: [--unsafe] # Allow custom YAML tags
       - id: check-json
       - id: check-toml
       - id: check-xml
@@ -68,7 +68,7 @@ repos:
     rev: v3.10.0-1
     hooks:
       - id: shfmt
-        args: [-w, -s, -i, '2', -ci]
+        args: [-w, -s, -i, "2", -ci]
         exclude: ^home/dot_zsh/
 
   # Markdown linting
