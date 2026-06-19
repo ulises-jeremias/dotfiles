@@ -25,6 +25,15 @@ Item {
         wireguard: { name: "wireguard", displayName: "WireGuard",       interface: "wg0",           icon: "vpn_lock" }
     })
 
+    // Provider type cards data for the dialog
+    readonly property var providerTypes: [
+        { type: "netbird",   label: "NetBird",         icon: "lan",      subtitle: qsTr("Open source secure network") },
+        { type: "tailscale", label: "Tailscale",       icon: "hub",      subtitle: qsTr("Zero-config mesh VPN") },
+        { type: "warp",      label: "Cloudflare WARP", icon: "shield",   subtitle: qsTr("Fast DNS + encrypted tunneling") },
+        { type: "wireguard", label: "WireGuard",       icon: "vpn_lock", subtitle: qsTr("Kernel-level encrypted tunnel") },
+        { type: "custom",    label: qsTr("Custom…"),   icon: "tune",     subtitle: qsTr("Manual connect / disconnect commands") }
+    ]
+
     // ── Reactive computed provider list ───────────────────────────────────────
     readonly property var providers: {
         return Config.utilities.vpn.provider.map((raw, i) => {
@@ -73,17 +82,16 @@ Item {
     }
 
     function setActive(idx) {
-        // Enable the target, disable all others
         const arr = [];
         for (let i = 0; i < Config.utilities.vpn.provider.length; i++) {
             const raw = Config.utilities.vpn.provider[i];
             const isObj = typeof raw === "object" && raw !== null;
             if (isObj) {
-                const copy = Object.assign({}, raw);
+                const copy = {};
+                for (const k in raw) copy[k] = raw[k];
                 copy.enabled = (i === idx);
                 arr.push(copy);
             } else {
-                // Convert string to object so we can store enabled flag
                 const name = String(raw);
                 const builtin = root.builtinDefaults[name] || {};
                 arr.push({
@@ -98,7 +106,6 @@ Item {
         Config.save();
     }
 
-    // pendingSwitchIndex: when we need to disable current provider first
     property int pendingSwitchIndex: -1
 
     Connections {
@@ -116,16 +123,12 @@ Item {
     function toggleProvider(idx) {
         const provider = root.providers[idx];
         if (!provider) return;
-
         if (provider.enabled) {
-            // This provider is already active — just connect/disconnect
             VPN.toggle();
         } else if (VPN.connected) {
-            // Another provider is connected — disconnect first, then switch
             root.pendingSwitchIndex = idx;
             VPN.disconnect();
         } else {
-            // Just enable this one and connect
             root.setActive(idx);
             VPN.connect();
         }
@@ -195,8 +198,6 @@ Item {
                                     font.pointSize: Appearance.font.size.smaller
                                     font.weight: 600
                                 }
-
-                                Behavior on color { CAnim {} }
                             }
                         }
 
@@ -208,7 +209,7 @@ Item {
                             implicitHeight: addRow.implicitHeight + Appearance.padding.normal * 2
 
                             StateLayer {
-                                function onClicked(): void { vpnDialog.openForAdd(); }
+                                function onClicked() { vpnDialog.openForAdd(); }
                             }
 
                             RowLayout {
@@ -231,7 +232,6 @@ Item {
                             }
                         }
 
-                        // Empty state
                         StyledText {
                             visible: root.providers.length === 0
                             Layout.fillWidth: true
@@ -243,112 +243,96 @@ Item {
                             wrapMode: Text.Wrap
                         }
 
-                        // Provider list
+                        // Provider list — one StyledRect per item, no inline component
                         Repeater {
                             model: root.providers
 
-                            Item {
-                                id: providerItem
+                            StyledRect {
+                                id: provCard
                                 required property var modelData
                                 readonly property bool isSelected: root.session.vpn.active !== null &&
-                                                                   root.session.vpn.active.index === modelData.index
-                                readonly property bool isConnected: modelData.enabled && VPN.connected
+                                                                   root.session.vpn.active.index === provCard.modelData.index
+                                readonly property bool isConnected: provCard.modelData.enabled && VPN.connected
 
                                 Layout.fillWidth: true
-                                implicitHeight: provCard.implicitHeight
+                                radius: Appearance.rounding.normal
+                                color: provCard.isSelected
+                                    ? Colours.layer(Colours.palette.m3secondaryContainer, 1)
+                                    : Colours.layer(Colours.palette.m3surfaceContainer, 1)
+                                implicitHeight: provRow.implicitHeight + Appearance.padding.normal * 2
 
-                                StyledRect {
-                                    id: provCard
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    radius: Appearance.rounding.normal
-                                    color: providerItem.isSelected
-                                        ? Colours.layer(Colours.palette.m3secondaryContainer, 1)
-                                        : Colours.layer(Colours.palette.m3surfaceContainer, 1)
-                                    implicitHeight: provRow.implicitHeight + Appearance.padding.normal * 2
+                                StateLayer {
+                                    color: provCard.isSelected
+                                        ? Colours.palette.m3onSecondaryContainer
+                                        : Colours.palette.m3onSurface
+                                    function onClicked() {
+                                        root.session.vpn.active = provCard.modelData;
+                                    }
+                                }
 
-                                    Behavior on color { CAnim {} }
+                                RowLayout {
+                                    id: provRow
+                                    anchors.fill: parent
+                                    anchors.margins: Appearance.padding.normal
+                                    spacing: Appearance.spacing.normal
 
-                                    StateLayer {
-                                        color: providerItem.isSelected
-                                            ? Colours.palette.m3onSecondaryContainer
-                                            : Colours.palette.m3onSurface
-                                        function onClicked(): void {
-                                            root.session.vpn.active = providerItem.modelData;
+                                    // Status dot
+                                    StyledRect {
+                                        implicitWidth: 8
+                                        implicitHeight: 8
+                                        radius: Appearance.rounding.full
+                                        color: provCard.isConnected
+                                            ? Colours.palette.m3primary
+                                            : provCard.modelData.enabled
+                                                ? Colours.palette.m3outline
+                                                : Colours.layer(Colours.palette.m3surfaceContainerHighest, 1)
+                                    }
+
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 2
+
+                                        StyledText {
+                                            Layout.fillWidth: true
+                                            text: provCard.modelData.displayName
+                                            font.pointSize: Appearance.font.size.normal
+                                            font.weight: provCard.modelData.enabled ? 600 : 400
+                                            elide: Text.ElideRight
+                                        }
+
+                                        StyledText {
+                                            visible: provCard.modelData.interface !== ""
+                                            text: provCard.modelData.interface
+                                            color: Colours.palette.m3onSurfaceVariant
+                                            font.pointSize: Appearance.font.size.smaller
+                                            elide: Text.ElideRight
                                         }
                                     }
 
-                                    RowLayout {
-                                        id: provRow
-                                        anchors.fill: parent
-                                        anchors.margins: Appearance.padding.normal
-                                        spacing: Appearance.spacing.normal
+                                    // Connect/disconnect toggle
+                                    StyledRect {
+                                        id: linkBtn
+                                        implicitWidth: implicitHeight
+                                        implicitHeight: linkIcon.implicitHeight + Appearance.padding.smaller * 2
+                                        radius: Appearance.rounding.full
+                                        color: provCard.modelData.enabled && VPN.connected
+                                            ? Colours.palette.m3primary
+                                            : Colours.layer(Colours.palette.m3surfaceContainerHigh, 2)
 
-                                        // Status dot
-                                        StyledRect {
-                                            implicitWidth: 8
-                                            implicitHeight: 8
-                                            radius: Appearance.rounding.full
-                                            color: providerItem.isConnected
-                                                ? Colours.palette.m3primary
-                                                : providerItem.modelData.enabled
-                                                    ? Colours.palette.m3outline
-                                                    : Colours.layer(Colours.palette.m3surfaceContainerHighest, 1)
-
-                                            Behavior on color { CAnim {} }
-                                        }
-
-                                        ColumnLayout {
-                                            Layout.fillWidth: true
-                                            spacing: 2
-
-                                            StyledText {
-                                                Layout.fillWidth: true
-                                                text: providerItem.modelData.displayName
-                                                font.pointSize: Appearance.font.size.normal
-                                                font.weight: providerItem.modelData.enabled ? 600 : 400
-                                                elide: Text.ElideRight
-                                            }
-
-                                            StyledText {
-                                                visible: providerItem.modelData.interface !== ""
-                                                text: providerItem.modelData.interface
-                                                color: Colours.palette.m3onSurfaceVariant
-                                                font.pointSize: Appearance.font.size.smaller
-                                                elide: Text.ElideRight
+                                        StateLayer {
+                                            function onClicked() {
+                                                root.toggleProvider(provCard.modelData.index);
                                             }
                                         }
 
-                                        // Connect/disconnect toggle
-                                        StyledRect {
-                                            implicitWidth: implicitHeight
-                                            implicitHeight: linkIcon.implicitHeight + Appearance.padding.smaller * 2
-                                            radius: Appearance.rounding.full
-                                            color: providerItem.modelData.enabled && VPN.connected
-                                                ? Colours.palette.m3primary
-                                                : Colours.layer(Colours.palette.m3surfaceContainerHigh, 2)
-
-                                            Behavior on color { CAnim {} }
-
-                                            StateLayer {
-                                                function onClicked(): void {
-                                                    root.toggleProvider(providerItem.modelData.index);
-                                                }
-                                            }
-
-                                            MaterialIcon {
-                                                id: linkIcon
-                                                anchors.centerIn: parent
-                                                text: providerItem.modelData.enabled && VPN.connected
-                                                    ? "link_off"
-                                                    : "link"
-                                                color: providerItem.modelData.enabled && VPN.connected
-                                                    ? Colours.palette.m3onPrimary
-                                                    : Colours.palette.m3onSurfaceVariant
-                                                font.pointSize: Appearance.font.size.normal
-
-                                                Behavior on color { CAnim {} }
-                                            }
+                                        MaterialIcon {
+                                            id: linkIcon
+                                            anchors.centerIn: parent
+                                            text: provCard.modelData.enabled && VPN.connected ? "link_off" : "link"
+                                            color: provCard.modelData.enabled && VPN.connected
+                                                ? Colours.palette.m3onPrimary
+                                                : Colours.palette.m3onSurfaceVariant
+                                            font.pointSize: Appearance.font.size.normal
                                         }
                                     }
                                 }
@@ -365,7 +349,7 @@ Item {
             }
         }
 
-        // Right — details or empty state (60%)
+        // Right — details (60%)
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -424,7 +408,7 @@ Item {
 
                         readonly property var active: root.session.vpn.active ?? ({})
 
-                        // ── Header ────────────────────────────────────────────
+                        // Header
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: Appearance.spacing.normal
@@ -434,8 +418,7 @@ Item {
                                 color: Colours.layer(
                                     detailsCol.active.enabled && VPN.connected
                                         ? Colours.palette.m3primaryContainer
-                                        : Colours.palette.m3surfaceContainerHigh,
-                                    2)
+                                        : Colours.palette.m3surfaceContainerHigh, 2)
                                 implicitWidth: 48
                                 implicitHeight: 48
 
@@ -447,8 +430,6 @@ Item {
                                         : Colours.palette.m3onSurfaceVariant
                                     font.pointSize: Appearance.font.size.extraLarge
                                 }
-
-                                Behavior on color { CAnim {} }
                             }
 
                             ColumnLayout {
@@ -476,7 +457,7 @@ Item {
                             }
                         }
 
-                        // ── Connection control ────────────────────────────────
+                        // Connection control
                         StyledRect {
                             Layout.fillWidth: true
                             radius: Appearance.rounding.normal
@@ -502,9 +483,10 @@ Item {
                                         if (checked)
                                             root.setActive(detailsCol.active.index);
                                         else {
-                                            // Disable without enabling another
                                             const raw = Config.utilities.vpn.provider[detailsCol.active.index];
-                                            const obj = typeof raw === "object" ? Object.assign({}, raw) : { name: String(raw) };
+                                            const obj = (typeof raw === "object" && raw !== null) ? {} : { name: String(raw) };
+                                            if (typeof raw === "object" && raw !== null)
+                                                for (const k in raw) obj[k] = raw[k];
                                             obj.enabled = false;
                                             root.updateProvider(detailsCol.active.index, obj);
                                         }
@@ -533,7 +515,7 @@ Item {
                             }
                         }
 
-                        // ── Provider info ─────────────────────────────────────
+                        // Provider info — inlined (was component InfoRow)
                         StyledRect {
                             Layout.fillWidth: true
                             radius: Appearance.rounding.normal
@@ -552,37 +534,41 @@ Item {
                                     font.weight: 500
                                 }
 
-                                component InfoRow: RowLayout {
-                                    required property string label
-                                    required property string value
+                                RowLayout {
                                     Layout.fillWidth: true
                                     spacing: Appearance.spacing.normal
                                     StyledText {
-                                        text: parent.label
+                                        text: qsTr("Type")
                                         color: Colours.palette.m3outline
                                         font.pointSize: Appearance.font.size.small
                                     }
                                     Item { Layout.fillWidth: true }
                                     StyledText {
-                                        text: parent.value
+                                        text: detailsCol.active.name ?? ""
                                         font.pointSize: Appearance.font.size.small
                                         elide: Text.ElideLeft
                                     }
                                 }
 
-                                InfoRow {
-                                    label: qsTr("Type")
-                                    value: detailsCol.active.name ?? ""
-                                }
-
-                                InfoRow {
-                                    label: qsTr("Interface")
-                                    value: detailsCol.active.interface !== "" ? detailsCol.active.interface : "—"
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    spacing: Appearance.spacing.normal
+                                    StyledText {
+                                        text: qsTr("Interface")
+                                        color: Colours.palette.m3outline
+                                        font.pointSize: Appearance.font.size.small
+                                    }
+                                    Item { Layout.fillWidth: true }
+                                    StyledText {
+                                        text: (detailsCol.active.interface !== "" ? detailsCol.active.interface : null) ?? "—"
+                                        font.pointSize: Appearance.font.size.small
+                                        elide: Text.ElideLeft
+                                    }
                                 }
                             }
                         }
 
-                        // ── Actions ───────────────────────────────────────────
+                        // Actions
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: Appearance.spacing.small
@@ -615,27 +601,24 @@ Item {
         }
     }
 
-    // ── Add / Edit dialog ─────────────────────────────────────────────────────
+    // ── Add / Edit dialog overlay ─────────────────────────────────────────────
+    // Plain Item overlay — no inline components with required property
     Item {
         id: vpnDialog
 
         property bool visible_: false
         property bool isEdit: false
         property int editIndex: -1
-
-        // Form fields
         property string selectedType: "netbird"
-        property string displayName: ""
+        property string displayName_: ""
         property string interface_: ""
-
-        // Dialog state: "type-select" | "form"
-        property string step: "type-select"
+        property string step: "type-select"  // "type-select" | "form"
 
         function openForAdd() {
             isEdit = false;
             editIndex = -1;
             selectedType = "netbird";
-            displayName = "";
+            displayName_ = "";
             interface_ = "";
             step = "type-select";
             visible_ = true;
@@ -645,32 +628,26 @@ Item {
             isEdit = true;
             editIndex = provider.index;
             selectedType = provider.name;
-            displayName = provider.displayName;
+            displayName_ = provider.displayName;
             interface_ = provider.interface;
             step = "form";
             visible_ = true;
         }
 
-        function close() {
-            visible_ = false;
-        }
+        function close() { visible_ = false; }
 
         function pickType(type) {
             selectedType = type;
             const builtin = root.builtinDefaults[type];
             if (builtin) {
-                displayName = builtin.displayName;
+                displayName_ = builtin.displayName;
                 interface_ = builtin.interface;
             } else {
-                displayName = "";
+                displayName_ = "";
                 interface_ = "";
             }
-            // wireguard and "custom" go to form; others save directly
             if (type === "wireguard" || type === "custom") {
-                if (type === "custom") {
-                    displayName = "";
-                    interface_ = "";
-                }
+                if (type === "custom") { displayName_ = ""; interface_ = ""; }
                 step = "form";
             } else {
                 save();
@@ -678,19 +655,17 @@ Item {
         }
 
         function save() {
+            const builtin = root.builtinDefaults[selectedType];
             const obj = {
                 name:        selectedType,
-                displayName: displayName || (root.builtinDefaults[selectedType]?.displayName ?? selectedType),
-                interface:   interface_ || (root.builtinDefaults[selectedType]?.interface ?? "")
+                displayName: displayName_ || builtin?.displayName || selectedType,
+                interface:   interface_ || builtin?.interface || ""
             };
-
             if (isEdit && editIndex >= 0) {
-                // Preserve enabled state
                 const raw = Config.utilities.vpn.provider[editIndex];
                 if (typeof raw === "object" && raw !== null && raw.enabled === true)
                     obj.enabled = true;
                 root.updateProvider(editIndex, obj);
-                // Refresh active if we edited the selected provider
                 if (root.session.vpn.active?.index === editIndex)
                     root.session.vpn.active = root.providers[editIndex] ?? null;
             } else {
@@ -699,16 +674,23 @@ Item {
             close();
         }
 
-        // Overlay backdrop
         anchors.fill: parent
         visible: visible_
         z: 100
 
+        // Backdrop — includes MouseArea to close on outside click
         Rectangle {
             anchors.fill: parent
             color: Qt.alpha(Colours.palette.m3scrim, 0.4)
 
-            Behavior on opacity { Anim { duration: Appearance.anim.durations.small } }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    // Only close if click is outside the dialog card
+                    if (!dialogCard.contains(mapToItem(dialogCard, mouseX, mouseY)))
+                        vpnDialog.close();
+                }
+            }
         }
 
         // Dialog card
@@ -726,6 +708,12 @@ Item {
                 level: 3
             }
 
+            // Prevent clicks on card from reaching the backdrop MouseArea
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {}
+            }
+
             ColumnLayout {
                 id: dialogContent
                 anchors.left: parent.left
@@ -734,14 +722,13 @@ Item {
                 anchors.margins: Appearance.padding.large
                 spacing: Appearance.spacing.normal
 
-                // Title
                 StyledText {
                     text: vpnDialog.isEdit ? qsTr("Edit provider") : qsTr("Add VPN provider")
                     font.pointSize: Appearance.font.size.larger
                     font.weight: 600
                 }
 
-                // ── Step: type selection ──────────────────────────────────────
+                // ── Type selection step ───────────────────────────────────────
                 ColumnLayout {
                     visible: vpnDialog.step === "type-select"
                     Layout.fillWidth: true
@@ -753,61 +740,57 @@ Item {
                         font.pointSize: Appearance.font.size.small
                     }
 
-                    component TypeCard: StyledRect {
-                        required property string type
-                        required property string label
-                        required property string icon
-                        required property string subtitle
+                    // Repeater over JS array — no inline component, direct modelData access
+                    Repeater {
+                        model: root.providerTypes
 
-                        Layout.fillWidth: true
-                        radius: Appearance.rounding.normal
-                        color: Colours.layer(Colours.palette.m3surfaceContainer, 1)
-                        implicitHeight: typeRow.implicitHeight + Appearance.padding.normal * 2
+                        StyledRect {
+                            id: typeCard
+                            required property var modelData
+                            Layout.fillWidth: true
+                            radius: Appearance.rounding.normal
+                            color: Colours.layer(Colours.palette.m3surfaceContainer, 1)
+                            implicitHeight: typeRow.implicitHeight + Appearance.padding.normal * 2
 
-                        StateLayer {
-                            function onClicked(): void { vpnDialog.pickType(parent.type); }
-                        }
-
-                        RowLayout {
-                            id: typeRow
-                            anchors.fill: parent
-                            anchors.margins: Appearance.padding.normal
-                            spacing: Appearance.spacing.normal
-
-                            MaterialIcon {
-                                text: parent.parent.icon
-                                color: Colours.palette.m3primary
-                                font.pointSize: Appearance.font.size.large
+                            StateLayer {
+                                function onClicked() { vpnDialog.pickType(typeCard.modelData.type); }
                             }
 
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 2
-                                StyledText {
-                                    text: parent.parent.label
-                                    font.pointSize: Appearance.font.size.normal
-                                    font.weight: 500
+                            RowLayout {
+                                id: typeRow
+                                anchors.fill: parent
+                                anchors.margins: Appearance.padding.normal
+                                spacing: Appearance.spacing.normal
+
+                                MaterialIcon {
+                                    text: typeCard.modelData.icon
+                                    color: Colours.palette.m3primary
+                                    font.pointSize: Appearance.font.size.large
                                 }
-                                StyledText {
-                                    text: parent.parent.subtitle
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 2
+                                    StyledText {
+                                        text: typeCard.modelData.label
+                                        font.pointSize: Appearance.font.size.normal
+                                        font.weight: 500
+                                    }
+                                    StyledText {
+                                        text: typeCard.modelData.subtitle
+                                        color: Colours.palette.m3outline
+                                        font.pointSize: Appearance.font.size.smaller
+                                    }
+                                }
+
+                                MaterialIcon {
+                                    text: "chevron_right"
                                     color: Colours.palette.m3outline
-                                    font.pointSize: Appearance.font.size.smaller
+                                    font.pointSize: Appearance.font.size.normal
                                 }
-                            }
-
-                            MaterialIcon {
-                                text: "chevron_right"
-                                color: Colours.palette.m3outline
-                                font.pointSize: Appearance.font.size.normal
                             }
                         }
                     }
-
-                    TypeCard { type: "netbird";   label: "NetBird";         icon: "lan";      subtitle: qsTr("Open source secure network") }
-                    TypeCard { type: "tailscale"; label: "Tailscale";       icon: "hub";      subtitle: qsTr("Zero-config mesh VPN") }
-                    TypeCard { type: "warp";      label: "Cloudflare WARP"; icon: "shield";   subtitle: qsTr("Fast DNS + encrypted tunneling") }
-                    TypeCard { type: "wireguard"; label: "WireGuard";       icon: "vpn_lock"; subtitle: qsTr("Kernel-level encrypted tunnel") }
-                    TypeCard { type: "custom";    label: qsTr("Custom…");   icon: "tune";     subtitle: qsTr("Manual connect / disconnect commands") }
 
                     TextButton {
                         Layout.alignment: Qt.AlignRight
@@ -816,7 +799,7 @@ Item {
                     }
                 }
 
-                // ── Step: form ───────────────────────────────────────────────
+                // ── Form step ─────────────────────────────────────────────────
                 ColumnLayout {
                     visible: vpnDialog.step === "form"
                     Layout.fillWidth: true
@@ -832,8 +815,8 @@ Item {
                         id: displayNameField
                         Layout.fillWidth: true
                         placeholderText: root.builtinDefaults[vpnDialog.selectedType]?.displayName ?? qsTr("My VPN")
-                        text: vpnDialog.displayName
-                        onTextChanged: vpnDialog.displayName = text
+                        text: vpnDialog.displayName_
+                        onTextChanged: vpnDialog.displayName_ = text
                     }
 
                     StyledText {
@@ -854,7 +837,7 @@ Item {
                     StyledText {
                         visible: vpnDialog.selectedType === "wireguard"
                         Layout.fillWidth: true
-                        text: qsTr("Used for: wg-quick up <interface>")
+                        text: qsTr("Used as: wg-quick up <interface>")
                         color: Colours.palette.m3outlineVariant
                         font.pointSize: Appearance.font.size.smaller
                         wrapMode: Text.Wrap
@@ -863,7 +846,7 @@ Item {
                     StyledText {
                         visible: vpnDialog.selectedType === "custom"
                         Layout.fillWidth: true
-                        text: qsTr("Connect / disconnect commands use the interface name as their argument. For fully custom commands, edit shell.json directly.")
+                        text: qsTr("For fully custom commands, edit utilities.vpn.provider in shell.json directly.")
                         color: Colours.palette.m3outlineVariant
                         font.pointSize: Appearance.font.size.smaller
                         wrapMode: Text.Wrap

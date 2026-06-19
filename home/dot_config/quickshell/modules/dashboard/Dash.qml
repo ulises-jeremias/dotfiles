@@ -19,17 +19,26 @@ GridLayout {
     Rect {
         Layout.column: 2
         Layout.columnSpan: 3
-        Layout.preferredWidth: user.implicitWidth
-        Layout.preferredHeight: user.implicitHeight
+        Layout.preferredWidth: userCol.implicitWidth
+        Layout.preferredHeight: userCol.implicitHeight
 
         radius: Appearance.rounding.large
 
-        User {
-            id: user
+        ColumnLayout {
+            id: userCol
+            spacing: 0
 
-            visibilities: root.visibilities
-            state: root.state
-            facePicker: root.facePicker
+            User {
+                id: user
+
+                visibilities: root.visibilities
+                state: root.state
+                facePicker: root.facePicker
+            }
+
+            QuickToggles {
+                Layout.fillWidth: true
+            }
         }
     }
 
