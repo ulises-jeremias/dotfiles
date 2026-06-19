@@ -4,31 +4,51 @@
      "eamodio.gitlens"
      "EditorConfig.EditorConfig"
      "ms-python.python"
+     "ms-python.pylance"
      "redhat.vscode-yaml"
      "streetsidesoftware.code-spell-checker"
      "yzhang.markdown-all-in-one"
      "VOSCA.vscode-v-analyzer"
+     "ms-vscode.makefile-tools"
+     "tamasfe.even-better-toml"
+     "esbenp.prettier-vscode"
+     "usernamehw.errorlens"
+     "gruntfuggly.todo-tree"
 -}}
 {{- /* AI extensions (github.copilot, github.copilot-chat, claude-code) are managed by dots-ai */ -}}
 
 #!/usr/bin/env bash
 
-set -eufo pipefail
-
-{{ range $extensions -}}
-code --force --install-extension {{ . }}
-{{ end -}}
+set -euo pipefail
 
 SETTINGS_PATH="$HOME/.config/Code/User/settings.json"
 FONT_FAMILY="'Hack Nerd Font Mono', 'Droid Sans Mono', 'monospace', monospace"
 
-# Check if jq is installed
+# Install all extensions in parallel and wait for all of them
+echo "Installing VS Code extensions..."
+pids=()
+{{ range $extensions -}}
+code --force --install-extension {{ . }} &>/dev/null &
+pids+=($!)
+{{ end -}}
+
+for pid in "${pids[@]}"; do
+    wait "$pid" || true
+done
+echo "VS Code extensions installed."
+
+# Apply font setting
 if ! command -v jq &>/dev/null; then
-    echo "jq is not installed. Please install it to continue."
-    exit 1
+    echo "jq is not installed — skipping settings.json update."
+    exit 0
 fi
 
-# Modify settings.json
-jq --arg font "${FONT_FAMILY}" '.["editor.fontFamily"]=$font' "${SETTINGS_PATH}" > temp.json && mv temp.json "${SETTINGS_PATH}"
+if [[ ! -f "$SETTINGS_PATH" ]]; then
+    mkdir -p "$(dirname "$SETTINGS_PATH")"
+    echo '{}' > "$SETTINGS_PATH"
+fi
+
+tmp="$(mktemp)"
+jq --arg font "${FONT_FAMILY}" '.["editor.fontFamily"] = $font' "$SETTINGS_PATH" > "$tmp" && mv "$tmp" "$SETTINGS_PATH"
 
 {{ end -}}
