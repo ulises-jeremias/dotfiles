@@ -19,6 +19,13 @@ repos:
       - id: check-xml
       - id: check-added-large-files
         args: [--maxkb=1000]
+        exclude: |
+          (?x)^(
+            home/dot_local/share/dots/rices/.*/backgrounds/.*|
+            home/dot_local/share/dots/rices/.*/preview\.png|
+            home/dot_local/share/dots/wallpapers/curated/.*|
+            static/.*
+          )$
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: check-symlinks
