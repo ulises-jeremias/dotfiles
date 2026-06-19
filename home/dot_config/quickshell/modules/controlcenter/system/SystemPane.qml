@@ -6,6 +6,7 @@ import qs.components
 import qs.components.controls
 import qs.components.effects
 import qs.components.containers
+import qs.components.misc
 import qs.services
 import qs.config
 import Quickshell
