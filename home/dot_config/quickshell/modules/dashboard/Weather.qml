@@ -272,7 +272,6 @@ Item {
                                 StyledText {
                                     Layout.alignment: Qt.AlignHCenter
                                     text: {
-                                        if (hourItem.index === 0) return qsTr("Now")
                                         const h = hourItem.modelData.hour ?? 0;
                                         return Config.services.useTwelveHourClock
                                             ? (h === 0 ? "12am" : h < 12 ? h + "am" : h === 12 ? "12pm" : (h - 12) + "pm")
@@ -314,7 +313,7 @@ Item {
         StyledText {
             Layout.topMargin: Appearance.spacing.normal
             Layout.leftMargin: Appearance.padding.normal
-            visible: forecastRepeater.count > 0
+            visible: forecastRepeater.count > 0 && !(Weather.hourlyForecast && Weather.hourlyForecast.length > 0)
             text: qsTr("7-Day Forecast")
             font.pointSize: Appearance.font.size.normal
             font.weight: 600
@@ -324,6 +323,7 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             spacing: Appearance.spacing.smaller
+            visible: !(Weather.hourlyForecast && Weather.hourlyForecast.length > 0)
 
             Repeater {
                 id: forecastRepeater

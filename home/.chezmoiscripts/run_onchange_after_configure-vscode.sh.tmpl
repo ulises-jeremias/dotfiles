@@ -48,7 +48,7 @@ if [[ ! -f "$SETTINGS_PATH" ]]; then
     echo '{}' > "$SETTINGS_PATH"
 fi
 
-tmp="$(mktemp)"
+tmp="$(mktemp "$(dirname "$SETTINGS_PATH")/settings.XXXXXX")"
 jq --arg font "${FONT_FAMILY}" '.["editor.fontFamily"] = $font' "$SETTINGS_PATH" > "$tmp" && mv "$tmp" "$SETTINGS_PATH"
 
 {{ end -}}

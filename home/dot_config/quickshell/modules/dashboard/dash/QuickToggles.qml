@@ -37,8 +37,8 @@ Item {
         ToggleChip {
             icon: Recorder.running ? "stop_circle" : "fiber_manual_record"
             label: Recorder.running
-                ? (recorderTimer.elapsed > 0
-                    ? "%1:%2".arg(Math.floor(recorderTimer.elapsed / 60)).arg(String(Math.floor(recorderTimer.elapsed % 60)).padStart(2, "0"))
+                ? (Recorder.elapsed > 0
+                    ? "%1:%2".arg(Math.floor(Recorder.elapsed / 60)).arg(String(Math.floor(Recorder.elapsed % 60)).padStart(2, "0"))
                     : qsTr("Rec"))
                 : qsTr("Record")
             active: Recorder.running
@@ -47,17 +47,6 @@ Item {
                     Recorder.stop();
                 else
                     Recorder.start();
-            }
-
-            // Live elapsed timer while recording
-            Timer {
-                id: recorderTimer
-                property int elapsed: 0
-                running: Recorder.running
-                interval: 1000
-                repeat: true
-                onTriggered: elapsed++
-                onRunningChanged: if (!running) elapsed = 0
             }
         }
     }

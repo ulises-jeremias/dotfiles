@@ -14,7 +14,7 @@ Theme-specific wallpapers live next to the rice that uses them, in `home/dot_loc
 
 ## How they get to `~/Pictures/Wallpapers`
 
-The chezmoi script `home/.chezmoiscripts/linux/run_onchange_after_link-wallpapers.sh.tmpl` runs after `chezmoi apply` and symlinks every PNG, JPG, JPEG, or WEBP in `curated/` into `~/Pictures/Wallpapers/`. Existing files there are left alone — drop your own additions in either place.
+The chezmoi script `home/.chezmoiscripts/linux/run_onchange_after_link-wallpapers.sh.tmpl` runs after `chezmoi apply` and symlinks every PNG, JPG, JPEG, or WEBP in `curated/` into `~/Pictures/Wallpapers/`. Existing non-symlink files are always left untouched; existing symlinks may be refreshed when they point to a different target — drop your own additions in either place.
 
 ## Adding to the curated pool
 

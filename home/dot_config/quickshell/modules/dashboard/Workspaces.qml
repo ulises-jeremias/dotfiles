@@ -116,7 +116,7 @@ Item {
 
                             // Window indicators (dots for each window)
                             Row {
-                                visible: wsItem.windowCount > 0 && wsItem.windowCount <= 8
+                                visible: wsItem.windowCount > 0
                                 spacing: 3
 
                                 Repeater {

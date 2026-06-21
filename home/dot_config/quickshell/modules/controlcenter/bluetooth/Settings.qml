@@ -345,10 +345,11 @@ ColumnLayout {
                         text: root.session.bt.currentAdapter?.name ?? ""
                         readOnly: !root.session.bt.editingAdapterName
                         onAccepted: {
+                            const adapter = root.session.bt.currentAdapter;
+                            if (!adapter) { root.session.bt.editingAdapterName = false; return; }
                             const newName = adapterNameEdit.text.trim();
-                            const currentName = root.session.bt.currentAdapter?.name ?? "";
-                            if (newName && newName !== currentName)
-                                Quickshell.execDetached(["bluetoothctl", "system-alias", newName]);
+                            if (newName && newName !== adapter.name)
+                                Quickshell.execDetached(["busctl", "set-property", "org.bluez", adapter.dbusPath, "org.bluez.Adapter1", "Alias", "s", newName]);
                             root.session.bt.editingAdapterName = false;
                         }
 

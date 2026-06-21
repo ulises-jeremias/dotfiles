@@ -83,8 +83,11 @@ SectionContainer {
                 placeholderText: qsTr("City or lat,lon")
                 text: Config.services.weatherLocation
                 onEditingFinished: {
-                    Config.services.weatherLocation = text;
-                    Config.services.saveConfig();
+                    const normalized = text.trim();
+                    if (normalized !== Config.services.weatherLocation) {
+                        Config.services.weatherLocation = normalized;
+                        Config.services.saveConfig();
+                    }
                 }
             }
         }
