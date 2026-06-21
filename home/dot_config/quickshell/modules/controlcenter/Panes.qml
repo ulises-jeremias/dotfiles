@@ -8,6 +8,9 @@ import "taskbar"
 import "launcher"
 import "dashboard"
 import "system"
+import "vpn"
+import "notifications"
+import "osd"
 import qs.components
 import qs.services
 import qs.config

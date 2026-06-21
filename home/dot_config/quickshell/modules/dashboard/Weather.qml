@@ -222,10 +222,98 @@ Item {
             }
         }
 
+        // ── Hourly forecast (next 24h) ────────────────────────────────────────
         StyledText {
             Layout.topMargin: Appearance.spacing.normal
             Layout.leftMargin: Appearance.padding.normal
-            visible: forecastRepeater.count > 0
+            visible: Weather.hourlyForecast && Weather.hourlyForecast.length > 0
+            text: qsTr("Next 24 hours")
+            font.pointSize: Appearance.font.size.normal
+            font.weight: 600
+            color: Colours.palette.m3onSurface
+        }
+
+        Item {
+            Layout.fillWidth: true
+            implicitHeight: hourlyRow.implicitHeight
+            visible: Weather.hourlyForecast && Weather.hourlyForecast.length > 0
+            clip: true
+
+            Flickable {
+                anchors.fill: parent
+                flickableDirection: Flickable.HorizontalFlick
+                contentWidth: hourlyRow.implicitWidth
+                contentHeight: hourlyRow.implicitHeight
+
+                Row {
+                    id: hourlyRow
+                    spacing: Appearance.spacing.smaller
+
+                    Repeater {
+                        model: Weather.hourlyForecast ? Weather.hourlyForecast.slice(0, 24) : []
+
+                        StyledRect {
+                            id: hourItem
+                            required property var modelData
+                            required property int index
+
+                            implicitWidth: 56
+                            implicitHeight: hourCol.implicitHeight + Appearance.padding.normal * 2
+                            radius: Appearance.rounding.normal
+                            color: hourItem.index === 0
+                                ? Colours.layer(Colours.palette.m3primaryContainer, 1)
+                                : Colours.tPalette.m3surfaceContainer
+
+                            ColumnLayout {
+                                id: hourCol
+                                anchors.centerIn: parent
+                                spacing: Appearance.spacing.small / 2
+
+                                StyledText {
+                                    Layout.alignment: Qt.AlignHCenter
+                                    text: {
+                                        const h = hourItem.modelData.hour ?? 0;
+                                        return Config.services.useTwelveHourClock
+                                            ? (h === 0 ? "12am" : h < 12 ? h + "am" : h === 12 ? "12pm" : (h - 12) + "pm")
+                                            : String(h).padStart(2, "0") + ":00"
+                                    }
+                                    font.pointSize: Appearance.font.size.smaller
+                                    color: hourItem.index === 0
+                                        ? Colours.palette.m3onPrimaryContainer
+                                        : Colours.palette.m3onSurfaceVariant
+                                }
+
+                                MaterialIcon {
+                                    Layout.alignment: Qt.AlignHCenter
+                                    text: hourItem.modelData.icon ?? "cloud"
+                                    font.pointSize: Appearance.font.size.larger
+                                    color: hourItem.index === 0
+                                        ? Colours.palette.m3onPrimaryContainer
+                                        : Colours.palette.m3secondary
+                                }
+
+                                StyledText {
+                                    Layout.alignment: Qt.AlignHCenter
+                                    text: Config.services.useFahrenheit
+                                        ? (hourItem.modelData.tempF ?? "--") + "°"
+                                        : (hourItem.modelData.tempC ?? "--") + "°"
+                                    font.pointSize: Appearance.font.size.smaller
+                                    font.weight: 600
+                                    color: hourItem.index === 0
+                                        ? Colours.palette.m3onPrimaryContainer
+                                        : Colours.palette.m3onSurface
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        StyledText {
+            Layout.topMargin: Appearance.spacing.normal
+            Layout.leftMargin: Appearance.padding.normal
+            visible: forecastRepeater.count > 0 && !(Weather.hourlyForecast && Weather.hourlyForecast.length > 0)
             text: qsTr("7-Day Forecast")
             font.pointSize: Appearance.font.size.normal
             font.weight: 600
@@ -235,6 +323,7 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             spacing: Appearance.spacing.smaller
+            visible: !(Weather.hourlyForecast && Weather.hourlyForecast.length > 0)
 
             Repeater {
                 id: forecastRepeater

@@ -7,6 +7,7 @@ import qs.components.controls
 import qs.components.effects
 import qs.services
 import qs.config
+import Quickshell
 import Quickshell.Bluetooth
 import QtQuick
 import QtQuick.Layouts
@@ -328,7 +329,7 @@ ColumnLayout {
 
                         anchors.left: parent.left
 
-                        text: qsTr("Rename adapter (currently does not work)")
+                        text: qsTr("Rename adapter")
                         color: Colours.palette.m3outline
                         font.pointSize: Appearance.font.size.small
                     }
@@ -344,6 +345,11 @@ ColumnLayout {
                         text: root.session.bt.currentAdapter?.name ?? ""
                         readOnly: !root.session.bt.editingAdapterName
                         onAccepted: {
+                            const adapter = root.session.bt.currentAdapter;
+                            if (!adapter) { root.session.bt.editingAdapterName = false; return; }
+                            const newName = adapterNameEdit.text.trim();
+                            if (newName && newName !== adapter.name)
+                                Quickshell.execDetached(["busctl", "set-property", "org.bluez", adapter.dbusPath, "org.bluez.Adapter1", "Alias", "s", newName]);
                             root.session.bt.editingAdapterName = false;
                         }
 
