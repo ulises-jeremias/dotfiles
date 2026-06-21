@@ -271,7 +271,7 @@ We welcome all contributions! 🎉
 
 ### Quickshell Desktop Shell
 
-The **Quickshell** implementation in HorneroConfig was highly inspired by and adapted from the amazing work of the [**caelestia-dots/shell**](https://github.com/caelestia-dots/shell) project by [@soramane](https://github.com/soramane).
+The **Quickshell** implementation in HorneroConfig was highly inspired by and adapted from the amazing work of the [**caelestia-dots/shell**](https://github.com/caelestia-dots/shell) project by [@soramanew](https://github.com/soramanew).
 
 - **Original Project**: [caelestia-dots/shell](https://github.com/caelestia-dots/shell)
 - **License**: GNU General Public License v3.0 (GPL-3.0)
