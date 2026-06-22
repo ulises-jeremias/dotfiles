@@ -7,15 +7,11 @@ import qs.services
 import qs.config
 import Quickshell
 import Quickshell.Hyprland
-import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
-// Detail panel for the selected workspace.
-//
-// Shows a live preview of the focused window (ScreencopyView),
-// a scrollable list of windows with badges and actions,
-// and a workspace action bar (rename / new / close-all).
+// Window list panel — sits inside a surfaceContainer card.
+// No background of its own (parent provides the card background).
 Item {
     id: root
 
@@ -23,146 +19,78 @@ Item {
     required property HyprlandWorkspace workspace
 
     readonly property var wsToplevels: Hypr.toplevels.values.filter(t => t.workspace?.id === root.wsId)
-    readonly property HyprlandToplevel focusedToplevel: {
-        return root.wsToplevels.find(t => t.wayland?.activated) ?? root.wsToplevels[0] ?? null;
-    }
-    readonly property int windowCount: root.workspace?.lastIpcObject?.windows ?? 0
-    readonly property string wsName: root.workspace?.name ?? qsTr("Workspace %1").arg(root.wsId)
 
-    implicitWidth: layout.implicitWidth
+    implicitWidth: parent ? parent.width : 300
     implicitHeight: layout.implicitHeight
 
     ColumnLayout {
         id: layout
 
         anchors.fill: parent
+        anchors.margins: Appearance.padding.large
 
         spacing: Appearance.spacing.normal
 
-        // Header: workspace name + window count
+        // Header
         RowLayout {
             Layout.fillWidth: true
             spacing: Appearance.spacing.small
 
+            MaterialIcon {
+                text: "select_window"
+                color: Colours.palette.m3secondary
+                font.pointSize: Appearance.font.size.large
+            }
+
             StyledText {
-                text: root.wsName
-                font.pointSize: Appearance.font.size.larger
+                text: qsTr("Windows")
+                font.pointSize: Appearance.font.size.normal
                 font.weight: 600
-                color: Colours.palette.m3primary
+                color: Colours.palette.m3onSurface
                 Layout.fillWidth: true
-                elide: Text.ElideRight
             }
 
             StyledText {
-                text: root.windowCount === 0
-                    ? qsTr("Empty")
-                    : qsTr("%1 window(s)").arg(root.windowCount)
+                text: root.wsToplevels.length > 0
+                    ? qsTr("%1").arg(root.wsToplevels.length)
+                    : ""
                 font.pointSize: Appearance.font.size.small
-                color: Colours.palette.m3outline
+                color: Colours.palette.m3onSurfaceVariant
+                visible: root.wsToplevels.length > 0
             }
         }
 
-        // Live preview of the focused window
-        Loader {
-            id: previewLoader
-
-            Layout.fillWidth: true
-            Layout.preferredHeight: Config.dashboard.workspaces.previewHeight
-
-            active: Config.dashboard.workspaces.showLivePreview && root.focusedToplevel !== null
-
-            sourceComponent: StyledClippingRect {
-                id: preview
-
-                anchors.fill: parent
-                radius: Appearance.rounding.normal
-                color: Colours.tPalette.m3surfaceContainer
-
-                ScreencopyView {
-                    id: view
-
-                    anchors.centerIn: parent
-
-                    captureSource: root.focusedToplevel?.wayland ?? null
-                    live: true
-
-                    constraintSize.width: root.focusedToplevel
-                        ? parent.height * Math.min(
-                            Screen.width / Screen.height,
-                            root.focusedToplevel?.lastIpcObject?.size?.[0] / root.focusedToplevel?.lastIpcObject?.size?.[1] ?? 1
-                        )
-                        : parent.width
-                    constraintSize.height: parent.height
-                }
-
-                // Empty state
-                Item {
-                    anchors.fill: parent
-                    visible: root.focusedToplevel === null
-
-                    ColumnLayout {
-                        anchors.centerIn: parent
-                        spacing: Appearance.spacing.small
-
-                        MaterialIcon {
-                            Layout.alignment: Qt.AlignHCenter
-                            text: "image_not_supported"
-                            color: Colours.palette.m3outline
-                            font.pointSize: Appearance.font.size.extraLarge * 2
-                        }
-
-                        StyledText {
-                            Layout.alignment: Qt.AlignHCenter
-                            text: qsTr("No windows to preview")
-                            color: Colours.palette.m3outline
-                            font.pointSize: Appearance.font.size.normal
-                        }
-                    }
-                }
-            }
-        }
-
-        // Window list
-        StyledRect {
+        // Window list or empty state
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            radius: Appearance.rounding.normal
-            color: Colours.layer(Colours.tPalette.m3surfaceContainer, 1)
-
-            implicitHeight: winList.implicitHeight + Appearance.padding.normal * 2
-
             // Empty state
-            Item {
-                anchors.fill: parent
+            ColumnLayout {
+                anchors.centerIn: parent
                 visible: root.wsToplevels.length === 0
+                spacing: Appearance.spacing.small
 
-                ColumnLayout {
-                    anchors.centerIn: parent
-                    spacing: Appearance.spacing.small
+                MaterialIcon {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "select_window_off"
+                    color: Colours.palette.m3onSurfaceVariant
+                    font.pointSize: Appearance.font.size.extraLarge
+                }
 
-                    MaterialIcon {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: "select_window_off"
-                        color: Colours.palette.m3outline
-                        font.pointSize: Appearance.font.size.extraLarge
-                    }
-
-                    StyledText {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("No windows in this workspace")
-                        color: Colours.palette.m3outline
-                        font.pointSize: Appearance.font.size.normal
-                    }
+                StyledText {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: qsTr("No windows")
+                    color: Colours.palette.m3onSurfaceVariant
+                    font.pointSize: Appearance.font.size.small
                 }
             }
 
+            // Window list
             StyledListView {
                 id: winList
 
                 anchors.fill: parent
-                anchors.margins: Appearance.padding.normal
-
                 visible: root.wsToplevels.length > 0
 
                 spacing: Appearance.spacing.small / 2
@@ -185,12 +113,6 @@ Item {
                     flickable: winList
                 }
             }
-        }
-
-        // Workspace actions bar
-        WsActionsBar {
-            Layout.fillWidth: true
-            wsId: root.wsId
         }
     }
 }
