@@ -902,12 +902,57 @@ dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...
 <p><code>~/.local/share/dots/rices/&lt;rice-name&gt;/</code></p>
 <p>Typical files:</p>
 <ul>
-<li><code>config.sh</code></li>
-<li><code>executable_apply.sh</code></li>
-<li><code>backgrounds/</code></li>
-<li>optional <code>preview.*</code></li>
+<li><code>config.json</code> — canonical config consumed by Quickshell&#39;s <code>list-rices.py</code> and <code>Rice.qml</code></li>
+<li><code>config.sh</code> — shell-sourceable mirror of the same metadata (used by legacy/<code>dots-gtk-theme</code>)</li>
+<li><code>backgrounds/</code> — wallpaper images (PNG/JPG/WEBP); the first sorted file becomes the default wallpaper</li>
+<li><code>preview.png</code> — small thumbnail shown in the rice selector carousel</li>
 </ul>
-<h2 id="notes">Notes</h2>
+<h2 id="catppuccin-variants">Catppuccin Variants</h2>
+<p>All four official Catppuccin flavours are available as rices, grouped under the <code>catppuccin</code> tag in the launcher:</p>
+<table>
+<thead>
+<tr>
+<th>Rice</th>
+<th>Mode</th>
+<th>Base</th>
+<th>Accent (Mauve)</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>catppuccin-latte</code></td>
+<td>light</td>
+<td><code>#eff1f5</code></td>
+<td><code>#8839ef</code></td>
+<td>Daytime coding, bright environments</td>
+</tr>
+<tr>
+<td><code>catppuccin-frappe</code></td>
+<td>dark</td>
+<td><code>#303446</code></td>
+<td><code>#ca9ee6</code></td>
+<td>Balanced dark, everyday desktop</td>
+</tr>
+<tr>
+<td><code>catppuccin-macchiato</code></td>
+<td>dark</td>
+<td><code>#24273a</code></td>
+<td><code>#c6a0f6</code></td>
+<td>Deep dark, evening sessions</td>
+</tr>
+<tr>
+<td><code>catppuccin-mocha</code></td>
+<td>dark</td>
+<td><code>#1e1e2e</code></td>
+<td><code>#cba6f7</code></td>
+<td>Cozy dark, creative work</td>
+</tr>
+</tbody>
+</table>
+<p>Each rice ships with wallpapers generated from the official Catppuccin palette so that the M3 color extraction stays faithful to each variant. GTK themes fall back to <code>Orchis-Dark</code> (dark) or <code>catppuccin-latte-mauve-compact</code> (light) until a dedicated Catppuccin GTK package is installed.</p>
+<pre class="hljs">dots appearance apply catppuccin-frappe
+dots appearance apply catppuccin-macchiato</pre><h2 id="notes">Notes</h2>
 <ul>
 <li>Legacy Rofi/JGMenu theme selectors were removed from the maintained path.</li>
 <li>The maintained desktop path is Hyprland + Quickshell.</li>
@@ -4382,12 +4427,57 @@ dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...
 <p><code>~/.local/share/dots/rices/&lt;rice-name&gt;/</code></p>
 <p>Typical files:</p>
 <ul>
-<li><code>config.sh</code></li>
-<li><code>executable_apply.sh</code></li>
-<li><code>backgrounds/</code></li>
-<li>optional <code>preview.*</code></li>
+<li><code>config.json</code> — canonical config consumed by Quickshell&#39;s <code>list-rices.py</code> and <code>Rice.qml</code></li>
+<li><code>config.sh</code> — shell-sourceable mirror of the same metadata (used by legacy/<code>dots-gtk-theme</code>)</li>
+<li><code>backgrounds/</code> — wallpaper images (PNG/JPG/WEBP); the first sorted file becomes the default wallpaper</li>
+<li><code>preview.png</code> — small thumbnail shown in the rice selector carousel</li>
 </ul>
-<h2 id="notes">Notes</h2>
+<h2 id="catppuccin-variants">Catppuccin Variants</h2>
+<p>All four official Catppuccin flavours are available as rices, grouped under the <code>catppuccin</code> tag in the launcher:</p>
+<table>
+<thead>
+<tr>
+<th>Rice</th>
+<th>Mode</th>
+<th>Base</th>
+<th>Accent (Mauve)</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>catppuccin-latte</code></td>
+<td>light</td>
+<td><code>#eff1f5</code></td>
+<td><code>#8839ef</code></td>
+<td>Daytime coding, bright environments</td>
+</tr>
+<tr>
+<td><code>catppuccin-frappe</code></td>
+<td>dark</td>
+<td><code>#303446</code></td>
+<td><code>#ca9ee6</code></td>
+<td>Balanced dark, everyday desktop</td>
+</tr>
+<tr>
+<td><code>catppuccin-macchiato</code></td>
+<td>dark</td>
+<td><code>#24273a</code></td>
+<td><code>#c6a0f6</code></td>
+<td>Deep dark, evening sessions</td>
+</tr>
+<tr>
+<td><code>catppuccin-mocha</code></td>
+<td>dark</td>
+<td><code>#1e1e2e</code></td>
+<td><code>#cba6f7</code></td>
+<td>Cozy dark, creative work</td>
+</tr>
+</tbody>
+</table>
+<p>Each rice ships with wallpapers generated from the official Catppuccin palette so that the M3 color extraction stays faithful to each variant. GTK themes fall back to <code>Orchis-Dark</code> (dark) or <code>catppuccin-latte-mauve-compact</code> (light) until a dedicated Catppuccin GTK package is installed.</p>
+<pre class="hljs">dots appearance apply catppuccin-frappe
+dots appearance apply catppuccin-macchiato</pre><h2 id="notes">Notes</h2>
 <ul>
 <li>Legacy Rofi/JGMenu theme selectors were removed from the maintained path.</li>
 <li>The maintained desktop path is Hyprland + Quickshell.</li>
