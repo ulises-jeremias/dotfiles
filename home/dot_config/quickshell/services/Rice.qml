@@ -86,10 +86,23 @@ Singleton {
         path: configLoader.running ? `${root.ricesDir}/${configLoader.riceId}/config.json` : ""
 
         onLoaded: {
+            // Read text() BEFORE clearing configLoader.running, because the
+            // `path` binding evaluates to "" when running is false, causing
+            // text() to return an empty string and JSON.parse to fail.
+            let rawText = "";
+            try {
+                rawText = text();
+            } catch (e) {
+                console.warn("Rice.qml: failed to read config.json for", configLoader.riceId, e);
+                configLoader.running = false;
+                return;
+            }
+
             configLoader.running = false;
+
             let cfg = {};
             try {
-                cfg = JSON.parse(text());
+                cfg = JSON.parse(rawText);
             } catch (e) {
                 console.warn("Rice.qml: failed to parse config.json for", configLoader.riceId, e);
                 return;

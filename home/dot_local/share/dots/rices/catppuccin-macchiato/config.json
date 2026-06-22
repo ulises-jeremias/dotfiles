@@ -1,0 +1,18 @@
+{
+  "id": "catppuccin-macchiato",
+  "name": "Catppuccin Macchiato",
+  "description": "The dark deep variant of Catppuccin — rich pastels over a deep dark base",
+  "style": "Pastel Dark",
+  "tags": ["catppuccin", "pastel", "dark", "purple", "modern", "deep"],
+  "schemeType": "tonal-spot",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#c6a0f6",
+  "primaryColor": "#8aadf4",
+  "secondaryColor": "#a6da95",
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Papirus-Dark",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "cozy",
+  "kittyOpacity": 0.88
+}
