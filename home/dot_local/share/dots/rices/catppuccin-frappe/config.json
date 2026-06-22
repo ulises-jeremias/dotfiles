@@ -1,0 +1,18 @@
+{
+  "id": "catppuccin-frappe",
+  "name": "Catppuccin Frappé",
+  "description": "The dark medium variant of Catppuccin — muted pastels over a warm dark base",
+  "style": "Pastel Dark",
+  "tags": ["catppuccin", "pastel", "dark", "purple", "modern", "cozy"],
+  "schemeType": "tonal-spot",
+  "darkMode": true,
+  "barPosition": "left",
+  "accentColor": "#ca9ee6",
+  "primaryColor": "#8caaee",
+  "secondaryColor": "#a6d189",
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Papirus-Dark",
+  "cursorTheme": "elementary",
+  "hyprlandAnimations": "cozy",
+  "kittyOpacity": 0.90
+}
