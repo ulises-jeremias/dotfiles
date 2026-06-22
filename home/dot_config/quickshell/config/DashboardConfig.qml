@@ -8,6 +8,17 @@ JsonObject {
     property int dragThreshold: 50
     property Sizes sizes: Sizes {}
     property Performance performance: Performance {}
+    property Workspaces workspaces: Workspaces {}
+
+    component Workspaces: JsonObject {
+        property bool showLivePreview: true
+        property bool showSpecialWorkspaces: true
+        property bool showWindowBadges: true
+        property bool showMonitorBadge: true
+        property int maxAppIcons: 4
+        property int previewHeight: 200
+        property bool enableWindowActions: true
+    }
 
     component Performance: JsonObject {
         property bool showBattery: true
