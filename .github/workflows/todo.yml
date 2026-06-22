@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Begin CI...
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Task list to Issue
         uses: alstr/todo-to-issue-action@v5
