@@ -53,12 +53,12 @@ Typical files:
 
 All four official Catppuccin flavours are available as rices, grouped under the `catppuccin` tag in the launcher:
 
-| Rice | Mode | Base | Accent (Mauve) | Best for |
-|------|------|------|-----------------|----------|
-| `catppuccin-latte` | light | `#eff1f5` | `#8839ef` | Daytime coding, bright environments |
-| `catppuccin-frappe` | dark | `#303446` | `#ca9ee6` | Balanced dark, everyday desktop |
-| `catppuccin-macchiato` | dark | `#24273a` | `#c6a0f6` | Deep dark, evening sessions |
-| `catppuccin-mocha` | dark | `#1e1e2e` | `#cba6f7` | Cozy dark, creative work |
+| Rice                   | Mode  | Base      | Accent (Mauve) | Best for                            |
+|------------------------|-------|-----------|----------------|-------------------------------------|
+| `catppuccin-latte`     | light | `#eff1f5` | `#8839ef`      | Daytime coding, bright environments |
+| `catppuccin-frappe`    | dark  | `#303446` | `#ca9ee6`      | Balanced dark, everyday desktop     |
+| `catppuccin-macchiato` | dark  | `#24273a` | `#c6a0f6`      | Deep dark, evening sessions         |
+| `catppuccin-mocha`     | dark  | `#1e1e2e` | `#cba6f7`      | Cozy dark, creative work            |
 
 Each rice ships with wallpapers generated from the official Catppuccin palette so that the M3 color extraction stays faithful to each variant. GTK themes fall back to `Orchis-Dark` (dark) or `catppuccin-latte-mauve-compact` (light) until a dedicated Catppuccin GTK package is installed.
 
