@@ -11,20 +11,14 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
-// Dashboard Workspaces tab — split pane workspace manager.
+// Dashboard Workspaces tab — matches the visual language of Dash.qml
+// and Performance.qml (GridLayout, surfaceContainer cards, rounding.large).
 //
-// Left pane: scrollable flow of workspace cards + special workspaces section.
-// Right pane: detail panel for the selected workspace (live preview, window list, actions).
-// Bottom: status bar with monitor + window summary.
+// Top row: active workspace preview card (left) + window list card (right).
+// Bottom row: workspace selector cards in a flow + special workspaces.
 Item {
     id: root
 
-    // Minimum matches dashboard panel width — avoids circular dependency
-    implicitWidth: 800
-    implicitHeight: layout.implicitHeight + Appearance.padding.large * 2
-
-    // Selection state — independent from the active workspace.
-    // Clicking a card switches the active WS AND selects it for the detail panel.
     property int selectedWsId: Hypr.activeWsId
 
     readonly property var regularWorkspaces: {
@@ -42,252 +36,184 @@ Item {
 
     readonly property string activeSpecialName: Hypr.focusedMonitor?.lastIpcObject?.specialWorkspace?.name ?? ""
 
-    readonly property int totalWindows: {
-        return root.regularWorkspaces.reduce((acc, ws) => acc + (ws.lastIpcObject?.windows ?? 0), 0);
-    }
-
-    readonly property int floatingCount: {
-        return Hypr.toplevels.values.filter(t =>
-            t.workspace?.id === root.selectedWsId && t.lastIpcObject?.floating
-        ).length;
-    }
-
-    // Reset selection to active when tab reopens
     Component.onCompleted: root.selectedWsId = Hypr.activeWsId
 
+    implicitWidth: Math.max(800, content.implicitWidth)
+    implicitHeight: content.implicitHeight
+
     ColumnLayout {
-        id: layout
+        id: content
 
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.margins: Appearance.padding.large
 
         spacing: Appearance.spacing.normal
 
-        // Header
+        // ── Top row: preview + window list ────────────────────────────
         RowLayout {
             Layout.fillWidth: true
-            spacing: Appearance.spacing.normal
-
-            StyledText {
-                text: qsTr("Workspaces")
-                font.pointSize: Appearance.font.size.larger
-                font.weight: 500
-                Layout.fillWidth: true
-            }
-
-            // Status summary
-            StyledText {
-                text: qsTr("%1 windows · %2 floating").arg(root.totalWindows).arg(root.floatingCount)
-                font.pointSize: Appearance.font.size.small
-                color: Colours.palette.m3outline
-            }
-        }
-
-        // Main split: left cards + right detail
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
 
             spacing: Appearance.spacing.normal
 
-            // ── Left pane: workspace cards ──────────────────────────────
-            ColumnLayout {
-                Layout.fillHeight: true
-                Layout.preferredWidth: 340
-
-                spacing: Appearance.spacing.small
-
-                // Regular workspaces — scrollable flow
-                StyledRect {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    radius: Appearance.rounding.normal
-                    color: Colours.layer(Colours.tPalette.m3surfaceContainer, 1)
-
-                    StyledFlickable {
-                        id: wsFlick
-
-                        anchors.fill: parent
-                        anchors.margins: Appearance.padding.normal
-
-                        flickableDirection: Flickable.VerticalFlick
-                        contentHeight: wsFlow.implicitHeight
-                        clip: true
-
-                        Flow {
-                            id: wsFlow
-
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-
-                            spacing: Appearance.spacing.small
-
-                            Repeater {
-                                model: root.regularWorkspaces
-
-                                delegate: WorkspaceCard {
-                                    isActive: modelData.id === Hypr.activeWsId
-                                    isSelected: modelData.id === root.selectedWsId
-
-                                    onClicked: {
-                                        root.selectedWsId = modelData.id;
-                                        Hypr.dispatch(`workspace ${modelData.id}`);
-                                    }
-                                }
-                            }
-
-                            // Empty state
-                            StyledText {
-                                visible: root.regularWorkspaces.length === 0
-                                text: qsTr("No workspaces open")
-                                color: Colours.palette.m3outline
-                                font.pointSize: Appearance.font.size.normal
-                            }
-                        }
-
-                        StyledScrollBar.vertical: StyledScrollBar {
-                            flickable: wsFlick
-                        }
-                    }
-                }
-
-                // Special workspaces section
-                Loader {
-                    Layout.fillWidth: true
-                    active: Config.dashboard.workspaces.showSpecialWorkspaces && root.specialWorkspaces.length > 0
-
-                    sourceComponent: ColumnLayout {
-                        spacing: Appearance.spacing.small
-
-                        StyledText {
-                            text: qsTr("Special Workspaces")
-                            font.pointSize: Appearance.font.size.normal
-                            font.weight: 600
-                            color: Colours.palette.m3tertiary
-                        }
-
-                        Flow {
-                            Layout.fillWidth: true
-                            spacing: Appearance.spacing.small
-
-                            Repeater {
-                                model: root.specialWorkspaces
-
-                                delegate: SpecialWsCard {
-                                    isActive: modelData.name === root.activeSpecialName
-
-                                    onClicked: {
-                                        Hypr.dispatch(`togglespecialworkspace ${modelData.name.slice("special:".length)}`);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // ── Right pane: workspace detail ────────────────────────────
+            // Left: active/selected workspace preview + actions
             StyledRect {
-                Layout.fillHeight: true
                 Layout.fillWidth: true
+                Layout.minimumWidth: 400
+                Layout.preferredHeight: previewCol.implicitHeight + Appearance.padding.large * 2
 
-                radius: Appearance.rounding.normal
-                color: Colours.layer(Colours.tPalette.m3surfaceContainer, 1)
+                radius: Appearance.rounding.large
+                color: Colours.tPalette.m3surfaceContainer
 
-                Loader {
-                    id: detailLoader
+                ColumnLayout {
+                    id: previewCol
 
                     anchors.fill: parent
-                    anchors.margins: Appearance.padding.normal
+                    anchors.margins: Appearance.padding.large
 
-                    active: root.selectedWorkspace !== null
+                    spacing: Appearance.spacing.normal
 
-                    sourceComponent: WorkspaceDetail {
-                        wsId: root.selectedWsId
-                        workspace: root.selectedWorkspace
-                    }
-                }
-
-                // Empty state when no workspace selected
-                Item {
-                    anchors.fill: parent
-                    visible: root.selectedWorkspace === null
-
-                    ColumnLayout {
-                        anchors.centerIn: parent
+                    // Header
+                    RowLayout {
+                        Layout.fillWidth: true
                         spacing: Appearance.spacing.small
 
                         MaterialIcon {
-                            Layout.alignment: Qt.AlignHCenter
                             text: "workspaces"
-                            color: Colours.palette.m3outline
-                            font.pointSize: Appearance.font.size.extraLarge * 2
+                            color: Colours.palette.m3primary
+                            font.pointSize: Appearance.font.size.large
                         }
 
                         StyledText {
-                            Layout.alignment: Qt.AlignHCenter
-                            text: qsTr("Select a workspace")
-                            color: Colours.palette.m3outline
-                            font.pointSize: Appearance.font.size.normal
+                            text: root.selectedWorkspace?.name ?? qsTr("Workspace %1").arg(root.selectedWsId)
+                            font.pointSize: Appearance.font.size.larger
+                            font.weight: 600
+                            color: Colours.palette.m3onSurface
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
+                        }
+
+                        StyledText {
+                            text: {
+                                const n = root.selectedWorkspace?.lastIpcObject?.windows ?? 0;
+                                return n === 0 ? qsTr("Empty") : qsTr("%1 windows").arg(n);
+                            }
+                            font.pointSize: Appearance.font.size.small
+                            color: Colours.palette.m3onSurfaceVariant
                         }
                     }
+
+                    // Live preview
+                    Loader {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: Config.dashboard.workspaces.previewHeight
+
+                        active: Config.dashboard.workspaces.showLivePreview && root.selectedWorkspace !== null
+
+                        sourceComponent: WorkspacePreview {
+                            wsId: root.selectedWsId
+                        }
+                    }
+
+                    // Actions bar
+                    WsActionsBar {
+                        Layout.fillWidth: true
+                        wsId: root.selectedWsId
+                    }
+                }
+            }
+
+            // Right: window list
+            StyledRect {
+                Layout.fillWidth: true
+                Layout.minimumWidth: 300
+                Layout.preferredHeight: previewCol.implicitHeight + Appearance.padding.large * 2
+
+                radius: Appearance.rounding.large
+                color: Colours.tPalette.m3surfaceContainer
+
+                WorkspaceDetail {
+                    anchors.fill: parent
+                    wsId: root.selectedWsId
+                    workspace: root.selectedWorkspace
                 }
             }
         }
 
-        // ── Bottom status bar ──────────────────────────────────────────
+        // ── Bottom: workspace selector cards ──────────────────────────
         StyledRect {
             Layout.fillWidth: true
-            radius: Appearance.rounding.normal
-            color: Colours.layer(Colours.tPalette.m3surfaceContainer, 1)
-            implicitHeight: statusRow.implicitHeight + Appearance.padding.small * 2
+            Layout.preferredHeight: wsFlowCol.implicitHeight + Appearance.padding.large * 2
 
-            RowLayout {
-                id: statusRow
+            radius: Appearance.rounding.large
+            color: Colours.tPalette.m3surfaceContainer
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.margins: Appearance.padding.normal
+            ColumnLayout {
+                id: wsFlowCol
+
+                anchors.fill: parent
+                anchors.margins: Appearance.padding.large
 
                 spacing: Appearance.spacing.normal
 
-                MaterialIcon {
-                    text: "monitor"
-                    color: Colours.palette.m3primary
-                    font.pointSize: Appearance.font.size.normal
-                }
-
-                StyledText {
-                    text: {
-                        const mon = Hypr.focusedMonitor;
-                        if (mon)
-                            return qsTr("Monitor: %1 · Active: WS %2").arg(mon.name).arg(Hypr.activeWsId);
-                        return qsTr("Active: WS %1").arg(Hypr.activeWsId);
-                    }
-                    font.pointSize: Appearance.font.size.small
-                    color: Colours.palette.m3onSurfaceVariant
+                // Section header
+                RowLayout {
                     Layout.fillWidth: true
-                }
-
-                // Monitor count badge (multi-monitor)
-                StyledRect {
-                    visible: Hypr.monitors.values.length > 1
-                    radius: Appearance.rounding.full
-                    color: Qt.alpha(Colours.palette.m3primary, 0.15)
-                    implicitWidth: monCount.implicitWidth + Appearance.padding.small * 2
-                    implicitHeight: monCount.implicitHeight + 2
+                    spacing: Appearance.spacing.small
 
                     StyledText {
-                        id: monCount
-                        anchors.centerIn: parent
-                        text: qsTr("%1 monitors").arg(Hypr.monitors.values.length)
-                        font.pointSize: Appearance.font.size.small
-                        color: Colours.palette.m3primary
+                        text: qsTr("Workspaces")
+                        font.pointSize: Appearance.font.size.normal
+                        font.weight: 600
+                        color: Colours.palette.m3onSurface
+                        Layout.fillWidth: true
+                    }
+
+                    // Special workspace chips
+                    Row {
+                        visible: Config.dashboard.workspaces.showSpecialWorkspaces && root.specialWorkspaces.length > 0
+                        spacing: Appearance.spacing.small / 2
+
+                        Repeater {
+                            model: root.specialWorkspaces
+
+                            delegate: SpecialWsCard {
+                                isActive: modelData.name === root.activeSpecialName
+
+                                onClicked: {
+                                    Hypr.dispatch(`togglespecialworkspace ${modelData.name.slice("special:".length)}`);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Workspace cards flow
+                Flow {
+                    Layout.fillWidth: true
+
+                    spacing: Appearance.spacing.small
+
+                    Repeater {
+                        model: root.regularWorkspaces
+
+                        delegate: WorkspaceCard {
+                            isActive: modelData.id === Hypr.activeWsId
+                            isSelected: modelData.id === root.selectedWsId
+
+                            onClicked: {
+                                root.selectedWsId = modelData.id;
+                                Hypr.dispatch(`workspace ${modelData.id}`);
+                            }
+                        }
+                    }
+
+                    // Empty state
+                    StyledText {
+                        visible: root.regularWorkspaces.length === 0
+                        text: qsTr("No workspaces open")
+                        color: Colours.palette.m3onSurfaceVariant
+                        font.pointSize: Appearance.font.size.normal
                     }
                 }
             }

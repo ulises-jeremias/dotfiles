@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import qs.components
-import qs.components.controls
 import qs.services
 import qs.utils
 import qs.config
@@ -9,11 +8,8 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
-// Workspace card for the dashboard Workspaces tab.
-//
-// Shows workspace name, app icons (up to maxAppIcons), window count badge,
-// and optional monitor badge. Clicking switches to the workspace and
-// selects it for the detail panel.
+// Workspace selector card — compact card for the bottom flow.
+// Matches the visual style of forecast cards in Weather.qml.
 Item {
     id: root
 
@@ -25,16 +21,12 @@ Item {
 
     readonly property int windowCount: root.modelData.lastIpcObject?.windows ?? 0
     readonly property var wsToplevels: Hypr.toplevels.values.filter(t => t.workspace?.id === root.modelData.id)
-    readonly property string monitorName: {
-        const mon = Hypr.monitors.values.find(m => m.activeWorkspace?.id === root.modelData.id);
-        return mon?.name ?? "";
-    }
 
-    implicitWidth: 130
-    implicitHeight: wsCard.implicitHeight
+    implicitWidth: 150
+    implicitHeight: card.implicitHeight
 
     StyledRect {
-        id: wsCard
+        id: card
 
         anchors.fill: parent
 
@@ -43,9 +35,7 @@ Item {
             ? Colours.tPalette.m3primaryContainer
             : root.isSelected
                 ? Colours.tPalette.m3secondaryContainer
-                : Colours.layer(Colours.tPalette.m3surfaceContainer, 1)
-        border.width: root.isActive || root.isSelected ? 1 : 0
-        border.color: root.isActive ? Colours.palette.m3primary : Colours.palette.m3secondary
+                : Colours.tPalette.m3surfaceContainerHigh
 
         Behavior on color {
             ColorAnimation {
@@ -66,75 +56,52 @@ Item {
         }
 
         ColumnLayout {
-            id: content
-
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.fill: parent
             anchors.margins: Appearance.padding.normal
 
             spacing: Appearance.spacing.small / 2
 
-            // Header: WS name + monitor badge + window count
+            // Header: WS number + name
             RowLayout {
                 Layout.fillWidth: true
                 spacing: Appearance.spacing.small
 
                 StyledText {
-                    text: root.modelData.name
+                    text: root.modelData.id
                     font.pointSize: Appearance.font.size.normal
-                    font.weight: root.isActive ? 700 : 500
+                    font.weight: 700
                     color: root.isActive
                         ? Colours.palette.m3onPrimaryContainer
                         : root.isSelected
                             ? Colours.palette.m3onSecondaryContainer
-                            : Colours.palette.m3onSurface
-                    elide: Text.ElideRight
+                            : Colours.palette.m3primary
+                }
+
+                StyledText {
                     Layout.fillWidth: true
-                }
-
-                // Monitor badge (only if multi-monitor and config enabled)
-                StyledRect {
-                    visible: root.monitorName !== "" && Config.dashboard.workspaces.showMonitorBadge && Hypr.monitors.values.length > 1
-                    radius: Appearance.rounding.full
-                    color: Qt.alpha(Colours.palette.m3outline, 0.15)
-                    implicitWidth: monLabel.implicitWidth + Appearance.padding.small
-                    implicitHeight: monLabel.implicitHeight + 2
-
-                    StyledText {
-                        id: monLabel
-                        anchors.centerIn: parent
-                        text: root.monitorName
-                        font.pointSize: Appearance.font.size.small
-                        color: root.isActive
-                            ? Colours.palette.m3onPrimaryContainer
-                            : Colours.palette.m3onSurfaceVariant
-                    }
-                }
-
-                // Window count badge
-                StyledRect {
-                    visible: root.windowCount > 0
-                    radius: Appearance.rounding.full
+                    text: root.modelData.name === String(root.modelData.id) ? "" : root.modelData.name
+                    font.pointSize: Appearance.font.size.small
                     color: root.isActive
-                        ? Qt.alpha(Colours.palette.m3onPrimaryContainer, 0.2)
-                        : Colours.layer(Colours.tPalette.m3surfaceContainerHigh, 1)
-                    implicitWidth: winCount.implicitWidth + Appearance.padding.small * 2
-                    implicitHeight: winCount.implicitHeight + 2
-
-                    StyledText {
-                        id: winCount
-                        anchors.centerIn: parent
-                        text: root.windowCount
-                        font.pointSize: Appearance.font.size.smaller
-                        color: root.isActive
-                            ? Colours.palette.m3onPrimaryContainer
+                        ? Colours.palette.m3onPrimaryContainer
+                        : root.isSelected
+                            ? Colours.palette.m3onSecondaryContainer
                             : Colours.palette.m3onSurfaceVariant
-                    }
+                    elide: Text.ElideRight
+                    visible: text !== ""
+                }
+
+                // Window count
+                StyledText {
+                    text: root.windowCount > 0 ? String(root.windowCount) : ""
+                    font.pointSize: Appearance.font.size.smaller
+                    color: root.isActive
+                        ? Colours.palette.m3onPrimaryContainer
+                        : Colours.palette.m3onSurfaceVariant
+                    visible: root.windowCount > 0
                 }
             }
 
-            // App icons row (up to maxAppIcons)
+            // App icons
             Row {
                 Layout.fillWidth: true
                 spacing: 4
@@ -156,25 +123,15 @@ Item {
                     }
                 }
 
-                // Overflow indicator
                 StyledText {
                     visible: root.wsToplevels.length > Config.dashboard.workspaces.maxAppIcons
                     text: qsTr("+%1").arg(root.wsToplevels.length - Config.dashboard.workspaces.maxAppIcons)
                     font.pointSize: Appearance.font.size.smaller
                     color: root.isActive
                         ? Colours.palette.m3onPrimaryContainer
-                        : Colours.palette.m3outline
+                        : Colours.palette.m3onSurfaceVariant
                     anchors.verticalCenter: parent.verticalCenter
                 }
-            }
-
-            // Active check mark
-            MaterialIcon {
-                Layout.alignment: Qt.AlignHCenter
-                visible: root.isActive
-                text: "check_circle"
-                color: Colours.palette.m3onPrimaryContainer
-                font.pointSize: Appearance.font.size.small
             }
         }
     }

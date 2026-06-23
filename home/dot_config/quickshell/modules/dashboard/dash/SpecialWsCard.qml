@@ -8,10 +8,7 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
-// Special workspace card for the dashboard Workspaces tab.
-//
-// Shows the special workspace icon, name, and window count.
-// Clicking toggles the special workspace.
+// Special workspace chip — compact pill for the workspace flow header.
 Item {
     id: root
 
@@ -24,20 +21,19 @@ Item {
     readonly property string iconName: Icons.getSpecialWsIcon(root.modelData.name)
     readonly property string displayName: root.modelData.name.slice("special:".length)
 
-    implicitWidth: 130
-    implicitHeight: wsCard.implicitHeight
+    implicitWidth: chip.implicitWidth
+    implicitHeight: chip.implicitHeight
 
     StyledRect {
-        id: wsCard
+        id: chip
 
-        anchors.fill: parent
-
-        radius: Appearance.rounding.normal
+        radius: Appearance.rounding.full
         color: root.isActive
             ? Colours.tPalette.m3tertiaryContainer
-            : Colours.layer(Colours.tPalette.m3surfaceContainer, 1)
-        border.width: root.isActive ? 1 : 0
-        border.color: Colours.palette.m3tertiary
+            : Colours.tPalette.m3surfaceContainerHigh
+
+        implicitWidth: content.implicitWidth + Appearance.padding.normal * 2
+        implicitHeight: content.implicitHeight + Appearance.padding.small
 
         Behavior on color {
             ColorAnimation {
@@ -56,12 +52,13 @@ Item {
         }
 
         RowLayout {
-            anchors.fill: parent
-            anchors.margins: Appearance.padding.normal
+            id: content
 
-            spacing: Appearance.spacing.small
+            anchors.centerIn: parent
 
-            // Icon or letter
+            spacing: Appearance.spacing.small / 2
+
+            // Icon
             Loader {
                 Layout.alignment: Qt.AlignVCenter
                 sourceComponent: root.iconName.length === 1 ? letterComp : iconComp
@@ -74,7 +71,7 @@ Item {
                         color: root.isActive
                             ? Colours.palette.m3onTertiaryContainer
                             : Colours.palette.m3tertiary
-                        font.pointSize: Appearance.font.size.large
+                        font.pointSize: Appearance.font.size.normal
                     }
                 }
 
@@ -86,35 +83,38 @@ Item {
                         color: root.isActive
                             ? Colours.palette.m3onTertiaryContainer
                             : Colours.palette.m3tertiary
-                        font.pointSize: Appearance.font.size.normal
+                        font.pointSize: Appearance.font.size.small
                         font.weight: 600
                     }
                 }
             }
 
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 0
+            // Name
+            StyledText {
+                text: root.displayName
+                font.pointSize: Appearance.font.size.small
+                font.weight: root.isActive ? 600 : 400
+                color: root.isActive
+                    ? Colours.palette.m3onTertiaryContainer
+                    : Colours.palette.m3onSurfaceVariant
+            }
+
+            // Window count
+            StyledRect {
+                visible: root.windowCount > 0
+                radius: Appearance.rounding.full
+                color: Qt.alpha(Colours.palette.m3onTertiaryContainer, 0.2)
+                implicitWidth: wcText.implicitWidth + 6
+                implicitHeight: wcText.implicitHeight + 2
 
                 StyledText {
-                    Layout.fillWidth: true
-                    text: root.displayName
-                    font.pointSize: Appearance.font.size.normal
-                    font.weight: root.isActive ? 700 : 500
+                    id: wcText
+                    anchors.centerIn: parent
+                    text: root.windowCount
+                    font.pointSize: Appearance.font.size.smaller
                     color: root.isActive
                         ? Colours.palette.m3onTertiaryContainer
-                        : Colours.palette.m3onSurface
-                    elide: Text.ElideRight
-                }
-
-                StyledText {
-                    text: root.windowCount > 0
-                        ? qsTr("%1 window(s)").arg(root.windowCount)
-                        : qsTr("Empty")
-                    font.pointSize: Appearance.font.size.small
-                    color: root.isActive
-                        ? Colours.palette.m3onTertiaryContainer
-                        : Colours.palette.m3outline
+                        : Colours.palette.m3onSurfaceVariant
                 }
             }
         }

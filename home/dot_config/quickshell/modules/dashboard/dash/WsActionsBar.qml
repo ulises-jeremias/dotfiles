@@ -8,16 +8,14 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
-// Action bar for workspace-level operations: rename, new, close-all.
-//
-// Rename shows an inline text field; New creates an empty workspace;
-// Close-all kills every window in the selected workspace.
+// Workspace action bar — rename, new, close-all.
+// Sits inside the preview card, no own background.
 Item {
     id: root
 
     required property int wsId
 
-    implicitWidth: layout.implicitWidth
+    implicitWidth: parent ? parent.width : 400
     implicitHeight: layout.implicitHeight
 
     property bool renameActive: false
@@ -25,14 +23,15 @@ Item {
     RowLayout {
         id: layout
 
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
 
         spacing: Appearance.spacing.small
 
         // Rename inline
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: renameField.visible ? renameField.implicitHeight : renameBtn.implicitHeight
+            Layout.preferredHeight: renameField.visible ? renameField.implicitHeight + Appearance.padding.small : renameBtn.implicitHeight
             clip: true
 
             TextButton {
