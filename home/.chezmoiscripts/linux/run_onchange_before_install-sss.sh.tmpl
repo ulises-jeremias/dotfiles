@@ -1,0 +1,20 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+# sss (Super ScreenShot) v0.2.1 — main screenshot CLI with interactive selector
+if ! type -p sss &>/dev/null; then
+  curl -fsSL https://github.com/SergioRibera/sss/releases/download/sss_cli/v0.2.1/install.sh | sh
+fi
+
+# sss_code v0.3.1 — code-to-PNG renderer
+if ! type -p sss_code &>/dev/null; then
+  curl -fsSL https://github.com/SergioRibera/sss/releases/download/sss_code/v0.3.1/install.sh | sh -s -- --binary sss_code
+fi
+
+{{      end -}}
+
+{{ end -}}

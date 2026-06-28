@@ -1,0 +1,21 @@
+[general]
+copy = true
+notify = true
+shadow = true
+shadow-blur = 30.0
+shadow-image = true
+radius = 15
+save-format = "png"
+show-cursor = false
+author = "@ulises-jeremias"
+
+[general.colors]
+background = "#FFFFFF"
+shadow = "#707070"
+author = "#000000"
+
+[general.window-controls]
+enable = false
+
+[ocr]
+enable = false

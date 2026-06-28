@@ -24,7 +24,10 @@ shoot() {
   if [ -n "${region:-}" ]; then
     sss
   else
-    sss --screen --current
+    local pictures filename
+    pictures="${XDG_PICTURES_DIR:-$HOME/Pictures}"
+    filename="${pictures}/screenshot_$(date +%Y%m%d_%H%M%S).png"
+    sss --screen --current --copy --output "$filename"
   fi
 }
 
