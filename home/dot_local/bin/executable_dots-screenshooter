@@ -21,23 +21,23 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 set -euo pipefail
 
 shoot() {
-  if [ -n "${region:-}" ]; then
-    sss
-  else
-    local pictures filename
-    pictures="${XDG_PICTURES_DIR:-$HOME/Pictures}"
-    filename="${pictures}/screenshot_$(date +%Y%m%d_%H%M%S).png"
-    sss --screen --current --copy --output "$filename"
-  fi
+	if [ -n "${region:-}" ]; then
+		sss
+	else
+		local pictures filename
+		pictures="${XDG_PICTURES_DIR:-$HOME/Pictures}"
+		filename="${pictures}/screenshot_$(date +%Y%m%d_%H%M%S).png"
+		sss --screen --current --copy --output "$filename"
+	fi
 }
 
 if [[ -n ${version:-} ]]; then
-  echo "dots-screenshooter -- Version 0.4"
-  exit 0
+	echo "dots-screenshooter -- Version 0.4"
+	exit 0
 fi
 
 if [[ -n ${region:-} ]]; then
-  region=1
+	region=1
 fi
 
 shoot
