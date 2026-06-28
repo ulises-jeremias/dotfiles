@@ -36,7 +36,7 @@ jobs:
         CODESPACES: true
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Validate script standards
         run: ./scripts/validate-dots-scripts.sh

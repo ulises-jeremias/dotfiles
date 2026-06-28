@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout Latest Dotfiles Release
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Publish AUR package
         uses: ulises-jeremias/github-actions-aur-publish@v1
