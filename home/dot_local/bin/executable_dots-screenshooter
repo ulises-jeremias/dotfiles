@@ -21,7 +21,7 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 set -euo pipefail
 
 shoot() {
-  if [ -n "$region" ]; then
+  if [ -n "${region:-}" ]; then
     sss
   else
     sss --screen --current
