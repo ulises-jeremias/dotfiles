@@ -47,7 +47,7 @@
 
 **Media & Screen:**
 
-- [📸 Screenshots](Dots-Scripts#screenshooter--screenshot-tool) - flameshot → grimblast → grim
+- [📸 Screenshots](Dots-Scripts#screenshooter--screenshot-tool) - sss
 - [🔒 Screen Lock](Dots-Scripts#lockscreen--screen-lock) - hyprlock
 - [🔆 Brightness](Dots-Scripts#brightness--screen-brightness-control) - brightnessctl
 

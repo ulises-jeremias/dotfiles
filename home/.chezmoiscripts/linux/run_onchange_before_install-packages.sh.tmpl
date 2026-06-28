@@ -38,7 +38,6 @@ set -eufo pipefail
 {{ if and (not .ephemeral) (not .headless) -}}
 {{ $packages = concat $packages (list
   "arandr"
-  "flameshot"
   "graphicsmagick"
   "orchis-theme"
   "xdg-desktop-portal"
@@ -62,6 +61,8 @@ set -eufo pipefail
   "pwvucontrol"
   "snappy-switcher"
   "poweralertd"
+  "sss-bin"
+  "sss_code-bin"
 ) -}}
 {{ end -}}
 
