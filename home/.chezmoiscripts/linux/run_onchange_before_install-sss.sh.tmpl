@@ -5,6 +5,18 @@
 
 set -eufo pipefail
 
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+{{   $sudo = "" -}}
+{{ end }}
+
+# sss v0.2.1 requires onnxruntime-cpu 1.24.x from extra (VERS_1.24.4 symbol)
+if ! pacman -Q onnxruntime-cpu &>/dev/null; then
+  {{ $sudo }}pacman -S --noconfirm extra/onnxruntime-cpu
+elif ! pacman -Q onnxruntime-cpu | grep -q "1\.24\."; then
+  {{ $sudo }}pacman -S --noconfirm extra/onnxruntime-cpu
+fi
+
 # sss (Super ScreenShot) v0.2.1 — main screenshot CLI with interactive selector
 if ! type -p sss &>/dev/null; then
   curl -fsSL https://github.com/SergioRibera/sss/releases/download/sss_cli/v0.2.1/install.sh | sh
