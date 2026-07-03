@@ -14,6 +14,24 @@
 [🚀 Quick Start](#-quick-installation) •
 [🤝 Contributing](CONTRIBUTING.md)
 
+<p>
+  <a href="https://github.com/PandaFoss/Awesome-Arch">
+    <img src="https://img.shields.io/badge/Awesome--Arch-mentioned-ffb0ca?style=for-the-badge&amp;labelColor=191114" alt="Mentioned in Awesome Arch"/>
+  </a>
+  <a href="https://aur.archlinux.org/packages/dots-stable">
+    <img src="https://img.shields.io/aur/version/dots-stable?label=AUR%20Stable&amp;style=for-the-badge&amp;labelColor=191114&amp;color=e2bdc7" alt="AUR Stable version"/>
+  </a>
+  <a href="https://aur.archlinux.org/packages/dots-git">
+    <img src="https://img.shields.io/aur/version/dots-git?label=AUR%20Development&amp;style=for-the-badge&amp;labelColor=191114&amp;color=f0bc95" alt="AUR Development version"/>
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-9e8c91?style=for-the-badge&amp;labelColor=191114" alt="MIT License"/>
+  </a>
+  <a href="https://archlinux.org/">
+    <img src="https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&amp;logo=arch-linux&amp;logoColor=white&amp;labelColor=191114" alt="Arch Linux"/>
+  </a>
+</p>
+
 <div align="center">
   <a href="https://github.com/ulises-jeremias/dotfiles/tree/x11-openbox-i3wm-xfce4">
     <img src="./static/x11-branch-banner.svg" alt="Looking for X11 with i3, OpenBox, XFCE4? Check our X11 branch!" width="800"/>
@@ -25,12 +43,6 @@
     <img src="./static/wayland-legacy-branch-banner.svg" alt="Looking for the classic Wayland stack (Hyprland + Waybar + Rofi + EWW)? Check this branch!" width="800"/>
   </a>
 </div>
-
-[![Awesome](https://awesome.re/mentioned-badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
-[![AUR Stable](https://img.shields.io/aur/version/dots-stable?label=AUR+Stable&style=for-the-badge)](https://aur.archlinux.org/packages/dots-stable)
-[![AUR Development](https://img.shields.io/aur/version/dots-git?label=AUR+Development&style=for-the-badge)](https://aur.archlinux.org/packages/dots-git)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-[![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)](https://archlinux.org/)
 
 </div>
 
