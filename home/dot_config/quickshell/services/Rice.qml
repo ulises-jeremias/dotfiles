@@ -18,6 +18,8 @@ Singleton {
     property string currentId: ""
     property var currentConfig: ({})
 
+    property bool _startupRestored: false
+
     property string _pendingWallpaper: ""
     property string _pendingSchemeType: "tonal-spot"
     property bool _pendingDarkMode: true
@@ -64,8 +66,38 @@ Singleton {
         path: root.stateFile
         onLoaded: {
             const id = text().trim();
-            if (id)
+            if (id) {
                 root.currentId = id;
+                if (!root._startupRestored) {
+                    root._startupRestored = true;
+                    ensureSchemeProc.running = true;
+                }
+            }
+        }
+        onLoadFailed: console.warn("Rice.qml: state file not found, skipping startup scheme regeneration")
+    }
+
+    // ── Ensure scheme.json exists after restoring state ─────────────────────
+    // Catches the case where ~/.cache/dots/smart-colors/scheme.json was
+    // cleaned (tmpfiles, bleachbit, etc) but the state files survived.
+
+    Component.onCompleted: {
+        Qt.callLater(() => {
+            if (root.currentId && !root._startupRestored) {
+                root._startupRestored = true;
+                ensureSchemeProc.running = true;
+            }
+        });
+    }
+
+    Process {
+        id: ensureSchemeProc
+
+        command: ["dots-color-scheme", "regenerate"]
+
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0)
+                console.warn("Rice.qml: scheme regeneration failed (exit", exitCode, ")");
         }
     }
 
