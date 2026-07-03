@@ -8,8 +8,8 @@
 set -euo pipefail
 
 if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
-  # shellcheck source=/dev/null
-  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+	# shellcheck source=/dev/null
+	source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
 fi
 
 SCHEME_FILE="${HOME}/.cache/dots/smart-colors/scheme.json"
@@ -25,75 +25,75 @@ cmd="${1:-}"
 shift 2>/dev/null || true
 
 normalize_scheme_type() {
-  local raw="${1:-tonal-spot}"
-  local normalized
-  normalized=$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | tr -d ' ')
-  case "$normalized" in
-    vibrant) echo "vibrant" ;;
-    tonalspot | tonal-spot) echo "tonal-spot" ;;
-    expressive) echo "expressive" ;;
-    fidelity) echo "fidelity" ;;
-    content) echo "content" ;;
-    neutral) echo "neutral" ;;
-    monochrome) echo "monochrome" ;;
-    fruitsalad | rainbow) echo "expressive" ;;
-    auto | *) echo "tonal-spot" ;;
-  esac
+	local raw="${1:-tonal-spot}"
+	local normalized
+	normalized=$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | tr -d ' ')
+	case "$normalized" in
+	vibrant) echo "vibrant" ;;
+	tonalspot | tonal-spot) echo "tonal-spot" ;;
+	expressive) echo "expressive" ;;
+	fidelity) echo "fidelity" ;;
+	content) echo "content" ;;
+	neutral) echo "neutral" ;;
+	monochrome) echo "monochrome" ;;
+	fruitsalad | rainbow) echo "expressive" ;;
+	auto | *) echo "tonal-spot" ;;
+	esac
 }
 
 normalize_variant() {
-  local raw="${1:-tonalspot}"
-  local normalized
-  normalized=$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | tr -d ' ')
-  case "$normalized" in
-    tonal-spot | tonalspot) echo "tonalspot" ;;
-    vibrant | expressive | fidelity | content | neutral | monochrome | fruitsalad | rainbow) echo "$normalized" ;;
-    *) echo "tonalspot" ;;
-  esac
+	local raw="${1:-tonalspot}"
+	local normalized
+	normalized=$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | tr -d ' ')
+	case "$normalized" in
+	tonal-spot | tonalspot) echo "tonalspot" ;;
+	vibrant | expressive | fidelity | content | neutral | monochrome | fruitsalad | rainbow) echo "$normalized" ;;
+	*) echo "tonalspot" ;;
+	esac
 }
 
 variant_to_scheme_type() {
-  local variant
-  variant=$(normalize_variant "${1:-}")
-  case "$variant" in
-    tonalspot) echo "tonal-spot" ;;
-    fruitsalad | rainbow) echo "expressive" ;;
-    *) echo "$variant" ;;
-  esac
+	local variant
+	variant=$(normalize_variant "${1:-}")
+	case "$variant" in
+	tonalspot) echo "tonal-spot" ;;
+	fruitsalad | rainbow) echo "expressive" ;;
+	*) echo "$variant" ;;
+	esac
 }
 
 resolve_wallpaper() {
-  if declare -f dots_current_wallpaper >/dev/null 2>&1; then
-    local unified=""
-    unified="$(dots_current_wallpaper 2>/dev/null || true)"
-    if [[ -n ${unified:-} && -f $unified ]]; then
-      printf '%s\n' "$unified"
-      return 0
-    fi
-  fi
+	if declare -f dots_current_wallpaper >/dev/null 2>&1; then
+		local unified=""
+		unified="$(dots_current_wallpaper 2>/dev/null || true)"
+		if [[ -n ${unified:-} && -f $unified ]]; then
+			printf '%s\n' "$unified"
+			return 0
+		fi
+	fi
 
-  local wall=""
-  if [[ -f $CURRENT_WALL_CACHE ]]; then
-    wall=$(<"$CURRENT_WALL_CACHE")
-  elif [[ -e $WAL_WALL_LINK ]]; then
-    wall=$(readlink -f "$WAL_WALL_LINK" 2>/dev/null || true)
-  fi
+	local wall=""
+	if [[ -f $CURRENT_WALL_CACHE ]]; then
+		wall=$(<"$CURRENT_WALL_CACHE")
+	elif [[ -e $WAL_WALL_LINK ]]; then
+		wall=$(readlink -f "$WAL_WALL_LINK" 2>/dev/null || true)
+	fi
 
-  if [[ -n ${wall:-} && -f $wall ]]; then
-    printf '%s\n' "$wall"
-    return 0
-  fi
-  return 1
+	if [[ -n ${wall:-} && -f $wall ]]; then
+		printf '%s\n' "$wall"
+		return 0
+	fi
+	return 1
 }
 
 ensure_state_dir() {
-  mkdir -p "$STATE_DIR"
+	mkdir -p "$STATE_DIR"
 }
 
 read_scheme_meta() {
-  local field="${1:-}"
-  [[ -f $SCHEME_FILE ]] || return 1
-  python3 - "$SCHEME_FILE" "$field" <<'PY'
+	local field="${1:-}"
+	[[ -f $SCHEME_FILE ]] || return 1
+	python3 - "$SCHEME_FILE" "$field" <<'PY'
 import json
 import sys
 path, field = sys.argv[1], sys.argv[2]
@@ -104,12 +104,12 @@ PY
 }
 
 write_state() {
-  local name="$1"
-  local flavour="$2"
-  local mode="$3"
-  local variant="$4"
-  ensure_state_dir
-  python3 - "$STATE_FILE" "$name" "$flavour" "$mode" "$variant" <<'PY'
+	local name="$1"
+	local flavour="$2"
+	local mode="$3"
+	local variant="$4"
+	ensure_state_dir
+	python3 - "$STATE_FILE" "$name" "$flavour" "$mode" "$variant" <<'PY'
 import json
 import pathlib
 import sys
@@ -126,31 +126,31 @@ PY
 }
 
 ensure_state() {
-  ensure_state_dir
-  if [[ -f $STATE_FILE ]]; then
-    return 0
-  fi
+	ensure_state_dir
+	if [[ -f $STATE_FILE ]]; then
+		return 0
+	fi
 
-  local flavour="tonal-spot"
-  local mode="dark"
-  local variant="tonalspot"
+	local flavour="tonal-spot"
+	local mode="dark"
+	local variant="tonalspot"
 
-  if [[ -f $SCHEME_FILE ]]; then
-    local f m
-    f="$(read_scheme_meta flavour || true)"
-    m="$(read_scheme_meta mode || true)"
-    [[ -n ${f:-} ]] && flavour="$(normalize_scheme_type "$f")"
-    [[ $m == "light" || $m == "dark" ]] && mode="$m"
-    variant="$(normalize_variant "$flavour")"
-  fi
+	if [[ -f $SCHEME_FILE ]]; then
+		local f m
+		f="$(read_scheme_meta flavour || true)"
+		m="$(read_scheme_meta mode || true)"
+		[[ -n ${f:-} ]] && flavour="$(normalize_scheme_type "$f")"
+		[[ $m == "light" || $m == "dark" ]] && mode="$m"
+		variant="$(normalize_variant "$flavour")"
+	fi
 
-  write_state "dynamic" "$flavour" "$mode" "$variant"
+	write_state "dynamic" "$flavour" "$mode" "$variant"
 }
 
 read_state_field() {
-  local field="$1"
-  ensure_state
-  python3 - "$STATE_FILE" "$field" <<'PY'
+	local field="$1"
+	ensure_state
+	python3 - "$STATE_FILE" "$field" <<'PY'
 import json
 import sys
 path, field = sys.argv[1], sys.argv[2]
@@ -161,56 +161,56 @@ PY
 }
 
 ensure_scheme_file() {
-  if [[ -f $SCHEME_FILE ]]; then
-    return 0
-  fi
-  regenerate_scheme >/dev/null 2>&1 || true
+	if [[ -f $SCHEME_FILE ]]; then
+		return 0
+	fi
+	regenerate_scheme >/dev/null 2>&1 || true
 }
 
 regenerate_scheme() {
-  ensure_state
-  command -v python3 >/dev/null 2>&1 || return 1
-  [[ -f $M3_SCRIPT ]] || return 1
+	ensure_state
+	command -v python3 >/dev/null 2>&1 || return 1
+	[[ -f $M3_SCRIPT ]] || return 1
 
-  local wallpaper
-  wallpaper="$(resolve_wallpaper)" || return 1
+	local wallpaper
+	wallpaper="$(resolve_wallpaper)" || return 1
 
-  local flavour mode
-  flavour="$(read_state_field flavour)"
-  mode="$(read_state_field mode)"
-  flavour="$(normalize_scheme_type "$flavour")"
-  [[ $mode == "light" || $mode == "dark" ]] || mode="dark"
+	local flavour mode
+	flavour="$(read_state_field flavour)"
+	mode="$(read_state_field mode)"
+	flavour="$(normalize_scheme_type "$flavour")"
+	[[ $mode == "light" || $mode == "dark" ]] || mode="dark"
 
-  mkdir -p "$(dirname "$SCHEME_FILE")"
-  local accent_args=()
-  local accent_override="${XDG_CACHE_HOME:-${HOME}/.cache}/dots/smart-colors/accent-override"
-  if [[ -f $accent_override ]]; then
-    local accent_hex
-    accent_hex="$(cat "$accent_override")"
-    [[ -n $accent_hex ]] && accent_args=(--source-color "$accent_hex")
-  fi
-  python3 "$M3_SCRIPT" \
-    --image "$wallpaper" \
-    --output "$SCHEME_FILE" \
-    --mode "$mode" \
-    --scheme-type "$flavour" \
-    "${accent_args[@]}" >/dev/null 2>&1 || return 1
+	mkdir -p "$(dirname "$SCHEME_FILE")"
+	local accent_args=()
+	local accent_override="${XDG_CACHE_HOME:-${HOME}/.cache}/dots/smart-colors/accent-override"
+	if [[ -f $accent_override ]]; then
+		local accent_hex
+		accent_hex="$(cat "$accent_override")"
+		[[ -n $accent_hex ]] && accent_args=(--source-color "$accent_hex")
+	fi
+	python3 "$M3_SCRIPT" \
+		--image "$wallpaper" \
+		--output "$SCHEME_FILE" \
+		--mode "$mode" \
+		--scheme-type "$flavour" \
+		"${accent_args[@]}" >/dev/null 2>&1 || return 1
 
-  # Regenerate hyprlock theme colors from the new scheme
-  if command -v dots-hyprlock-theme >/dev/null 2>&1; then
-    dots-hyprlock-theme >/dev/null 2>&1 || true
-  fi
+	# Regenerate hyprlock theme colors from the new scheme
+	if command -v dots-hyprlock-theme >/dev/null 2>&1; then
+		dots-hyprlock-theme >/dev/null 2>&1 || true
+	fi
 
-  if pgrep -x quickshell >/dev/null 2>&1 && command -v dots-quickshell >/dev/null 2>&1; then
-    dots-quickshell ipc colours reload >/dev/null 2>&1 || true
-  fi
+	if pgrep -x quickshell >/dev/null 2>&1 && command -v dots-quickshell >/dev/null 2>&1; then
+		dots-quickshell ipc colours reload >/dev/null 2>&1 || true
+	fi
 }
 
 cmd_list() {
-  ensure_state
-  ensure_scheme_file
+	ensure_state
+	ensure_scheme_file
 
-  python3 - "$SCHEME_FILE" "${SCHEME_TYPES[@]}" <<'PY'
+	python3 - "$SCHEME_FILE" "${SCHEME_TYPES[@]}" <<'PY'
 import json
 import pathlib
 import sys
@@ -232,88 +232,88 @@ PY
 }
 
 cmd_current() {
-  ensure_state
-  local name flavour variant
-  name="$(read_state_field name)"
-  flavour="$(read_state_field flavour)"
-  variant="$(read_state_field variant)"
-  [[ -n $name ]] || name="dynamic"
-  [[ -n $flavour ]] || flavour="tonal-spot"
-  [[ -n $variant ]] || variant="tonalspot"
-  printf '%s\n' "$name"
-  printf '%s\n' "$flavour"
-  printf '%s\n' "$variant"
+	ensure_state
+	local name flavour variant
+	name="$(read_state_field name)"
+	flavour="$(read_state_field flavour)"
+	variant="$(read_state_field variant)"
+	[[ -n $name ]] || name="dynamic"
+	[[ -n $flavour ]] || flavour="tonal-spot"
+	[[ -n $variant ]] || variant="tonalspot"
+	printf '%s\n' "$name"
+	printf '%s\n' "$flavour"
+	printf '%s\n' "$variant"
 }
 
 cmd_set() {
-  ensure_state
-  local name flavour mode variant
-  name="$(read_state_field name)"
-  flavour="$(read_state_field flavour)"
-  mode="$(read_state_field mode)"
-  variant="$(read_state_field variant)"
+	ensure_state
+	local name flavour mode variant
+	name="$(read_state_field name)"
+	flavour="$(read_state_field flavour)"
+	mode="$(read_state_field mode)"
+	variant="$(read_state_field variant)"
 
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      -n | --name)
-        name="${2:-$name}"
-        shift 2
-        ;;
-      -f | --flavour | --flavor)
-        flavour="$(normalize_scheme_type "${2:-$flavour}")"
-        variant="$(normalize_variant "$flavour")"
-        shift 2
-        ;;
-      *)
-        shift
-        ;;
-    esac
-  done
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		-n | --name)
+			name="${2:-$name}"
+			shift 2
+			;;
+		-f | --flavour | --flavor)
+			flavour="$(normalize_scheme_type "${2:-$flavour}")"
+			variant="$(normalize_variant "$flavour")"
+			shift 2
+			;;
+		*)
+			shift
+			;;
+		esac
+	done
 
-  write_state "$name" "$flavour" "$mode" "$variant"
-  regenerate_scheme || true
+	write_state "$name" "$flavour" "$mode" "$variant"
+	regenerate_scheme || true
 }
 
 cmd_variant() {
-  ensure_state
-  local variant_in="${1:-tonalspot}"
-  local variant flavour name mode
-  variant="$(normalize_variant "$variant_in")"
-  flavour="$(variant_to_scheme_type "$variant")"
-  name="$(read_state_field name)"
-  mode="$(read_state_field mode)"
-  write_state "${name:-dynamic}" "$flavour" "${mode:-dark}" "$variant"
-  regenerate_scheme || true
+	ensure_state
+	local variant_in="${1:-tonalspot}"
+	local variant flavour name mode
+	variant="$(normalize_variant "$variant_in")"
+	flavour="$(variant_to_scheme_type "$variant")"
+	name="$(read_state_field name)"
+	mode="$(read_state_field mode)"
+	write_state "${name:-dynamic}" "$flavour" "${mode:-dark}" "$variant"
+	regenerate_scheme || true
 }
 
 cmd_mode() {
-  ensure_state
-  local mode="${1:-}"
-  if [[ $mode != "light" && $mode != "dark" ]]; then
-    echo "Usage: dots-color-scheme mode {light|dark}" >&2
-    exit 1
-  fi
-  local name flavour variant
-  name="$(read_state_field name)"
-  flavour="$(normalize_scheme_type "$(read_state_field flavour)")"
-  variant="$(read_state_field variant)"
-  write_state "${name:-dynamic}" "$flavour" "$mode" "${variant:-tonalspot}"
-  regenerate_scheme || true
+	ensure_state
+	local mode="${1:-}"
+	if [[ $mode != "light" && $mode != "dark" ]]; then
+		echo "Usage: dots-color-scheme mode {light|dark}" >&2
+		exit 1
+	fi
+	local name flavour variant
+	name="$(read_state_field name)"
+	flavour="$(normalize_scheme_type "$(read_state_field flavour)")"
+	variant="$(read_state_field variant)"
+	write_state "${name:-dynamic}" "$flavour" "$mode" "${variant:-tonalspot}"
+	regenerate_scheme || true
 }
 
 cmd_regenerate() {
-  ensure_scheme_file
+	ensure_scheme_file
 }
 
 case "$cmd" in
-  list) cmd_list ;;
-  current) cmd_current ;;
-  set) cmd_set "$@" ;;
-  variant) cmd_variant "${1:-}" ;;
-  mode) cmd_mode "${1:-}" ;;
-  regenerate) cmd_regenerate ;;
-  *)
-    echo "Usage: dots-color-scheme {list|current|set|variant|mode|regenerate}" >&2
-    exit 1
-    ;;
+list) cmd_list ;;
+current) cmd_current ;;
+set) cmd_set "$@" ;;
+variant) cmd_variant "${1:-}" ;;
+mode) cmd_mode "${1:-}" ;;
+regenerate) cmd_regenerate ;;
+*)
+	echo "Usage: dots-color-scheme {list|current|set|variant|mode|regenerate}" >&2
+	exit 1
+	;;
 esac
