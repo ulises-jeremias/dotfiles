@@ -74,6 +74,7 @@ Singleton {
                 }
             }
         }
+        onLoadFailed: console.warn("Rice.qml: state file not found, skipping startup scheme regeneration")
     }
 
     // ── Ensure scheme.json exists after restoring state ─────────────────────
@@ -93,6 +94,11 @@ Singleton {
         id: ensureSchemeProc
 
         command: ["dots-color-scheme", "regenerate"]
+
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0)
+                console.warn("Rice.qml: scheme regeneration failed (exit", exitCode, ")");
+        }
     }
 
     // ── Step 1: load config.json for the requested rice ────────────────────
