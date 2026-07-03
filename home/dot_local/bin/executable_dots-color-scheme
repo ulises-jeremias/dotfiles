@@ -18,8 +18,6 @@ STATE_FILE="${STATE_DIR}/state.json"
 CURRENT_WALL_CACHE="${DOTS_WALLPAPER_POINTER_FILE:-$HOME/.local/state/dots/wallpaper/path}"
 WAL_WALL_LINK="${HOME}/.cache/wal/wal"
 M3_SCRIPT="${HOME}/.local/lib/dots/generate-m3-colors.py"
-CAELESTIA_STATE_DIR="${HOME}/.local/state/caelestia"
-CAELESTIA_SCHEME_LINK="${CAELESTIA_STATE_DIR}/scheme.json"
 
 SCHEME_TYPES=("vibrant" "tonal-spot" "expressive" "fidelity" "content" "neutral" "monochrome")
 
@@ -90,7 +88,6 @@ resolve_wallpaper() {
 
 ensure_state_dir() {
   mkdir -p "$STATE_DIR"
-  mkdir -p "$CAELESTIA_STATE_DIR"
 }
 
 read_scheme_meta() {
@@ -170,11 +167,6 @@ ensure_scheme_file() {
   regenerate_scheme >/dev/null 2>&1 || true
 }
 
-link_compat_scheme() {
-  ensure_state_dir
-  ln -snf "$SCHEME_FILE" "$CAELESTIA_SCHEME_LINK" 2>/dev/null || true
-}
-
 regenerate_scheme() {
   ensure_state
   command -v python3 >/dev/null 2>&1 || return 1
@@ -203,8 +195,6 @@ regenerate_scheme() {
     --mode "$mode" \
     --scheme-type "$flavour" \
     "${accent_args[@]}" >/dev/null 2>&1 || return 1
-
-  link_compat_scheme
 
   # Regenerate hyprlock theme colors from the new scheme
   if command -v dots-hyprlock-theme >/dev/null 2>&1; then
@@ -311,15 +301,9 @@ cmd_mode() {
   regenerate_scheme || true
 }
 
-if command -v caelestia >/dev/null 2>&1; then
-  case "$cmd" in
-    list) exec caelestia scheme list ;;
-    current) exec caelestia scheme get -nfv ;;
-    set) exec caelestia scheme set "$@" ;;
-    variant) exec caelestia scheme set -v "${1:-}" ;;
-    mode) exec caelestia scheme set -m "${1:-}" ;;
-  esac
-fi
+cmd_regenerate() {
+  ensure_scheme_file
+}
 
 case "$cmd" in
   list) cmd_list ;;
@@ -327,8 +311,9 @@ case "$cmd" in
   set) cmd_set "$@" ;;
   variant) cmd_variant "${1:-}" ;;
   mode) cmd_mode "${1:-}" ;;
+  regenerate) cmd_regenerate ;;
   *)
-    echo "Usage: dots-color-scheme {list|current|set [-n name] [-f flavour]|variant <name>|mode <light|dark>}" >&2
+    echo "Usage: dots-color-scheme {list|current|set|variant|mode|regenerate}" >&2
     exit 1
     ;;
 esac

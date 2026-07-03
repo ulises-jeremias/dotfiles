@@ -18,6 +18,8 @@ Singleton {
     property string currentId: ""
     property var currentConfig: ({})
 
+    property bool _startupRestored: false
+
     property string _pendingWallpaper: ""
     property string _pendingSchemeType: "tonal-spot"
     property bool _pendingDarkMode: true
@@ -64,9 +66,33 @@ Singleton {
         path: root.stateFile
         onLoaded: {
             const id = text().trim();
-            if (id)
+            if (id) {
                 root.currentId = id;
+                if (!root._startupRestored) {
+                    root._startupRestored = true;
+                    ensureSchemeProc.running = true;
+                }
+            }
         }
+    }
+
+    // ── Ensure scheme.json exists after restoring state ─────────────────────
+    // Catches the case where ~/.cache/dots/smart-colors/scheme.json was
+    // cleaned (tmpfiles, bleachbit, etc) but the state files survived.
+
+    Component.onCompleted: {
+        Qt.callLater(() => {
+            if (root.currentId && !root._startupRestored) {
+                root._startupRestored = true;
+                ensureSchemeProc.running = true;
+            }
+        });
+    }
+
+    Process {
+        id: ensureSchemeProc
+
+        command: ["dots-color-scheme", "regenerate"]
     }
 
     // ── Step 1: load config.json for the requested rice ────────────────────
