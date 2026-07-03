@@ -25,7 +25,7 @@
     <img src="https://img.shields.io/aur/version/dots-git?label=AUR%20Development&amp;style=for-the-badge&amp;labelColor=191114&amp;color=f0bc95" alt="AUR Development version"/>
   </a>
   <a href="LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-9e8c91?style=for-the-badge&amp;labelColor=191114" alt="MIT License"/>
+    <img src="https://img.shields.io/badge/License-MIT-d5c2c6?style=for-the-badge&amp;labelColor=191114" alt="MIT License"/>
   </a>
   <a href="https://archlinux.org/">
     <img src="https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&amp;logo=arch-linux&amp;logoColor=white&amp;labelColor=191114" alt="Arch Linux"/>
