@@ -33,7 +33,7 @@ The Hyprland configuration controls:
 To edit:
 
 ```sh
-chezmoi edit ~/.config/hypr/hyprland.conf
+chezmoi edit ~/.config/hypr/hyprland.lua
 chezmoi apply
 ```
 
