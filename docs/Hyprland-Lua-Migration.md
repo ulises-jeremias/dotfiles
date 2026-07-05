@@ -45,25 +45,25 @@ require("hyprland.lua.d.input")
 
 ## hyprlang → Lua Conversion Rules
 
-| hyprlang | Lua | Notes |
-|----------|-----|-------|
-| `source = ~/.../foo.conf` | `require("hyprland.lua.d.foo")` | `.conf.d` → `.lua.d` |
-| `exec-once = cmd` | `hl.on("hyprland.start", function() hl.exec_cmd("cmd") end)` | |
-| `exec-once = cmd1 && cmd2` | Multiple `hl.exec_cmd()` calls in one `hl.on` block | |
-| `env = KEY,value` | `hl.env("KEY", "value")` | Use `os.getenv()` for runtime refs |
-| `bind = mod, key, disp` | `hl.bind("mod + key", hl.dsp.disp())` | |
-| `binde = ...` | `hl.bind(..., { repeating = true })` | Repeating flag |
-| `bindl = ...` | `hl.bind(..., { locked = true })` | Locked flag |
-| `bindle = ...` | `hl.bind(..., { locked = true, repeating = true })` | Both flags |
-| `bindm = mod, mouse:N, action` | `hl.bind("mod + mouse:N", hl.dsp.window.action(), { mouse = true })` | |
-| `submap = name` / `submap = reset` | `hl.dsp.submap("name")` / `hl.dsp.submap("reset")` | |
-| `windowrule { ... }` | `hl.window_rule({ ... })` | Preserve name, match, effects |
-| `bezier = name, x1, y1, x2, y2` | `hl.curve(name, { type = "bezier", points = {{x1, y1}, {x2, y2}} })` | |
+| hyprlang                                     | Lua                                                                                                    | Notes                                       |
+|----------------------------------------------|--------------------------------------------------------------------------------------------------------|---------------------------------------------|
+| `source = ~/.../foo.conf`                    | `require("hyprland.lua.d.foo")`                                                                        | `.conf.d` → `.lua.d`                        |
+| `exec-once = cmd`                            | `hl.on("hyprland.start", function() hl.exec_cmd("cmd") end)`                                           |                                             |
+| `exec-once = cmd1 && cmd2`                   | Multiple `hl.exec_cmd()` calls in one `hl.on` block                                                    |                                             |
+| `env = KEY,value`                            | `hl.env("KEY", "value")`                                                                               | Use `os.getenv()` for runtime refs          |
+| `bind = mod, key, disp`                      | `hl.bind("mod + key", hl.dsp.disp())`                                                                  |                                             |
+| `binde = ...`                                | `hl.bind(..., { repeating = true })`                                                                   | Repeating flag                              |
+| `bindl = ...`                                | `hl.bind(..., { locked = true })`                                                                      | Locked flag                                 |
+| `bindle = ...`                               | `hl.bind(..., { locked = true, repeating = true })`                                                    | Both flags                                  |
+| `bindm = mod, mouse:N, action`               | `hl.bind("mod + mouse:N", hl.dsp.window.action(), { mouse = true })`                                   |                                             |
+| `submap = name` / `submap = reset`           | `hl.dsp.submap("name")` / `hl.dsp.submap("reset")`                                                     |                                             |
+| `windowrule { ... }`                         | `hl.window_rule({ ... })`                                                                              | Preserve name, match, effects               |
+| `bezier = name, x1, y1, x2, y2`              | `hl.curve(name, { type = "bezier", points = {{x1, y1}, {x2, y2}} })`                                   |                                             |
 | `animation = leaf, on, frames, curve, style` | `hl.animation({ leaf = "...", enabled = true, speed = frames*0.0167, bezier = "...", style = "..." })` | `speed` is deciseconds (1 = 100ms) in 0.55+ |
-| `$mainMod = SUPER` | `local mainMod = "SUPER"` | |
-| `general { key = val }` | `hl.config({ general = { key = val } })` | |
-| `col.active_border = rgba(...)` | `col = { active_border = "rgba(...)" }` | String format |
-| `monitor = name,pref,pos,sc` | `hl.monitor({ output = "name", mode = "preferred", position = "pos", scale = sc })` | |
+| `$mainMod = SUPER`                           | `local mainMod = "SUPER"`                                                                              |                                             |
+| `general { key = val }`                      | `hl.config({ general = { key = val } })`                                                               |                                             |
+| `col.active_border = rgba(...)`              | `col = { active_border = "rgba(...)" }`                                                                | String format                               |
+| `monitor = name,pref,pos,sc`                 | `hl.monitor({ output = "name", mode = "preferred", position = "pos", scale = sc })`                    |                                             |
 
 ### Animation speed conversion
 
@@ -223,39 +223,43 @@ hl.bind("mod + key", hl.dsp.exec_cmd("hyprctl dispatch ..."))
 
 ## Implementation Order
 
-| Order | Issue | Scope | Branch prefix |
-|-------|-------|-------|---------------|
-| 1 | `#181` | Entrypoint + static settings (`hyprland.lua`, static, input, monitors, environment, autostart, layout) | `feat-hyprland-lua-static-181` |
-| 2 | `#182` | Keybindings + keyboard help | `feat-hyprland-lua-binds-182` |
-| 3 | `#183` | Window rules | `feat-hyprland-lua-windowrules-183` |
-| 4 | `#184` | Animation curves + profiles + rice switching | `feat-hyprland-lua-animations-184` |
-| 5 | `#185` | Smart Colors Lua output generation | `feat-hyprland-lua-smartcolors-185` |
-| 6 | `#186` | Runtime integrations audit (Rice.qml paths, QS integrations) | `feat-hyprland-lua-integrations-186` |
-| 7 | `#187` | Documentation update | `docs-hyprland-lua-docs-187` |
-| 8 | `#188` | Validation + rollout (final CI checks) | `chore-hyprland-lua-rollout-188` |
+| Order | Issue  | Scope                                                                                                  | Branch prefix                        |
+|-------|--------|--------------------------------------------------------------------------------------------------------|--------------------------------------|
+| 1     | `#181` | Entrypoint + static settings (`hyprland.lua`, static, input, monitors, environment, autostart, layout) | `feat-hyprland-lua-static-181`       |
+| 2     | `#182` | Keybindings + keyboard help                                                                            | `feat-hyprland-lua-binds-182`        |
+| 3     | `#183` | Window rules                                                                                           | `feat-hyprland-lua-windowrules-183`  |
+| 4     | `#184` | Animation curves + profiles + rice switching                                                           | `feat-hyprland-lua-animations-184`   |
+| 5     | `#185` | Smart Colors Lua output generation                                                                     | `feat-hyprland-lua-smartcolors-185`  |
+| 6     | `#186` | Runtime integrations audit (Rice.qml paths, QS integrations)                                           | `feat-hyprland-lua-integrations-186` |
+| 7     | `#187` | Documentation update                                                                                   | `docs-hyprland-lua-docs-187`         |
+| 8     | `#188` | Validation + rollout (final CI checks)                                                                 | `chore-hyprland-lua-rollout-188`     |
 
 ## Validation per PR
 
-| Check | Command | When |
-|-------|---------|------|
-| Lua syntax | `luac -p file.lua` | Each Lua file created/modified |
-| Shell lint | `shellcheck script.sh` | Shell scripts touched |
-| Shell format | `shfmt -d script.sh` | Shell scripts touched |
-| Pre-commit | `pre-commit run --files <changed>` | Before every commit |
-| chezmoi apply | `chezmoi apply --dry-run --refresh-externals` | Dry-run before final commit |
-| Live reload | `hyprctl reload` + visual check | Host only — operator-approved |
+| Check         | Command                                       | When                           |
+|---------------|-----------------------------------------------|--------------------------------|
+| Lua syntax    | `luac -p file.lua`                            | Each Lua file created/modified |
+| Shell lint    | `shellcheck script.sh`                        | Shell scripts touched          |
+| Shell format  | `shfmt -d script.sh`                          | Shell scripts touched          |
+| Pre-commit    | `pre-commit run --files <changed>`            | Before every commit            |
+| chezmoi apply | `chezmoi apply --dry-run --refresh-externals` | Dry-run before final commit    |
+| Live reload   | `hyprctl reload` + visual check               | Host only — operator-approved  |
 
 ## Rollout
 
 1. After all sub-issues are merged to `main`, apply chezmoi:
+
    ```sh
    chezmoi update
    chezmoi apply
    ```
+
 2. Reload Hyprland:
+
    ```sh
    hyprctl reload
    ```
+
 3. Verify:
    - Quickshell bar appears
    - Keybindings work (workspace switching, terminal, launcher)
