@@ -1,0 +1,2 @@
+-- TODO: Implement in https://github.com/ulises-jeremias/dotfiles/issues/184
+-- This file will be populated in PR #feat-hyprland-lua-animations-184
