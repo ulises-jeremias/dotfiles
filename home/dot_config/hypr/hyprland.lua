@@ -6,13 +6,15 @@ require("hyprland.lua.d.layout")
 require("hyprland.lua.d.keybindings")
 require("hyprland.lua.d.window-rules")
 
-local animOk, _ = pcall(require, "hyprland.lua.d.animations-current")
-if not animOk then
-    require("hyprland.lua.d.animations")
-end
+pcall(require, "hyprland.lua.d.animations")
 
-local colorsOk, _ = pcall(dofile, os.getenv("HOME") .. "/.cache/dots/smart-colors/colors.lua")
-if not colorsOk then
+local home = os.getenv("HOME")
+if home then
+    local colorsOk, _ = pcall(dofile, home .. "/.cache/dots/smart-colors/colors.lua")
+    if not colorsOk then
+        require("hyprland.lua.d.colors-manual")
+    end
+else
     require("hyprland.lua.d.colors-manual")
 end
 

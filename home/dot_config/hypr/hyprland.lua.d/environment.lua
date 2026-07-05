@@ -7,8 +7,11 @@ hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
 
-hl.env("DBUS_SESSION_BUS_ADDRESS", "unix:path=" .. os.getenv("XDG_RUNTIME_DIR") .. "/bus")
-hl.env("GNOME_KEYRING_CONTROL", os.getenv("XDG_RUNTIME_DIR") .. "/keyring")
+local xdg_runtime = os.getenv("XDG_RUNTIME_DIR") or "/run/user/1000"
+hl.env("DBUS_SESSION_BUS_ADDRESS", "unix:path=" .. xdg_runtime .. "/bus")
+hl.env("GNOME_KEYRING_CONTROL", xdg_runtime .. "/keyring")
+
+local home = os.getenv("HOME") or ""
 hl.env("PASSWORD_STORE", "basic")
 hl.env("KDE_FULL_SESSION", "")
 hl.env("KDE_SESSION_VERSION", "")
@@ -25,8 +28,10 @@ hl.env("MOZ_ENABLE_WAYLAND", "1")
 hl.env("XCURSOR_SIZE", "24")
 hl.env("XCURSOR_THEME", "elementary")
 
-hl.env("QML2_IMPORT_PATH", os.getenv("HOME") .. "/.local/usr/lib/qt6/qml:" .. os.getenv("HOME") .. "/.local/lib/quickshell/qml:" .. os.getenv("HOME") .. "/.config/quickshell")
-hl.env("QS_PLUGIN_PATH", os.getenv("HOME") .. "/.local/lib/quickshell")
+if home ~= "" then
+    hl.env("QML2_IMPORT_PATH", home .. "/.local/usr/lib/qt6/qml:" .. home .. "/.local/lib/quickshell/qml:" .. home .. "/.config/quickshell")
+    hl.env("QS_PLUGIN_PATH", home .. "/.local/lib/quickshell")
+end
 
 hl.env("_JAVA_AWT_WM_NONREPARENTING", "1")
 
