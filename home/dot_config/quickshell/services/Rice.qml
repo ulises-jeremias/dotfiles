@@ -309,7 +309,7 @@ Singleton {
 
         property string animProfile: ""
 
-        command: ["sh", "-c", 'mkdir -p "$(dirname "$DOTS_ANIM_DST")" && printf '"'"'require("hyprland.lua.d.animations-%s")\n'"'"' "$DOTS_ANIM_PROFILE" > "$DOTS_ANIM_DST"']
+        command: ["sh", "-c", 'mkdir -p "$(dirname "$DOTS_ANIM_DST")" && printf '"'"'require("hyprland.lua.d/animations-%s")\n'"'"' "$DOTS_ANIM_PROFILE" > "$DOTS_ANIM_DST"']
         environment: ({
             "DOTS_ANIM_DST": `${root.hyprAnimDir}/animations-current.lua`,
             "DOTS_ANIM_PROFILE": hyprAnimProc.animProfile,

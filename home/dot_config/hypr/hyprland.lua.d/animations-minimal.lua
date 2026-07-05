@@ -1,4 +1,4 @@
-require("hyprland.lua.d.animations")
+require("hyprland.lua.d/animations")
 
 hl.curve("snap", { type = "bezier", points = {{0.5, 0.0}, {0.5, 1.0}} })
 hl.curve("direct", { type = "bezier", points = {{0.4, 0.0}, {0.6, 1.0}} })

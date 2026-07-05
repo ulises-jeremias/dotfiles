@@ -1,4 +1,4 @@
-require("hyprland.lua.d.animations")
+require("hyprland.lua.d/animations")
 
 hl.curve("soft", { type = "bezier", points = {{0.2, 0.8}, {0.2, 1.0}} })
 hl.curve("bounce", { type = "bezier", points = {{0.2, 1.3}, {0.3, 1.0}} })

@@ -1,4 +1,4 @@
-require("hyprland.lua.d.animations")
+require("hyprland.lua.d/animations")
 
 hl.curve("retro", { type = "bezier", points = {{0.3, 0.8}, {0.2, 1.0}} })
 hl.curve("dream", { type = "bezier", points = {{0.2, 1.1}, {0.3, 1.0}} })

@@ -1,4 +1,4 @@
-require("hyprland.lua.d.animations")
+require("hyprland.lua.d/animations")
 
 hl.curve("leaf", { type = "bezier", points = {{0.25, 0.46}, {0.45, 0.94}} })
 hl.curve("breeze", { type = "bezier", points = {{0.16, 1.00}, {0.30, 1.00}} })
