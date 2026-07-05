@@ -75,7 +75,7 @@ chezmoi apply
 hyprctl reload
 ```
 
-3. If all else fails, the old `hyprland.conf` files are still present in
+1. If all else fails, the old `hyprland.conf` files are still present in
    `~/.config/hypr/` and can be restored manually:
 
 ```sh
@@ -87,11 +87,11 @@ hyprctl reload
 
 ## Validation checks
 
-| Check | Command | Expected |
-|-------|---------|----------|
-| Lua entrypoint exists | `test -f ~/.config/hypr/hyprland.lua` | `true` |
-| Modules directory exists | `test -d ~/.config/hypr/hyprland.lua.d` | `true` |
-| Keybindings load | `hyprctl binds` | Lists all binds |
-| Monitor config | `hyprctl monitors` | Monitors configured |
-| Animations active | `hyprctl getoption animations:enabled -j` | `"str": "true"` |
-| Old conf not primary | `test -f ~/.config/hypr/hyprland.conf` | May still exist (legacy) |
+| Check                    | Command                                   | Expected                 |
+|--------------------------|-------------------------------------------|--------------------------|
+| Lua entrypoint exists    | `test -f ~/.config/hypr/hyprland.lua`     | `true`                   |
+| Modules directory exists | `test -d ~/.config/hypr/hyprland.lua.d`   | `true`                   |
+| Keybindings load         | `hyprctl binds`                           | Lists all binds          |
+| Monitor config           | `hyprctl monitors`                        | Monitors configured      |
+| Animations active        | `hyprctl getoption animations:enabled -j` | `"str": "true"`          |
+| Old conf not primary     | `test -f ~/.config/hypr/hyprland.conf`    | May still exist (legacy) |
