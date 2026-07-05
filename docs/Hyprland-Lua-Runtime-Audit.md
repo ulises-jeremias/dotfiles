@@ -18,6 +18,7 @@ not the config file. Compatible with Lua config. **No changes needed.**
 ### Quickshell Rice.qml — animation switching
 
 Animation profile switching was updated in `#184` to:
+
 - Write a Lua `require()` wrapper to `hyprland.lua.d/animations-current.lua`
 - Use `hyprctl reload` to apply changes
 
