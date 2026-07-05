@@ -77,7 +77,7 @@ dots-smart-colors --analyze --colors
 **Hyprland Floating Window Configuration**:
 
 ```conf
-# Hyprland floating window rules are configured in hyprland.conf
+# Hyprland floating window rules are configured in hyprland.lua
 ```
 ```text
 

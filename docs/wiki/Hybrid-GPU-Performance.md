@@ -218,7 +218,7 @@ sudo systemctl restart display-manager
 **Solution**:
 
 ```properties
-# In hyprland.conf, verify:
+# In hyprland.lua, verify:
 misc {
     vrr = 1  # Variable Refresh Rate
     no_direct_scanout = false

@@ -27,7 +27,7 @@ dots appearance apply neon-city
 
 ## Core Paths
 
-- Hyprland config: `~/.config/hypr/`
+- Hyprland config: `~/.config/hypr/hyprland.lua` (Hyprland 0.55+ Lua)
 - Quickshell config: `~/.config/quickshell/`
 - Smart colors cache: `~/.cache/dots/smart-colors/`
 
