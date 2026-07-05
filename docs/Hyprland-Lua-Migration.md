@@ -47,26 +47,26 @@ require("hyprland.lua.d/input")
 
 ## hyprlang → Lua Conversion Rules
 
-| hyprlang                                     | Lua                                                                                                    | Notes                                       |
-|----------------------------------------------|--------------------------------------------------------------------------------------------------------|---------------------------------------------|
-| `source = ~/.../foo.conf`                    | `require("hyprland.lua.d/foo")`                                                                        | `.conf.d` → `.lua.d`                        |
-| `exec-once = cmd`                            | `hl.on("hyprland.start", function() hl.exec_cmd("cmd") end)`                                           |                                             |
-| `exec-once = cmd1 && cmd2`                   | `hl.exec_cmd("sh -c 'cmd1 && cmd2'")`                                                                 | Preserve `&&` dependency in single shell    |
-| `env = KEY,value`                            | `hl.env("KEY", "value")`                                                                               | Use `os.getenv()` for runtime refs          |
-| `bind = mod, key, exec, cmd`                 | `hl.bind("mod + key", hl.dsp.exec_cmd("cmd"))`                                                         | Use concrete dispatcher                     |
-| `bind = mod, key, dispatcher`                | `hl.bind("mod + key", hl.dsp.focus(...))` or `hl.dsp.layout("...")` or function wrapper                | Maps to `hl.dsp.*` helpers                  |
-| `binde = ...`                                | `hl.bind(..., { repeating = true })`                                                                   | Repeating flag                              |
-| `bindl = ...`                                | `hl.bind(..., { locked = true })`                                                                      | Locked flag                                 |
-| `bindle = ...`                               | `hl.bind(..., { locked = true, repeating = true })`                                                    | Both flags                                  |
-| `bindm = mod, mouse:N, action`               | `hl.bind("mod + mouse:N", hl.dsp.window.drag() or hl.dsp.window.resize(), { mouse = true })`           | Maps to specific helpers                    |
-| `submap = name` / `submap = reset`           | `hl.dsp.submap("name")` / `hl.dsp.submap("reset")`                                                     |                                             |
-| `windowrule { ... }`                         | `hl.window_rule({ ... })`                                                                              | Preserve name, match, effects               |
-| `bezier = name, x1, y1, x2, y2`              | `hl.curve(name, { type = "bezier", points = {{x1, y1}, {x2, y2}} })`                                   |                                             |
-| `animation = leaf, on, speed, curve, style`  | `hl.animation({ leaf = "...", enabled = true, speed = speed, bezier = "...", style = "..." })`         | HorneroConfig used frames (see below)       |
-| `$mainMod = SUPER`                           | `local mainMod = "SUPER"`                                                                              |                                             |
-| `general { key = val }`                      | `hl.config({ general = { key = val } })`                                                               |                                             |
-| `col.active_border = rgba(...)`              | `col = { active_border = "rgba(...)" }`                                                                | String format                               |
-| `monitor = name,pref,pos,sc`                 | `hl.monitor({ output = "name", mode = "preferred", position = "pos", scale = sc })`                    |                                             |
+| hyprlang                                    | Lua                                                                                            | Notes                                    |
+|---------------------------------------------|------------------------------------------------------------------------------------------------|------------------------------------------|
+| `source = ~/.../foo.conf`                   | `require("hyprland.lua.d/foo")`                                                                | `.conf.d` → `.lua.d`                     |
+| `exec-once = cmd`                           | `hl.on("hyprland.start", function() hl.exec_cmd("cmd") end)`                                   |                                          |
+| `exec-once = cmd1 && cmd2`                  | `hl.exec_cmd("sh -c 'cmd1 && cmd2'")`                                                          | Preserve `&&` dependency in single shell |
+| `env = KEY,value`                           | `hl.env("KEY", "value")`                                                                       | Use `os.getenv()` for runtime refs       |
+| `bind = mod, key, exec, cmd`                | `hl.bind("mod + key", hl.dsp.exec_cmd("cmd"))`                                                 | Use concrete dispatcher                  |
+| `bind = mod, key, dispatcher`               | `hl.bind("mod + key", hl.dsp.focus(...))` or `hl.dsp.layout("...")` or function wrapper        | Maps to `hl.dsp.*` helpers               |
+| `binde = ...`                               | `hl.bind(..., { repeating = true })`                                                           | Repeating flag                           |
+| `bindl = ...`                               | `hl.bind(..., { locked = true })`                                                              | Locked flag                              |
+| `bindle = ...`                              | `hl.bind(..., { locked = true, repeating = true })`                                            | Both flags                               |
+| `bindm = mod, mouse:N, action`              | `hl.bind("mod + mouse:N", hl.dsp.window.drag() or hl.dsp.window.resize(), { mouse = true })`   | Maps to specific helpers                 |
+| `submap = name` / `submap = reset`          | `hl.dsp.submap("name")` / `hl.dsp.submap("reset")`                                             |                                          |
+| `windowrule { ... }`                        | `hl.window_rule({ ... })`                                                                      | Preserve name, match, effects            |
+| `bezier = name, x1, y1, x2, y2`             | `hl.curve(name, { type = "bezier", points = {{x1, y1}, {x2, y2}} })`                           |                                          |
+| `animation = leaf, on, speed, curve, style` | `hl.animation({ leaf = "...", enabled = true, speed = speed, bezier = "...", style = "..." })` | HorneroConfig used frames (see below)    |
+| `$mainMod = SUPER`                          | `local mainMod = "SUPER"`                                                                      |                                          |
+| `general { key = val }`                     | `hl.config({ general = { key = val } })`                                                       |                                          |
+| `col.active_border = rgba(...)`             | `col = { active_border = "rgba(...)" }`                                                        | String format                            |
+| `monitor = name,pref,pos,sc`                | `hl.monitor({ output = "name", mode = "preferred", position = "pos", scale = sc })`            |                                          |
 
 ### Animation speed conversion
 
@@ -84,13 +84,13 @@ The Lua migration converts documented frame values to deciseconds:
 
 | Frames (old) | ~ms | Lua speed (ds) |
 |--------------|-----|----------------|
-| 2 | 33 | 0.33 |
-| 4 | 67 | 0.67 |
-| 6 | 100 | 1.0 |
-| 8 | 133 | 1.33 |
-| 10 | 167 | 1.67 |
-| 12 | 200 | 2.0 |
-| 30 | 500 | 5.0 |
+| 2            | 33  | 0.33           |
+| 4            | 67  | 0.67           |
+| 6            | 100 | 1.0            |
+| 8            | 133 | 1.33           |
+| 10           | 167 | 1.67           |
+| 12           | 200 | 2.0            |
+| 30           | 500 | 5.0            |
 
 Note: Standard hyprlang `animation` syntax uses deciseconds directly, but
 HorneroConfig's own source comments explicitly define the values as frames
