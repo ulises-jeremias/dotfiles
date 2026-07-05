@@ -252,12 +252,12 @@ __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia <app>
 
 NVIDIA GPUs have different performance states (P-states):
 
-| P-State | Mode | Power Usage | Use Case |
-|---------|------|-------------|----------|
-| P0 | Maximum Performance | ~50-55W | Gaming, Heavy Compute |
-| P2 | Balanced | ~20-30W | Video Editing |
-| P5 | Low Power | ~5-10W | Display Output Only |
-| P8 | Idle (not achievable with display) | ~1-2W | No display connected |
+| P-State | Mode                               | Power Usage | Use Case              |
+|---------|------------------------------------|-------------|-----------------------|
+| P0      | Maximum Performance                | ~50-55W     | Gaming, Heavy Compute |
+| P2      | Balanced                           | ~20-30W     | Video Editing         |
+| P5      | Low Power                          | ~5-10W      | Display Output Only   |
+| P8      | Idle (not achievable with display) | ~1-2W       | No display connected  |
 
 In Reverse PRIME mode with external monitor, NVIDIA stays at **P5** (5W) minimum.
 
