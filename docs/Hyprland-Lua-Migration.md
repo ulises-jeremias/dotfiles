@@ -35,11 +35,13 @@ home/dot_config/hypr/
     └── colors-manual.lua              # —fallback— hardcoded default colors
 ```
 
-The `require` path is relative to `hyprland.lua`'s directory, so:
+The `require` path is relative to `hyprland.lua`'s directory. Use `/` as the
+separator (Hyprland's Lua supports both `/` and `.` for this) since
+dots are conventionally used for Lua module namespaces:
 
 ```lua
-require("hyprland.lua.d.static")
-require("hyprland.lua.d.input")
+require("hyprland.lua.d/static")
+require("hyprland.lua.d/input")
 -- etc.
 ```
 
@@ -47,19 +49,20 @@ require("hyprland.lua.d.input")
 
 | hyprlang                                     | Lua                                                                                                    | Notes                                       |
 |----------------------------------------------|--------------------------------------------------------------------------------------------------------|---------------------------------------------|
-| `source = ~/.../foo.conf`                    | `require("hyprland.lua.d.foo")`                                                                        | `.conf.d` → `.lua.d`                        |
+| `source = ~/.../foo.conf`                    | `require("hyprland.lua.d/foo")`                                                                        | `.conf.d` → `.lua.d`                        |
 | `exec-once = cmd`                            | `hl.on("hyprland.start", function() hl.exec_cmd("cmd") end)`                                           |                                             |
-| `exec-once = cmd1 && cmd2`                   | Multiple `hl.exec_cmd()` calls in one `hl.on` block                                                    |                                             |
+| `exec-once = cmd1 && cmd2`                   | `hl.exec_cmd("sh -c 'cmd1 && cmd2'")`                                                                 | Preserve `&&` dependency in single shell    |
 | `env = KEY,value`                            | `hl.env("KEY", "value")`                                                                               | Use `os.getenv()` for runtime refs          |
-| `bind = mod, key, disp`                      | `hl.bind("mod + key", hl.dsp.disp())`                                                                  |                                             |
+| `bind = mod, key, exec, cmd`                 | `hl.bind("mod + key", hl.dsp.exec_cmd("cmd"))`                                                         | Use concrete dispatcher                     |
+| `bind = mod, key, dispatcher`                | `hl.bind("mod + key", hl.dsp.focus(...))` or `hl.dsp.layout("...")` or function wrapper                | Maps to `hl.dsp.*` helpers                  |
 | `binde = ...`                                | `hl.bind(..., { repeating = true })`                                                                   | Repeating flag                              |
 | `bindl = ...`                                | `hl.bind(..., { locked = true })`                                                                      | Locked flag                                 |
 | `bindle = ...`                               | `hl.bind(..., { locked = true, repeating = true })`                                                    | Both flags                                  |
-| `bindm = mod, mouse:N, action`               | `hl.bind("mod + mouse:N", hl.dsp.window.action(), { mouse = true })`                                   |                                             |
+| `bindm = mod, mouse:N, action`               | `hl.bind("mod + mouse:N", hl.dsp.window.drag() or hl.dsp.window.resize(), { mouse = true })`           | Maps to specific helpers                    |
 | `submap = name` / `submap = reset`           | `hl.dsp.submap("name")` / `hl.dsp.submap("reset")`                                                     |                                             |
 | `windowrule { ... }`                         | `hl.window_rule({ ... })`                                                                              | Preserve name, match, effects               |
 | `bezier = name, x1, y1, x2, y2`              | `hl.curve(name, { type = "bezier", points = {{x1, y1}, {x2, y2}} })`                                   |                                             |
-| `animation = leaf, on, frames, curve, style` | `hl.animation({ leaf = "...", enabled = true, speed = frames*0.0167, bezier = "...", style = "..." })` | `speed` is deciseconds (1 = 100ms) in 0.55+ |
+| `animation = leaf, on, speed, curve, style`  | `hl.animation({ leaf = "...", enabled = true, speed = speed, bezier = "...", style = "..." })`         | HorneroConfig used frames (see below)       |
 | `$mainMod = SUPER`                           | `local mainMod = "SUPER"`                                                                              |                                             |
 | `general { key = val }`                      | `hl.config({ general = { key = val } })`                                                               |                                             |
 | `col.active_border = rgba(...)`              | `col = { active_border = "rgba(...)" }`                                                                | String format                               |
@@ -67,15 +70,31 @@ require("hyprland.lua.d.input")
 
 ### Animation speed conversion
 
-Hyprland 0.55 animation `speed` uses deciseconds (1 = 100ms). Old hyprlang used
-"frames" at nominal 60fps refresh. Each frame was ≈ 16.67ms. Conversion:
+Hyprland 0.55 animation `speed` uses deciseconds (1 = 100ms).
+HorneroConfig's old `animations.conf` documented its values in "frames"
+at nominal 60fps refresh (1 frame ≈ 16.67ms). For example:
 
-- 2 frames (~33ms) → speed ≈ 0.33
-- 4 frames (~67ms) → speed ≈ 0.67
-- 6 frames (100ms) → speed = 1.0
-- 8 frames (133ms) → speed ≈ 1.33
-- 10 frames (167ms) → speed ≈ 1.67
-- 12 frames (200ms) → speed = 2.0
+```
+# Fast: 4 frames (67ms) — speed ≈ 0.67 ds
+# Normal: 6 frames (100ms) — speed = 1.0 ds
+# Slow: 8 frames (133ms) — speed ≈ 1.33 ds
+```
+
+The Lua migration converts documented frame values to deciseconds:
+
+| Frames (old) | ~ms | Lua speed (ds) |
+|--------------|-----|----------------|
+| 2 | 33 | 0.33 |
+| 4 | 67 | 0.67 |
+| 6 | 100 | 1.0 |
+| 8 | 133 | 1.33 |
+| 10 | 167 | 1.67 |
+| 12 | 200 | 2.0 |
+| 30 | 500 | 5.0 |
+
+Note: Standard hyprlang `animation` syntax uses deciseconds directly, but
+HorneroConfig's own source comments explicitly define the values as frames
+at 60fps. The migrated Lua values use deciseconds as required by the 0.55+ API.
 
 Upper layers inherit from `global` if not explicitly set.
 
@@ -141,7 +160,7 @@ config file, so no migration is needed there.
 ### 1. Module path uses `.lua.d/` suffix
 
 All modules live in `hyprland.lua.d/` to keep them grouped with the entrypoint.
-The `require()` calls use relative syntax: `require("hyprland.lua.d.static")`.
+The `require()` calls use `/` as the path separator: `require("hyprland.lua.d/static")`.
 
 ### 2. Animation profiles remain modular
 
