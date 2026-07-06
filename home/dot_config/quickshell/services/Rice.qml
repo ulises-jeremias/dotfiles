@@ -13,7 +13,7 @@ Singleton {
     readonly property string wallpaperPointer: `${Quickshell.env("HOME")}/.local/state/dots/wallpaper/path`
     readonly property string m3Script: `${Quickshell.env("HOME")}/.local/lib/dots/generate-m3-colors.py`
     readonly property string schemeJson: `${Quickshell.env("HOME")}/.cache/dots/smart-colors/scheme.json`
-    readonly property string hyprAnimDir: `${Quickshell.env("HOME")}/.config/hypr/hyprland.conf.d`
+    readonly property string hyprAnimDir: `${Quickshell.env("HOME")}/.config/hypr/hyprland.lua.d`
 
     property string currentId: ""
     property var currentConfig: ({})
@@ -284,9 +284,9 @@ Singleton {
         if (anim) {
             hyprAnimProc.animProfile = anim;
             hyprAnimProc.running = true;
+        } else {
+            hyprReloadProc.running = true;
         }
-
-        hyprReloadProc.running = true;
 
         const opacity = cfg.kittyOpacity;
         if (opacity !== null && opacity !== undefined) {
@@ -309,11 +309,18 @@ Singleton {
 
         property string animProfile: ""
 
-        command: ["sh", "-c", '[ -f "$DOTS_ANIM_SRC" ] && ln -sf "$DOTS_ANIM_SRC" "$DOTS_ANIM_DST" || true']
+        command: ["sh", "-c", 'mkdir -p "$(dirname "$DOTS_ANIM_DST")" && printf '"'"'require("hyprland.lua.d/animations-%s")\n'"'"' "$DOTS_ANIM_PROFILE" > "$DOTS_ANIM_DST"']
         environment: ({
-            "DOTS_ANIM_SRC": `${root.hyprAnimDir}/animations-${hyprAnimProc.animProfile}.conf`,
-            "DOTS_ANIM_DST": `${root.hyprAnimDir}/animations-current.conf`
+            "DOTS_ANIM_DST": `${root.hyprAnimDir}/animations-current.lua`,
+            "DOTS_ANIM_PROFILE": hyprAnimProc.animProfile,
         })
+
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0)
+                hyprReloadProc.running = true;
+            else
+                console.warn("Rice.qml: failed to update Hyprland animation profile", hyprAnimProc.animProfile);
+        }
     }
 
     Process {

@@ -180,31 +180,25 @@ Interactive gaps adjustment:
 
 ## Configuration Files
 
-Keybindings are organized in:
+Keybindings are defined in:
 
 ```bash
-~/.config/hypr/hyprland.conf.d/
-├── keybindings.conf           # Core keybindings
-├── keybindings-media.conf     # Media and volume controls
-└── keybindings-custom.conf    # User customizations
+~/.config/hypr/hyprland.lua.d/keybindings.lua
 ```
 
 ## Customization
 
-To add custom keybindings, edit:
+To add custom keybindings, edit the Lua module:
 
 ```bash
-~/.config/hypr/hyprland.conf.d/keybindings-custom.conf
+~/.config/hypr/hyprland.lua.d/keybindings.lua
 ```
 
-Example:
+Example (Hyprland 0.55+ Lua syntax):
 
-```conf
-# Custom application launcher
-bind = $Mod, B, exec, firefox
-
-# Custom window manipulation
-bind = $Mod SHIFT, M, togglesplit
+```lua
+hl.bind("SUPER + B", hl.dsp.exec_cmd("firefox"), { description = "[Custom] Firefox" })
+hl.bind("SUPER + SHIFT + M", hl.dsp.layout("togglesplit"), { description = "[Custom] Toggle split" })
 ```
 
 ## Tips
