@@ -47,19 +47,19 @@ for script in "${DOTS_BIN_DIR}"/executable_dots-*; do
     # Check for copyright header
     if ! head -n 10 "$script" | grep -q "Copyright"; then
       echo "❌ Missing copyright header: $script_name"
-      ((errors++))
+      errors=$((errors + 1))
     fi
 
     # Check for license header
     if ! head -n 15 "$script" | grep -q -E "(Licensed under MIT|GNU General Public License)"; then
       echo "❌ Missing license header: $script_name"
-      ((errors++))
+      errors=$((errors + 1))
     fi
 
     # Check for set -euo pipefail (required for robustness)
     if ! grep -q "^set -euo pipefail" "$script"; then
       echo "❌ Missing 'set -euo pipefail': $script_name"
-      ((errors++))
+      errors=$((errors + 1))
     fi
 
     # Check for easyoptions usage (warning only, not error for simple scripts)
@@ -80,7 +80,7 @@ done
 for script in "${ENTRYPOINT_SCRIPTS[@]}"; do
   if [[ ! -f $script ]]; then
     echo "❌ Missing critical entrypoint script: $script"
-    ((errors++))
+    errors=$((errors + 1))
     continue
   fi
 
@@ -88,12 +88,12 @@ for script in "${ENTRYPOINT_SCRIPTS[@]}"; do
 
   if ! grep -q "^set -euo pipefail" "$script"; then
     echo "❌ Missing 'set -euo pipefail' in entrypoint: $script_name"
-    ((errors++))
+    errors=$((errors + 1))
   fi
 
   if ! grep -q "easyoptions.sh" "$script"; then
     echo "❌ Missing EasyOptions usage in entrypoint: $script_name"
-    ((errors++))
+    errors=$((errors + 1))
   fi
 done
 
@@ -107,7 +107,7 @@ if ! diff -q <(echo "$scripts_in_dir") <(echo "$scripts_in_list") >/dev/null; th
   comm -23 <(echo "$scripts_in_dir") <(echo "$scripts_in_list")
   echo "Scripts in list but not in directory:"
   comm -13 <(echo "$scripts_in_dir") <(echo "$scripts_in_list")
-  ((errors++))
+  errors=$((errors + 1))
 fi
 
 if [[ $errors -eq 0 ]]; then
