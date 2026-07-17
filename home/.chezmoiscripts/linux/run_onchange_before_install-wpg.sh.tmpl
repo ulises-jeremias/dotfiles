@@ -1,16 +1,18 @@
 {{ if and (not .ephemeral) (not .headless) -}}
 
-{{      if eq .osid "linux-arch" -}}
+{{ if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
 yay -S --noconfirm --needed \
-  feh \
-  python-pywal \
-  sassc
+    feh \
+    python-pywal \
+    sassc
 
-command -v pipx >/dev/null 2>&1 || sudo pacman -S --noconfirm --needed pipx
-pipx install wpgtk
-pipx inject wpgtk pygobject
-{{      end -}}
+if ! uv tool list | grep -q "^wpgtk"; then
+    uv tool install wpgtk --with pygobject
+else
+    uv tool upgrade wpgtk
+fi
+{{ end -}}
 
 {{ end -}}
