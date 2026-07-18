@@ -9,19 +9,54 @@
 
 set -euo pipefail
 
+HOST="${DOTS_PING_HOST:-1.1.1.1}"
+TIMEOUT=25
+ONCE=false
+
+usage() {
+  echo "Usage: dots check-network [--once] [--timeout=SECONDS]"
+  echo "  DOTS_PING_HOST  Ping target (default: 1.1.1.1)"
+}
+
+for arg in "$@"; do
+  case "$arg" in
+    --once)
+      ONCE=true
+      ;;
+    --timeout=*)
+      TIMEOUT="${arg#*=}"
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $arg" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
 wdisconnect="睊"
 wconnected="直"
 econnected=""
 edisconnect=""
 
-network_interface="$(ip link 2>/dev/null | awk '/state UP/ {print $2}' || echo "")"
-
 while true; do
-  if ping -c 1 google.com >/dev/null 2>&1; then
+  network_interface="$(ip link 2>/dev/null | awk '/state UP/ {print $2}' || echo "")"
+
+  if ping -c 1 "$HOST" >/dev/null 2>&1; then
     [[ $network_interface == e* ]] && echo "$econnected" || echo "$wconnected"
-    sleep 25
+    sleep_for="$TIMEOUT"
   else
     [[ $network_interface == e* ]] && echo "$edisconnect" || echo "$wdisconnect"
-    sleep 0.6
+    sleep_for=0.6
   fi
+
+  if $ONCE; then
+    break
+  fi
+
+  sleep "$sleep_for"
 done
