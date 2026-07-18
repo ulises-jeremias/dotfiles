@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/ulises-jeremias/dotfiles/blob/main/static/header.png?raw=true" alt="HorneroConfig" style="width: 100%;">
+</p>
+
 <div align="center">
   <h1>🏠 HorneroConfig - Comprehensive Dotfiles Framework</h1>
 

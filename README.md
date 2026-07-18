@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./static/header.png" alt="HorneroConfig" style="width: 100%;">
+</p>
+
 <div align="center">
 
 ```ocaml
