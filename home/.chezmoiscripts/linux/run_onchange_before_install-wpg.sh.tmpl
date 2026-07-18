@@ -4,15 +4,13 @@
 #!/usr/bin/env bash
 
 yay -S --noconfirm --needed \
-    feh \
-    python-pywal \
-    sassc
+  feh \
+  python-pywal \
+  sassc
 
-if ! uv tool list | grep -q "^wpgtk"; then
-    uv tool install wpgtk --with pygobject
-else
-    uv tool upgrade wpgtk
-fi
+# --force replaces legacy pipx-managed wpg binaries in ~/.local/bin.
+# Always reinstall with --with pygobject so upgrades keep the dependency.
+uv tool install --force --with pygobject wpgtk
 {{ end -}}
 
 {{ end -}}
