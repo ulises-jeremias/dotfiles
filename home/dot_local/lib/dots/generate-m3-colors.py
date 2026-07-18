@@ -5,7 +5,7 @@ Uses the materialyoucolor library to extract HCT source color, generate
 a full M3 scheme (60+ color roles), success colors, and 16 ANSI terminal
 colors.  Outputs a single JSON file consumed by Quickshell's Colours service.
 
-Requires: pip install materialyoucolor
+Requires: python-materialyoucolor (Arch package)
 """
 
 import argparse
@@ -267,7 +267,8 @@ def main() -> None:
     except ImportError:
         print(
             "Error: materialyoucolor is not installed.\n"
-            "  pip install materialyoucolor --upgrade",
+            "  Arch (HorneroConfig): yay -S --needed python-materialyoucolor"
+            "  Or: uv pip install materialyoucolor   # only if you manage a local venv",
             file=sys.stderr,
         )
         sys.exit(1)
