@@ -73,21 +73,22 @@ Before you start, make sure you have:
 
 5. **Set up pre-commit hooks** (required for contributors):
 
-   We use [pre-commit](https://pre-commit.com/) to maintain code quality. Install it with [pipx](https://pipx.pypa.io/) (recommended):
+   We use [pre-commit](https://pre-commit.com/) to maintain code quality.
 
    ```bash
-   # Install pipx if not already installed
+   # Install uv if not already installed
    # Arch Linux:
-   sudo pacman -S python-pipx
+   sudo pacman -S uv
 
    # Ubuntu/Debian:
-   sudo apt install pipx && pipx ensurepath
+   curl -LsSf https://astral.sh/uv/install.sh | sh
 
    # macOS:
-   brew install pipx && pipx ensurepath
+   brew install uv
 
    # Install pre-commit
-   pipx install pre-commit
+   uv tool install pre-commit
+   # One-shot alternative: uvx pre-commit run --all-files
 
    # Set up git hooks in the repository
    pre-commit install
