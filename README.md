@@ -217,10 +217,19 @@ git clone https://github.com/ulises-jeremias/dotfiles && cd dotfiles
 
 We use [pre-commit](https://pre-commit.com/) for code quality:
 
+Install `uv` first:
+
+- **Arch Linux:** `sudo pacman -S uv`
+- **Other platforms:**
+  - Installation script: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+  - Homebrew: `brew install uv`
+
 ```bash
-pipx install pre-commit           # Install pre-commit
-cd ~/.dotfiles && pre-commit install   # Set up hooks
-pre-commit run --all-files        # Run all checks
+uv tool install pre-commit  # Install pre-commit
+# One-shot alternative: uvx pre-commit run --all-files
+
+pre-commit install          # Set up hooks
+pre-commit run --all-files  # Run all checks
 ```
 
 > 🤝 [Contributing guide →](CONTRIBUTING.md) | [Development standards →](docs/Development-Standards.md)

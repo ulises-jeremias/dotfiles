@@ -1,6 +1,7 @@
 # Pre-commit hooks for dotfiles quality assurance
 # See https://pre-commit.com for more information
-# Install with: pipx install pre-commit
+# Install with: uv tool install pre-commit
+# One-shot alternative: uvx pre-commit run --all-files
 # Setup: pre-commit install
 # Run manually: pre-commit run --all-files
 
