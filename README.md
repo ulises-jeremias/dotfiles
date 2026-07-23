@@ -34,7 +34,7 @@
   <a href="https://archlinux.org/">
     <img src="https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&amp;logo=arch-linux&amp;logoColor=white&amp;labelColor=191114" alt="Arch Linux"/>
   </a>
-  <a href="https://discord.gg/dwFTsR7fK2">
+  <a href="https://discord.gg/bR5VyATgka">
     <img src="https://img.shields.io/discord/1527933660764831825?style=for-the-badge&amp;label=Discord&amp;logo=discord&amp;logoColor=white&amp;labelColor=191114" alt="Discord"/>
   </a>
 </p>
