@@ -42,11 +42,26 @@ DISABLE_LINTERS:
   # pinning 59+ refs across all workflows is impractical for a personal dotfiles
   # repo. Disable the linter rather than carry dead SHA maintenance burden.
   - ACTION_ZIZMOR
+  # checkov scans IaC (Terraform, CloudFormation, Kubernetes, etc.). This repo
+  # has none; it only contains shell scripts, dotfiles, and docs. Additionally,
+  # MegaLinter auto-generates .megalinter_github_conf/branch_protection_rules.json
+  # which contains a raw GitHub API 404 response that checkov misidentifies as a
+  # broken OpenAPI spec and crashes on. No IaC to audit here.
+  - REPOSITORY_CHECKOV
 
 BASH_SHELLCHECK_ARGUMENTS: --exclude=SC2317,SC2086,SC2155,SC2030,SC2031,SC2181
 
 BASH_EXEC_FILTER_REGEX_EXCLUDE: >-
   (^|/)(lib/.*\.sh|home/dot_local/lib/dots/.*\.sh|playground/config/\.bashrc)$
+
+# MegaLinter APPLY_FIXES creates temp backups of chezmoi source files it
+# reformats. The backup name is .<original_name><random_number>, where the
+# original file carries a chezmoi attribute prefix (executable_, private_,
+# readonly_). secretlint then hits ENOENT trying to open these after they
+# are already deleted. Narrow the exclusion to that exact pattern so that
+# legitimate hidden files ending in digits are still scanned.
+REPOSITORY_SECRETLINT_FILTER_REGEX_EXCLUDE: >-
+  (^|/)\.(executable|private|readonly)_[^/]+[0-9]{10,}$
 
 # Uncomment if you want MegaLinter to detect errors but not block CI to pass
 # DISABLE_ERRORS: true
