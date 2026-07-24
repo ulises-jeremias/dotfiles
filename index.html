@@ -3222,7 +3222,7 @@ On a fresh install, chezmoi handles package installation but you may need to log
 <h3 id="verify-pipewire-is-active">Verify PipeWire is active</h3>
 <p>After logging back in, confirm that PipeWire is serving as the PulseAudio backend:</p>
 <pre class="hljs">pactl info</pre><p>Look for this line in the output:</p>
-<pre class="hljs"><span class="hljs-keyword">Server</span> <span class="hljs-type">Name</span>: PulseAudio (<span class="hljs-keyword">on</span> PipeWire)</pre><p>If you see <code>PulseAudio (on PipeWire)</code>, everything is wired up correctly. Any other value (e.g., plain <code>PulseAudio</code>) means PipeWire is not active — check that <code>pipewire-pulse</code> is installed and <code>wireplumber</code> is running:</p>
+<pre class="hljs">Server Name: PulseAudio (on PipeWire)</pre><p>If you see <code>PulseAudio (on PipeWire)</code>, everything is wired up correctly. Any other value (e.g., plain <code>PulseAudio</code>) means PipeWire is not active — check that <code>pipewire-pulse</code> is installed and <code>wireplumber</code> is running:</p>
 <pre class="hljs">systemctl --user status pipewire pipewire-pulse wireplumber</pre><hr>
 <h2 id="-daw-reaper">🎛️ DAW — REAPER</h2>
 <p><a href="https://www.reaper.fm/">REAPER</a> is a professional, lightweight, and highly customizable Digital Audio Workstation.</p>
