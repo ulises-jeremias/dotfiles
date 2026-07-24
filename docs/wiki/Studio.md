@@ -61,7 +61,7 @@ pactl info
 
 Look for this line in the output:
 
-```
+```text
 Server Name: PulseAudio (on PipeWire)
 ```
 

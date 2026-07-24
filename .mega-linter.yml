@@ -48,5 +48,12 @@ BASH_SHELLCHECK_ARGUMENTS: --exclude=SC2317,SC2086,SC2155,SC2030,SC2031,SC2181
 BASH_EXEC_FILTER_REGEX_EXCLUDE: >-
   (^|/)(lib/.*\.sh|home/dot_local/lib/dots/.*\.sh|playground/config/\.bashrc)$
 
+# MegaLinter APPLY_FIXES creates temp backups of files it reformats, using the
+# pattern .<original_name><random_number>. secretlint then tries to open those
+# files but they are already deleted by the time it runs, causing ENOENT errors.
+# Exclude any dotfile whose name ends with a long numeric suffix.
+REPOSITORY_SECRETLINT_FILTER_REGEX_EXCLUDE: >-
+  (^|/)\.[^/]+[0-9]{10,}$
+
 # Uncomment if you want MegaLinter to detect errors but not block CI to pass
 # DISABLE_ERRORS: true
