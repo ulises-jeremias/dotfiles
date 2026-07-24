@@ -57,5 +57,12 @@ BASH_EXEC_FILTER_REGEX_EXCLUDE: >-
 REPOSITORY_SECRETLINT_FILTER_REGEX_EXCLUDE: >-
   (^|/)\.(executable|private|readonly)_[^/]+[0-9]{10,}$
 
+# branch_protection_rules.json stores the raw GitHub API 404 response for repos
+# without branch protection configured. Checkov tries to parse it as an OpenAPI
+# spec and fails. Exclude the entire .megalinter_github_conf/ directory from
+# checkov since it holds runtime state files, not infra config to be audited.
+REPOSITORY_CHECKOV_FILTER_REGEX_EXCLUDE: >-
+  (^|/)\.megalinter_github_conf/
+
 # Uncomment if you want MegaLinter to detect errors but not block CI to pass
 # DISABLE_ERRORS: true
