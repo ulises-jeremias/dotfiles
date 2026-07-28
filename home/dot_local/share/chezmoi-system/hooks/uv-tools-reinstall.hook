@@ -7,4 +7,4 @@ Target = python
 [Action]
 Description = Reinstalling uv packages for new Python version...
 When = PostTransaction
-Exec = /usr/bin/env bash -c 'if command -v uv &>/dev/null; then uv tool upgrade --all || true;  fi'
+Exec = /usr/bin/env bash -c 'for u in $(getent passwd | awk -F: '\''/\/bin\/(bash|zsh|fish)$/ && $3 >= 1000 {print $1}'\''); do h=$(getent passwd "$u" | cut -d: -f6); uv_bin=$(command -v uv 2>/dev/null); if [ -z "$uv_bin" ]; then uv_bin="$h/.local/bin/uv"; fi; if [ -x "$uv_bin" ] && [ -d "$h/.local/share/uv/tools" ]; then runuser -u "$u" -- env HOME="$h" PATH="$h/.local/bin:/usr/local/bin:/usr/bin:/bin" "$uv_bin" tool upgrade --all 2>&1 || true; fi; done || true'
