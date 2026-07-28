@@ -7,4 +7,4 @@ Target = python
 [Action]
 Description = Reinstalling pipx packages for new Python version...
 When = PostTransaction
-Exec = /usr/bin/env bash -c 'if command -v pipx &>/dev/null; then pipx reinstall-all --python /usr/bin/python3 || true; fi'
+Exec = /usr/bin/env bash -c 'for u in $(getent passwd | awk -F: '\''/\/bin\/(bash|zsh|fish)$/ && $3 >= 1000 {print $1}'\''); do h=$(getent passwd "$u" | cut -d: -f6); pipx_bin=$(command -v pipx 2>/dev/null); if [ -z "$pipx_bin" ]; then pipx_bin="$h/.local/bin/pipx"; fi; if [ -x "$pipx_bin" ] && [ -d "$h/.local/pipx/venvs" ]; then runuser -u "$u" -- env HOME="$h" PATH="$h/.local/bin:/usr/local/bin:/usr/bin:/bin" "$pipx_bin" reinstall-all --python /usr/bin/python3 2>&1 || true; fi; done || true'
