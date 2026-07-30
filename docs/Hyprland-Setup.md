@@ -43,6 +43,19 @@ dots-hypr-layout --current
 dots-hypr-layout --toggle
 ```
 
+## ScrollOverview (niri-style overview)
+
+The [hyprland-scroll-overview](https://github.com/yayuuu/hyprland-scroll-overview)
+plugin provides a bird's-eye view of all workspaces and windows. It is
+installed and enabled via `hyprpm` by the Hyprland install script and is
+configured in `~/.config/hypr/hyprland.conf.d/plugins.conf`.
+
+- Toggle the overview: `Super+O` (or a 3-finger swipe up on a touchpad)
+- Keyboard navigation while the overview is open is handled by the
+  `scrolloverview` submap (arrows, Return to select, Escape to close).
+- See [Hyprland Keybindings](wiki/Hyprland-Keybindings.md) for the full map.
+
+
 ## Theme and Color Workflow
 
 ```mermaid

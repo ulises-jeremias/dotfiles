@@ -46,6 +46,14 @@ yay -S --noconfirm --needed \
 # NOTE: playerctl and pamixer are installed by run_onchange_before_install-packages.sh.tmpl
 #       to avoid duplication here. Both are Wayland/X11 agnostic utilities.
 
+# ScrollOverview plugin (niri-style overview) — managed by hyprpm.
+# hyprpm ships with hyprland, so no extra package is required.
+# Guards keep the script idempotent and safe on first run (set -euo pipefail).
+# Release Hyprland build => use the plugin's main branch.
+hyprpm add --force https://github.com/yayuuu/hyprland-scroll-overview.git 2>/dev/null || true
+hyprpm update 2>/dev/null || true
+hyprpm enable scrolloverview 2>/dev/null || true
+
 {{      end -}}
 
 {{ end -}}

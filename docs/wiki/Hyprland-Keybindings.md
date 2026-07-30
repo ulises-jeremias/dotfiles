@@ -74,6 +74,7 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+Ctrl+Left` | Previous existing workspace |
 | `Super+Ctrl+Right` | Next existing workspace |
 | `Super+Tab` | Cycle through workspaces |
+| `Super+O` | Toggle ScrollOverview (niri-style overview) |
 
 ## Window to Workspace
 
@@ -156,11 +157,35 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+Right Click` | Resize window |
 | `Super+Middle Click` | Toggle floating |
 
+## ScrollOverview (niri-style overview)
+
+Toggle a bird's-eye view of all workspaces and windows, powered by the
+[hyprland-scroll-overview](https://github.com/yayuuu/hyprland-scroll-overview)
+plugin.
+
+| Keybinding | Function |
+|------------|----------|
+| `Super+O` | Toggle the overview on the active monitor |
+| 3-finger swipe up | Toggle the overview (touchpad gesture) |
+
+### ScrollOverview submap
+
+While the overview is open, the `scrolloverview` submap provides keyboard
+navigation. Normal Hyprland binds outside this submap are not handled unless
+they use the `submap_universal` flag.
+
+| Keybinding | Function |
+|------------|----------|
+| `Left` / `Right` / `Up` / `Down` | Move selection between windows (and across workspaces at the layout edge) |
+| `Return` | Select the workspace under the cursor |
+| `Escape` | Close the overview |
+
 ## Special Modes
 
 ### Resize Mode (`Super+R`)
 
 Once in resize mode:
+
 
 - `H` / `Left` - Shrink width
 - `J` / `Down` - Grow height
