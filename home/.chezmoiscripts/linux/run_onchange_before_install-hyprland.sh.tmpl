@@ -61,24 +61,26 @@ yay -S --noconfirm --needed \
   make \
   jq
 
-# Bootstrap the plugin idempotently. `hyprpm add --force` does NOT skip the
-# "repository already installed" check, so we guard `add` with `hyprpm list`
-# and only add when the repo is absent. `update` builds/refreshes headers and
-# plugins from the installed Hyprland package state and does not require a
-# running session. `enable` is a no-op if already enabled. We do NOT suppress
-# genuine failures so a real bootstrap error aborts the script instead of
-# leaving the plugin configured-but-missing. Release build => main branch.
-SCROLL_OVERVIEW_URL="https://github.com/yayuuu/hyprland-scroll-overview.git"
-if ! hyprpm list 2>/dev/null | grep -q 'hyprland-scroll-overview'; then
-  hyprpm add "${SCROLL_OVERVIEW_URL}"
+# Bootstrap the ScrollOverview plugin via hyprpm.
+# hyprpm stores its cache (headers, built plugins) under /var/cache/hyprpm,
+# which is owned by root, so `sudo` is required for update/purge-cache.
+# `sudo -n` uses the cached sudo credentials from `yay` above (which already
+# prompted for the password). If the timestamp expired, the script aborts
+# cleanly instead of hanging on a hidden prompt.
+if ! sudo -n true 2>/dev/null; then
+  echo "WARNING: sudo credentials expired. Skipping ScrollOverview bootstrap." >&2
+  echo "Run 'sudo hyprpm update -f && hyprpm add https://github.com/yayuuu/hyprland-scroll-overview.git && hyprpm enable scrolloverview' manually." >&2
+else
+  # Idempotent: only add if the repo isn't already installed.
+  if ! hyprpm list 2>/dev/null | grep -q 'hyprland-scroll-overview'; then
+    hyprpm add https://github.com/yayuuu/hyprland-scroll-overview.git
+  fi
+  # Force header rebuild to match the installed Hyprland version.
+  sudo -n hyprpm update -f
+  hyprpm enable scrolloverview
+  # Best-effort reload for an already-running session (no-op on first install).
+  hyprpm reload 2>/dev/null || true
 fi
-hyprpm update
-hyprpm enable scrolloverview
-
-# Best-effort reload so an already-running Hyprland session picks up the
-# plugin immediately; ignore failures (no session running on first install,
-# and autostart.conf handles loading on next compositor start).
-hyprpm reload 2>/dev/null || true
 
 {{      end -}}
 
