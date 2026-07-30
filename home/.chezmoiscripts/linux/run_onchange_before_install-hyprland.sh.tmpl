@@ -2,6 +2,7 @@
 
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
+set -euo pipefail
 
 # Hyprland and Wayland core packages
 yay -S --noconfirm --needed \
@@ -48,11 +49,28 @@ yay -S --noconfirm --needed \
 
 # ScrollOverview plugin (niri-style overview) — managed by hyprpm.
 # hyprpm ships with hyprland, so no extra package is required.
-# Guards keep the script idempotent and safe on first run (set -euo pipefail).
-# Release Hyprland build => use the plugin's main branch.
-hyprpm add --force https://github.com/yayuuu/hyprland-scroll-overview.git 2>/dev/null || true
-hyprpm update 2>/dev/null || true
-hyprpm enable scrolloverview 2>/dev/null || true
+# Build dependencies required by hyprpm to compile plugins against the
+# installed Hyprland headers. See https://wiki.hypr.land/Plugins/Using-Plugins/
+yay -S --noconfirm --needed \
+  cmake \
+  cpio \
+  pkg-config \
+  git \
+  gcc \
+  jq
+
+# Bootstrap the plugin. `--force` makes `add` idempotent (no-op if already
+# present); `update` builds/refreshes headers and plugins; `enable` is a
+# no-op if already enabled. We do NOT suppress failures (`|| true`) so that
+# a real bootstrap error aborts the script instead of leaving the plugin
+# configured-but-missing. Release Hyprland build => plugin's main branch.
+hyprpm add --force https://github.com/yayuuu/hyprland-scroll-overview.git
+hyprpm update
+hyprpm enable scrolloverview
+
+# Best-effort reload so an already-running Hyprland session picks up the
+# plugin immediately; ignore failures (no session running on first install).
+hyprpm reload 2>/dev/null || true
 
 {{      end -}}
 
