@@ -55,7 +55,6 @@ configured in `~/.config/hypr/hyprland.conf.d/plugins.conf`.
   `scrolloverview` submap (arrows, Return to select, Escape to close).
 - See [Hyprland Keybindings](wiki/Hyprland-Keybindings.md) for the full map.
 
-
 ## Theme and Color Workflow
 
 ```mermaid
