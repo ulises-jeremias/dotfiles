@@ -50,26 +50,34 @@ yay -S --noconfirm --needed \
 # ScrollOverview plugin (niri-style overview) — managed by hyprpm.
 # hyprpm ships with hyprland, so no extra package is required.
 # Build dependencies required by hyprpm to compile plugins against the
-# installed Hyprland headers. See https://wiki.hypr.land/Plugins/Using-Plugins/
+# installed Hyprland headers. The plugin's hyprpm.toml uses `make all`, so
+# `make` is required. See https://wiki.hypr.land/Plugins/Using-Plugins/
 yay -S --noconfirm --needed \
   cmake \
   cpio \
   pkg-config \
   git \
   gcc \
+  make \
   jq
 
-# Bootstrap the plugin. `--force` makes `add` idempotent (no-op if already
-# present); `update` builds/refreshes headers and plugins; `enable` is a
-# no-op if already enabled. We do NOT suppress failures (`|| true`) so that
-# a real bootstrap error aborts the script instead of leaving the plugin
-# configured-but-missing. Release Hyprland build => plugin's main branch.
-hyprpm add --force https://github.com/yayuuu/hyprland-scroll-overview.git
+# Bootstrap the plugin idempotently. `hyprpm add --force` does NOT skip the
+# "repository already installed" check, so we guard `add` with `hyprpm list`
+# and only add when the repo is absent. `update` builds/refreshes headers and
+# plugins from the installed Hyprland package state and does not require a
+# running session. `enable` is a no-op if already enabled. We do NOT suppress
+# genuine failures so a real bootstrap error aborts the script instead of
+# leaving the plugin configured-but-missing. Release build => main branch.
+SCROLL_OVERVIEW_URL="https://github.com/yayuuu/hyprland-scroll-overview.git"
+if ! hyprpm list 2>/dev/null | grep -q 'hyprland-scroll-overview'; then
+  hyprpm add "${SCROLL_OVERVIEW_URL}"
+fi
 hyprpm update
 hyprpm enable scrolloverview
 
 # Best-effort reload so an already-running Hyprland session picks up the
-# plugin immediately; ignore failures (no session running on first install).
+# plugin immediately; ignore failures (no session running on first install,
+# and autostart.conf handles loading on next compositor start).
 hyprpm reload 2>/dev/null || true
 
 {{      end -}}
