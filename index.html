@@ -1310,6 +1310,10 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <td><code>Super+Tab</code></td>
 <td>Cycle through workspaces</td>
 </tr>
+<tr>
+<td><code>Super+O</code></td>
+<td>Toggle ScrollOverview (niri-style overview)</td>
+</tr>
 </tbody>
 </table>
 <h2 id="window-to-workspace">Window to Workspace</h2>
@@ -1552,6 +1556,54 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <tr>
 <td><code>Super+Middle Click</code></td>
 <td>Toggle floating</td>
+</tr>
+</tbody>
+</table>
+<h2 id="scrolloverview-niri-style-overview-">ScrollOverview (niri-style overview)</h2>
+<p>Toggle a bird&#39;s-eye view of all workspaces and windows, powered by the
+<a href="https://github.com/yayuuu/hyprland-scroll-overview">hyprland-scroll-overview</a>
+plugin.</p>
+<table>
+<thead>
+<tr>
+<th>Keybinding</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Super+O</code></td>
+<td>Toggle the overview on the active monitor</td>
+</tr>
+<tr>
+<td>3-finger swipe up</td>
+<td>Toggle the overview (touchpad gesture)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scrolloverview-submap">ScrollOverview submap</h3>
+<p>While the overview is open, the <code>scrolloverview</code> submap provides keyboard
+navigation. Normal Hyprland binds outside this submap are not handled unless
+they use the <code>submap_universal</code> flag.</p>
+<table>
+<thead>
+<tr>
+<th>Keybinding</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Left</code> / <code>Right</code> / <code>Up</code> / <code>Down</code></td>
+<td>Move selection between windows (and across workspaces at the layout edge)</td>
+</tr>
+<tr>
+<td><code>Return</code></td>
+<td>Select the workspace under the cursor</td>
+</tr>
+<tr>
+<td><code>Escape</code></td>
+<td>Close the overview</td>
 </tr>
 </tbody>
 </table>
