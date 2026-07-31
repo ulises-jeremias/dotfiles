@@ -48,9 +48,9 @@ dots-hypr-layout --toggle
 The [hyprland-scroll-overview](https://github.com/yayuuu/hyprland-scroll-overview)
 plugin provides a bird's-eye view of all workspaces and windows. The Hyprland
 install script ensures the build dependencies and Hyprland headers are present,
-and the idempotent `dots-hyprland-plugins` helper (run by the install script
-and on every login via autostart) adds, enables and reloads the plugin through
-`hyprpm`. The plugin is configured in
+and the `run_onchange_after` script runs the idempotent
+`dots-hyprland-plugins` helper (also started on every login via autostart) to
+add, enable and reload the plugin through `hyprpm`. The plugin is configured in
 `~/.config/hypr/hyprland.conf.d/plugins.conf`.
 
 - Toggle the overview: `Super+O` (or a 3-finger swipe up on a touchpad)

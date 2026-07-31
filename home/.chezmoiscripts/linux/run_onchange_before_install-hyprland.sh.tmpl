@@ -67,19 +67,13 @@ yay -S --noconfirm --needed \
 # (hyprpm refuses root); it internally invokes sudo for privileged steps like
 # installing headers into /var/cache/hyprpm.
 #
-# The actual `hyprpm add`/`enable`/`reload` steps need a running session, so
-# they are handled by the idempotent `dots-hyprland-plugins` script: it is
-# invoked here when a session is active, and on every login via autostart
-# (exec-once), so a first install that happens outside a session is completed
-# automatically at the next login.
+# The actual `hyprpm add`/`enable`/`reload` steps need a running session and
+# require `~/.local/bin/dots-hyprland-plugins` to exist (created when chezmoi
+# applies the dotfiles). Those are handled by the `run_onchange_after` script,
+# which runs after this install phase, and by autostart on every login.
 #
 # Force header rebuild to match the installed Hyprland version.
 hyprpm update -f
-
-# If a Hyprland session is active, bootstrap the plugins right away.
-if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && hyprctl -j version >/dev/null 2>&1; then
-  ~/.local/bin/dots-hyprland-plugins
-fi
 
 {{      end -}}
 

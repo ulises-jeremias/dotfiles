@@ -1,0 +1,31 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source "${HOME}/.local/lib/dots/logging.sh"
+
+BOOTSTRAP_SCRIPT="${HOME}/.local/bin/dots-hyprland-plugins"
+
+if [[ ! -x "$BOOTSTRAP_SCRIPT" ]]; then
+    log_warn "dots-hyprland-plugins not found, skipping plugin bootstrap"
+    exit 0
+fi
+
+# `hyprpm add`/`enable`/`reload` require a running Hyprland session, so gate
+# on HYPRLAND_INSTANCE_SIGNATURE / `hyprctl -j version`. If there is no
+# session (e.g. first install from a TTY), the autostart exec-once entry
+# completes the bootstrap at the next login.
+if [[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] || ! hyprctl -j version >/dev/null 2>&1; then
+    log_warn "No active Hyprland session, skipping ScrollOverview bootstrap (autostart will handle it)"
+    exit 0
+fi
+
+log_info "Bootstrapping HyprPM plugins (ScrollOverview)..."
+"$BOOTSTRAP_SCRIPT"
+
+{{      end -}}
+
+{{ end -}}
