@@ -20,6 +20,7 @@ scripts_list=(
   "🎨 accent-override: Set or clear a hex accent color override for the M3 color scheme"
   "🧭 hypr-layout: Manage Hyprland layout profiles with persistence and restore support"
   "🖥️ hypr-monitors: Manage Hyprland monitor configurations and layouts"
+  "🧩 hyprland-plugins: Idempotent bootstrap of HyprPM-managed plugins (e.g. ScrollOverview)"
   "🎨 hyprlock-theme: Generate hyprlock color overrides from the current smart-colors M3 palette"
   "🔠 keyboard-help: Interactive keyboard shortcuts help overlay for Hyprland"
   "⌨️ keyboard-layout: Toggle keyboard layouts for Hyprland/Wayland/X11"

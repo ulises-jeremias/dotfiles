@@ -62,31 +62,23 @@ yay -S --noconfirm --needed \
   jq
 
 # Bootstrap the ScrollOverview plugin via hyprpm.
-# `hyprpm add` and `hyprpm enable` require a running Hyprland session (they
-# query the compositor and ensure plugin load state), so we gate on
-# HYPRLAND_INSTANCE_SIGNATURE / `hyprctl -j version`. On first install there
-# is no session yet; the autostart `exec-once = hyprpm reload` entry will load
-# the plugin on the next compositor start once the user runs the bootstrap
-# manually (see the warning below).
+# `hyprpm update` builds/installs the Hyprland headers used to compile plugins
+# and can run without an active Hyprland session. It must run as the USER
+# (hyprpm refuses root); it internally invokes sudo for privileged steps like
+# installing headers into /var/cache/hyprpm.
 #
-# `hyprpm update -f` must run as the USER (hyprpm refuses root); it internally
-# invokes sudo for privileged steps like installing headers into /var/cache/hyprpm.
+# The actual `hyprpm add`/`enable`/`reload` steps need a running session, so
+# they are handled by the idempotent `dots-hyprland-plugins` script: it is
+# invoked here when a session is active, and on every login via autostart
+# (exec-once), so a first install that happens outside a session is completed
+# automatically at the next login.
+#
+# Force header rebuild to match the installed Hyprland version.
+hyprpm update -f
+
+# If a Hyprland session is active, bootstrap the plugins right away.
 if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && hyprctl -j version >/dev/null 2>&1; then
-  # Idempotent: only add if the repo isn't already installed.
-  # Capture the output first to avoid `pipefail` + `grep -q` SIGPIPE issues.
-  plugin_list="$(hyprpm list 2>/dev/null)"
-  if ! grep -Fq -- 'hyprland-scroll-overview' <<<"$plugin_list"; then
-    hyprpm add https://github.com/yayuuu/hyprland-scroll-overview.git
-  fi
-  # Force header rebuild to match the installed Hyprland version.
-  hyprpm update -f
-  hyprpm enable scrolloverview
-  # Reload the running session to pick up the plugin immediately.
-  hyprpm reload 2>/dev/null || true
-else
-  echo "WARNING: No active Hyprland session. ScrollOverview plugin bootstrap skipped." >&2
-  echo "After logging into Hyprland, run:" >&2
-  echo "  hyprpm update -f && hyprpm add https://github.com/yayuuu/hyprland-scroll-overview.git && hyprpm enable scrolloverview" >&2
+  ~/.local/bin/dots-hyprland-plugins
 fi
 
 {{      end -}}
