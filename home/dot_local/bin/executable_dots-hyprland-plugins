@@ -24,7 +24,7 @@ hyprpm update
 log_info "Ensuring ScrollOverview repository is installed..."
 plugin_list="$(hyprpm list 2>/dev/null)"
 if ! grep -Fq -- 'hyprland-scroll-overview' <<<"$plugin_list"; then
-  hyprpm add "${SCROLLOVERVIEW_REPO}"
+	hyprpm add "${SCROLLOVERVIEW_REPO}"
 fi
 
 log_info "Enabling ScrollOverview..."
