@@ -5,12 +5,9 @@
 #   $DOTS_WALLPAPER_POINTER_FILE  (default: ~/.local/state/dots/wallpaper/path)
 # Must match Quickshell Paths.state + "/wallpaper/path".
 #
-# Optional legacy (older installs): ~/.cache/dots/wallpaper/path — read-only fallback.
-# Priority: explicit path > canonical state pointer > legacy cache pointer > wal link.
+# Priority: explicit path > canonical state pointer > wal link.
 DOTS_STATE_DIR="${DOTS_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dots}"
 DOTS_WALLPAPER_POINTER_FILE="${DOTS_WALLPAPER_POINTER_FILE:-$DOTS_STATE_DIR/wallpaper/path}"
-DOTS_CACHE_DIR="${DOTS_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/dots}"
-DOTS_LEGACY_WALLPAPER_POINTER="${DOTS_LEGACY_WALLPAPER_POINTER:-$DOTS_CACHE_DIR/wallpaper/path}"
 
 dots_strip_file_uri() {
   local s="${1:-}"
@@ -100,7 +97,6 @@ dots_current_wallpaper() {
 
   local candidates=(
     "$DOTS_WALLPAPER_POINTER_FILE"
-    "$DOTS_LEGACY_WALLPAPER_POINTER"
     "$HOME/.cache/wal/wal"
   )
 

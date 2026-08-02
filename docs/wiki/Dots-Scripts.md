@@ -114,5 +114,5 @@ dots appearance doctor
 ## Notes
 
 - Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.
-- `dots rice` remains available as legacy-compatible naming; `dots appearance` is the canonical contract.
+- `dots rice` remains available as a thin alias; `dots appearance` is the canonical contract.
 - `dots-*` scripts remain modular and can be called directly.

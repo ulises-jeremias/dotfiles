@@ -7,10 +7,10 @@
 **Architecture:**
 
 - Each rice is a self-contained directory: `~/.local/share/dots/rices/<rice-name>/`
-- Configuration: `config.json` (canonical) + `config.sh` (shell mirror)
+- Configuration: `config.json` only
 - Application: Quickshell `Rice.qml` IPC, with `apply-appearance.sh` shell fallback
 - Assets: `backgrounds/`, `preview.png`
-- State tracking: `~/.local/state/dots/rice/current` (mirrored to `.current_rice`)
+- State tracking: `~/.local/state/dots/rice/current`
 
 **Integration Points:**
 
@@ -21,7 +21,6 @@
 
 **Design Constraints:**
 
-- `config.sh` must remain sourceable (no side effects)
 - Apply pipelines must be fail-closed on wal/M3 hard failures
 - Assets must be relative to rice directory
 - No cross-rice dependencies allowed
@@ -107,10 +106,10 @@
 
 **Integration:**
 
-Rices specify their animation profile via `HYPRLAND_ANIMATIONS` in `config.sh`:
+Rices specify their animation profile via `hyprlandAnimations` in `config.json`:
 
-```bash
-HYPRLAND_ANIMATIONS="cyberpunk"  # Uses animations-cyberpunk.conf
+```json
+{ "hyprlandAnimations": "cyberpunk" }
 ```
 
 ## 4. Legacy Removal Note

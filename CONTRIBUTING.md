@@ -272,8 +272,7 @@ Create a new directory in `home/dot_local/share/dots/rices/`:
 
 ```text
 your-rice-name/
-├── config.sh          # Theme configuration
-├── apply.sh           # Application script
+├── config.json        # Canonical theme configuration (required)
 ├── backgrounds/       # Wallpaper images
 ├── preview.png        # Theme preview (required)
 └── README.md          # Theme description (optional)
@@ -281,37 +280,25 @@ your-rice-name/
 
 ### What to Include
 
-**config.sh** - Theme settings:
-```bash
-#!/usr/bin/env bash
+**config.json** - Theme settings (consumed by Quickshell `Rice.qml` / `list-rices.py`):
 
-# Rice metadata
-RICE_NAME="your-rice-name"
-RICE_DESCRIPTION="Brief description of your theme"
-
-# Polybar configuration
-POLYBAR_PROFILE="default"  # or "minimal"
-
-# GTK theme
-GTK_THEME="Orchis-Dark-Compact"
-ICON_THEME="Papirus-Dark"
-
-# Optional: Window manager specific settings
-I3_GAPS_INNER=10
-I3_GAPS_OUTER=5
+```json
+{
+  "id": "your-rice-name",
+  "name": "Your Rice Name",
+  "description": "Brief description of your theme",
+  "style": "Example Style",
+  "tags": ["example"],
+  "schemeType": "tonal-spot",
+  "darkMode": true,
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Papirus-Dark",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}
 ```
 
-**apply.sh** - Setup script:
-```bash
-#!/usr/bin/env bash
-
-# Load rice configuration
-RICE_DIR="$(dirname "$(readlink -f "$0")")"
-source "${RICE_DIR}/config.sh"
-
-# Your customization logic here
-# Set wallpaper, apply colors, configure apps, etc.
-```
+Apply via `dots appearance apply your-rice-name` (Quickshell IPC or shell fallback). Per-rice `config.sh` / `apply.sh` are not part of the maintained path.
 
 **backgrounds/** - At least one high-quality wallpaper
 

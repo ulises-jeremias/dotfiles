@@ -11,8 +11,6 @@ Singleton {
 
     readonly property string ricesDir: `${Paths.data}/rices`
     readonly property string stateFile: `${Paths.state}/rice/current`
-    readonly property string legacyStateFile: `${Paths.data}/rices/.current_rice`
-    readonly property string cacheRiceFile: `${Paths.cache}/current_rice`
     readonly property string wallpaperPointer: Paths.wallpaperPointer
     readonly property string m3Script: `${Quickshell.env("HOME")}/.local/lib/dots/generate-m3-colors.py`
     readonly property string schemeJson: `${Paths.cache}/smart-colors/scheme.json`
@@ -135,31 +133,7 @@ Singleton {
                 }
             }
         }
-        onLoadFailed: {
-            // Fall back to legacy pointer once, then migrate on next successful apply.
-            legacyStateLoader.running = true;
-        }
-    }
-
-    Process {
-        id: legacyStateLoader
-
-        command: ["sh", "-c", 'f="$HOME/.local/share/dots/rices/.current_rice"; [ -f "$f" ] && head -n 1 "$f" || true']
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const id = text.trim();
-                if (id && !root.currentId) {
-                    root.currentId = id;
-                    // Mirror into canonical path without full apply.
-                    persistRiceProc.riceId = id;
-                    persistRiceProc.running = true;
-                }
-                if (root.currentId && !root._startupRestored) {
-                    root._startupRestored = true;
-                    ensureSchemeProc.running = true;
-                }
-            }
-        }
+        onLoadFailed: console.warn("Rice.qml: state file not found:", root.stateFile)
     }
 
     Component.onCompleted: {
@@ -247,18 +221,16 @@ Singleton {
         }
     }
 
-    // Persist current rice id to canonical + legacy + cache mirrors
+    // Persist current rice id (canonical only) and purge legacy pointers
     Process {
         id: persistRiceProc
 
         property string riceId: ""
 
-        command: ["sh", "-c", 'mkdir -p "$(dirname "$DOTS_RICE_CANON")" "$(dirname "$DOTS_RICE_LEGACY")" "$(dirname "$DOTS_RICE_CACHE")" && printf "%s\\n" "$DOTS_RICE_ID" > "$DOTS_RICE_CANON" && printf "%s\\n" "$DOTS_RICE_ID" > "$DOTS_RICE_LEGACY" && printf "CURRENT_RICE=%s\\n" "$DOTS_RICE_ID" > "$DOTS_RICE_CACHE"']
+        command: ["sh", "-c", 'mkdir -p "$(dirname "$DOTS_RICE_CANON")" && printf "%s\\n" "$DOTS_RICE_ID" > "$DOTS_RICE_CANON" && rm -f "$HOME/.local/share/dots/rices/.current_rice" "$HOME/.cache/dots/current_rice"']
         environment: ({
             "DOTS_RICE_ID": persistRiceProc.riceId || root.currentId,
-            "DOTS_RICE_CANON": root.stateFile,
-            "DOTS_RICE_LEGACY": root.legacyStateFile,
-            "DOTS_RICE_CACHE": root.cacheRiceFile
+            "DOTS_RICE_CANON": root.stateFile
         })
     }
 

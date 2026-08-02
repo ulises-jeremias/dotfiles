@@ -26,17 +26,17 @@ SNAPSHOTS_DIR="$HOME/.cache/dots/snapshots"
 [[ ! -d $SNAPSHOTS_DIR ]] && mkdir -p "$SNAPSHOTS_DIR"
 
 create_snapshot() {
-	local timestamp
-	timestamp=$(date +%Y%m%d_%H%M%S)
-	local snapshot_id="config_${timestamp}"
-	local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
+  local timestamp
+  timestamp=$(date +%Y%m%d_%H%M%S)
+  local snapshot_id="config_${timestamp}"
+  local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
 
-	log_info "Creating configuration snapshot: $snapshot_id"
+  log_info "Creating configuration snapshot: $snapshot_id"
 
-	mkdir -p "$snapshot_dir"
+  mkdir -p "$snapshot_dir"
 
-	# Create metadata
-	cat >"$snapshot_dir/metadata.json" <<EOF
+  # Create metadata
+  cat >"$snapshot_dir/metadata.json" <<EOF
 {
   "id": "$snapshot_id",
   "timestamp": "$(date -Iseconds)",
@@ -51,184 +51,179 @@ create_snapshot() {
 }
 EOF
 
-	# Backup critical configurations
-	log_debug "Backing up dotfiles state..."
-	tar -czf "$snapshot_dir/dotfiles.tar.gz" -C "$HOME" .config .local/bin .local/lib .zshrc .p10k.zsh 2>/dev/null || true
+  # Backup critical configurations
+  log_debug "Backing up dotfiles state..."
+  tar -czf "$snapshot_dir/dotfiles.tar.gz" -C "$HOME" .config .local/bin .local/lib .zshrc .p10k.zsh 2>/dev/null || true
 
-	# Backup current rice configuration (canonical + legacy mirror)
-	# shellcheck source=/dev/null
-	source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
-	local rice_id=""
-	if declare -f dots_read_current_rice >/dev/null 2>&1; then
-		rice_id="$(dots_read_current_rice)"
-	elif [[ -f "$HOME/.local/state/dots/rice/current" ]]; then
-		rice_id="$(head -n 1 "$HOME/.local/state/dots/rice/current")"
-	elif [[ -f "$HOME/.local/share/dots/rices/.current_rice" ]]; then
-		rice_id="$(head -n 1 "$HOME/.local/share/dots/rices/.current_rice")"
-	fi
-	if [[ -n $rice_id ]]; then
-		printf '%s\n' "$rice_id" >"$snapshot_dir/.current_rice"
-		printf '%s\n' "$rice_id" >"$snapshot_dir/rice_current"
-		log_debug "Current rice: $rice_id"
-	fi
+  # Backup current rice id (canonical only)
+  # shellcheck source=/dev/null
+  source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
+  local rice_id=""
+  if declare -f dots_read_current_rice >/dev/null 2>&1; then
+    rice_id="$(dots_read_current_rice)"
+  elif [[ -f "$HOME/.local/state/dots/rice/current" ]]; then
+    rice_id="$(head -n 1 "$HOME/.local/state/dots/rice/current")"
+  fi
+  if [[ -n $rice_id ]]; then
+    printf '%s\n' "$rice_id" >"$snapshot_dir/rice_current"
+    log_debug "Current rice: $rice_id"
+  fi
 
-	# Backup package list (if on Arch)
-	if command -v pacman >/dev/null 2>&1; then
-		pacman -Qqe >"$snapshot_dir/packages_explicit.txt"
-		pacman -Qqm >"$snapshot_dir/packages_aur.txt"
-		log_debug "Saved package lists"
-	fi
+  # Backup package list (if on Arch)
+  if command -v pacman >/dev/null 2>&1; then
+    pacman -Qqe >"$snapshot_dir/packages_explicit.txt"
+    pacman -Qqm >"$snapshot_dir/packages_aur.txt"
+    log_debug "Saved package lists"
+  fi
 
-	# Save running processes
-	ps aux >"$snapshot_dir/processes.txt"
+  # Save running processes
+  ps aux >"$snapshot_dir/processes.txt"
 
-	# Calculate size
-	local size
-	size=$(du -sh "$snapshot_dir" | cut -f1)
-	log_debug "Snapshot size: $size"
+  # Calculate size
+  local size
+  size=$(du -sh "$snapshot_dir" | cut -f1)
+  log_debug "Snapshot size: $size"
 
-	log_info "Snapshot created: $snapshot_id"
-	log_debug "Location: $snapshot_dir"
+  log_info "Snapshot created: $snapshot_id"
+  log_debug "Location: $snapshot_dir"
 
-	# Update latest symlink
-	ln -sfn "$snapshot_dir" "$SNAPSHOTS_DIR/latest"
+  # Update latest symlink
+  ln -sfn "$snapshot_dir" "$SNAPSHOTS_DIR/latest"
 }
 
 list_snapshots() {
-	log_info "Configuration Snapshots"
+  log_info "Configuration Snapshots"
 
-	if [[ ! -d $SNAPSHOTS_DIR ]] || [[ -z "$(ls -A "$SNAPSHOTS_DIR" 2>/dev/null)" ]]; then
-		log_warn "No snapshots found. Create one with: dots config-manager --create"
-		return
-	fi
+  if [[ ! -d $SNAPSHOTS_DIR ]] || [[ -z "$(ls -A "$SNAPSHOTS_DIR" 2>/dev/null)" ]]; then
+    log_warn "No snapshots found. Create one with: dots config-manager --create"
+    return
+  fi
 
-	printf "%-20s %-19s %-15s %-10s %s\n" "ID" "TIMESTAMP" "HOSTNAME" "SIZE" "DOTFILES_COMMIT"
-	printf "%-20s %-19s %-15s %-10s %s\n" "----" "---------" "--------" "----" "---------------"
+  printf "%-20s %-19s %-15s %-10s %s\n" "ID" "TIMESTAMP" "HOSTNAME" "SIZE" "DOTFILES_COMMIT"
+  printf "%-20s %-19s %-15s %-10s %s\n" "----" "---------" "--------" "----" "---------------"
 
-	for snapshot_dir in "$SNAPSHOTS_DIR"/config_*; do
-		if [[ -d $snapshot_dir ]] && [[ -f "$snapshot_dir/metadata.json" ]]; then
-			local snapshot_id hostname timestamp size commit
-			snapshot_id=$(basename "$snapshot_dir")
-			hostname=$(jq -r '.hostname // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null || echo "unknown")
-			timestamp=$(jq -r '.timestamp // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null | cut -d'T' -f1,2 | tr 'T' ' ' | cut -d'+' -f1)
-			size=$(du -sh "$snapshot_dir" 2>/dev/null | cut -f1 || echo "?")
-			commit=$(jq -r '.dotfiles_commit // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null | cut -c1-12)
+  for snapshot_dir in "$SNAPSHOTS_DIR"/config_*; do
+    if [[ -d $snapshot_dir ]] && [[ -f "$snapshot_dir/metadata.json" ]]; then
+      local snapshot_id hostname timestamp size commit
+      snapshot_id=$(basename "$snapshot_dir")
+      hostname=$(jq -r '.hostname // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null || echo "unknown")
+      timestamp=$(jq -r '.timestamp // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null | cut -d'T' -f1,2 | tr 'T' ' ' | cut -d'+' -f1)
+      size=$(du -sh "$snapshot_dir" 2>/dev/null | cut -f1 || echo "?")
+      commit=$(jq -r '.dotfiles_commit // "unknown"' "$snapshot_dir/metadata.json" 2>/dev/null | cut -c1-12)
 
-			printf "%-20s %-19s %-15s %-10s %s\n" "$snapshot_id" "$timestamp" "$hostname" "$size" "$commit"
-		fi
-	done
+      printf "%-20s %-19s %-15s %-10s %s\n" "$snapshot_id" "$timestamp" "$hostname" "$size" "$commit"
+    fi
+  done
 
-	echo ""
-	echo "Use 'dots config-manager --restore SNAPSHOT_ID' to restore a snapshot"
+  echo ""
+  echo "Use 'dots config-manager --restore SNAPSHOT_ID' to restore a snapshot"
 }
 
 restore_snapshot() {
-	local snapshot_id="$1"
-	local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
+  local snapshot_id="$1"
+  local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
 
-	if [[ ! -d $snapshot_dir ]]; then
-		echo "❌ Snapshot not found: $snapshot_id"
-		return 1
-	fi
+  if [[ ! -d $snapshot_dir ]]; then
+    echo "❌ Snapshot not found: $snapshot_id"
+    return 1
+  fi
 
-	echo "🔄 Restoring configuration from snapshot: $snapshot_id"
+  echo "🔄 Restoring configuration from snapshot: $snapshot_id"
 
-	# Show snapshot info
-	if [[ -f "$snapshot_dir/metadata.json" ]]; then
-		echo "  Snapshot info:"
-		echo "    Date: $(jq -r '.timestamp' "$snapshot_dir/metadata.json" 2>/dev/null)"
-		echo "    Host: $(jq -r '.hostname' "$snapshot_dir/metadata.json" 2>/dev/null)"
-		echo "    Commit: $(jq -r '.dotfiles_commit' "$snapshot_dir/metadata.json" 2>/dev/null)"
-	fi
+  # Show snapshot info
+  if [[ -f "$snapshot_dir/metadata.json" ]]; then
+    echo "  Snapshot info:"
+    echo "    Date: $(jq -r '.timestamp' "$snapshot_dir/metadata.json" 2>/dev/null)"
+    echo "    Host: $(jq -r '.hostname' "$snapshot_dir/metadata.json" 2>/dev/null)"
+    echo "    Commit: $(jq -r '.dotfiles_commit' "$snapshot_dir/metadata.json" 2>/dev/null)"
+  fi
 
-	# Create backup of current state
-	echo "  Creating backup of current state..."
-	create_snapshot
+  # Create backup of current state
+  echo "  Creating backup of current state..."
+  create_snapshot
 
-	# Restore files
-	if [[ -f "$snapshot_dir/dotfiles.tar.gz" ]]; then
-		echo "  Restoring dotfiles..."
-		tar -xzf "$snapshot_dir/dotfiles.tar.gz" -C "$HOME" 2>/dev/null || true
-	fi
+  # Restore files
+  if [[ -f "$snapshot_dir/dotfiles.tar.gz" ]]; then
+    echo "  Restoring dotfiles..."
+    tar -xzf "$snapshot_dir/dotfiles.tar.gz" -C "$HOME" 2>/dev/null || true
+  fi
 
-	# Restore rice configuration to canonical + legacy
-	if [[ -f "$snapshot_dir/rice_current" || -f "$snapshot_dir/.current_rice" ]]; then
-		local restored_rice
-		restored_rice="$(cat "$snapshot_dir/rice_current" 2>/dev/null || cat "$snapshot_dir/.current_rice")"
-		# shellcheck source=/dev/null
-		source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
-		if declare -f dots_write_current_rice >/dev/null 2>&1; then
-			dots_write_current_rice "$restored_rice"
-		else
-			mkdir -p "$HOME/.local/state/dots/rice" "$HOME/.local/share/dots/rices"
-			printf '%s\n' "$restored_rice" >"$HOME/.local/state/dots/rice/current"
-			printf '%s\n' "$restored_rice" >"$HOME/.local/share/dots/rices/.current_rice"
-		fi
-		echo "  Restored rice: $restored_rice"
-	fi
+  # Restore rice configuration to canonical pointer only
+  if [[ -f "$snapshot_dir/rice_current" || -f "$snapshot_dir/.current_rice" ]]; then
+    local restored_rice
+    restored_rice="$(cat "$snapshot_dir/rice_current" 2>/dev/null || cat "$snapshot_dir/.current_rice")"
+    # shellcheck source=/dev/null
+    source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
+    if declare -f dots_write_current_rice >/dev/null 2>&1; then
+      dots_write_current_rice "$restored_rice"
+    else
+      mkdir -p "$HOME/.local/state/dots/rice"
+      printf '%s\n' "$restored_rice" >"$HOME/.local/state/dots/rice/current"
+      rm -f "$HOME/.local/share/dots/rices/.current_rice" "$HOME/.cache/dots/current_rice" 2>/dev/null || true
+    fi
+    echo "  Restored rice: $restored_rice"
+  fi
 
-	echo "✅ Restore completed!"
-	echo "   You may need to restart your shell or reload configurations"
+  echo "✅ Restore completed!"
+  echo "   You may need to restart your shell or reload configurations"
 }
 
 show_diff() {
-	local snapshot_id="$1"
-	local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
+  local snapshot_id="$1"
+  local snapshot_dir="$SNAPSHOTS_DIR/$snapshot_id"
 
-	if [[ ! -d $snapshot_dir ]]; then
-		echo "❌ Snapshot not found: $snapshot_id"
-		return 1
-	fi
+  if [[ ! -d $snapshot_dir ]]; then
+    echo "❌ Snapshot not found: $snapshot_id"
+    return 1
+  fi
 
-	echo "🔍 Comparing current configuration with snapshot: $snapshot_id"
+  echo "🔍 Comparing current configuration with snapshot: $snapshot_id"
 
-	# Compare rice configuration
-	# shellcheck source=/dev/null
-	source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
-	local old_rice="" new_rice=""
-	[[ -f "$snapshot_dir/rice_current" ]] && old_rice=$(cat "$snapshot_dir/rice_current")
-	[[ -z $old_rice && -f "$snapshot_dir/.current_rice" ]] && old_rice=$(cat "$snapshot_dir/.current_rice")
-	if declare -f dots_read_current_rice >/dev/null 2>&1; then
-		new_rice="$(dots_read_current_rice)"
-	elif [[ -f "$HOME/.local/state/dots/rice/current" ]]; then
-		new_rice=$(head -n 1 "$HOME/.local/state/dots/rice/current")
-	elif [[ -f "$HOME/.local/share/dots/rices/.current_rice" ]]; then
-		new_rice=$(head -n 1 "$HOME/.local/share/dots/rices/.current_rice")
-	fi
-	if [[ -n $old_rice || -n $new_rice ]]; then
-		if [[ $old_rice != "$new_rice" ]]; then
-			echo "  Rice changed: ${old_rice:-none} → ${new_rice:-none}"
-		else
-			echo "  Rice unchanged: $new_rice"
-		fi
-	fi
+  # Compare rice configuration
+  # shellcheck source=/dev/null
+  source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
+  local old_rice="" new_rice=""
+  [[ -f "$snapshot_dir/rice_current" ]] && old_rice=$(cat "$snapshot_dir/rice_current")
+  [[ -z $old_rice && -f "$snapshot_dir/.current_rice" ]] && old_rice=$(cat "$snapshot_dir/.current_rice")
+  if declare -f dots_read_current_rice >/dev/null 2>&1; then
+    new_rice="$(dots_read_current_rice)"
+  elif [[ -f "$HOME/.local/state/dots/rice/current" ]]; then
+    new_rice=$(head -n 1 "$HOME/.local/state/dots/rice/current")
+  fi
+  if [[ -n $old_rice || -n $new_rice ]]; then
+    if [[ $old_rice != "$new_rice" ]]; then
+      echo "  Rice changed: ${old_rice:-none} → ${new_rice:-none}"
+    else
+      echo "  Rice unchanged: $new_rice"
+    fi
+  fi
 
-	# Compare package lists (if available)
-	if [[ -f "$snapshot_dir/packages_explicit.txt" ]] && command -v pacman >/dev/null 2>&1; then
-		local current_packages
-		current_packages=$(mktemp)
-		pacman -Qqe >"$current_packages"
+  # Compare package lists (if available)
+  if [[ -f "$snapshot_dir/packages_explicit.txt" ]] && command -v pacman >/dev/null 2>&1; then
+    local current_packages
+    current_packages=$(mktemp)
+    pacman -Qqe >"$current_packages"
 
-		echo ""
-		echo "  Package differences:"
-		echo "    Added packages:"
-		comm -13 "$snapshot_dir/packages_explicit.txt" "$current_packages" | head -10 | sed 's/^/      /'
-		echo "    Removed packages:"
-		comm -23 "$snapshot_dir/packages_explicit.txt" "$current_packages" | head -10 | sed 's/^/      /'
+    echo ""
+    echo "  Package differences:"
+    echo "    Added packages:"
+    comm -13 "$snapshot_dir/packages_explicit.txt" "$current_packages" | head -10 | sed 's/^/      /'
+    echo "    Removed packages:"
+    comm -23 "$snapshot_dir/packages_explicit.txt" "$current_packages" | head -10 | sed 's/^/      /'
 
-		rm "$current_packages"
-	fi
+    rm "$current_packages"
+  fi
 }
 
 setup_auto_snapshots() {
-	echo "⚙️  Setting up automatic snapshots..."
+  echo "⚙️  Setting up automatic snapshots..."
 
-	# Create systemd timer for automatic snapshots
-	local timer_dir="$HOME/.config/systemd/user"
-	mkdir -p "$timer_dir"
+  # Create systemd timer for automatic snapshots
+  local timer_dir="$HOME/.config/systemd/user"
+  mkdir -p "$timer_dir"
 
-	# Service file
-	cat >"$timer_dir/dots-snapshot.service" <<EOF
+  # Service file
+  cat >"$timer_dir/dots-snapshot.service" <<EOF
 [Unit]
 Description=Create HorneroConfig snapshot
 After=graphical-session.target
@@ -238,8 +233,8 @@ Type=oneshot
 ExecStart=$HOME/.local/bin/dots config-manager --create
 EOF
 
-	# Timer file
-	cat >"$timer_dir/dots-snapshot.timer" <<EOF
+  # Timer file
+  cat >"$timer_dir/dots-snapshot.timer" <<EOF
 [Unit]
 Description=Create HorneroConfig snapshots
 Requires=dots-snapshot.service
@@ -252,50 +247,50 @@ Persistent=true
 WantedBy=timers.target
 EOF
 
-	# Enable timer
-	systemctl --user daemon-reload
-	systemctl --user enable dots-snapshot.timer
-	systemctl --user start dots-snapshot.timer
+  # Enable timer
+  systemctl --user daemon-reload
+  systemctl --user enable dots-snapshot.timer
+  systemctl --user start dots-snapshot.timer
 
-	echo "✅ Automatic snapshots enabled (daily)"
-	echo "   Check status: systemctl --user status dots-snapshot.timer"
+  echo "✅ Automatic snapshots enabled (daily)"
+  echo "   Check status: systemctl --user status dots-snapshot.timer"
 }
 
 cleanup_snapshots() {
-	echo "🧹 Cleaning up old snapshots..."
+  echo "🧹 Cleaning up old snapshots..."
 
-	local snapshots
-	mapfile -t snapshots < <(ls -1t "$SNAPSHOTS_DIR"/config_* 2>/dev/null || true)
+  local snapshots
+  mapfile -t snapshots < <(ls -1t "$SNAPSHOTS_DIR"/config_* 2>/dev/null || true)
 
-	if [[ ${#snapshots[@]} -le 10 ]]; then
-		echo "  Only ${#snapshots[@]} snapshots found, no cleanup needed"
-		return
-	fi
+  if [[ ${#snapshots[@]} -le 10 ]]; then
+    echo "  Only ${#snapshots[@]} snapshots found, no cleanup needed"
+    return
+  fi
 
-	local to_remove=("${snapshots[@]:10}")
+  local to_remove=("${snapshots[@]:10}")
 
-	echo "  Removing ${#to_remove[@]} old snapshots..."
-	for snapshot in "${to_remove[@]}"; do
-		echo "    Removing: $(basename "$snapshot")"
-		rm -rf "$snapshot"
-	done
+  echo "  Removing ${#to_remove[@]} old snapshots..."
+  for snapshot in "${to_remove[@]}"; do
+    echo "    Removing: $(basename "$snapshot")"
+    rm -rf "$snapshot"
+  done
 
-	echo "✅ Cleanup completed, kept 10 most recent snapshots"
+  echo "✅ Cleanup completed, kept 10 most recent snapshots"
 }
 
 # Main logic
 if [[ -n ${create} ]]; then
-	create_snapshot
+  create_snapshot
 elif [[ -n ${list} ]]; then
-	list_snapshots
+  list_snapshots
 elif [[ -n ${restore} ]]; then
-	restore_snapshot "$restore"
+  restore_snapshot "$restore"
 elif [[ -n ${diff} ]]; then
-	show_diff "$diff"
+  show_diff "$diff"
 elif [[ -n ${auto} ]]; then
-	setup_auto_snapshots
+  setup_auto_snapshots
 elif [[ -n ${cleanup} ]]; then
-	cleanup_snapshots
+  cleanup_snapshots
 else
-	list_snapshots
+  list_snapshots
 fi

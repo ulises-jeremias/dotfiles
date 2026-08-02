@@ -25,10 +25,7 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 
 1. Explicit argument
 2. `~/.local/state/dots/wallpaper/path` (canonical persistent pointer)
-3. Legacy `~/.cache/dots/wallpaper/path` (read-only fallback)
-4. `~/.cache/wal/wal` (pywal symlink; last resort)
-
-> Historical wpgtk (`wpg -s`) notes may still appear in older wiki pages; they are **not** required on the maintained Quickshell path.
+3. `~/.cache/wal/wal` (pywal symlink; last resort)
 
 ## Main Commands
 

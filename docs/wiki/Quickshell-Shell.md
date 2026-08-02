@@ -69,13 +69,15 @@ Quickshell uses **Material Design 3** (M3) color palettes generated from your wa
 
 ### Scheme Configuration
 
-Each appearance (rice) can configure its M3 scheme via `config.sh`:
+Each appearance (rice) configures its M3 scheme via `config.json`:
 
-```bash
-SCHEME_TYPE="vibrant"     # tonalSpot, vibrant, expressive, neutral, monochrome, fidelity
-DARK_MODE="true"          # true/false
-ACCENT_COLOR=""           # Optional hex color override
-BAR_POSITION="top"        # top/bottom
+```json
+{
+  "schemeType": "vibrant",
+  "darkMode": true,
+  "accentColor": "",
+  "barPosition": "top"
+}
 ```
 
 ### Appearance Commands

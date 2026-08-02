@@ -71,7 +71,7 @@ desc = "Go to Rices"
 
 [[mgr.prepend_keymap]]
 on   = ["g", "w"]
-run  = "cd ~/.local/share/dots/rices/$(cat ~/.local/state/dots/rice/current 2>/dev/null || cat ~/.local/share/dots/rices/.current_rice 2>/dev/null || echo machines)/backgrounds"
+run  = "cd ~/.local/share/dots/rices/$(cat ~/.local/state/dots/rice/current 2>/dev/null || echo machines)/backgrounds"
 desc = "Go to current rice Wallpapers"
 
 [[mgr.prepend_keymap]]

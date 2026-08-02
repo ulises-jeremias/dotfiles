@@ -196,7 +196,7 @@ input-field {
 
 ## Rice-Style-Aware Layouts
 
-The lockscreen automatically adapts its layout based on your current rice's `RICE_STYLE`. This provides a cohesive aesthetic experience across your entire desktop.
+The lockscreen automatically adapts its layout based on your current rice's `style` field in `config.json`. This provides a cohesive aesthetic experience across your entire desktop.
 
 ### Available Layouts
 
@@ -210,21 +210,17 @@ The lockscreen automatically adapts its layout based on your current rice's `RIC
 
 ### How It Works
 
-1. When locking, the script reads `RICE_STYLE` from your current rice's `config.sh`
+1. When locking, the script reads `style` from your current rice's `config.json`
 2. Based on the style, it selects the appropriate layout template
 3. Colors are pulled from the smart-colors cache
 4. The hyprlock configuration is generated dynamically
 
 ### Rice Configuration
 
-To enable style-aware layouts, add `RICE_STYLE` to your rice's `config.sh`:
+To enable style-aware layouts, set `style` in your rice's `config.json`:
 
-```bash
-# Example for cyberpunk rice
-RICE_STYLE="Cyberpunk"
-
-# Example for cozy rice
-RICE_STYLE="Cozy"
+```json
+{ "style": "cyberpunk" }
 ```
 
 The style matching is case-insensitive and supports partial matches (e.g., "cozy warm" matches the Cozy layout).

@@ -77,23 +77,21 @@ if command -v dots &>/dev/null || command -v dots-rice &>/dev/null; then
   fi
 
   if [[ -z "$current_rice" ]]; then
-    # Prefer an existing rice; never write a ghost id like landscape-light.
     for candidate in soft-morning landscape machines catppuccin-mocha; do
-      if [[ -d "$HOME/.local/share/dots/rices/$candidate" ]]; then
+      if [[ -f "$HOME/.local/share/dots/rices/$candidate/config.json" ]]; then
         print_status "info" "Setting default rice: $candidate"
         if declare -f dots_write_current_rice >/dev/null 2>&1; then
           dots_write_current_rice "$candidate"
         else
-          mkdir -p "$HOME/.local/state/dots/rice" "$HOME/.local/share/dots/rices"
+          mkdir -p "$HOME/.local/state/dots/rice"
           printf '%s\n' "$candidate" > "$HOME/.local/state/dots/rice/current"
-          printf '%s\n' "$candidate" > "$HOME/.local/share/dots/rices/.current_rice"
+          rm -f "$HOME/.local/share/dots/rices/.current_rice" "$HOME/.cache/dots/current_rice" 2>/dev/null || true
         fi
         current_rice="$candidate"
         break
       fi
     done
   elif declare -f dots_write_current_rice >/dev/null 2>&1; then
-    # Heal split pointers on init.
     dots_write_current_rice "$current_rice" || true
   fi
 
