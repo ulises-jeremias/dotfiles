@@ -1,2 +1,7 @@
 .config/flameshot/flameshot.ini
 .config/autostart/Flameshot.desktop
+.local/state/dots/wallpaper/path.txt
+.cache/dots/smart-colors/wallpaper
+.local/share/dots/rices/*/apply.sh
+.local/share/dots/rices/.current_rice
+.cache/dots/current_rice

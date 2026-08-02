@@ -103,15 +103,16 @@ dots wal-reload
 ### wallpaper-set
 
 - Unified wallpaper entrypoint used by Quickshell and scripts
-- Delegates to `wpg -s` when available
-- Fallback path writes wallpaper state files and triggers smart-colors + Quickshell palette reload
+- When Quickshell is running: IPC `rice setWallpaper`
+- Fallback: wal + wallpaper pointer + M3 generation + `dots-color-scheme sync-state`
 
 ```bash
 dots wallpaper-set /path/to/wallpaper.jpg
+dots appearance doctor
 ```
 
 ## Notes
 
 - Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.
-- `dots rice` remains available as legacy-compatible naming; `dots appearance` is the canonical contract.
+- `dots rice` remains available as a thin alias; `dots appearance` is the canonical contract.
 - `dots-*` scripts remain modular and can be called directly.

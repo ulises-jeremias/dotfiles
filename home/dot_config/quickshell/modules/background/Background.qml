@@ -9,6 +9,8 @@ import Quickshell.Wayland
 import QtQuick
 
 Loader {
+    // Touch Rice so the singleton (and its IPC target) loads at shell start.
+    readonly property string _riceKeepAlive: Rice.currentId
     active: Config.background.enabled
 
     sourceComponent: Variants {

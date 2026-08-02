@@ -28,8 +28,8 @@ set -euo pipefail
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 source ~/.local/lib/dots/logging.sh || exit
 if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
-  # shellcheck source=/dev/null
-  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+	# shellcheck source=/dev/null
+	source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
 fi
 
 VER="1.0.0"
@@ -54,222 +54,226 @@ LOCK_PIXEL="$CURRENT_DIR/lock_pixel.png"
 # Smart colors cache
 SMART_COLORS_CACHE="${HOME}/.cache/dots/smart-colors/current.env"
 
-# Rice configuration
+# Rice configuration (canonical pointer only)
 RICE_CONFIG_DIR="${HOME}/.local/share/dots/rices"
-CURRENT_RICE_FILE="${HOME}/.local/share/dots/rices/.current_rice"
+CURRENT_RICE_FILE="${HOME}/.local/state/dots/rice/current"
+# shellcheck source=/dev/null
+source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
 
 # Compatibility wrapper for scripts that use success semantics.
 log_success() {
-  log_info "$@"
+	log_info "$@"
 }
 
 # Check dependencies
 check_dependencies() {
-  local missing_deps=()
+	local missing_deps=()
 
-  if ! command -v hyprlock >/dev/null 2>&1; then
-    missing_deps+=("hyprlock")
-  fi
+	if ! command -v hyprlock >/dev/null 2>&1; then
+		missing_deps+=("hyprlock")
+	fi
 
-  if ! command -v convert >/dev/null 2>&1 && ! command -v magick >/dev/null 2>&1; then
-    missing_deps+=("imagemagick")
-  fi
+	if ! command -v convert >/dev/null 2>&1 && ! command -v magick >/dev/null 2>&1; then
+		missing_deps+=("imagemagick")
+	fi
 
-  if [[ ${#missing_deps[@]} -gt 0 ]]; then
-    log_error "Missing dependencies: ${missing_deps[*]}"
-    return 1
-  fi
+	if [[ ${#missing_deps[@]} -gt 0 ]]; then
+		log_error "Missing dependencies: ${missing_deps[*]}"
+		return 1
+	fi
 
-  return 0
+	return 0
 }
 
 # Get convert command (ImageMagick)
 get_convert_cmd() {
-  if command -v magick >/dev/null 2>&1; then
-    echo "magick"
-  else
-    echo "convert"
-  fi
+	if command -v magick >/dev/null 2>&1; then
+		echo "magick"
+	else
+		echo "convert"
+	fi
 }
 
 # Run ImageMagick command
 run_magick() {
-  local convert_cmd
-  convert_cmd=$(get_convert_cmd)
+	local convert_cmd
+	convert_cmd=$(get_convert_cmd)
 
-  if [[ $convert_cmd == "magick" ]]; then
-    magick "$@"
-  else
-    convert "$@"
-  fi
+	if [[ $convert_cmd == "magick" ]]; then
+		magick "$@"
+	else
+		convert "$@"
+	fi
 }
 
 # Load smart colors
 load_smart_colors() {
-  if [[ -f $SMART_COLORS_CACHE ]]; then
-    # shellcheck source=/dev/null
-    source "$SMART_COLORS_CACHE"
-  else
-    # Fallback colors
-    SMART_BG="${SMART_BG:-#1e1e1e}"
-    SMART_FG="${SMART_FG:-#ffffff}"
-    SMART_PRIMARY="${SMART_PRIMARY:-#6495ed}"
-    SMART_ACCENT="${SMART_ACCENT:-#ff6b6b}"
-    SMART_SUCCESS="${SMART_SUCCESS:-#51cf66}"
-    SMART_WARNING="${SMART_WARNING:-#ffd43b}"
-    SMART_ERROR="${SMART_ERROR:-#ff6b6b}"
-  fi
+	if [[ -f $SMART_COLORS_CACHE ]]; then
+		# shellcheck source=/dev/null
+		source "$SMART_COLORS_CACHE"
+	else
+		# Fallback colors
+		SMART_BG="${SMART_BG:-#1e1e1e}"
+		SMART_FG="${SMART_FG:-#ffffff}"
+		SMART_PRIMARY="${SMART_PRIMARY:-#6495ed}"
+		SMART_ACCENT="${SMART_ACCENT:-#ff6b6b}"
+		SMART_SUCCESS="${SMART_SUCCESS:-#51cf66}"
+		SMART_WARNING="${SMART_WARNING:-#ffd43b}"
+		SMART_ERROR="${SMART_ERROR:-#ff6b6b}"
+	fi
 }
 
 # Get current rice style
 get_rice_style() {
-  local rice_style="default"
+	local rice_style="default"
 
-  # Try to get current rice name
-  if [[ -f $CURRENT_RICE_FILE ]]; then
-    local rice_name
-    rice_name=$(cat "$CURRENT_RICE_FILE")
-    local rice_config="$RICE_CONFIG_DIR/$rice_name/config.sh"
+	local rice_name=""
+	if declare -f dots_read_current_rice >/dev/null 2>&1; then
+		rice_name="$(dots_read_current_rice)"
+	elif [[ -f $CURRENT_RICE_FILE ]]; then
+		rice_name=$(head -n 1 "$CURRENT_RICE_FILE")
+	fi
 
-    if [[ -f $rice_config ]]; then
-      # Extract RICE_STYLE from config
-      local style
-      style=$(grep -E "^RICE_STYLE=" "$rice_config" 2>/dev/null | cut -d'"' -f2)
-      [[ -n $style ]] && rice_style="$style"
-    fi
-  fi
+	if [[ -n $rice_name ]]; then
+		local rice_json="$RICE_CONFIG_DIR/$rice_name/config.json"
+		if [[ -f $rice_json ]]; then
+			local style
+			style=$(python3 -c "import json;print(json.load(open('$rice_json')).get('style',''))" 2>/dev/null || true)
+			[[ -n $style ]] && rice_style="$style"
+		fi
+	fi
 
-  echo "$rice_style"
+	echo "$rice_style"
 }
 
 # Get layout config based on rice style
 get_layout_config() {
-  local style="$1"
-  local style_lower
-  style_lower=$(echo "$style" | tr '[:upper:]' '[:lower:]')
+	local style="$1"
+	local style_lower
+	style_lower=$(echo "$style" | tr '[:upper:]' '[:lower:]')
 
-  # Determine layout based on aesthetic category
-  case "$style_lower" in
-    *cyberpunk* | *neon* | *synthwave*)
-      echo "cyberpunk"
-      ;;
-    *cozy* | *kawaii* | *pastel* | *soft*)
-      echo "cozy"
-      ;;
-    *vaporwave* | *retro* | *80s* | *90s*)
-      echo "vaporwave"
-      ;;
-    *minimal* | *clean*)
-      echo "minimal"
-      ;;
-    *)
-      echo "default"
-      ;;
-  esac
+	# Determine layout based on aesthetic category
+	case "$style_lower" in
+	*cyberpunk* | *neon* | *synthwave*)
+		echo "cyberpunk"
+		;;
+	*cozy* | *kawaii* | *pastel* | *soft*)
+		echo "cozy"
+		;;
+	*vaporwave* | *retro* | *80s* | *90s*)
+		echo "vaporwave"
+		;;
+	*minimal* | *clean*)
+		echo "minimal"
+		;;
+	*)
+		echo "default"
+		;;
+	esac
 }
 
 # Create effect images
 create_resize_image() {
-  local input="$1"
-  local output="$2"
-  local convert_cmd
-  convert_cmd=$(get_convert_cmd)
+	local input="$1"
+	local output="$2"
+	local convert_cmd
+	convert_cmd=$(get_convert_cmd)
 
-  log_info "Creating base resized image..."
-  # Get screen resolution
-  local resolution
-  if [[ -n ${WAYLAND_DISPLAY:-} ]] && command -v swaymsg >/dev/null 2>&1; then
-    resolution=$(swaymsg -t get_outputs 2>/dev/null | jq -r '.[0] | "\(.current_mode.width)x\(.current_mode.height)"' 2>/dev/null || echo "1920x1080")
-  elif command -v xrandr >/dev/null 2>&1; then
-    resolution=$(xrandr --current | grep '\*' | uniq | awk '{print $1}' | head -n1)
-    [[ -z $resolution ]] && resolution="1920x1080"
-  else
-    resolution="1920x1080"
-  fi
+	log_info "Creating base resized image..."
+	# Get screen resolution
+	local resolution
+	if [[ -n ${WAYLAND_DISPLAY:-} ]] && command -v swaymsg >/dev/null 2>&1; then
+		resolution=$(swaymsg -t get_outputs 2>/dev/null | jq -r '.[0] | "\(.current_mode.width)x\(.current_mode.height)"' 2>/dev/null || echo "1920x1080")
+	elif command -v xrandr >/dev/null 2>&1; then
+		resolution=$(xrandr --current | grep '\*' | uniq | awk '{print $1}' | head -n1)
+		[[ -z $resolution ]] && resolution="1920x1080"
+	else
+		resolution="1920x1080"
+	fi
 
-  # Use magick directly to avoid deprecation warnings
-  run_magick "$input" -resize "${resolution}^" -gravity center -extent "${resolution}" "$output"
+	# Use magick directly to avoid deprecation warnings
+	run_magick "$input" -resize "${resolution}^" -gravity center -extent "${resolution}" "$output"
 }
 
 create_dim_image() {
-  local input="$1"
-  local output="$2"
-  local level="$3"
+	local input="$1"
+	local output="$2"
+	local level="$3"
 
-  log_info "Creating dimmed image (level: $level)..."
-  run_magick "$input" -fill black -colorize "${level}%" "$output"
+	log_info "Creating dimmed image (level: $level)..."
+	run_magick "$input" -fill black -colorize "${level}%" "$output"
 }
 
 create_blur_image() {
-  local input="$1"
-  local output="$2"
-  local level="$3"
+	local input="$1"
+	local output="$2"
+	local level="$3"
 
-  log_info "Creating blurred image (level: $level)..."
-  run_magick "$input" -blur "0x${level}" "$output"
+	log_info "Creating blurred image (level: $level)..."
+	run_magick "$input" -blur "0x${level}" "$output"
 }
 
 create_dimblur_image() {
-  local input="$1"
-  local output="$2"
-  local dim_level="$3"
-  local blur_level="$4"
+	local input="$1"
+	local output="$2"
+	local dim_level="$3"
+	local blur_level="$4"
 
-  log_info "Creating dim+blur image..."
-  run_magick "$input" -fill black -colorize "${dim_level}%" -blur "0x${blur_level}" "$output"
+	log_info "Creating dim+blur image..."
+	run_magick "$input" -fill black -colorize "${dim_level}%" -blur "0x${blur_level}" "$output"
 }
 
 create_pixel_image() {
-  local input="$1"
-  local output="$2"
-  local scale="$3"
+	local input="$1"
+	local output="$2"
+	local scale="$3"
 
-  log_info "Creating pixelated image (scale: $scale)..."
-  local width height
-  width=$(run_magick "$input" -format "%w" info:)
-  height=$(run_magick "$input" -format "%h" info:)
+	log_info "Creating pixelated image (scale: $scale)..."
+	local width height
+	width=$(run_magick "$input" -format "%w" info:)
+	height=$(run_magick "$input" -format "%h" info:)
 
-  local new_width=$((width / scale))
-  local new_height=$((height / scale))
+	local new_width=$((width / scale))
+	local new_height=$((height / scale))
 
-  run_magick "$input" -scale "${new_width}x${new_height}" -scale "${width}x${height}" "$output"
+	run_magick "$input" -scale "${new_width}x${new_height}" -scale "${width}x${height}" "$output"
 }
 
 # Update lockscreen images
 update_lockscreen() {
-  local wallpaper="$1"
+	local wallpaper="$1"
 
-  if [[ ! -f $wallpaper ]]; then
-    log_error "Wallpaper file not found: $wallpaper"
-    return 1
-  fi
+	if [[ ! -f $wallpaper ]]; then
+		log_error "Wallpaper file not found: $wallpaper"
+		return 1
+	fi
 
-  log_info "Updating lockscreen images from: $wallpaper"
+	log_info "Updating lockscreen images from: $wallpaper"
 
-  # Create cache directory
-  mkdir -p "$CURRENT_DIR"
+	# Create cache directory
+	mkdir -p "$CURRENT_DIR"
 
-  # Create base resized image
-  create_resize_image "$wallpaper" "$LOCK_RESIZE"
+	# Create base resized image
+	create_resize_image "$wallpaper" "$LOCK_RESIZE"
 
-  # Create effect images
-  create_dim_image "$LOCK_RESIZE" "$LOCK_DIM" "$DIM_LEVEL"
-  create_blur_image "$LOCK_RESIZE" "$LOCK_BLUR" "$BLUR_LEVEL"
-  create_dimblur_image "$LOCK_RESIZE" "$LOCK_DIMBLUR" "$DIM_LEVEL" "$BLUR_LEVEL"
-  create_pixel_image "$LOCK_RESIZE" "$LOCK_PIXEL" "$PIXEL_SCALE"
+	# Create effect images
+	create_dim_image "$LOCK_RESIZE" "$LOCK_DIM" "$DIM_LEVEL"
+	create_blur_image "$LOCK_RESIZE" "$LOCK_BLUR" "$BLUR_LEVEL"
+	create_dimblur_image "$LOCK_RESIZE" "$LOCK_DIMBLUR" "$DIM_LEVEL" "$BLUR_LEVEL"
+	create_pixel_image "$LOCK_RESIZE" "$LOCK_PIXEL" "$PIXEL_SCALE"
 
-  log_success "Lockscreen images updated successfully"
+	log_success "Lockscreen images updated successfully"
 }
 
 # Generate cyberpunk layout config
 generate_cyberpunk_config() {
-  local image="$1"
-  local bg_color="$2"
-  local fg_color="$3"
-  local primary_color="$4"
-  local error_color="$5"
+	local image="$1"
+	local bg_color="$2"
+	local fg_color="$3"
+	local primary_color="$4"
+	local error_color="$5"
 
-  cat <<EOF
+	cat <<EOF
 # Generated by dots-lockscreen - Cyberpunk Layout
 background {
   monitor =
@@ -359,13 +363,13 @@ EOF
 
 # Generate cozy layout config
 generate_cozy_config() {
-  local image="$1"
-  local bg_color="$2"
-  local fg_color="$3"
-  local primary_color="$4"
-  local error_color="$5"
+	local image="$1"
+	local bg_color="$2"
+	local fg_color="$3"
+	local primary_color="$4"
+	local error_color="$5"
 
-  cat <<EOF
+	cat <<EOF
 # Generated by dots-lockscreen - Cozy Layout
 background {
   monitor =
@@ -451,13 +455,13 @@ EOF
 
 # Generate vaporwave layout config
 generate_vaporwave_config() {
-  local image="$1"
-  local bg_color="$2"
-  local fg_color="$3"
-  local primary_color="$4"
-  local error_color="$5"
+	local image="$1"
+	local bg_color="$2"
+	local fg_color="$3"
+	local primary_color="$4"
+	local error_color="$5"
 
-  cat <<EOF
+	cat <<EOF
 # Generated by dots-lockscreen - Vaporwave Layout
 background {
   monitor =
@@ -543,13 +547,13 @@ EOF
 
 # Generate minimal layout config
 generate_minimal_config() {
-  local image="$1"
-  local bg_color="$2"
-  local fg_color="$3"
-  local primary_color="$4"
-  local error_color="$5"
+	local image="$1"
+	local bg_color="$2"
+	local fg_color="$3"
+	local primary_color="$4"
+	local error_color="$5"
 
-  cat <<EOF
+	cat <<EOF
 # Generated by dots-lockscreen - Minimal Layout
 background {
   monitor =
@@ -613,13 +617,13 @@ EOF
 
 # Generate default layout config
 generate_default_config() {
-  local image="$1"
-  local bg_color="$2"
-  local fg_color="$3"
-  local primary_color="$4"
-  local error_color="$5"
+	local image="$1"
+	local bg_color="$2"
+	local fg_color="$3"
+	local primary_color="$4"
+	local error_color="$5"
 
-  cat <<EOF
+	cat <<EOF
 # Generated by dots-lockscreen - Default Layout
 background {
   monitor =
@@ -699,154 +703,154 @@ EOF
 
 # Lock screen with hyprlock
 lock_screen() {
-  local effect="${1:-blur}"
-  local image=""
+	local effect="${1:-blur}"
+	local image=""
 
-  load_smart_colors
+	load_smart_colors
 
-  # Select image based on effect
-  case "$effect" in
-    dim)
-      image="$LOCK_DIM"
-      ;;
-    blur)
-      image="$LOCK_BLUR"
-      ;;
-    dimblur)
-      image="$LOCK_DIMBLUR"
-      ;;
-    pixel)
-      image="$LOCK_PIXEL"
-      ;;
-    *)
-      image="$LOCK_BLUR"
-      ;;
-  esac
+	# Select image based on effect
+	case "$effect" in
+	dim)
+		image="$LOCK_DIM"
+		;;
+	blur)
+		image="$LOCK_BLUR"
+		;;
+	dimblur)
+		image="$LOCK_DIMBLUR"
+		;;
+	pixel)
+		image="$LOCK_PIXEL"
+		;;
+	*)
+		image="$LOCK_BLUR"
+		;;
+	esac
 
-  # Fallback to resize if effect image doesn't exist
-  if [[ ! -f $image ]]; then
-    log_warning "Effect image not found, using base image"
-    image="$LOCK_RESIZE"
-  fi
+	# Fallback to resize if effect image doesn't exist
+	if [[ ! -f $image ]]; then
+		log_warning "Effect image not found, using base image"
+		image="$LOCK_RESIZE"
+	fi
 
-  # Check if image exists
-  if [[ ! -f $image ]]; then
-    log_error "No lockscreen image available. Run: dots-lockscreen --update=<wallpaper>"
-    return 1
-  fi
+	# Check if image exists
+	if [[ ! -f $image ]]; then
+		log_error "No lockscreen image available. Run: dots-lockscreen --update=<wallpaper>"
+		return 1
+	fi
 
-  # Get rice style and layout
-  local rice_style
-  rice_style=$(get_rice_style)
-  local layout
-  layout=$(get_layout_config "$rice_style")
+	# Get rice style and layout
+	local rice_style
+	rice_style=$(get_rice_style)
+	local layout
+	layout=$(get_layout_config "$rice_style")
 
-  log_info "Locking screen with effect: $effect, layout: $layout"
-  log_info "Using image: $image"
+	log_info "Locking screen with effect: $effect, layout: $layout"
+	log_info "Using image: $image"
 
-  # Generate temporary hyprlock config with current wallpaper
-  local temp_config="/tmp/hyprlock-$$.conf"
+	# Generate temporary hyprlock config with current wallpaper
+	local temp_config="/tmp/hyprlock-$$.conf"
 
-  # Remove # from color codes for hyprlock
-  local bg_color="${SMART_BG#\#}"
-  local fg_color="${SMART_FG#\#}"
-  local primary_color="${SMART_PRIMARY#\#}"
-  local error_color="${SMART_ERROR#\#}"
+	# Remove # from color codes for hyprlock
+	local bg_color="${SMART_BG#\#}"
+	local fg_color="${SMART_FG#\#}"
+	local primary_color="${SMART_PRIMARY#\#}"
+	local error_color="${SMART_ERROR#\#}"
 
-  # Generate layout-specific config
-  case "$layout" in
-    cyberpunk)
-      generate_cyberpunk_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
-      ;;
-    cozy)
-      generate_cozy_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
-      ;;
-    vaporwave)
-      generate_vaporwave_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
-      ;;
-    minimal)
-      generate_minimal_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
-      ;;
-    *)
-      generate_default_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
-      ;;
-  esac
+	# Generate layout-specific config
+	case "$layout" in
+	cyberpunk)
+		generate_cyberpunk_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
+		;;
+	cozy)
+		generate_cozy_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
+		;;
+	vaporwave)
+		generate_vaporwave_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
+		;;
+	minimal)
+		generate_minimal_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
+		;;
+	*)
+		generate_default_config "$image" "$bg_color" "$fg_color" "$primary_color" "$error_color" >"$temp_config"
+		;;
+	esac
 
-  # Lock with hyprlock using temporary config
-  hyprlock --config "$temp_config"
+	# Lock with hyprlock using temporary config
+	hyprlock --config "$temp_config"
 
-  # Clean up temporary config
-  rm -f "$temp_config"
+	# Clean up temporary config
+	rm -f "$temp_config"
 }
 
 # Main function
 main() {
-  # Handle version flag
-  if [[ ${version:-} == "yes" ]]; then
-    echo "dots-lockscreen version $VER"
-    exit 0
-  fi
+	# Handle version flag
+	if [[ ${version:-} == "yes" ]]; then
+		echo "dots-lockscreen version $VER"
+		exit 0
+	fi
 
-  # Check if running on Wayland
-  if [[ -z ${WAYLAND_DISPLAY:-} ]]; then
-    log_error "This script requires Wayland"
-    exit 1
-  fi
+	# Check if running on Wayland
+	if [[ -z ${WAYLAND_DISPLAY:-} ]]; then
+		log_error "This script requires Wayland"
+		exit 1
+	fi
 
-  # Check dependencies
-  if ! check_dependencies; then
-    exit 1
-  fi
+	# Check dependencies
+	if ! check_dependencies; then
+		exit 1
+	fi
 
-  # Determine action based on flags
-  if [[ -n ${update:-} ]]; then
-    # Update lockscreen images
-    local wallpaper="$update"
+	# Determine action based on flags
+	if [[ -n ${update:-} ]]; then
+		# Update lockscreen images
+		local wallpaper="$update"
 
-    if [[ ! -f $wallpaper ]]; then
-      # Try to get current wallpaper
-      if [[ -f $CURRENT_WALLPAPER ]]; then
-        wallpaper=$(cat "$CURRENT_WALLPAPER")
-      else
-        log_error "Wallpaper file not found: $wallpaper"
-        exit 1
-      fi
-    fi
+		if [[ ! -f $wallpaper ]]; then
+			# Try to get current wallpaper
+			if [[ -f $CURRENT_WALLPAPER ]]; then
+				wallpaper=$(cat "$CURRENT_WALLPAPER")
+			else
+				log_error "Wallpaper file not found: $wallpaper"
+				exit 1
+			fi
+		fi
 
-    update_lockscreen "$wallpaper"
+		update_lockscreen "$wallpaper"
 
-  elif [[ ${lock:-} == "yes" ]] || [[ -n ${lock_effect:-} ]]; then
-    # Lock screen
-    local effect="${lock_effect:-blur}"
-    lock_screen "$effect"
+	elif [[ ${lock:-} == "yes" ]] || [[ -n ${lock_effect:-} ]]; then
+		# Lock screen
+		local effect="${lock_effect:-blur}"
+		lock_screen "$effect"
 
-  elif [[ ${wall:-} == "yes" ]] || [[ -n ${wall_effect:-} ]]; then
-    # Set wallpaper
-    local requested_path="${wall_effect:-}"
-    local wallpaper_path=""
+	elif [[ ${wall:-} == "yes" ]] || [[ -n ${wall_effect:-} ]]; then
+		# Set wallpaper
+		local requested_path="${wall_effect:-}"
+		local wallpaper_path=""
 
-    if command -v dots-wallpaper-set >/dev/null 2>&1; then
-      if [[ -n $requested_path && -f $requested_path ]]; then
-        wallpaper_path="$requested_path"
-      else
-        if [[ -f $CURRENT_WALLPAPER ]]; then
-          wallpaper_path=$(cat "$CURRENT_WALLPAPER")
-        fi
-      fi
+		if command -v dots-wallpaper-set >/dev/null 2>&1; then
+			if [[ -n $requested_path && -f $requested_path ]]; then
+				wallpaper_path="$requested_path"
+			else
+				if [[ -f $CURRENT_WALLPAPER ]]; then
+					wallpaper_path=$(cat "$CURRENT_WALLPAPER")
+				fi
+			fi
 
-      if [[ -n $wallpaper_path && -f $wallpaper_path ]]; then
-        dots-wallpaper-set "$wallpaper_path"
-      else
-        log_warning "Could not resolve wallpaper path for --wall"
-      fi
-    else
-      log_warning "dots-wallpaper-set not found, skipping wallpaper update"
-    fi
+			if [[ -n $wallpaper_path && -f $wallpaper_path ]]; then
+				dots-wallpaper-set "$wallpaper_path"
+			else
+				log_warning "Could not resolve wallpaper path for --wall"
+			fi
+		else
+			log_warning "dots-wallpaper-set not found, skipping wallpaper update"
+		fi
 
-  else
-    log_error "No command specified. Use -h for help"
-    exit 1
-  fi
+	else
+		log_error "No command specified. Use -h for help"
+		exit 1
+	fi
 }
 
 main "$@"

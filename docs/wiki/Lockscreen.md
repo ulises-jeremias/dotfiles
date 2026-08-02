@@ -161,7 +161,7 @@ dots wal-reload  # Updates wallpaper and lockscreen
 
 ### Rice System
 
-Rice themes can trigger lockscreen updates in their `apply.sh`:
+Rice / appearance apply regenerates lockscreen colors via `dots-hyprlock-theme` after scheme generation. Historical note — older docs mentioned per-rice `apply.sh`; that path is no longer maintained. Equivalent hook:
 
 ```bash
 if command -v dots-lockscreen &>/dev/null; then
@@ -196,49 +196,45 @@ input-field {
 
 ## Rice-Style-Aware Layouts
 
-The lockscreen automatically adapts its layout based on your current rice's `RICE_STYLE`. This provides a cohesive aesthetic experience across your entire desktop.
+The lockscreen automatically adapts its layout based on your current rice's `style` field in `config.json`. This provides a cohesive aesthetic experience across your entire desktop.
 
 ### Available Layouts
 
-| Layout | Rice Styles | Description |
-|--------|-------------|-------------|
-| **Default** | Any unlisted style | Clean, centered layout with standard typography |
-| **Cyberpunk** | cyberpunk, neon, futuristic | Glowing neon elements, tech-inspired fonts |
-| **Cozy** | cozy, kawaii, cute, warm | Soft, rounded elements with pastel accents |
-| **Vaporwave** | vaporwave, retro, synthwave | Gradient effects, 80s-inspired typography |
-| **Minimal** | minimal, clean, productive | Ultra-clean with minimal UI elements |
+| Layout        | Rice Styles                 | Description                                     |
+|---------------|-----------------------------|-------------------------------------------------|
+| **Default**   | Any unlisted style          | Clean, centered layout with standard typography |
+| **Cyberpunk** | cyberpunk, neon, futuristic | Glowing neon elements, tech-inspired fonts      |
+| **Cozy**      | cozy, kawaii, cute, warm    | Soft, rounded elements with pastel accents      |
+| **Vaporwave** | vaporwave, retro, synthwave | Gradient effects, 80s-inspired typography       |
+| **Minimal**   | minimal, clean, productive  | Ultra-clean with minimal UI elements            |
 
 ### How It Works
 
-1. When locking, the script reads `RICE_STYLE` from your current rice's `config.sh`
+1. When locking, the script reads `style` from your current rice's `config.json`
 2. Based on the style, it selects the appropriate layout template
 3. Colors are pulled from the smart-colors cache
 4. The hyprlock configuration is generated dynamically
 
 ### Rice Configuration
 
-To enable style-aware layouts, add `RICE_STYLE` to your rice's `config.sh`:
+To enable style-aware layouts, set `style` in your rice's `config.json`:
 
-```bash
-# Example for cyberpunk rice
-RICE_STYLE="Cyberpunk"
-
-# Example for cozy rice
-RICE_STYLE="Cozy"
+```json
+{ "style": "cyberpunk" }
 ```
 
 The style matching is case-insensitive and supports partial matches (e.g., "cozy warm" matches the Cozy layout).
 
 ## Comparison with Betterlockscreen
 
-| Feature | betterlockscreen | dots-lockscreen |
-|---------|------------------|-----------------|
-| Platform | X11 (i3lock) | Wayland (hyprlock) |
-| Effects | 6 effects | 4 core effects |
-| Multi-monitor | Native support | Via hyprlock |
-| Color integration | Manual config | Smart-colors system |
-| Dependencies | i3lock-color, imagemagick | hyprlock, imagemagick |
-| Login box | Custom rendering | Hyprlock built-in |
+| Feature           | betterlockscreen          | dots-lockscreen       |
+|-------------------|---------------------------|-----------------------|
+| Platform          | X11 (i3lock)              | Wayland (hyprlock)    |
+| Effects           | 6 effects                 | 4 core effects        |
+| Multi-monitor     | Native support            | Via hyprlock          |
+| Color integration | Manual config             | Smart-colors system   |
+| Dependencies      | i3lock-color, imagemagick | hyprlock, imagemagick |
+| Login box         | Custom rendering          | Hyprlock built-in     |
 
 ## Troubleshooting
 

@@ -66,16 +66,33 @@ fi
 
 # Initialize rice system
 print_status "info" "Checking rice configuration..."
-if command -v dots &>/dev/null; then
-  current_rice=$(dots rice current 2>/dev/null | grep -o '[^ ]*$' || echo "")
+if command -v dots &>/dev/null || command -v dots-rice &>/dev/null; then
+  # shellcheck source=/dev/null
+  source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
+  current_rice=""
+  if declare -f dots_read_current_rice >/dev/null 2>&1; then
+    current_rice="$(dots_read_current_rice)"
+  elif command -v dots-rice &>/dev/null; then
+    current_rice="$(dots-rice current 2>/dev/null || true)"
+  fi
 
   if [[ -z "$current_rice" ]]; then
-    # Set default rice if none is configured
-    if [[ -d "$HOME/.local/share/dots/rices/landscape-light" ]]; then
-      print_status "info" "Setting default rice: landscape-light"
-      echo "landscape-light" > "$HOME/.local/share/dots/rices/.current_rice"
-      current_rice="landscape-light"
-    fi
+    for candidate in soft-morning landscape machines catppuccin-mocha; do
+      if [[ -f "$HOME/.local/share/dots/rices/$candidate/config.json" ]]; then
+        print_status "info" "Setting default rice: $candidate"
+        if declare -f dots_write_current_rice >/dev/null 2>&1; then
+          dots_write_current_rice "$candidate"
+        else
+          mkdir -p "$HOME/.local/state/dots/rice"
+          printf '%s\n' "$candidate" > "$HOME/.local/state/dots/rice/current"
+          rm -f "$HOME/.local/share/dots/rices/.current_rice" "$HOME/.cache/dots/current_rice" 2>/dev/null || true
+        fi
+        current_rice="$candidate"
+        break
+      fi
+    done
+  elif declare -f dots_write_current_rice >/dev/null 2>&1; then
+    dots_write_current_rice "$current_rice" || true
   fi
 
   if [[ -n "$current_rice" ]]; then

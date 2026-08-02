@@ -103,7 +103,16 @@ Searcher {
         readonly property string icon: root.styleIcon(style)
         readonly property string preview: modelData.preview ?? ""
         readonly property var wallpapers: modelData.wallpapers ?? []
+        readonly property string wallpaper: modelData.wallpaper ?? ""
         readonly property var tags: modelData.tags ?? []
+        // Forward rice preset fields so Control Center staging/preview can
+        // honor light/dark + schemeType (list-rices.py always emits these).
+        readonly property bool darkMode: modelData.darkMode !== undefined ? !!modelData.darkMode : true
+        readonly property string schemeType: modelData.schemeType || "tonal-spot"
+        readonly property string gtkTheme: modelData.gtkTheme || "auto"
+        readonly property string accentColor: modelData.accentColor || ""
+        readonly property string primaryColor: modelData.primaryColor || ""
+        readonly property string secondaryColor: modelData.secondaryColor || ""
 
         function onClicked(list: AppList): void {
             list.visibilities.launcher = false;

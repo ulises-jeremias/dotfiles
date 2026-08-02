@@ -55,24 +55,14 @@ ClippingRectangle {
         y: -root.session.activeIndex * root.height
         clip: true
 
-        property bool animationComplete: true
         property bool initialOpeningComplete: false
 
         Timer {
-            id: animationDelayTimer
-            interval: Appearance.anim.durations.normal
-            onTriggered: {
-                layout.animationComplete = true;
-            }
-        }
-
-        Timer {
             id: initialOpeningTimer
-            interval: Appearance.anim.durations.large
+            // Short gate so the first pane can mount before rapid tab switches.
+            interval: Appearance.anim.durations.small
             running: true
-            onTriggered: {
-                layout.initialOpeningComplete = true;
-            }
+            onTriggered: layout.initialOpeningComplete = true
         }
 
         Repeater {
@@ -86,14 +76,9 @@ ClippingRectangle {
         }
 
         Behavior on y {
-            Anim {}
-        }
-
-        Connections {
-            target: root.session
-            function onActiveIndexChanged(): void {
-                layout.animationComplete = false;
-                animationDelayTimer.restart();
+            Anim {
+                // Snappier pane switches — long slides feel like input lag.
+                duration: Appearance.anim.durations.small
             }
         }
     }
@@ -107,24 +92,20 @@ ClippingRectangle {
         implicitWidth: root.width
         implicitHeight: root.height
 
-        property bool hasBeenLoaded: false
-
         function updateActive(): void {
             const diff = Math.abs(root.session.activeIndex - pane.paneIndex);
             const isActivePane = diff === 0;
-            let shouldBeActive = false;
+            const warmIndex = PaneRegistry.getIndexByLabel(root.session.warmLabel || "");
+            const isWarm = warmIndex >= 0 && pane.paneIndex === warmIndex;
 
-            if (!layout.initialOpeningComplete) {
+            // Keep only the active pane, its immediate neighbours, and a hovered
+            // (prefetched) pane. Never keep every visited pane alive — that made
+            // the ColumnLayout grow and y-animation feel increasingly sluggish.
+            let shouldBeActive = false;
+            if (!layout.initialOpeningComplete)
                 shouldBeActive = isActivePane;
-            } else {
-                if (diff <= 1) {
-                    shouldBeActive = true;
-                } else if (pane.hasBeenLoaded) {
-                    shouldBeActive = true;
-                } else {
-                    shouldBeActive = layout.animationComplete;
-                }
-            }
+            else
+                shouldBeActive = isActivePane || diff <= 1 || isWarm;
 
             loader.active = shouldBeActive;
         }
@@ -135,26 +116,15 @@ ClippingRectangle {
             anchors.fill: parent
             clip: false
             active: false
+            asynchronous: true
 
-            Component.onCompleted: {
-                Qt.callLater(pane.updateActive);
-            }
+            Component.onCompleted: Qt.callLater(pane.updateActive)
 
             onActiveChanged: {
-                if (active && !pane.hasBeenLoaded) {
-                    pane.hasBeenLoaded = true;
-                }
-
                 if (active && !item) {
                     loader.setSource(pane.componentPath, {
                         "session": root.session
                     });
-                }
-            }
-
-            onItemChanged: {
-                if (item) {
-                    pane.hasBeenLoaded = true;
                 }
             }
         }
@@ -164,14 +134,14 @@ ClippingRectangle {
             function onActiveIndexChanged(): void {
                 pane.updateActive();
             }
+            function onWarmLabelChanged(): void {
+                pane.updateActive();
+            }
         }
 
         Connections {
             target: layout
             function onInitialOpeningCompleteChanged(): void {
-                pane.updateActive();
-            }
-            function onAnimationCompleteChanged(): void {
                 pane.updateActive();
             }
         }

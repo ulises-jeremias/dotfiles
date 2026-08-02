@@ -299,10 +299,36 @@ cmd_mode() {
 	variant="$(read_state_field variant)"
 	write_state "${name:-dynamic}" "$flavour" "$mode" "${variant:-tonalspot}"
 	regenerate_scheme || true
+	# Keep GTK/libadwaita color-scheme aligned with live appearance mode.
+	if [[ -f ${HOME}/.local/lib/dots/gtk-theme-manager.sh ]]; then
+		# shellcheck source=/dev/null
+		source "${HOME}/.local/lib/dots/gtk-theme-manager.sh"
+		if declare -f apply_gtk_color_scheme >/dev/null 2>&1; then
+			apply_gtk_color_scheme "$mode" || true
+		fi
+	fi
 }
 
 cmd_regenerate() {
 	ensure_scheme_file
+}
+
+# Sync state.json from the meta already present in scheme.json (no regenerate).
+# Used by Rice.qml / apply-appearance.sh after a successful M3 write so boot
+# regenerate cannot fight the rice schemeType/mode.
+cmd_sync_state() {
+	[[ -f $SCHEME_FILE ]] || {
+		echo "dots-color-scheme sync-state: scheme.json missing" >&2
+		return 1
+	}
+	local flavour mode name variant
+	flavour="$(normalize_scheme_type "$(read_scheme_meta flavour || true)")"
+	mode="$(read_scheme_meta mode || true)"
+	[[ $mode == "light" || $mode == "dark" ]] || mode="dark"
+	name="$(read_scheme_meta name || true)"
+	[[ -n $name ]] || name="dynamic"
+	variant="$(normalize_variant "$flavour")"
+	write_state "$name" "$flavour" "$mode" "$variant"
 }
 
 case "$cmd" in
@@ -312,8 +338,9 @@ set) cmd_set "$@" ;;
 variant) cmd_variant "${1:-}" ;;
 mode) cmd_mode "${1:-}" ;;
 regenerate) cmd_regenerate ;;
+sync-state) cmd_sync_state ;;
 *)
-	echo "Usage: dots-color-scheme {list|current|set|variant|mode|regenerate}" >&2
+	echo "Usage: dots-color-scheme {list|current|set|variant|mode|regenerate|sync-state}" >&2
 	exit 1
 	;;
 esac

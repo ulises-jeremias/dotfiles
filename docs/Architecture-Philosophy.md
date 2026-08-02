@@ -43,7 +43,7 @@ Components are self-contained units that can be:
 Configuration data flows from centralized sources:
 
 - Color palettes: `~/.cache/wal/colors` (pywal) → `~/.cache/dots/smart-colors/`
-- Rice configs: `~/.local/share/dots/rices/<rice-name>/config.sh`
+- Rice configs: `~/.local/share/dots/rices/<rice-name>/config.json`
 - Environment: Detected dynamically, not hardcoded
 - State: Centralized in known locations (`~/.cache/dots/`, `~/.config/`)
 

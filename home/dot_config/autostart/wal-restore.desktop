@@ -1,5 +1,6 @@
 [Desktop Entry]
 Type=Application
 Name=Wal Restore Colorscheme
-Exec=wal -R -q
+Comment=Restore pywal + M3 palette from live appearance state
+Exec=dots-wal-reload
 X-GNOME-Autostart-enabled=true

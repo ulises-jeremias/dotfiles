@@ -56,17 +56,20 @@ Before you start, make sure you have:
 1. **Fork the repository** on GitHub
 
 2. **Clone your fork** locally:
+
    ```bash
    git clone https://github.com/YOUR-USERNAME/dotfiles ~/.dotfiles
    cd ~/.dotfiles
    ```
 
 3. **Add upstream remote**:
+
    ```bash
    git remote add upstream https://github.com/ulises-jeremias/dotfiles
    ```
 
 4. **Install dependencies**:
+
    ```bash
    ./install.sh
    ```
@@ -107,6 +110,7 @@ Before you start, make sure you have:
    - ✅ Prevents direct commits to main branch
 
 6. **Test in the playground** (recommended):
+
    ```bash
    ./bin/play
    ```
@@ -140,6 +144,7 @@ Use our [bug report template](.github/ISSUE_TEMPLATE/bug-report.yml) and include
 > **Environment:** Arch Linux, i3wm, Polybar 3.6.3
 >
 > **Steps:**
+>
 > 1. Apply gruvbox-anime rice
 > 2. Check weather module on polybar
 > 3. Compare with actual weather
@@ -178,6 +183,7 @@ Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) a
 > **Solution:** Add configuration profiles for Sway and Hyprland
 >
 > **Alternatives:**
+>
 > - Create a separate project for Wayland
 > - Provide documentation for manual Wayland setup
 >
@@ -195,6 +201,7 @@ Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) a
    - Agree on implementation approach
 
 2. **Create a feature branch**:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -205,11 +212,13 @@ Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) a
    - Test thoroughly in the playground
 
 4. **Commit with meaningful messages**:
+
    ```bash
    git commit -m "feat: add spotify integration to music player module"
    ```
 
 5. **Push to your fork**:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -223,6 +232,7 @@ Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) a
 ### Code Style Guidelines
 
 **For detailed technical guidelines:**
+
 - Quick reference: [AGENTS.md](AGENTS.md)
 - Comprehensive guides: [docs/](docs/)
   - [Development Standards](docs/Development-Standards.md) - Script templates and standards
@@ -253,6 +263,7 @@ We follow conventional commits for clarity:
 - `chore:` - Maintenance tasks
 
 **Examples:**
+
 ```text
 feat: add weather forecast to polybar module
 fix: correct color contrast in light themes
@@ -272,8 +283,7 @@ Create a new directory in `home/dot_local/share/dots/rices/`:
 
 ```text
 your-rice-name/
-├── config.sh          # Theme configuration
-├── apply.sh           # Application script
+├── config.json        # Canonical theme configuration (required)
 ├── backgrounds/       # Wallpaper images
 ├── preview.png        # Theme preview (required)
 └── README.md          # Theme description (optional)
@@ -281,37 +291,25 @@ your-rice-name/
 
 ### What to Include
 
-**config.sh** - Theme settings:
-```bash
-#!/usr/bin/env bash
+**config.json** - Theme settings (consumed by Quickshell `Rice.qml` / `list-rices.py`):
 
-# Rice metadata
-RICE_NAME="your-rice-name"
-RICE_DESCRIPTION="Brief description of your theme"
-
-# Polybar configuration
-POLYBAR_PROFILE="default"  # or "minimal"
-
-# GTK theme
-GTK_THEME="Orchis-Dark-Compact"
-ICON_THEME="Papirus-Dark"
-
-# Optional: Window manager specific settings
-I3_GAPS_INNER=10
-I3_GAPS_OUTER=5
+```json
+{
+  "id": "your-rice-name",
+  "name": "Your Rice Name",
+  "description": "Brief description of your theme",
+  "style": "Example Style",
+  "tags": ["example"],
+  "schemeType": "tonal-spot",
+  "darkMode": true,
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Papirus-Dark",
+  "hyprlandAnimations": "",
+  "kittyOpacity": null
+}
 ```
 
-**apply.sh** - Setup script:
-```bash
-#!/usr/bin/env bash
-
-# Load rice configuration
-RICE_DIR="$(dirname "$(readlink -f "$0")")"
-source "${RICE_DIR}/config.sh"
-
-# Your customization logic here
-# Set wallpaper, apply colors, configure apps, etc.
-```
+Apply via `dots appearance apply your-rice-name` (Quickshell IPC or shell fallback). Per-rice `config.sh` / `apply.sh` are not part of the maintained path.
 
 **backgrounds/** - At least one high-quality wallpaper
 
@@ -321,9 +319,11 @@ source "${RICE_DIR}/config.sh"
 
 1. Create your rice theme directory
 2. Test it thoroughly:
+
    ```bash
    dots rice apply your-rice-name
    ```
+
 3. Take beautiful screenshots
 4. Submit a PR with:
    - Your rice files
@@ -354,18 +354,21 @@ The playground provides a safe testing environment:
 ### What to Test
 
 **For all changes:**
+
 - Does it work as intended?
 - Does it handle errors gracefully?
 - Does it work in both light and dark themes?
 - Does it work with different window managers?
 
 **For visual changes:**
+
 - Does it look good in all rice themes?
 - Are colors appropriate and readable?
 - Does it scale properly on different resolutions?
 - Does it work on multiple monitors?
 
 **For scripts:**
+
 - Does it handle missing dependencies?
 - Does it clean up after itself?
 - Does it log appropriately?
@@ -466,6 +469,7 @@ Not sure where to start? Try these:
 ### Good First Issues
 
 Look for issues labeled:
+
 - `good first issue` - Perfect for beginners
 - `help wanted` - Maintainers would appreciate help
 - `documentation` - Improve docs (no coding required)
@@ -524,7 +528,7 @@ Before submitting your PR, verify:
 
 ---
 
-## 💖 Thank You!
+## 💖 Thank You
 
 Every contribution, no matter how small, makes HorneroConfig better. We appreciate your time and effort!
 

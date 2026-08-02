@@ -1,6 +1,6 @@
 # Rice System: Theme Management
 
-The rice system is now managed through the Quickshell-first appearance workflow.
+The rice system is managed through the Quickshell-first appearance workflow.
 
 ## Canonical Commands
 
@@ -11,63 +11,81 @@ dots appearance apply neon-city
 dots appearance set-variant vibrant
 dots appearance set-mode dark
 dots appearance set-wallpaper /path/to/wallpaper.jpg
+dots appearance doctor
 ```
 
-`dots rice ...` is retained as compatibility naming, but `dots appearance ...` is the canonical interface.
+`dots rice ...` remains as a thin compatibility alias for the same commands.
+
+When Quickshell is running, apply/set-wallpaper go through IPC into `Rice.qml`.
+When Quickshell is not running, the same full pipeline runs via `apply-appearance.sh`.
 
 ## What a Rice Controls
 
-- wallpaper selection
-- smart-colors / M3 palette generation
-- light/dark mode and M3 variant
-- GTK theme metadata and optional extras
-- Quickshell-facing appearance state
+- wallpaper selection (`backgrounds/`, first sorted image by default)
+- smart-colors / M3 palette generation (`schemeType`, `darkMode`)
+- GTK theme (`gtkTheme`, including `auto`)
+- optional Hyprland animation profile / kitty opacity / snappy theme
+
+## Light / dark model
+
+Two related but distinct concepts:
+
+| Layer           | Source                                                     | When it wins                                                                                        |
+|-----------------|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| Rice default    | `config.json` → `darkMode`                                 | On **full rice apply** (`dots appearance apply`, launcher confirm, Control Center Apply for a rice) |
+| Live preference | `scheme/state.json` → `mode` (mirrored into `scheme.json`) | After apply: Theme mode toggle, wallpaper-only changes, variant/mode CLI, boot regenerate           |
+
+Rules:
+
+1. **Applying a rice** sets live mode from that rice’s `darkMode` (preset).
+2. **Theme mode** in Control Center updates the live preference only — it does **not** change the current rice id.
+3. **Wallpaper-only** / reload use the **live** mode (`Colours.currentLight` / `state.json`), never the rice default. Otherwise flipping to dark and changing wallpaper would snap back to the rice’s light/dark.
+4. Control Center shows when live mode diverges from the current rice default.
+
+```bash
+dots appearance set-mode dark   # live preference
+dots appearance apply soft-morning  # preset (includes darkMode: false)
+dots appearance doctor          # FAIL on wal≠pointer, empty hyprlock, GTK mode drift, orphans
+```
+
+`Appearances.Appearance` in Quickshell forwards `darkMode` / `schemeType` from `list-rices.py` so Control Center staging can honor light rices. Mode overrides after a rice apply wait for `Rice.applyFinished` and only run when Theme mode was toggled explicitly.
+
+GTK / libadwaita keep `gtk-application-prefer-dark-theme` and `org.gnome.desktop.interface color-scheme` (`prefer-dark` / `prefer-light`) aligned with the live mode on rice apply and on `dots-color-scheme mode`.
+
+## State (single source of truth)
+
+| Concern           | Path                                     |
+|-------------------|------------------------------------------|
+| Current rice id   | `~/.local/state/dots/rice/current`       |
+| Wallpaper pointer | `~/.local/state/dots/wallpaper/path`     |
+| Live scheme       | `~/.cache/dots/smart-colors/scheme.json` |
+| Scheme prefs      | `~/.local/state/dots/scheme/state.json`  |
+
+There is **no** `.current_rice`, cache rice export, or per-rice `config.sh` / `apply.sh` on the maintained path.
+
+```bash
+dots appearance doctor
+dots-color-scheme sync-state
+```
 
 ## Quickshell Integration
 
-Appearance changes done from the control center can be previewed first, then committed with Apply/Save.
+Control Center → Appearance:
 
-```mermaid
-flowchart LR
-  user[UserSelectsAppearance] --> preview[QuickshellPreview]
-  preview --> apply[ApplyOrSave]
-  apply --> cli[dots-appearanceApply]
-  cli --> palette[dots-smart-colorsAndScheme]
-  palette --> shell[QuickshellReload]
-```
+1. Hover / click **stages** a preview.
+2. Explicit **Apply** commits staged changes.
+3. Launcher rice selector applies immediately on confirm.
 
 ## Structure
 
-Rices live under:
-
 `~/.local/share/dots/rices/<rice-name>/`
 
-Typical files:
-
-- `config.json` — canonical config consumed by Quickshell's `list-rices.py` and `Rice.qml`
-- `config.sh` — shell-sourceable mirror of the same metadata (used by legacy/`dots-gtk-theme`)
-- `backgrounds/` — wallpaper images (PNG/JPG/WEBP); the first sorted file becomes the default wallpaper
-- `preview.png` — small thumbnail shown in the rice selector carousel
-
-## Catppuccin Variants
-
-All four official Catppuccin flavours are available as rices, grouped under the `catppuccin` tag in the launcher:
-
-| Rice                   | Mode  | Base      | Accent (Mauve) | Best for                            |
-|------------------------|-------|-----------|----------------|-------------------------------------|
-| `catppuccin-latte`     | light | `#eff1f5` | `#8839ef`      | Daytime coding, bright environments |
-| `catppuccin-frappe`    | dark  | `#303446` | `#ca9ee6`      | Balanced dark, everyday desktop     |
-| `catppuccin-macchiato` | dark  | `#24273a` | `#c6a0f6`      | Deep dark, evening sessions         |
-| `catppuccin-mocha`     | dark  | `#1e1e2e` | `#cba6f7`      | Cozy dark, creative work            |
-
-Each rice ships with wallpapers generated from the official Catppuccin palette so that the M3 color extraction stays faithful to each variant. GTK themes fall back to `Orchis-Dark` (dark) or `catppuccin-latte-mauve-compact` (light) until a dedicated Catppuccin GTK package is installed.
-
-```bash
-dots appearance apply catppuccin-frappe
-dots appearance apply catppuccin-macchiato
-```
+- `config.json` — sole rice config
+- `backgrounds/` — wallpapers (PNG/JPG/WEBP/GIF/BMP; symlinks followed)
+- `preview.png` — selector thumbnail
 
 ## Notes
 
-- Legacy Rofi/JGMenu theme selectors were removed from the maintained path.
-- The maintained desktop path is Hyprland + Quickshell.
+- Maintained desktop path: Hyprland + Quickshell.
+- Wallpaper display: Quickshell Background layershell + pywal + Material You.
+- Tracking: <https://github.com/ulises-jeremias/dotfiles/issues/249>

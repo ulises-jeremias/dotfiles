@@ -12,6 +12,7 @@ import qs.components.images
 import qs.services
 import qs.config
 import qs.utils
+import qs.modules.controlcenter
 import Hornero.Models
 import Quickshell
 import Quickshell.Widgets
@@ -59,6 +60,16 @@ Item {
     property string pendingVariant: Schemes.currentVariant
     property string pendingMode: Colours.currentLight ? "light" : "dark"
     property string pendingWallpaperPath: Wallpapers.actualCurrent
+    property string stagedAppearanceWallpaper: ""
+    property bool appearanceDirty: false
+    property bool schemeDirty: false
+    property bool variantDirty: false
+    property bool modeDirty: false
+    property bool wallpaperDirty: false
+    // True only when Theme mode was toggled by the user (not implied by rice stage).
+    property bool modeOverrideDirty: false
+    property string deferredMode: ""
+    readonly property bool hasPendingChanges: appearanceDirty || schemeDirty || variantDirty || modeDirty || wallpaperDirty
     property bool previewActive: false
     property string previewSource: ""
     property string previewTitle: ""
@@ -246,7 +257,7 @@ Item {
         previewTitle = modelData.name ?? modelData.id ?? qsTr("Appearance");
         previewSubtitle = modelData.style ?? modelData.description ?? qsTr("Appearance preset");
         previewVariant = modelData.schemeType ?? "";
-        previewMode = (modelData.darkMode ?? true) ? "dark" : "light";
+        previewMode = modelData.darkMode ? "dark" : "light";
         previewWallpaperPath = modelData.wallpaper ?? "";
         previewSchemeType = normalizeSchemeType(modelData.schemeType ?? "");
 
@@ -273,38 +284,113 @@ Item {
     }
 
     function commitSelection(): void {
+        // Apply staged appearance changes.
+        // Rice.apply is a full preset: it sets wallpaper + schemeType + darkMode
+        // from config.json. Mode overrides only run when the user explicitly
+        // re-staged Theme mode (modeOverrideDirty), and only after Rice finishes.
+        const appliedRice = appearanceDirty && pendingAppearanceId;
+        deferredMode = "";
+
+        if (appliedRice) {
+            Rice.apply(pendingAppearanceId, stagedAppearanceWallpaper || "");
+            if (modeOverrideDirty && pendingMode)
+                deferredMode = pendingMode;
+        } else if (wallpaperDirty && pendingWallpaperPath) {
+            Rice.setWallpaper(pendingWallpaperPath);
+            if (modeOverrideDirty && pendingMode)
+                deferredMode = pendingMode;
+        } else {
+            if (schemeDirty && pendingSchemeKey) {
+                const parts = pendingSchemeKey.split(" ");
+                const name = parts[0] || "dynamic";
+                const flavour = parts.slice(1).join(" ") || pendingVariant;
+                session.runAction(["dots-color-scheme", "set", "-n", name, "-f", flavour]);
+            } else if (variantDirty && pendingVariant) {
+                session.runAction(["dots-color-scheme", "variant", pendingVariant]);
+            }
+            if (modeDirty && pendingMode)
+                session.runAction(["dots-color-scheme", "mode", pendingMode]);
+        }
+
+        // If a Rice job is in flight and we need a mode override, wait for
+        // applyFinished. If Rice is already idle (edge case), apply now.
+        if (deferredMode && !Rice.busy)
+            root._flushDeferredMode();
+
+        appearanceDirty = false;
+        schemeDirty = false;
+        variantDirty = false;
+        modeDirty = false;
+        modeOverrideDirty = false;
+        wallpaperDirty = false;
+        stagedAppearanceWallpaper = "";
         clearPreview();
+    }
+
+    function _flushDeferredMode(): void {
+        if (!deferredMode)
+            return;
+        const mode = deferredMode;
+        deferredMode = "";
+        session.runAction(["dots-color-scheme", "mode", mode]);
     }
 
     function stageAppearanceApply(appearanceId: string): void {
         pendingAppearanceId = appearanceId;
-        Rice.apply(appearanceId, "");
+        stagedAppearanceWallpaper = "";
+        appearanceDirty = appearanceId !== Appearances.currentId;
+        // Selecting a rice implies its default wallpaper unless overridden.
+        wallpaperDirty = false;
+        // Stage the rice's default mode so Theme mode UI stays consistent with
+        // the preset the user is about to apply. This is NOT a user override —
+        // Rice.apply will set live mode from config.json.
+        modeOverrideDirty = false;
+        const rice = (Appearances.list || []).find(a => a.id === appearanceId);
+        if (rice) {
+            pendingMode = rice.darkMode ? "dark" : "light";
+            const current = Colours.currentLight ? "light" : "dark";
+            modeDirty = pendingMode !== current;
+            if (rice.schemeType) {
+                pendingVariant = rice.schemeType;
+                previewSchemeType = normalizeSchemeType(rice.schemeType);
+            }
+        }
     }
 
     function stageAppearanceApplyWithWallpaper(appearanceId: string, wallpaperPath: string): void {
-        pendingAppearanceId = appearanceId;
+        stageAppearanceApply(appearanceId);
         pendingWallpaperPath = wallpaperPath;
-        Rice.apply(appearanceId, wallpaperPath);
+        stagedAppearanceWallpaper = wallpaperPath;
+        appearanceDirty = true;
+        wallpaperDirty = false;
     }
 
     function stageSchemeApply(name: string, flavour: string): void {
         pendingSchemeKey = `${name} ${flavour}`;
-        session.runAction(["dots-color-scheme", "set", "-n", name, "-f", flavour]);
+        pendingVariant = flavour;
+        schemeDirty = pendingSchemeKey !== Schemes.currentScheme;
+        variantDirty = false;
     }
 
     function stageVariantApply(variant: string): void {
         pendingVariant = variant;
-        session.runAction(["dots-color-scheme", "variant", variant]);
+        variantDirty = normalizeVariantKey(variant) !== normalizeVariantKey(Schemes.currentVariant);
+        schemeDirty = false;
     }
 
     function stageModeApply(mode: string): void {
         pendingMode = mode;
-        session.runAction(["dots-color-scheme", "mode", mode]);
+        const current = Colours.currentLight ? "light" : "dark";
+        modeDirty = mode !== current;
+        modeOverrideDirty = modeDirty;
     }
 
     function stageWallpaperApply(path: string): void {
         pendingWallpaperPath = path;
-        Rice.setWallpaper(path);
+        wallpaperDirty = path !== Wallpapers.actualCurrent;
+        // Wallpaper-only stage clears rice wallpaper override.
+        if (!appearanceDirty)
+            stagedAppearanceWallpaper = "";
     }
 
     function resetPendingSelections(): void {
@@ -313,6 +399,14 @@ Item {
         pendingVariant = Schemes.currentVariant;
         pendingMode = Colours.currentLight ? "light" : "dark";
         pendingWallpaperPath = Wallpapers.actualCurrent;
+        stagedAppearanceWallpaper = "";
+        appearanceDirty = false;
+        schemeDirty = false;
+        variantDirty = false;
+        modeDirty = false;
+        modeOverrideDirty = false;
+        deferredMode = "";
+        wallpaperDirty = false;
         if (!previewActive) {
             previewWallpaperPath = pendingWallpaperPath;
             previewVariant = pendingVariant;
@@ -405,8 +499,9 @@ Item {
                     Layout.bottomMargin: -Appearance.padding.large * 2
 
                     active: {
-                        const isActive = root.session.activeIndex === 3;
-                        const isAdjacent = Math.abs(root.session.activeIndex - 3) === 1;
+                        const appearanceIndex = PaneRegistry.getIndexByLabel("appearance");
+                        const isActive = root.session.activeIndex === appearanceIndex;
+                        const isAdjacent = Math.abs(root.session.activeIndex - appearanceIndex) === 1;
                         const splitLayout = root.children[0];
                         const loader = splitLayout && splitLayout.rightLoader ? splitLayout.rightLoader : null;
                         const shouldActivate = loader && loader.item !== null && (isActive || isAdjacent);
@@ -593,6 +688,36 @@ Item {
                         id: backgroundSection
                         rootPane: sidebarFlickable.rootPane
                     }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.topMargin: Appearance.spacing.normal
+                        spacing: Appearance.spacing.small
+
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: root.hasPendingChanges ? qsTr("Pending appearance changes") : qsTr("No pending changes")
+                            color: root.hasPendingChanges ? Colours.palette.m3primary : Colours.palette.m3outline
+                            font.pointSize: Appearance.font.size.small
+                        }
+
+                        IconButton {
+                            icon: "refresh"
+                            type: IconButton.Text
+                            enabled: root.hasPendingChanges
+                            onClicked: root.resetPendingSelections()
+                        }
+
+                        IconButton {
+                            icon: "check"
+                            type: IconButton.Filled
+                            enabled: root.hasPendingChanges
+                            onClicked: {
+                                root.commitSelection();
+                                root.saveConfig();
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -604,8 +729,17 @@ Item {
         target: root.session
 
         function onActiveIndexChanged(): void {
-            if (root.session.activeIndex !== 3)
+            if (root.session.activeIndex !== PaneRegistry.getIndexByLabel("appearance"))
                 root.clearPreview();
+        }
+    }
+
+    Connections {
+        target: Rice
+
+        function onApplyFinished(ok: bool): void {
+            if (root.deferredMode)
+                root._flushDeferredMode();
         }
     }
 

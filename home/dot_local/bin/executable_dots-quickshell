@@ -177,14 +177,19 @@ cmd_ipc() {
 	fi
 
 	if [[ $target == "colours" && $action == "reload" ]]; then
+		# Prefer real Colours IpcHandler; fall back to touching scheme.json for older shells.
+		if quickshell ipc call colours reload >/dev/null 2>&1; then
+			log_debug "Triggered colour reload via IPC"
+			return 0
+		fi
 		local scheme_file="${HOME}/.cache/dots/smart-colors/scheme.json"
 		if [[ -f $scheme_file ]]; then
-			log_debug "Triggering colour reload via file touch"
+			log_debug "IPC unavailable; triggering colour reload via file touch"
 			touch "$scheme_file"
-		else
-			log_warn "Scheme file not found: $scheme_file"
+			return 0
 		fi
-		return 0
+		log_warn "Scheme file not found: $scheme_file"
+		return 1
 	fi
 
 	log_debug "Sending IPC: target=$target action=$action args=$*"

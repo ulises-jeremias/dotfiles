@@ -5,33 +5,44 @@
 ##
 ## Unified wallpaper entrypoint — IPC stub for Quickshell.
 ## When Quickshell is running, delegates to Rice.setWallpaper via IPC.
-## Falls back to direct wal + state pointer write when QS is not running.
+## Falls back to full wal + M3 + state sync when QS is not running.
 ##
 set -euo pipefail
 
 WALLPAPER_INPUT="${1:-}"
 if [[ -z $WALLPAPER_INPUT ]]; then
-  echo "Usage: $0 <wallpaper_path>" >&2
-  exit 1
+	echo "Usage: $0 <wallpaper_path>" >&2
+	exit 1
 fi
 
 WALLPAPER_PATH="$(readlink -f "$WALLPAPER_INPUT" 2>/dev/null || true)"
 if [[ -z ${WALLPAPER_PATH:-} || ! -f $WALLPAPER_PATH ]]; then
-  echo "Error: wallpaper file not found: $WALLPAPER_INPUT" >&2
-  exit 1
+	echo "Error: wallpaper file not found: $WALLPAPER_INPUT" >&2
+	exit 1
 fi
 
 if pgrep -x quickshell >/dev/null 2>&1; then
-  quickshell ipc call rice setWallpaper "$WALLPAPER_PATH"
-  exit 0
+	ipc_out=""
+	if ipc_out="$(quickshell ipc call rice setWallpaper "$WALLPAPER_PATH" 2>&1)"; then
+		case "$ipc_out" in
+		*"not found"* | *"Error"* | *"error"*)
+			echo "Warning: Quickshell IPC unavailable ($ipc_out); falling back to direct apply" >&2
+			;;
+		*)
+			exit 0
+			;;
+		esac
+	else
+		echo "Warning: Quickshell IPC failed; falling back to direct apply" >&2
+	fi
 fi
 
-# Fallback: direct pywal + state pointer
-if command -v wal >/dev/null 2>&1; then
-  wal -i "$WALLPAPER_PATH" -q 2>/dev/null || true
-fi
+# Fallback: full pipeline (wal + pointer + M3 + state sync)
+# shellcheck source=/dev/null
+source "$HOME/.local/lib/dots/wallpaper-resolver.sh" 2>/dev/null || true
+# shellcheck source=/dev/null
+source "$HOME/.local/lib/dots/rice-state.sh" 2>/dev/null || true
+# shellcheck source=/dev/null
+source "$HOME/.local/lib/dots/apply-appearance.sh"
 
-STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dots/wallpaper"
-mkdir -p "$STATE_DIR"
-printf '%s\n' "$WALLPAPER_PATH" >"$STATE_DIR/path"
-printf '%s\n' "$WALLPAPER_PATH" >"${XDG_CACHE_HOME:-$HOME/.cache}/dots/smart-colors/wallpaper" 2>/dev/null || true
+dots_apply_wallpaper_only "$WALLPAPER_PATH"

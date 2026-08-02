@@ -43,9 +43,16 @@ Searcher {
 
     /** Raw pointer file content; avoids empty UI if dots-wallpaper-current fails (env/PATH). */
     function applyPointerFromFileView(pointerReadout: string): void {
-        const t = pointerReadout.trim();
-        if (t.length > 0)
-            actualCurrent = t;
+        let t = pointerReadout.trim();
+        if (!t.length)
+            return;
+        // Normalize file:// URIs written by some tools / drag-drop paths.
+        if (t.startsWith("file://"))
+            t = Paths.toLocalFile(t) || t.replace(/^file:\/\//, "");
+        // Reject self-referential pointer corruption (pointer path written into itself).
+        if (t === root.wallpaperPointerPath || t === Paths.wallpaperPointer)
+            return;
+        actualCurrent = t;
     }
 
     list: wallpapers.entries

@@ -85,8 +85,9 @@ Item {
         let results = Appearances.query(root.search.text);
         if (root.activeTag) {
             results = results.filter(r => {
-                const tags = (r.tags ?? "").split(",").map(t => t.trim());
-                return tags.includes(root.activeTag);
+                const rawTags = r.tags ?? [];
+                const tags = Array.isArray(rawTags) ? rawTags : String(rawTags).split(",");
+                return tags.map(t => String(t).trim()).includes(root.activeTag);
             });
         }
         riceModel.values = results;

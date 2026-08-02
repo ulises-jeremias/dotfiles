@@ -90,8 +90,13 @@ def extract_source_color(image_path: str, quality: int = 5, max_colors: int = 12
     from materialyoucolor.score.score import Score
 
     img = Image.open(image_path)
-    if getattr(img, "format", None) == "GIF":
-        img.seek(1)
+    # Multi-frame GIFs: prefer a non-first frame when available. Single-frame
+    # GIFs raise EOFError on seek(1) — stay on frame 0 instead.
+    if getattr(img, "format", None) == "GIF" and getattr(img, "n_frames", 1) > 1:
+        try:
+            img.seek(1)
+        except EOFError:
+            img.seek(0)
     if img.mode in ("L", "P", "LA", "PA"):
         img = img.convert("RGB")
     elif img.mode == "RGBA":

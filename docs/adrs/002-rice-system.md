@@ -2,52 +2,38 @@
 
 ## Status
 
-Accepted
+Accepted (updated 2026-08-02 — legacy shell rice path removed)
 
 ## Context
 
-Desktop theming and customization is a core feature of HorneroConfig. Users need the ability to:
-
-- Switch between different visual themes ("rices") easily
-- Share and distribute custom themes
-- Apply consistent theming across all applications
-- Maintain theme-specific configurations for different use cases
-
-Traditional dotfiles approaches often hardcode visual settings, making theme switching cumbersome and error-prone.
+Desktop theming is a core HorneroConfig feature. The earlier shell-centric design (`config.sh`, `apply.sh`, `.current_rice`) duplicated state with the Quickshell-first path and caused desync. We keep modular rices but drop the legacy shell dual-write model.
 
 ## Decision
 
-We implemented a modular rice system with the following architecture:
+- **Rice directory**: `~/.local/share/dots/rices/<rice-name>/`
+- **Sole config**: `config.json`
+- **Orchestrator**: Quickshell `Rice.qml` (IPC) + `apply-appearance.sh` shell fallback
+- **State**:
+  - Rice id: `~/.local/state/dots/rice/current` only
+  - Wallpaper: `~/.local/state/dots/wallpaper/path`
+  - Scheme prefs: `~/.local/state/dots/scheme/state.json` synced via `dots-color-scheme sync-state`
+- **CLI**: `dots appearance …` (+ `dots rice …` alias), `dots appearance doctor`
 
-- **Rice Directory Structure**: Each rice lives in `~/.local/share/dots/rices/<rice-name>/`
-- **Configuration Files**: Each rice has a `config.sh` with theme-specific settings
-- **Apply Scripts**: Each rice has an `apply.sh` script for theme activation
-- **Central Management**: A `.current_rice` file tracks the active theme
-- **Quickshell Integration**: `dots appearance ...` and control-center appearance panel provide theme switching
-
-Key components:
-
-- `dots-rice-config.sh` - Core rice management library
-- Individual rice directories with modular configurations
-- Integration with pywal/Smart Colors and Quickshell theming
+Removed from the maintained path: `.current_rice`, `~/.cache/dots/current_rice`, per-rice `config.sh` / `apply.sh`, wallpaper cache pointer fallback.
 
 ## Consequences
 
 ### Positive
 
-- **Easy Theme Switching**: Users can change entire desktop themes with one command
-- **Modular Design**: Each rice is self-contained and portable
-- **Consistency**: All applications follow the same theming approach
-- **Extensibility**: New rices can be added without modifying core code
-- **Sharing**: Rices can be easily shared between users
+- One source of truth for rice / wallpaper / scheme meta
+- QS UI, CLI, boot regenerate, lockscreen, GTK, snappy share the same pointers
+- Offline apply without Quickshell
 
 ### Negative
 
-- **Complexity**: More complex than simple configuration files
-- **Duplication**: Some settings may be duplicated across rices
-- **Learning Curve**: Users need to understand the rice system structure
+- Shell helpers that previously sourced `config.sh` must read JSON
+- Existing external forks that still ship only `config.sh` need a `config.json`
 
 ### Neutral
 
-- **Directory Structure**: Requires specific organization in user directories
-- **Dependencies**: Relies on external tools like pywal for color generation
+- `dots rice` naming remains as a thin alias

@@ -11,19 +11,19 @@ Quickshell is the unified desktop shell for HorneroConfig, built with QML/QtQuic
 
 Quickshell provides all desktop shell functionality through modular QML components:
 
-| Module | Description |
-| ------ | ----------- |
+| Module            | Description                                                          |
+|-------------------|----------------------------------------------------------------------|
 | **Left Rail Bar** | Vertical/horizontal rail with workspaces, clock, status icons, power |
-| **Launcher** | App search, calculator, wallpaper browser, appearance selector |
-| **Dashboard** | Tabbed system overview, media, performance, weather |
-| **Notifications** | Popup notifications and notification center sidebar |
-| **Session Rail** | Right-edge quick actions menu (logout, power, session controls) |
-| **Lock** | PAM-authenticated lock screen |
-| **OSD Notch** | Right-edge sliders for volume/brightness feedback |
-| **AI Chat** | Multi-provider AI assistant sidebar |
-| **Background** | Desktop wallpaper with optional audio visualizer |
-| **AreaPicker** | Screenshot region selector |
-| **Utilities** | Quick toggles panel (WiFi, Bluetooth, DND, etc.) |
+| **Launcher**      | App search, calculator, wallpaper browser, appearance selector       |
+| **Dashboard**     | Tabbed system overview, media, performance, weather                  |
+| **Notifications** | Popup notifications and notification center sidebar                  |
+| **Session Rail**  | Right-edge quick actions menu (logout, power, session controls)      |
+| **Lock**          | PAM-authenticated lock screen                                        |
+| **OSD Notch**     | Right-edge sliders for volume/brightness feedback                    |
+| **AI Chat**       | Multi-provider AI assistant sidebar                                  |
+| **Background**    | Desktop wallpaper with optional audio visualizer                     |
+| **AreaPicker**    | Screenshot region selector                                           |
+| **Utilities**     | Quick toggles panel (WiFi, Bluetooth, DND, etc.)                     |
 
 ---
 
@@ -69,13 +69,15 @@ Quickshell uses **Material Design 3** (M3) color palettes generated from your wa
 
 ### Scheme Configuration
 
-Each appearance (rice) can configure its M3 scheme via `config.sh`:
+Each appearance (rice) configures its M3 scheme via `config.json`:
 
-```bash
-SCHEME_TYPE="vibrant"     # tonalSpot, vibrant, expressive, neutral, monochrome, fidelity
-DARK_MODE="true"          # true/false
-ACCENT_COLOR=""           # Optional hex color override
-BAR_POSITION="top"        # top/bottom
+```json
+{
+  "schemeType": "vibrant",
+  "darkMode": true,
+  "accentColor": "",
+  "barPosition": "top"
+}
 ```
 
 ### Appearance Commands
@@ -108,21 +110,21 @@ The active shell now follows a unified drawers architecture inspired by `referen
 
 QML singletons providing system integration:
 
-| Service | Purpose |
-| ------- | ------- |
-| `Colours` | M3 theming, transparency, wallpaper luminance |
-| `Hypr` | Hyprland IPC (workspaces, monitors, keyboard) |
-| `Audio` | PipeWire audio, Cava visualization, beat detection |
-| `Players` | MPRIS media player control |
-| `Brightness` | Screen brightness (brightnessctl, ddcutil) |
-| `Network` | WiFi/Ethernet management (nmcli) |
-| `SystemUsage` | CPU, GPU, memory, disk monitoring |
-| `Weather` | Open-Meteo weather data |
-| `Wallpapers` | Wallpaper browsing and selection |
-| `Notifs` | Notification server (replaces Mako) |
-| `Time` | System clock and date |
-| `Visibilities` | Panel visibility state management |
-| `Ai` | Multi-provider AI with function calling |
+| Service        | Purpose                                            |
+|----------------|----------------------------------------------------|
+| `Colours`      | M3 theming, transparency, wallpaper luminance      |
+| `Hypr`         | Hyprland IPC (workspaces, monitors, keyboard)      |
+| `Audio`        | PipeWire audio, Cava visualization, beat detection |
+| `Players`      | MPRIS media player control                         |
+| `Brightness`   | Screen brightness (brightnessctl, ddcutil)         |
+| `Network`      | WiFi/Ethernet management (nmcli)                   |
+| `SystemUsage`  | CPU, GPU, memory, disk monitoring                  |
+| `Weather`      | Open-Meteo weather data                            |
+| `Wallpapers`   | Wallpaper browsing and selection                   |
+| `Notifs`       | Notification server (replaces Mako)                |
+| `Time`         | System clock and date                              |
+| `Visibilities` | Panel visibility state management                  |
+| `Ai`           | Multi-provider AI with function calling            |
 
 ### C++ Plugin (Hornero)
 
@@ -170,12 +172,12 @@ Shell behavior is configured via `~/.config/hornero/shell.json`:
 
 ## ⌨️ Keybindings
 
-| Keybinding | Action |
-| ---------- | ------ |
-| `Super+D` | Toggle launcher |
-| `Super+X` | Toggle session/power menu |
-| `Super+Ctrl+B` | Toggle bar |
-| `Super+?` or `Super+/` | Keyboard shortcuts help |
+| Keybinding             | Action                    |
+|------------------------|---------------------------|
+| `Super+D`              | Toggle launcher           |
+| `Super+X`              | Toggle session/power menu |
+| `Super+Ctrl+B`         | Toggle bar                |
+| `Super+?` or `Super+/` | Keyboard shortcuts help   |
 
 ---
 
