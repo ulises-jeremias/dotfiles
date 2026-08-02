@@ -788,7 +788,7 @@ into a harmonious blend of elegance and efficiency.</p>
 <li><strong>Terminal Emulator</strong> 🐾 <a href="https://sw.kovidgoyal.net/kitty/">Kitty</a> - GPU-accelerated terminal</li>
 <li><strong>Shell</strong> 🐚 <a href="https://zsh.org">Zsh</a> with Powerlevel10k prompt</li>
 <li><strong>Lockscreen</strong> 🔒 <a href="https://github.com/hyprwm/hyprlock">Hyprlock</a> - Secure lock screen</li>
-<li><strong>Wallpaper</strong> 🖼️ Quickshell + wpgtk integration via <code>dots-wallpaper-set</code></li>
+<li><strong>Wallpaper</strong> 🖼️ Quickshell Background + pywal/M3 via <code>dots-wallpaper-set</code></li>
 <li><strong>File Manager</strong> 🃏 <a href="https://docs.xfce.org/xfce/thunar/start">Thunar</a> with customized side pane</li>
 <li>and many more!</li>
 </ul>
@@ -878,88 +878,106 @@ chezmoi apply</pre><p>And your personalized setup will be ready!</p>
 <p>Go ahead — personalize everything. Make your desktop, terminal, and tooling truly yours! 🚀</p>
 <p class="page" id="Rice-System-Theme-Management"></p><h1>🎨 Rice System</h1>
 <h1 id="rice-system-theme-management">Rice System: Theme Management</h1>
-<p>The rice system is now managed through the Quickshell-first appearance workflow.</p>
+<p>The rice system is managed through the Quickshell-first appearance workflow.</p>
 <h2 id="canonical-commands">Canonical Commands</h2>
 <pre class="hljs">dots appearance list
 dots appearance current
 dots appearance apply neon-city
 dots appearance set-variant vibrant
 dots appearance set-mode dark
-dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...</code> is retained as compatibility naming, but <code>dots appearance ...</code> is the canonical interface.</p>
+dots appearance set-wallpaper /path/to/wallpaper.jpg
+dots appearance doctor</pre><p><code>dots rice ...</code> remains as a thin compatibility alias for the same commands.</p>
+<p>When Quickshell is running, apply/set-wallpaper go through IPC into <code>Rice.qml</code>.
+When Quickshell is not running, the same full pipeline runs via <code>apply-appearance.sh</code>.</p>
 <h2 id="what-a-rice-controls">What a Rice Controls</h2>
 <ul>
-<li>wallpaper selection</li>
-<li>smart-colors / M3 palette generation</li>
-<li>light/dark mode and M3 variant</li>
-<li>GTK theme metadata and optional extras</li>
-<li>Quickshell-facing appearance state</li>
+<li>wallpaper selection (<code>backgrounds/</code>, first sorted image by default)</li>
+<li>smart-colors / M3 palette generation (<code>schemeType</code>, <code>darkMode</code>)</li>
+<li>GTK theme (<code>gtkTheme</code>, including <code>auto</code>)</li>
+<li>optional Hyprland animation profile / kitty opacity / snappy theme</li>
 </ul>
-<h2 id="quickshell-integration">Quickshell Integration</h2>
-<p>Appearance changes done from the control center can be previewed first, then committed with Apply/Save.</p>
-<pre class="hljs">flowchart LR
-  <span class="hljs-function"><span class="hljs-title">user</span>[UserSelectsAppearance] --&gt;</span> preview[QuickshellPreview]
-  <span class="hljs-function"><span class="hljs-title">preview</span> --&gt;</span> apply[ApplyOrSave]
-  <span class="hljs-function"><span class="hljs-title">apply</span> --&gt;</span> cli[dots-appearanceApply]
-  <span class="hljs-function"><span class="hljs-title">cli</span> --&gt;</span> palette[dots-smart-colorsAndScheme]
-  <span class="hljs-function"><span class="hljs-title">palette</span> --&gt;</span> shell[QuickshellReload]</pre><h2 id="structure">Structure</h2>
-<p>Rices live under:</p>
-<p><code>~/.local/share/dots/rices/&lt;rice-name&gt;/</code></p>
-<p>Typical files:</p>
-<ul>
-<li><code>config.json</code> — canonical config consumed by Quickshell&#39;s <code>list-rices.py</code> and <code>Rice.qml</code></li>
-<li><code>config.sh</code> — shell-sourceable mirror of the same metadata (used by legacy/<code>dots-gtk-theme</code>)</li>
-<li><code>backgrounds/</code> — wallpaper images (PNG/JPG/WEBP); the first sorted file becomes the default wallpaper</li>
-<li><code>preview.png</code> — small thumbnail shown in the rice selector carousel</li>
-</ul>
-<h2 id="catppuccin-variants">Catppuccin Variants</h2>
-<p>All four official Catppuccin flavours are available as rices, grouped under the <code>catppuccin</code> tag in the launcher:</p>
+<h2 id="light-dark-model">Light / dark model</h2>
+<p>Two related but distinct concepts:</p>
 <table>
 <thead>
 <tr>
-<th>Rice</th>
-<th>Mode</th>
-<th>Base</th>
-<th>Accent (Mauve)</th>
-<th>Best for</th>
+<th>Layer</th>
+<th>Source</th>
+<th>When it wins</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>catppuccin-latte</code></td>
-<td>light</td>
-<td><code>#eff1f5</code></td>
-<td><code>#8839ef</code></td>
-<td>Daytime coding, bright environments</td>
+<td>Rice default</td>
+<td><code>config.json</code> → <code>darkMode</code></td>
+<td>On <strong>full rice apply</strong> (<code>dots appearance apply</code>, launcher confirm, Control Center Apply for a rice)</td>
 </tr>
 <tr>
-<td><code>catppuccin-frappe</code></td>
-<td>dark</td>
-<td><code>#303446</code></td>
-<td><code>#ca9ee6</code></td>
-<td>Balanced dark, everyday desktop</td>
-</tr>
-<tr>
-<td><code>catppuccin-macchiato</code></td>
-<td>dark</td>
-<td><code>#24273a</code></td>
-<td><code>#c6a0f6</code></td>
-<td>Deep dark, evening sessions</td>
-</tr>
-<tr>
-<td><code>catppuccin-mocha</code></td>
-<td>dark</td>
-<td><code>#1e1e2e</code></td>
-<td><code>#cba6f7</code></td>
-<td>Cozy dark, creative work</td>
+<td>Live preference</td>
+<td><code>scheme/state.json</code> → <code>mode</code> (mirrored into <code>scheme.json</code>)</td>
+<td>After apply: Theme mode toggle, wallpaper-only changes, variant/mode CLI, boot regenerate</td>
 </tr>
 </tbody>
 </table>
-<p>Each rice ships with wallpapers generated from the official Catppuccin palette so that the M3 color extraction stays faithful to each variant. GTK themes fall back to <code>Orchis-Dark</code> (dark) or <code>catppuccin-latte-mauve-compact</code> (light) until a dedicated Catppuccin GTK package is installed.</p>
-<pre class="hljs">dots appearance apply catppuccin-frappe
-dots appearance apply catppuccin-macchiato</pre><h2 id="notes">Notes</h2>
+<p>Rules:</p>
+<ol>
+<li><strong>Applying a rice</strong> sets live mode from that rice’s <code>darkMode</code> (preset).</li>
+<li><strong>Theme mode</strong> in Control Center updates the live preference only — it does <strong>not</strong> change the current rice id.</li>
+<li><strong>Wallpaper-only</strong> / reload use the <strong>live</strong> mode (<code>Colours.currentLight</code> / <code>state.json</code>), never the rice default. Otherwise flipping to dark and changing wallpaper would snap back to the rice’s light/dark.</li>
+<li>Control Center shows when live mode diverges from the current rice default.</li>
+</ol>
+<pre class="hljs">dots appearance set-mode dark   <span class="hljs-comment"># live preference</span>
+dots appearance apply soft-morning  <span class="hljs-comment"># preset (includes darkMode: false)</span>
+dots appearance doctor          <span class="hljs-comment"># FAIL on wal≠pointer, empty hyprlock, GTK mode drift, orphans</span></pre><p><code>Appearances.Appearance</code> in Quickshell forwards <code>darkMode</code> / <code>schemeType</code> from <code>list-rices.py</code> so Control Center staging can honor light rices. Mode overrides after a rice apply wait for <code>Rice.applyFinished</code> and only run when Theme mode was toggled explicitly.</p>
+<p>GTK / libadwaita keep <code>gtk-application-prefer-dark-theme</code> and <code>org.gnome.desktop.interface color-scheme</code> (<code>prefer-dark</code> / <code>prefer-light</code>) aligned with the live mode on rice apply and on <code>dots-color-scheme mode</code>.</p>
+<h2 id="state-single-source-of-truth-">State (single source of truth)</h2>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Current rice id</td>
+<td><code>~/.local/state/dots/rice/current</code></td>
+</tr>
+<tr>
+<td>Wallpaper pointer</td>
+<td><code>~/.local/state/dots/wallpaper/path</code></td>
+</tr>
+<tr>
+<td>Live scheme</td>
+<td><code>~/.cache/dots/smart-colors/scheme.json</code></td>
+</tr>
+<tr>
+<td>Scheme prefs</td>
+<td><code>~/.local/state/dots/scheme/state.json</code></td>
+</tr>
+</tbody>
+</table>
+<p>There is <strong>no</strong> <code>.current_rice</code>, cache rice export, or per-rice <code>config.sh</code> / <code>apply.sh</code> on the maintained path.</p>
+<pre class="hljs">dots appearance doctor
+dots-color-scheme sync-state</pre><h2 id="quickshell-integration">Quickshell Integration</h2>
+<p>Control Center → Appearance:</p>
+<ol>
+<li>Hover / click <strong>stages</strong> a preview.</li>
+<li>Explicit <strong>Apply</strong> commits staged changes.</li>
+<li>Launcher rice selector applies immediately on confirm.</li>
+</ol>
+<h2 id="structure">Structure</h2>
+<p><code>~/.local/share/dots/rices/&lt;rice-name&gt;/</code></p>
 <ul>
-<li>Legacy Rofi/JGMenu theme selectors were removed from the maintained path.</li>
-<li>The maintained desktop path is Hyprland + Quickshell.</li>
+<li><code>config.json</code> — sole rice config</li>
+<li><code>backgrounds/</code> — wallpapers (PNG/JPG/WEBP/GIF/BMP; symlinks followed)</li>
+<li><code>preview.png</code> — selector thumbnail</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Maintained desktop path: Hyprland + Quickshell.</li>
+<li>Wallpaper display: Quickshell Background layershell + pywal + Material You.</li>
+<li>Tracking: <a href="https://github.com/ulises-jeremias/dotfiles/issues/249">https://github.com/ulises-jeremias/dotfiles/issues/249</a></li>
 </ul>
 <p class="page" id="Smart-Colors-System"></p><h1>🧠 Smart Colors System</h1>
 <h1 id="smart-colors-system">Smart Colors System</h1>
@@ -971,24 +989,25 @@ dots appearance apply catppuccin-macchiato</pre><h2 id="notes">Notes</h2>
 <li>Script consumers can source shell/env exports from the same cache directory.</li>
 </ul>
 <h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
-<h3 id="historical-pipelines">Historical pipelines</h3>
-<ul>
-<li><strong>wpgtk pipeline</strong>: <code>wpg -s &lt;image&gt;</code> -&gt; <code>wpg.conf</code> runs <code>dots-wal-reload</code> and refreshes shell colors.</li>
-<li><strong>Legacy Quickshell direct pipeline</strong>: UI actions used to call compositor-specific wallpaper setters directly, bypassing <code>wpg</code> and global reload orchestration.</li>
+<h3 id="maintained-path-hyprland-quickshell-">Maintained path (Hyprland + Quickshell)</h3>
+<ol>
+<li><code>dots-wallpaper-set &lt;image&gt;</code> (or Control Center Apply / <code>Rice.setWallpaper</code>)</li>
+<li>When Quickshell is running → IPC <code>rice setWallpaper</code></li>
+<li>Otherwise → <code>apply-appearance.sh</code> wallpaper-only path:<ul>
+<li><code>wal -i</code> (honors light/dark from current rice / scheme state)</li>
+<li>write <code>~/.local/state/dots/wallpaper/path</code></li>
+<li><code>generate-m3-colors.py</code> → <code>scheme.json</code></li>
+<li><code>dots-color-scheme sync-state</code> → <code>scheme/state.json</code></li>
 </ul>
-<p>The direct pipeline could desynchronize <code>~/.config/wpg/.current</code> from shell/runtime state and miss some app reloads that are centralized in <code>dots-wal-reload</code>.</p>
-<h3 id="unified-contract">Unified contract</h3>
-<ul>
-<li>Use <code>dots-wallpaper-set</code> as the single entrypoint for wallpaper changes from shell UI/actions.</li>
-<li>When <code>wpg</code> is available, <code>dots-wallpaper-set</code> delegates to <code>wpg -s</code> so wpgtk remains source-compatible.</li>
-<li>Wallpaper resolution priority is unified across scripts:<ol>
-<li>Explicit argument</li>
-<li><code>~/.local/state/dots/wallpaper/path</code> (canonical persistent pointer; respects <code>DOTS_STATE_DIR</code> / <code>XDG_STATE_HOME</code>)</li>
-<li><code>~/.cache/wal/wal</code> (pywal)</li>
-<li><code>~/.config/wpg/.current</code> (optional, when using wpgtk)</li>
-</ol>
 </li>
-</ul>
+<li><code>Colours.qml</code> reloads via file watch or <code>dots-quickshell ipc colours reload</code> (real IPC + touch fallback)</li>
+</ol>
+<h3 id="wallpaper-resolution-priority">Wallpaper resolution priority</h3>
+<ol>
+<li>Explicit argument</li>
+<li><code>~/.local/state/dots/wallpaper/path</code> (canonical persistent pointer)</li>
+<li><code>~/.cache/wal/wal</code> (pywal symlink; last resort)</li>
+</ol>
 <h2 id="main-commands">Main Commands</h2>
 <pre class="hljs">dots-smart-colors --generate --m3
 dots-smart-colors --analyze
@@ -1008,9 +1027,11 @@ dots-wal-reload</pre><h2 id="generated-cache">Generated Cache</h2>
 <h2 id="data-flow">Data Flow</h2>
 <pre class="hljs">flowchart LR
   <span class="hljs-function"><span class="hljs-title">wallpaper</span>[WallpaperChange] --&gt;</span> set[dots-wallpaper-set]
-  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> wal[dots-wal-reload]
-  <span class="hljs-function"><span class="hljs-title">wal</span> --&gt;</span> smart[dots-smart-colorsGenerate]
-  <span class="hljs-function"><span class="hljs-title">smart</span> --&gt;</span> scheme[schemeJson]
+  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> rice[RiceIpcOrShellFallback]
+  <span class="hljs-function"><span class="hljs-title">rice</span> --&gt;</span> wal[pywal]
+  <span class="hljs-function"><span class="hljs-title">rice</span> --&gt;</span> m3[generate-m3-colors]
+  <span class="hljs-function"><span class="hljs-title">m3</span> --&gt;</span> scheme[schemeJson]
+  <span class="hljs-function"><span class="hljs-title">m3</span> --&gt;</span> state[schemeStateJson]
   <span class="hljs-function"><span class="hljs-title">scheme</span> --&gt;</span> colours[QuickshellColoursService]
   <span class="hljs-function"><span class="hljs-title">colours</span> --&gt;</span> ui[QuickshellUIUpdated]</pre><h2 id="troubleshooting">Troubleshooting</h2>
 <pre class="hljs"><span class="hljs-comment"># Rebuild smart-colors cache</span>
@@ -1715,7 +1736,7 @@ dots lockscreen --lock --lock-effect=pixel</pre><h3 id="automatic-updates">Autom
             <span class="hljs-string">&quot;&quot;</span>)))</pre><h3 id="wal-reload">Wal Reload</h3>
 <p>Automatically updates lockscreen when changing themes:</p>
 <pre class="hljs">dots wal-reload  <span class="hljs-comment"># Updates wallpaper and lockscreen</span></pre><h3 id="rice-system">Rice System</h3>
-<p>Rice themes can trigger lockscreen updates in their <code>apply.sh</code>:</p>
+<p>Rice / appearance apply regenerates lockscreen colors via <code>dots-hyprlock-theme</code> after scheme generation. Historical note — older docs mentioned per-rice <code>apply.sh</code>; that path is no longer maintained. Equivalent hook:</p>
 <pre class="hljs"><span class="hljs-keyword">if</span> <span class="hljs-built_in">command</span> -v dots-lockscreen &amp;&gt;/dev/null; <span class="hljs-keyword">then</span>
   dots-lockscreen --update=<span class="hljs-string">&quot;<span class="hljs-variable">$wallpaper</span>&quot;</span>
 <span class="hljs-keyword">fi</span></pre><h2 id="hyprlock-configuration">Hyprlock Configuration</h2>
@@ -1738,7 +1759,7 @@ input-field {
   <span class="hljs-attr">fail_color</span> = rgba(&lt;error-color&gt;)
   <span class="hljs-comment"># ... and more</span>
 }</pre><h2 id="rice-style-aware-layouts">Rice-Style-Aware Layouts</h2>
-<p>The lockscreen automatically adapts its layout based on your current rice&#39;s <code>RICE_STYLE</code>. This provides a cohesive aesthetic experience across your entire desktop.</p>
+<p>The lockscreen automatically adapts its layout based on your current rice&#39;s <code>style</code> field in <code>config.json</code>. This provides a cohesive aesthetic experience across your entire desktop.</p>
 <h3 id="available-layouts">Available Layouts</h3>
 <table>
 <thead>
@@ -1778,18 +1799,14 @@ input-field {
 </table>
 <h3 id="how-it-works">How It Works</h3>
 <ol>
-<li>When locking, the script reads <code>RICE_STYLE</code> from your current rice&#39;s <code>config.sh</code></li>
+<li>When locking, the script reads <code>style</code> from your current rice&#39;s <code>config.json</code></li>
 <li>Based on the style, it selects the appropriate layout template</li>
 <li>Colors are pulled from the smart-colors cache</li>
 <li>The hyprlock configuration is generated dynamically</li>
 </ol>
 <h3 id="rice-configuration">Rice Configuration</h3>
-<p>To enable style-aware layouts, add <code>RICE_STYLE</code> to your rice&#39;s <code>config.sh</code>:</p>
-<pre class="hljs"><span class="hljs-comment"># Example for cyberpunk rice</span>
-RICE_STYLE=<span class="hljs-string">&quot;Cyberpunk&quot;</span>
-
-<span class="hljs-comment"># Example for cozy rice</span>
-RICE_STYLE=<span class="hljs-string">&quot;Cozy&quot;</span></pre><p>The style matching is case-insensitive and supports partial matches (e.g., &quot;cozy warm&quot; matches the Cozy layout).</p>
+<p>To enable style-aware layouts, set <code>style</code> in your rice&#39;s <code>config.json</code>:</p>
+<pre class="hljs">{ <span class="hljs-attr">&quot;style&quot;</span>: <span class="hljs-string">&quot;cyberpunk&quot;</span> }</pre><p>The style matching is case-insensitive and supports partial matches (e.g., &quot;cozy warm&quot; matches the Cozy layout).</p>
 <h2 id="comparison-with-betterlockscreen">Comparison with Betterlockscreen</h2>
 <table>
 <thead>
@@ -1956,11 +1973,13 @@ dots-quickshell ipc sidebar toggle    <span class="hljs-comment"># Toggle notifi
 <li>Quickshell&#39;s <code>Colours</code> service watches the file and reloads automatically</li>
 </ol>
 <h3 id="scheme-configuration">Scheme Configuration</h3>
-<p>Each appearance (rice) can configure its M3 scheme via <code>config.sh</code>:</p>
-<pre class="hljs">SCHEME_TYPE=<span class="hljs-string">&quot;vibrant&quot;</span>     <span class="hljs-comment"># tonalSpot, vibrant, expressive, neutral, monochrome, fidelity</span>
-DARK_MODE=<span class="hljs-string">&quot;true&quot;</span>          <span class="hljs-comment"># true/false</span>
-ACCENT_COLOR=<span class="hljs-string">&quot;&quot;</span>           <span class="hljs-comment"># Optional hex color override</span>
-BAR_POSITION=<span class="hljs-string">&quot;top&quot;</span>        <span class="hljs-comment"># top/bottom</span></pre><h3 id="appearance-commands">Appearance Commands</h3>
+<p>Each appearance (rice) configures its M3 scheme via <code>config.json</code>:</p>
+<pre class="hljs">{
+  <span class="hljs-attr">&quot;schemeType&quot;</span>: <span class="hljs-string">&quot;vibrant&quot;</span>,
+  <span class="hljs-attr">&quot;darkMode&quot;</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">&quot;accentColor&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,
+  <span class="hljs-attr">&quot;barPosition&quot;</span>: <span class="hljs-string">&quot;top&quot;</span>
+}</pre><h3 id="appearance-commands">Appearance Commands</h3>
 <pre class="hljs">dots appearance list
 dots appearance current
 dots appearance apply machines
@@ -2974,13 +2993,14 @@ dots smart-colors --concept=error</pre><h3 id="wal-reload">wal-reload</h3>
 <pre class="hljs">dots wal-reload</pre><h3 id="wallpaper-set">wallpaper-set</h3>
 <ul>
 <li>Unified wallpaper entrypoint used by Quickshell and scripts</li>
-<li>Delegates to <code>wpg -s</code> when available</li>
-<li>Fallback path writes wallpaper state files and triggers smart-colors + Quickshell palette reload</li>
+<li>When Quickshell is running: IPC <code>rice setWallpaper</code></li>
+<li>Fallback: wal + wallpaper pointer + M3 generation + <code>dots-color-scheme sync-state</code></li>
 </ul>
-<pre class="hljs">dots wallpaper-set /path/to/wallpaper.jpg</pre><h2 id="notes">Notes</h2>
+<pre class="hljs">dots wallpaper-set /path/to/wallpaper.jpg
+dots appearance doctor</pre><h2 id="notes">Notes</h2>
 <ul>
 <li>Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.</li>
-<li><code>dots rice</code> remains available as legacy-compatible naming; <code>dots appearance</code> is the canonical contract.</li>
+<li><code>dots rice</code> remains available as a thin alias; <code>dots appearance</code> is the canonical contract.</li>
 <li><code>dots-*</code> scripts remain modular and can be called directly.</li>
 </ul>
 <p class="page" id="Dots-Backup"></p><h1>💾 Backup System</h1>
@@ -4362,7 +4382,7 @@ into a harmonious blend of elegance and efficiency.</p>
 <li><strong>Terminal Emulator</strong> 🐾 <a href="https://sw.kovidgoyal.net/kitty/">Kitty</a> - GPU-accelerated terminal</li>
 <li><strong>Shell</strong> 🐚 <a href="https://zsh.org">Zsh</a> with Powerlevel10k prompt</li>
 <li><strong>Lockscreen</strong> 🔒 <a href="https://github.com/hyprwm/hyprlock">Hyprlock</a> - Secure lock screen</li>
-<li><strong>Wallpaper</strong> 🖼️ Quickshell + wpgtk integration via <code>dots-wallpaper-set</code></li>
+<li><strong>Wallpaper</strong> 🖼️ Quickshell Background + pywal/M3 via <code>dots-wallpaper-set</code></li>
 <li><strong>File Manager</strong> 🃏 <a href="https://docs.xfce.org/xfce/thunar/start">Thunar</a> with customized side pane</li>
 <li>and many more!</li>
 </ul>
@@ -4448,99 +4468,118 @@ dots smart-colors --concept=error</pre><h3 id="wal-reload">wal-reload</h3>
 <pre class="hljs">dots wal-reload</pre><h3 id="wallpaper-set">wallpaper-set</h3>
 <ul>
 <li>Unified wallpaper entrypoint used by Quickshell and scripts</li>
-<li>Delegates to <code>wpg -s</code> when available</li>
-<li>Fallback path writes wallpaper state files and triggers smart-colors + Quickshell palette reload</li>
+<li>When Quickshell is running: IPC <code>rice setWallpaper</code></li>
+<li>Fallback: wal + wallpaper pointer + M3 generation + <code>dots-color-scheme sync-state</code></li>
 </ul>
-<pre class="hljs">dots wallpaper-set /path/to/wallpaper.jpg</pre><h2 id="notes">Notes</h2>
+<pre class="hljs">dots wallpaper-set /path/to/wallpaper.jpg
+dots appearance doctor</pre><h2 id="notes">Notes</h2>
 <ul>
 <li>Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.</li>
-<li><code>dots rice</code> remains available as legacy-compatible naming; <code>dots appearance</code> is the canonical contract.</li>
+<li><code>dots rice</code> remains available as a thin alias; <code>dots appearance</code> is the canonical contract.</li>
 <li><code>dots-*</code> scripts remain modular and can be called directly.</li>
 </ul>
 <p class="page" id="Rice-System-Theme-Management"></p><h1>🎨 Rice System</h1>
 <h1 id="rice-system-theme-management">Rice System: Theme Management</h1>
-<p>The rice system is now managed through the Quickshell-first appearance workflow.</p>
+<p>The rice system is managed through the Quickshell-first appearance workflow.</p>
 <h2 id="canonical-commands">Canonical Commands</h2>
 <pre class="hljs">dots appearance list
 dots appearance current
 dots appearance apply neon-city
 dots appearance set-variant vibrant
 dots appearance set-mode dark
-dots appearance set-wallpaper /path/to/wallpaper.jpg</pre><p><code>dots rice ...</code> is retained as compatibility naming, but <code>dots appearance ...</code> is the canonical interface.</p>
+dots appearance set-wallpaper /path/to/wallpaper.jpg
+dots appearance doctor</pre><p><code>dots rice ...</code> remains as a thin compatibility alias for the same commands.</p>
+<p>When Quickshell is running, apply/set-wallpaper go through IPC into <code>Rice.qml</code>.
+When Quickshell is not running, the same full pipeline runs via <code>apply-appearance.sh</code>.</p>
 <h2 id="what-a-rice-controls">What a Rice Controls</h2>
 <ul>
-<li>wallpaper selection</li>
-<li>smart-colors / M3 palette generation</li>
-<li>light/dark mode and M3 variant</li>
-<li>GTK theme metadata and optional extras</li>
-<li>Quickshell-facing appearance state</li>
+<li>wallpaper selection (<code>backgrounds/</code>, first sorted image by default)</li>
+<li>smart-colors / M3 palette generation (<code>schemeType</code>, <code>darkMode</code>)</li>
+<li>GTK theme (<code>gtkTheme</code>, including <code>auto</code>)</li>
+<li>optional Hyprland animation profile / kitty opacity / snappy theme</li>
 </ul>
-<h2 id="quickshell-integration">Quickshell Integration</h2>
-<p>Appearance changes done from the control center can be previewed first, then committed with Apply/Save.</p>
-<pre class="hljs">flowchart LR
-  <span class="hljs-function"><span class="hljs-title">user</span>[UserSelectsAppearance] --&gt;</span> preview[QuickshellPreview]
-  <span class="hljs-function"><span class="hljs-title">preview</span> --&gt;</span> apply[ApplyOrSave]
-  <span class="hljs-function"><span class="hljs-title">apply</span> --&gt;</span> cli[dots-appearanceApply]
-  <span class="hljs-function"><span class="hljs-title">cli</span> --&gt;</span> palette[dots-smart-colorsAndScheme]
-  <span class="hljs-function"><span class="hljs-title">palette</span> --&gt;</span> shell[QuickshellReload]</pre><h2 id="structure">Structure</h2>
-<p>Rices live under:</p>
-<p><code>~/.local/share/dots/rices/&lt;rice-name&gt;/</code></p>
-<p>Typical files:</p>
-<ul>
-<li><code>config.json</code> — canonical config consumed by Quickshell&#39;s <code>list-rices.py</code> and <code>Rice.qml</code></li>
-<li><code>config.sh</code> — shell-sourceable mirror of the same metadata (used by legacy/<code>dots-gtk-theme</code>)</li>
-<li><code>backgrounds/</code> — wallpaper images (PNG/JPG/WEBP); the first sorted file becomes the default wallpaper</li>
-<li><code>preview.png</code> — small thumbnail shown in the rice selector carousel</li>
-</ul>
-<h2 id="catppuccin-variants">Catppuccin Variants</h2>
-<p>All four official Catppuccin flavours are available as rices, grouped under the <code>catppuccin</code> tag in the launcher:</p>
+<h2 id="light-dark-model">Light / dark model</h2>
+<p>Two related but distinct concepts:</p>
 <table>
 <thead>
 <tr>
-<th>Rice</th>
-<th>Mode</th>
-<th>Base</th>
-<th>Accent (Mauve)</th>
-<th>Best for</th>
+<th>Layer</th>
+<th>Source</th>
+<th>When it wins</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>catppuccin-latte</code></td>
-<td>light</td>
-<td><code>#eff1f5</code></td>
-<td><code>#8839ef</code></td>
-<td>Daytime coding, bright environments</td>
+<td>Rice default</td>
+<td><code>config.json</code> → <code>darkMode</code></td>
+<td>On <strong>full rice apply</strong> (<code>dots appearance apply</code>, launcher confirm, Control Center Apply for a rice)</td>
 </tr>
 <tr>
-<td><code>catppuccin-frappe</code></td>
-<td>dark</td>
-<td><code>#303446</code></td>
-<td><code>#ca9ee6</code></td>
-<td>Balanced dark, everyday desktop</td>
-</tr>
-<tr>
-<td><code>catppuccin-macchiato</code></td>
-<td>dark</td>
-<td><code>#24273a</code></td>
-<td><code>#c6a0f6</code></td>
-<td>Deep dark, evening sessions</td>
-</tr>
-<tr>
-<td><code>catppuccin-mocha</code></td>
-<td>dark</td>
-<td><code>#1e1e2e</code></td>
-<td><code>#cba6f7</code></td>
-<td>Cozy dark, creative work</td>
+<td>Live preference</td>
+<td><code>scheme/state.json</code> → <code>mode</code> (mirrored into <code>scheme.json</code>)</td>
+<td>After apply: Theme mode toggle, wallpaper-only changes, variant/mode CLI, boot regenerate</td>
 </tr>
 </tbody>
 </table>
-<p>Each rice ships with wallpapers generated from the official Catppuccin palette so that the M3 color extraction stays faithful to each variant. GTK themes fall back to <code>Orchis-Dark</code> (dark) or <code>catppuccin-latte-mauve-compact</code> (light) until a dedicated Catppuccin GTK package is installed.</p>
-<pre class="hljs">dots appearance apply catppuccin-frappe
-dots appearance apply catppuccin-macchiato</pre><h2 id="notes">Notes</h2>
+<p>Rules:</p>
+<ol>
+<li><strong>Applying a rice</strong> sets live mode from that rice’s <code>darkMode</code> (preset).</li>
+<li><strong>Theme mode</strong> in Control Center updates the live preference only — it does <strong>not</strong> change the current rice id.</li>
+<li><strong>Wallpaper-only</strong> / reload use the <strong>live</strong> mode (<code>Colours.currentLight</code> / <code>state.json</code>), never the rice default. Otherwise flipping to dark and changing wallpaper would snap back to the rice’s light/dark.</li>
+<li>Control Center shows when live mode diverges from the current rice default.</li>
+</ol>
+<pre class="hljs">dots appearance set-mode dark   <span class="hljs-comment"># live preference</span>
+dots appearance apply soft-morning  <span class="hljs-comment"># preset (includes darkMode: false)</span>
+dots appearance doctor          <span class="hljs-comment"># FAIL on wal≠pointer, empty hyprlock, GTK mode drift, orphans</span></pre><p><code>Appearances.Appearance</code> in Quickshell forwards <code>darkMode</code> / <code>schemeType</code> from <code>list-rices.py</code> so Control Center staging can honor light rices. Mode overrides after a rice apply wait for <code>Rice.applyFinished</code> and only run when Theme mode was toggled explicitly.</p>
+<p>GTK / libadwaita keep <code>gtk-application-prefer-dark-theme</code> and <code>org.gnome.desktop.interface color-scheme</code> (<code>prefer-dark</code> / <code>prefer-light</code>) aligned with the live mode on rice apply and on <code>dots-color-scheme mode</code>.</p>
+<h2 id="state-single-source-of-truth-">State (single source of truth)</h2>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Current rice id</td>
+<td><code>~/.local/state/dots/rice/current</code></td>
+</tr>
+<tr>
+<td>Wallpaper pointer</td>
+<td><code>~/.local/state/dots/wallpaper/path</code></td>
+</tr>
+<tr>
+<td>Live scheme</td>
+<td><code>~/.cache/dots/smart-colors/scheme.json</code></td>
+</tr>
+<tr>
+<td>Scheme prefs</td>
+<td><code>~/.local/state/dots/scheme/state.json</code></td>
+</tr>
+</tbody>
+</table>
+<p>There is <strong>no</strong> <code>.current_rice</code>, cache rice export, or per-rice <code>config.sh</code> / <code>apply.sh</code> on the maintained path.</p>
+<pre class="hljs">dots appearance doctor
+dots-color-scheme sync-state</pre><h2 id="quickshell-integration">Quickshell Integration</h2>
+<p>Control Center → Appearance:</p>
+<ol>
+<li>Hover / click <strong>stages</strong> a preview.</li>
+<li>Explicit <strong>Apply</strong> commits staged changes.</li>
+<li>Launcher rice selector applies immediately on confirm.</li>
+</ol>
+<h2 id="structure">Structure</h2>
+<p><code>~/.local/share/dots/rices/&lt;rice-name&gt;/</code></p>
 <ul>
-<li>Legacy Rofi/JGMenu theme selectors were removed from the maintained path.</li>
-<li>The maintained desktop path is Hyprland + Quickshell.</li>
+<li><code>config.json</code> — sole rice config</li>
+<li><code>backgrounds/</code> — wallpapers (PNG/JPG/WEBP/GIF/BMP; symlinks followed)</li>
+<li><code>preview.png</code> — selector thumbnail</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Maintained desktop path: Hyprland + Quickshell.</li>
+<li>Wallpaper display: Quickshell Background layershell + pywal + Material You.</li>
+<li>Tracking: <a href="https://github.com/ulises-jeremias/dotfiles/issues/249">https://github.com/ulises-jeremias/dotfiles/issues/249</a></li>
 </ul>
 <p class="page" id="Smart-Colors-System"></p><h1>🧠 Smart Colors</h1>
 <h1 id="smart-colors-system">Smart Colors System</h1>
@@ -4552,24 +4591,25 @@ dots appearance apply catppuccin-macchiato</pre><h2 id="notes">Notes</h2>
 <li>Script consumers can source shell/env exports from the same cache directory.</li>
 </ul>
 <h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
-<h3 id="historical-pipelines">Historical pipelines</h3>
-<ul>
-<li><strong>wpgtk pipeline</strong>: <code>wpg -s &lt;image&gt;</code> -&gt; <code>wpg.conf</code> runs <code>dots-wal-reload</code> and refreshes shell colors.</li>
-<li><strong>Legacy Quickshell direct pipeline</strong>: UI actions used to call compositor-specific wallpaper setters directly, bypassing <code>wpg</code> and global reload orchestration.</li>
+<h3 id="maintained-path-hyprland-quickshell-">Maintained path (Hyprland + Quickshell)</h3>
+<ol>
+<li><code>dots-wallpaper-set &lt;image&gt;</code> (or Control Center Apply / <code>Rice.setWallpaper</code>)</li>
+<li>When Quickshell is running → IPC <code>rice setWallpaper</code></li>
+<li>Otherwise → <code>apply-appearance.sh</code> wallpaper-only path:<ul>
+<li><code>wal -i</code> (honors light/dark from current rice / scheme state)</li>
+<li>write <code>~/.local/state/dots/wallpaper/path</code></li>
+<li><code>generate-m3-colors.py</code> → <code>scheme.json</code></li>
+<li><code>dots-color-scheme sync-state</code> → <code>scheme/state.json</code></li>
 </ul>
-<p>The direct pipeline could desynchronize <code>~/.config/wpg/.current</code> from shell/runtime state and miss some app reloads that are centralized in <code>dots-wal-reload</code>.</p>
-<h3 id="unified-contract">Unified contract</h3>
-<ul>
-<li>Use <code>dots-wallpaper-set</code> as the single entrypoint for wallpaper changes from shell UI/actions.</li>
-<li>When <code>wpg</code> is available, <code>dots-wallpaper-set</code> delegates to <code>wpg -s</code> so wpgtk remains source-compatible.</li>
-<li>Wallpaper resolution priority is unified across scripts:<ol>
-<li>Explicit argument</li>
-<li><code>~/.local/state/dots/wallpaper/path</code> (canonical persistent pointer; respects <code>DOTS_STATE_DIR</code> / <code>XDG_STATE_HOME</code>)</li>
-<li><code>~/.cache/wal/wal</code> (pywal)</li>
-<li><code>~/.config/wpg/.current</code> (optional, when using wpgtk)</li>
-</ol>
 </li>
-</ul>
+<li><code>Colours.qml</code> reloads via file watch or <code>dots-quickshell ipc colours reload</code> (real IPC + touch fallback)</li>
+</ol>
+<h3 id="wallpaper-resolution-priority">Wallpaper resolution priority</h3>
+<ol>
+<li>Explicit argument</li>
+<li><code>~/.local/state/dots/wallpaper/path</code> (canonical persistent pointer)</li>
+<li><code>~/.cache/wal/wal</code> (pywal symlink; last resort)</li>
+</ol>
 <h2 id="main-commands">Main Commands</h2>
 <pre class="hljs">dots-smart-colors --generate --m3
 dots-smart-colors --analyze
@@ -4589,9 +4629,11 @@ dots-wal-reload</pre><h2 id="generated-cache">Generated Cache</h2>
 <h2 id="data-flow">Data Flow</h2>
 <pre class="hljs">flowchart LR
   <span class="hljs-function"><span class="hljs-title">wallpaper</span>[WallpaperChange] --&gt;</span> set[dots-wallpaper-set]
-  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> wal[dots-wal-reload]
-  <span class="hljs-function"><span class="hljs-title">wal</span> --&gt;</span> smart[dots-smart-colorsGenerate]
-  <span class="hljs-function"><span class="hljs-title">smart</span> --&gt;</span> scheme[schemeJson]
+  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> rice[RiceIpcOrShellFallback]
+  <span class="hljs-function"><span class="hljs-title">rice</span> --&gt;</span> wal[pywal]
+  <span class="hljs-function"><span class="hljs-title">rice</span> --&gt;</span> m3[generate-m3-colors]
+  <span class="hljs-function"><span class="hljs-title">m3</span> --&gt;</span> scheme[schemeJson]
+  <span class="hljs-function"><span class="hljs-title">m3</span> --&gt;</span> state[schemeStateJson]
   <span class="hljs-function"><span class="hljs-title">scheme</span> --&gt;</span> colours[QuickshellColoursService]
   <span class="hljs-function"><span class="hljs-title">colours</span> --&gt;</span> ui[QuickshellUIUpdated]</pre><h2 id="troubleshooting">Troubleshooting</h2>
 <pre class="hljs"><span class="hljs-comment"># Rebuild smart-colors cache</span>
