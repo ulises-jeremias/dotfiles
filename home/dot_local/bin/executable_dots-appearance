@@ -19,316 +19,329 @@ cmd="${1:-}"
 shift 2>/dev/null || true
 
 json_escape() {
-	python3 -c "import json,sys; print(json.dumps(sys.argv[1]))" "$1"
+  python3 -c "import json,sys; print(json.dumps(sys.argv[1]))" "$1"
 }
 
 cmd_list() {
-	local script="${HOME}/.local/lib/dots/list-rices.py"
-	if [[ -f $script ]]; then
-		python3 "$script" "$RICES_DIR"
-	else
-		echo "[]"
-	fi
+  local script="${HOME}/.local/lib/dots/list-rices.py"
+  if [[ -f $script ]]; then
+    python3 "$script" "$RICES_DIR"
+  else
+    echo "[]"
+  fi
 }
 
 _ipc_rice_current() {
-	local id=""
-	id="$(quickshell ipc call rice current 2>/dev/null || true)"
-	id="${id//$'\r'/}"
-	id="${id//$'\n'/}"
-	# Ignore QS error payloads when the target is unavailable (stale process / reload).
-	[[ -n $id ]] || return 1
-	[[ $id == *" "* ]] && return 1
-	[[ -d "$RICES_DIR/$id" ]] || return 1
-	printf '%s\n' "$id"
+  local id=""
+  id="$(quickshell ipc call rice current 2>/dev/null || true)"
+  id="${id//$'\r'/}"
+  id="${id//$'\n'/}"
+  # Ignore QS error payloads when the target is unavailable (stale process / reload).
+  [[ -n $id ]] || return 1
+  [[ $id == *" "* ]] && return 1
+  [[ -d "$RICES_DIR/$id" ]] || return 1
+  printf '%s\n' "$id"
 }
 
 cmd_current() {
-	local id=""
-	if pgrep -x quickshell >/dev/null 2>&1; then
-		id="$(_ipc_rice_current || true)"
-	fi
-	if [[ -z ${id:-} ]] && declare -f dots_read_current_rice >/dev/null 2>&1; then
-		id="$(dots_read_current_rice)"
-	fi
-	if [[ ${1:-} == "--json" ]]; then
-		printf '{"id":%s}\n' "$(json_escape "${id:-}")"
-	else
-		printf '%s\n' "${id:-}"
-	fi
+  local id=""
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    id="$(_ipc_rice_current || true)"
+  fi
+  if [[ -z ${id:-} ]] && declare -f dots_read_current_rice >/dev/null 2>&1; then
+    id="$(dots_read_current_rice)"
+  fi
+  if [[ ${1:-} == "--json" ]]; then
+    printf '{"id":%s}\n' "$(json_escape "${id:-}")"
+  else
+    printf '%s\n' "${id:-}"
+  fi
 }
 
 _shell_apply() {
-	local id="$1"
-	local wallpaper="${2:-}"
-	# shellcheck source=/dev/null
-	source "$HOME/.local/lib/dots/wallpaper-resolver.sh" 2>/dev/null || true
-	# shellcheck source=/dev/null
-	source "$HOME/.local/lib/dots/apply-appearance.sh"
-	dots_apply_appearance "$id" "$wallpaper"
+  local id="$1"
+  local wallpaper="${2:-}"
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh" 2>/dev/null || true
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/apply-appearance.sh"
+  dots_apply_appearance "$id" "$wallpaper"
 }
 
 cmd_apply() {
-	local id="${1:-}"
-	local wallpaper=""
-	shift 2>/dev/null || true
-	while [[ $# -gt 0 ]]; do
-		case "${1:-}" in
-		--wallpaper)
-			wallpaper="${2:-}"
-			shift 2
-			;;
-		*)
-			echo "dots-appearance apply: unknown argument: $1" >&2
-			exit 1
-			;;
-		esac
-	done
+  local id="${1:-}"
+  local wallpaper=""
+  shift 2>/dev/null || true
+  while [[ $# -gt 0 ]]; do
+    case "${1:-}" in
+      --wallpaper)
+        [[ -n ${2:-} ]] || {
+          echo "dots-appearance apply: --wallpaper requires a path" >&2
+          exit 1
+        }
+        wallpaper="$2"
+        shift 2
+        ;;
+      *)
+        echo "dots-appearance apply: unknown argument: $1" >&2
+        exit 1
+        ;;
+    esac
+  done
 
-	[[ -n $id ]] || {
-		echo "Usage: dots-appearance apply <id> [--wallpaper <path>]" >&2
-		exit 1
-	}
+  [[ -n $id ]] || {
+    echo "Usage: dots-appearance apply <id> [--wallpaper <path>]" >&2
+    exit 1
+  }
 
-	if pgrep -x quickshell >/dev/null 2>&1; then
-		local ipc_out=""
-		if ipc_out="$(quickshell ipc call rice apply "$id" "${wallpaper:-}" 2>&1)"; then
-			case "$ipc_out" in
-			"Target not found."* | *"Target not found"*)
-				echo "Warning: Quickshell IPC unavailable ($ipc_out); falling back to shell apply" >&2
-				;;
-			*)
-				# Wait for the queued QS job; persist happens inside Rice after success.
-				local _i busy last_error
-				for _i in $(seq 1 120); do
-					busy="$(quickshell ipc call rice isBusy 2>/dev/null || echo 0)"
-					[[ $busy == "1" ]] || break
-					sleep 0.5
-				done
-				last_error="$(quickshell ipc call rice lastError 2>/dev/null || true)"
-				last_error="${last_error//$'\r'/}"
-				last_error="${last_error//$'\n'/}"
-				if [[ -n $last_error ]]; then
-					echo "Error: appearance apply failed: $last_error" >&2
-					exit 1
-				fi
-				exit 0
-				;;
-			esac
-		else
-			echo "Warning: Quickshell IPC failed; falling back to shell apply" >&2
-		fi
-	fi
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    local ipc_out=""
+    if ipc_out="$(quickshell ipc call rice apply "$id" "${wallpaper:-}" 2>&1)"; then
+      case "$ipc_out" in
+        "Target not found."* | *"Target not found"*)
+          echo "Warning: Quickshell IPC unavailable ($ipc_out); falling back to shell apply" >&2
+          ;;
+        *)
+          # Wait for the queued QS job; persist happens inside Rice after success.
+          local _i busy="" last_error
+          for _i in $(seq 1 120); do
+            if ! busy="$(quickshell ipc call rice isBusy 2>/dev/null)"; then
+              echo "Error: failed to poll rice isBusy via Quickshell IPC" >&2
+              exit 1
+            fi
+            busy="${busy//$'\r'/}"
+            busy="${busy//$'\n'/}"
+            [[ $busy == "1" ]] || break
+            sleep 0.5
+          done
+          if [[ $busy == "1" ]]; then
+            echo "Error: appearance apply timed out waiting for Quickshell" >&2
+            exit 1
+          fi
+          last_error="$(quickshell ipc call rice lastError 2>/dev/null || true)"
+          last_error="${last_error//$'\r'/}"
+          last_error="${last_error//$'\n'/}"
+          if [[ -n $last_error ]]; then
+            echo "Error: appearance apply failed: $last_error" >&2
+            exit 1
+          fi
+          exit 0
+          ;;
+      esac
+    else
+      echo "Warning: Quickshell IPC failed; falling back to shell apply" >&2
+    fi
+  fi
 
-	_shell_apply "$id" "$wallpaper"
+  _shell_apply "$id" "$wallpaper"
 }
 
 cmd_preview() {
-	local id="${1:-}"
-	[[ -n $id ]] || {
-		echo "Usage: dots-appearance preview <id>" >&2
-		exit 1
-	}
-	local config_path="${RICES_DIR}/${id}/config.json"
-	[[ -f $config_path ]] || {
-		echo "Appearance not found: $id" >&2
-		exit 1
-	}
-	cat "$config_path"
+  local id="${1:-}"
+  [[ -n $id ]] || {
+    echo "Usage: dots-appearance preview <id>" >&2
+    exit 1
+  }
+  local config_path="${RICES_DIR}/${id}/config.json"
+  [[ -f $config_path ]] || {
+    echo "Appearance not found: $id" >&2
+    exit 1
+  }
+  cat "$config_path"
 }
 
 cmd_set_wallpaper() {
-	local wallpaper="${1:-}"
-	[[ -n $wallpaper ]] || {
-		echo "Usage: dots-appearance set-wallpaper <path>" >&2
-		exit 1
-	}
-	dots-wallpaper-set "$wallpaper"
+  local wallpaper="${1:-}"
+  [[ -n $wallpaper ]] || {
+    echo "Usage: dots-appearance set-wallpaper <path>" >&2
+    exit 1
+  }
+  dots-wallpaper-set "$wallpaper"
 }
 
 cmd_set_variant() {
-	dots-color-scheme variant "${1:-}"
+  dots-color-scheme variant "${1:-}"
 }
 
 cmd_set_mode() {
-	dots-color-scheme mode "${1:-}"
+  dots-color-scheme mode "${1:-}"
 }
 
 cmd_sync() {
-	if pgrep -x quickshell >/dev/null 2>&1; then
-		quickshell ipc call rice reload || true
-	fi
-	dots-color-scheme sync-state >/dev/null 2>&1 || true
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    quickshell ipc call rice reload || true
+  fi
+  dots-color-scheme sync-state >/dev/null 2>&1 || true
 }
 
 cmd_doctor() {
-	local ok=0
-	local qs_rice="" canon=""
-	local scheme_flavour="" state_flavour="" scheme_mode="" state_mode=""
-	local pointer="" resolved="" wal_target=""
+  local ok=0
+  local qs_rice="" canon=""
+  local scheme_flavour="" state_flavour="" scheme_mode="" state_mode=""
+  local pointer="" resolved="" wal_target=""
 
-	# Drop leftover legacy pointers if helpers are available.
-	if declare -f dots_purge_legacy_rice_pointers >/dev/null 2>&1; then
-		dots_purge_legacy_rice_pointers
-	else
-		rm -f "$HOME/.local/share/dots/rices/.current_rice" \
-			"$HOME/.cache/dots/current_rice" 2>/dev/null || true
-	fi
+  # Drop leftover legacy pointers if helpers are available.
+  if declare -f dots_purge_legacy_rice_pointers >/dev/null 2>&1; then
+    dots_purge_legacy_rice_pointers
+  else
+    rm -f "$HOME/.local/share/dots/rices/.current_rice" \
+      "$HOME/.cache/dots/current_rice" 2>/dev/null || true
+  fi
 
-	canon="${DOTS_RICE_CANONICAL_FILE:-$HOME/.local/state/dots/rice/current}"
-	[[ -f $canon ]] && qs_rice="$(head -n 1 "$canon" | tr -d '\r')"
+  canon="${DOTS_RICE_CANONICAL_FILE:-$HOME/.local/state/dots/rice/current}"
+  [[ -f $canon ]] && qs_rice="$(head -n 1 "$canon" | tr -d '\r')"
 
-	if pgrep -x quickshell >/dev/null 2>&1; then
-		local ipc_rice
-		ipc_rice="$(_ipc_rice_current || true)"
-		[[ -n $ipc_rice ]] && qs_rice="$ipc_rice"
-	fi
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    local ipc_rice
+    ipc_rice="$(_ipc_rice_current || true)"
+    [[ -n $ipc_rice ]] && qs_rice="$ipc_rice"
+  fi
 
-	local scheme_file="${HOME}/.cache/dots/smart-colors/scheme.json"
-	local state_file="${HOME}/.local/state/dots/scheme/state.json"
-	if [[ -f $scheme_file ]]; then
-		scheme_flavour="$(python3 -c "import json;print(json.load(open('$scheme_file')).get('flavour',''))" 2>/dev/null || true)"
-		scheme_mode="$(python3 -c "import json;print(json.load(open('$scheme_file')).get('mode',''))" 2>/dev/null || true)"
-	fi
-	if [[ -f $state_file ]]; then
-		state_flavour="$(python3 -c "import json;print(json.load(open('$state_file')).get('flavour',''))" 2>/dev/null || true)"
-		state_mode="$(python3 -c "import json;print(json.load(open('$state_file')).get('mode',''))" 2>/dev/null || true)"
-	fi
+  local scheme_file="${HOME}/.cache/dots/smart-colors/scheme.json"
+  local state_file="${HOME}/.local/state/dots/scheme/state.json"
+  if [[ -f $scheme_file ]]; then
+    scheme_flavour="$(python3 -c "import json;print(json.load(open('$scheme_file')).get('flavour',''))" 2>/dev/null || true)"
+    scheme_mode="$(python3 -c "import json;print(json.load(open('$scheme_file')).get('mode',''))" 2>/dev/null || true)"
+  fi
+  if [[ -f $state_file ]]; then
+    state_flavour="$(python3 -c "import json;print(json.load(open('$state_file')).get('flavour',''))" 2>/dev/null || true)"
+    state_mode="$(python3 -c "import json;print(json.load(open('$state_file')).get('mode',''))" 2>/dev/null || true)"
+  fi
 
-	pointer="${DOTS_WALLPAPER_POINTER_FILE:-$HOME/.local/state/dots/wallpaper/path}"
-	local pointer_val=""
-	[[ -f $pointer ]] && pointer_val="$(head -n 1 "$pointer" | tr -d '\r')"
-	if command -v dots-wallpaper-current >/dev/null 2>&1; then
-		resolved="$(dots-wallpaper-current 2>/dev/null || true)"
-	fi
-	wal_target="$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || true)"
+  pointer="${DOTS_WALLPAPER_POINTER_FILE:-$HOME/.local/state/dots/wallpaper/path}"
+  local pointer_val=""
+  [[ -f $pointer ]] && pointer_val="$(head -n 1 "$pointer" | tr -d '\r')"
+  if command -v dots-wallpaper-current >/dev/null 2>&1; then
+    resolved="$(dots-wallpaper-current 2>/dev/null || true)"
+  fi
+  wal_target="$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || true)"
 
-	echo "=== dots-appearance doctor ==="
-	echo "rice.current   : ${qs_rice:-"(missing)"}"
-	echo "scheme.flavour : ${scheme_flavour:-"(missing)"}"
-	echo "state.flavour  : ${state_flavour:-"(missing)"}"
-	echo "scheme.mode    : ${scheme_mode:-"(missing)"}"
-	echo "state.mode     : ${state_mode:-"(missing)"}"
-	local hyprlock_conf="${HOME}/.cache/dots/smart-colors/colors-hyprlock.conf"
-	local hyprlock_bytes=0
-	[[ -f $hyprlock_conf ]] && hyprlock_bytes="$(wc -c <"$hyprlock_conf" | tr -d ' ')"
-	local gtk_theme_ini="" gtk_prefer_dark="" gtk_color_scheme=""
-	if [[ -f ${HOME}/.config/gtk-3.0/settings.ini ]]; then
-		gtk_theme_ini="$(grep -E '^gtk-theme-name=' "${HOME}/.config/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
-		gtk_prefer_dark="$(grep -E '^gtk-application-prefer-dark-theme=' "${HOME}/.config/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
-	fi
-	if command -v gsettings >/dev/null 2>&1; then
-		gtk_color_scheme="$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | tr -d "'\"" || true)"
-	fi
+  echo "=== dots-appearance doctor ==="
+  echo "rice.current   : ${qs_rice:-"(missing)"}"
+  echo "scheme.flavour : ${scheme_flavour:-"(missing)"}"
+  echo "state.flavour  : ${state_flavour:-"(missing)"}"
+  echo "scheme.mode    : ${scheme_mode:-"(missing)"}"
+  echo "state.mode     : ${state_mode:-"(missing)"}"
+  local hyprlock_conf="${HOME}/.cache/dots/smart-colors/colors-hyprlock.conf"
+  local hyprlock_bytes=0
+  [[ -f $hyprlock_conf ]] && hyprlock_bytes="$(wc -c <"$hyprlock_conf" | tr -d ' ')"
+  local gtk_theme_ini="" gtk_prefer_dark="" gtk_color_scheme=""
+  if [[ -f ${HOME}/.config/gtk-3.0/settings.ini ]]; then
+    gtk_theme_ini="$(grep -E '^gtk-theme-name=' "${HOME}/.config/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
+    gtk_prefer_dark="$(grep -E '^gtk-application-prefer-dark-theme=' "${HOME}/.config/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
+  fi
+  if command -v gsettings >/dev/null 2>&1; then
+    gtk_color_scheme="$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | tr -d "'\"" || true)"
+  fi
 
-	echo "wallpaper.ptr  : ${pointer_val:-"(missing)"}"
-	echo "wallpaper.res  : ${resolved:-"(missing)"}"
-	echo "wal.target     : ${wal_target:-"(missing)"}"
-	echo "hyprlock.conf  : ${hyprlock_bytes} bytes"
-	echo "gtk.theme.ini  : ${gtk_theme_ini:-"(missing)"}"
-	echo "gtk.preferDark : ${gtk_prefer_dark:-"(missing)"}"
-	echo "gtk.colorScheme: ${gtk_color_scheme:-"(missing)"}"
+  echo "wallpaper.ptr  : ${pointer_val:-"(missing)"}"
+  echo "wallpaper.res  : ${resolved:-"(missing)"}"
+  echo "wal.target     : ${wal_target:-"(missing)"}"
+  echo "hyprlock.conf  : ${hyprlock_bytes} bytes"
+  echo "gtk.theme.ini  : ${gtk_theme_ini:-"(missing)"}"
+  echo "gtk.preferDark : ${gtk_prefer_dark:-"(missing)"}"
+  echo "gtk.colorScheme: ${gtk_color_scheme:-"(missing)"}"
 
-	if [[ -z $qs_rice ]]; then
-		echo "FAIL: rice current pointer missing" >&2
-		ok=1
-	elif [[ ! -f "$HOME/.local/share/dots/rices/$qs_rice/config.json" ]]; then
-		echo "FAIL: rice config.json missing for $qs_rice" >&2
-		ok=1
-	fi
-	if [[ -e $HOME/.local/share/dots/rices/.current_rice || -e $HOME/.cache/dots/current_rice ]]; then
-		echo "FAIL: legacy rice pointer still present" >&2
-		ok=1
-	fi
-	if [[ -n $scheme_flavour && -n $state_flavour && $scheme_flavour != "$state_flavour" ]]; then
-		echo "FAIL: scheme flavour != state flavour ($scheme_flavour vs $state_flavour)" >&2
-		ok=1
-	fi
-	if [[ -n $scheme_mode && -n $state_mode && $scheme_mode != "$state_mode" ]]; then
-		echo "FAIL: scheme mode != state mode ($scheme_mode vs $state_mode)" >&2
-		ok=1
-	fi
-	if [[ -n $pointer_val && ! -f $pointer_val ]]; then
-		echo "FAIL: wallpaper pointer does not exist: $pointer_val" >&2
-		ok=1
-	fi
-	if [[ -n $pointer_val && -n $resolved && $pointer_val != "$resolved" ]]; then
-		local ptr_real res_real
-		ptr_real="$(readlink -f "$pointer_val" 2>/dev/null || true)"
-		res_real="$(readlink -f "$resolved" 2>/dev/null || true)"
-		if [[ -n $ptr_real && -n $res_real && $ptr_real != "$res_real" ]]; then
-			echo "FAIL: pointer != dots-wallpaper-current ($pointer_val vs $resolved)" >&2
-			ok=1
-		fi
-	fi
-	if [[ -n $pointer_val && -f $pointer_val ]]; then
-		local ptr_real wal_real
-		ptr_real="$(readlink -f "$pointer_val" 2>/dev/null || true)"
-		wal_real="$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || true)"
-		if [[ -z $wal_real ]]; then
-			echo "FAIL: ~/.cache/wal/wal missing or broken" >&2
-			ok=1
-		elif [[ -n $ptr_real && $ptr_real != "$wal_real" ]]; then
-			echo "FAIL: wal target != wallpaper pointer ($wal_real vs $ptr_real)" >&2
-			ok=1
-		fi
-	fi
-	if [[ ! -f $hyprlock_conf || ${hyprlock_bytes:-0} -eq 0 ]]; then
-		echo "FAIL: colors-hyprlock.conf missing or empty" >&2
-		ok=1
-	fi
-	if [[ -f ${HOME}/.local/state/dots/wallpaper/path.txt ]]; then
-		echo "FAIL: orphan wallpaper/path.txt present (use wallpaper/path)" >&2
-		ok=1
-	fi
-	if [[ -f ${HOME}/.cache/dots/smart-colors/wallpaper ]]; then
-		echo "FAIL: orphan smart-colors/wallpaper cache present" >&2
-		ok=1
-	fi
-	if [[ -n $state_mode && -n $gtk_prefer_dark ]]; then
-		if [[ $state_mode == "dark" && $gtk_prefer_dark == "false" ]]; then
-			echo "FAIL: GTK prefer-dark=false while live mode is dark" >&2
-			ok=1
-		elif [[ $state_mode == "light" && $gtk_prefer_dark == "true" ]]; then
-			echo "FAIL: GTK prefer-dark=true while live mode is light" >&2
-			ok=1
-		fi
-	fi
-	if [[ -n $state_mode && -n $gtk_color_scheme ]]; then
-		if [[ $state_mode == "dark" && $gtk_color_scheme != "prefer-dark" ]]; then
-			echo "FAIL: gsettings color-scheme=$gtk_color_scheme while live mode is dark" >&2
-			ok=1
-		elif [[ $state_mode == "light" && $gtk_color_scheme != "prefer-light" ]]; then
-			echo "FAIL: gsettings color-scheme=$gtk_color_scheme while live mode is light" >&2
-			ok=1
-		fi
-	fi
-	if [[ -n $wal_target && -f $wal_target ]]; then
-		if ! file -b --mime-type "$wal_target" 2>/dev/null | grep -q '^image/'; then
-			echo "WARN: wal target is not an image: $wal_target" >&2
-		fi
-	fi
+  if [[ -z $qs_rice ]]; then
+    echo "FAIL: rice current pointer missing" >&2
+    ok=1
+  elif [[ ! -f "$HOME/.local/share/dots/rices/$qs_rice/config.json" ]]; then
+    echo "FAIL: rice config.json missing for $qs_rice" >&2
+    ok=1
+  fi
+  if [[ -e $HOME/.local/share/dots/rices/.current_rice || -e $HOME/.cache/dots/current_rice ]]; then
+    echo "FAIL: legacy rice pointer still present" >&2
+    ok=1
+  fi
+  if [[ -n $scheme_flavour && -n $state_flavour && $scheme_flavour != "$state_flavour" ]]; then
+    echo "FAIL: scheme flavour != state flavour ($scheme_flavour vs $state_flavour)" >&2
+    ok=1
+  fi
+  if [[ -n $scheme_mode && -n $state_mode && $scheme_mode != "$state_mode" ]]; then
+    echo "FAIL: scheme mode != state mode ($scheme_mode vs $state_mode)" >&2
+    ok=1
+  fi
+  if [[ -n $pointer_val && ! -f $pointer_val ]]; then
+    echo "FAIL: wallpaper pointer does not exist: $pointer_val" >&2
+    ok=1
+  fi
+  if [[ -n $pointer_val && -n $resolved && $pointer_val != "$resolved" ]]; then
+    local ptr_real res_real
+    ptr_real="$(readlink -f "$pointer_val" 2>/dev/null || true)"
+    res_real="$(readlink -f "$resolved" 2>/dev/null || true)"
+    if [[ -n $ptr_real && -n $res_real && $ptr_real != "$res_real" ]]; then
+      echo "FAIL: pointer != dots-wallpaper-current ($pointer_val vs $resolved)" >&2
+      ok=1
+    fi
+  fi
+  if [[ -n $pointer_val && -f $pointer_val ]]; then
+    local ptr_real wal_real
+    ptr_real="$(readlink -f "$pointer_val" 2>/dev/null || true)"
+    wal_real="$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || true)"
+    if [[ -z $wal_real ]]; then
+      echo "FAIL: ~/.cache/wal/wal missing or broken" >&2
+      ok=1
+    elif [[ -n $ptr_real && $ptr_real != "$wal_real" ]]; then
+      echo "FAIL: wal target != wallpaper pointer ($wal_real vs $ptr_real)" >&2
+      ok=1
+    fi
+  fi
+  if [[ ! -f $hyprlock_conf || ${hyprlock_bytes:-0} -eq 0 ]]; then
+    echo "FAIL: colors-hyprlock.conf missing or empty" >&2
+    ok=1
+  fi
+  if [[ -f ${HOME}/.local/state/dots/wallpaper/path.txt ]]; then
+    echo "FAIL: orphan wallpaper/path.txt present (use wallpaper/path)" >&2
+    ok=1
+  fi
+  if [[ -f ${HOME}/.cache/dots/smart-colors/wallpaper ]]; then
+    echo "FAIL: orphan smart-colors/wallpaper cache present" >&2
+    ok=1
+  fi
+  if [[ -n $state_mode && -n $gtk_prefer_dark ]]; then
+    if [[ $state_mode == "dark" && $gtk_prefer_dark == "false" ]]; then
+      echo "FAIL: GTK prefer-dark=false while live mode is dark" >&2
+      ok=1
+    elif [[ $state_mode == "light" && $gtk_prefer_dark == "true" ]]; then
+      echo "FAIL: GTK prefer-dark=true while live mode is light" >&2
+      ok=1
+    fi
+  fi
+  if [[ -n $state_mode && -n $gtk_color_scheme ]]; then
+    if [[ $state_mode == "dark" && $gtk_color_scheme != "prefer-dark" ]]; then
+      echo "FAIL: gsettings color-scheme=$gtk_color_scheme while live mode is dark" >&2
+      ok=1
+    elif [[ $state_mode == "light" && $gtk_color_scheme != "prefer-light" ]]; then
+      echo "FAIL: gsettings color-scheme=$gtk_color_scheme while live mode is light" >&2
+      ok=1
+    fi
+  fi
+  if [[ -n $wal_target && -f $wal_target ]]; then
+    if ! file -b --mime-type "$wal_target" 2>/dev/null | grep -q '^image/'; then
+      echo "WARN: wal target is not an image: $wal_target" >&2
+    fi
+  fi
 
-	if [[ $ok -eq 0 ]]; then
-		echo "OK: appearance state is consistent"
-	else
-		echo "DONE: inconsistencies detected (exit $ok)"
-	fi
-	return "$ok"
+  if [[ $ok -eq 0 ]]; then
+    echo "OK: appearance state is consistent"
+  else
+    echo "DONE: inconsistencies detected (exit $ok)"
+  fi
+  return "$ok"
 }
 
 case "${cmd:-}" in
-list) cmd_list ;;
-current) cmd_current "${1:-}" ;;
-apply) cmd_apply "$@" ;;
-preview) cmd_preview "${1:-}" ;;
-set-variant) cmd_set_variant "${1:-}" ;;
-set-mode) cmd_set_mode "${1:-}" ;;
-set-wallpaper) cmd_set_wallpaper "${1:-}" ;;
-sync) cmd_sync ;;
-doctor) cmd_doctor ;;
-*)
-	cat <<'EOF' >&2
+  list) cmd_list ;;
+  current) cmd_current "${1:-}" ;;
+  apply) cmd_apply "$@" ;;
+  preview) cmd_preview "${1:-}" ;;
+  set-variant) cmd_set_variant "${1:-}" ;;
+  set-mode) cmd_set_mode "${1:-}" ;;
+  set-wallpaper) cmd_set_wallpaper "${1:-}" ;;
+  sync) cmd_sync ;;
+  doctor) cmd_doctor ;;
+  *)
+    cat <<'EOF' >&2
 Usage: dots-appearance <command> [args]
 
 Commands:
@@ -342,6 +355,6 @@ Commands:
   sync
   doctor
 EOF
-	exit 1
-	;;
+    exit 1
+    ;;
 esac
