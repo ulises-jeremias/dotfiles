@@ -30,10 +30,10 @@ When Quickshell is not running, the same full pipeline runs via `apply-appearanc
 
 Two related but distinct concepts:
 
-| Layer | Source | When it wins |
-|-------|--------|--------------|
-| Rice default | `config.json` → `darkMode` | On **full rice apply** (`dots appearance apply`, launcher confirm, Control Center Apply for a rice) |
-| Live preference | `scheme/state.json` → `mode` (mirrored into `scheme.json`) | After apply: Theme mode toggle, wallpaper-only changes, variant/mode CLI, boot regenerate |
+| Layer           | Source                                                     | When it wins                                                                                        |
+|-----------------|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| Rice default    | `config.json` → `darkMode`                                 | On **full rice apply** (`dots appearance apply`, launcher confirm, Control Center Apply for a rice) |
+| Live preference | `scheme/state.json` → `mode` (mirrored into `scheme.json`) | After apply: Theme mode toggle, wallpaper-only changes, variant/mode CLI, boot regenerate           |
 
 Rules:
 

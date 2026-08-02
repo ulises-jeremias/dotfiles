@@ -16,8 +16,8 @@
 set -euo pipefail
 
 if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
-  # shellcheck source=/dev/null
-  source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+	# shellcheck source=/dev/null
+	source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
 fi
 
 SMART_COLORS_DIR="${HOME}/.cache/dots/smart-colors"
@@ -29,22 +29,22 @@ DOTS_WALLPAPER_POINTER="${DOTS_WALLPAPER_POINTER_FILE:-${DOTS_STATE_DIR:-${XDG_S
 # ── helpers ──────────────────────────────────────────────────────────────────
 
 hex_to_hyprlock_rgba() {
-  # Convert a 6-char hex (#rrggbb) + optional alpha (0-255 as 2-hex) to
-  # hyprlock RGBA format: rrggbbaa (no #, always 8 chars)
-  local hex="${1#\#}"
-  local alpha="${2:-ff}"
-  printf '%s%s\n' "$hex" "$alpha"
+	# Convert a 6-char hex (#rrggbb) + optional alpha (0-255 as 2-hex) to
+	# hyprlock RGBA format: rrggbbaa (no #, always 8 chars)
+	local hex="${1#\#}"
+	local alpha="${2:-ff}"
+	printf '%s%s\n' "$hex" "$alpha"
 }
 
 # ── parse scheme.json ─────────────────────────────────────────────────────────
 
 if [[ ! -f $SCHEME_FILE ]]; then
-  echo "dots-hyprlock-theme: scheme.json not found at $SCHEME_FILE — run dots-color-scheme first." >&2
-  exit 1
+	echo "dots-hyprlock-theme: scheme.json not found at $SCHEME_FILE — run dots-color-scheme first." >&2
+	exit 1
 fi
 
 read_colour() {
-  python3 - "$SCHEME_FILE" "$1" <<'PY'
+	python3 - "$SCHEME_FILE" "$1" <<'PY'
 import json, pathlib, sys
 data = json.loads(pathlib.Path(sys.argv[1]).read_text())
 key = sys.argv[2]
@@ -55,7 +55,7 @@ PY
 }
 
 is_light_mode() {
-  python3 - "$SCHEME_FILE" <<'PY'
+	python3 - "$SCHEME_FILE" <<'PY'
 import json, pathlib, sys
 data = json.loads(pathlib.Path(sys.argv[1]).read_text())
 print("true" if data.get("mode", "dark") == "light" else "false")
@@ -76,15 +76,15 @@ light_mode="$(is_light_mode)"
 # Resolve wallpaper path — canonical pointer wins over stale cache mirrors.
 wallpaper=""
 if [[ $# -ge 1 && -n ${1:-} ]]; then
-  wallpaper="$1"
+	wallpaper="$1"
 elif [[ -f $DOTS_WALLPAPER_POINTER ]]; then
-  wallpaper="$(head -n 1 "$DOTS_WALLPAPER_POINTER" | tr -d '\r')"
+	wallpaper="$(head -n 1 "$DOTS_WALLPAPER_POINTER" | tr -d '\r')"
 elif [[ -f $WALLPAPER_CACHE ]]; then
-  wallpaper="$(head -n 1 "$WALLPAPER_CACHE" | tr -d '\r')"
+	wallpaper="$(head -n 1 "$WALLPAPER_CACHE" | tr -d '\r')"
 fi
 # Reject non-existent cache leftovers (e.g. old test PNGs).
 if [[ -n ${wallpaper:-} && ! -f $wallpaper ]]; then
-  wallpaper=""
+	wallpaper=""
 fi
 
 # ── generate hyprlock colour override file ────────────────────────────────────
@@ -111,9 +111,9 @@ cat >"$OUTPUT_FILE" <<EOF
 background {
     monitor =
     $(if [[ -n $wallpaper && -f $wallpaper ]]; then
-  echo "path = $wallpaper"
+	echo "path = $wallpaper"
 else
-  echo "color = 0xff${bg_rgba}"
+	echo "color = 0xff${bg_rgba}"
 fi)
     blur_passes = 3
     blur_size = 6
