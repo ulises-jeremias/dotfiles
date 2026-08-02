@@ -93,10 +93,17 @@ cmd_apply() {
 	while [[ $# -gt 0 ]]; do
 		case "${1:-}" in
 		--wallpaper)
-			wallpaper="${2:-}"
+			[[ -n ${2:-} ]] || {
+				echo "Error: --wallpaper requires a path" >&2
+				exit 1
+			}
+			wallpaper="$2"
 			shift 2
 			;;
-		*) shift ;;
+		*)
+			echo "Error: unknown argument: $1" >&2
+			exit 1
+			;;
 		esac
 	done
 
@@ -113,11 +120,32 @@ cmd_apply() {
 		local ipc_out=""
 		if ipc_out="$(quickshell ipc call rice apply "$rice_name" "${wallpaper:-}" 2>&1)"; then
 			case "$ipc_out" in
-			*"not found"* | *"Error"* | *"error"*)
+			"Target not found."* | *"Target not found"*)
 				echo "Warning: Quickshell IPC unavailable ($ipc_out); falling back to shell apply" >&2
 				;;
 			*)
-				# Persist happens inside Quickshell after wal/M3 succeed.
+				local _i busy="" last_error
+				for _i in $(seq 1 120); do
+					if ! busy="$(quickshell ipc call rice isBusy 2>/dev/null)"; then
+						echo "Error: failed to poll rice isBusy via Quickshell IPC" >&2
+						exit 1
+					fi
+					busy="${busy//$'\r'/}"
+					busy="${busy//$'\n'/}"
+					[[ $busy == "1" ]] || break
+					sleep 0.5
+				done
+				if [[ $busy == "1" ]]; then
+					echo "Error: rice apply timed out waiting for Quickshell" >&2
+					exit 1
+				fi
+				last_error="$(quickshell ipc call rice lastError 2>/dev/null || true)"
+				last_error="${last_error//$'\r'/}"
+				last_error="${last_error//$'\n'/}"
+				if [[ -n $last_error ]]; then
+					echo "Error: rice apply failed: $last_error" >&2
+					exit 1
+				fi
 				exit 0
 				;;
 			esac

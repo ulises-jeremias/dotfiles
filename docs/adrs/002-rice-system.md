@@ -16,6 +16,7 @@ Desktop theming is a core HorneroConfig feature. The earlier shell-centric desig
 - **State**:
   - Rice id: `~/.local/state/dots/rice/current` only
   - Wallpaper: `~/.local/state/dots/wallpaper/path`
+  - Palette: `~/.cache/dots/smart-colors/scheme.json`
   - Scheme prefs: `~/.local/state/dots/scheme/state.json` synced via `dots-color-scheme sync-state`
 - **CLI**: `dots appearance …` (+ `dots rice …` alias), `dots appearance doctor`
 

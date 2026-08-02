@@ -239,6 +239,19 @@ apply_gtk_color_scheme() {
 		else
 			printf '\ngtk-application-prefer-dark-theme=%s\n' "$prefer_dark" >> "$GTK3_CONFIG"
 		fi
+	else
+		mkdir -p "$(dirname "$GTK3_CONFIG")" || {
+			log "ERROR" "Failed to create directory for $GTK3_CONFIG"
+			return 1
+		}
+		if ! cat > "$GTK3_CONFIG" << EOF; then
+[Settings]
+gtk-application-prefer-dark-theme=$prefer_dark
+EOF
+			log "ERROR" "Failed to write $GTK3_CONFIG"
+			return 1
+		fi
+		log "INFO" "Created GTK3 config for color-scheme sync"
 	fi
 
 	if command -v gsettings > /dev/null 2>&1; then
