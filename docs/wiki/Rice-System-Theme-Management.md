@@ -50,6 +50,8 @@ dots appearance doctor          # FAIL on wal≠pointer, empty hyprlock, GTK mod
 
 `Appearances.Appearance` in Quickshell forwards `darkMode` / `schemeType` from `list-rices.py` so Control Center staging can honor light rices. Mode overrides after a rice apply wait for `Rice.applyFinished` and only run when Theme mode was toggled explicitly.
 
+GTK / libadwaita keep `gtk-application-prefer-dark-theme` and `org.gnome.desktop.interface color-scheme` (`prefer-dark` / `prefer-light`) aligned with the live mode on rice apply and on `dots-color-scheme mode`.
+
 ## State (single source of truth)
 
 | Concern           | Path                                     |
