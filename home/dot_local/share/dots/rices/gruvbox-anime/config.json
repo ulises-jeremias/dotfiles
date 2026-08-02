@@ -3,14 +3,7 @@
   "name": "Gruvbox Anime",
   "description": "Retro warm colors with anime aesthetics and artistic wallpapers",
   "style": "Retro Anime",
-  "tags": [
-    "retro",
-    "anime",
-    "warm",
-    "cozy",
-    "artistic",
-    "painting"
-  ],
+  "tags": ["retro", "anime", "warm", "cozy", "artistic", "painting"],
   "schemeType": "expressive",
   "darkMode": true,
   "barPosition": "left",

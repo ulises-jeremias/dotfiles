@@ -32,12 +32,12 @@ Fields such as `barPosition` / `iconTheme` / `cursorTheme` / `accentColor` are m
 
 ## State (single source of truth)
 
-| Concern | Canonical path | Notes |
-|---------|----------------|-------|
-| Current rice id | `~/.local/state/dots/rice/current` | Mirrored to `~/.local/share/dots/rices/.current_rice` and `~/.cache/dots/current_rice` on every write |
-| Wallpaper pointer | `~/.local/state/dots/wallpaper/path` | One absolute path per line |
-| Live scheme | `~/.cache/dots/smart-colors/scheme.json` | Consumed by `Colours.qml` |
-| Scheme prefs | `~/.local/state/dots/scheme/state.json` | Must match scheme meta after apply (`dots-color-scheme sync-state`) |
+| Concern           | Canonical path                           | Notes                                                                                                 |
+|-------------------|------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| Current rice id   | `~/.local/state/dots/rice/current`       | Mirrored to `~/.local/share/dots/rices/.current_rice` and `~/.cache/dots/current_rice` on every write |
+| Wallpaper pointer | `~/.local/state/dots/wallpaper/path`     | One absolute path per line                                                                            |
+| Live scheme       | `~/.cache/dots/smart-colors/scheme.json` | Consumed by `Colours.qml`                                                                             |
+| Scheme prefs      | `~/.local/state/dots/scheme/state.json`  | Must match scheme meta after apply (`dots-color-scheme sync-state`)                                   |
 
 ```bash
 # Heal / verify
@@ -101,4 +101,4 @@ dots appearance apply catppuccin-macchiato
 - The maintained desktop path is Hyprland + Quickshell.
 - Wallpaper display is Quickshell Background (layershell), not swww/hyprpaper.
 - Colour generation uses pywal + `generate-m3-colors.py` (Material You). There is no wpgtk requirement on the maintained path.
-- Related tracking: https://github.com/ulises-jeremias/dotfiles/issues/249
+- Related tracking: <https://github.com/ulises-jeremias/dotfiles/issues/249>

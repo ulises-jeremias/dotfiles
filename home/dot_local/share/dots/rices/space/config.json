@@ -3,13 +3,7 @@
   "name": "Space",
   "description": "Mystical and calming cosmic theme with deep blues and purples",
   "style": "Cosmic",
-  "tags": [
-    "cosmic",
-    "space",
-    "mystical",
-    "calming",
-    "dark"
-  ],
+  "tags": ["cosmic", "space", "mystical", "calming", "dark"],
   "schemeType": "vibrant",
   "darkMode": true,
   "barPosition": "left",

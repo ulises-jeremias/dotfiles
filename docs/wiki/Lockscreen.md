@@ -200,13 +200,13 @@ The lockscreen automatically adapts its layout based on your current rice's `RIC
 
 ### Available Layouts
 
-| Layout | Rice Styles | Description |
-|--------|-------------|-------------|
-| **Default** | Any unlisted style | Clean, centered layout with standard typography |
-| **Cyberpunk** | cyberpunk, neon, futuristic | Glowing neon elements, tech-inspired fonts |
-| **Cozy** | cozy, kawaii, cute, warm | Soft, rounded elements with pastel accents |
-| **Vaporwave** | vaporwave, retro, synthwave | Gradient effects, 80s-inspired typography |
-| **Minimal** | minimal, clean, productive | Ultra-clean with minimal UI elements |
+| Layout        | Rice Styles                 | Description                                     |
+|---------------|-----------------------------|-------------------------------------------------|
+| **Default**   | Any unlisted style          | Clean, centered layout with standard typography |
+| **Cyberpunk** | cyberpunk, neon, futuristic | Glowing neon elements, tech-inspired fonts      |
+| **Cozy**      | cozy, kawaii, cute, warm    | Soft, rounded elements with pastel accents      |
+| **Vaporwave** | vaporwave, retro, synthwave | Gradient effects, 80s-inspired typography       |
+| **Minimal**   | minimal, clean, productive  | Ultra-clean with minimal UI elements            |
 
 ### How It Works
 
@@ -231,14 +231,14 @@ The style matching is case-insensitive and supports partial matches (e.g., "cozy
 
 ## Comparison with Betterlockscreen
 
-| Feature | betterlockscreen | dots-lockscreen |
-|---------|------------------|-----------------|
-| Platform | X11 (i3lock) | Wayland (hyprlock) |
-| Effects | 6 effects | 4 core effects |
-| Multi-monitor | Native support | Via hyprlock |
-| Color integration | Manual config | Smart-colors system |
-| Dependencies | i3lock-color, imagemagick | hyprlock, imagemagick |
-| Login box | Custom rendering | Hyprlock built-in |
+| Feature           | betterlockscreen          | dots-lockscreen       |
+|-------------------|---------------------------|-----------------------|
+| Platform          | X11 (i3lock)              | Wayland (hyprlock)    |
+| Effects           | 6 effects                 | 4 core effects        |
+| Multi-monitor     | Native support            | Via hyprlock          |
+| Color integration | Manual config             | Smart-colors system   |
+| Dependencies      | i3lock-color, imagemagick | hyprlock, imagemagick |
+| Login box         | Custom rendering          | Hyprlock built-in     |
 
 ## Troubleshooting
 

@@ -3,12 +3,7 @@
   "name": "Gruvbox Minimalistic",
   "description": "Clean and simplified gruvbox aesthetic with minimal polybar",
   "style": "Retro Minimal",
-  "tags": [
-    "minimal",
-    "clean",
-    "gruvbox",
-    "productivity"
-  ],
+  "tags": ["minimal", "clean", "gruvbox", "productivity"],
   "schemeType": "tonal-spot",
   "darkMode": true,
   "barPosition": "top",
