@@ -54,7 +54,7 @@ Item {
 
         Behavior on contentY {
             Anim {
-                duration: Appearance.anim.durations.normal
+                duration: Appearance.anim.durations.small
             }
         }
 
@@ -235,9 +235,15 @@ Item {
                 color: item.active ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
 
                 function onClicked(): void {
-                    if (!root.initialOpeningComplete)
-                        return;
+                    // Allow navigation even during the short opening gate; the
+                    // active pane loader handles first paint.
                     root.session.active = item.label;
+                }
+
+                onEntered: root.session.prefetch(item.label)
+                onExited: {
+                    if (root.session.warmLabel === item.label)
+                        root.session.clearPrefetch();
                 }
             }
 

@@ -18,10 +18,12 @@ Singleton {
 
     property string currentId: ""
     property var currentConfig: ({})
+    readonly property bool busy: _busy
 
     property bool _startupRestored: false
     property bool _busy: false
     property var _queue: []
+    property string _jobKind: ""
 
     property string _pendingWallpaper: ""
     property string _pendingSchemeType: "tonal-spot"
@@ -30,6 +32,8 @@ Singleton {
     property string _applyRiceId: ""
     property bool _persistRiceOnSuccess: false
     property string _lastError: ""
+
+    signal applyFinished(bool ok)
 
     // ── Public API ──────────────────────────────────────────────────────────
 
@@ -80,6 +84,7 @@ Singleton {
         _queue = _queue.slice(1);
         _busy = true;
         _lastError = "";
+        _jobKind = job.kind || "";
 
         if (job.kind === "apply") {
             _pendingRiceId = job.riceId;
@@ -92,15 +97,16 @@ Singleton {
             _persistRiceOnSuccess = false;
             _applyRiceId = root.currentId;
             _pendingWallpaper = job.wallpaper;
-            _pendingSchemeType = currentConfig.schemeType || "tonal-spot";
-            _pendingDarkMode = currentConfig.darkMode !== undefined ? !!currentConfig.darkMode : true;
+            // Wallpaper-only: live mode + flavour from Colours/state, not rice defaults.
+            _pendingSchemeType = Colours.flavour || currentConfig.schemeType || "tonal-spot";
+            _pendingDarkMode = !Colours.currentLight;
             walProc.running = true;
         } else if (job.kind === "reload") {
             _persistRiceOnSuccess = false;
             _applyRiceId = root.currentId;
             _pendingWallpaper = Wallpapers.actualCurrent || "";
-            _pendingSchemeType = currentConfig.schemeType || "tonal-spot";
-            _pendingDarkMode = currentConfig.darkMode !== undefined ? !!currentConfig.darkMode : true;
+            _pendingSchemeType = Colours.flavour || currentConfig.schemeType || "tonal-spot";
+            _pendingDarkMode = !Colours.currentLight;
             walReloadProc.running = true;
         } else {
             _finishJob(false, "unknown job kind");
@@ -116,21 +122,26 @@ Singleton {
         }
         _busy = false;
         _persistRiceOnSuccess = false;
+        root.applyFinished(ok);
         Qt.callLater(() => root._pump());
     }
 
     // ── Restore current rice id from state file on startup ──────────────────
 
     FileView {
+        id: riceStateFile
+
         path: root.stateFile
+        watchChanges: true
+        // Must call FileView.reload — root.reload() would re-run wal.
+        onFileChanged: riceStateFile.reload()
         onLoaded: {
             const id = text().trim();
-            if (id) {
+            if (id && id !== root.currentId)
                 root.currentId = id;
-                if (!root._startupRestored) {
-                    root._startupRestored = true;
-                    ensureSchemeProc.running = true;
-                }
+            if (id && !root._startupRestored) {
+                root._startupRestored = true;
+                ensureSchemeProc.running = true;
             }
         }
         onLoadFailed: console.warn("Rice.qml: state file not found:", root.stateFile)
@@ -288,11 +299,11 @@ find -L "$DOTS_BG_DIR" -maxdepth 1 \\( -type f -o -type l \\) \\( \
         }
     }
 
-    // Write wallpaper pointer state file
+    // Write wallpaper pointer + realign ~/.cache/wal/wal (shell apply parity)
     Process {
         id: writeWallpaperPointer
 
-        command: ["sh", "-c", 'mkdir -p "$(dirname "$DOTS_WALLPAPER_PTR")" && printf "%s\\n" "$DOTS_WALLPAPER_PATH" > "$DOTS_WALLPAPER_PTR"']
+        command: ["sh", "-c", 'mkdir -p "$(dirname "$DOTS_WALLPAPER_PTR")" "$HOME/.cache/wal" && printf "%s\\n" "$DOTS_WALLPAPER_PATH" > "$DOTS_WALLPAPER_PTR" && ln -sfn "$DOTS_WALLPAPER_PATH" "$HOME/.cache/wal/wal"']
         environment: ({
             "DOTS_WALLPAPER_PTR": root.wallpaperPointer,
             "DOTS_WALLPAPER_PATH": root._pendingWallpaper
@@ -369,35 +380,40 @@ find -L "$DOTS_BG_DIR" -maxdepth 1 \\( -type f -o -type l \\) \\( \
         command: ["touch", root.schemeJson]
     }
 
-    // ── Step 4: side effects (Hyprland, kitty, GTK, snappy, notify) ─────────
+    // ── Step 4: side effects (Hyprland, kitty, GTK, snappy, hyprlock, notify)
 
     function _runSideEffects(): void {
         const cfg = root.currentConfig;
         const riceId = root._applyRiceId || root.currentId;
+        const fullApply = root._jobKind === "apply";
 
-        if (cfg && cfg.hyprlandAnimations) {
+        // Always refresh lockscreen colours from the new palette.
+        hyprlockProc.running = true;
+
+        if (fullApply && cfg && cfg.hyprlandAnimations) {
             hyprAnimProc.animProfile = cfg.hyprlandAnimations;
             hyprAnimProc.running = true;
         }
 
         hyprReloadProc.running = true;
 
-        if (cfg && cfg.kittyOpacity !== null && cfg.kittyOpacity !== undefined) {
-            kittyProc.kittyOpacity = String(cfg.kittyOpacity);
-            kittyProc.running = true;
-        }
-
-        // Always drive GTK through rice helper so "auto" is honored.
-        if (riceId) {
-            gtkProc.riceId = riceId;
-            gtkProc.running = true;
-            snappyProc.riceId = riceId;
-            snappyProc.running = true;
-        }
-
-        if (cfg && (cfg.name || riceId)) {
-            notifyProc.riceName = cfg.name || riceId;
-            notifyProc.running = true;
+        // Wallpaper-only / reload must not snap GTK/snappy back to rice defaults
+        // after the user flipped live Theme mode.
+        if (fullApply) {
+            if (cfg && cfg.kittyOpacity !== null && cfg.kittyOpacity !== undefined) {
+                kittyProc.kittyOpacity = String(cfg.kittyOpacity);
+                kittyProc.running = true;
+            }
+            if (riceId) {
+                gtkProc.riceId = riceId;
+                gtkProc.running = true;
+                snappyProc.riceId = riceId;
+                snappyProc.running = true;
+            }
+            if (cfg && (cfg.name || riceId)) {
+                notifyProc.riceName = cfg.name || riceId;
+                notifyProc.running = true;
+            }
         }
     }
 
@@ -447,6 +463,12 @@ find -L "$DOTS_BG_DIR" -maxdepth 1 \\( -type f -o -type l \\) \\( \
     }
 
     Process {
+        id: hyprlockProc
+
+        command: ["dots-hyprlock-theme"]
+    }
+
+    Process {
         id: notifyProc
 
         property string riceName: ""
@@ -483,7 +505,7 @@ find -L "$DOTS_BG_DIR" -maxdepth 1 \\( -type f -o -type l \\) \\( \
             root.setWallpaper(path);
         }
 
-        function busy(): string {
+        function isBusy(): string {
             return root._busy ? "1" : "0";
         }
 

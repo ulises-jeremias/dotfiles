@@ -26,6 +26,30 @@ When Quickshell is not running, the same full pipeline runs via `apply-appearanc
 - GTK theme (`gtkTheme`, including `auto`)
 - optional Hyprland animation profile / kitty opacity / snappy theme
 
+## Light / dark model
+
+Two related but distinct concepts:
+
+| Layer | Source | When it wins |
+|-------|--------|--------------|
+| Rice default | `config.json` → `darkMode` | On **full rice apply** (`dots appearance apply`, launcher confirm, Control Center Apply for a rice) |
+| Live preference | `scheme/state.json` → `mode` (mirrored into `scheme.json`) | After apply: Theme mode toggle, wallpaper-only changes, variant/mode CLI, boot regenerate |
+
+Rules:
+
+1. **Applying a rice** sets live mode from that rice’s `darkMode` (preset).
+2. **Theme mode** in Control Center updates the live preference only — it does **not** change the current rice id.
+3. **Wallpaper-only** / reload use the **live** mode (`Colours.currentLight` / `state.json`), never the rice default. Otherwise flipping to dark and changing wallpaper would snap back to the rice’s light/dark.
+4. Control Center shows when live mode diverges from the current rice default.
+
+```bash
+dots appearance set-mode dark   # live preference
+dots appearance apply soft-morning  # preset (includes darkMode: false)
+dots appearance doctor          # FAIL on wal≠pointer, empty hyprlock, GTK mode drift, orphans
+```
+
+`Appearances.Appearance` in Quickshell forwards `darkMode` / `schemeType` from `list-rices.py` so Control Center staging can honor light rices. Mode overrides after a rice apply wait for `Rice.applyFinished` and only run when Theme mode was toggled explicitly.
+
 ## State (single source of truth)
 
 | Concern           | Path                                     |

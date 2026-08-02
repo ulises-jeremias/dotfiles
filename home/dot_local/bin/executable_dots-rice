@@ -26,7 +26,7 @@ source "$HOME/.local/lib/dots/rice-state.sh" 2>/dev/null || true
 RICES_DIR="${RICES_DIR:-${DOTS_RICES_DIR:-$HOME/.local/share/dots/rices}}"
 
 show_help() {
-	cat <<'EOF'
+  cat <<'EOF'
 Usage: dots-rice <command> [options]
 
 Commands:
@@ -39,113 +39,111 @@ EOF
 }
 
 cmd_selector() {
-	if pgrep -x quickshell >/dev/null 2>&1; then
-		quickshell ipc call drawers toggle launcher
-		exit 0
-	fi
-	echo "Quickshell not running." >&2
-	cmd_list
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    quickshell ipc call drawers toggle launcher
+    exit 0
+  fi
+  echo "Quickshell not running." >&2
+  cmd_list
 }
 
 cmd_list() {
-	for rice_dir in "$RICES_DIR"/*/; do
-		[[ -d $rice_dir ]] || continue
-		basename "$rice_dir"
-	done
+  for rice_dir in "$RICES_DIR"/*/; do
+    [[ -d $rice_dir ]] || continue
+    basename "$rice_dir"
+  done
 }
 
 cmd_current() {
-	if pgrep -x quickshell >/dev/null 2>&1; then
-		local id
-		id="$(quickshell ipc call rice current 2>/dev/null || true)"
-		id="${id//$'\r'/}"
-		id="${id//$'\n'/}"
-		case "$id" in
-		"" | "Target not found." | *"not found"* | *"error"* | *"Error"*) ;;
-		*)
-			printf '%s\n' "$id"
-			return
-			;;
-		esac
-	fi
-	if declare -f dots_read_current_rice >/dev/null 2>&1; then
-		dots_read_current_rice
-	else
-		[[ -f ${DOTS_RICE_CANONICAL_FILE:-} ]] && cat "$DOTS_RICE_CANONICAL_FILE" || echo ""
-	fi
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    local id
+    id="$(quickshell ipc call rice current 2>/dev/null || true)"
+    id="${id//$'\r'/}"
+    id="${id//$'\n'/}"
+    case "$id" in
+      "" | "Target not found." | *"not found"* | *"error"* | *"Error"*) ;;
+      *)
+        printf '%s\n' "$id"
+        return
+        ;;
+    esac
+  fi
+  if declare -f dots_read_current_rice >/dev/null 2>&1; then
+    dots_read_current_rice
+  else
+    [[ -f ${DOTS_RICE_CANONICAL_FILE:-} ]] && cat "$DOTS_RICE_CANONICAL_FILE" || echo ""
+  fi
 }
 
 _shell_apply() {
-	local rice_name="$1"
-	local wallpaper="${2:-}"
-	# shellcheck source=/dev/null
-	source "$HOME/.local/lib/dots/wallpaper-resolver.sh" 2>/dev/null || true
-	# shellcheck source=/dev/null
-	source "$HOME/.local/lib/dots/apply-appearance.sh"
-	dots_apply_appearance "$rice_name" "$wallpaper"
+  local rice_name="$1"
+  local wallpaper="${2:-}"
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/wallpaper-resolver.sh" 2>/dev/null || true
+  # shellcheck source=/dev/null
+  source "$HOME/.local/lib/dots/apply-appearance.sh"
+  dots_apply_appearance "$rice_name" "$wallpaper"
 }
 
 cmd_apply() {
-	local rice_name="${1:-}"
-	local wallpaper=""
-	shift 2>/dev/null || true
+  local rice_name="${1:-}"
+  local wallpaper=""
+  shift 2>/dev/null || true
 
-	while [[ $# -gt 0 ]]; do
-		case "${1:-}" in
-		--wallpaper)
-			wallpaper="${2:-}"
-			shift 2
-			;;
-		*) shift ;;
-		esac
-	done
+  while [[ $# -gt 0 ]]; do
+    case "${1:-}" in
+      --wallpaper)
+        wallpaper="${2:-}"
+        shift 2
+        ;;
+      *) shift ;;
+    esac
+  done
 
-	[[ -n $rice_name ]] || {
-		echo "Error: rice name required" >&2
-		exit 1
-	}
-	[[ -d "$RICES_DIR/$rice_name" ]] || {
-		echo "Error: rice '$rice_name' not found" >&2
-		exit 1
-	}
+  [[ -n $rice_name ]] || {
+    echo "Error: rice name required" >&2
+    exit 1
+  }
+  [[ -d "$RICES_DIR/$rice_name" ]] || {
+    echo "Error: rice '$rice_name' not found" >&2
+    exit 1
+  }
 
-	if pgrep -x quickshell >/dev/null 2>&1; then
-		local ipc_out=""
-		if ipc_out="$(quickshell ipc call rice apply "$rice_name" "${wallpaper:-}" 2>&1)"; then
-			case "$ipc_out" in
-			*"not found"* | *"Error"* | *"error"*)
-				echo "Warning: Quickshell IPC unavailable ($ipc_out); falling back to shell apply" >&2
-				;;
-			*)
-				if declare -f dots_write_current_rice >/dev/null 2>&1; then
-					dots_write_current_rice "$rice_name" || true
-				fi
-				exit 0
-				;;
-			esac
-		else
-			echo "Warning: Quickshell IPC failed; falling back to shell apply" >&2
-		fi
-	fi
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    local ipc_out=""
+    if ipc_out="$(quickshell ipc call rice apply "$rice_name" "${wallpaper:-}" 2>&1)"; then
+      case "$ipc_out" in
+        *"not found"* | *"Error"* | *"error"*)
+          echo "Warning: Quickshell IPC unavailable ($ipc_out); falling back to shell apply" >&2
+          ;;
+        *)
+          # Persist happens inside Quickshell after wal/M3 succeed.
+          exit 0
+          ;;
+      esac
+    else
+      echo "Warning: Quickshell IPC failed; falling back to shell apply" >&2
+    fi
+  fi
 
-	_shell_apply "$rice_name" "$wallpaper"
+  _shell_apply "$rice_name" "$wallpaper"
 }
 
 case "${1:-help}" in
-selector)
-	shift
-	cmd_selector "$@"
-	;;
-list) cmd_list ;;
-current) cmd_current ;;
-apply)
-	shift
-	cmd_apply "$@"
-	;;
-help | --help | -h) show_help ;;
-*)
-	echo "Unknown command: $1" >&2
-	echo "Run 'dots-rice help' for usage" >&2
-	exit 1
-	;;
+  selector)
+    shift
+    cmd_selector "$@"
+    ;;
+  list) cmd_list ;;
+  current) cmd_current ;;
+  apply)
+    shift
+    cmd_apply "$@"
+    ;;
+  help | --help | -h) show_help ;;
+  *)
+    echo "Unknown command: $1" >&2
+    echo "Run 'dots-rice help' for usage" >&2
+    exit 1
+    ;;
 esac

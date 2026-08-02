@@ -73,14 +73,18 @@ secondary="$(read_colour secondary)"
 error="$(read_colour error)"
 light_mode="$(is_light_mode)"
 
-# Resolve wallpaper path
+# Resolve wallpaper path — canonical pointer wins over stale cache mirrors.
 wallpaper=""
 if [[ $# -ge 1 && -n ${1:-} ]]; then
   wallpaper="$1"
-elif [[ -f $WALLPAPER_CACHE ]]; then
-  wallpaper="$(cat "$WALLPAPER_CACHE")"
 elif [[ -f $DOTS_WALLPAPER_POINTER ]]; then
-  wallpaper="$(cat "$DOTS_WALLPAPER_POINTER")"
+  wallpaper="$(head -n 1 "$DOTS_WALLPAPER_POINTER" | tr -d '\r')"
+elif [[ -f $WALLPAPER_CACHE ]]; then
+  wallpaper="$(head -n 1 "$WALLPAPER_CACHE" | tr -d '\r')"
+fi
+# Reject non-existent cache leftovers (e.g. old test PNGs).
+if [[ -n ${wallpaper:-} && ! -f $wallpaper ]]; then
+  wallpaper=""
 fi
 
 # ── generate hyprlock colour override file ────────────────────────────────────
@@ -134,7 +138,7 @@ input-field {
     outer_color = rgba(${outline_rgba})
     check_color = rgb(${primary:-ffb0ca})
     fail_color = rgba(${error:-ffb4ab}bb)
-    fail_text = <i>$FAIL_REASON</i>
+    fail_text = <i>\$FAIL_REASON</i>
     fail_timeout = 2000
     rounding = 12
     shadow_passes = 3

@@ -95,9 +95,8 @@ cmd_apply() {
 				echo "Warning: Quickshell IPC unavailable ($ipc_out); falling back to shell apply" >&2
 				;;
 			*)
-				if declare -f dots_write_current_rice >/dev/null 2>&1; then
-					dots_write_current_rice "$id" || true
-				fi
+				# Rice id is persisted by Quickshell only after a successful apply.
+				# Do not write rice/current here — that raced ahead of wal/M3.
 				exit 0
 				;;
 			esac
@@ -195,9 +194,21 @@ cmd_doctor() {
 	echo "state.flavour  : ${state_flavour:-"(missing)"}"
 	echo "scheme.mode    : ${scheme_mode:-"(missing)"}"
 	echo "state.mode     : ${state_mode:-"(missing)"}"
+	local hyprlock_conf="${HOME}/.cache/dots/smart-colors/colors-hyprlock.conf"
+	local hyprlock_bytes=0
+	[[ -f $hyprlock_conf ]] && hyprlock_bytes="$(wc -c <"$hyprlock_conf" | tr -d ' ')"
+	local gtk_theme_ini="" gtk_prefer_dark=""
+	if [[ -f ${HOME}/.config/gtk-3.0/settings.ini ]]; then
+		gtk_theme_ini="$(grep -E '^gtk-theme-name=' "${HOME}/.config/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
+		gtk_prefer_dark="$(grep -E '^gtk-application-prefer-dark-theme=' "${HOME}/.config/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
+	fi
+
 	echo "wallpaper.ptr  : ${pointer_val:-"(missing)"}"
 	echo "wallpaper.res  : ${resolved:-"(missing)"}"
 	echo "wal.target     : ${wal_target:-"(missing)"}"
+	echo "hyprlock.conf  : ${hyprlock_bytes} bytes"
+	echo "gtk.theme.ini  : ${gtk_theme_ini:-"(missing)"}"
+	echo "gtk.preferDark : ${gtk_prefer_dark:-"(missing)"}"
 
 	if [[ -z $qs_rice ]]; then
 		echo "FAIL: rice current pointer missing" >&2
@@ -228,6 +239,39 @@ cmd_doctor() {
 		res_real="$(readlink -f "$resolved" 2>/dev/null || true)"
 		if [[ -n $ptr_real && -n $res_real && $ptr_real != "$res_real" ]]; then
 			echo "FAIL: pointer != dots-wallpaper-current ($pointer_val vs $resolved)" >&2
+			ok=1
+		fi
+	fi
+	if [[ -n $pointer_val && -f $pointer_val ]]; then
+		local ptr_real wal_real
+		ptr_real="$(readlink -f "$pointer_val" 2>/dev/null || true)"
+		wal_real="$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || true)"
+		if [[ -z $wal_real ]]; then
+			echo "FAIL: ~/.cache/wal/wal missing or broken" >&2
+			ok=1
+		elif [[ -n $ptr_real && $ptr_real != "$wal_real" ]]; then
+			echo "FAIL: wal target != wallpaper pointer ($wal_real vs $ptr_real)" >&2
+			ok=1
+		fi
+	fi
+	if [[ ! -f $hyprlock_conf || ${hyprlock_bytes:-0} -eq 0 ]]; then
+		echo "FAIL: colors-hyprlock.conf missing or empty" >&2
+		ok=1
+	fi
+	if [[ -f ${HOME}/.local/state/dots/wallpaper/path.txt ]]; then
+		echo "FAIL: orphan wallpaper/path.txt present (use wallpaper/path)" >&2
+		ok=1
+	fi
+	if [[ -f ${HOME}/.cache/dots/smart-colors/wallpaper ]]; then
+		echo "FAIL: orphan smart-colors/wallpaper cache present" >&2
+		ok=1
+	fi
+	if [[ -n $state_mode && -n $gtk_prefer_dark ]]; then
+		if [[ $state_mode == "dark" && $gtk_prefer_dark == "false" ]]; then
+			echo "FAIL: GTK prefer-dark=false while live mode is dark" >&2
+			ok=1
+		elif [[ $state_mode == "light" && $gtk_prefer_dark == "true" ]]; then
+			echo "FAIL: GTK prefer-dark=true while live mode is light" >&2
 			ok=1
 		fi
 	fi

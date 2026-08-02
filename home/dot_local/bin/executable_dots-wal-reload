@@ -5,8 +5,8 @@
 ##
 ## Wal reload — IPC stub for Quickshell.
 ## When Quickshell is running, delegates to Rice.reload() via IPC which runs
-## wal -R, regenerates M3 scheme, reloads Hyprland, kitty, and GTK in-process.
-## Falls back to direct wal -R when QS is not running.
+## wal -R, regenerates M3 scheme, reloads Hyprland, and hyprlock in-process.
+## Falls back to wal -R + regenerate-from-state when QS is not running.
 ##
 set -euo pipefail
 
@@ -15,19 +15,37 @@ if pgrep -x quickshell >/dev/null 2>&1; then
   exit 0
 fi
 
-# Fallback: direct wal reload
+# Fallback: direct wal reload + M3 from live state prefs
 if command -v wal >/dev/null 2>&1; then
   wal -R -q 2>/dev/null || true
 fi
 
-# Fallback: regenerate M3 scheme if possible
 M3_SCRIPT="${HOME}/.local/lib/dots/generate-m3-colors.py"
 SCHEME_JSON="${XDG_CACHE_HOME:-$HOME/.cache}/dots/smart-colors/scheme.json"
 WALL_POINTER="${XDG_STATE_HOME:-$HOME/.local/state}/dots/wallpaper/path"
+STATE_JSON="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
+
+mode="dark"
+flavour="tonal-spot"
+if [[ -f $STATE_JSON ]]; then
+  mode="$(python3 -c "import json;print(json.load(open('$STATE_JSON')).get('mode','dark'))" 2>/dev/null || echo dark)"
+  flavour="$(python3 -c "import json;print(json.load(open('$STATE_JSON')).get('flavour','tonal-spot'))" 2>/dev/null || echo tonal-spot)"
+fi
+[[ $mode == "light" || $mode == "dark" ]] || mode="dark"
 
 if [[ -f $WALL_POINTER && -f $M3_SCRIPT ]] && command -v python3 >/dev/null 2>&1; then
-  wallpaper="$(cat "$WALL_POINTER" 2>/dev/null || true)"
+  wallpaper="$(head -n 1 "$WALL_POINTER" 2>/dev/null | tr -d '\r' || true)"
   if [[ -n ${wallpaper:-} && -f $wallpaper ]]; then
-    python3 "$M3_SCRIPT" --image "$wallpaper" --output "$SCHEME_JSON" 2>/dev/null || true
+    python3 "$M3_SCRIPT" \
+      --image "$wallpaper" \
+      --scheme-type "$flavour" \
+      --mode "$mode" \
+      --output "$SCHEME_JSON" 2>/dev/null || true
+    if command -v dots-color-scheme >/dev/null 2>&1; then
+      dots-color-scheme sync-state >/dev/null 2>&1 || true
+    fi
+    if command -v dots-hyprlock-theme >/dev/null 2>&1; then
+      dots-hyprlock-theme >/dev/null 2>&1 || true
+    fi
   fi
 fi

@@ -207,22 +207,21 @@ dots_apply_wallpaper_only() {
 		return 1
 	}
 
+	# Wallpaper-only: live mode/flavour come from scheme state (user preference),
+	# not from the rice default. Rice darkMode is applied only on full rice apply.
 	local rice_id="" scheme_type="tonal-spot" dark_mode="dark"
 	if declare -f dots_read_current_rice > /dev/null 2>&1; then
 		rice_id="$(dots_read_current_rice)"
 	fi
-	if [[ -n $rice_id && -f "$DOTS_RICES_DIR/$rice_id/config.json" ]]; then
+	local state_file="$DOTS_STATE_DIR/scheme/state.json"
+	if [[ -f $state_file ]]; then
+		scheme_type="$(_dots_aa_normalize_scheme_type "$(_dots_aa_json_get "$state_file" flavour tonal-spot)")"
+		dark_mode="$(_dots_aa_json_get "$state_file" mode dark)"
+		[[ $dark_mode == "light" || $dark_mode == "dark" ]] || dark_mode="dark"
+	elif [[ -n $rice_id && -f "$DOTS_RICES_DIR/$rice_id/config.json" ]]; then
 		scheme_type="$(_dots_aa_normalize_scheme_type "$(_dots_aa_json_get "$DOTS_RICES_DIR/$rice_id/config.json" schemeType tonal-spot)")"
 		if [[ "$(_dots_aa_json_get "$DOTS_RICES_DIR/$rice_id/config.json" darkMode true)" == "false" ]]; then
 			dark_mode="light"
-		fi
-	elif command -v dots-color-scheme > /dev/null 2>&1; then
-		# Prefer last scheme state when rice config unavailable.
-		local state_file="$DOTS_STATE_DIR/scheme/state.json"
-		if [[ -f $state_file ]]; then
-			scheme_type="$(_dots_aa_normalize_scheme_type "$(_dots_aa_json_get "$state_file" flavour tonal-spot)")"
-			dark_mode="$(_dots_aa_json_get "$state_file" mode dark)"
-			[[ $dark_mode == "light" || $dark_mode == "dark" ]] || dark_mode="dark"
 		fi
 	fi
 

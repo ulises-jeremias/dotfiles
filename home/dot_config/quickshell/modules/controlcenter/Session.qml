@@ -15,6 +15,8 @@ QtObject {
     }
     property int activeIndex: 0
     property bool navExpanded: false
+    // Hover-prefetch target for NavRail → Panes loaders.
+    property string warmLabel: ""
 
     readonly property BluetoothState bt: BluetoothState {}
     readonly property NetworkState network: NetworkState {}
@@ -27,7 +29,20 @@ QtObject {
             Quickshell.execDetached(command);
     }
 
-    onActiveChanged: activeIndex = Math.max(0, panes.indexOf(active))
+    function prefetch(label: string): void {
+        if (label && label !== active)
+            warmLabel = label;
+    }
+
+    function clearPrefetch(): void {
+        warmLabel = "";
+    }
+
+    onActiveChanged: {
+        activeIndex = Math.max(0, panes.indexOf(active));
+        if (warmLabel === active)
+            warmLabel = "";
+    }
     onActiveIndexChanged: if (panes[activeIndex])
         active = panes[activeIndex]
 }
