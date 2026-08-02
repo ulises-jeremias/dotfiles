@@ -50,7 +50,9 @@ get_rice_metadata() {
   local backgrounds_dir="$RICES_DIR/$rice_name/backgrounds"
   if [[ -d $backgrounds_dir ]]; then
     local count=0
-    count=$(find "$backgrounds_dir" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) | wc -l)
+    count=$(find -L "$backgrounds_dir" -maxdepth 1 \( -type f -o -type l \) \( \
+      -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \
+      -o -iname "*.gif" -o -iname "*.bmp" \) | wc -l)
     WALLPAPER_COUNT="$count"
   fi
 

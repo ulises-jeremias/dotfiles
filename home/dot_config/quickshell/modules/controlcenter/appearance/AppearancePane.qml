@@ -59,6 +59,13 @@ Item {
     property string pendingVariant: Schemes.currentVariant
     property string pendingMode: Colours.currentLight ? "light" : "dark"
     property string pendingWallpaperPath: Wallpapers.actualCurrent
+    property string stagedAppearanceWallpaper: ""
+    property bool appearanceDirty: false
+    property bool schemeDirty: false
+    property bool variantDirty: false
+    property bool modeDirty: false
+    property bool wallpaperDirty: false
+    readonly property bool hasPendingChanges: appearanceDirty || schemeDirty || variantDirty || modeDirty || wallpaperDirty
     property bool previewActive: false
     property string previewSource: ""
     property string previewTitle: ""
@@ -273,38 +280,76 @@ Item {
     }
 
     function commitSelection(): void {
+        // Apply staged appearance changes. Rice apply already covers wallpaper
+        // when an appearance is staged with a wallpaper override.
+        if (appearanceDirty && pendingAppearanceId) {
+            Rice.apply(pendingAppearanceId, stagedAppearanceWallpaper || "");
+        } else if (wallpaperDirty && pendingWallpaperPath) {
+            Rice.setWallpaper(pendingWallpaperPath);
+        }
+
+        if (schemeDirty && pendingSchemeKey) {
+            const parts = pendingSchemeKey.split(" ");
+            const name = parts[0] || "dynamic";
+            const flavour = parts.slice(1).join(" ") || pendingVariant;
+            session.runAction(["dots-color-scheme", "set", "-n", name, "-f", flavour]);
+        } else if (variantDirty && pendingVariant) {
+            session.runAction(["dots-color-scheme", "variant", pendingVariant]);
+        }
+
+        if (modeDirty && pendingMode)
+            session.runAction(["dots-color-scheme", "mode", pendingMode]);
+
+        appearanceDirty = false;
+        schemeDirty = false;
+        variantDirty = false;
+        modeDirty = false;
+        wallpaperDirty = false;
+        stagedAppearanceWallpaper = "";
         clearPreview();
     }
 
     function stageAppearanceApply(appearanceId: string): void {
         pendingAppearanceId = appearanceId;
-        Rice.apply(appearanceId, "");
+        stagedAppearanceWallpaper = "";
+        appearanceDirty = appearanceId !== Appearances.currentId;
+        // Selecting a rice implies its default wallpaper unless overridden.
+        wallpaperDirty = false;
     }
 
     function stageAppearanceApplyWithWallpaper(appearanceId: string, wallpaperPath: string): void {
         pendingAppearanceId = appearanceId;
         pendingWallpaperPath = wallpaperPath;
-        Rice.apply(appearanceId, wallpaperPath);
+        stagedAppearanceWallpaper = wallpaperPath;
+        appearanceDirty = true;
+        wallpaperDirty = false;
     }
 
     function stageSchemeApply(name: string, flavour: string): void {
         pendingSchemeKey = `${name} ${flavour}`;
-        session.runAction(["dots-color-scheme", "set", "-n", name, "-f", flavour]);
+        pendingVariant = flavour;
+        schemeDirty = pendingSchemeKey !== Schemes.currentScheme;
+        variantDirty = false;
     }
 
     function stageVariantApply(variant: string): void {
         pendingVariant = variant;
-        session.runAction(["dots-color-scheme", "variant", variant]);
+        variantDirty = normalizeVariantKey(variant) !== normalizeVariantKey(Schemes.currentVariant);
+        schemeDirty = false;
     }
 
     function stageModeApply(mode: string): void {
         pendingMode = mode;
-        session.runAction(["dots-color-scheme", "mode", mode]);
+        const current = Colours.currentLight ? "light" : "dark";
+        modeDirty = mode !== current;
     }
 
     function stageWallpaperApply(path: string): void {
         pendingWallpaperPath = path;
-        Rice.setWallpaper(path);
+        wallpaperDirty = path !== Wallpapers.actualCurrent;
+        // Wallpaper-only stage clears rice wallpaper override.
+        if (!appearanceDirty)
+            stagedAppearanceWallpaper = "";
     }
 
     function resetPendingSelections(): void {
@@ -313,6 +358,12 @@ Item {
         pendingVariant = Schemes.currentVariant;
         pendingMode = Colours.currentLight ? "light" : "dark";
         pendingWallpaperPath = Wallpapers.actualCurrent;
+        stagedAppearanceWallpaper = "";
+        appearanceDirty = false;
+        schemeDirty = false;
+        variantDirty = false;
+        modeDirty = false;
+        wallpaperDirty = false;
         if (!previewActive) {
             previewWallpaperPath = pendingWallpaperPath;
             previewVariant = pendingVariant;
@@ -592,6 +643,36 @@ Item {
                     BackgroundSection {
                         id: backgroundSection
                         rootPane: sidebarFlickable.rootPane
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.topMargin: Appearance.spacing.normal
+                        spacing: Appearance.spacing.small
+
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: root.hasPendingChanges ? qsTr("Pending appearance changes") : qsTr("No pending changes")
+                            color: root.hasPendingChanges ? Colours.palette.m3primary : Colours.palette.m3outline
+                            font.pointSize: Appearance.font.size.small
+                        }
+
+                        IconButton {
+                            icon: "refresh"
+                            type: IconButton.Text
+                            enabled: root.hasPendingChanges
+                            onClicked: root.resetPendingSelections()
+                        }
+
+                        IconButton {
+                            icon: "check"
+                            type: IconButton.Filled
+                            enabled: root.hasPendingChanges
+                            onClicked: {
+                                root.commitSelection();
+                                root.saveConfig();
+                            }
+                        }
                     }
                 }
             }

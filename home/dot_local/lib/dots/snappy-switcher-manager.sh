@@ -172,9 +172,18 @@ apply_rice_snappy_switcher_theme() {
   local rice_name="${1:-}"
 
   if [[ -z $rice_name ]]; then
-    local current_rice_file="$HOME/.local/share/dots/rices/.current_rice"
-    if [[ -f $current_rice_file ]]; then
-      rice_name=$(<"$current_rice_file")
+    # shellcheck source=/dev/null
+    source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
+    if declare -f dots_read_current_rice >/dev/null 2>&1; then
+      rice_name="$(dots_read_current_rice)"
+    else
+      local current_rice_file="$HOME/.local/state/dots/rice/current"
+      local legacy_rice_file="$HOME/.local/share/dots/rices/.current_rice"
+      if [[ -f $current_rice_file ]]; then
+        rice_name=$(head -n 1 "$current_rice_file")
+      elif [[ -f $legacy_rice_file ]]; then
+        rice_name=$(head -n 1 "$legacy_rice_file")
+      fi
     fi
   fi
 

@@ -15,7 +15,7 @@ GTK_THEME="auto"          # Use auto-detection based on wallpaper brightness
 ICON_THEME="Numix-Circle" # Colorful icons that work well with vibrant themes
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
-PREFER_DARK_THEME="auto" # Auto-detect based on wallpaper analysis
+PREFER_DARK_THEME="false"
 
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#d3869b"
@@ -28,7 +28,7 @@ WAYBAR_PROFILE="default"
 # ================================
 # Quickshell Configuration
 # ================================
-SCHEME_TYPE="fidelity"          # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+SCHEME_TYPE="fidelity" # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
 DARK_MODE=false
-ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
-BAR_POSITION="top"             # left/top/bottom/right
+ACCENT_COLOR=""    # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="top" # left/top/bottom/right

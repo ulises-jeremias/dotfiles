@@ -29,7 +29,7 @@ linked=0
 skipped=0
 
 shopt -s nullglob
-for src in "$SRC"/*.{png,jpg,jpeg,webp}; do
+for src in "$SRC"/*.{png,jpg,jpeg,webp,gif}; do
   name="$(basename "$src")"
   target="$DEST/$name"
 

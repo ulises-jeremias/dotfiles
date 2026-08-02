@@ -15,7 +15,7 @@ GTK_THEME="Orchis-Light"  # Light theme that matches gruvbox light aesthetic
 ICON_THEME="Numix-Circle" # Warm, friendly icons
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
-PREFER_DARK_THEME="auto" # Explicitly prefer light theme
+PREFER_DARK_THEME="false"
 
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#d79921"
@@ -28,7 +28,7 @@ WAYBAR_PROFILE="default"
 # ================================
 # Quickshell Configuration
 # ================================
-SCHEME_TYPE="tonal-spot"        # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+SCHEME_TYPE="tonal-spot" # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
 DARK_MODE=false
-ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
-BAR_POSITION="top"             # left/top/bottom/right
+ACCENT_COLOR=""    # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="top" # left/top/bottom/right

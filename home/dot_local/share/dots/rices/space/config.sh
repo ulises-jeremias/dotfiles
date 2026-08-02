@@ -11,11 +11,11 @@ RICE_TAGS="cosmic,space,mystical,calming,dark"
 RICE_BEST_FOR="Night sessions, space enthusiasts, calming work environment"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light"  # Light theme for cosmic aesthetic with better readability
+GTK_THEME="Orchis-Dark"
 ICON_THEME="Numix-Circle" # Modern, clean icons
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
-PREFER_DARK_THEME="auto" # Light theme for comfortable viewing
+PREFER_DARK_THEME="true"
 
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#b16286"
@@ -31,7 +31,7 @@ WAYBAR_PROFILE="vertical-left"
 # ================================
 # Quickshell Configuration
 # ================================
-SCHEME_TYPE="vibrant"           # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+SCHEME_TYPE="vibrant" # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
 DARK_MODE=true
-ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
-BAR_POSITION="left"            # left/top/bottom/right
+ACCENT_COLOR=""     # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="left" # left/top/bottom/right

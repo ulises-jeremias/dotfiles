@@ -10,22 +10,25 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 
 ## Wallpaper Pipeline Contract
 
-### Historical pipelines
+### Maintained path (Hyprland + Quickshell)
 
-- **wpgtk pipeline**: `wpg -s <image>` -> `wpg.conf` runs `dots-wal-reload` and refreshes shell colors.
-- **Legacy Quickshell direct pipeline**: UI actions used to call compositor-specific wallpaper setters directly, bypassing `wpg` and global reload orchestration.
+1. `dots-wallpaper-set <image>` (or Control Center Apply / `Rice.setWallpaper`)
+2. When Quickshell is running → IPC `rice setWallpaper`
+3. Otherwise → `apply-appearance.sh` wallpaper-only path:
+   - `wal -i` (honors light/dark from current rice / scheme state)
+   - write `~/.local/state/dots/wallpaper/path`
+   - `generate-m3-colors.py` → `scheme.json`
+   - `dots-color-scheme sync-state` → `scheme/state.json`
+4. `Colours.qml` reloads via file watch or `dots-quickshell ipc colours reload` (real IPC + touch fallback)
 
-The direct pipeline could desynchronize `~/.config/wpg/.current` from shell/runtime state and miss some app reloads that are centralized in `dots-wal-reload`.
+### Wallpaper resolution priority
 
-### Unified contract
+1. Explicit argument
+2. `~/.local/state/dots/wallpaper/path` (canonical persistent pointer)
+3. Legacy `~/.cache/dots/wallpaper/path` (read-only fallback)
+4. `~/.cache/wal/wal` (pywal symlink; last resort)
 
-- Use `dots-wallpaper-set` as the single entrypoint for wallpaper changes from shell UI/actions.
-- When `wpg` is available, `dots-wallpaper-set` delegates to `wpg -s` so wpgtk remains source-compatible.
-- Wallpaper resolution priority is unified across scripts:
-  1. Explicit argument
-  2. `~/.local/state/dots/wallpaper/path` (canonical persistent pointer; respects `DOTS_STATE_DIR` / `XDG_STATE_HOME`)
-  3. `~/.cache/wal/wal` (pywal)
-  4. `~/.config/wpg/.current` (optional, when using wpgtk)
+> Historical wpgtk (`wpg -s`) notes may still appear in older wiki pages; they are **not** required on the maintained Quickshell path.
 
 ## Main Commands
 
@@ -56,9 +59,11 @@ Compatibility files may exist for external tooling, but they are not part of the
 ```mermaid
 flowchart LR
   wallpaper[WallpaperChange] --> set[dots-wallpaper-set]
-  set --> wal[dots-wal-reload]
-  wal --> smart[dots-smart-colorsGenerate]
-  smart --> scheme[schemeJson]
+  set --> rice[RiceIpcOrShellFallback]
+  rice --> wal[pywal]
+  rice --> m3[generate-m3-colors]
+  m3 --> scheme[schemeJson]
+  m3 --> state[schemeStateJson]
   scheme --> colours[QuickshellColoursService]
   colours --> ui[QuickshellUIUpdated]
 ```

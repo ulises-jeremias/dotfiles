@@ -6,25 +6,26 @@
 
 **Architecture:**
 
-- Each rice is self-contained directory: `~/.local/share/dots/rices/<rice-name>/`
-- Configuration: `config.sh` (shell variables, no execution)
-- Application: `apply.sh` (executable script)
+- Each rice is a self-contained directory: `~/.local/share/dots/rices/<rice-name>/`
+- Configuration: `config.json` (canonical) + `config.sh` (shell mirror)
+- Application: Quickshell `Rice.qml` IPC, with `apply-appearance.sh` shell fallback
 - Assets: `backgrounds/`, `preview.png`
-- State tracking: `~/.config/.current_rice`
+- State tracking: `~/.local/state/dots/rice/current` (mirrored to `.current_rice`)
 
 **Integration Points:**
 
-- Quickshell (M3 color scheme via scheme.json)
+- Quickshell (M3 color scheme via scheme.json + Colours service)
 - Hyprland (compositor animations and settings)
-- Wallpaper system (Quickshell background + wpgtk contract)
-- GTK themes (automatic light/dark selection)
+- Wallpaper system (Quickshell Background layershell + pywal + persistent pointer)
+- GTK themes (named theme or `auto` via `dots-gtk-theme rice`)
 
 **Design Constraints:**
 
-- Rice configs must be sourceable (no side effects)
-- Apply scripts must be idempotent
+- `config.sh` must remain sourceable (no side effects)
+- Apply pipelines must be fail-closed on wal/M3 hard failures
 - Assets must be relative to rice directory
 - No cross-rice dependencies allowed
+- `scheme/state.json` must stay aligned with `scheme.json` after apply
 
 ## 2. Smart Colors System
 

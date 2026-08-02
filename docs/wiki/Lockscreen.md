@@ -161,7 +161,7 @@ dots wal-reload  # Updates wallpaper and lockscreen
 
 ### Rice System
 
-Rice themes can trigger lockscreen updates in their `apply.sh`:
+Rice / appearance apply regenerates lockscreen colors via `dots-hyprlock-theme` after scheme generation. Historical note — older docs mentioned per-rice `apply.sh`; that path is no longer maintained. Equivalent hook:
 
 ```bash
 if command -v dots-lockscreen &>/dev/null; then

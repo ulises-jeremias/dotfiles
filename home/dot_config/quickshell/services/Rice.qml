@@ -1,6 +1,7 @@
 pragma Singleton
 
 import qs.services
+import qs.utils
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -8,22 +9,29 @@ import QtQuick
 Singleton {
     id: root
 
-    readonly property string ricesDir: `${Quickshell.env("HOME")}/.local/share/dots/rices`
-    readonly property string stateFile: `${Quickshell.env("HOME")}/.local/state/dots/rice/current`
-    readonly property string wallpaperPointer: `${Quickshell.env("HOME")}/.local/state/dots/wallpaper/path`
+    readonly property string ricesDir: `${Paths.data}/rices`
+    readonly property string stateFile: `${Paths.state}/rice/current`
+    readonly property string legacyStateFile: `${Paths.data}/rices/.current_rice`
+    readonly property string cacheRiceFile: `${Paths.cache}/current_rice`
+    readonly property string wallpaperPointer: Paths.wallpaperPointer
     readonly property string m3Script: `${Quickshell.env("HOME")}/.local/lib/dots/generate-m3-colors.py`
-    readonly property string schemeJson: `${Quickshell.env("HOME")}/.cache/dots/smart-colors/scheme.json`
+    readonly property string schemeJson: `${Paths.cache}/smart-colors/scheme.json`
     readonly property string hyprAnimDir: `${Quickshell.env("HOME")}/.config/hypr/hyprland.conf.d`
 
     property string currentId: ""
     property var currentConfig: ({})
 
     property bool _startupRestored: false
+    property bool _busy: false
+    property var _queue: []
 
     property string _pendingWallpaper: ""
     property string _pendingSchemeType: "tonal-spot"
     property bool _pendingDarkMode: true
     property string _pendingRiceId: ""
+    property string _applyRiceId: ""
+    property bool _persistRiceOnSuccess: false
+    property string _lastError: ""
 
     // ── Public API ──────────────────────────────────────────────────────────
 
@@ -34,18 +42,20 @@ Singleton {
     function apply(id: string, wallpaperPath: string): void {
         if (!id)
             return;
-        _pendingRiceId = id;
-        configLoader.riceId = id;
-        configLoader.wallpaperOverride = wallpaperPath || "";
-        configLoader.running = true;
+        _enqueue({
+            kind: "apply",
+            riceId: id,
+            wallpaper: wallpaperPath || ""
+        });
     }
 
     /**
      * Re-run wal -R and regenerate scheme without changing the rice or wallpaper.
-     * Equivalent to the old dots-wal-reload.
      */
     function reload(): void {
-        walReloadProc.running = true;
+        _enqueue({
+            kind: "reload"
+        });
     }
 
     /**
@@ -54,10 +64,61 @@ Singleton {
     function setWallpaper(path: string): void {
         if (!path)
             return;
-        _pendingWallpaper = path;
-        _pendingSchemeType = currentConfig.schemeType || "tonal-spot";
-        _pendingDarkMode = currentConfig.darkMode !== undefined ? !!currentConfig.darkMode : true;
-        walProc.running = true;
+        _enqueue({
+            kind: "wallpaper",
+            wallpaper: path
+        });
+    }
+
+    function _enqueue(job: var): void {
+        _queue = _queue.concat([job]);
+        _pump();
+    }
+
+    function _pump(): void {
+        if (_busy || _queue.length === 0)
+            return;
+        const job = _queue[0];
+        _queue = _queue.slice(1);
+        _busy = true;
+        _lastError = "";
+
+        if (job.kind === "apply") {
+            _pendingRiceId = job.riceId;
+            _applyRiceId = job.riceId;
+            _persistRiceOnSuccess = true;
+            configLoader.riceId = job.riceId;
+            configLoader.wallpaperOverride = job.wallpaper || "";
+            configLoader.running = true;
+        } else if (job.kind === "wallpaper") {
+            _persistRiceOnSuccess = false;
+            _applyRiceId = root.currentId;
+            _pendingWallpaper = job.wallpaper;
+            _pendingSchemeType = currentConfig.schemeType || "tonal-spot";
+            _pendingDarkMode = currentConfig.darkMode !== undefined ? !!currentConfig.darkMode : true;
+            walProc.running = true;
+        } else if (job.kind === "reload") {
+            _persistRiceOnSuccess = false;
+            _applyRiceId = root.currentId;
+            _pendingWallpaper = Wallpapers.actualCurrent || "";
+            _pendingSchemeType = currentConfig.schemeType || "tonal-spot";
+            _pendingDarkMode = currentConfig.darkMode !== undefined ? !!currentConfig.darkMode : true;
+            walReloadProc.running = true;
+        } else {
+            _finishJob(false, "unknown job kind");
+        }
+    }
+
+    function _finishJob(ok: bool, err: string): void {
+        if (!ok) {
+            _lastError = err || "appearance apply failed";
+            console.warn("Rice.qml:", _lastError);
+            notifyFailProc.message = _lastError;
+            notifyFailProc.running = true;
+        }
+        _busy = false;
+        _persistRiceOnSuccess = false;
+        Qt.callLater(() => root._pump());
     }
 
     // ── Restore current rice id from state file on startup ──────────────────
@@ -74,12 +135,32 @@ Singleton {
                 }
             }
         }
-        onLoadFailed: console.warn("Rice.qml: state file not found, skipping startup scheme regeneration")
+        onLoadFailed: {
+            // Fall back to legacy pointer once, then migrate on next successful apply.
+            legacyStateLoader.running = true;
+        }
     }
 
-    // ── Ensure scheme.json exists after restoring state ─────────────────────
-    // Catches the case where ~/.cache/dots/smart-colors/scheme.json was
-    // cleaned (tmpfiles, bleachbit, etc) but the state files survived.
+    Process {
+        id: legacyStateLoader
+
+        command: ["sh", "-c", 'f="$HOME/.local/share/dots/rices/.current_rice"; [ -f "$f" ] && head -n 1 "$f" || true']
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const id = text.trim();
+                if (id && !root.currentId) {
+                    root.currentId = id;
+                    // Mirror into canonical path without full apply.
+                    persistRiceProc.riceId = id;
+                    persistRiceProc.running = true;
+                }
+                if (root.currentId && !root._startupRestored) {
+                    root._startupRestored = true;
+                    ensureSchemeProc.running = true;
+                }
+            }
+        }
+    }
 
     Component.onCompleted: {
         Qt.callLater(() => {
@@ -110,6 +191,7 @@ Singleton {
         property string wallpaperOverride: ""
         property bool running: false
         property string resolvedWallpaper: ""
+        property var pendingConfig: ({})
     }
 
     FileView {
@@ -127,6 +209,7 @@ Singleton {
             } catch (e) {
                 console.warn("Rice.qml: failed to read config.json for", configLoader.riceId, e);
                 configLoader.running = false;
+                root._finishJob(false, `failed to read config.json for ${configLoader.riceId}`);
                 return;
             }
 
@@ -137,19 +220,21 @@ Singleton {
                 cfg = JSON.parse(rawText);
             } catch (e) {
                 console.warn("Rice.qml: failed to parse config.json for", configLoader.riceId, e);
+                root._finishJob(false, `invalid config.json for ${configLoader.riceId}`);
                 return;
             }
 
-            root.currentConfig = cfg;
-            root.currentId = configLoader.riceId;
-
-            // Persist current rice id via shell write
-            persistRiceProc.running = true;
+            // Stash config for this apply; promote to currentConfig only after
+            // wal + M3 succeed so wallpaper-only changes do not use a failed rice.
+            configLoader.pendingConfig = cfg;
+            root._pendingRiceId = configLoader.riceId;
+            root._pendingSchemeType = cfg.schemeType || "tonal-spot";
+            root._pendingDarkMode = cfg.darkMode !== undefined ? !!cfg.darkMode : true;
 
             const wp = configLoader.wallpaperOverride;
             if (wp) {
                 configLoader.resolvedWallpaper = wp;
-                _startWalWithConfig();
+                root._startWalWithConfig();
             } else {
                 firstWallpaperProc.running = true;
             }
@@ -158,26 +243,35 @@ Singleton {
         onLoadFailed: {
             console.warn("Rice.qml: config.json not found for rice", configLoader.riceId);
             configLoader.running = false;
+            root._finishJob(false, `config.json not found for ${configLoader.riceId}`);
         }
     }
 
-    // Persist current rice id to state file
+    // Persist current rice id to canonical + legacy + cache mirrors
     Process {
         id: persistRiceProc
 
-        // Pass values via env so paths/ids with special chars are safe
-        command: ["sh", "-c", 'mkdir -p "$(dirname "$DOTS_STATE_FILE")" && printf "%s\\n" "$DOTS_RICE_ID" > "$DOTS_STATE_FILE"']
+        property string riceId: ""
+
+        command: ["sh", "-c", 'mkdir -p "$(dirname "$DOTS_RICE_CANON")" "$(dirname "$DOTS_RICE_LEGACY")" "$(dirname "$DOTS_RICE_CACHE")" && printf "%s\\n" "$DOTS_RICE_ID" > "$DOTS_RICE_CANON" && printf "%s\\n" "$DOTS_RICE_ID" > "$DOTS_RICE_LEGACY" && printf "CURRENT_RICE=%s\\n" "$DOTS_RICE_ID" > "$DOTS_RICE_CACHE"']
         environment: ({
-            "DOTS_STATE_FILE": root.stateFile,
-            "DOTS_RICE_ID": root.currentId
+            "DOTS_RICE_ID": persistRiceProc.riceId || root.currentId,
+            "DOTS_RICE_CANON": root.stateFile,
+            "DOTS_RICE_LEGACY": root.legacyStateFile,
+            "DOTS_RICE_CACHE": root.cacheRiceFile
         })
     }
 
-    // Find first wallpaper in the rice's backgrounds/ directory
+    // Find first wallpaper in the rice's backgrounds/ directory (follow symlinks)
     Process {
         id: firstWallpaperProc
 
-        command: ["sh", "-c", 'find "$DOTS_BG_DIR" -maxdepth 1 -type f \\( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" \\) 2>/dev/null | sort | head -n 1']
+        command: ["sh", "-c", `
+find -L "$DOTS_BG_DIR" -maxdepth 1 \\( -type f -o -type l \\) \\( \
+  -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \
+  -o -iname "*.gif" -o -iname "*.bmp" \
+\\) 2>/dev/null | sort | head -n 1
+`]
         environment: ({
             "DOTS_BG_DIR": `${root.ricesDir}/${configLoader.riceId}/backgrounds`
         })
@@ -189,7 +283,7 @@ Singleton {
                     configLoader.resolvedWallpaper = wp;
                     root._startWalWithConfig();
                 } else {
-                    console.warn("Rice.qml: no wallpapers found for rice", configLoader.riceId);
+                    root._finishJob(false, `no wallpapers found for rice ${configLoader.riceId}`);
                 }
             }
         }
@@ -197,8 +291,9 @@ Singleton {
 
     function _startWalWithConfig(): void {
         _pendingWallpaper = configLoader.resolvedWallpaper;
-        _pendingSchemeType = root.currentConfig.schemeType || "tonal-spot";
-        _pendingDarkMode = root.currentConfig.darkMode !== undefined ? !!root.currentConfig.darkMode : true;
+        const cfg = configLoader.pendingConfig || {};
+        _pendingSchemeType = cfg.schemeType || "tonal-spot";
+        _pendingDarkMode = cfg.darkMode !== undefined ? !!cfg.darkMode : true;
         walProc.running = true;
     }
 
@@ -207,13 +302,15 @@ Singleton {
     Process {
         id: walProc
 
-        // Build the command inline so QML's dependency tracker picks up _pendingWallpaper
-        // and _pendingDarkMode correctly. var array literals break reactivity.
         command: root._pendingDarkMode
             ? ["wal", "-i", root._pendingWallpaper, "-q"]
             : ["wal", "-i", root._pendingWallpaper, "-q", "-l"]
 
         onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0) {
+                root._finishJob(false, `wal failed (exit ${exitCode})`);
+                return;
+            }
             writeWallpaperPointer.running = true;
             m3Proc.running = true;
         }
@@ -238,6 +335,10 @@ Singleton {
         command: ["wal", "-R", "-q"]
 
         onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0) {
+                root._finishJob(false, `wal -R failed (exit ${exitCode})`);
+                return;
+            }
             m3Proc.running = true;
         }
     }
@@ -260,48 +361,72 @@ Singleton {
         ]
 
         onExited: (exitCode, exitStatus) => {
-            if (exitCode === 0)
-                touchSchemeProc.running = true;
-            _runSideEffects();
+            if (exitCode !== 0) {
+                root._finishJob(false, `M3 colour generation failed (exit ${exitCode})`);
+                return;
+            }
+            syncStateProc.running = true;
         }
     }
 
-    // Touch scheme.json so Colours.qml FileView triggers onFileChanged
+    // Sync scheme/state.json from scheme.json so boot regenerate cannot drift
+    Process {
+        id: syncStateProc
+
+        command: ["dots-color-scheme", "sync-state"]
+
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0)
+                console.warn("Rice.qml: sync-state failed (exit", exitCode, ")");
+            touchSchemeProc.running = true;
+            if (root._persistRiceOnSuccess && root._pendingRiceId) {
+                if (configLoader.pendingConfig && Object.keys(configLoader.pendingConfig).length)
+                    root.currentConfig = configLoader.pendingConfig;
+                root.currentId = root._pendingRiceId;
+                persistRiceProc.riceId = root._pendingRiceId;
+                persistRiceProc.running = true;
+            }
+            root._runSideEffects();
+            root._finishJob(true, "");
+        }
+    }
+
     Process {
         id: touchSchemeProc
 
         command: ["touch", root.schemeJson]
     }
 
-    // ── Step 4: side effects (Hyprland, kitty, GTK, notify) ────────────────
+    // ── Step 4: side effects (Hyprland, kitty, GTK, snappy, notify) ─────────
 
     function _runSideEffects(): void {
         const cfg = root.currentConfig;
-        if (!cfg || !cfg.id)
-            return;
+        const riceId = root._applyRiceId || root.currentId;
 
-        const anim = cfg.hyprlandAnimations || "";
-        if (anim) {
-            hyprAnimProc.animProfile = anim;
+        if (cfg && cfg.hyprlandAnimations) {
+            hyprAnimProc.animProfile = cfg.hyprlandAnimations;
             hyprAnimProc.running = true;
         }
 
         hyprReloadProc.running = true;
 
-        const opacity = cfg.kittyOpacity;
-        if (opacity !== null && opacity !== undefined) {
-            kittyProc.kittyOpacity = String(opacity);
+        if (cfg && cfg.kittyOpacity !== null && cfg.kittyOpacity !== undefined) {
+            kittyProc.kittyOpacity = String(cfg.kittyOpacity);
             kittyProc.running = true;
         }
 
-        const gtkTheme = cfg.gtkTheme || "";
-        if (gtkTheme && gtkTheme !== "auto") {
-            gtkProc.gtkTheme = gtkTheme;
+        // Always drive GTK through rice helper so "auto" is honored.
+        if (riceId) {
+            gtkProc.riceId = riceId;
             gtkProc.running = true;
+            snappyProc.riceId = riceId;
+            snappyProc.running = true;
         }
 
-        notifyProc.riceName = cfg.name || root.currentId;
-        notifyProc.running = true;
+        if (cfg && (cfg.name || riceId)) {
+            notifyProc.riceName = cfg.name || riceId;
+            notifyProc.running = true;
+        }
     }
 
     Process {
@@ -333,9 +458,20 @@ Singleton {
     Process {
         id: gtkProc
 
-        property string gtkTheme: ""
+        property string riceId: ""
 
-        command: ["dots-gtk-theme", "apply", gtkProc.gtkTheme]
+        command: ["dots-gtk-theme", "rice", gtkProc.riceId]
+    }
+
+    Process {
+        id: snappyProc
+
+        property string riceId: ""
+
+        command: ["bash", "-c", 'source "$HOME/.local/lib/dots/snappy-switcher-manager.sh" 2>/dev/null || exit 0; declare -f apply_rice_snappy_switcher_theme >/dev/null 2>&1 && apply_rice_snappy_switcher_theme "$DOTS_RICE_ID" || true']
+        environment: ({
+            "DOTS_RICE_ID": snappyProc.riceId
+        })
     }
 
     Process {
@@ -344,6 +480,14 @@ Singleton {
         property string riceName: ""
 
         command: ["notify-send", "HorneroConfig", `${notifyProc.riceName} rice applied`]
+    }
+
+    Process {
+        id: notifyFailProc
+
+        property string message: ""
+
+        command: ["notify-send", "-u", "critical", "HorneroConfig", notifyFailProc.message || "Appearance apply failed"]
     }
 
     // ── IPC ─────────────────────────────────────────────────────────────────
@@ -365,6 +509,14 @@ Singleton {
 
         function setWallpaper(path: string): void {
             root.setWallpaper(path);
+        }
+
+        function busy(): string {
+            return root._busy ? "1" : "0";
+        }
+
+        function lastError(): string {
+            return root._lastError;
         }
     }
 }

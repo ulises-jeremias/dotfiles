@@ -54,9 +54,12 @@ LOCK_PIXEL="$CURRENT_DIR/lock_pixel.png"
 # Smart colors cache
 SMART_COLORS_CACHE="${HOME}/.cache/dots/smart-colors/current.env"
 
-# Rice configuration
+# Rice configuration (canonical pointer with legacy fallback)
 RICE_CONFIG_DIR="${HOME}/.local/share/dots/rices"
-CURRENT_RICE_FILE="${HOME}/.local/share/dots/rices/.current_rice"
+CURRENT_RICE_FILE="${HOME}/.local/state/dots/rice/current"
+LEGACY_RICE_FILE="${HOME}/.local/share/dots/rices/.current_rice"
+# shellcheck source=/dev/null
+source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
 
 # Compatibility wrapper for scripts that use success semantics.
 log_success() {
@@ -125,13 +128,25 @@ load_smart_colors() {
 get_rice_style() {
   local rice_style="default"
 
-  # Try to get current rice name
-  if [[ -f $CURRENT_RICE_FILE ]]; then
-    local rice_name
-    rice_name=$(cat "$CURRENT_RICE_FILE")
+  # Try to get current rice name (canonical → legacy)
+  local rice_name=""
+  if declare -f dots_read_current_rice >/dev/null 2>&1; then
+    rice_name="$(dots_read_current_rice)"
+  elif [[ -f $CURRENT_RICE_FILE ]]; then
+    rice_name=$(head -n 1 "$CURRENT_RICE_FILE")
+  elif [[ -f $LEGACY_RICE_FILE ]]; then
+    rice_name=$(head -n 1 "$LEGACY_RICE_FILE")
+  fi
+
+  if [[ -n $rice_name ]]; then
+    local rice_json="$RICE_CONFIG_DIR/$rice_name/config.json"
     local rice_config="$RICE_CONFIG_DIR/$rice_name/config.sh"
 
-    if [[ -f $rice_config ]]; then
+    if [[ -f $rice_json ]]; then
+      local style
+      style=$(python3 -c "import json;print(json.load(open('$rice_json')).get('style',''))" 2>/dev/null || true)
+      [[ -n $style ]] && rice_style="$style"
+    elif [[ -f $rice_config ]]; then
       # Extract RICE_STYLE from config
       local style
       style=$(grep -E "^RICE_STYLE=" "$rice_config" 2>/dev/null | cut -d'"' -f2)

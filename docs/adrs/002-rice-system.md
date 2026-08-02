@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted (updated 2026-08-02)
 
 ## Context
 
@@ -13,41 +13,44 @@ Desktop theming and customization is a core feature of HorneroConfig. Users need
 - Apply consistent theming across all applications
 - Maintain theme-specific configurations for different use cases
 
-Traditional dotfiles approaches often hardcode visual settings, making theme switching cumbersome and error-prone.
+Traditional dotfiles approaches often hardcode visual settings, making theme switching cumbersome and error-prone. An earlier shell-centric design used per-rice `apply.sh` scripts and a single `.current_rice` file; the maintained path is now Quickshell-first.
 
 ## Decision
 
-We implemented a modular rice system with the following architecture:
+We keep a modular rice system with the following architecture:
 
 - **Rice Directory Structure**: Each rice lives in `~/.local/share/dots/rices/<rice-name>/`
-- **Configuration Files**: Each rice has a `config.sh` with theme-specific settings
-- **Apply Scripts**: Each rice has an `apply.sh` script for theme activation
-- **Central Management**: A `.current_rice` file tracks the active theme
-- **Quickshell Integration**: `dots appearance ...` and control-center appearance panel provide theme switching
+- **Canonical config**: `config.json` (Quickshell + `list-rices.py`); `config.sh` remains a shell mirror for GTK/snappy/lockscreen helpers
+- **Orchestrator**: Quickshell `Rice.qml` (IPC) with a shared shell fallback (`apply-appearance.sh`) when QS is down
+- **Central state**:
+  - Rice id: `~/.local/state/dots/rice/current` (mirrored to `.current_rice` for legacy readers)
+  - Wallpaper: `~/.local/state/dots/wallpaper/path`
+  - Scheme prefs: `~/.local/state/dots/scheme/state.json` kept in sync with `scheme.json` via `dots-color-scheme sync-state`
+- **CLI**: `dots appearance …` (canonical) / `dots rice …` (compat), plus `dots appearance doctor`
 
 Key components:
 
-- `dots-rice-config.sh` - Core rice management library
-- Individual rice directories with modular configurations
-- Integration with pywal/Smart Colors and Quickshell theming
+- `Rice.qml` / `Wallpapers.qml` / `Colours.qml`
+- `dots-appearance`, `dots-rice`, `dots-wallpaper-set`, `dots-color-scheme`
+- `rice-state.sh`, `apply-appearance.sh`, `wallpaper-resolver.sh`
+- Integration with pywal + Material You (`generate-m3-colors.py`)
 
 ## Consequences
 
 ### Positive
 
-- **Easy Theme Switching**: Users can change entire desktop themes with one command
+- **Easy Theme Switching**: One command / control-center Apply changes the desktop theme
 - **Modular Design**: Each rice is self-contained and portable
-- **Consistency**: All applications follow the same theming approach
-- **Extensibility**: New rices can be added without modifying core code
-- **Sharing**: Rices can be easily shared between users
+- **Consistency**: QS UI, CLI, boot regenerate, lockscreen, and GTK share the same pointers
+- **Offline apply**: Shell fallback works without Quickshell
 
 ### Negative
 
-- **Complexity**: More complex than simple configuration files
-- **Duplication**: Some settings may be duplicated across rices
-- **Learning Curve**: Users need to understand the rice system structure
+- **Complexity**: More moving parts than a single config file
+- **Dual config formats**: `config.json` + `config.sh` must stay aligned for shell consumers
+- **Learning Curve**: Contributors need to understand the state table above
 
 ### Neutral
 
-- **Directory Structure**: Requires specific organization in user directories
-- **Dependencies**: Relies on external tools like pywal for color generation
+- Legacy `.current_rice` is a **mirror**, not an independent source of truth
+- Per-rice `apply.sh` is **not** part of the maintained path

@@ -11,11 +11,11 @@ RICE_TAGS="minimal,clean,gruvbox,productivity"
 RICE_BEST_FOR="Distraction-free work, minimal desktop lovers, focus sessions"
 
 # Theme Components Information
-GTK_THEME="Orchis-Light"
+GTK_THEME="Orchis-Dark"
 ICON_THEME="Numix-Circle"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
-PREFER_DARK_THEME="auto"
+PREFER_DARK_THEME="true"
 
 # Color Scheme Preview
 RICE_ACCENT_COLOR="#d79921"
@@ -31,7 +31,7 @@ WAYBAR_PROFILE="vertical-left"
 # ================================
 # Quickshell Configuration
 # ================================
-SCHEME_TYPE="tonal-spot"        # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
+SCHEME_TYPE="tonal-spot" # M3 scheme: auto/vibrant/tonal-spot/expressive/neutral/fidelity/content/monochrome
 DARK_MODE=true
-ACCENT_COLOR=""                # Empty = auto from wallpaper. Set to hex for override.
-BAR_POSITION="top"             # left/top/bottom/right
+ACCENT_COLOR=""    # Empty = auto from wallpaper. Set to hex for override.
+BAR_POSITION="top" # left/top/bottom/right

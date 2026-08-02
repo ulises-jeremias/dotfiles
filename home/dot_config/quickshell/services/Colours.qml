@@ -78,11 +78,33 @@ Singleton {
         Quickshell.execDetached(["dots-color-scheme", "mode", mode]);
     }
 
+    function reloadFromDisk(): void {
+        schemeFileView.reload();
+    }
+
     FileView {
+        id: schemeFileView
+
         path: `${Paths.cache}/smart-colors/scheme.json`
         watchChanges: true
         onFileChanged: reload()
         onLoaded: root.load(text(), false)
+    }
+
+    IpcHandler {
+        target: "colours"
+
+        function reload(): void {
+            root.reloadFromDisk();
+        }
+
+        function mode(): string {
+            return root.currentLight ? "light" : "dark";
+        }
+
+        function flavour(): string {
+            return root.flavour;
+        }
     }
 
     ImageAnalyser {

@@ -313,25 +313,49 @@ detect_optimal_gtk_theme() {
   echo "$detected_theme:$prefer_dark"
 }
 
+# Normalize prefer-dark to a real GTK boolean string (true/false).
+normalize_prefer_dark() {
+  case "${1:-auto}" in
+    true | 1 | yes | dark) echo "true" ;;
+    false | 0 | no | light) echo "false" ;;
+    *) echo "auto" ;;
+  esac
+}
+
 # Function to apply GTK theme based on current rice configuration
 apply_rice_gtk_theme() {
   local rice_name="${1:-}"
 
-  # If no rice specified, try to detect current rice
-  if [[ -z $rice_name ]] && [[ -f "$HOME/.cache/dots/current_rice" ]]; then
-    source "$HOME/.cache/dots/current_rice"
-    rice_name="$CURRENT_RICE"
+  # Prefer canonical rice pointer helpers; fall back to cache/legacy.
+  if [[ -z $rice_name ]]; then
+    # shellcheck source=/dev/null
+    source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
+    if declare -f dots_read_current_rice >/dev/null 2>&1; then
+      rice_name="$(dots_read_current_rice)"
+    elif [[ -f "$HOME/.cache/dots/current_rice" ]]; then
+      # shellcheck source=/dev/null
+      source "$HOME/.cache/dots/current_rice"
+      rice_name="${CURRENT_RICE:-}"
+    fi
   fi
 
   if [[ -z $rice_name ]]; then
     log "WARN" "No rice specified, using default theme detection"
-    local wallpaper
-    wallpaper=$(cat "$HOME/.cache/wal/wal" 2>/dev/null || echo "")
+    local wallpaper=""
+    if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+      # shellcheck source=/dev/null
+      source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+      wallpaper="$(dots_current_wallpaper 2>/dev/null || true)"
+    fi
+    if [[ -z ${wallpaper:-} ]]; then
+      wallpaper=$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || true)
+    fi
     if [[ -n $wallpaper && -f $wallpaper ]]; then
       local theme_info
       theme_info=$(detect_optimal_gtk_theme "$wallpaper")
       local gtk_theme="${theme_info%:*}"
-      local prefer_dark="${theme_info#*:}"
+      local prefer_dark
+      prefer_dark="$(normalize_prefer_dark "${theme_info#*:}")"
       apply_gtk_theme "$gtk_theme" "Numix-Circle" "$prefer_dark"
     else
       apply_gtk_theme "Orchis-Light" "Numix-Circle" "false"
@@ -341,39 +365,68 @@ apply_rice_gtk_theme() {
 
   log "INFO" "Applying GTK theme for rice: $rice_name"
 
-  # Load rice configuration
+  local gtk_theme="" icon_theme="Numix-Circle" prefer_dark="auto"
+  local rice_json="$HOME/.local/share/dots/rices/$rice_name/config.json"
   local rice_config="$HOME/.local/share/dots/rices/$rice_name/config.sh"
-  if [[ ! -f $rice_config ]]; then
-    log "ERROR" "Rice config not found: $rice_config"
+
+  if [[ -f $rice_json ]]; then
+    local meta
+    meta="$(
+      python3 - "$rice_json" <<'PY'
+import json, sys
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+print(data.get("gtkTheme") or "auto")
+print(data.get("iconTheme") or "Numix-Circle")
+print("true" if data.get("darkMode", True) else "false")
+PY
+    )"
+    gtk_theme="$(sed -n '1p' <<<"$meta")"
+    icon_theme="$(sed -n '2p' <<<"$meta")"
+    prefer_dark="$(sed -n '3p' <<<"$meta")"
+  elif [[ -f $rice_config ]]; then
+    # shellcheck source=/dev/null
+    source "$rice_config"
+    gtk_theme="${GTK_THEME:-auto}"
+    icon_theme="${ICON_THEME:-Numix-Circle}"
+    prefer_dark="$(normalize_prefer_dark "${PREFER_DARK_THEME:-auto}")"
+  else
+    log "ERROR" "Rice config not found for: $rice_name"
     return 1
   fi
 
-  # Source rice configuration
-  source "$rice_config"
-
-  # Get GTK theme from rice config or detect automatically
-  local gtk_theme="${GTK_THEME:-}"
-  local icon_theme="${ICON_THEME:-Numix-Circle}"
-  local prefer_dark="${PREFER_DARK_THEME:-auto}"
+  prefer_dark="$(normalize_prefer_dark "$prefer_dark")"
 
   # If no explicit theme set in rice, detect based on wallpaper
   if [[ -z $gtk_theme ]] || [[ $gtk_theme == "auto" ]]; then
-    local wal_wallpaper
-    wal_wallpaper=$(cat "$HOME/.cache/wal/wal" 2>/dev/null || echo "")
+    local wal_wallpaper=""
+    if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+      # shellcheck source=/dev/null
+      source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+      wal_wallpaper="$(dots_current_wallpaper 2>/dev/null || true)"
+    fi
+    if [[ -z ${wal_wallpaper:-} ]]; then
+      wal_wallpaper=$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || true)
+    fi
 
     if [[ -n $wal_wallpaper && -f $wal_wallpaper ]]; then
       local theme_info
       theme_info=$(detect_optimal_gtk_theme "$wal_wallpaper")
       gtk_theme="${theme_info%:*}"
       if [[ $prefer_dark == "auto" ]]; then
-        prefer_dark="${theme_info#*:}"
+        prefer_dark="$(normalize_prefer_dark "${theme_info#*:}")"
       fi
     else
-      gtk_theme="Orchis-Light"
-      if [[ $prefer_dark == "auto" ]]; then
+      if [[ $prefer_dark == "true" ]]; then
+        gtk_theme="Orchis-Dark"
+      else
+        gtk_theme="Orchis-Light"
         prefer_dark="false"
       fi
     fi
+  fi
+
+  if [[ $prefer_dark == "auto" ]]; then
+    prefer_dark="false"
   fi
 
   # Apply the theme

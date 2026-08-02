@@ -15,7 +15,7 @@ GTK_THEME="catppuccin-latte-mauve-compact"
 ICON_THEME="Papirus-Light"
 CURSOR_THEME="elementary"
 SMART_COLORS="true"
-PREFER_DARK_THEME="light"
+PREFER_DARK_THEME="false"
 
 # Color Scheme Preview - Catppuccin Latte
 RICE_ACCENT_COLOR="#8839ef"    # Mauve
