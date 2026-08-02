@@ -738,6 +738,10 @@ Item {
         target: Rice
 
         function onApplyFinished(ok: bool): void {
+            if (!ok) {
+                root.deferredMode = "";
+                return;
+            }
             if (root.deferredMode)
                 root._flushDeferredMode();
         }

@@ -73,6 +73,9 @@ Singleton {
     }
 
     function _enqueue(job: var): void {
+        const tail = _queue.length ? _queue[_queue.length - 1] : null;
+        if (tail && tail.kind === job.kind && tail.riceId === job.riceId && tail.wallpaper === job.wallpaper)
+            return;
         _queue = _queue.concat([job]);
         _pump();
     }
@@ -359,8 +362,10 @@ find -L "$DOTS_BG_DIR" -maxdepth 1 \\( -type f -o -type l \\) \\( \
         command: ["dots-color-scheme", "sync-state"]
 
         onExited: (exitCode, exitStatus) => {
-            if (exitCode !== 0)
-                console.warn("Rice.qml: sync-state failed (exit", exitCode, ")");
+            if (exitCode !== 0) {
+                root._finishJob(false, `sync-state failed (exit ${exitCode})`);
+                return;
+            }
             touchSchemeProc.running = true;
             if (root._persistRiceOnSuccess && root._pendingRiceId) {
                 if (configLoader.pendingConfig && Object.keys(configLoader.pendingConfig).length)
