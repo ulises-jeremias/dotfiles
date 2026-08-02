@@ -28,12 +28,12 @@ When Quickshell is not running, the same full pipeline runs via `apply-appearanc
 
 ## State (single source of truth)
 
-| Concern | Path |
-|---------|------|
-| Current rice id | `~/.local/state/dots/rice/current` |
-| Wallpaper pointer | `~/.local/state/dots/wallpaper/path` |
-| Live scheme | `~/.cache/dots/smart-colors/scheme.json` |
-| Scheme prefs | `~/.local/state/dots/scheme/state.json` |
+| Concern           | Path                                     |
+|-------------------|------------------------------------------|
+| Current rice id   | `~/.local/state/dots/rice/current`       |
+| Wallpaper pointer | `~/.local/state/dots/wallpaper/path`     |
+| Live scheme       | `~/.cache/dots/smart-colors/scheme.json` |
+| Scheme prefs      | `~/.local/state/dots/scheme/state.json`  |
 
 There is **no** `.current_rice`, cache rice export, or per-rice `config.sh` / `apply.sh` on the maintained path.
 
@@ -62,4 +62,4 @@ Control Center → Appearance:
 
 - Maintained desktop path: Hyprland + Quickshell.
 - Wallpaper display: Quickshell Background layershell + pywal + Material You.
-- Tracking: https://github.com/ulises-jeremias/dotfiles/issues/249
+- Tracking: <https://github.com/ulises-jeremias/dotfiles/issues/249>

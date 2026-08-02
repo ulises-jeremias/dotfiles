@@ -12,49 +12,49 @@ DOTS_RICES_DIR="${DOTS_RICES_DIR:-$DOTS_DATA_DIR/rices}"
 DOTS_RICE_CANONICAL_FILE="${DOTS_RICE_CANONICAL_FILE:-$DOTS_STATE_DIR/rice/current}"
 
 dots_rice_canonical_file() {
-  printf '%s\n' "$DOTS_RICE_CANONICAL_FILE"
+	printf '%s\n' "$DOTS_RICE_CANONICAL_FILE"
 }
 
 dots_purge_legacy_rice_pointers() {
-  rm -f \
-    "$DOTS_RICES_DIR/.current_rice" \
-    "${XDG_CACHE_HOME:-$HOME/.cache}/dots/current_rice" \
-    2>/dev/null || true
+	rm -f \
+		"$DOTS_RICES_DIR/.current_rice" \
+		"${XDG_CACHE_HOME:-$HOME/.cache}/dots/current_rice" \
+		2> /dev/null || true
 }
 
 dots_read_current_rice() {
-  local id=""
-  if [[ -f $DOTS_RICE_CANONICAL_FILE ]]; then
-    id="$(head -n 1 "$DOTS_RICE_CANONICAL_FILE" 2>/dev/null || true)"
-    id="${id//$'\r'/}"
-    id="${id//$'\n'/}"
-  fi
-  printf '%s\n' "$id"
+	local id=""
+	if [[ -f $DOTS_RICE_CANONICAL_FILE ]]; then
+		id="$(head -n 1 "$DOTS_RICE_CANONICAL_FILE" 2> /dev/null || true)"
+		id="${id//$'\r'/}"
+		id="${id//$'\n'/}"
+	fi
+	printf '%s\n' "$id"
 }
 
 dots_write_current_rice() {
-  local id="${1:-}"
-  [[ -n $id ]] || return 1
+	local id="${1:-}"
+	[[ -n $id ]] || return 1
 
-  mkdir -p "$(dirname "$DOTS_RICE_CANONICAL_FILE")" 2>/dev/null || true
-  printf '%s\n' "$id" >"$DOTS_RICE_CANONICAL_FILE"
-  dots_purge_legacy_rice_pointers
+	mkdir -p "$(dirname "$DOTS_RICE_CANONICAL_FILE")" 2> /dev/null || true
+	printf '%s\n' "$id" > "$DOTS_RICE_CANONICAL_FILE"
+	dots_purge_legacy_rice_pointers
 }
 
 dots_rice_exists() {
-  local id="${1:-}"
-  [[ -n $id && -d "$DOTS_RICES_DIR/$id" && -f "$DOTS_RICES_DIR/$id/config.json" ]]
+	local id="${1:-}"
+	[[ -n $id && -d "$DOTS_RICES_DIR/$id" && -f "$DOTS_RICES_DIR/$id/config.json" ]]
 }
 
 # Read a scalar field from a rice config.json (bool → true/false).
 dots_rice_json_get() {
-  local rice_id="${1:-}" key="${2:-}" default="${3:-}"
-  local path="$DOTS_RICES_DIR/$rice_id/config.json"
-  [[ -f $path ]] || {
-    printf '%s\n' "$default"
-    return 1
-  }
-  python3 - "$path" "$key" "$default" <<'PY'
+	local rice_id="${1:-}" key="${2:-}" default="${3:-}"
+	local path="$DOTS_RICES_DIR/$rice_id/config.json"
+	[[ -f $path ]] || {
+		printf '%s\n' "$default"
+		return 1
+	}
+	python3 - "$path" "$key" "$default" << 'PY'
 import json, sys
 path, key, default = sys.argv[1], sys.argv[2], sys.argv[3]
 try:

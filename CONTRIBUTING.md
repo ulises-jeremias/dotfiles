@@ -56,17 +56,20 @@ Before you start, make sure you have:
 1. **Fork the repository** on GitHub
 
 2. **Clone your fork** locally:
+
    ```bash
    git clone https://github.com/YOUR-USERNAME/dotfiles ~/.dotfiles
    cd ~/.dotfiles
    ```
 
 3. **Add upstream remote**:
+
    ```bash
    git remote add upstream https://github.com/ulises-jeremias/dotfiles
    ```
 
 4. **Install dependencies**:
+
    ```bash
    ./install.sh
    ```
@@ -107,6 +110,7 @@ Before you start, make sure you have:
    - ✅ Prevents direct commits to main branch
 
 6. **Test in the playground** (recommended):
+
    ```bash
    ./bin/play
    ```
@@ -140,6 +144,7 @@ Use our [bug report template](.github/ISSUE_TEMPLATE/bug-report.yml) and include
 > **Environment:** Arch Linux, i3wm, Polybar 3.6.3
 >
 > **Steps:**
+>
 > 1. Apply gruvbox-anime rice
 > 2. Check weather module on polybar
 > 3. Compare with actual weather
@@ -178,6 +183,7 @@ Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) a
 > **Solution:** Add configuration profiles for Sway and Hyprland
 >
 > **Alternatives:**
+>
 > - Create a separate project for Wayland
 > - Provide documentation for manual Wayland setup
 >
@@ -195,6 +201,7 @@ Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) a
    - Agree on implementation approach
 
 2. **Create a feature branch**:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -205,11 +212,13 @@ Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) a
    - Test thoroughly in the playground
 
 4. **Commit with meaningful messages**:
+
    ```bash
    git commit -m "feat: add spotify integration to music player module"
    ```
 
 5. **Push to your fork**:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -223,6 +232,7 @@ Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) a
 ### Code Style Guidelines
 
 **For detailed technical guidelines:**
+
 - Quick reference: [AGENTS.md](AGENTS.md)
 - Comprehensive guides: [docs/](docs/)
   - [Development Standards](docs/Development-Standards.md) - Script templates and standards
@@ -253,6 +263,7 @@ We follow conventional commits for clarity:
 - `chore:` - Maintenance tasks
 
 **Examples:**
+
 ```text
 feat: add weather forecast to polybar module
 fix: correct color contrast in light themes
@@ -308,9 +319,11 @@ Apply via `dots appearance apply your-rice-name` (Quickshell IPC or shell fallba
 
 1. Create your rice theme directory
 2. Test it thoroughly:
+
    ```bash
    dots rice apply your-rice-name
    ```
+
 3. Take beautiful screenshots
 4. Submit a PR with:
    - Your rice files
@@ -341,18 +354,21 @@ The playground provides a safe testing environment:
 ### What to Test
 
 **For all changes:**
+
 - Does it work as intended?
 - Does it handle errors gracefully?
 - Does it work in both light and dark themes?
 - Does it work with different window managers?
 
 **For visual changes:**
+
 - Does it look good in all rice themes?
 - Are colors appropriate and readable?
 - Does it scale properly on different resolutions?
 - Does it work on multiple monitors?
 
 **For scripts:**
+
 - Does it handle missing dependencies?
 - Does it clean up after itself?
 - Does it log appropriately?
@@ -453,6 +469,7 @@ Not sure where to start? Try these:
 ### Good First Issues
 
 Look for issues labeled:
+
 - `good first issue` - Perfect for beginners
 - `help wanted` - Maintainers would appreciate help
 - `documentation` - Improve docs (no coding required)
@@ -511,7 +528,7 @@ Before submitting your PR, verify:
 
 ---
 
-## 💖 Thank You!
+## 💖 Thank You
 
 Every contribution, no matter how small, makes HorneroConfig better. We appreciate your time and effort!
 
