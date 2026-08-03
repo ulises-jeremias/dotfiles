@@ -10,16 +10,21 @@ set -eufo pipefail
 {{   $sudo = "" -}}
 {{ end }}
 
-# sss v0.2.1 requires onnxruntime-cpu 1.24.x from extra (VERS_1.24.4 symbol)
-if ! pacman -Q onnxruntime-cpu &>/dev/null; then
-  {{ $sudo }}pacman -S --noconfirm extra/onnxruntime-cpu
-elif ! pacman -Q onnxruntime-cpu | grep -q "1\.24\."; then
-  {{ $sudo }}pacman -S --noconfirm extra/onnxruntime-cpu
-fi
-
-# sss (Super ScreenShot) v0.2.1 — main screenshot CLI with interactive selector
-if ! type -p sss &>/dev/null; then
-  curl -fsSL https://github.com/SergioRibera/sss/releases/download/sss_cli/v0.2.1/install.sh | sh
+# sss (Super ScreenShot) v0.2.1 — main screenshot CLI with interactive selector.
+#
+# We install the `noocr` variant on purpose. The OCR ("system") variant links
+# against libonnxruntime.so.1 with the versioned symbol VERS_1.24.4, which
+# Arch rolling breaks on every onnxruntime bump (onnxruntime-cpu/cuda ship
+# 1.27+/1.28, whose only versioned symbol is VERS_1.28.0). The `noocr`
+# variant drops the onnxruntime dependency entirely and OCR is already
+# disabled in ~/.config/sss/config.toml, so nothing is lost.
+if ! pacman -Q sss-noocr &>/dev/null; then
+  # A previous "system" variant must be removed first or the two packages
+  # collide on /usr/bin/sss.
+  if pacman -Q sss &>/dev/null; then
+    {{ $sudo }}pacman -R --noconfirm sss
+  fi
+  curl -fsSL https://github.com/SergioRibera/sss/releases/download/sss_cli/v0.2.1/install.sh | sh -s -- --variant noocr
 fi
 
 # sss_code v0.3.1 — code-to-PNG renderer
