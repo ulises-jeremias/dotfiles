@@ -817,11 +817,11 @@ Item {
 
     Process {
         id: liveIconProc
-        command: ["bash", "-c", `gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'"`]
+        command: ["dots-gtk-theme", "-q", "-p", "current-icon"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const name = text.trim();
-                if (name)
+                if (name && name !== "Unknown")
                     root.pendingIconTheme = name;
             }
         }

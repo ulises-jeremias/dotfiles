@@ -10,7 +10,7 @@ one-shot recipes — they never own a sticky “current theme”.
 | Wallpaper      | `~/.local/state/dots/wallpaper/path`         |
 | Palette        | `~/.cache/dots/smart-colors/scheme.json`     |
 | Mode / flavour | `~/.local/state/dots/scheme/state.json`      |
-| GTK / icons    | `~/.config/gtk-3.0/settings.ini` + gsettings |
+| GTK / icons    | via `dots-gtk-theme` → `settings.ini` + gsettings |
 
 ## Theme packs
 
@@ -43,3 +43,4 @@ dots appearance doctor
 
 - Orchestrator: `ThemePipeline` singleton (IPC target `appearance`)
 - Control Center pane configures themes, wallpaper, mode, variant, scheme, GTK, icons
+- GTK/icon apply always goes through `dots-gtk-theme` (never inline `gtk-theme-manager.sh` or raw `gsettings` from QML)

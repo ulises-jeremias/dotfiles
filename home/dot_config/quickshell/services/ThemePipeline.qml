@@ -373,9 +373,8 @@ elif [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
   if [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
     dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME}" "\$prefer" || true
   else
-    icon="$(gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'" || true)"
-    [[ -n "\$icon" ]] || icon="Numix-Circle"
-    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\$icon" "\$prefer" || true
+    # Omit icon: dots-gtk-theme apply resolves the live icon theme.
+    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "" "\$prefer" || true
   fi
 elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
   dots-gtk-theme -q set-icons "\${DOTS_ICON_THEME}" || true
@@ -403,9 +402,8 @@ fi
         command: ["bash", "-c", `
 set -euo pipefail
 prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
-icon="$(gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'" || true)"
-[[ -n "\$icon" ]] || icon="Numix-Circle"
-dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\$icon" "\$prefer"
+# Omit icon: dots-gtk-theme apply resolves the live icon theme.
+dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "" "\$prefer"
 `]
         environment: ({
             "DOTS_GTK_THEME": gtkStandaloneProc.themeName,
