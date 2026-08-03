@@ -11,9 +11,43 @@ Item {
     implicitHeight: layout.implicitHeight
 
     readonly property var today: Weather.forecast && Weather.forecast.length > 0 ? Weather.forecast[0] : null
-    readonly property bool isLoading: !Weather.city || Weather.forecast.length === 0
+    readonly property bool isLoading: Weather.loading || (!Weather.ready && !Weather.lastError)
+    readonly property bool isError: !Weather.loading && !!Weather.lastError && !Weather.ready
 
     Component.onCompleted: Weather.reload()
+
+    // ── Error state ───────────────────────────────────────────────────────────
+    Loader {
+        active: root.isError
+        visible: active
+        anchors.fill: parent
+
+        sourceComponent: Column {
+            anchors.centerIn: parent
+            spacing: Appearance.spacing.normal
+
+            MaterialIcon {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "cloud_off"
+                font.pointSize: Appearance.font.size.extraLarge * 2
+                color: Colours.palette.m3error
+            }
+
+            StyledText {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: Weather.lastError || qsTr("Weather unavailable")
+                color: Colours.palette.m3onSurface
+                font.pointSize: Appearance.font.size.normal
+            }
+
+            StyledText {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Check network or set a location in Control Center → Dashboard")
+                color: Colours.palette.m3outline
+                font.pointSize: Appearance.font.size.small
+            }
+        }
+    }
 
     // ── Loading skeleton (shown while weather data is fetching) ───────────────
     Loader {
@@ -102,7 +136,7 @@ Item {
     }
 
     // ── Real content (shown when data is ready) ───────────────────────────────
-    opacity: root.isLoading ? 0 : 1
+    opacity: root.isLoading || root.isError ? 0 : 1
     Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
 
     ColumnLayout {
