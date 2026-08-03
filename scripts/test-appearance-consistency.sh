@@ -67,7 +67,7 @@ PY
     for key in schemaVersion id name darkMode schemeType gtkTheme iconTheme defaultWallpaper wallpaperDir; do
       jq -e --arg k "$key" 'has($k)' "$theme_json" >/dev/null || return 1
     done
-    jq -e '.tags == null or (type == "array")' "$theme_json" >/dev/null || return 1
+    jq -e '(.tags == null) or ((.tags | type) == "array")' "$theme_json" >/dev/null || return 1
     return 0
   fi
 
