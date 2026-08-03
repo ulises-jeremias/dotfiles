@@ -3,12 +3,7 @@
   "id": "everforest",
   "name": "Everforest",
   "description": "Soft green forest fidelity theme",
-  "tags": [
-    "everforest",
-    "nature",
-    "green",
-    "dark"
-  ],
+  "tags": ["everforest", "nature", "green", "dark"],
   "darkMode": true,
   "schemeType": "fidelity",
   "gtkTheme": "Orchis-Light-Compact",

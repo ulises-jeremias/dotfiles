@@ -3,13 +3,7 @@
   "id": "gruvbox",
   "name": "Gruvbox",
   "description": "Warm retro palette with anime and pixel art",
-  "tags": [
-    "gruvbox",
-    "warm",
-    "retro",
-    "anime",
-    "dark"
-  ],
+  "tags": ["gruvbox", "warm", "retro", "anime", "dark"],
   "darkMode": true,
   "schemeType": "expressive",
   "gtkTheme": "Orchis-Light-Compact",

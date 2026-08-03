@@ -3,11 +3,7 @@
   "id": "rose-pine",
   "name": "Ros\u00e9 Pine",
   "description": "Elegant muted rose and pine dark palette",
-  "tags": [
-    "rose-pine",
-    "muted",
-    "dark"
-  ],
+  "tags": ["rose-pine", "muted", "dark"],
   "darkMode": true,
   "schemeType": "expressive",
   "gtkTheme": "Orchis-Light-Compact",

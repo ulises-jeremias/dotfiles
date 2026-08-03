@@ -3,12 +3,7 @@
   "id": "landscape",
   "name": "Landscape",
   "description": "Cinematic nature vistas and fantasy scenery",
-  "tags": [
-    "nature",
-    "cinematic",
-    "landscape",
-    "dark"
-  ],
+  "tags": ["nature", "cinematic", "landscape", "dark"],
   "darkMode": true,
   "schemeType": "fidelity",
   "gtkTheme": "Orchis-Light-Compact",
