@@ -20,15 +20,20 @@ Item {
 
     property string wallpaperScopeDir: ""
     property bool showAllWallpapers: false
+    signal toggleShowAllRequested()
 
     readonly property string scopeBasePath: wallpaperScopeDir ? `${Paths.pictures}/Wallpapers/${wallpaperScopeDir}` : ""
+    readonly property string scopeDataPath: wallpaperScopeDir ? `${Paths.data}/wallpapers/${wallpaperScopeDir}` : ""
     readonly property var displayModel: {
         if (showAllWallpapers || !wallpaperScopeDir)
             return Wallpapers.list;
-        const base = scopeBasePath;
+        const pics = scopeBasePath;
+        const data = scopeDataPath;
         return Wallpapers.list.filter(entry => {
             const p = entry?.path ?? "";
-            return p.startsWith(`${base}/`) || p === base;
+            return p.startsWith(`${pics}/`) || p === pics || p.startsWith(`${data}/`) || p === data
+                || p.includes(`/Wallpapers/${wallpaperScopeDir}/`)
+                || p.includes(`/wallpapers/${wallpaperScopeDir}/`);
         });
     }
 
@@ -61,7 +66,7 @@ Item {
 
             TextButton {
                 text: showAllWallpapers ? qsTr("Show theme only") : qsTr("Show all")
-                onClicked: showAllWallpapers = !showAllWallpapers
+                onClicked: root.toggleShowAllRequested()
             }
         }
 
@@ -81,6 +86,16 @@ Item {
             model: root.displayModel
 
             clip: true
+
+            StyledText {
+                anchors.centerIn: parent
+                visible: grid.count === 0
+                text: root.wallpaperScopeDir && !root.showAllWallpapers
+                    ? qsTr("No wallpapers found for this theme")
+                    : qsTr("No wallpapers found")
+                color: Colours.palette.m3outline
+                font.pointSize: Appearance.font.size.normal
+            }
 
             StyledScrollBar.vertical: StyledScrollBar {
                 flickable: grid

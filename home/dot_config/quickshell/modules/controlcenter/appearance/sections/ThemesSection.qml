@@ -28,7 +28,11 @@ CollapsibleSection {
     function wallpaperPathFor(theme: var, filename: string): string {
         if (!theme || !filename)
             return "";
+        if (theme.wallpaperPath && theme.defaultWallpaper === filename)
+            return theme.wallpaperPath;
         const dir = theme.wallpaperDir || theme.id || "";
+        // Pictures is the canonical post-chezmoi location; list-themes.py
+        // already falls back to the data dir for defaultWallpaperPath.
         return `${Paths.pictures}/Wallpapers/${dir}/${filename}`;
     }
 
@@ -90,7 +94,7 @@ CollapsibleSection {
                             spacing: Appearance.spacing.normal
 
                             Loader {
-                                active: (modelData.preview ?? "") !== ""
+                                active: (themeItem.modelData.preview ?? "") !== ""
                                 Layout.alignment: Qt.AlignVCenter
 
                                 sourceComponent: StyledClippingRect {
@@ -101,7 +105,7 @@ CollapsibleSection {
 
                                     CachingImage {
                                         anchors.fill: parent
-                                        path: modelData.preview ?? ""
+                                        path: themeItem.modelData.preview ?? ""
                                         cache: true
                                     }
                                 }

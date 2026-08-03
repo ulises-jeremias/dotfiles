@@ -24,7 +24,7 @@ CollapsibleSection {
         const id = previewController.pendingThemeId;
         if (!id)
             return "";
-        const theme = (Themes.list || []).find(t => t.id === id);
+        const theme = Themes.themeById(id);
         if (!theme)
             return "";
         return theme.darkMode ? "dark" : "light";

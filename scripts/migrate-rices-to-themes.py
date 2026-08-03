@@ -184,11 +184,12 @@ def save_wallpaper(src: Path, dest: Path) -> Path:
         im = im.convert("RGB") if im.mode in ("P", "RGBA", "LA") else im
         im = resize_max(im, MAX_LONG)
         # Prefer jpeg for photos; keep png for tiny/simple graphics under 300KB source
+        # Build the output path explicitly — Path.with_suffix breaks on stems that contain dots.
         if src.suffix.lower() == ".png" and src.stat().st_size < 300_000 and max(im.size) <= 1920:
-            out = dest.with_suffix(".png")
+            out = Path(f"{dest}.png")
             im.save(out, format="PNG", optimize=True)
         else:
-            out = dest.with_suffix(".jpg")
+            out = Path(f"{dest}.jpg")
             im.save(out, format="JPEG", quality=88, optimize=True)
     return out
 
@@ -200,7 +201,7 @@ def save_preview(src: Path, dest: Path) -> Path:
         w, h = im.size
         scale = PREVIEW_W / w
         im = im.resize((PREVIEW_W, max(1, int(h * scale))), Image.Resampling.LANCZOS)
-        out = dest.with_suffix(".jpg")
+        out = Path(f"{dest}.jpg")
         quality = 82
         while quality >= 50:
             im.save(out, format="JPEG", quality=quality, optimize=True)
@@ -261,6 +262,10 @@ def main() -> None:
             stem = src.stem
             # Avoid colliding names across merged sources
             dest_base = wall_dir / stem
+            n = 2
+            while any(Path(f"{dest_base}{ext}").exists() for ext in (".jpg", ".png", ".jpeg", ".webp")):
+                dest_base = wall_dir / f"{stem}-{n}"
+                n += 1
             out = save_wallpaper(src, dest_base)
             written.append(out.name)
             if preview_src is None:

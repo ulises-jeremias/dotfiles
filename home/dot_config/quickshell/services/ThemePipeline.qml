@@ -16,7 +16,7 @@ Singleton {
     readonly property string m3Script: `${Quickshell.env("HOME")}/.local/lib/dots/generate-m3-colors.py`
     readonly property string schemeJson: `${Paths.cache}/smart-colors/scheme.json`
 
-    readonly property bool busy: _busy
+    readonly property bool busy: _busy || _queue.length > 0
     property bool _busy: false
     property var _queue: []
     property string _jobKind: ""
@@ -60,23 +60,24 @@ Singleton {
     function setGtk(theme: string): void {
         if (!theme)
             return;
-        // Standalone GTK apply must NOT reuse gtkFinalizeProc — that process
-        // calls _finishJob and would abort an in-flight theme/wallpaper job.
-        gtkStandaloneProc.themeName = theme;
-        gtkStandaloneProc.mode = Colours.currentLight ? "light" : "dark";
-        gtkStandaloneProc.running = true;
+        _enqueue({
+            kind: "gtk",
+            gtkTheme: theme
+        });
     }
 
     function setIcons(theme: string): void {
         if (!theme)
             return;
-        iconOnlyProc.themeName = theme;
-        iconOnlyProc.running = true;
+        _enqueue({
+            kind: "icons",
+            iconTheme: theme
+        });
     }
 
     function _enqueue(job: var): void {
         const tail = _queue.length ? _queue[_queue.length - 1] : null;
-        if (tail && tail.kind === job.kind && tail.themeId === job.themeId && tail.wallpaper === job.wallpaper)
+        if (tail && tail.kind === job.kind && tail.themeId === job.themeId && tail.wallpaper === job.wallpaper && tail.gtkTheme === job.gtkTheme && tail.iconTheme === job.iconTheme)
             return;
         _queue = _queue.concat([job]);
         _pump();
@@ -110,6 +111,13 @@ Singleton {
             _pendingSchemeType = Colours.flavour || "tonal-spot";
             _pendingDarkMode = !Colours.currentLight;
             walReloadProc.running = true;
+        } else if (job.kind === "gtk") {
+            gtkStandaloneProc.themeName = job.gtkTheme || "";
+            gtkStandaloneProc.mode = Colours.currentLight ? "light" : "dark";
+            gtkStandaloneProc.running = true;
+        } else if (job.kind === "icons") {
+            iconOnlyProc.themeName = job.iconTheme || "";
+            iconOnlyProc.running = true;
         } else {
             _finishJob(false, "unknown job kind");
         }
@@ -354,9 +362,14 @@ done
         command: ["bash", "-c", `
 set -euo pipefail
 source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2>/dev/null || exit 0
+icon_theme="\${DOTS_ICON_THEME:-}"
+if [[ -z "\$icon_theme" ]]; then
+  icon_theme="$(gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'" || true)"
+fi
+[[ -n "\$icon_theme" ]] || icon_theme="Numix-Circle"
 if [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
   prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
-  apply_gtk_theme "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-Numix-Circle}" "\$prefer" || true
+  apply_gtk_theme "\${DOTS_GTK_THEME}" "\$icon_theme" "\$prefer" || true
 elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
   gsettings set org.gnome.desktop.interface icon-theme "\${DOTS_ICON_THEME}" >/dev/null 2>&1 || true
 fi
@@ -372,7 +385,7 @@ apply_gtk_color_scheme "\${DOTS_MODE}" || true
         }
     }
 
-    // User/CLI GTK override outside the job queue — never touches _finishJob.
+    // Queued GTK override — must call _finishJob (unlike the old fire-and-forget path).
     Process {
         id: gtkStandaloneProc
         property string themeName: ""
@@ -380,9 +393,11 @@ apply_gtk_color_scheme "\${DOTS_MODE}" || true
         command: ["bash", "-c", `
 set -euo pipefail
 source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2>/dev/null || exit 0
+icon_theme="$(gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'" || true)"
+[[ -n "\$icon_theme" ]] || icon_theme="Numix-Circle"
 if [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
   prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
-  apply_gtk_theme "\${DOTS_GTK_THEME}" "Numix-Circle" "\$prefer" || true
+  apply_gtk_theme "\${DOTS_GTK_THEME}" "\$icon_theme" "\$prefer" || true
 fi
 apply_gtk_color_scheme "\${DOTS_MODE}" || true
 `]
@@ -390,6 +405,9 @@ apply_gtk_color_scheme "\${DOTS_MODE}" || true
             "DOTS_GTK_THEME": gtkStandaloneProc.themeName,
             "DOTS_MODE": gtkStandaloneProc.mode
         })
+        onExited: (exitCode, exitStatus) => {
+            root._finishJob(true, "");
+        }
     }
 
     function _runSideEffects(): void {
@@ -411,6 +429,9 @@ apply_gtk_color_scheme "\${DOTS_MODE}" || true
         id: iconOnlyProc
         property string themeName: ""
         command: ["gsettings", "set", "org.gnome.desktop.interface", "icon-theme", iconOnlyProc.themeName]
+        onExited: (exitCode, exitStatus) => {
+            root._finishJob(exitCode === 0, exitCode === 0 ? "" : `setIcons failed (exit ${exitCode})`);
+        }
     }
 
     Process {

@@ -35,6 +35,17 @@ Searcher {
         loadProc.running = true;
     }
 
+    function themeById(id: string): var {
+        if (!id)
+            return null;
+        const items = themes.instances;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].id === id)
+                return items[i];
+        }
+        return null;
+    }
+
     list: themes.instances
     useFuzzy: Config.launcher.useFuzzy.actions
     keys: ["name", "description", "id", "tags"]

@@ -380,7 +380,7 @@ Item {
         themeDirty = !!themeId;
         wallpaperDirty = false;
         modeOverrideDirty = false;
-        const theme = (Themes.list || []).find(t => t.id === themeId);
+        const theme = Themes.themeById(themeId);
         if (theme) {
             wallpaperScopeDir = theme.wallpaperDir || themeId;
             wallpaperShowAll = false;
@@ -441,8 +441,8 @@ Item {
     function stageWallpaperApply(path: string): void {
         pendingWallpaperPath = path;
         wallpaperDirty = path !== Wallpapers.actualCurrent;
-        if (!themeDirty)
-            stagedThemeWallpaper = "";
+        // With a theme staged, the click overrides the theme wallpaper.
+        stagedThemeWallpaper = themeDirty ? path : "";
     }
 
     function resetPendingSelections(): void {
@@ -579,7 +579,7 @@ Item {
                         previewController: root
                         wallpaperScopeDir: root.wallpaperScopeDir
                         showAllWallpapers: root.wallpaperShowAll
-                        onShowAllWallpapersChanged: root.wallpaperShowAll = showAllWallpapers
+                        onToggleShowAllRequested: root.wallpaperShowAll = !root.wallpaperShowAll
                     }
                 }
             }

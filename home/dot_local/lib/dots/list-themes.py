@@ -63,11 +63,15 @@ def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:
     }
 
 
+def _data_home() -> Path:
+    return Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")
+
+
 def main() -> int:
     themes_dir = Path(
         os.environ.get(
             "DOTS_THEMES_DIR",
-            Path.home() / ".local/share/dots/themes",
+            _data_home() / "dots/themes",
         )
     )
     if len(sys.argv) > 1:
@@ -75,7 +79,7 @@ def main() -> int:
     walls_root = Path(
         os.environ.get(
             "DOTS_WALLPAPERS_DIR",
-            Path.home() / ".local/share/dots/wallpapers",
+            _data_home() / "dots/wallpapers",
         )
     )
     themes: list[dict] = []
