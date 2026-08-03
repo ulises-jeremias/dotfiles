@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+reviews:
+  path_filters:
+    # Deleted sticky-rice assets/configs are bulk noise; runtime code is elsewhere.
+    - "!home/dot_local/share/dots/rices/**"
+    # Theme pack JSON is data, not logic (still visible in the GitHub PR diff).
+    - "!home/dot_local/share/dots/themes/**/theme.json"
+    - "!home/dot_local/share/dots/themes/**/preview.*"
+    - "!home/dot_local/share/dots/wallpapers/**"
