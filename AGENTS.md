@@ -22,6 +22,7 @@ See [Architecture Philosophy](docs/Architecture-Philosophy.md) for detailed prin
 ### Essential Standards
 
 **Scripts Must:**
+
 - Use EasyOptions for CLI parsing
 - Include `set -euo pipefail`
 - Follow naming: `dots-*` for user scripts, `snake_case` for functions/vars

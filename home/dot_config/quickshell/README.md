@@ -64,6 +64,7 @@ sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/main/scrip
 ```
 
 The installation script will:
+
 1. Install Quickshell and dependencies
 2. Build the Hornero C++ plugin
 3. Configure integration with Hyprland
@@ -107,6 +108,7 @@ sudo cmake --install build
 ```
 
 Dependencies:
+
 - `cmake`, `ninja`
 - `qt6-base`, `qt6-declarative`
 - `libcava`, `aubio`, `libpipewire`
@@ -121,6 +123,7 @@ Dependencies:
 Quickshell starts automatically with Hyprland via the HorneroConfig configuration.
 
 Manual start:
+
 ```bash
 quickshell
 ```

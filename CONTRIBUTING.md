@@ -283,7 +283,6 @@ Create a theme pack under `home/dot_local/share/dots/themes/<id>/` with `theme.j
 and place wallpapers in `home/dot_local/share/dots/wallpapers/<id>/`. Theme packs are
 apply-once recipes — they must not introduce a sticky current-theme state.
 
-
 ## 🧪 Testing Your Changes
 
 ### Using the Playground

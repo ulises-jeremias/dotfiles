@@ -3,6 +3,7 @@
 ## 1. Appearance System (Theme Packs)
 
 ### Core Principles
+
 - Live state owns wallpaper, palette, mode/flavour, and GTK/icons
 - Theme packs under `~/.local/share/dots/themes/<id>/` are apply-once recipes (`theme.json`)
 - Wallpapers under `~/.local/share/dots/wallpapers/<id>/` link into `~/Pictures/Wallpapers/<id>/`
@@ -10,13 +11,14 @@
 - No sticky `current` theme/rice id
 
 ### What a theme pack stages
+
 - Default wallpaper, M3 `schemeType`, light/dark mode
 - GTK theme + icon theme
 
 ### Constraints
+
 - Packs must not write persistent theme identity
 - Wallpaper assets are shared via Pictures, not nested under the recipe
-
 
 ## 2. Smart Colors System
 
