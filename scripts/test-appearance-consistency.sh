@@ -110,7 +110,11 @@ for theme_json in "$THEMES_SRC"/*/theme.json; do
     fail "missing preview for $id"
   fi
 done
-[[ $theme_count -ge 1 ]] && pass "found $theme_count theme packs" || fail "no theme packs"
+if [[ $theme_count -ge 1 ]]; then
+  pass "found $theme_count theme packs"
+else
+  fail "no theme packs"
+fi
 
 if [[ -f $LIST_THEMES ]]; then
   if [[ -z $PYTHON_BIN ]]; then
@@ -160,6 +164,8 @@ else
   pass "ThemePipeline uses dots-gtk-theme CLI"
 fi
 
+# Intentional: match the literal shell source pattern containing $HOME.
+# shellcheck disable=SC2016
 if grep -En 'readlink -f "\$HOME/\.cache/wal/wal"|readlink -f \$HOME/\.cache/wal/wal' \
   "$GTK_MGR" "$GTK_BIN" "${ROOT}/home/dot_local/lib/dots/apply-appearance.sh" >/dev/null 2>&1; then
   fail "unsafe readlink on wal text pointer"
@@ -189,7 +195,11 @@ else
     fail "dots-gtk-theme current-icon"
   fi
   if mapfile -t themes < <(dots-gtk-theme -q -p list 2>/dev/null); then
-    [[ ${#themes[@]} -gt 0 ]] && pass "dots-gtk-theme list (${#themes[@]} themes)" || fail "dots-gtk-theme list empty"
+    if [[ ${#themes[@]} -gt 0 ]]; then
+      pass "dots-gtk-theme list (${#themes[@]} themes)"
+    else
+      fail "dots-gtk-theme list empty"
+    fi
   else
     fail "dots-gtk-theme list"
   fi
