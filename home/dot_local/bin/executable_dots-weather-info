@@ -33,7 +33,7 @@ cache_weather_icon=${cache_dir}/weather-icon
 cache_weather_location=${cache_dir}/weather-location
 
 ## Weather data - API key from LastPass via chezmoi template
-readonly WEATHER_API_KEY_FILE="$HOME/.config/private_credentials/weather_api_key"
+readonly WEATHER_API_KEY_FILE="$HOME/.config/credentials/weather_api_key"
 KEY="${WEATHER_API_KEY:-$(cat "$WEATHER_API_KEY_FILE" 2>/dev/null || echo "")}"
 
 if [[ -z $KEY ]]; then
