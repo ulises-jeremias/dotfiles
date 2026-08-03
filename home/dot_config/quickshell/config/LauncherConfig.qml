@@ -64,10 +64,10 @@ JsonObject {
             dangerous: false
         },
         {
-            name: "Appearance",
+            name: "Themes",
             icon: "style",
-            description: "Apply a full desktop appearance/rice",
-            command: ["autocomplete", "rice"],
+            description: "Apply a desktop theme pack",
+            command: ["autocomplete", "theme"],
             enabled: true,
             dangerous: false
         },

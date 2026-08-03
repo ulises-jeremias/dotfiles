@@ -76,19 +76,21 @@ The installation script will:
 Configuration is managed through:
 
 - **`config/Config.qml`** - Main configuration file
-- **Rice system** - Theme settings from `~/.local/share/dots/rices/`
+- **Theme packs** - Apply-once presets from `~/.local/share/dots/themes/`
 - **Smart Colors** - Automatic color adaptation via `~/.cache/dots/smart-colors/`
 
 ### Customization
 
-Edit configuration in your HorneroConfig rice:
+Apply a theme pack (wallpaper + palette + GTK) from the Control Center Appearance
+pane, or via CLI:
 
 ```bash
-# Edit current rice configuration
-dots-rice edit
+# List and apply a theme pack
+dots appearance theme list
+dots appearance theme apply vapor-dreams
 
-# Switch rice (changes entire theme including Quickshell)
-dots-rice switch
+# Wallpaper / GTK / icons without changing theme pack selection
+dots appearance set-wallpaper ~/Pictures/Wallpapers/vapor-dreams/foo.png
 ```
 
 ---

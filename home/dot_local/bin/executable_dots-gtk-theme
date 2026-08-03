@@ -6,7 +6,7 @@
 ## GTK Theme Utility Script for HorneroConfig
 ##
 ## This script provides command-line utilities for managing GTK themes
-## within the rice system, including listing, applying, and detecting themes.
+## within the appearance system, including listing, applying, and detecting themes.
 ##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
@@ -24,7 +24,7 @@
 ##     current                 Show current GTK theme
 ##     apply <theme>           Apply specific GTK theme
 ##     detect [wallpaper]      Detect optimal theme for wallpaper
-##     rice [rice-name]        Apply GTK theme for specific rice
+##     theme [theme-id]        Apply GTK theme from appearance theme pack
 ##     auto                    Auto-detect and apply optimal theme
 ##     icons                   List installed icon themes
 ##     info <theme>            Show information about a theme
@@ -34,7 +34,7 @@ set -euo pipefail
 ## Examples:
 ##     @script.name list
 ##     @script.name apply Orchis-Dark-Compact
-##     @script.name rice space
+##     @script.name theme vapor-dreams
 ##     @script.name detect ~/Pictures/wallpaper.jpg
 ##     @script.name auto
 
@@ -211,15 +211,15 @@ cmd_detect() {
 }
 
 # Function to apply rice-specific theme
-cmd_rice() {
+cmd_theme_pack() {
   local rice_name="${1:-}"
 
-  echo -e "${BLUE}🍚 Applying GTK theme for rice:${NC} ${rice_name:-auto-detect}"
+  echo -e "${BLUE}🍚 Applying GTK theme from theme pack:${NC} ${rice_name:-auto-detect}"
 
-  if apply_rice_gtk_theme "$rice_name"; then
+  if apply_theme_gtk_theme "$rice_name"; then
     echo -e "${GREEN}✅ Rice GTK theme applied successfully${NC}"
   else
-    echo -e "${RED}❌ Failed to apply rice GTK theme${NC}"
+    echo -e "${RED}❌ Failed to apply theme pack GTK theme${NC}"
     return 1
   fi
 }
@@ -227,7 +227,7 @@ cmd_rice() {
 # Function to auto-detect and apply
 cmd_auto() {
   echo -e "${BLUE}🤖 Auto-detecting optimal GTK theme...${NC}"
-  cmd_rice ""
+  cmd_theme_pack ""
 }
 
 # Function to list icon themes
@@ -369,8 +369,8 @@ main() {
     "detect" | "analyze")
       cmd_detect "${cmd_args[@]}"
       ;;
-    "rice" | "r")
-      cmd_rice "${cmd_args[@]}"
+    "theme" | "t")
+      cmd_theme_pack "${cmd_args[@]}"
       ;;
     "auto" | "automatic")
       cmd_auto

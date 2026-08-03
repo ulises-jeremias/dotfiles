@@ -52,9 +52,9 @@ StyledListView {
         const text = search.text;
         const prefix = Config.launcher.actionPrefix;
         if (text.startsWith(prefix)) {
-            for (const action of ["calc", "scheme", "variant", "appearance"])
+            for (const action of ["calc", "scheme", "variant", "appearance", "theme"])
                 if (text.startsWith(`${prefix}${action} `))
-                    return action;
+                    return action === "theme" ? "appearance" : action;
 
             return "actions";
         }
@@ -66,7 +66,7 @@ StyledListView {
         if (state === "scheme" || state === "variant")
             Schemes.reload();
         if (state === "appearance")
-            Appearances.reload();
+            Themes.reload();
     }
 
     states: [
@@ -114,8 +114,8 @@ StyledListView {
             name: "appearance"
 
             PropertyChanges {
-                model.values: Appearances.query(search.text)
-                root.delegate: appearanceItem
+                model.values: Themes.query(search.text)
+                root.delegate: themeItem
             }
         }
     ]
@@ -266,7 +266,7 @@ StyledListView {
     }
 
     Component {
-        id: appearanceItem
+        id: themeItem
 
         AppearanceItem {
             list: root

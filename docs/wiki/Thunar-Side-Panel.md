@@ -41,9 +41,9 @@ chezmoi apply --force --include=files
 
 The template includes: Home, Projects, Dev, Downloads, Documents, Pictures, Music, Videos, .config, LocalShare, Rices, Wallpapers, Bin. Remove or reorder directly in the template to reflect your workflow.
 
-### Adding Per-Rice Bookmarks (Optional Manual Pattern)
+### Adding Extra Bookmarks (Optional Manual Pattern)
 
-If a specific rice needs additional paths (e.g. a theme assets folder), just append them manually after switching rice. Since we removed automation, we intentionally keep this lightweight. If automation becomes desirable again, a simple helper script or a chezmoi data-driven conditional can be reintroduced later.
+If a specific setup needs additional paths (e.g. a theme assets folder), just append them manually after changing appearance. Since we removed automation, we intentionally keep this lightweight. If automation becomes desirable again, a simple helper script or a chezmoi data-driven conditional can be reintroduced later.
 
 ### Keeping Things Clean
 
@@ -68,7 +68,7 @@ If emojis appear as empty squares, install a font with emoji coverage (e.g. Noto
 ### Future Enhancements (Optional Ideas)
 
 - Folder-specific icons using `.directory` files
-- Conditional entries via Go template (per host / per rice)
+- Conditional entries via Go template (per host / per host)
 - Color-tag comments referencing Smart Colors system
 
 For now the approach stays intentionally simple: a single, explicit source of truth under version control.

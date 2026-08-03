@@ -103,7 +103,7 @@ dots wal-reload
 ### wallpaper-set
 
 - Unified wallpaper entrypoint used by Quickshell and scripts
-- When Quickshell is running: IPC `rice setWallpaper`
+- When Quickshell is running: IPC `appearance setWallpaper`
 - Fallback: wal + wallpaper pointer + M3 generation + `dots-color-scheme sync-state`
 
 ```bash
@@ -114,5 +114,5 @@ dots appearance doctor
 ## Notes
 
 - Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.
-- `dots rice` remains available as a thin alias; `dots appearance` is the canonical contract.
+- `dots appearance theme` remains available as a thin alias; `dots appearance` is the canonical contract.
 - `dots-*` scripts remain modular and can be called directly.

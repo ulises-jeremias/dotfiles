@@ -1,30 +1,22 @@
 # System Architecture
 
-## 1. Theme System (Rice)
+## 1. Appearance System (Theme Packs)
 
-**Purpose**: Provide complete desktop theme management with one-command switching.
+### Core Principles
+- Live state owns wallpaper, palette, mode/flavour, and GTK/icons
+- Theme packs under `~/.local/share/dots/themes/<id>/` are apply-once recipes (`theme.json`)
+- Wallpapers under `~/.local/share/dots/wallpapers/<id>/` link into `~/Pictures/Wallpapers/<id>/`
+- Application: Quickshell `ThemePipeline.qml` IPC (`appearance`), with `apply-appearance.sh` shell fallback
+- No sticky `current` theme/rice id
 
-**Architecture:**
+### What a theme pack stages
+- Default wallpaper, M3 `schemeType`, light/dark mode
+- GTK theme + icon theme
 
-- Each rice is a self-contained directory: `~/.local/share/dots/rices/<rice-name>/`
-- Configuration: `config.json` only
-- Application: Quickshell `Rice.qml` IPC, with `apply-appearance.sh` shell fallback
-- Assets: `backgrounds/`, `preview.png`
-- State tracking: `~/.local/state/dots/rice/current`
+### Constraints
+- Packs must not write persistent theme identity
+- Wallpaper assets are shared via Pictures, not nested under the recipe
 
-**Integration Points:**
-
-- Quickshell (M3 color scheme via scheme.json + Colours service)
-- Hyprland (compositor animations and settings)
-- Wallpaper system (Quickshell Background layershell + pywal + persistent pointer)
-- GTK themes (named theme or `auto` via `dots-gtk-theme rice`)
-
-**Design Constraints:**
-
-- Apply pipelines must be fail-closed on wal/M3 hard failures
-- Assets must be relative to rice directory
-- No cross-rice dependencies allowed
-- `scheme/state.json` must stay aligned with `scheme.json` after apply
 
 ## 2. Smart Colors System
 
@@ -66,7 +58,7 @@
 **Key Modules:**
 
 - **Left Rail Bar**: Status rail with workspaces, clock, status icons and power controls
-- **Launcher**: App search, calculator, wallpaper browser, rice selector
+- **Launcher**: App search, calculator, wallpaper browser, theme browser
 - **Dashboard**: Tabbed system overview (media, performance, weather)
 - **Notifications**: Popup and sidebar notification center
 - **Session Rail**: Right-edge quick actions menu
@@ -94,7 +86,7 @@
 
 ## 3.1 Hyprland Animations
 
-**Purpose**: Rice-specific animation profiles for window transitions.
+**Purpose**: Hyprland animation profiles for window transitions.
 
 **Available Profiles:**
 
@@ -130,7 +122,7 @@ Waybar, EWW, and Rofi integration was intentionally removed from runtime and ins
 **Script Categories:**
 
 - System management (updates, backups, monitoring)
-- Theme control (rice application, color management)
+- Theme control (theme application, color management)
 - Security (auditing, hardening, secret scanning)
 - User interaction (Quickshell IPC, notifications, launcher)
 - Development (testing, validation, debugging)

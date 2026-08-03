@@ -4,7 +4,7 @@
 ## Licensed under MIT.
 ##
 ## Program: dots-snappy-switcher
-## Description: Snappy Switcher wrapper with rice theme integration
+## Description: Snappy Switcher wrapper with appearance theme integration
 ##
 ## Usage:
 ##   dots-snappy-switcher [COMMAND] [ARG]
@@ -18,7 +18,8 @@
 ##   select                    Confirm current selection
 ##   quit                      Stop snappy-switcher daemon
 ##   apply-theme <theme>       Apply explicit theme file (e.g. nord.ini)
-##   apply-rice-theme [rice]   Apply theme from rice config (SNAPPY_SWITCHER_THEME/THEME)
+##   apply-theme-pack [id]     Apply theme from appearance theme pack
+##   apply-rice-theme [id]     Deprecated alias for apply-theme-pack
 ##   status                    Show whether daemon is running
 ##
 
@@ -57,8 +58,8 @@ case "$cmd" in
     fi
     apply_snappy_switcher_theme "$arg"
     ;;
-  apply-rice-theme)
-    apply_rice_snappy_switcher_theme "$arg"
+  apply-theme-pack | apply-rice-theme)
+    apply_theme_snappy_switcher_theme "$arg"
     ;;
   status)
     if pgrep -x snappy-switcher >/dev/null 2>&1; then

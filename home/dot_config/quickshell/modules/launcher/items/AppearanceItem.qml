@@ -8,7 +8,7 @@ import QtQuick
 Item {
     id: root
 
-    required property Appearances.Appearance modelData
+    required property Themes.Theme modelData
     required property var list
 
     implicitHeight: Config.launcher.sizes.itemHeight
@@ -54,7 +54,7 @@ Item {
         MaterialIcon {
             id: icon
 
-            text: root.modelData?.icon ?? "palette"
+            text: "palette"
             font.pointSize: Appearance.font.size.extraLarge
 
             anchors.left: previewThumb.active ? previewThumb.right : parent.left
@@ -67,7 +67,7 @@ Item {
             anchors.leftMargin: Appearance.spacing.larger
             anchors.verticalCenter: icon.verticalCenter
 
-            width: parent.width - icon.implicitWidth - anchors.leftMargin - (previewThumb.active ? previewThumb.implicitWidth + Appearance.spacing.small : 0) - (current.active ? current.width + Appearance.spacing.normal : 0)
+            width: parent.width - icon.implicitWidth - anchors.leftMargin - (previewThumb.active ? previewThumb.implicitWidth + Appearance.spacing.small : 0)
             spacing: 0
 
             StyledText {
@@ -76,28 +76,13 @@ Item {
             }
 
             StyledText {
-                text: root.modelData?.style ?? root.modelData?.desc ?? ""
+                text: root.modelData?.description ?? ""
                 font.pointSize: Appearance.font.size.small
                 color: Colours.palette.m3outline
 
                 elide: Text.ElideRight
                 anchors.left: parent.left
                 anchors.right: parent.right
-            }
-        }
-
-        Loader {
-            id: current
-
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-
-            active: root.modelData?.id === Appearances.currentId
-
-            sourceComponent: MaterialIcon {
-                text: "check"
-                color: Colours.palette.m3onSurfaceVariant
-                font.pointSize: Appearance.font.size.large
             }
         }
     }

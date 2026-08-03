@@ -74,7 +74,7 @@ Files open with `xdg-open` by default. Directories can also open in Thunar. Text
 | `gc` | ~/.config |
 | `gl` | ~/.local |
 | `gr` | Rices directory |
-| `gw` | Current rice wallpapers |
+| `gw` | Wallpapers library |
 | `gb` | ~/.local/bin (scripts) |
 | `gt` | /tmp |
 
@@ -122,7 +122,7 @@ Files open with `xdg-open` by default. Directories can also open in Thunar. Text
 
 ## Smart Colors Integration
 
-Yazi inherits terminal colors via escape sequences. When you switch rice themes:
+Yazi inherits terminal colors via escape sequences. When you switch appearance themes:
 
 1. `dots-wal-reload` regenerates pywal colors
 2. Terminal (Kitty) receives new color palette

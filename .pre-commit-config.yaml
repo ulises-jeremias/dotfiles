@@ -22,8 +22,8 @@ repos:
         args: [--maxkb=1000]
         exclude: |
           (?x)^(
-            home/dot_local/share/dots/rices/.*/backgrounds/.*|
-            home/dot_local/share/dots/rices/.*/preview\.png|
+            home/dot_local/share/dots/wallpapers/.*/.*|
+            home/dot_local/share/dots/themes/.*/preview\..*|
             home/dot_local/share/dots/wallpapers/curated/.*|
             static/.*
           )$

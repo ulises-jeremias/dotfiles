@@ -1,23 +1,27 @@
 # Wallpapers
 
-This directory holds the generic wallpaper pool — images that don't belong to a specific rice but are still part of the rotation.
+Themed wallpaper packs ship here and are symlinked into `~/Pictures/Wallpapers/<theme-id>/` on `chezmoi apply`.
 
 ```text
 wallpapers/
-└── curated/   # generic pool, linked to ~/Pictures/Wallpapers on `chezmoi apply`
+├── curated/           # uncategorized pool
+├── vapor-dreams/
+├── neon-city/
+├── gruvbox/
+└── …
 ```
 
-Theme-specific wallpapers live next to the rice that uses them, in `home/dot_local/share/dots/rices/<rice>/backgrounds/`. The split is intentional:
+Theme recipes (mode, scheme, GTK, icons, default wallpaper) live separately in
+`home/dot_local/share/dots/themes/<id>/theme.json`. Themes are apply-once packs —
+they do not own a sticky “current theme” state.
 
-- A rice's `backgrounds/` ships with the theme and tracks it. Adding a `cyberpunk-alley.png` to `neon-city/backgrounds/` means "this fits the neon-city palette".
-- `curated/` is for images with no strong palette tie — the Quickshell launcher feeds its random-wallpaper picker from `~/Pictures/Wallpapers`, which is populated from this directory.
+## Linking
 
-## How they get to `~/Pictures/Wallpapers`
+`home/.chezmoiscripts/linux/run_onchange_after_link-wallpapers.sh.tmpl` symlinks
+every image under each theme directory into `~/Pictures/Wallpapers/<theme-id>/`.
+Existing non-symlink files are never clobbered.
 
-The chezmoi script `home/.chezmoiscripts/linux/run_onchange_after_link-wallpapers.sh.tmpl` runs after `chezmoi apply` and symlinks every PNG, JPG, JPEG, or WEBP in `curated/` into `~/Pictures/Wallpapers/`. Existing non-symlink files are always left untouched; existing symlinks may be refreshed when they point to a different target — drop your own additions in either place.
+## Adding images
 
-## Adding to the curated pool
-
-Drop the file in `curated/` and commit it. The next `chezmoi apply` picks it up.
-
-Keep an eye on size: each image lands in the repo as-is. Aim for ≤ 5 MB per PNG (1920×1080 with reasonable compression); anything heavier is a candidate for converting to webp or downsampling.
+Drop files under the matching theme directory (or `curated/`) and commit.
+Prefer ≤ 2560px on the long edge and JPEG/WebP for photos.

@@ -16,18 +16,20 @@ CollapsibleSection {
     required property var session
 
     title: qsTr("Theme mode")
-    description: qsTr("Light or dark — live preference (rices set a default on apply)")
+    description: qsTr("Light or dark — live preference (theme packs set a default on apply)")
     showBackground: true
 
     readonly property bool darkChecked: previewController.pendingMode === "dark"
-    readonly property string riceDefaultMode: {
-        const id = Appearances.currentId;
-        const rice = (Appearances.list || []).find(a => a.id === id);
-        if (!rice)
+    readonly property string themeDefaultMode: {
+        const id = previewController.pendingThemeId;
+        if (!id)
             return "";
-        return rice.darkMode ? "dark" : "light";
+        const theme = (Themes.list || []).find(t => t.id === id);
+        if (!theme)
+            return "";
+        return theme.darkMode ? "dark" : "light";
     }
-    readonly property bool modeDivergesFromRice: riceDefaultMode !== "" && previewController.pendingMode !== riceDefaultMode
+    readonly property bool modeDivergesFromTheme: themeDefaultMode !== "" && previewController.pendingMode !== themeDefaultMode
 
     SwitchRow {
         label: qsTr("Dark mode")
@@ -47,8 +49,8 @@ CollapsibleSection {
     }
 
     StyledText {
-        visible: root.modeDivergesFromRice
-        text: qsTr("Differs from current rice default (%1)").arg(root.riceDefaultMode)
+        visible: root.modeDivergesFromTheme
+        text: qsTr("Differs from staged theme default (%1)").arg(root.themeDefaultMode)
         color: Colours.palette.m3outline
         font.pointSize: Appearance.font.size.small
     }

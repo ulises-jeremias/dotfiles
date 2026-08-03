@@ -4,7 +4,7 @@
 # ║  A curated, theme-adaptive terminal file manager configuration.            ║
 # ║  Managed by chezmoi — edit the source, not the generated file.             ║
 # ║                                                                            ║
-# ║  Colors auto-adapt to your current rice via terminal escape sequences.     ║
+# ║  Colors auto-adapt to your appearance palette via terminal escape sequences. ║
 # ║  Image previews use Kitty protocol (native Wayland support).               ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 

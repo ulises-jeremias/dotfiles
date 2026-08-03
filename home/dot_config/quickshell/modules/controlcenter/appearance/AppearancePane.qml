@@ -55,21 +55,29 @@ Item {
     property bool visualiserAutoHide: Config.background.visualiser.autoHide ?? true
     property real visualiserRounding: Config.background.visualiser.rounding ?? 1
     property real visualiserSpacing: Config.background.visualiser.spacing ?? 1
-    property string pendingAppearanceId: Appearances.currentId
+    property string pendingThemeId: ""
     property string pendingSchemeKey: Schemes.currentScheme
     property string pendingVariant: Schemes.currentVariant
     property string pendingMode: Colours.currentLight ? "light" : "dark"
     property string pendingWallpaperPath: Wallpapers.actualCurrent
-    property string stagedAppearanceWallpaper: ""
-    property bool appearanceDirty: false
+    property string stagedThemeWallpaper: ""
+    property string pendingGtkTheme: ""
+    property string pendingIconTheme: ""
+    property string wallpaperScopeDir: ""
+    property bool wallpaperShowAll: false
+    property bool themeDirty: false
     property bool schemeDirty: false
     property bool variantDirty: false
     property bool modeDirty: false
     property bool wallpaperDirty: false
-    // True only when Theme mode was toggled by the user (not implied by rice stage).
+    property bool gtkDirty: false
+    property bool iconDirty: false
+    // True only when Theme mode was toggled by the user (not implied by theme stage).
     property bool modeOverrideDirty: false
     property string deferredMode: ""
-    readonly property bool hasPendingChanges: appearanceDirty || schemeDirty || variantDirty || modeDirty || wallpaperDirty
+    property string deferredGtk: ""
+    property string deferredIcon: ""
+    readonly property bool hasPendingChanges: themeDirty || schemeDirty || variantDirty || modeDirty || wallpaperDirty || gtkDirty || iconDirty
     property bool previewActive: false
     property string previewSource: ""
     property string previewTitle: ""
@@ -248,17 +256,17 @@ Item {
         scheduleGeneratedPreview(path, previewMode || pendingMode, previewSchemeType);
     }
 
-    function startAppearancePreview(modelData: var): void {
+    function startThemePreview(modelData: var): void {
         if (!modelData)
             return;
 
         previewActive = true;
-        previewSource = "appearance";
-        previewTitle = modelData.name ?? modelData.id ?? qsTr("Appearance");
-        previewSubtitle = modelData.style ?? modelData.description ?? qsTr("Appearance preset");
+        previewSource = "theme";
+        previewTitle = modelData.name ?? modelData.id ?? qsTr("Theme");
+        previewSubtitle = modelData.description ?? qsTr("Theme pack");
         previewVariant = modelData.schemeType ?? "";
         previewMode = modelData.darkMode ? "dark" : "light";
-        previewWallpaperPath = modelData.wallpaper ?? "";
+        previewWallpaperPath = modelData.wallpaperPath ?? modelData.wallpaper ?? "";
         previewSchemeType = normalizeSchemeType(modelData.schemeType ?? "");
 
         scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, previewMode, previewSchemeType);
@@ -284,19 +292,22 @@ Item {
     }
 
     function commitSelection(): void {
-        // Apply staged appearance changes.
-        // Rice.apply is a full preset: it sets wallpaper + schemeType + darkMode
-        // from config.json. Mode overrides only run when the user explicitly
-        // re-staged Theme mode (modeOverrideDirty), and only after Rice finishes.
-        const appliedRice = appearanceDirty && pendingAppearanceId;
+        // ThemePipeline.applyTheme is a full preset: wallpaper + schemeType + darkMode
+        // from theme.json. Mode/GTK/icon overrides only run when the user explicitly
+        // staged them, and only after apply finishes (avoids racing gtkFinalizeProc).
+        const appliedTheme = themeDirty && pendingThemeId;
+        const appliedWallpaper = !appliedTheme && wallpaperDirty && pendingWallpaperPath;
+        const pipelineJob = appliedTheme || appliedWallpaper;
         deferredMode = "";
+        deferredGtk = "";
+        deferredIcon = "";
 
-        if (appliedRice) {
-            Rice.apply(pendingAppearanceId, stagedAppearanceWallpaper || "");
+        if (appliedTheme) {
+            ThemePipeline.applyTheme(pendingThemeId, stagedThemeWallpaper || "");
             if (modeOverrideDirty && pendingMode)
                 deferredMode = pendingMode;
-        } else if (wallpaperDirty && pendingWallpaperPath) {
-            Rice.setWallpaper(pendingWallpaperPath);
+        } else if (appliedWallpaper) {
+            ThemePipeline.setWallpaper(pendingWallpaperPath);
             if (modeOverrideDirty && pendingMode)
                 deferredMode = pendingMode;
         } else {
@@ -312,18 +323,32 @@ Item {
                 session.runAction(["dots-color-scheme", "mode", pendingMode]);
         }
 
-        // If a Rice job is in flight and we need a mode override, wait for
-        // applyFinished. If Rice is already idle (edge case), apply now.
-        if (deferredMode && !Rice.busy)
-            root._flushDeferredMode();
+        if (gtkDirty && pendingGtkTheme) {
+            if (pipelineJob)
+                deferredGtk = pendingGtkTheme;
+            else
+                ThemePipeline.setGtk(pendingGtkTheme);
+        }
+        if (iconDirty && pendingIconTheme) {
+            if (pipelineJob)
+                deferredIcon = pendingIconTheme;
+            else
+                ThemePipeline.setIcons(pendingIconTheme);
+        }
 
-        appearanceDirty = false;
+        // If a pipeline job is in flight, wait for applyFinished. If already idle, flush now.
+        if ((deferredMode || deferredGtk || deferredIcon) && !ThemePipeline.busy)
+            root._flushDeferredPipelineExtras();
+
+        themeDirty = false;
         schemeDirty = false;
         variantDirty = false;
         modeDirty = false;
         modeOverrideDirty = false;
         wallpaperDirty = false;
-        stagedAppearanceWallpaper = "";
+        gtkDirty = false;
+        iconDirty = false;
+        stagedThemeWallpaper = "";
         clearPreview();
     }
 
@@ -335,34 +360,62 @@ Item {
         session.runAction(["dots-color-scheme", "mode", mode]);
     }
 
-    function stageAppearanceApply(appearanceId: string): void {
-        pendingAppearanceId = appearanceId;
-        stagedAppearanceWallpaper = "";
-        appearanceDirty = appearanceId !== Appearances.currentId;
-        // Selecting a rice implies its default wallpaper unless overridden.
-        wallpaperDirty = false;
-        // Stage the rice's default mode so Theme mode UI stays consistent with
-        // the preset the user is about to apply. This is NOT a user override —
-        // Rice.apply will set live mode from config.json.
-        modeOverrideDirty = false;
-        const rice = (Appearances.list || []).find(a => a.id === appearanceId);
-        if (rice) {
-            pendingMode = rice.darkMode ? "dark" : "light";
-            const current = Colours.currentLight ? "light" : "dark";
-            modeDirty = pendingMode !== current;
-            if (rice.schemeType) {
-                pendingVariant = rice.schemeType;
-                previewSchemeType = normalizeSchemeType(rice.schemeType);
-            }
+    function _flushDeferredPipelineExtras(): void {
+        root._flushDeferredMode();
+        if (deferredGtk) {
+            const theme = deferredGtk;
+            deferredGtk = "";
+            ThemePipeline.setGtk(theme);
+        }
+        if (deferredIcon) {
+            const theme = deferredIcon;
+            deferredIcon = "";
+            ThemePipeline.setIcons(theme);
         }
     }
 
-    function stageAppearanceApplyWithWallpaper(appearanceId: string, wallpaperPath: string): void {
-        stageAppearanceApply(appearanceId);
-        pendingWallpaperPath = wallpaperPath;
-        stagedAppearanceWallpaper = wallpaperPath;
-        appearanceDirty = true;
+    function stageThemeApply(themeId: string): void {
+        pendingThemeId = themeId;
+        stagedThemeWallpaper = "";
+        themeDirty = !!themeId;
         wallpaperDirty = false;
+        modeOverrideDirty = false;
+        const theme = (Themes.list || []).find(t => t.id === themeId);
+        if (theme) {
+            wallpaperScopeDir = theme.wallpaperDir || themeId;
+            wallpaperShowAll = false;
+            pendingMode = theme.darkMode ? "dark" : "light";
+            const current = Colours.currentLight ? "light" : "dark";
+            modeDirty = pendingMode !== current;
+            if (theme.schemeType) {
+                pendingVariant = theme.schemeType;
+                previewSchemeType = normalizeSchemeType(theme.schemeType);
+            }
+            if (theme.wallpaperPath)
+                pendingWallpaperPath = theme.wallpaperPath;
+            if (theme.gtkTheme)
+                pendingGtkTheme = theme.gtkTheme;
+            if (theme.iconTheme)
+                pendingIconTheme = theme.iconTheme;
+        }
+    }
+
+    function stageThemeApplyWithWallpaper(themeId: string, wallpaperPath: string): void {
+        stageThemeApply(themeId);
+        pendingWallpaperPath = wallpaperPath;
+        stagedThemeWallpaper = wallpaperPath;
+        themeDirty = true;
+        wallpaperDirty = false;
+    }
+
+    function stageGtkTheme(theme: string): void {
+        pendingGtkTheme = theme;
+        gtkDirty = !!theme;
+    }
+
+    function stageIconTheme(theme: string): void {
+        pendingIconTheme = theme;
+        iconDirty = !!theme;
     }
 
     function stageSchemeApply(name: string, flavour: string): void {
@@ -388,25 +441,32 @@ Item {
     function stageWallpaperApply(path: string): void {
         pendingWallpaperPath = path;
         wallpaperDirty = path !== Wallpapers.actualCurrent;
-        // Wallpaper-only stage clears rice wallpaper override.
-        if (!appearanceDirty)
-            stagedAppearanceWallpaper = "";
+        if (!themeDirty)
+            stagedThemeWallpaper = "";
     }
 
     function resetPendingSelections(): void {
-        pendingAppearanceId = Appearances.currentId;
+        pendingThemeId = "";
         pendingSchemeKey = Schemes.currentScheme;
         pendingVariant = Schemes.currentVariant;
         pendingMode = Colours.currentLight ? "light" : "dark";
         pendingWallpaperPath = Wallpapers.actualCurrent;
-        stagedAppearanceWallpaper = "";
-        appearanceDirty = false;
+        stagedThemeWallpaper = "";
+        pendingGtkTheme = "";
+        pendingIconTheme = "";
+        wallpaperScopeDir = "";
+        wallpaperShowAll = false;
+        themeDirty = false;
         schemeDirty = false;
         variantDirty = false;
         modeDirty = false;
         modeOverrideDirty = false;
         deferredMode = "";
+        deferredGtk = "";
+        deferredIcon = "";
         wallpaperDirty = false;
+        gtkDirty = false;
+        iconDirty = false;
         if (!previewActive) {
             previewWallpaperPath = pendingWallpaperPath;
             previewVariant = pendingVariant;
@@ -517,6 +577,9 @@ Item {
                     sourceComponent: WallpaperGrid {
                         session: root.session
                         previewController: root
+                        wallpaperScopeDir: root.wallpaperScopeDir
+                        showAllWallpapers: root.wallpaperShowAll
+                        onShowAllWallpapersChanged: root.wallpaperShowAll = showAllWallpapers
                     }
                 }
             }
@@ -600,7 +663,7 @@ Item {
 
                     readonly property var rootPane: sidebarFlickable.rootPane
 
-                    readonly property bool allSectionsExpanded: appearancesSection.expanded && themeModeSection.expanded && colorVariantSection.expanded && colorSchemeSection.expanded && animationsSection.expanded && fontsSection.expanded && scalesSection.expanded && transparencySection.expanded && borderSection.expanded && backgroundSection.expanded
+                    readonly property bool allSectionsExpanded: themesSection.expanded && gtkThemeSection.expanded && iconThemeSection.expanded && themeModeSection.expanded && colorVariantSection.expanded && colorSchemeSection.expanded && animationsSection.expanded && fontsSection.expanded && scalesSection.expanded && transparencySection.expanded && borderSection.expanded && backgroundSection.expanded
 
                     RowLayout {
                         spacing: Appearance.spacing.smaller
@@ -621,7 +684,9 @@ Item {
                             label.animate: true
                             onClicked: {
                                 const shouldExpand = !sidebarLayout.allSectionsExpanded;
-                                appearancesSection.expanded = shouldExpand;
+                                themesSection.expanded = shouldExpand;
+                                gtkThemeSection.expanded = shouldExpand;
+                                iconThemeSection.expanded = shouldExpand;
                                 themeModeSection.expanded = shouldExpand;
                                 colorVariantSection.expanded = shouldExpand;
                                 colorSchemeSection.expanded = shouldExpand;
@@ -635,8 +700,20 @@ Item {
                         }
                     }
 
-                    AppearancesSection {
-                        id: appearancesSection
+                    ThemesSection {
+                        id: themesSection
+                        session: root.session
+                        previewController: root
+                    }
+
+                    GtkThemeSection {
+                        id: gtkThemeSection
+                        session: root.session
+                        previewController: root
+                    }
+
+                    IconThemeSection {
+                        id: iconThemeSection
                         session: root.session
                         previewController: root
                     }
@@ -735,15 +812,16 @@ Item {
     }
 
     Connections {
-        target: Rice
+        target: ThemePipeline
 
         function onApplyFinished(ok: bool): void {
             if (!ok) {
                 root.deferredMode = "";
+                root.deferredGtk = "";
+                root.deferredIcon = "";
                 return;
             }
-            if (root.deferredMode)
-                root._flushDeferredMode();
+            root._flushDeferredPipelineExtras();
         }
     }
 

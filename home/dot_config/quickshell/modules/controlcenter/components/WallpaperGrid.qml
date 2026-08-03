@@ -7,48 +7,102 @@ import qs.components.effects
 import qs.components.images
 import qs.services
 import qs.config
+import qs.utils
 import Hornero.Models
 import QtQuick
+import QtQuick.Layouts
 
-GridView {
+Item {
     id: root
 
     required property Session session
     required property var previewController
 
+    property string wallpaperScopeDir: ""
+    property bool showAllWallpapers: false
+
+    readonly property string scopeBasePath: wallpaperScopeDir ? `${Paths.pictures}/Wallpapers/${wallpaperScopeDir}` : ""
+    readonly property var displayModel: {
+        if (showAllWallpapers || !wallpaperScopeDir)
+            return Wallpapers.list;
+        const base = scopeBasePath;
+        return Wallpapers.list.filter(entry => {
+            const p = entry?.path ?? "";
+            return p.startsWith(`${base}/`) || p === base;
+        });
+    }
+
     readonly property int minCellWidth: 200 + Appearance.spacing.normal
-    readonly property int columnsCount: Math.max(1, Math.floor(width / minCellWidth))
-    property string pendingPreviewPath: ""
-    property string pendingPreviewName: ""
 
-    cellWidth: width / columnsCount
-    cellHeight: 140 + Appearance.spacing.normal
+    implicitWidth: grid.implicitWidth
+    implicitHeight: scopeHeader.visible ? scopeHeader.implicitHeight + grid.implicitHeight : grid.implicitHeight
 
-    model: Wallpapers.list
+    anchors.fill: parent
 
-    clip: true
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 0
 
-    StyledScrollBar.vertical: StyledScrollBar {
-        flickable: root
-    }
+        RowLayout {
+            id: scopeHeader
 
-    Timer {
-        id: previewDebounce
-        interval: 120
-        onTriggered: {
-            if (root.pendingPreviewPath)
-                root.previewController.startWallpaperPreview(root.pendingPreviewPath, root.pendingPreviewName);
+            Layout.fillWidth: true
+            visible: wallpaperScopeDir !== ""
+            spacing: Appearance.spacing.small
+
+            StyledText {
+                Layout.fillWidth: true
+                text: showAllWallpapers
+                    ? qsTr("All wallpapers")
+                    : qsTr("Theme wallpapers: %1").arg(wallpaperScopeDir)
+                font.pointSize: Appearance.font.size.small
+                color: Colours.palette.m3outline
+            }
+
+            TextButton {
+                text: showAllWallpapers ? qsTr("Show theme only") : qsTr("Show all")
+                onClicked: showAllWallpapers = !showAllWallpapers
+            }
         }
-    }
 
-    delegate: Item {
-        required property var modelData
-        required property int index
+        GridView {
+            id: grid
 
-        width: root.cellWidth
-        height: root.cellHeight
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-        readonly property bool isCurrent: modelData && modelData.path === previewController.pendingWallpaperPath
+            readonly property int columnsCount: Math.max(1, Math.floor(width / root.minCellWidth))
+            property string pendingPreviewPath: ""
+            property string pendingPreviewName: ""
+
+            cellWidth: width / columnsCount
+            cellHeight: 140 + Appearance.spacing.normal
+
+            model: root.displayModel
+
+            clip: true
+
+            StyledScrollBar.vertical: StyledScrollBar {
+                flickable: grid
+            }
+
+            Timer {
+                id: previewDebounce
+                interval: 120
+                onTriggered: {
+                    if (grid.pendingPreviewPath)
+                        root.previewController.startWallpaperPreview(grid.pendingPreviewPath, grid.pendingPreviewName);
+                }
+            }
+
+            delegate: Item {
+                required property var modelData
+                required property int index
+
+                width: grid.cellWidth
+                height: grid.cellHeight
+
+                readonly property bool isCurrent: modelData && modelData.path === root.previewController.pendingWallpaperPath
         readonly property real itemMargin: Appearance.spacing.normal / 2
         readonly property real itemRadius: Appearance.rounding.normal
 
@@ -72,13 +126,13 @@ GridView {
             acceptedButtons: Qt.NoButton
             hoverEnabled: true
             onEntered: {
-                root.pendingPreviewPath = modelData.path;
-                root.pendingPreviewName = modelData.name;
+                grid.pendingPreviewPath = modelData.path;
+                grid.pendingPreviewName = modelData.name;
                 previewDebounce.restart();
             }
             onExited: {
-                root.pendingPreviewPath = "";
-                root.pendingPreviewName = "";
+                grid.pendingPreviewPath = "";
+                grid.pendingPreviewName = "";
                 previewDebounce.stop();
             }
         }
@@ -257,6 +311,8 @@ GridView {
 
             Component.onCompleted: {
                 opacity = 1;
+            }
+        }
             }
         }
     }

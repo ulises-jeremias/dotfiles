@@ -263,7 +263,7 @@ cmake --install build --prefix ~/.local/lib/quickshell
 
 ## 📚 Related Documentation
 
-- [Rice System](Rice-System-Theme-Management.md) — Theme switching (legacy naming, now exposed as "Appearances")
+- [Appearance Themes](Rice-System-Theme-Management.md) — Theme switching (legacy naming, now exposed as "Appearances")
 - [Smart Colors System](Smart-Colors-System.md) — Color generation pipeline
 - [Dots Scripts](Dots-Scripts.md) — CLI tools and management scripts
 - [Hyprland Keybindings](Hyprland-Keybindings.md) — Keyboard shortcuts

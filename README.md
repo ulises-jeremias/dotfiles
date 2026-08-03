@@ -157,15 +157,15 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 
 > 📖 [Learn more about Smart Colors →](https://github.com/ulises-jeremias/dotfiles/wiki/Smart-Colors-System)
 
-### 🎨 Rice System & Themes
+### 🎨 Appearance Themes & Themes
 
 Choose from **13 stunning themes** organized by aesthetic: Cyberpunk, Cozy, Vaporwave, Nature, and Cosmic:
 
 ```bash
 dots appearance list        # List available appearances 🎯
 dots appearance apply flowers
-dots rice apply flowers     # Apply a specific theme
-dots rice list              # See all available themes
+dots appearance theme apply flowers     # Apply a specific theme
+dots appearance theme list              # See all available themes
 ```
 
 > 📖 [Explore all themes →](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management)
@@ -178,7 +178,7 @@ dots rice list              # See all available themes
 🐚 **[Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Feature-rich shell with beautiful prompt  
 🔒 **[Hyprlock](https://github.com/hyprwm/hyprlock)** — Secure lock screen  
 🖼️ **Quickshell wallpaper flow** — Unified wallpaper management via `dots-wallpaper-set`  
-🎨 **Rice System** — Instant theme switching with Material Design 3 colors
+🎨 **Appearance Themes** — Instant theme switching with Material Design 3 colors
 
 > 📖 [Complete component list →](https://github.com/ulises-jeremias/dotfiles/wiki/Home)
 
@@ -244,7 +244,7 @@ pre-commit run --all-files  # Run all checks
 ### 📚 For Users
 
 🏠 [**Getting Started**](https://github.com/ulises-jeremias/dotfiles/wiki/Home) — First steps and basic setup  
-🎨 [**Rice System**](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management) — Theme management  
+🎨 [**Appearance Themes**](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management) — Theme management  
 🧠 [**Smart Colors**](https://github.com/ulises-jeremias/dotfiles/wiki/Smart-Colors-System) — Intelligent theming  
 🐚 [**Quickshell**](https://github.com/ulises-jeremias/dotfiles/wiki/Quickshell-Shell) — Desktop shell configuration  
 🔧 [**Scripts**](https://github.com/ulises-jeremias/dotfiles/wiki/Dots-Scripts) — Automation tools  

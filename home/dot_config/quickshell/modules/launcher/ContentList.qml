@@ -24,16 +24,15 @@ Item {
         return search.text === command || search.text.startsWith(`${command} `);
     }
 
-    readonly property bool showRiceSelector: matchesAction("rice") || matchesAction("appearance")
+    readonly property bool showThemesList: matchesAction("theme") || matchesAction("appearance")
     readonly property bool showWallpapers: matchesAction("wallpaper")
-    readonly property Item currentList: showRiceSelector ? riceSelectorLoader.item?.currentList ?? null : showWallpapers ? wallpaperList.item : appList.item
-    readonly property var riceSelector: riceSelectorLoader.item
+    readonly property Item currentList: showWallpapers ? wallpaperList.item : appList.item
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
 
     clip: true
-    state: showRiceSelector ? "riceSelector" : showWallpapers ? "wallpapers" : "apps"
+    state: showWallpapers ? "wallpapers" : "apps"
 
     states: [
         State {
@@ -57,15 +56,6 @@ Item {
                 root.implicitWidth: Math.max(Config.launcher.sizes.itemWidth * 1.2, wallpaperList.implicitWidth)
                 root.implicitHeight: Config.launcher.sizes.wallpaperHeight
                 wallpaperList.active: true
-            }
-        },
-        State {
-            name: "riceSelector"
-
-            PropertyChanges {
-                root.implicitWidth: riceSelectorLoader.item?.implicitWidth ?? Config.launcher.sizes.itemWidth
-                root.implicitHeight: Math.min(root.maxHeight, (riceSelectorLoader.item?.implicitHeight ?? 0) > 0 ? riceSelectorLoader.item.implicitHeight : empty.implicitHeight)
-                riceSelectorLoader.active: true
             }
         }
     ]
@@ -120,21 +110,6 @@ Item {
         }
     }
 
-    Loader {
-        id: riceSelectorLoader
-
-        active: false
-
-        anchors.fill: parent
-
-        sourceComponent: RiceSelector {
-            search: root.search
-            visibilities: root.visibilities
-            panels: root.panels
-            content: root.content
-        }
-    }
-
     Row {
         id: empty
 
@@ -148,7 +123,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
 
         MaterialIcon {
-            text: root.state === "wallpapers" ? "wallpaper_slideshow" : root.state === "riceSelector" ? "palette" : "manage_search"
+            text: root.state === "wallpapers" ? "wallpaper_slideshow" : "palette"
             color: Colours.palette.m3onSurfaceVariant
             font.pointSize: Appearance.font.size.extraLarge
 
@@ -159,7 +134,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             StyledText {
-                text: root.state === "wallpapers" ? qsTr("No wallpapers found") : root.state === "riceSelector" ? qsTr("No appearances found") : qsTr("No results")
+                text: root.state === "wallpapers" ? qsTr("No wallpapers found") : qsTr("No themes found")
                 color: Colours.palette.m3onSurfaceVariant
                 font.pointSize: Appearance.font.size.larger
                 font.weight: 500

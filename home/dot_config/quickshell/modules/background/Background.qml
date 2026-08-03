@@ -9,8 +9,9 @@ import Quickshell.Wayland
 import QtQuick
 
 Loader {
-    // Touch Rice so the singleton (and its IPC target) loads at shell start.
-    readonly property string _riceKeepAlive: Rice.currentId
+    // Keep ThemePipeline singleton (and appearance IPC) loaded at shell start.
+    readonly property string _wallpaperKeepAlive: Wallpapers.actualCurrent
+    readonly property bool _themePipelineKeepAlive: ThemePipeline.busy
     active: Config.background.enabled
 
     sourceComponent: Variants {

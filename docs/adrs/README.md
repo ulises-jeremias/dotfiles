@@ -18,7 +18,7 @@ Each ADR follows this structure:
 ## Index
 
 - [ADR-001: Use Chezmoi for Dotfiles Management](001-chezmoi-adoption.md)
-- [ADR-002: Modular Rice System Architecture](002-rice-system.md)
+- [ADR-002: Appearance System and Theme Packs](002-rice-system.md)
 - [ADR-003: EasyOptions for Script Argument Parsing](003-easyoptions-standard.md)
 - [ADR-004: Testing Strategy with Docker/Vagrant](004-testing-strategy.md)
 - [ADR-005: Smart Colors Centralized Integration](005-smart-colors-centralized-integration.md)
