@@ -150,8 +150,8 @@ THEME_META: dict[str, dict] = {
 }
 
 
-def md5(path: Path) -> str:
-    h = hashlib.md5()
+def file_digest(path: Path) -> str:
+    h = hashlib.sha256()
     with path.open("rb") as f:
         for chunk in iter(lambda: f.read(1 << 20), b""):
             h.update(chunk)
@@ -249,7 +249,7 @@ def main() -> None:
             if not is_valid_image(src):
                 print(f"SKIP corrupt: {src}")
                 continue
-            digest = md5(src)
+            digest = file_digest(src)
             if digest in seen_hashes:
                 print(f"SKIP dup: {src}")
                 continue

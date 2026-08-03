@@ -3,12 +3,7 @@
   "id": "neon-city",
   "name": "Neon City",
   "description": "Cyberpunk neon nights and futuristic streets",
-  "tags": [
-    "cyberpunk",
-    "neon",
-    "dark",
-    "city"
-  ],
+  "tags": ["cyberpunk", "neon", "dark", "city"],
   "darkMode": true,
   "schemeType": "vibrant",
   "gtkTheme": "Orchis-Dark-Compact",

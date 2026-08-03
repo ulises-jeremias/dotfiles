@@ -3,12 +3,7 @@
   "id": "warm-sunset",
   "name": "Warm Sunset",
   "description": "Golden-hour landscapes with warm cinematic tones",
-  "tags": [
-    "sunset",
-    "warm",
-    "cinematic",
-    "light"
-  ],
+  "tags": ["sunset", "warm", "cinematic", "light"],
   "darkMode": false,
   "schemeType": "vibrant",
   "gtkTheme": "Orchis-Light",

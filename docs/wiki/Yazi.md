@@ -29,12 +29,12 @@ dots yazi --fix-previews
 
 All config lives in `~/.config/yazi/`:
 
-| File | Purpose |
-| --- | --- |
-| `yazi.toml` | General settings, openers, preview config |
-| `keymap.toml` | Custom keybindings (layered on defaults) |
-| `theme.toml` | Color scheme / flavor selection |
-| `init.lua` | Lua plugin hooks |
+| File          | Purpose                                   |
+|---------------|-------------------------------------------|
+| `yazi.toml`   | General settings, openers, preview config |
+| `keymap.toml` | Custom keybindings (layered on defaults)  |
+| `theme.toml`  | Color scheme / flavor selection           |
+| `init.lua`    | Lua plugin hooks                          |
 
 ### Key Settings (yazi.toml)
 
@@ -53,70 +53,70 @@ Files open with `xdg-open` by default. Directories can also open in Thunar. Text
 
 ### Navigation
 
-| Key | Action |
-| --- | --- |
+| Key       | Action                   |
+|-----------|--------------------------|
 | `h` / `l` | Parent / Enter directory |
-| `j` / `k` | Move down / up |
-| `~` | Go home |
-| `.` | Toggle hidden files |
+| `j` / `k` | Move down / up           |
+| `~`       | Go home                  |
+| `.`       | Toggle hidden files      |
 
 ### Quick Directories (g + key)
 
-| Key | Directory |
-| --- | --- |
-| `gh` | Home |
-| `gp` | ~/Projects |
-| `gd` | ~/Downloads |
-| `gD` | ~/Documents |
-| `gP` | ~/Pictures |
-| `gm` | ~/Music |
-| `gv` | ~/Videos |
-| `gc` | ~/.config |
-| `gl` | ~/.local |
-| `gr` | Rices directory |
-| `gw` | Wallpapers library |
+| Key  | Directory              |
+|------|------------------------|
+| `gh` | Home                   |
+| `gp` | ~/Projects             |
+| `gd` | ~/Downloads            |
+| `gD` | ~/Documents            |
+| `gP` | ~/Pictures             |
+| `gm` | ~/Music                |
+| `gv` | ~/Videos               |
+| `gc` | ~/.config              |
+| `gl` | ~/.local               |
+| `gr` | Themes directory       |
+| `gw` | Wallpapers library     |
 | `gb` | ~/.local/bin (scripts) |
-| `gt` | /tmp |
+| `gt` | /tmp                   |
 
 ### File Operations
 
-| Key | Action |
-| --- | --- |
-| `Space` | Toggle select |
-| `y` | Copy (yank) |
-| `x` | Cut |
-| `p` | Paste |
-| `a` | Create file/dir |
-| `r` | Rename |
-| `d` | Trash |
-| `DD` | Safe trash (confirm) |
-| `yp` | Yank path to clipboard |
-| `yd` | Yank directory to clipboard |
-| `yn` | Yank filename to clipboard |
+| Key     | Action                      |
+|---------|-----------------------------|
+| `Space` | Toggle select               |
+| `y`     | Copy (yank)                 |
+| `x`     | Cut                         |
+| `p`     | Paste                       |
+| `a`     | Create file/dir             |
+| `r`     | Rename                      |
+| `d`     | Trash                       |
+| `DD`    | Safe trash (confirm)        |
+| `yp`    | Yank path to clipboard      |
+| `yd`    | Yank directory to clipboard |
+| `yn`    | Yank filename to clipboard  |
 
 ### Power Features
 
-| Key | Action |
-| --- | --- |
-| `f` | Filter files |
-| `/` | Search |
-| `z` | Jump with zoxide |
-| `Z` | Jump with fzf |
-| `C` | Compress selection |
-| `X` | Extract archive |
-| `Alt-t` | Open in Thunar |
-| `s` | Shell command |
+| Key     | Action             |
+|---------|--------------------|
+| `f`     | Filter files       |
+| `/`     | Search             |
+| `z`     | Jump with zoxide   |
+| `Z`     | Jump with fzf      |
+| `C`     | Compress selection |
+| `X`     | Extract archive    |
+| `Alt-t` | Open in Thunar     |
+| `s`     | Shell command      |
 
 ### Sorting (o + key)
 
-| Key | Sort by |
-| --- | --- |
-| `on` | Name |
-| `os` | Size |
-| `om` | Modified |
-| `ot` | Type |
+| Key  | Sort by   |
+|------|-----------|
+| `on` | Name      |
+| `os` | Size      |
+| `om` | Modified  |
+| `ot` | Type      |
 | `oe` | Extension |
-| `or` | Reverse |
+| `or` | Reverse   |
 
 ---
 

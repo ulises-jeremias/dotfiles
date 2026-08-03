@@ -3,12 +3,7 @@
   "id": "vapor-dreams",
   "name": "Vapor Dreams",
   "description": "Nostalgic 80s/90s vaporwave with retro gradients",
-  "tags": [
-    "vaporwave",
-    "retro",
-    "synthwave",
-    "dark"
-  ],
+  "tags": ["vaporwave", "retro", "synthwave", "dark"],
   "darkMode": true,
   "schemeType": "expressive",
   "gtkTheme": "Orchis-Dark",

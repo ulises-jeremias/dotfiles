@@ -5,12 +5,12 @@ one-shot recipes — they never own a sticky “current theme”.
 
 ## Live sources of truth
 
-| Concern | Path |
-|---------|------|
-| Wallpaper | `~/.local/state/dots/wallpaper/path` |
-| Palette | `~/.cache/dots/smart-colors/scheme.json` |
-| Mode / flavour | `~/.local/state/dots/scheme/state.json` |
-| GTK / icons | `~/.config/gtk-3.0/settings.ini` + gsettings |
+| Concern        | Path                                         |
+|----------------|----------------------------------------------|
+| Wallpaper      | `~/.local/state/dots/wallpaper/path`         |
+| Palette        | `~/.cache/dots/smart-colors/scheme.json`     |
+| Mode / flavour | `~/.local/state/dots/scheme/state.json`      |
+| GTK / icons    | `~/.config/gtk-3.0/settings.ini` + gsettings |
 
 ## Theme packs
 

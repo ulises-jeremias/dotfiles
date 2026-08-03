@@ -3,11 +3,7 @@
   "id": "catppuccin-latte",
   "name": "Catppuccin Latte",
   "description": "Light Catppuccin mauve for soft daytime sessions",
-  "tags": [
-    "catppuccin",
-    "pastel",
-    "light"
-  ],
+  "tags": ["catppuccin", "pastel", "light"],
   "darkMode": false,
   "schemeType": "tonal-spot",
   "gtkTheme": "catppuccin-latte-mauve-compact",
