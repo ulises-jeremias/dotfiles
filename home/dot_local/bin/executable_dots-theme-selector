@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Copyright (C) 2019-2026 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
 ## Program: dots-theme-selector
-## Description: GTK theme selector for Quickshell-first setup
+## Description: GTK theme selector (opens Appearance CC when Quickshell is up)
 ##
 ## Usage: dots-theme-selector [OPTIONS]
 ##
@@ -12,10 +12,10 @@
 ##   -h, --help          Show this help message
 ##
 ## Examples:
-##   dots-theme-selector             # Launch theme selector (terminal picker)
+##   dots-theme-selector             # Launch theme selector
 ##
 ## Notes:
-##   Scans ~/.themes and /usr/share/themes for available themes
+##   Uses dots-gtk-theme as the canonical apply path.
 
 set -euo pipefail
 
@@ -25,18 +25,13 @@ if pgrep -x quickshell >/dev/null 2>&1; then
   exec ~/.local/bin/dots-settings-gui --pane=appearance menu
 fi
 
-# Minimal list-based selector for GTK theme
-THEMES=$( (
-  ls -1 ~/.themes 2>/dev/null
-  ls -1 /usr/share/themes 2>/dev/null
-) | sort -u) || true
-if [[ -z ${THEMES} ]]; then
-  notify-send "Themes" "No themes found in ~/.themes or /usr/share/themes"
+# Terminal fallback — list via dots-gtk-theme, apply via dots-gtk-theme.
+mapfile -t THEME_LIST < <(dots-gtk-theme -q -p list 2>/dev/null || true)
+if [[ ${#THEME_LIST[@]} -eq 0 ]]; then
+  notify-send "Themes" "No GTK themes found"
   exit 1
 fi
 
-mapfile -t THEME_LIST < <(printf '%s\n' "$THEMES" | awk 'NF')
-[[ ${#THEME_LIST[@]} -eq 0 ]] && exit 1
 echo "GTK themes:"
 i=1
 for t in "${THEME_LIST[@]}"; do
@@ -46,13 +41,14 @@ done
 printf "Select theme [1-%d, empty to cancel]: " "${#THEME_LIST[@]}"
 read -r idx || exit 1
 [[ -z ${idx:-} ]] && exit 0
-[[ "$idx" =~ ^[0-9]+$ ]] || exit 1
-(( idx >= 1 && idx <= ${#THEME_LIST[@]} )) || exit 1
+[[ $idx =~ ^[0-9]+$ ]] || exit 1
+((idx >= 1 && idx <= ${#THEME_LIST[@]})) || exit 1
 SELECTED="${THEME_LIST[$((idx - 1))]}"
 [[ -z $SELECTED ]] && exit 0
 
-gsettings set org.gnome.desktop.interface gtk-theme "$SELECTED" || {
+if dots-gtk-theme -q apply "$SELECTED"; then
+  notify-send "Theme" "Applied $SELECTED"
+else
   notify-send "Theme" "Failed to apply $SELECTED"
   exit 1
-}
-notify-send "Theme" "Applied $SELECTED"
+fi

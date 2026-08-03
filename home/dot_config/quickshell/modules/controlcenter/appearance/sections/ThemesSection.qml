@@ -31,8 +31,8 @@ CollapsibleSection {
         if (theme.wallpaperPath && theme.defaultWallpaper === filename)
             return theme.wallpaperPath;
         const dir = theme.wallpaperDir || theme.id || "";
-        // Pictures is the canonical post-chezmoi location; list-themes.py
-        // already falls back to the data dir for defaultWallpaperPath.
+        // Prefer Pictures (post-chezmoi link); list-themes wallpaperPath already
+        // falls back to the data dir for the default wallpaper.
         return `${Paths.pictures}/Wallpapers/${dir}/${filename}`;
     }
 

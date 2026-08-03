@@ -32,24 +32,7 @@ CollapsibleSection {
     Process {
         id: listProc
 
-        command: ["bash", "-c", `
-data_home="\${XDG_DATA_HOME:-$HOME/.local/share}"
-for d in /usr/share/icons /usr/local/share/icons "$HOME/.icons" "$data_home/icons"; do
-  [ -d "$d" ] || continue
-  find "$d" -maxdepth 1 -mindepth 1 -type d -printf '%f\\n' 2>/dev/null
-done | while read -r name; do
-  [ -z "$name" ] && continue
-  case "$name" in
-    default|hicolor) continue ;;
-  esac
-  for d in /usr/share/icons /usr/local/share/icons "$HOME/.icons" "$data_home/icons"; do
-    if [ -f "$d/$name/index.theme" ]; then
-      printf '%s\\n' "$name"
-      break
-    fi
-  done
-done | sort -u
-`]
+        command: ["dots-gtk-theme", "-q", "-p", "icons"]
         stdout: StdioCollector {
             onStreamFinished: {
                 root.iconNames = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);

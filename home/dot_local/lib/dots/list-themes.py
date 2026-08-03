@@ -11,10 +11,16 @@ EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 
 
 def wallpaper_names(theme_id: str, wallpaper_dir: str, walls_root: Path) -> list[str]:
-    d = walls_root / (wallpaper_dir or theme_id)
-    if not d.is_dir():
-        return []
-    return sorted(p.name for p in d.iterdir() if p.is_file() and p.suffix.lower() in EXTS)
+    names: set[str] = set()
+    pics_root = Path.home() / "Pictures/Wallpapers"
+    for root in (pics_root, walls_root):
+        d = root / (wallpaper_dir or theme_id)
+        if not d.is_dir():
+            continue
+        for p in d.iterdir():
+            if p.is_file() and p.suffix.lower() in EXTS:
+                names.add(p.name)
+    return sorted(names)
 
 
 def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:

@@ -452,8 +452,6 @@ Item {
         pendingMode = Colours.currentLight ? "light" : "dark";
         pendingWallpaperPath = Wallpapers.actualCurrent;
         stagedThemeWallpaper = "";
-        pendingGtkTheme = "";
-        pendingIconTheme = "";
         wallpaperScopeDir = "";
         wallpaperShowAll = false;
         themeDirty = false;
@@ -467,6 +465,9 @@ Item {
         wallpaperDirty = false;
         gtkDirty = false;
         iconDirty = false;
+        // Seed live GTK/icon so section checkmarks reflect current state.
+        liveGtkProc.running = true;
+        liveIconProc.running = true;
         if (!previewActive) {
             previewWallpaperPath = pendingWallpaperPath;
             previewVariant = pendingVariant;
@@ -800,6 +801,30 @@ Item {
         }
 
         rightContent: appearanceRightContentComponent
+    }
+
+    Process {
+        id: liveGtkProc
+        command: ["dots-gtk-theme", "-q", "-p", "current"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const name = text.trim();
+                if (name && name !== "Unknown")
+                    root.pendingGtkTheme = name;
+            }
+        }
+    }
+
+    Process {
+        id: liveIconProc
+        command: ["bash", "-c", `gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'"`]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const name = text.trim();
+                if (name)
+                    root.pendingIconTheme = name;
+            }
+        }
     }
 
     Connections {

@@ -32,7 +32,7 @@ CollapsibleSection {
     Process {
         id: listProc
 
-        command: ["bash", "-c", 'source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2>/dev/null; list_installed_gtk_themes 2>/dev/null || true']
+        command: ["dots-gtk-theme", "-q", "-p", "list"]
         stdout: StdioCollector {
             onStreamFinished: {
                 root.themeNames = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);
