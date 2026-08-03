@@ -18,27 +18,34 @@
 ##     -v, --verbose   Enable verbose output.
 ##     -d, --debug     Enable debug mode.
 ##     -q, --quiet     Suppress output.
+##     -p, --plain     Machine-readable output (one name per line).
 ##
 ## Commands:
-##     list                    List all installed GTK themes
+##     list                    List installed GTK themes
 ##     current                 Show current GTK theme
-##     apply <theme>           Apply specific GTK theme
+##     current-icon            Show current icon theme
+##     apply <theme> [icon] [prefer-dark]
+##                             Apply GTK theme (prefer-dark: true|false)
+##     set-icons <icon>        Update icon theme (keeps current GTK theme)
+##     color-scheme <mode>     Sync gtk prefer-dark / color-scheme (light|dark)
 ##     detect [wallpaper]      Detect optimal theme for wallpaper
 ##     theme [theme-id]        Apply GTK theme from appearance theme pack
 ##     auto                    Auto-detect and apply optimal theme
 ##     icons                   List installed icon themes
 ##     info <theme>            Show information about a theme
-
-set -euo pipefail
 ##
 ## Examples:
-##     @script.name list
-##     @script.name apply Orchis-Dark-Compact
+##     @script.name -p list
+##     @script.name -q -p current
+##     @script.name -q -p current-icon
+##     @script.name apply Orchis-Dark-Compact Numix-Circle true
+##     @script.name set-icons Papirus-Dark
+##     @script.name color-scheme dark
 ##     @script.name theme vapor-dreams
 ##     @script.name detect ~/Pictures/wallpaper.jpg
 ##     @script.name auto
 
-set -e
+set -euo pipefail
 
 # Source EasyOptions for argument parsing
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
@@ -111,16 +118,24 @@ log() {
 
 # Function to list installed GTK themes
 cmd_list() {
-	log "" "${BLUE}📋 Installed GTK themes:${NC}"
-	log "" ""
+	local use_plain=false
+	[[ ${plain:-} == "yes" || ${1:-} == "--plain" || ${1:-} == "-p" || ${1:-} == "plain" ]] && use_plain=true
 
 	local themes
 	themes=$(list_installed_gtk_themes)
 
 	if [[ -z $themes ]]; then
-		log "WARN" "No GTK themes found"
+		[[ $use_plain == true ]] || log "WARN" "No GTK themes found"
 		return 1
 	fi
+
+	if [[ $use_plain == true ]]; then
+		printf '%s\n' "$themes"
+		return 0
+	fi
+
+	log "" "${BLUE}📋 Installed GTK themes:${NC}"
+	log "" ""
 
 	local current_theme
 	current_theme=$(get_current_gtk_theme)
@@ -140,8 +155,16 @@ cmd_list() {
 
 # Function to show current theme
 cmd_current() {
+	local use_plain=false
+	[[ ${plain:-} == "yes" || ${1:-} == "--plain" || ${1:-} == "-p" || ${1:-} == "plain" ]] && use_plain=true
+
 	local current_theme
 	current_theme=$(get_current_gtk_theme)
+
+	if [[ $use_plain == true ]]; then
+		printf '%s\n' "$current_theme"
+		return 0
+	fi
 
 	log "" "${BLUE}🎨 Current GTK Theme:${NC} $current_theme"
 
@@ -157,11 +180,42 @@ cmd_current() {
 	fi
 }
 
+# Function to show current icon theme
+cmd_current_icon() {
+	local use_plain=false
+	[[ ${plain:-} == "yes" || ${1:-} == "--plain" || ${1:-} == "-p" || ${1:-} == "plain" ]] && use_plain=true
+
+	local current_icon
+	current_icon="$(get_current_icon_theme 2>/dev/null || true)"
+	[[ -n $current_icon ]] || current_icon="Unknown"
+
+	if [[ $use_plain == true ]]; then
+		printf '%s\n' "$current_icon"
+		return 0
+	fi
+
+	log "" "${BLUE}🎯 Current Icon Theme:${NC} $current_icon"
+}
+
 # Function to apply specific theme
 cmd_apply() {
 	local theme_name="$1"
-	local icon_theme="${2:-Numix-Circle}"
-	local prefer_dark="${3:-false}"
+	local icon_theme="${2:-}"
+	local prefer_dark="${3:-}"
+
+	if [[ -z $icon_theme ]]; then
+		icon_theme="$(get_current_icon_theme 2>/dev/null || true)"
+		[[ -n $icon_theme ]] || icon_theme="Numix-Circle"
+	fi
+	if [[ -z $prefer_dark ]]; then
+		# Derive from live scheme state when callers omit prefer-dark.
+		local mode="dark"
+		local state_json="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
+		if [[ -f $state_json ]]; then
+			mode="$(python3 -c "import json;print(json.load(open('$state_json')).get('mode','dark'))" 2>/dev/null || echo dark)"
+		fi
+		prefer_dark=$([[ $mode == "light" ]] && echo false || echo true)
+	fi
 
 	log "" "${BLUE}🎨 Applying GTK Theme:${NC} $theme_name"
 	log "DEBUG" "Icon theme: $icon_theme, prefer dark: $prefer_dark"
@@ -174,14 +228,59 @@ cmd_apply() {
 	fi
 }
 
+# Update icon theme while preserving the current GTK theme + prefer-dark.
+cmd_set_icons() {
+	local icon_theme="${1:-}"
+	[[ -n $icon_theme ]] || {
+		log "ERROR" "Icon theme name required"
+		log "" "Usage: $(basename "$0") set-icons <icon-theme>"
+		return 1
+	}
+
+	local gtk_theme prefer_dark
+	gtk_theme="$(get_current_gtk_theme)"
+	prefer_dark="false"
+	if [[ -f "$HOME/.config/gtk-3.0/settings.ini" ]]; then
+		prefer_dark="$(grep "^gtk-application-prefer-dark-theme=" "$HOME/.config/gtk-3.0/settings.ini" | cut -d'=' -f2 || echo false)"
+	fi
+	[[ $prefer_dark == "1" || $prefer_dark == "true" ]] && prefer_dark="true" || prefer_dark="false"
+
+	log "" "${BLUE}🎯 Applying icon theme:${NC} $icon_theme (gtk=$gtk_theme)"
+	if apply_gtk_theme "$gtk_theme" "$icon_theme" "$prefer_dark"; then
+		log "" "${GREEN}✅ Icon theme applied successfully${NC}"
+	else
+		log "ERROR" "Failed to apply icon theme"
+		return 1
+	fi
+}
+
+# Sync GTK color-scheme / prefer-dark with live light|dark mode.
+cmd_color_scheme() {
+	local mode="${1:-}"
+	[[ $mode == "light" || $mode == "dark" ]] || {
+		log "ERROR" "Mode must be light or dark"
+		log "" "Usage: $(basename "$0") color-scheme <light|dark>"
+		return 1
+	}
+	if apply_gtk_color_scheme "$mode"; then
+		log "" "${GREEN}✅ GTK color-scheme synced:${NC} $mode"
+	else
+		log "ERROR" "Failed to sync GTK color-scheme"
+		return 1
+	fi
+}
+
 # Function to detect optimal theme
 cmd_detect() {
 	local wallpaper_path="${1:-}"
 
 	if [[ -z $wallpaper_path ]]; then
-		# Use current wallpaper
-		wallpaper_path=$(cat "$HOME/.cache/wal/wal" 2>/dev/null || echo "")
-		if [[ -z $wallpaper_path ]]; then
+		if [[ -f $HOME/.local/lib/dots/wallpaper-resolver.sh ]]; then
+			# shellcheck source=/dev/null
+			source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+			wallpaper_path="$(dots_current_wallpaper 2>/dev/null || true)"
+		fi
+		if [[ -z ${wallpaper_path:-} ]]; then
 			echo -e "${RED}❌ No wallpaper specified and no current wallpaper found${NC}"
 			return 1
 		fi
@@ -210,14 +309,14 @@ cmd_detect() {
 	fi
 }
 
-# Function to apply rice-specific theme
+# Function to apply theme-pack GTK settings
 cmd_theme_pack() {
-	local rice_name="${1:-}"
+	local theme_id="${1:-}"
 
-	echo -e "${BLUE}🍚 Applying GTK theme from theme pack:${NC} ${rice_name:-auto-detect}"
+	echo -e "${BLUE}🎨 Applying GTK theme from theme pack:${NC} ${theme_id:-auto-detect}"
 
-	if apply_theme_gtk_theme "$rice_name"; then
-		echo -e "${GREEN}✅ Rice GTK theme applied successfully${NC}"
+	if apply_theme_gtk_theme "$theme_id"; then
+		echo -e "${GREEN}✅ Theme pack GTK theme applied successfully${NC}"
 	else
 		echo -e "${RED}❌ Failed to apply theme pack GTK theme${NC}"
 		return 1
@@ -232,14 +331,14 @@ cmd_auto() {
 
 # Function to list icon themes
 cmd_icons() {
-	echo -e "${BLUE}🎯 Installed Icon Themes:${NC}"
-	echo ""
+	local use_plain=false
+	[[ ${plain:-} == "yes" || ${1:-} == "--plain" || ${1:-} == "-p" || ${1:-} == "plain" ]] && use_plain=true
 
 	local icon_dirs=(
 		"/usr/share/icons"
 		"/usr/local/share/icons"
 		"$HOME/.icons"
-		"$HOME/.local/share/icons"
+		"${XDG_DATA_HOME:-$HOME/.local/share}/icons"
 	)
 
 	local icons=()
@@ -248,23 +347,40 @@ cmd_icons() {
 			while IFS= read -r -d '' icon_path; do
 				local icon_name
 				icon_name=$(basename "$icon_path")
-				if [[ -f "$icon_path/index.theme" ]] || [[ -d "$icon_path/scalable" ]] || [[ -d "$icon_path/16x16" ]]; then
+				case "$icon_name" in
+				default | hicolor) continue ;;
+				esac
+				if [[ -f "$icon_path/index.theme" ]]; then
 					icons+=("$icon_name")
 				fi
-			done < <(find "$icon_dir" -maxdepth 1 -type d -print0)
+			done < <(find "$icon_dir" -maxdepth 1 -mindepth 1 -type d -print0 2>/dev/null)
 		fi
 	done
 
-	# Remove duplicates and sort
+	if ((${#icons[@]} == 0)); then
+		if [[ $use_plain == true ]]; then
+			return 1
+		fi
+		echo -e "${YELLOW}⚠️  No icon themes found${NC}"
+		return 1
+	fi
+
 	local unique_icons
 	unique_icons=$(printf '%s\n' "${icons[@]}" | sort -u)
 
-	local current_icon=""
-	if [[ -f "$HOME/.config/gtk-3.0/settings.ini" ]]; then
-		current_icon=$(grep "^gtk-icon-theme-name=" "$HOME/.config/gtk-3.0/settings.ini" | cut -d'=' -f2)
+	if [[ $use_plain == true ]]; then
+		printf '%s\n' "$unique_icons"
+		return 0
 	fi
 
+	echo -e "${BLUE}🎯 Installed Icon Themes:${NC}"
+	echo ""
+
+	local current_icon=""
+	current_icon="$(get_current_icon_theme 2>/dev/null || true)"
+
 	while IFS= read -r icon; do
+		[[ -z $icon ]] && continue
 		if [[ $icon == "$current_icon" ]]; then
 			echo -e "  ${GREEN}✓${NC} $icon ${CYAN}(current)${NC}"
 		else
@@ -353,10 +469,13 @@ main() {
 
 	case "$command" in
 	"list" | "ls")
-		cmd_list
+		cmd_list "${cmd_args[@]}"
 		;;
 	"current" | "status")
-		cmd_current
+		cmd_current "${cmd_args[@]}"
+		;;
+	"current-icon" | "current-icons" | "icon-current")
+		cmd_current_icon "${cmd_args[@]}"
 		;;
 	"apply" | "set")
 		if [[ ${#cmd_args[@]} -eq 0 ]]; then
@@ -365,6 +484,22 @@ main() {
 			exit 1
 		fi
 		cmd_apply "${cmd_args[@]}"
+		;;
+	"set-icons" | "set-icon")
+		if [[ ${#cmd_args[@]} -eq 0 ]]; then
+			log "ERROR" "Icon theme name required"
+			log "" "Usage: $(basename "$0") set-icons <icon-theme>"
+			exit 1
+		fi
+		cmd_set_icons "${cmd_args[0]}"
+		;;
+	"color-scheme" | "scheme")
+		if [[ ${#cmd_args[@]} -eq 0 ]]; then
+			log "ERROR" "Mode required (light|dark)"
+			log "" "Usage: $(basename "$0") color-scheme <light|dark>"
+			exit 1
+		fi
+		cmd_color_scheme "${cmd_args[0]}"
 		;;
 	"detect" | "analyze")
 		cmd_detect "${cmd_args[@]}"
@@ -376,7 +511,7 @@ main() {
 		cmd_auto
 		;;
 	"icons" | "icon")
-		cmd_icons
+		cmd_icons "${cmd_args[@]}"
 		;;
 	"info" | "show")
 		if [[ ${#cmd_args[@]} -eq 0 ]]; then

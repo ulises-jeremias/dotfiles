@@ -6,8 +6,9 @@
   "tags": ["cyberpunk", "neon", "dark", "city"],
   "darkMode": true,
   "schemeType": "vibrant",
-  "gtkTheme": "Orchis-Dark-Compact",
+  "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Numix-Circle",
   "defaultWallpaper": "neon-city-01.jpg",
-  "wallpaperDir": "neon-city"
+  "wallpaperDir": "neon-city",
+  "gtkPreferDark": false
 }

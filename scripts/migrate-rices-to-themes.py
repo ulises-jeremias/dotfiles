@@ -45,7 +45,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["vaporwave", "retro", "synthwave", "dark"],
         "darkMode": True,
         "schemeType": "expressive",
-        "gtkTheme": "Orchis-Dark",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Numix-Circle",
     },
     "neon-city": {
@@ -54,7 +54,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["cyberpunk", "neon", "dark", "city"],
         "darkMode": True,
         "schemeType": "vibrant",
-        "gtkTheme": "Orchis-Dark-Compact",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Numix-Circle",
     },
     "gruvbox": {
@@ -63,7 +63,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["gruvbox", "warm", "retro", "anime", "dark"],
         "darkMode": True,
         "schemeType": "expressive",
-        "gtkTheme": "Orchis-Dark",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Numix-Circle",
     },
     "landscape": {
@@ -72,7 +72,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["nature", "cinematic", "landscape", "dark"],
         "darkMode": True,
         "schemeType": "fidelity",
-        "gtkTheme": "Orchis-Dark",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Numix-Circle",
     },
     "warm-sunset": {
@@ -81,7 +81,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["sunset", "warm", "cinematic", "light"],
         "darkMode": False,
         "schemeType": "vibrant",
-        "gtkTheme": "Orchis-Light",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Numix-Circle",
     },
     "soft-morning": {
@@ -90,7 +90,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["morning", "calm", "pastel", "light"],
         "darkMode": False,
         "schemeType": "neutral",
-        "gtkTheme": "Orchis-Light",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Numix-Circle",
     },
     "catppuccin-mocha": {
@@ -99,7 +99,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["catppuccin", "pastel", "cozy", "dark"],
         "darkMode": True,
         "schemeType": "tonal-spot",
-        "gtkTheme": "Orchis-Dark",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Papirus-Dark",
     },
     "catppuccin-latte": {
@@ -108,7 +108,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["catppuccin", "pastel", "light"],
         "darkMode": False,
         "schemeType": "tonal-spot",
-        "gtkTheme": "catppuccin-latte-mauve-compact",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Papirus",
     },
     "rose-pine": {
@@ -117,7 +117,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["rose-pine", "muted", "dark"],
         "darkMode": True,
         "schemeType": "expressive",
-        "gtkTheme": "Orchis-Dark",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Numix-Circle",
     },
     "nord-dreams": {
@@ -126,7 +126,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["nord", "cool", "minimal", "dark"],
         "darkMode": True,
         "schemeType": "tonal-spot",
-        "gtkTheme": "Orchis-Dark-Compact",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Numix-Circle",
     },
     "everforest": {
@@ -135,7 +135,7 @@ THEME_META: dict[str, dict] = {
         "tags": ["everforest", "nature", "green", "dark"],
         "darkMode": True,
         "schemeType": "fidelity",
-        "gtkTheme": "Orchis-Dark",
+        "gtkTheme": "Orchis-Light-Compact",
         "iconTheme": "Numix-Circle",
     },
     "monochrome": {

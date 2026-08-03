@@ -16,7 +16,7 @@ A beautiful, functional, and highly customizable desktop shell built with [Quick
 
 ## 🌟 Features
 
-- 🎨 **Theme-Adaptive UI** - Automatically adapts to rice color schemes via Smart Colors
+- 🎨 **Theme-Adaptive UI** - Automatically adapts to appearance / wallpaper palettes via Smart Colors
 - 🎯 **Unified Desktop Shell** - Bar, launcher, dashboard, notifications, and AI chat in one
 - ⚡ **High Performance** - C++ plugin (Hornero) for performance-critical operations
 - 🎵 **Audio Visualization** - Beat detection and spectrum analyzer

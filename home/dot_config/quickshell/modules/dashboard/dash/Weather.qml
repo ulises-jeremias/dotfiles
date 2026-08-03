@@ -21,7 +21,7 @@ Item {
 
         animate: true
         text: Weather.icon
-        color: Colours.palette.m3secondary
+        color: Weather.lastError && !Weather.ready ? Colours.palette.m3error : Colours.palette.m3secondary
         font.pointSize: Appearance.font.size.extraLarge * 2
     }
 

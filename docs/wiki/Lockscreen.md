@@ -161,12 +161,12 @@ dots wal-reload  # Updates wallpaper and lockscreen
 
 ### Appearance
 
-Rice / appearance apply regenerates lockscreen colors via `dots-hyprlock-theme` after scheme generation. Historical note — older docs mentioned per-rice `apply.sh`; that path is no longer maintained. Equivalent hook:
+Theme / wallpaper apply regenerates lockscreen colors via `dots-hyprlock-theme`
+after scheme generation (Quickshell `ThemePipeline` and shell `apply-appearance.sh`).
 
 ```bash
-if command -v dots-lockscreen &>/dev/null; then
-  dots-lockscreen --update="$wallpaper"
-fi
+dots appearance theme apply vapor-dreams
+dots-hyprlock-theme
 ```
 
 ## Hyprlock Configuration
@@ -194,36 +194,38 @@ input-field {
 }
 ```
 
-## Rice-Style-Aware Layouts
+## Style-Aware Layouts
 
-The lockscreen automatically adapts its layout based on your current rice's `style` field in `config.json`. This provides a cohesive aesthetic experience across your entire desktop.
+The lockscreen adapts layout from the **current wallpaper path** and optional
+theme-pack `tags` (there is no sticky “current theme” id).
 
 ### Available Layouts
 
-| Layout        | Rice Styles                 | Description                                     |
-|---------------|-----------------------------|-------------------------------------------------|
-| **Default**   | Any unlisted style          | Clean, centered layout with standard typography |
-| **Cyberpunk** | cyberpunk, neon, futuristic | Glowing neon elements, tech-inspired fonts      |
-| **Cozy**      | cozy, kawaii, cute, warm    | Soft, rounded elements with pastel accents      |
-| **Vaporwave** | vaporwave, retro, synthwave | Gradient effects, 80s-inspired typography       |
-| **Minimal**   | minimal, clean, productive  | Ultra-clean with minimal UI elements            |
+| Layout        | Matching tags / path hints     | Description                                     |
+|---------------|--------------------------------|-------------------------------------------------|
+| **Default**   | Any unmatched                  | Clean, centered layout with standard typography |
+| **Cyberpunk** | cyberpunk, neon, futuristic    | Glowing neon elements, tech-inspired fonts      |
+| **Cozy**      | cozy, kawaii, cute, warm, soft | Soft, rounded elements with pastel accents      |
+| **Vaporwave** | vaporwave, retro, synthwave    | Gradient effects, 80s-inspired typography       |
+| **Minimal**   | minimal, clean                 | Ultra-clean with minimal UI elements            |
 
 ### How It Works
 
-1. When locking, the script reads `style` from your current rice's `config.json`
-2. Based on the style, it selects the appropriate layout template
-3. Colors are pulled from the smart-colors cache
-4. The hyprlock configuration is generated dynamically
+1. `dots-lockscreen` resolves the wallpaper from `~/.local/state/dots/wallpaper/path`
+2. Path segments (e.g. `…/vapor-dreams/…`) provide a first hint
+3. If the parent folder matches a theme pack id, `tags` from `theme.json` refine the layout
+4. Colors come from the smart-colors / hyprlock cache
 
-### Rice Configuration
-
-To enable style-aware layouts, set `style` in your rice's `config.json`:
+### Theme pack tags
 
 ```json
-{ "style": "cyberpunk" }
+{
+  "id": "neon-city",
+  "tags": ["cyberpunk", "neon", "dark", "city"]
+}
 ```
 
-The style matching is case-insensitive and supports partial matches (e.g., "cozy warm" matches the Cozy layout).
+Matching is case-insensitive and supports partial keyword matches.
 
 ## Comparison with Betterlockscreen
 
@@ -290,6 +292,6 @@ dots lockscreen --update=~/.local/state/dots/wallpaper/path
 ## See Also
 
 - [Smart Colors System](Smart-Colors-System.md)
-- [Rice System](Rice-System-Theme-Management.md)
+- [Appearance Themes](Rice-System-Theme-Management.md)
 - [EWW Widgets](EWW-Widgets.md)
 - [Hyprland Setup](../Hyprland-Setup.md)

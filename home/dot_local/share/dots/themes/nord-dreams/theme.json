@@ -6,8 +6,9 @@
   "tags": ["nord", "cool", "minimal", "dark"],
   "darkMode": true,
   "schemeType": "tonal-spot",
-  "gtkTheme": "Orchis-Dark-Compact",
+  "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Numix-Circle",
   "defaultWallpaper": "nord-aurora-01.png",
-  "wallpaperDir": "nord-dreams"
+  "wallpaperDir": "nord-dreams",
+  "gtkPreferDark": false
 }

@@ -10,11 +10,35 @@ from pathlib import Path
 EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 
 
-def wallpaper_names(theme_id: str, wallpaper_dir: str, walls_root: Path) -> list[str]:
-    d = walls_root / (wallpaper_dir or theme_id)
-    if not d.is_dir():
-        return []
-    return sorted(p.name for p in d.iterdir() if p.is_file() and p.suffix.lower() in EXTS)
+def resolve_wallpaper_file(wallpaper_dir: str, filename: str, walls_root: Path) -> str:
+    """Prefer Pictures (chezmoi link), then data dir."""
+    pics = Path.home() / "Pictures/Wallpapers" / wallpaper_dir / filename
+    data_path = walls_root / wallpaper_dir / filename
+    if pics.is_file():
+        return str(pics)
+    if data_path.is_file():
+        return str(data_path)
+    # Canonical post-chezmoi target even if not linked yet.
+    return str(pics)
+
+
+def wallpaper_index(theme_id: str, wallpaper_dir: str, walls_root: Path) -> dict[str, str]:
+    """Map wallpaper filename → absolute path across Pictures + data roots."""
+    paths: dict[str, str] = {}
+    pics_root = Path.home() / "Pictures/Wallpapers"
+    dir_name = wallpaper_dir or theme_id
+    for root in (pics_root, walls_root):
+        d = root / dir_name
+        if not d.is_dir():
+            continue
+        for p in d.iterdir():
+            if not p.is_file() or p.suffix.lower() not in EXTS:
+                continue
+            # Prefer Pictures when both roots expose the same name.
+            if p.name in paths and root == walls_root:
+                continue
+            paths[p.name] = str(p.resolve()) if p.exists() else str(p)
+    return dict(sorted(paths.items()))
 
 
 def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:
@@ -27,7 +51,8 @@ def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:
         return None
     theme_id = data.get("id") or theme_dir.name
     wallpaper_dir = data.get("wallpaperDir") or theme_id
-    walls = wallpaper_names(theme_id, wallpaper_dir, walls_root)
+    wallpaper_paths = wallpaper_index(theme_id, wallpaper_dir, walls_root)
+    walls = list(wallpaper_paths.keys())
     preview = ""
     for cand in ("preview.jpg", "preview.webp", "preview.png"):
         p = theme_dir / cand
@@ -37,15 +62,9 @@ def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:
     default = data.get("defaultWallpaper") or (walls[0] if walls else "")
     wallpaper_path = ""
     if default:
-        pics = Path.home() / "Pictures/Wallpapers" / wallpaper_dir / default
-        data_path = walls_root / wallpaper_dir / default
-        if pics.exists():
-            wallpaper_path = str(pics)
-        elif data_path.exists():
-            wallpaper_path = str(data_path)
-        else:
-            # Canonical post-chezmoi target even if not linked yet.
-            wallpaper_path = str(pics)
+        wallpaper_path = wallpaper_paths.get(default) or resolve_wallpaper_file(
+            wallpaper_dir, default, walls_root
+        )
     return {
         "id": theme_id,
         "name": data.get("name") or theme_id,
@@ -53,11 +72,23 @@ def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:
         "tags": data.get("tags") or [],
         "darkMode": bool(data.get("darkMode", True)),
         "schemeType": data.get("schemeType") or "tonal-spot",
-        "gtkTheme": data.get("gtkTheme") or "Orchis-Dark",
+        "gtkTheme": data.get("gtkTheme") or "Orchis-Light-Compact",
         "iconTheme": data.get("iconTheme") or "Numix-Circle",
+        "gtkPreferDark": (
+            bool(data["gtkPreferDark"])
+            if "gtkPreferDark" in data and data["gtkPreferDark"] is not None
+            else (
+                False
+                if "light" in str(data.get("gtkTheme") or "").lower()
+                else True
+                if "dark" in str(data.get("gtkTheme") or "").lower()
+                else bool(data.get("darkMode", True))
+            )
+        ),
         "defaultWallpaper": default,
         "wallpaperDir": wallpaper_dir,
         "wallpapers": walls,
+        "wallpaperPaths": wallpaper_paths,
         "preview": preview,
         "wallpaperPath": wallpaper_path,
     }

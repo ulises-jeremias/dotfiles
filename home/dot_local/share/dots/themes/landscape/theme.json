@@ -6,8 +6,9 @@
   "tags": ["nature", "cinematic", "landscape", "dark"],
   "darkMode": true,
   "schemeType": "fidelity",
-  "gtkTheme": "Orchis-Dark",
+  "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Numix-Circle",
   "defaultWallpaper": "landscape-01.jpg",
-  "wallpaperDir": "landscape"
+  "wallpaperDir": "landscape",
+  "gtkPreferDark": false
 }

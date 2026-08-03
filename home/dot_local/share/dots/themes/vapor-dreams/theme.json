@@ -6,8 +6,9 @@
   "tags": ["vaporwave", "retro", "synthwave", "dark"],
   "darkMode": true,
   "schemeType": "expressive",
-  "gtkTheme": "Orchis-Dark",
+  "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Numix-Circle",
   "defaultWallpaper": "vapor-dreams-01.jpg",
-  "wallpaperDir": "vapor-dreams"
+  "wallpaperDir": "vapor-dreams",
+  "gtkPreferDark": false
 }

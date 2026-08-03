@@ -69,14 +69,15 @@ Quickshell uses **Material Design 3** (M3) color palettes generated from your wa
 
 ### Scheme Configuration
 
-Each appearance (rice) configures its M3 scheme via `config.json`:
+Each appearance theme pack configures its M3 scheme via `theme.json`:
 
 ```json
 {
   "schemeType": "vibrant",
   "darkMode": true,
-  "accentColor": "",
-  "barPosition": "top"
+  "gtkTheme": "Orchis-Light-Compact",
+  "gtkPreferDark": false,
+  "iconTheme": "Numix-Circle"
 }
 ```
 
@@ -84,10 +85,10 @@ Each appearance (rice) configures its M3 scheme via `config.json`:
 
 ```bash
 dots appearance list
-dots appearance current
-dots appearance apply machines
-dots appearance set-variant tonalspot
+dots appearance theme apply vapor-dreams
+dots appearance set-variant tonal-spot
 dots appearance set-mode light
+dots appearance doctor
 ```
 
 ---
@@ -165,7 +166,7 @@ Shell behavior is configured via `~/.config/hornero/shell.json`:
 ### Reference Parity Status
 
 - **Matched**: wallpaper-driven M3 theming pipeline, left-rail shell feel, top control center, launcher command modes, right-edge OSD/session controls, rounded frame and edge exclusions.
-- **Intentional deviations**: Hornero-specific `dots-*` integrations, rice selector mode in launcher, AI chat module.
+- **Intentional deviations**: Hornero-specific `dots-*` integrations, appearance/theme selector mode in launcher, AI chat module.
 - **In progress hardening**: deeper panel unification and additional popout parity refinements.
 
 ---

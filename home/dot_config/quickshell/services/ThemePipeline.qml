@@ -26,11 +26,35 @@ Singleton {
     property string _pendingGtkTheme: ""
     property string _pendingIconTheme: ""
     property string _pendingThemeName: ""
+    property string _pendingThemeId: ""
+    // "true" | "false" | "" (infer from gtk theme name / shell mode)
+    property string _pendingGtkPreferDark: ""
     property bool _runThemeSideEffects: false
     property string _lastError: ""
+    readonly property string lastError: _lastError
     property bool _startupRestored: false
 
     signal applyFinished(bool ok)
+
+    function resolveGtkPreferDark(cfg: var, darkMode: bool): string {
+        if (cfg && cfg.gtkPreferDark !== undefined && cfg.gtkPreferDark !== null && cfg.gtkPreferDark !== "")
+            return cfg.gtkPreferDark ? "true" : "false";
+        const gtk = ((cfg && cfg.gtkTheme) ? cfg.gtkTheme : "").toLowerCase();
+        if (gtk.indexOf("light") >= 0)
+            return "false";
+        if (gtk.indexOf("dark") >= 0)
+            return "true";
+        return darkMode ? "true" : "false";
+    }
+
+    function resolveGtkPreferFromName(gtkTheme: string, darkMode: bool): string {
+        const gtk = (gtkTheme || "").toLowerCase();
+        if (gtk.indexOf("light") >= 0)
+            return "false";
+        if (gtk.indexOf("dark") >= 0)
+            return "true";
+        return darkMode ? "true" : "false";
+    }
 
     function applyTheme(id: string, wallpaperPath: string): void {
         if (!id)
@@ -95,9 +119,12 @@ Singleton {
         _pendingGtkTheme = "";
         _pendingIconTheme = "";
         _pendingThemeName = "";
+        _pendingThemeId = "";
+        _pendingGtkPreferDark = "";
 
         if (job.kind === "theme") {
             _runThemeSideEffects = true;
+            _pendingThemeId = job.themeId || "";
             themeLoader.themeId = job.themeId;
             themeLoader.wallpaperOverride = job.wallpaper || "";
             themeLoader.running = true;
@@ -114,6 +141,7 @@ Singleton {
         } else if (job.kind === "gtk") {
             gtkStandaloneProc.themeName = job.gtkTheme || "";
             gtkStandaloneProc.mode = Colours.currentLight ? "light" : "dark";
+            gtkStandaloneProc.preferDark = root.resolveGtkPreferFromName(job.gtkTheme || "", !Colours.currentLight);
             gtkStandaloneProc.running = true;
         } else if (job.kind === "icons") {
             iconOnlyProc.themeName = job.iconTheme || "";
@@ -193,6 +221,7 @@ Singleton {
             root._pendingGtkTheme = cfg.gtkTheme || "";
             root._pendingIconTheme = cfg.iconTheme || "";
             root._pendingThemeName = cfg.name || themeLoader.themeId;
+            root._pendingGtkPreferDark = root.resolveGtkPreferDark(cfg, root._pendingDarkMode);
 
             const wp = themeLoader.wallpaperOverride;
             if (wp) {
@@ -255,6 +284,7 @@ done
         const cfg = themeLoader.pendingConfig || {};
         _pendingSchemeType = cfg.schemeType || "tonal-spot";
         _pendingDarkMode = cfg.darkMode !== undefined ? !!cfg.darkMode : true;
+        _pendingGtkPreferDark = root.resolveGtkPreferDark(cfg, _pendingDarkMode);
         walPrepProc.running = true;
     }
 
@@ -339,10 +369,12 @@ done
             }
             touchSchemeProc.running = true;
             root._runSideEffects();
-            // Finalize GTK (theme name + prefer-dark/color-scheme) before completing.
+            // Finalize GTK via the canonical dots-gtk-theme CLI before completing.
             gtkFinalizeProc.themeName = root._runThemeSideEffects ? (root._pendingGtkTheme || "") : "";
             gtkFinalizeProc.iconTheme = root._runThemeSideEffects ? (root._pendingIconTheme || "") : "";
+            gtkFinalizeProc.themeId = root._runThemeSideEffects ? (root._pendingThemeId || "") : "";
             gtkFinalizeProc.mode = root._pendingDarkMode ? "dark" : "light";
+            gtkFinalizeProc.preferDark = root._pendingGtkPreferDark || root.resolveGtkPreferFromName(root._pendingGtkTheme, root._pendingDarkMode);
             gtkFinalizeProc.running = true;
         }
     }
@@ -352,67 +384,94 @@ done
         command: ["touch", root.schemeJson]
     }
 
-    // Apply GTK theme/icons (optional) then force color-scheme to match live mode.
-    // Used only at the end of theme/wallpaper/reload jobs (calls _finishJob).
+    // Apply GTK via dots-gtk-theme (canonical CLI) then complete the job.
     Process {
         id: gtkFinalizeProc
         property string themeName: ""
         property string iconTheme: ""
+        property string themeId: ""
         property string mode: "dark"
+        property string preferDark: "true"
         command: ["bash", "-c", `
 set -euo pipefail
-source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2>/dev/null || exit 0
-icon_theme="\${DOTS_ICON_THEME:-}"
-if [[ -z "\$icon_theme" ]]; then
-  icon_theme="$(gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'" || true)"
-fi
-[[ -n "\$icon_theme" ]] || icon_theme="Numix-Circle"
-if [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
+prefer="\${DOTS_GTK_PREFER:-}"
+if [[ -z "\$prefer" ]]; then
   prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
-  apply_gtk_theme "\${DOTS_GTK_THEME}" "\$icon_theme" "\$prefer" || true
-elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
-  gsettings set org.gnome.desktop.interface icon-theme "\${DOTS_ICON_THEME}" >/dev/null 2>&1 || true
 fi
-apply_gtk_color_scheme "\${DOTS_MODE}" || true
+if [[ -n "\${DOTS_THEME_ID:-}" && ( -z "\${DOTS_GTK_THEME:-}" || "\${DOTS_GTK_THEME}" == "auto" ) ]]; then
+  dots-gtk-theme -q theme "\${DOTS_THEME_ID}" || true
+  if [[ "\$prefer" == "false" ]]; then
+    dots-gtk-theme -q color-scheme light || true
+  else
+    dots-gtk-theme -q color-scheme dark || true
+  fi
+elif [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
+  if [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
+    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME}" "\$prefer" || true
+  else
+    # Omit icon: dots-gtk-theme apply resolves the live icon theme.
+    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "" "\$prefer" || true
+  fi
+elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
+  dots-gtk-theme -q set-icons "\${DOTS_ICON_THEME}" || true
+  if [[ "\$prefer" == "false" ]]; then
+    dots-gtk-theme -q color-scheme light || true
+  else
+    dots-gtk-theme -q color-scheme dark || true
+  fi
+else
+  if [[ "\$prefer" == "false" ]]; then
+    dots-gtk-theme -q color-scheme light || true
+  else
+    dots-gtk-theme -q color-scheme dark || true
+  fi
+fi
 `]
         environment: ({
             "DOTS_GTK_THEME": gtkFinalizeProc.themeName,
             "DOTS_ICON_THEME": gtkFinalizeProc.iconTheme,
-            "DOTS_MODE": gtkFinalizeProc.mode
+            "DOTS_THEME_ID": gtkFinalizeProc.themeId,
+            "DOTS_MODE": gtkFinalizeProc.mode,
+            "DOTS_GTK_PREFER": gtkFinalizeProc.preferDark
         })
         onExited: (exitCode, exitStatus) => {
             root._finishJob(true, "");
         }
     }
 
-    // Queued GTK override — must call _finishJob (unlike the old fire-and-forget path).
+    // Queued GTK override through dots-gtk-theme.
     Process {
         id: gtkStandaloneProc
         property string themeName: ""
         property string mode: "dark"
+        property string preferDark: "true"
         command: ["bash", "-c", `
 set -euo pipefail
-source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2>/dev/null || exit 0
-icon_theme="$(gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'" || true)"
-[[ -n "\$icon_theme" ]] || icon_theme="Numix-Circle"
-if [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
+prefer="\${DOTS_GTK_PREFER:-}"
+if [[ -z "\$prefer" ]]; then
   prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
-  apply_gtk_theme "\${DOTS_GTK_THEME}" "\$icon_theme" "\$prefer" || true
 fi
-apply_gtk_color_scheme "\${DOTS_MODE}" || true
+# Omit icon: dots-gtk-theme apply resolves the live icon theme.
+dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "" "\$prefer"
 `]
         environment: ({
             "DOTS_GTK_THEME": gtkStandaloneProc.themeName,
-            "DOTS_MODE": gtkStandaloneProc.mode
+            "DOTS_MODE": gtkStandaloneProc.mode,
+            "DOTS_GTK_PREFER": gtkStandaloneProc.preferDark
         })
         onExited: (exitCode, exitStatus) => {
-            root._finishJob(true, "");
+            root._finishJob(exitCode === 0, exitCode === 0 ? "" : `setGtk failed (exit ${exitCode})`);
         }
     }
 
     function _runSideEffects(): void {
         hyprlockProc.running = true;
         hyprReloadProc.running = true;
+
+        if (root._runThemeSideEffects && root._pendingThemeId) {
+            snappyProc.themeId = root._pendingThemeId;
+            snappyProc.running = true;
+        }
 
         if (root._runThemeSideEffects && root._pendingThemeName) {
             notifyProc.themeName = root._pendingThemeName;
@@ -426,9 +485,15 @@ apply_gtk_color_scheme "\${DOTS_MODE}" || true
     }
 
     Process {
+        id: snappyProc
+        property string themeId: ""
+        command: ["dots-snappy-switcher", "apply-theme-pack", snappyProc.themeId]
+    }
+
+    Process {
         id: iconOnlyProc
         property string themeName: ""
-        command: ["gsettings", "set", "org.gnome.desktop.interface", "icon-theme", iconOnlyProc.themeName]
+        command: ["dots-gtk-theme", "-q", "set-icons", iconOnlyProc.themeName]
         onExited: (exitCode, exitStatus) => {
             root._finishJob(exitCode === 0, exitCode === 0 ? "" : `setIcons failed (exit ${exitCode})`);
         }

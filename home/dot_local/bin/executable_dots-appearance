@@ -204,7 +204,16 @@ cmd_set_gtk() {
 			exit 0
 		fi
 	fi
-	dots-gtk-theme apply "$theme"
+	local prefer="true" mode="dark"
+	local state_json="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
+	if [[ -f $state_json ]]; then
+		mode="$(python3 -c "import json;print(json.load(open('$state_json')).get('mode','dark'))" 2>/dev/null || echo dark)"
+	fi
+	prefer=$([[ $mode == "light" ]] && echo false || echo true)
+	local icon
+	icon="$(gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'" || true)"
+	[[ -n $icon ]] || icon="Numix-Circle"
+	dots-gtk-theme -q apply "$theme" "$icon" "$prefer"
 }
 
 cmd_set_icons() {
@@ -219,7 +228,7 @@ cmd_set_icons() {
 			exit 0
 		fi
 	fi
-	gsettings set org.gnome.desktop.interface icon-theme "$theme"
+	dots-gtk-theme -q set-icons "$theme"
 }
 
 cmd_sync() {

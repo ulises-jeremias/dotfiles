@@ -39,7 +39,7 @@ chezmoi apply --force --include=files
 
 ### Recommended Folder Set
 
-The template includes: Home, Projects, Dev, Downloads, Documents, Pictures, Music, Videos, .config, LocalShare, Rices, Wallpapers, Bin. Remove or reorder directly in the template to reflect your workflow.
+The template includes: Home, Projects, Dev, Downloads, Documents, Pictures, Music, Videos, .config, LocalShare, Themes, Wallpapers, Bin. Remove or reorder directly in the template to reflect your workflow.
 
 ### Adding Extra Bookmarks (Optional Manual Pattern)
 
@@ -50,7 +50,7 @@ If a specific setup needs additional paths (e.g. a theme assets folder), just ap
 If a bookmarked directory no longer exists, Thunar will still show it (but inaccessible). Periodically prune obsolete lines manually. You can safely create missing directories with:
 
 ```bash
-mkdir -p ~/Projects ~/Dev ~/.local/share/dots/rices ~/.local/share/wallpapers
+mkdir -p ~/Projects ~/Dev ~/.local/share/dots/themes ~/.local/share/dots/wallpapers ~/Pictures/Wallpapers
 ```
 
 ### Restoring / Resetting

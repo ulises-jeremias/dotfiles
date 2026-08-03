@@ -28,11 +28,14 @@ CollapsibleSection {
     function wallpaperPathFor(theme: var, filename: string): string {
         if (!theme || !filename)
             return "";
+        const mapped = theme.wallpaperPaths?.[filename];
+        if (mapped)
+            return mapped;
         if (theme.wallpaperPath && theme.defaultWallpaper === filename)
             return theme.wallpaperPath;
         const dir = theme.wallpaperDir || theme.id || "";
-        // Pictures is the canonical post-chezmoi location; list-themes.py
-        // already falls back to the data dir for defaultWallpaperPath.
+        // Prefer Pictures (post-chezmoi link); list-themes wallpaperPath already
+        // falls back to the data dir for the default wallpaper.
         return `${Paths.pictures}/Wallpapers/${dir}/${filename}`;
     }
 
@@ -53,15 +56,15 @@ CollapsibleSection {
                 Layout.fillWidth: true
                 spacing: 0
 
-                readonly property bool isCurrent: modelData.id === previewController.pendingThemeId
+                readonly property bool isStaged: modelData.id === previewController.pendingThemeId
                 readonly property bool isExpanded: modelData.id === sectionRoot.selectedThemeId
 
                 StyledRect {
                     Layout.fillWidth: true
 
-                    color: Qt.alpha(Colours.tPalette.m3surfaceContainer, themeItem.isCurrent ? Colours.tPalette.m3surfaceContainer.a : 0)
+                    color: Qt.alpha(Colours.tPalette.m3surfaceContainer, themeItem.isStaged ? Colours.tPalette.m3surfaceContainer.a : 0)
                     radius: Appearance.rounding.normal
-                    border.width: themeItem.isCurrent ? 1 : 0
+                    border.width: themeItem.isStaged ? 1 : 0
                     border.color: Colours.palette.m3primary
 
                     StateLayer {
@@ -69,6 +72,7 @@ CollapsibleSection {
                             sectionRoot.selectedThemeId = themeItem.modelData.id;
                             previewController.stageThemeApply(themeItem.modelData.id);
                             previewController.startThemePreview(themeItem.modelData);
+                            previewController.commitPending();
                         }
                     }
 
@@ -130,6 +134,27 @@ CollapsibleSection {
                                     maximumLineCount: 2
                                     wrapMode: Text.WordWrap
                                 }
+
+                                StyledText {
+                                    width: parent.width
+                                    text: {
+                                        const bits = [];
+                                        if (modelData.schemeType)
+                                            bits.push(modelData.schemeType);
+                                        if (modelData.gtkTheme)
+                                            bits.push(modelData.gtkTheme);
+                                        const prefer = modelData.gtkPreferDark === undefined ? "" : (modelData.gtkPreferDark ? "prefer-dark" : "prefer-light");
+                                        if (prefer)
+                                            bits.push(prefer);
+                                        if (modelData.iconTheme)
+                                            bits.push(modelData.iconTheme);
+                                        return bits.join(" · ");
+                                    }
+                                    font.pointSize: Appearance.font.size.smaller
+                                    color: Colours.palette.m3outlineVariant
+                                    elide: Text.ElideRight
+                                    visible: !!(modelData.schemeType || modelData.gtkTheme || modelData.iconTheme)
+                                }
                             }
 
                             StyledRect {
@@ -147,11 +172,20 @@ CollapsibleSection {
                                 }
                             }
 
-                            MaterialIcon {
-                                visible: themeItem.isCurrent
-                                text: "check"
-                                color: Colours.palette.m3primary
-                                font.pointSize: Appearance.font.size.large
+                            StyledRect {
+                                visible: themeItem.isStaged
+                                radius: Appearance.rounding.full
+                                color: Qt.alpha(Colours.palette.m3primaryContainer, 0.85)
+                                implicitWidth: stagedChip.implicitWidth + Appearance.padding.small * 2
+                                implicitHeight: stagedChip.implicitHeight + Appearance.padding.smaller * 2
+
+                                StyledText {
+                                    id: stagedChip
+                                    anchors.centerIn: parent
+                                    text: previewController.themeDirty ? qsTr("Pending") : qsTr("Selected")
+                                    font.pointSize: Appearance.font.size.smaller
+                                    color: Colours.palette.m3onPrimaryContainer
+                                }
                             }
                         }
 
@@ -231,6 +265,7 @@ CollapsibleSection {
 
                                     function onClicked(): void {
                                         previewController.stageThemeApplyWithWallpaper(sectionRoot.selectedThemeId, wallpaperThumb.fullPath);
+                                        previewController.commitPending();
                                     }
                                 }
 

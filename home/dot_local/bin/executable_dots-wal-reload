@@ -76,7 +76,9 @@ if [[ -n ${wallpaper:-} && -f $wallpaper && -f $M3_SCRIPT ]] && command -v pytho
 	if command -v dots-color-scheme >/dev/null 2>&1; then
 		dots-color-scheme sync-state >/dev/null 2>&1 || true
 	fi
-	if [[ -f $HOME/.local/lib/dots/gtk-theme-manager.sh ]]; then
+	if command -v dots-gtk-theme >/dev/null 2>&1; then
+		dots-gtk-theme -q color-scheme "$mode" >/dev/null 2>&1 || true
+	elif [[ -f $HOME/.local/lib/dots/gtk-theme-manager.sh ]]; then
 		# shellcheck source=/dev/null
 		source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2>/dev/null || true
 		if declare -f apply_gtk_color_scheme >/dev/null 2>&1; then

@@ -385,9 +385,7 @@ apply_theme_gtk_theme() {
 			source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
 			wallpaper="$(dots_current_wallpaper 2> /dev/null || true)"
 		fi
-		if [[ -z ${wallpaper:-} ]]; then
-			wallpaper=$(readlink -f "$HOME/.cache/wal/wal" 2> /dev/null || true)
-		fi
+		# Never readlink ~/.cache/wal/wal — it is a text path file, not an image symlink.
 		if [[ -n $wallpaper && -f $wallpaper ]]; then
 			local theme_info
 			theme_info=$(detect_optimal_gtk_theme "$wallpaper")
@@ -416,9 +414,21 @@ apply_theme_gtk_theme() {
 		python3 - "$theme_json" << 'PY'
 import json, sys
 data = json.load(open(sys.argv[1], encoding="utf-8"))
-print(data.get("gtkTheme") or "auto")
-print(data.get("iconTheme") or "Numix-Circle")
-print("true" if data.get("darkMode", True) else "false")
+gtk = data.get("gtkTheme") or "auto"
+icon = data.get("iconTheme") or "Numix-Circle"
+if "gtkPreferDark" in data and data["gtkPreferDark"] is not None:
+    prefer = "true" if data["gtkPreferDark"] else "false"
+else:
+    gtk_lc = str(gtk).lower()
+    if "light" in gtk_lc:
+        prefer = "false"
+    elif "dark" in gtk_lc:
+        prefer = "true"
+    else:
+        prefer = "true" if data.get("darkMode", True) else "false"
+print(gtk)
+print(icon)
+print(prefer)
 PY
 	)"
 	gtk_theme="$(sed -n '1p' <<< "$meta")"
@@ -433,9 +443,7 @@ PY
 			source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
 			wal_wallpaper="$(dots_current_wallpaper 2> /dev/null || true)"
 		fi
-		if [[ -z ${wal_wallpaper:-} ]]; then
-			wal_wallpaper=$(readlink -f "$HOME/.cache/wal/wal" 2> /dev/null || true)
-		fi
+		# Prefer wallpaper-resolver (handles text wal pointer + state pointer).
 		if [[ -n $wal_wallpaper && -f $wal_wallpaper ]]; then
 			local theme_info
 			theme_info=$(detect_optimal_gtk_theme "$wal_wallpaper")
@@ -445,15 +453,15 @@ PY
 			fi
 		else
 			if [[ $prefer_dark == "true" ]]; then
-				gtk_theme="Orchis-Dark"
+				gtk_theme="Orchis-Dark-Compact"
 			else
-				gtk_theme="Orchis-Light"
+				gtk_theme="Orchis-Light-Compact"
 			fi
 		fi
 	fi
 
 	if [[ $prefer_dark == "auto" ]]; then
-		prefer_dark="true"
+		prefer_dark="false"
 	fi
 
 	apply_gtk_theme "$gtk_theme" "$icon_theme" "$prefer_dark"
@@ -461,13 +469,34 @@ PY
 
 # Function to get current GTK theme
 get_current_gtk_theme() {
+	local value=""
 	if [[ -f $GTK3_CONFIG ]]; then
-		grep "^gtk-theme-name=" "$GTK3_CONFIG" | cut -d'=' -f2
-	elif [[ -f $GTK2_CONFIG ]]; then
-		grep "^gtk-theme-name=" "$GTK2_CONFIG" | cut -d'"' -f2
-	else
-		echo "Unknown"
+		value="$(grep "^gtk-theme-name=" "$GTK3_CONFIG" 2> /dev/null | cut -d'=' -f2 || true)"
 	fi
+	if [[ -z $value && -f $GTK2_CONFIG ]]; then
+		value="$(grep "^gtk-theme-name=" "$GTK2_CONFIG" 2> /dev/null | cut -d'"' -f2 || true)"
+	fi
+	if [[ -z $value ]] && command -v gsettings > /dev/null 2>&1; then
+		value="$(gsettings get org.gnome.desktop.interface gtk-theme 2> /dev/null | tr -d "'" || true)"
+	fi
+	printf '%s\n' "${value:-Unknown}"
+	return 0
+}
+
+# Function to get current icon theme
+get_current_icon_theme() {
+	local value=""
+	if [[ -f $GTK3_CONFIG ]]; then
+		value="$(grep "^gtk-icon-theme-name=" "$GTK3_CONFIG" 2> /dev/null | cut -d'=' -f2 || true)"
+	fi
+	if [[ -z $value ]] && command -v gsettings > /dev/null 2>&1; then
+		value="$(gsettings get org.gnome.desktop.interface icon-theme 2> /dev/null | tr -d "'" || true)"
+	fi
+	if [[ -z $value && -f $GTK2_CONFIG ]]; then
+		value="$(grep "^gtk-icon-theme-name=" "$GTK2_CONFIG" 2> /dev/null | cut -d'"' -f2 || true)"
+	fi
+	printf '%s\n' "${value:-}"
+	return 0
 }
 
 # Function to list installed GTK themes

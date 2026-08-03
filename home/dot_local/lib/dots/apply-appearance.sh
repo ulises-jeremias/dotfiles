@@ -48,6 +48,43 @@ _dots_aa_normalize_scheme_type() {
 	esac
 }
 
+# Resolve gtk-application-prefer-dark independently of shell darkMode when possible.
+# Priority: theme.json gtkPreferDark → Light/Dark in gtk theme name → shell mode.
+_dots_aa_resolve_gtk_prefer() {
+	local config_json="${1:-}"
+	local dark_mode="${2:-dark}"
+	local gtk_theme="${3:-}"
+	local explicit=""
+
+	if [[ -n $config_json && -f $config_json ]]; then
+		explicit="$(_dots_aa_json_get "$config_json" gtkPreferDark "")"
+	fi
+	case "$explicit" in
+		true | false)
+			printf '%s\n' "$explicit"
+			return 0
+			;;
+	esac
+
+	local gtk_lc
+	gtk_lc=$(printf '%s' "$gtk_theme" | tr '[:upper:]' '[:lower:]')
+	case "$gtk_lc" in
+		*light*)
+			printf 'false\n'
+			;;
+		*dark*)
+			printf 'true\n'
+			;;
+		*)
+			if [[ $dark_mode == "light" ]]; then
+				printf 'false\n'
+			else
+				printf 'true\n'
+			fi
+			;;
+	esac
+}
+
 _dots_aa_resolve_theme_wallpaper() {
 	local theme_id="$1"
 	local wallpaper_dir="$2"
@@ -87,7 +124,9 @@ _dots_aa_resolve_theme_wallpaper() {
 
 _dots_aa_sync_gtk_color_scheme() {
 	local mode="${1:-dark}"
-	if [[ -f $HOME/.local/lib/dots/gtk-theme-manager.sh ]]; then
+	if command -v dots-gtk-theme > /dev/null 2>&1; then
+		dots-gtk-theme -q color-scheme "$mode" > /dev/null 2>&1 || true
+	elif [[ -f $HOME/.local/lib/dots/gtk-theme-manager.sh ]]; then
 		# shellcheck source=/dev/null
 		source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2> /dev/null || true
 		if declare -f apply_gtk_color_scheme > /dev/null 2>&1; then
@@ -166,7 +205,7 @@ dots_apply_theme() {
 	else
 		dark_mode="dark"
 	fi
-	gtk_theme="$(_dots_aa_json_get "$config_json" gtkTheme Orchis-Dark)"
+	gtk_theme="$(_dots_aa_json_get "$config_json" gtkTheme Orchis-Light-Compact)"
 	icon_theme="$(_dots_aa_json_get "$config_json" iconTheme Numix-Circle)"
 	theme_name="$(_dots_aa_json_get "$config_json" name "$theme_id")"
 	wallpaper_dir="$(_dots_aa_json_get "$config_json" wallpaperDir "$theme_id")"
@@ -182,13 +221,30 @@ dots_apply_theme() {
 
 	if command -v dots-gtk-theme > /dev/null 2>&1; then
 		if [[ -n $gtk_theme && $gtk_theme != "auto" ]]; then
-			dots-gtk-theme apply "$gtk_theme" > /dev/null 2>&1 || true
+			local prefer
+			prefer="$(_dots_aa_resolve_gtk_prefer "$config_json" "$dark_mode" "$gtk_theme")"
+			dots-gtk-theme -q apply "$gtk_theme" "${icon_theme:-Numix-Circle}" "$prefer" > /dev/null 2>&1 || true
+		elif [[ $gtk_theme == "auto" ]]; then
+			dots-gtk-theme -q theme "$theme_id" > /dev/null 2>&1 || true
+			local prefer_auto
+			prefer_auto="$(_dots_aa_resolve_gtk_prefer "$config_json" "$dark_mode" "")"
+			if [[ $prefer_auto == "false" ]]; then
+				dots-gtk-theme -q color-scheme light > /dev/null 2>&1 || true
+			else
+				dots-gtk-theme -q color-scheme dark > /dev/null 2>&1 || true
+			fi
+		elif [[ -n $icon_theme ]]; then
+			dots-gtk-theme -q set-icons "$icon_theme" > /dev/null 2>&1 || true
+			dots-gtk-theme -q color-scheme "$dark_mode" > /dev/null 2>&1 || true
+		else
+			dots-gtk-theme -q color-scheme "$dark_mode" > /dev/null 2>&1 || true
 		fi
-	fi
-	if [[ -n $icon_theme ]] && command -v gsettings > /dev/null 2>&1; then
+	elif [[ -n $icon_theme ]] && command -v gsettings > /dev/null 2>&1; then
 		gsettings set org.gnome.desktop.interface icon-theme "$icon_theme" > /dev/null 2>&1 || true
+		_dots_aa_sync_gtk_color_scheme "$dark_mode"
+	else
+		_dots_aa_sync_gtk_color_scheme "$dark_mode"
 	fi
-	_dots_aa_sync_gtk_color_scheme "$dark_mode"
 
 	if [[ -f $HOME/.local/lib/dots/snappy-switcher-manager.sh ]]; then
 		# shellcheck source=/dev/null

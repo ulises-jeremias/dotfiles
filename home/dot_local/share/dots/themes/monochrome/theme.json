@@ -9,5 +9,6 @@
   "gtkTheme": "Adwaita-dark",
   "iconTheme": "Papirus-Dark",
   "defaultWallpaper": "mono-curated-1.jpg",
-  "wallpaperDir": "monochrome"
+  "wallpaperDir": "monochrome",
+  "gtkPreferDark": true
 }

@@ -388,8 +388,8 @@ Item {
                         ActionTile {
                             icon: "palette"
                             label: qsTr("GTK theme")
-                            description: qsTr("Pick GTK theme, icons and cursors")
-                            action: () => root.run(["nwg-look"])
+                            description: qsTr("Open Appearance to pick GTK theme and icons")
+                            action: () => root.run(["dots-theme-selector"])
                         }
 
                         ActionTile {

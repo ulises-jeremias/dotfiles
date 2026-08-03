@@ -6,8 +6,9 @@
   "tags": ["morning", "calm", "pastel", "light"],
   "darkMode": false,
   "schemeType": "neutral",
-  "gtkTheme": "Orchis-Light",
+  "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Numix-Circle",
   "defaultWallpaper": "morning-lake-2.jpg",
-  "wallpaperDir": "soft-morning"
+  "wallpaperDir": "soft-morning",
+  "gtkPreferDark": false
 }

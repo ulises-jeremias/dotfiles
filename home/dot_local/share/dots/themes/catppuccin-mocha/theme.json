@@ -6,8 +6,9 @@
   "tags": ["catppuccin", "pastel", "cozy", "dark"],
   "darkMode": true,
   "schemeType": "tonal-spot",
-  "gtkTheme": "Orchis-Dark",
+  "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Papirus-Dark",
   "defaultWallpaper": "catppuccin-mauve-02.png",
-  "wallpaperDir": "catppuccin-mocha"
+  "wallpaperDir": "catppuccin-mocha",
+  "gtkPreferDark": false
 }
