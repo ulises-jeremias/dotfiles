@@ -123,7 +123,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
 
         MaterialIcon {
-            text: root.state === "wallpapers" ? "wallpaper_slideshow" : "palette"
+            text: root.state === "wallpapers" ? "wallpaper_slideshow" : (root.showThemesList ? "palette" : "search")
             color: Colours.palette.m3onSurfaceVariant
             font.pointSize: Appearance.font.size.extraLarge
 
@@ -134,7 +134,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             StyledText {
-                text: root.state === "wallpapers" ? qsTr("No wallpapers found") : qsTr("No themes found")
+                text: root.state === "wallpapers" ? qsTr("No wallpapers found") : (root.showThemesList ? qsTr("No themes found") : qsTr("No results found"))
                 color: Colours.palette.m3onSurfaceVariant
                 font.pointSize: Appearance.font.size.larger
                 font.weight: 500
