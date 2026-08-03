@@ -201,13 +201,13 @@ theme-pack `tags` (there is no sticky “current theme” id).
 
 ### Available Layouts
 
-| Layout        | Matching tags / path hints      | Description                                     |
-|---------------|---------------------------------|-------------------------------------------------|
-| **Default**   | Any unmatched                   | Clean, centered layout with standard typography |
-| **Cyberpunk** | cyberpunk, neon, futuristic     | Glowing neon elements, tech-inspired fonts      |
-| **Cozy**      | cozy, kawaii, cute, warm, soft  | Soft, rounded elements with pastel accents      |
-| **Vaporwave** | vaporwave, retro, synthwave     | Gradient effects, 80s-inspired typography       |
-| **Minimal**   | minimal, clean                  | Ultra-clean with minimal UI elements            |
+| Layout        | Matching tags / path hints     | Description                                     |
+|---------------|--------------------------------|-------------------------------------------------|
+| **Default**   | Any unmatched                  | Clean, centered layout with standard typography |
+| **Cyberpunk** | cyberpunk, neon, futuristic    | Glowing neon elements, tech-inspired fonts      |
+| **Cozy**      | cozy, kawaii, cute, warm, soft | Soft, rounded elements with pastel accents      |
+| **Vaporwave** | vaporwave, retro, synthwave    | Gradient effects, 80s-inspired typography       |
+| **Minimal**   | minimal, clean                 | Ultra-clean with minimal UI elements            |
 
 ### How It Works
 
