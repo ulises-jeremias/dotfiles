@@ -3,11 +3,16 @@
   "id": "rose-pine",
   "name": "Ros\u00e9 Pine",
   "description": "Elegant muted rose and pine dark palette",
-  "tags": ["rose-pine", "muted", "dark"],
+  "tags": [
+    "rose-pine",
+    "muted",
+    "dark"
+  ],
   "darkMode": true,
   "schemeType": "expressive",
-  "gtkTheme": "Orchis-Dark",
+  "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Numix-Circle",
   "defaultWallpaper": "rose-pine-dawn-01.png",
-  "wallpaperDir": "rose-pine"
+  "wallpaperDir": "rose-pine",
+  "gtkPreferDark": false
 }

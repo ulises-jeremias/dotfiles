@@ -72,6 +72,7 @@ CollapsibleSection {
                             sectionRoot.selectedThemeId = themeItem.modelData.id;
                             previewController.stageThemeApply(themeItem.modelData.id);
                             previewController.startThemePreview(themeItem.modelData);
+                            previewController.commitPending();
                         }
                     }
 
@@ -133,6 +134,27 @@ CollapsibleSection {
                                     maximumLineCount: 2
                                     wrapMode: Text.WordWrap
                                 }
+
+                                StyledText {
+                                    width: parent.width
+                                    text: {
+                                        const bits = [];
+                                        if (modelData.schemeType)
+                                            bits.push(modelData.schemeType);
+                                        if (modelData.gtkTheme)
+                                            bits.push(modelData.gtkTheme);
+                                        const prefer = modelData.gtkPreferDark === undefined ? "" : (modelData.gtkPreferDark ? "prefer-dark" : "prefer-light");
+                                        if (prefer)
+                                            bits.push(prefer);
+                                        if (modelData.iconTheme)
+                                            bits.push(modelData.iconTheme);
+                                        return bits.join(" · ");
+                                    }
+                                    font.pointSize: Appearance.font.size.smaller
+                                    color: Colours.palette.m3outlineVariant
+                                    elide: Text.ElideRight
+                                    visible: !!(modelData.schemeType || modelData.gtkTheme || modelData.iconTheme)
+                                }
                             }
 
                             StyledRect {
@@ -160,7 +182,7 @@ CollapsibleSection {
                                 StyledText {
                                     id: stagedChip
                                     anchors.centerIn: parent
-                                    text: previewController.themeDirty ? qsTr("Staged") : qsTr("Selected")
+                                    text: previewController.themeDirty ? qsTr("Pending") : qsTr("Selected")
                                     font.pointSize: Appearance.font.size.smaller
                                     color: Colours.palette.m3onPrimaryContainer
                                 }
@@ -243,6 +265,7 @@ CollapsibleSection {
 
                                     function onClicked(): void {
                                         previewController.stageThemeApplyWithWallpaper(sectionRoot.selectedThemeId, wallpaperThumb.fullPath);
+                                        previewController.commitPending();
                                     }
                                 }
 

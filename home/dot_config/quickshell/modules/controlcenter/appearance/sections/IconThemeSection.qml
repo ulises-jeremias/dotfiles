@@ -18,7 +18,7 @@ CollapsibleSection {
     required property var session
 
     title: qsTr("Icon theme")
-    description: qsTr("Desktop icon set — staged until Apply")
+    description: qsTr("Desktop icon set — applies on click")
     showBackground: true
 
     property var iconNames: []
@@ -62,6 +62,7 @@ CollapsibleSection {
                 StateLayer {
                     function onClicked(): void {
                         previewController.stageIconTheme(modelData);
+                        previewController.commitPending();
                     }
                 }
 

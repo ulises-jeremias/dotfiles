@@ -42,6 +42,7 @@ CollapsibleSection {
 
                         previewController.startVariantPreview(variant);
                         previewController.stageVariantApply(variant);
+                        previewController.commitPending();
                     }
                 }
 

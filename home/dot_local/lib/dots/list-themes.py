@@ -72,8 +72,19 @@ def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:
         "tags": data.get("tags") or [],
         "darkMode": bool(data.get("darkMode", True)),
         "schemeType": data.get("schemeType") or "tonal-spot",
-        "gtkTheme": data.get("gtkTheme") or "Orchis-Dark",
+        "gtkTheme": data.get("gtkTheme") or "Orchis-Light-Compact",
         "iconTheme": data.get("iconTheme") or "Numix-Circle",
+        "gtkPreferDark": (
+            bool(data["gtkPreferDark"])
+            if "gtkPreferDark" in data and data["gtkPreferDark"] is not None
+            else (
+                False
+                if "light" in str(data.get("gtkTheme") or "").lower()
+                else True
+                if "dark" in str(data.get("gtkTheme") or "").lower()
+                else bool(data.get("darkMode", True))
+            )
+        ),
         "defaultWallpaper": default,
         "wallpaperDir": wallpaper_dir,
         "wallpapers": walls,

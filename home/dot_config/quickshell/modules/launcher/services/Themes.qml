@@ -91,9 +91,18 @@ Searcher {
         readonly property var tags: modelData.tags ?? []
         readonly property bool darkMode: modelData.darkMode !== undefined ? !!modelData.darkMode : true
         readonly property string schemeType: modelData.schemeType || "tonal-spot"
-        readonly property string gtkTheme: modelData.gtkTheme || "auto"
+        readonly property string gtkTheme: modelData.gtkTheme || "Orchis-Light-Compact"
         readonly property string iconTheme: modelData.iconTheme || ""
-
+        readonly property bool gtkPreferDark: {
+            if (modelData.gtkPreferDark !== undefined)
+                return !!modelData.gtkPreferDark;
+            const gtk = gtkTheme.toLowerCase();
+            if (gtk.indexOf("light") >= 0)
+                return false;
+            if (gtk.indexOf("dark") >= 0)
+                return true;
+            return darkMode;
+        }
         function onClicked(list: AppList): void {
             list.visibilities.launcher = false;
             ThemePipeline.applyTheme(id, wallpaperPath || "");

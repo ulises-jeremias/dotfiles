@@ -75,7 +75,8 @@ Each appearance theme pack configures its M3 scheme via `theme.json`:
 {
   "schemeType": "vibrant",
   "darkMode": true,
-  "gtkTheme": "Orchis-Dark",
+  "gtkTheme": "Orchis-Light-Compact",
+  "gtkPreferDark": false,
   "iconTheme": "Numix-Circle"
 }
 ```

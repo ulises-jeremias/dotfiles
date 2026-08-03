@@ -130,9 +130,9 @@ Item {
             radius: itemRadius
 
             function onClicked(): void {
-                // Stage only — Apply in the appearance sidebar commits.
                 root.previewController.startWallpaperPreview(modelData.path, modelData.name);
                 root.previewController.stageWallpaperApply(modelData.path);
+                root.previewController.commitPending();
             }
         }
 

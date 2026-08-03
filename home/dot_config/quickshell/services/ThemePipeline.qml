@@ -27,12 +27,34 @@ Singleton {
     property string _pendingIconTheme: ""
     property string _pendingThemeName: ""
     property string _pendingThemeId: ""
+    // "true" | "false" | "" (infer from gtk theme name / shell mode)
+    property string _pendingGtkPreferDark: ""
     property bool _runThemeSideEffects: false
     property string _lastError: ""
     readonly property string lastError: _lastError
     property bool _startupRestored: false
 
     signal applyFinished(bool ok)
+
+    function resolveGtkPreferDark(cfg: var, darkMode: bool): string {
+        if (cfg && cfg.gtkPreferDark !== undefined && cfg.gtkPreferDark !== null && cfg.gtkPreferDark !== "")
+            return cfg.gtkPreferDark ? "true" : "false";
+        const gtk = ((cfg && cfg.gtkTheme) ? cfg.gtkTheme : "").toLowerCase();
+        if (gtk.indexOf("light") >= 0)
+            return "false";
+        if (gtk.indexOf("dark") >= 0)
+            return "true";
+        return darkMode ? "true" : "false";
+    }
+
+    function resolveGtkPreferFromName(gtkTheme: string, darkMode: bool): string {
+        const gtk = (gtkTheme || "").toLowerCase();
+        if (gtk.indexOf("light") >= 0)
+            return "false";
+        if (gtk.indexOf("dark") >= 0)
+            return "true";
+        return darkMode ? "true" : "false";
+    }
 
     function applyTheme(id: string, wallpaperPath: string): void {
         if (!id)
@@ -98,6 +120,7 @@ Singleton {
         _pendingIconTheme = "";
         _pendingThemeName = "";
         _pendingThemeId = "";
+        _pendingGtkPreferDark = "";
 
         if (job.kind === "theme") {
             _runThemeSideEffects = true;
@@ -118,6 +141,7 @@ Singleton {
         } else if (job.kind === "gtk") {
             gtkStandaloneProc.themeName = job.gtkTheme || "";
             gtkStandaloneProc.mode = Colours.currentLight ? "light" : "dark";
+            gtkStandaloneProc.preferDark = root.resolveGtkPreferFromName(job.gtkTheme || "", !Colours.currentLight);
             gtkStandaloneProc.running = true;
         } else if (job.kind === "icons") {
             iconOnlyProc.themeName = job.iconTheme || "";
@@ -197,6 +221,7 @@ Singleton {
             root._pendingGtkTheme = cfg.gtkTheme || "";
             root._pendingIconTheme = cfg.iconTheme || "";
             root._pendingThemeName = cfg.name || themeLoader.themeId;
+            root._pendingGtkPreferDark = root.resolveGtkPreferDark(cfg, root._pendingDarkMode);
 
             const wp = themeLoader.wallpaperOverride;
             if (wp) {
@@ -259,6 +284,7 @@ done
         const cfg = themeLoader.pendingConfig || {};
         _pendingSchemeType = cfg.schemeType || "tonal-spot";
         _pendingDarkMode = cfg.darkMode !== undefined ? !!cfg.darkMode : true;
+        _pendingGtkPreferDark = root.resolveGtkPreferDark(cfg, _pendingDarkMode);
         walPrepProc.running = true;
     }
 
@@ -348,6 +374,7 @@ done
             gtkFinalizeProc.iconTheme = root._runThemeSideEffects ? (root._pendingIconTheme || "") : "";
             gtkFinalizeProc.themeId = root._runThemeSideEffects ? (root._pendingThemeId || "") : "";
             gtkFinalizeProc.mode = root._pendingDarkMode ? "dark" : "light";
+            gtkFinalizeProc.preferDark = root._pendingGtkPreferDark || root.resolveGtkPreferFromName(root._pendingGtkTheme, root._pendingDarkMode);
             gtkFinalizeProc.running = true;
         }
     }
@@ -364,12 +391,20 @@ done
         property string iconTheme: ""
         property string themeId: ""
         property string mode: "dark"
+        property string preferDark: "true"
         command: ["bash", "-c", `
 set -euo pipefail
-prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
+prefer="\${DOTS_GTK_PREFER:-}"
+if [[ -z "\$prefer" ]]; then
+  prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
+fi
 if [[ -n "\${DOTS_THEME_ID:-}" && ( -z "\${DOTS_GTK_THEME:-}" || "\${DOTS_GTK_THEME}" == "auto" ) ]]; then
   dots-gtk-theme -q theme "\${DOTS_THEME_ID}" || true
-  dots-gtk-theme -q color-scheme "\${DOTS_MODE}" || true
+  if [[ "\$prefer" == "false" ]]; then
+    dots-gtk-theme -q color-scheme light || true
+  else
+    dots-gtk-theme -q color-scheme dark || true
+  fi
 elif [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
   if [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
     dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME}" "\$prefer" || true
@@ -379,16 +414,25 @@ elif [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
   fi
 elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
   dots-gtk-theme -q set-icons "\${DOTS_ICON_THEME}" || true
-  dots-gtk-theme -q color-scheme "\${DOTS_MODE}" || true
+  if [[ "\$prefer" == "false" ]]; then
+    dots-gtk-theme -q color-scheme light || true
+  else
+    dots-gtk-theme -q color-scheme dark || true
+  fi
 else
-  dots-gtk-theme -q color-scheme "\${DOTS_MODE}" || true
+  if [[ "\$prefer" == "false" ]]; then
+    dots-gtk-theme -q color-scheme light || true
+  else
+    dots-gtk-theme -q color-scheme dark || true
+  fi
 fi
 `]
         environment: ({
             "DOTS_GTK_THEME": gtkFinalizeProc.themeName,
             "DOTS_ICON_THEME": gtkFinalizeProc.iconTheme,
             "DOTS_THEME_ID": gtkFinalizeProc.themeId,
-            "DOTS_MODE": gtkFinalizeProc.mode
+            "DOTS_MODE": gtkFinalizeProc.mode,
+            "DOTS_GTK_PREFER": gtkFinalizeProc.preferDark
         })
         onExited: (exitCode, exitStatus) => {
             root._finishJob(true, "");
@@ -400,15 +444,20 @@ fi
         id: gtkStandaloneProc
         property string themeName: ""
         property string mode: "dark"
+        property string preferDark: "true"
         command: ["bash", "-c", `
 set -euo pipefail
-prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
+prefer="\${DOTS_GTK_PREFER:-}"
+if [[ -z "\$prefer" ]]; then
+  prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
+fi
 # Omit icon: dots-gtk-theme apply resolves the live icon theme.
 dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "" "\$prefer"
 `]
         environment: ({
             "DOTS_GTK_THEME": gtkStandaloneProc.themeName,
-            "DOTS_MODE": gtkStandaloneProc.mode
+            "DOTS_MODE": gtkStandaloneProc.mode,
+            "DOTS_GTK_PREFER": gtkStandaloneProc.preferDark
         })
         onExited: (exitCode, exitStatus) => {
             root._finishJob(exitCode === 0, exitCode === 0 ? "" : `setGtk failed (exit ${exitCode})`);

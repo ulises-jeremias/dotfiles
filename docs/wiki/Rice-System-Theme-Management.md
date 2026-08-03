@@ -34,7 +34,7 @@ dots appearance theme apply neon-city --wallpaper ~/Pictures/Wallpapers/neon-cit
 dots appearance set-wallpaper <path>
 dots appearance set-mode dark|light
 dots appearance set-variant expressive
-dots appearance set-gtk Orchis-Dark
+dots appearance set-gtk Orchis-Light-Compact
 dots appearance set-icons Numix-Circle
 dots appearance status
 dots appearance doctor
@@ -46,7 +46,7 @@ GTK entrypoint (canonical for scripts and Quickshell):
 dots-gtk-theme -q -p list
 dots-gtk-theme -q -p current
 dots-gtk-theme -q -p current-icon
-dots-gtk-theme -q apply Orchis-Dark Numix-Circle true
+dots-gtk-theme -q apply Orchis-Light-Compact Numix-Circle true
 dots-gtk-theme -q color-scheme dark
 dots-gtk-theme -q theme vapor-dreams
 ```

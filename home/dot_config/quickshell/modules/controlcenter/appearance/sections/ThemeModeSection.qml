@@ -16,7 +16,7 @@ CollapsibleSection {
     required property var session
 
     title: qsTr("Theme mode")
-    description: qsTr("Light or dark — live preference (theme packs set a default on apply)")
+    description: qsTr("Light or dark — applies on toggle")
     showBackground: true
 
     readonly property bool darkChecked: previewController.pendingMode === "dark"
@@ -38,6 +38,7 @@ CollapsibleSection {
             const mode = checked ? "dark" : "light";
             previewController.startModePreview(mode);
             previewController.stageModeApply(mode);
+            previewController.commitPending();
         }
 
         MouseArea {
@@ -50,7 +51,7 @@ CollapsibleSection {
 
     StyledText {
         visible: root.modeDivergesFromTheme
-        text: qsTr("Differs from staged theme default (%1)").arg(root.themeDefaultMode)
+        text: qsTr("Differs from theme default (%1)").arg(root.themeDefaultMode)
         color: Colours.palette.m3outline
         font.pointSize: Appearance.font.size.small
     }

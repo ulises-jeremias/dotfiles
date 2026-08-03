@@ -18,7 +18,7 @@ CollapsibleSection {
     required property var session
 
     title: qsTr("GTK theme")
-    description: qsTr("Application chrome theme — staged until Apply")
+    description: qsTr("Application chrome theme — applies on click")
     showBackground: true
 
     property var themeNames: []
@@ -62,6 +62,7 @@ CollapsibleSection {
                 StateLayer {
                     function onClicked(): void {
                         previewController.stageGtkTheme(modelData);
+                        previewController.commitPending();
                     }
                 }
 

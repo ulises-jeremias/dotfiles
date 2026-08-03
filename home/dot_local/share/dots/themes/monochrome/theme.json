@@ -3,11 +3,17 @@
   "id": "monochrome",
   "name": "Monochrome",
   "description": "High-contrast black and white focus aesthetic",
-  "tags": ["monochrome", "minimal", "a11y", "dark"],
+  "tags": [
+    "monochrome",
+    "minimal",
+    "a11y",
+    "dark"
+  ],
   "darkMode": true,
   "schemeType": "monochrome",
   "gtkTheme": "Adwaita-dark",
   "iconTheme": "Papirus-Dark",
   "defaultWallpaper": "mono-curated-1.jpg",
-  "wallpaperDir": "monochrome"
+  "wallpaperDir": "monochrome",
+  "gtkPreferDark": true
 }

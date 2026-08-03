@@ -45,6 +45,7 @@ CollapsibleSection {
                         const flavour = modelData.flavour;
                         previewController.startSchemePreview(modelData);
                         previewController.stageSchemeApply(name, flavour);
+                        previewController.commitPending();
                     }
                 }
 

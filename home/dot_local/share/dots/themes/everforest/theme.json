@@ -3,11 +3,17 @@
   "id": "everforest",
   "name": "Everforest",
   "description": "Soft green forest fidelity theme",
-  "tags": ["everforest", "nature", "green", "dark"],
+  "tags": [
+    "everforest",
+    "nature",
+    "green",
+    "dark"
+  ],
   "darkMode": true,
   "schemeType": "fidelity",
-  "gtkTheme": "Orchis-Dark",
+  "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Numix-Circle",
   "defaultWallpaper": "everforest-deep-01.png",
-  "wallpaperDir": "everforest"
+  "wallpaperDir": "everforest",
+  "gtkPreferDark": false
 }

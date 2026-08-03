@@ -88,8 +88,8 @@ Item {
         if (applyFailed && applyStatusMessage)
             return applyStatusMessage;
         if (hasPendingChanges)
-            return qsTr("Pending appearance changes — press Apply to commit");
-        return qsTr("No pending changes");
+            return qsTr("Pending — will apply when the current job finishes");
+        return qsTr("Click a theme or option to apply");
     }
     property bool previewActive: false
     property string previewSource: ""
@@ -99,6 +99,13 @@ Item {
     property string previewMode: ""
     property string previewWallpaperPath: ""
     property string previewSchemeType: ""
+    property string previewGtkTheme: ""
+    property string previewIconTheme: ""
+    property string previewGtkPrefer: ""
+    property string previewWallpaperLabel: ""
+    property string previewThemeId: ""
+    property var previewTags: []
+    property int previewWallpaperCount: 0
     property string previewGenWallpaper: ""
     property string previewGenMode: "dark"
     property string previewGenSchemeType: "tonal-spot"
@@ -214,6 +221,16 @@ Item {
         previewPaletteDebounce.restart();
     }
 
+    function resetPreviewRecipe(): void {
+        previewGtkTheme = "";
+        previewIconTheme = "";
+        previewGtkPrefer = "";
+        previewWallpaperLabel = "";
+        previewThemeId = "";
+        previewTags = [];
+        previewWallpaperCount = 0;
+    }
+
     function startSchemePreview(modelData: var): void {
         if (!modelData)
             return;
@@ -224,6 +241,11 @@ Item {
         previewSubtitle = qsTr("Color scheme");
         previewVariant = modelData.flavour ?? "";
         previewSchemeType = normalizeSchemeType(modelData.flavour ?? "");
+        resetPreviewRecipe();
+        previewMode = pendingMode;
+        previewGtkTheme = pendingGtkTheme;
+        previewIconTheme = pendingIconTheme;
+        previewWallpaperLabel = pendingWallpaperPath ? pendingWallpaperPath.split("/").pop() : "";
         scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, pendingMode, previewSchemeType);
     }
 
@@ -239,6 +261,10 @@ Item {
         previewSubtitle = qsTr("Color variant");
         previewVariant = scheme.flavour ?? variant;
         previewSchemeType = normalizeSchemeType(scheme.flavour ?? variant);
+        resetPreviewRecipe();
+        previewMode = pendingMode;
+        previewGtkTheme = pendingGtkTheme;
+        previewIconTheme = pendingIconTheme;
         scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, pendingMode, previewSchemeType);
     }
 
@@ -253,6 +279,10 @@ Item {
         previewSubtitle = qsTr("Theme mode");
         previewMode = mode;
         previewSchemeType = normalizeSchemeType(previewVariant || current.flavour || pendingVariant);
+        resetPreviewRecipe();
+        previewVariant = previewSchemeType;
+        previewGtkTheme = pendingGtkTheme;
+        previewIconTheme = pendingIconTheme;
         scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, mode, previewSchemeType);
     }
 
@@ -260,12 +290,24 @@ Item {
         if (!path)
             return;
 
+        const keepThemeRecipe = previewSource === "theme" && !!previewThemeId;
+
         previewActive = true;
-        previewSource = "wallpaper";
-        previewTitle = label || path.split("/").pop();
-        previewSubtitle = qsTr("Wallpaper");
+        if (!keepThemeRecipe) {
+            previewSource = "wallpaper";
+            previewTitle = label || path.split("/").pop();
+            previewSubtitle = qsTr("Wallpaper");
+            resetPreviewRecipe();
+            previewMode = previewMode || pendingMode;
+            previewGtkTheme = pendingGtkTheme;
+            previewIconTheme = pendingIconTheme;
+        }
         previewWallpaperPath = path;
         previewSchemeType = normalizeSchemeType(previewVariant || pendingVariant);
+        previewVariant = previewSchemeType;
+        previewWallpaperLabel = label || path.split("/").pop();
+        if (!previewMode)
+            previewMode = pendingMode;
         scheduleGeneratedPreview(path, previewMode || pendingMode, previewSchemeType);
     }
 
@@ -281,6 +323,23 @@ Item {
         previewMode = modelData.darkMode ? "dark" : "light";
         previewWallpaperPath = modelData.wallpaperPath ?? modelData.wallpaper ?? "";
         previewSchemeType = normalizeSchemeType(modelData.schemeType ?? "");
+        previewGtkTheme = modelData.gtkTheme || "Orchis-Light-Compact";
+        previewIconTheme = modelData.iconTheme || "";
+        if (modelData.gtkPreferDark !== undefined)
+            previewGtkPrefer = modelData.gtkPreferDark ? "prefer-dark" : "prefer-light";
+        else {
+            const gtk = (previewGtkTheme || "").toLowerCase();
+            if (gtk.indexOf("light") >= 0)
+                previewGtkPrefer = "prefer-light";
+            else if (gtk.indexOf("dark") >= 0)
+                previewGtkPrefer = "prefer-dark";
+            else
+                previewGtkPrefer = modelData.darkMode ? "prefer-dark" : "prefer-light";
+        }
+        previewWallpaperLabel = modelData.defaultWallpaper || (previewWallpaperPath ? previewWallpaperPath.split("/").pop() : "");
+        previewThemeId = modelData.id || "";
+        previewTags = modelData.tags ?? [];
+        previewWallpaperCount = Array.isArray(modelData.wallpapers) ? modelData.wallpapers.length : 0;
 
         scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, previewMode, previewSchemeType);
     }
@@ -299,6 +358,7 @@ Item {
         previewMode = "";
         previewWallpaperPath = "";
         previewSchemeType = "";
+        resetPreviewRecipe();
         previewPalette = {};
         previewRequestKey = "";
         previewRunningKey = "";
@@ -363,6 +423,19 @@ Item {
         iconDirty = false;
         stagedThemeWallpaper = "";
         clearPreview();
+    }
+
+    // Apply staged changes immediately (click-to-apply). If the pipeline is busy,
+    // keep the selection staged and retry from onApplyFinished.
+    function commitPending(): void {
+        if (!hasPendingChanges)
+            return;
+        if (pipelineBusy)
+            return;
+        applyFailed = false;
+        applyStatusMessage = "";
+        commitSelection();
+        saveConfig();
     }
 
     function _flushDeferredMode(): void {
@@ -555,7 +628,7 @@ Item {
 
                 AppearancePreviewPane {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 320
+                    Layout.preferredHeight: root.previewSource === "theme" ? 460 : 340
                     Layout.bottomMargin: Appearance.spacing.normal
 
                     active: root.previewActive
@@ -565,6 +638,13 @@ Item {
                     variantText: root.previewVariant
                     modeText: root.previewMode
                     wallpaperPath: root.previewWallpaperPath || root.pendingWallpaperPath
+                    gtkThemeText: root.previewGtkTheme
+                    iconThemeText: root.previewIconTheme
+                    gtkPreferText: root.previewGtkPrefer
+                    wallpaperLabel: root.previewWallpaperLabel
+                    themeIdText: root.previewThemeId
+                    tags: root.previewTags
+                    wallpaperCount: root.previewWallpaperCount
                     rootPane: root
                 }
 
@@ -822,12 +902,7 @@ Item {
                             type: IconButton.Filled
                             enabled: root.canApply
                             Accessible.name: qsTr("Apply appearance changes")
-                            onClicked: {
-                                root.applyFailed = false;
-                                root.applyStatusMessage = "";
-                                root.commitSelection();
-                                root.saveConfig();
-                            }
+                            onClicked: root.commitPending()
                         }
                     }
                 }
@@ -895,6 +970,9 @@ Item {
                 liveGtkProc.running = true;
             if (!root.iconDirty)
                 liveIconProc.running = true;
+            // User selected something else while we were busy — apply it now.
+            if (root.hasPendingChanges)
+                root.commitPending();
         }
     }
 
