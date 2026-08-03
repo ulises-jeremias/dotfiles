@@ -31,6 +31,54 @@ skip() {
   printf '  SKIP  %s\n' "$*"
 }
 
+PYTHON_BIN=""
+if command -v python3 >/dev/null 2>&1; then
+  PYTHON_BIN="$(command -v python3)"
+elif command -v python >/dev/null 2>&1; then
+  PYTHON_BIN="$(command -v python)"
+fi
+
+validate_theme_json() {
+  local theme_json="$1"
+  local expected_id="$2"
+  local key
+
+  if [[ -n $PYTHON_BIN ]]; then
+    "$PYTHON_BIN" - "$theme_json" "$expected_id" <<'PY'
+import json, sys
+path, expected = sys.argv[1], sys.argv[2]
+data = json.load(open(path, encoding="utf-8"))
+required = ("schemaVersion", "id", "name", "darkMode", "schemeType", "gtkTheme", "iconTheme", "defaultWallpaper", "wallpaperDir")
+missing = [k for k in required if k not in data]
+if missing:
+    raise SystemExit(f"missing keys {missing}")
+if data.get("id") != expected:
+    raise SystemExit(f"id mismatch: {data.get('id')!r} != {expected!r}")
+if not isinstance(data.get("tags", []), list):
+    raise SystemExit("tags must be a list")
+PY
+    return $?
+  fi
+
+  if command -v jq >/dev/null 2>&1; then
+    local id_val
+    id_val="$(jq -r '.id // empty' "$theme_json")"
+    [[ $id_val == "$expected_id" ]] || return 1
+    for key in schemaVersion id name darkMode schemeType gtkTheme iconTheme defaultWallpaper wallpaperDir; do
+      jq -e --arg k "$key" 'has($k)' "$theme_json" >/dev/null || return 1
+    done
+    jq -e '.tags == null or (type == "array")' "$theme_json" >/dev/null || return 1
+    return 0
+  fi
+
+  # Minimal grep fallback for CI images without Python/jq.
+  for key in schemaVersion id name darkMode schemeType gtkTheme iconTheme defaultWallpaper wallpaperDir; do
+    grep -q "\"$key\"" "$theme_json" || return 1
+  done
+  grep -Eq "\"id\"[[:space:]]*:[[:space:]]*\"${expected_id}\"" "$theme_json" || return 1
+  return 0
+}
+
 echo "== appearance consistency =="
 
 # ── Source tree ──────────────────────────────────────────────────────────────
@@ -51,19 +99,7 @@ for theme_json in "$THEMES_SRC"/*/theme.json; do
   theme_count=$((theme_count + 1))
   dir="$(dirname "$theme_json")"
   id="$(basename "$dir")"
-  if python3 - "$theme_json" "$id" <<'PY'; then
-import json, sys
-path, expected = sys.argv[1], sys.argv[2]
-data = json.load(open(path, encoding="utf-8"))
-required = ("schemaVersion", "id", "name", "darkMode", "schemeType", "gtkTheme", "iconTheme", "defaultWallpaper", "wallpaperDir")
-missing = [k for k in required if k not in data]
-if missing:
-    raise SystemExit(f"missing keys {missing}")
-if data.get("id") != expected:
-    raise SystemExit(f"id mismatch: {data.get('id')!r} != {expected!r}")
-if not isinstance(data.get("tags", []), list):
-    raise SystemExit("tags must be a list")
-PY
+  if validate_theme_json "$theme_json" "$id"; then
     pass "theme.json valid: $id"
   else
     fail "theme.json invalid: $id"
@@ -77,9 +113,11 @@ done
 [[ $theme_count -ge 1 ]] && pass "found $theme_count theme packs" || fail "no theme packs"
 
 if [[ -f $LIST_THEMES ]]; then
-  if DOTS_THEMES_DIR="$THEMES_SRC" DOTS_WALLPAPERS_DIR="${ROOT}/home/dot_local/share/dots/wallpapers" \
-    python3 "$LIST_THEMES" "$THEMES_SRC" >/tmp/dots-themes-test.json 2>/tmp/dots-themes-test.err; then
-    if python3 - <<'PY'; then
+  if [[ -z $PYTHON_BIN ]]; then
+    skip "list-themes.py check (python not available)"
+  elif DOTS_THEMES_DIR="$THEMES_SRC" DOTS_WALLPAPERS_DIR="${ROOT}/home/dot_local/share/dots/wallpapers" \
+    "$PYTHON_BIN" "$LIST_THEMES" "$THEMES_SRC" >/tmp/dots-themes-test.json 2>/tmp/dots-themes-test.err; then
+    if "$PYTHON_BIN" - <<'PY'; then
 import json
 data = json.load(open("/tmp/dots-themes-test.json", encoding="utf-8"))
 assert isinstance(data, list) and data, "empty theme list"
@@ -95,35 +133,35 @@ PY
       fail "list-themes.py schema check"
     fi
   else
-    fail "list-themes.py failed: $(head -c 200 /tmp/dots-themes-test.err)"
+    fail "list-themes.py failed: $(head -c 200 /tmp/dots-themes-test.err 2>/dev/null || true)"
   fi
 else
   fail "list-themes.py missing"
 fi
 
 # No stale rice IPC / sticky current writers in QS appearance path
-if rg -n 'target:\s*"rice"|IpcHandler.*rice|dots-rice|nwg-look' "$QS_PIPE" \
-  "${ROOT}/home/dot_config/quickshell/modules/controlcenter/appearance" 2>/dev/null; then
+if grep -REn 'target:[[:space:]]*"rice"|IpcHandler.*rice|dots-rice|nwg-look' "$QS_PIPE" \
+  "${ROOT}/home/dot_config/quickshell/modules/controlcenter/appearance" >/dev/null 2>&1; then
   fail "stale rice/nwg-look references in appearance QS"
 else
   pass "no stale rice IPC in appearance QS"
 fi
 
-if rg -n 'gsettings set org.gnome.desktop.interface (gtk-theme|icon-theme)' \
-  "${ROOT}/home/dot_config/quickshell" 2>/dev/null; then
+if grep -REn 'gsettings set org\.gnome\.desktop\.interface (gtk-theme|icon-theme)' \
+  "${ROOT}/home/dot_config/quickshell" >/dev/null 2>&1; then
   fail "raw gsettings GTK/icon writes in Quickshell"
 else
   pass "Quickshell does not write GTK/icons via gsettings"
 fi
 
-if rg -n 'gtk-theme-manager\.sh' "${ROOT}/home/dot_config/quickshell/services/ThemePipeline.qml" 2>/dev/null; then
+if grep -En 'gtk-theme-manager\.sh' "${ROOT}/home/dot_config/quickshell/services/ThemePipeline.qml" >/dev/null 2>&1; then
   fail "ThemePipeline still sources gtk-theme-manager.sh"
 else
   pass "ThemePipeline uses dots-gtk-theme CLI"
 fi
 
-if rg -n 'readlink -f "\$HOME/\.cache/wal/wal"|readlink -f \$HOME/\.cache/wal/wal' \
-  "$GTK_MGR" "$GTK_BIN" "${ROOT}/home/dot_local/lib/dots/apply-appearance.sh" 2>/dev/null; then
+if grep -En 'readlink -f "\$HOME/\.cache/wal/wal"|readlink -f \$HOME/\.cache/wal/wal' \
+  "$GTK_MGR" "$GTK_BIN" "${ROOT}/home/dot_local/lib/dots/apply-appearance.sh" >/dev/null 2>&1; then
   fail "unsafe readlink on wal text pointer"
 else
   pass "no unsafe wal readlink in GTK apply path"
