@@ -20,7 +20,7 @@ Searcher {
 
     function setWallpaper(path: string): void {
         actualCurrent = path;
-        Rice.setWallpaper(path);
+        ThemePipeline.setWallpaper(path);
     }
 
     function preview(path: string): void {

@@ -1,40 +1,49 @@
-# ADR-002: Modular Rice System Architecture
+# ADR-002: Appearance System and Theme Packs
 
 ## Status
 
-Accepted (updated 2026-08-02 — legacy shell rice path removed)
+Superseded 2026-08-02 (formerly “Modular Rice System Architecture”)
 
 ## Context
 
-Desktop theming is a core HorneroConfig feature. The earlier shell-centric design (`config.sh`, `apply.sh`, `.current_rice`) duplicated state with the Quickshell-first path and caused desync. We keep modular rices but drop the legacy shell dual-write model.
+Desktop theming previously used sticky “rices” (`rices/<id>/`, `rice/current`,
+`Rice.qml` IPC). That model duplicated state, caused GTK/mode drift, and forced
+every wallpaper/palette change through a rice identity. We keep curated look
+packs, but they are apply-once recipes — not a live source of truth.
 
 ## Decision
 
-- **Rice directory**: `~/.local/share/dots/rices/<rice-name>/`
-- **Sole config**: `config.json`
-- **Orchestrator**: Quickshell `Rice.qml` (IPC) + `apply-appearance.sh` shell fallback
-- **State**:
-  - Rice id: `~/.local/state/dots/rice/current` only
+- **Live SoT**
   - Wallpaper: `~/.local/state/dots/wallpaper/path`
   - Palette: `~/.cache/dots/smart-colors/scheme.json`
-  - Scheme prefs: `~/.local/state/dots/scheme/state.json` synced via `dots-color-scheme sync-state`
-- **CLI**: `dots appearance …` (+ `dots rice …` alias), `dots appearance doctor`
+  - Mode/flavour prefs: `~/.local/state/dots/scheme/state.json`
+  - GTK/icons: gtk `settings.ini` + gsettings
+  - Shell chrome: QS `Config` / `~/.config/hornero/shell.json`
+- **Theme packs** (optional recipes): `~/.local/share/dots/themes/<id>/theme.json`
+  - Apply once via Control Center Themes or `dots appearance theme apply <id>`
+  - **Never** write a sticky `current` theme/rice id
+- **Wallpapers**: `~/.local/share/dots/wallpapers/<id>/` → symlinked to
+  `~/Pictures/Wallpapers/<id>/`
+- **Orchestrator**: Quickshell `ThemePipeline.qml` (IPC target `appearance`) +
+  `apply-appearance.sh` shell fallback
+- **CLI**: `dots appearance …` (`theme`, `set-wallpaper`, `set-mode`, `set-gtk`, …)
 
-Removed from the maintained path: `.current_rice`, `~/.cache/dots/current_rice`, per-rice `config.sh` / `apply.sh`, wallpaper cache pointer fallback.
+Removed: `~/.local/share/dots/rices/`, `dots-rice`, `rice/current`, per-rice
+`config.sh` / `apply.sh`, IPC target `rice`.
 
 ## Consequences
 
 ### Positive
 
-- One source of truth for rice / wallpaper / scheme meta
-- QS UI, CLI, boot regenerate, lockscreen, GTK, snappy share the same pointers
+- One live appearance model; theme packs are inspiration, not identity
+- Control Center can configure wallpaper, mode, variant, scheme, GTK, icons
 - Offline apply without Quickshell
 
 ### Negative
 
-- Shell helpers that previously sourced `config.sh` must read JSON
-- Existing external forks that still ship only `config.sh` need a `config.json`
+- External forks that only ship rice `config.sh` trees need a `theme.json` pack
+- Users must not expect “current rice” restores from old snapshots
 
 ### Neutral
 
-- `dots rice` naming remains as a thin alias
+- Shell layout presets (`shell-presets/`) remain a separate apply-once system

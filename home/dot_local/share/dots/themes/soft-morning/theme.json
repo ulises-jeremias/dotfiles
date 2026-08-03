@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "soft-morning",
+  "name": "Soft Morning",
+  "description": "Calm mist, florals, and soft natural light",
+  "tags": ["morning", "calm", "pastel", "light"],
+  "darkMode": false,
+  "schemeType": "neutral",
+  "gtkTheme": "Orchis-Light",
+  "iconTheme": "Numix-Circle",
+  "defaultWallpaper": "morning-lake-2.jpg",
+  "wallpaperDir": "soft-morning"
+}

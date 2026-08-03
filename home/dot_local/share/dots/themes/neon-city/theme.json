@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "neon-city",
+  "name": "Neon City",
+  "description": "Cyberpunk neon nights and futuristic streets",
+  "tags": ["cyberpunk", "neon", "dark", "city"],
+  "darkMode": true,
+  "schemeType": "vibrant",
+  "gtkTheme": "Orchis-Dark-Compact",
+  "iconTheme": "Numix-Circle",
+  "defaultWallpaper": "neon-city-01.jpg",
+  "wallpaperDir": "neon-city"
+}

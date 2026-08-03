@@ -159,7 +159,7 @@ Automatically updates lockscreen when changing themes:
 dots wal-reload  # Updates wallpaper and lockscreen
 ```
 
-### Rice System
+### Appearance
 
 Rice / appearance apply regenerates lockscreen colors via `dots-hyprlock-theme` after scheme generation. Historical note — older docs mentioned per-rice `apply.sh`; that path is no longer maintained. Equivalent hook:
 

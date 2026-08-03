@@ -7,8 +7,9 @@
 ##
 ## Usage:
 ##   source ~/.local/lib/dots/snappy-switcher-manager.sh
-##   apply_rice_snappy_switcher_theme [rice_name]
+##   apply_theme_snappy_switcher_theme [theme_id]
 ##   apply_snappy_switcher_theme <theme_file.ini>
+##   apply_rice_snappy_switcher_theme [theme_id]  # deprecated alias
 ##
 
 set -euo pipefail
@@ -133,26 +134,18 @@ apply_snappy_switcher_theme() {
 	snappy_log "INFO" "Applied snappy-switcher theme: $theme_name"
 }
 
-get_rice_snappy_theme() {
-	local rice_name="$1"
-	local rice_json="$HOME/.local/share/dots/rices/${rice_name}/config.json"
+get_theme_snappy_theme() {
+	local theme_id="$1"
+	local theme_json="$HOME/.local/share/dots/themes/${theme_id}/theme.json"
 
-	if [[ ! -f $rice_json ]]; then
-		snappy_log "ERROR" "Rice config not found: $rice_json"
+	if [[ ! -f $theme_json ]]; then
+		snappy_log "ERROR" "Theme pack not found: $theme_json"
 		return 1
 	fi
 
-	# shellcheck source=/dev/null
-	source "${HOME}/.local/lib/dots/rice-state.sh" 2> /dev/null || true
-
 	local snappy_theme="" dark_mode="true"
-	if declare -f dots_rice_json_get > /dev/null 2>&1; then
-		snappy_theme="$(dots_rice_json_get "$rice_name" snappyTheme "")"
-		dark_mode="$(dots_rice_json_get "$rice_name" darkMode true)"
-	else
-		snappy_theme="$(python3 -c "import json;print(json.load(open('$rice_json')).get('snappyTheme',''))" 2> /dev/null || true)"
-		dark_mode="$(python3 -c "import json;print('true' if json.load(open('$rice_json')).get('darkMode',True) else 'false')" 2> /dev/null || echo true)"
-	fi
+	snappy_theme="$(python3 -c "import json;print(json.load(open('$theme_json')).get('snappyTheme',''))" 2> /dev/null || true)"
+	dark_mode="$(python3 -c "import json;print('true' if json.load(open('$theme_json')).get('darkMode',True) else 'false')" 2> /dev/null || echo true)"
 
 	if [[ -n $snappy_theme ]]; then
 		echo "$snappy_theme"
@@ -166,28 +159,20 @@ get_rice_snappy_theme() {
 	fi
 }
 
-apply_rice_snappy_switcher_theme() {
-	local rice_name="${1:-}"
+apply_theme_snappy_switcher_theme() {
+	local theme_id="${1:-}"
 
-	if [[ -z $rice_name ]]; then
-		# shellcheck source=/dev/null
-		source "${HOME}/.local/lib/dots/rice-state.sh" 2> /dev/null || true
-		if declare -f dots_read_current_rice > /dev/null 2>&1; then
-			rice_name="$(dots_read_current_rice)"
-		else
-			local current_rice_file="$HOME/.local/state/dots/rice/current"
-			if [[ -f $current_rice_file ]]; then
-				rice_name=$(head -n 1 "$current_rice_file")
-			fi
-		fi
-	fi
-
-	if [[ -z $rice_name ]]; then
-		snappy_log "WARN" "No rice selected; skipping snappy-switcher theme sync"
+	if [[ -z $theme_id ]]; then
+		snappy_log "WARN" "No theme pack specified; skipping snappy-switcher theme sync"
 		return 0
 	fi
 
 	local theme_name
-	theme_name="$(get_rice_snappy_theme "$rice_name")" || return 1
+	theme_name="$(get_theme_snappy_theme "$theme_id")" || return 1
 	apply_snappy_switcher_theme "$theme_name"
+}
+
+# Backward-compatible alias for callers still using the rice name.
+apply_rice_snappy_switcher_theme() {
+	apply_theme_snappy_switcher_theme "$@"
 }

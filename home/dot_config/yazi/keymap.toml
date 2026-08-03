@@ -66,13 +66,13 @@ desc = "Go to ~/.local"
 
 [[mgr.prepend_keymap]]
 on   = ["g", "r"]
-run  = "cd ~/.local/share/dots/rices"
-desc = "Go to Rices"
+run  = "cd ~/.local/share/dots/themes"
+desc = "Go to appearance theme packs"
 
 [[mgr.prepend_keymap]]
 on   = ["g", "w"]
-run  = "cd ~/.local/share/dots/rices/$(cat ~/.local/state/dots/rice/current 2>/dev/null || echo machines)/backgrounds"
-desc = "Go to current rice Wallpapers"
+run  = "cd ~/Pictures/Wallpapers"
+desc = "Go to Wallpapers"
 
 [[mgr.prepend_keymap]]
 on   = ["g", "b"]

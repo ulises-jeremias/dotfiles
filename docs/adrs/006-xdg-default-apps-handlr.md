@@ -3,7 +3,7 @@
 **Status**: Accepted  
 **Date**: 2025-11-08  
 **Deciders**: Ulises Jeremias Cornejo Fandos  
-**Related**: [ADR 002: Rice System](002-rice-system.md), [Development Standards](../Development-Standards.md)
+**Related**: [ADR 002: Appearance System](002-rice-system.md), [Development Standards](../Development-Standards.md)
 
 ## Context
 
@@ -162,7 +162,7 @@ All methods write to the same XDG MIME database, ensuring consistency.
 
 1. **Terminal launcher**: Create `dots-terminal` wrapper for `exo-open --launch TerminalEmulator`
 2. **Web browser launcher**: Create `dots-webbrowser` wrapper for `exo-open --launch WebBrowser`
-3. **Per-rice defaults**: Rice system could suggest default apps (e.g., cyberpunk rice suggests neon terminals)
+3. **Per-theme defaults: theme packs could suggest default apps (future)
 4. **Validation**: Add checks in `dots-default-apps` to ensure selected apps are installed
 
 ## See Also

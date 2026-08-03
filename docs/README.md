@@ -17,7 +17,7 @@
 ### Architecture Decision Records (ADRs)
 
 - **[ADR-001: Chezmoi Adoption](adrs/001-chezmoi-adoption.md)** - Dotfiles management approach
-- **[ADR-002: Rice System Architecture](adrs/002-rice-system.md)** - Modular theme system design
+- **[ADR-002: Appearance System and Theme Packs](adrs/002-rice-system.md)** - Modular theme system design
 - **[ADR-003: EasyOptions Standard](adrs/003-easyoptions-standard.md)** - CLI argument parsing
 - **[ADR-004: Testing Strategy](adrs/004-testing-strategy.md)** - Docker vs Vagrant environments
 - **[ADR-005: Smart Colors Integration](adrs/005-smart-colors-centralized-integration.md)** - Color caching system
@@ -30,7 +30,7 @@ The `wiki/` directory contains comprehensive user-facing guides:
 
 - **Window Manager**: Hyprland
 - **Components**: Quickshell (primary shell), Hyprland, Kitty
-- **Theming**: Rice system, smart colors, wallpapers
+- **Theming**: Appearance themes, smart colors, wallpapers
 - **Tools**: Dots scripts, backup, security
 - **Customization**: Personalization guides
 

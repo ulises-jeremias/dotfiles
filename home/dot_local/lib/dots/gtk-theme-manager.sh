@@ -3,16 +3,16 @@
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
-## GTK Theme Manager for Rice System Integration
+## GTK Theme Manager for Appearance Integration
 ##
-## This library provides functions to manage GTK themes as part of the rice system,
-## allowing for automatic theme switching based on rice preferences and color schemes.
+## This library provides functions to manage GTK themes for the appearance system,
+## allowing for automatic theme switching based on theme preferences and color schemes.
 ##
 ## Usage:
 ##     source ~/.local/lib/dots/gtk-theme-manager.sh
 ##     apply_gtk_theme "theme-name" "icon-theme-name" [prefer-dark]
 ##     detect_optimal_gtk_theme
-##     apply_rice_gtk_theme
+##     apply_theme_gtk_theme
 ##
 
 set -euo pipefail
@@ -373,20 +373,12 @@ normalize_prefer_dark() {
 	esac
 }
 
-# Function to apply GTK theme based on current rice configuration
-apply_rice_gtk_theme() {
-	local rice_name="${1:-}"
+# Apply GTK/icons from an appearance theme pack (one-shot recipe).
+apply_theme_gtk_theme() {
+	local theme_id="${1:-}"
 
-	if [[ -z $rice_name ]]; then
-		# shellcheck source=/dev/null
-		source "${HOME}/.local/lib/dots/rice-state.sh" 2> /dev/null || true
-		if declare -f dots_read_current_rice > /dev/null 2>&1; then
-			rice_name="$(dots_read_current_rice)"
-		fi
-	fi
-
-	if [[ -z $rice_name ]]; then
-		log "WARN" "No rice specified, using default theme detection"
+	if [[ -z $theme_id ]]; then
+		log "WARN" "No theme specified, using wallpaper-based detection"
 		local wallpaper=""
 		if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
 			# shellcheck source=/dev/null
@@ -404,24 +396,24 @@ apply_rice_gtk_theme() {
 			prefer_dark="$(normalize_prefer_dark "${theme_info#*:}")"
 			apply_gtk_theme "$gtk_theme" "Numix-Circle" "$prefer_dark"
 		else
-			apply_gtk_theme "Orchis-Light" "Numix-Circle" "false"
+			apply_gtk_theme "Orchis-Dark" "Numix-Circle" "true"
 		fi
 		return
 	fi
 
-	log "INFO" "Applying GTK theme for rice: $rice_name"
+	log "INFO" "Applying GTK theme from appearance pack: $theme_id"
 
 	local gtk_theme="" icon_theme="Numix-Circle" prefer_dark="auto"
-	local rice_json="$HOME/.local/share/dots/rices/$rice_name/config.json"
+	local theme_json="$HOME/.local/share/dots/themes/$theme_id/theme.json"
 
-	if [[ ! -f $rice_json ]]; then
-		log "ERROR" "Rice config not found for: $rice_name ($rice_json)"
+	if [[ ! -f $theme_json ]]; then
+		log "ERROR" "Theme pack not found: $theme_id ($theme_json)"
 		return 1
 	fi
 
 	local meta
 	meta="$(
-		python3 - "$rice_json" << 'PY'
+		python3 - "$theme_json" << 'PY'
 import json, sys
 data = json.load(open(sys.argv[1], encoding="utf-8"))
 print(data.get("gtkTheme") or "auto")
@@ -432,10 +424,8 @@ PY
 	gtk_theme="$(sed -n '1p' <<< "$meta")"
 	icon_theme="$(sed -n '2p' <<< "$meta")"
 	prefer_dark="$(sed -n '3p' <<< "$meta")"
-
 	prefer_dark="$(normalize_prefer_dark "$prefer_dark")"
 
-	# If no explicit theme set in rice, detect based on wallpaper
 	if [[ -z $gtk_theme ]] || [[ $gtk_theme == "auto" ]]; then
 		local wal_wallpaper=""
 		if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
@@ -446,7 +436,6 @@ PY
 		if [[ -z ${wal_wallpaper:-} ]]; then
 			wal_wallpaper=$(readlink -f "$HOME/.cache/wal/wal" 2> /dev/null || true)
 		fi
-
 		if [[ -n $wal_wallpaper && -f $wal_wallpaper ]]; then
 			local theme_info
 			theme_info=$(detect_optimal_gtk_theme "$wal_wallpaper")
@@ -459,16 +448,14 @@ PY
 				gtk_theme="Orchis-Dark"
 			else
 				gtk_theme="Orchis-Light"
-				prefer_dark="false"
 			fi
 		fi
 	fi
 
 	if [[ $prefer_dark == "auto" ]]; then
-		prefer_dark="false"
+		prefer_dark="true"
 	fi
 
-	# Apply the theme
 	apply_gtk_theme "$gtk_theme" "$icon_theme" "$prefer_dark"
 }
 

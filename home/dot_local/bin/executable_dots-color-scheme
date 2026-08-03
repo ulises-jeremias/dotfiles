@@ -314,8 +314,8 @@ cmd_regenerate() {
 }
 
 # Sync state.json from the meta already present in scheme.json (no regenerate).
-# Used by Rice.qml / apply-appearance.sh after a successful M3 write so boot
-# regenerate cannot fight the rice schemeType/mode.
+# Used by ThemePipeline.qml / apply-appearance.sh after a successful M3 write so boot
+# regenerate cannot fight the live schemeType/mode.
 cmd_sync_state() {
 	[[ -f $SCHEME_FILE ]] || {
 		echo "dots-color-scheme sync-state: scheme.json missing" >&2

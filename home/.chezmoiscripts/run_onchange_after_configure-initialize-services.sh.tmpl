@@ -43,7 +43,7 @@ print_status "info" "Creating cache directories..."
 mkdir -p "$HOME/.local/state/dots/wallpaper"
 mkdir -p "$HOME/.cache/dots/weather"
 mkdir -p "$HOME/.cache/dots/smart-colors"
-mkdir -p "$HOME/.cache/dots/rice"
+mkdir -p "$HOME/.cache/dots/smart-colors"
 mkdir -p "$HOME/.cache/dots/default-apps"
 mkdir -p "$HOME/.cache/dots-lockscreen"
 print_status "success" "Cache directories created"
@@ -64,49 +64,38 @@ else
   print_status "error" "dots-weather-info not found (will be available after next login)"
 fi
 
-# Initialize rice system
-print_status "info" "Checking rice configuration..."
-if command -v dots &>/dev/null || command -v dots-rice &>/dev/null; then
-  # shellcheck source=/dev/null
-  source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
-  current_rice=""
-  if declare -f dots_read_current_rice >/dev/null 2>&1; then
-    current_rice="$(dots_read_current_rice)"
-  elif command -v dots-rice &>/dev/null; then
-    current_rice="$(dots-rice current 2>/dev/null || true)"
-  fi
+# Initialize appearance palette (no sticky theme id)
+print_status "info" "Checking appearance / wallpaper state..."
+rm -f "$HOME/.local/state/dots/rice/current" "$HOME/.local/share/dots/rices/.current_rice" "$HOME/.cache/dots/current_rice" 2>/dev/null || true
+rmdir "$HOME/.local/state/dots/rice" 2>/dev/null || true
 
-  if [[ -z "$current_rice" ]]; then
-    for candidate in soft-morning landscape machines catppuccin-mocha; do
-      if [[ -f "$HOME/.local/share/dots/rices/$candidate/config.json" ]]; then
-        print_status "info" "Setting default rice: $candidate"
-        if declare -f dots_write_current_rice >/dev/null 2>&1; then
-          dots_write_current_rice "$candidate"
-        else
-          mkdir -p "$HOME/.local/state/dots/rice"
-          printf '%s\n' "$candidate" > "$HOME/.local/state/dots/rice/current"
-          rm -f "$HOME/.local/share/dots/rices/.current_rice" "$HOME/.cache/dots/current_rice" 2>/dev/null || true
-        fi
-        current_rice="$candidate"
-        break
+wall_ptr="$HOME/.local/state/dots/wallpaper/path"
+if [[ ! -f "$wall_ptr" || ! -s "$wall_ptr" ]]; then
+  for candidate in vapor-dreams neon-city soft-morning catppuccin-mocha; do
+    theme_json="$HOME/.local/share/dots/themes/$candidate/theme.json"
+    [[ -f "$theme_json" ]] || continue
+    default_wp="$(python3 -c "import json;print(json.load(open('$theme_json')).get('defaultWallpaper',''))" 2>/dev/null || true)"
+    wp_dir="$(python3 -c "import json;print(json.load(open('$theme_json')).get('wallpaperDir','$candidate'))" 2>/dev/null || echo "$candidate")"
+    for base in "$HOME/Pictures/Wallpapers/$wp_dir" "$HOME/.local/share/dots/wallpapers/$wp_dir"; do
+      if [[ -n "$default_wp" && -f "$base/$default_wp" ]]; then
+        mkdir -p "$(dirname "$wall_ptr")"
+        printf '%s\n' "$base/$default_wp" >"$wall_ptr"
+        print_status "info" "Seeded wallpaper pointer from theme pack: $candidate"
+        break 2
       fi
     done
-  elif declare -f dots_write_current_rice >/dev/null 2>&1; then
-    dots_write_current_rice "$current_rice" || true
-  fi
+  done
+fi
 
-  if [[ -n "$current_rice" ]]; then
-    print_status "info" "Generating smart colors for rice: $current_rice"
-
-    # Generate smart colors in background with timeout
-    if timeout 15s dots-smart-colors --generate &>/dev/null; then
-      print_status "success" "Smart colors generated for $current_rice"
-    else
-      print_status "error" "Failed to generate smart colors (non-critical)"
-    fi
+if command -v dots-smart-colors &>/dev/null; then
+  print_status "info" "Generating smart colors from current wallpaper..."
+  if timeout 15s dots-smart-colors --generate &>/dev/null; then
+    print_status "success" "Smart colors generated"
   else
-    print_status "info" "No rice configured yet"
+    print_status "error" "Failed to generate smart colors (non-critical)"
   fi
+elif command -v dots &>/dev/null; then
+  print_status "info" "dots available; appearance will initialize on first session"
 else
   print_status "info" "dots command not available yet (will be available after next login)"
 fi
@@ -115,7 +104,6 @@ fi
 print_status "info" "Verifying script permissions..."
 essential_scripts=(
   "$HOME/.local/bin/dots-weather-info"
-  "$HOME/.local/bin/dots-rice"
   "$HOME/.local/bin/dots-night-mode"
   "$HOME/.local/bin/dots-appearance"
   "$HOME/.local/bin/dots-smart-colors"

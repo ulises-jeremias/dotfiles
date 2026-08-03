@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "gruvbox",
+  "name": "Gruvbox",
+  "description": "Warm retro palette with anime and pixel art",
+  "tags": ["gruvbox", "warm", "retro", "anime", "dark"],
+  "darkMode": true,
+  "schemeType": "expressive",
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Numix-Circle",
+  "defaultWallpaper": "gruvbox-anime-01.jpg",
+  "wallpaperDir": "gruvbox"
+}

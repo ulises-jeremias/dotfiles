@@ -34,7 +34,7 @@ Components are self-contained units that can be:
 
 **Example Applications:**
 
-- Rice themes (12+ self-contained themes)
+- Appearance theme packs (curated apply-once recipes)
 - Quickshell modules (bar, launcher, dashboard, session, control center)
 - Utility scripts (100+ independent tools)
 
@@ -43,7 +43,7 @@ Components are self-contained units that can be:
 Configuration data flows from centralized sources:
 
 - Color palettes: `~/.cache/wal/colors` (pywal) → `~/.cache/dots/smart-colors/`
-- Rice configs: `~/.local/share/dots/rices/<rice-name>/config.json`
+- Theme packs: `~/.local/share/dots/themes/<id>/theme.json`
 - Environment: Detected dynamically, not hardcoded
 - State: Centralized in known locations (`~/.cache/dots/`, `~/.config/`)
 
@@ -77,7 +77,7 @@ Security is not optional or afterthought:
 
 ### Major Subsystems
 
-1. **Theme System (Rice)** - Complete desktop theme management
+1. **Appearance System** - Complete desktop theme management
 2. **Smart Colors System** - Intelligent color adaptation
 3. **Quickshell Shell** - Unified status bar, launcher, dashboard, notifications, and control center
 4. **Script Management (dots)** - Unified utility interface

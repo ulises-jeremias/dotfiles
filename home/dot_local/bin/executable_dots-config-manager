@@ -55,20 +55,6 @@ EOF
 	log_debug "Backing up dotfiles state..."
 	tar -czf "$snapshot_dir/dotfiles.tar.gz" -C "$HOME" .config .local/bin .local/lib .zshrc .p10k.zsh 2>/dev/null || true
 
-	# Backup current rice id (canonical only)
-	# shellcheck source=/dev/null
-	source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
-	local rice_id=""
-	if declare -f dots_read_current_rice >/dev/null 2>&1; then
-		rice_id="$(dots_read_current_rice)"
-	elif [[ -f "$HOME/.local/state/dots/rice/current" ]]; then
-		rice_id="$(head -n 1 "$HOME/.local/state/dots/rice/current")"
-	fi
-	if [[ -n $rice_id ]]; then
-		printf '%s\n' "$rice_id" >"$snapshot_dir/rice_current"
-		log_debug "Current rice: $rice_id"
-	fi
-
 	# Backup package list (if on Arch)
 	if command -v pacman >/dev/null 2>&1; then
 		pacman -Qqe >"$snapshot_dir/packages_explicit.txt"
@@ -148,22 +134,6 @@ restore_snapshot() {
 		tar -xzf "$snapshot_dir/dotfiles.tar.gz" -C "$HOME" 2>/dev/null || true
 	fi
 
-	# Restore rice configuration to canonical pointer only
-	if [[ -f "$snapshot_dir/rice_current" || -f "$snapshot_dir/.current_rice" ]]; then
-		local restored_rice
-		restored_rice="$(cat "$snapshot_dir/rice_current" 2>/dev/null || cat "$snapshot_dir/.current_rice")"
-		# shellcheck source=/dev/null
-		source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
-		if declare -f dots_write_current_rice >/dev/null 2>&1; then
-			dots_write_current_rice "$restored_rice"
-		else
-			mkdir -p "$HOME/.local/state/dots/rice"
-			printf '%s\n' "$restored_rice" >"$HOME/.local/state/dots/rice/current"
-			rm -f "$HOME/.local/share/dots/rices/.current_rice" "$HOME/.cache/dots/current_rice" 2>/dev/null || true
-		fi
-		echo "  Restored rice: $restored_rice"
-	fi
-
 	echo "✅ Restore completed!"
 	echo "   You may need to restart your shell or reload configurations"
 }
@@ -178,25 +148,6 @@ show_diff() {
 	fi
 
 	echo "🔍 Comparing current configuration with snapshot: $snapshot_id"
-
-	# Compare rice configuration
-	# shellcheck source=/dev/null
-	source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
-	local old_rice="" new_rice=""
-	[[ -f "$snapshot_dir/rice_current" ]] && old_rice=$(cat "$snapshot_dir/rice_current")
-	[[ -z $old_rice && -f "$snapshot_dir/.current_rice" ]] && old_rice=$(cat "$snapshot_dir/.current_rice")
-	if declare -f dots_read_current_rice >/dev/null 2>&1; then
-		new_rice="$(dots_read_current_rice)"
-	elif [[ -f "$HOME/.local/state/dots/rice/current" ]]; then
-		new_rice=$(head -n 1 "$HOME/.local/state/dots/rice/current")
-	fi
-	if [[ -n $old_rice || -n $new_rice ]]; then
-		if [[ $old_rice != "$new_rice" ]]; then
-			echo "  Rice changed: ${old_rice:-none} → ${new_rice:-none}"
-		else
-			echo "  Rice unchanged: $new_rice"
-		fi
-	fi
 
 	# Compare package lists (if available)
 	if [[ -f "$snapshot_dir/packages_explicit.txt" ]] && command -v pacman >/dev/null 2>&1; then

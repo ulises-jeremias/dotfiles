@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "landscape",
+  "name": "Landscape",
+  "description": "Cinematic nature vistas and fantasy scenery",
+  "tags": ["nature", "cinematic", "landscape", "dark"],
+  "darkMode": true,
+  "schemeType": "fidelity",
+  "gtkTheme": "Orchis-Dark",
+  "iconTheme": "Numix-Circle",
+  "defaultWallpaper": "landscape-01.jpg",
+  "wallpaperDir": "landscape"
+}

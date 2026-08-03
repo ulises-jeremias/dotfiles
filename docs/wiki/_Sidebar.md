@@ -4,7 +4,7 @@
 
 - [🏠 Home](Home)
 - [⚙️ Customization](Customization)
-- [🎨 Rice System](Rice-System-Theme-Management)
+- [🎨 Appearance Themes](Rice-System-Theme-Management)
 - [🧠 Smart Colors System](Smart-Colors-System) ⭐
 
 ### 🪟 **Window Manager & Desktop**
@@ -85,7 +85,7 @@
 
 - [🏠 Home](Home) - Start here
 - [📜 Dots Scripts](Dots-Scripts) ⭐ - All tools & fallbacks
-- [🎨 Rice System](Rice-System-Theme-Management) - Theme switching
+- [🎨 Appearance Themes](Rice-System-Theme-Management) - Theme switching
 - [🧠 Smart Colors](Smart-Colors-System) - Adaptive theming
 
 **Recent Updates:**

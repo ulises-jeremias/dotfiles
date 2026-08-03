@@ -22,6 +22,7 @@ See [Architecture Philosophy](docs/Architecture-Philosophy.md) for detailed prin
 ### Essential Standards
 
 **Scripts Must:**
+
 - Use EasyOptions for CLI parsing
 - Include `set -euo pipefail`
 - Follow naming: `dots-*` for user scripts, `snake_case` for functions/vars
@@ -32,7 +33,7 @@ See [Development Standards](docs/Development-Standards.md) for complete requirem
 
 ### Key Systems
 
-- **Rice System** - Self-contained themes in `~/.local/share/dots/rices/`
+- **Appearance Themes** - Apply-once theme packs + live wallpaper/scheme/GTK controls
 - **Smart Colors** - Semantic color adaptation cached in `~/.cache/dots/smart-colors/`
 - **Quickshell** - Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)
 - **Hornero C++ Plugin** - Performance-critical Quickshell extensions (image analysis, audio, calculator)

@@ -37,7 +37,7 @@ into a harmonious blend of elegance and efficiency.
 
 ## ✨ Key Features
 
-- **🎨 Advanced Rice System**: Switch between beautiful desktop themes instantly
+- **🎨 Advanced Appearance Themes**: Switch between beautiful desktop themes instantly
 - **🧠 Smart Colors**: Intelligent color adaptation for optimal readability and theme consistency  
 - **🐚 Quickshell**: Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)
 - **🎨 Material Design 3**: Intelligent color theming from wallpaper analysis

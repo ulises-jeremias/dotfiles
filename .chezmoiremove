@@ -2,7 +2,13 @@
 .config/autostart/Flameshot.desktop
 .local/state/dots/wallpaper/path.txt
 .cache/dots/smart-colors/wallpaper
-.local/share/dots/rices/*/apply.sh
-.local/share/dots/rices/*/config.sh
-.local/share/dots/rices/.current_rice
+.local/share/dots/rices
+.local/share/dots/rices/**
+.local/state/dots/rice
+.local/state/dots/rice/**
 .cache/dots/current_rice
+.local/bin/dots-rice
+.local/lib/dots/rice-state.sh
+.local/lib/dots/rice-metadata.sh
+.local/lib/dots/dots-rice-config.sh
+.local/lib/dots/list-rices.py

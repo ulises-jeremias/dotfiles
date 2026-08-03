@@ -54,11 +54,7 @@ LOCK_PIXEL="$CURRENT_DIR/lock_pixel.png"
 # Smart colors cache
 SMART_COLORS_CACHE="${HOME}/.cache/dots/smart-colors/current.env"
 
-# Rice configuration (canonical pointer only)
-RICE_CONFIG_DIR="${HOME}/.local/share/dots/rices"
-CURRENT_RICE_FILE="${HOME}/.local/state/dots/rice/current"
-# shellcheck source=/dev/null
-source "${HOME}/.local/lib/dots/rice-state.sh" 2>/dev/null || true
+THEMES_DIR="${HOME}/.local/share/dots/themes"
 
 # Compatibility wrapper for scripts that use success semantics.
 log_success() {
@@ -123,30 +119,33 @@ load_smart_colors() {
 	fi
 }
 
-# Get current rice style
-get_rice_style() {
-	local rice_style="default"
-
-	local rice_name=""
-	if declare -f dots_read_current_rice >/dev/null 2>&1; then
-		rice_name="$(dots_read_current_rice)"
-	elif [[ -f $CURRENT_RICE_FILE ]]; then
-		rice_name=$(head -n 1 "$CURRENT_RICE_FILE")
+# Infer lock layout style from wallpaper path / theme tags (no sticky theme id).
+get_lock_style() {
+	local style="default"
+	local wallpaper=""
+	if [[ -f ${HOME}/.local/state/dots/wallpaper/path ]]; then
+		wallpaper="$(head -n 1 "${HOME}/.local/state/dots/wallpaper/path" | tr -d '\r')"
 	fi
-
-	if [[ -n $rice_name ]]; then
-		local rice_json="$RICE_CONFIG_DIR/$rice_name/config.json"
-		if [[ -f $rice_json ]]; then
-			local style
-			style=$(python3 -c "import json;print(json.load(open('$rice_json')).get('style',''))" 2>/dev/null || true)
-			[[ -n $style ]] && rice_style="$style"
+	if [[ -n $wallpaper ]]; then
+		case "$wallpaper" in
+		*/neon-city/* | */vapor-dreams/*) style="vaporwave" ;;
+		*/soft-morning/* | */catppuccin-latte/*) style="cozy" ;;
+		*/monochrome/*) style="minimal" ;;
+		*/gruvbox/*) style="default" ;;
+		esac
+		# Prefer theme.json tags when path maps to a known pack folder name
+		local pack
+		pack="$(basename "$(dirname "$wallpaper")" 2>/dev/null || true)"
+		if [[ -n $pack && -f $THEMES_DIR/$pack/theme.json ]]; then
+			local tags
+			tags="$(python3 -c "import json;print(' '.join(json.load(open('$THEMES_DIR/$pack/theme.json')).get('tags',[])))" 2>/dev/null || true)"
+			[[ -n $tags ]] && style="$tags"
 		fi
 	fi
-
-	echo "$rice_style"
+	echo "$style"
 }
 
-# Get layout config based on rice style
+# Get layout config based on aesthetic style keywords
 get_layout_config() {
 	local style="$1"
 	local style_lower
@@ -739,11 +738,10 @@ lock_screen() {
 		return 1
 	fi
 
-	# Get rice style and layout
-	local rice_style
-	rice_style=$(get_rice_style)
-	local layout
-	layout=$(get_layout_config "$rice_style")
+	# Get lock layout style from live wallpaper / theme tags
+	local lock_style layout
+	lock_style=$(get_lock_style)
+	layout=$(get_layout_config "$lock_style")
 
 	log_info "Locking screen with effect: $effect, layout: $layout"
 	log_info "Using image: $image"

@@ -83,7 +83,7 @@ The dotfiles include an **intelligent color system** that automatically optimize
 
 Learn more: [Smart Colors System](Smart-Colors-System)
 
-### Rice Theme Management
+### Theme Pack Management
 
 ---
 

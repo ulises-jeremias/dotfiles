@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "warm-sunset",
+  "name": "Warm Sunset",
+  "description": "Golden-hour landscapes with warm cinematic tones",
+  "tags": ["sunset", "warm", "cinematic", "light"],
+  "darkMode": false,
+  "schemeType": "vibrant",
+  "gtkTheme": "Orchis-Light",
+  "iconTheme": "Numix-Circle",
+  "defaultWallpaper": "warm-sunset-05.jpg",
+  "wallpaperDir": "warm-sunset"
+}

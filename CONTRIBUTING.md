@@ -22,7 +22,7 @@ Found a bug or have an idea? We want to hear about it!
 - **Bug reports** - Help us improve stability and reliability
 - **Feature requests** - Suggest new capabilities and enhancements
 - **Documentation improvements** - Help us explain things better
-- **Rice themes** - Share your beautiful theme creations
+- **Theme packs** - Share your beautiful theme creations
 
 ### 💻 Contribute Code
 
@@ -33,7 +33,7 @@ Found a bug or have an idea? We want to hear about it!
 
 ### 🎨 Create Content
 
-- **Design rice themes** - Create beautiful desktop themes
+- **Design theme packs** - Create beautiful desktop themes
 - **Make wallpapers** - Contribute artwork
 - **Create tutorials** - Help others learn
 - **Record demos** - Show off features in action
@@ -145,7 +145,7 @@ Use our [bug report template](.github/ISSUE_TEMPLATE/bug-report.yml) and include
 >
 > **Steps:**
 >
-> 1. Apply gruvbox-anime rice
+> 1. Apply gruvbox theme pack
 > 2. Check weather module on polybar
 > 3. Compare with actual weather
 >
@@ -273,65 +273,15 @@ refactor: simplify smart colors caching logic
 
 ---
 
-## 🎨 Creating Rice Themes
+## 🎨 Creating Theme Packs
 
 Want to share your beautiful desktop theme? Here's how:
 
-### Rice Theme Structure
+### Theme Pack Structure
 
-Create a new directory in `home/dot_local/share/dots/rices/`:
-
-```text
-your-rice-name/
-├── config.json        # Canonical theme configuration (required)
-├── backgrounds/       # Wallpaper images
-├── preview.png        # Theme preview (required)
-└── README.md          # Theme description (optional)
-```
-
-### What to Include
-
-**config.json** - Theme settings (consumed by Quickshell `Rice.qml` / `list-rices.py`):
-
-```json
-{
-  "id": "your-rice-name",
-  "name": "Your Rice Name",
-  "description": "Brief description of your theme",
-  "style": "Example Style",
-  "tags": ["example"],
-  "schemeType": "tonal-spot",
-  "darkMode": true,
-  "gtkTheme": "Orchis-Dark",
-  "iconTheme": "Papirus-Dark",
-  "hyprlandAnimations": "",
-  "kittyOpacity": null
-}
-```
-
-Apply via `dots appearance apply your-rice-name` (Quickshell IPC or shell fallback). Per-rice `config.sh` / `apply.sh` are not part of the maintained path.
-
-**backgrounds/** - At least one high-quality wallpaper
-
-**preview.png** - Screenshot showcasing your theme (recommended: 1920x1080)
-
-### Submitting Your Rice
-
-1. Create your rice theme directory
-2. Test it thoroughly:
-
-   ```bash
-   dots rice apply your-rice-name
-   ```
-
-3. Take beautiful screenshots
-4. Submit a PR with:
-   - Your rice files
-   - Preview screenshot
-   - Description of the theme's aesthetic
-   - Any special requirements or dependencies
-
----
+Create a theme pack under `home/dot_local/share/dots/themes/<id>/` with `theme.json`
+and place wallpapers in `home/dot_local/share/dots/wallpapers/<id>/`. Theme packs are
+apply-once recipes — they must not introduce a sticky current-theme state.
 
 ## 🧪 Testing Your Changes
 
@@ -362,7 +312,7 @@ The playground provides a safe testing environment:
 
 **For visual changes:**
 
-- Does it look good in all rice themes?
+- Does it look good in all theme packs?
 - Are colors appropriate and readable?
 - Does it scale properly on different resolutions?
 - Does it work on multiple monitors?
@@ -414,7 +364,7 @@ Understanding the repository layout helps you navigate:
 │   ├── dot_local/        # ~/.local/ files
 │   │   ├── bin/          # Executable scripts
 │   │   ├── lib/          # Shared libraries
-│   │   └── share/        # Rice themes, data files
+│   │   └── share/        # Theme packs, data files
 │   └── dot_zsh/          # Zsh configuration
 ├── playground/            # Testing environment (Vagrant/Docker)
 ├── scripts/              # Installation and validation scripts
@@ -478,7 +428,7 @@ Look for issues labeled:
 ### Popular Contribution Areas
 
 - **Polybar modules** - Add new system monitors or integrations
-- **Rice themes** - Create beautiful desktop themes
+- **Theme packs** - Create beautiful desktop themes
 - **Documentation** - Write guides and tutorials
 - **Bug fixes** - Tackle open bug reports
 - **Testing** - Improve test coverage
