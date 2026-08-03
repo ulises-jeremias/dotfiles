@@ -885,7 +885,7 @@ one-shot recipes — they never own a sticky “current theme”.</p>
 <thead>
 <tr>
 <th>Concern</th>
-<th>Path</th>
+<th>Path / tool</th>
 </tr>
 </thead>
 <tbody>
@@ -903,7 +903,11 @@ one-shot recipes — they never own a sticky “current theme”.</p>
 </tr>
 <tr>
 <td>GTK / icons</td>
-<td><code>~/.config/gtk-3.0/settings.ini</code> + gsettings</td>
+<td>via <code>dots-gtk-theme</code> → <code>settings.ini</code> + gsettings</td>
+</tr>
+<tr>
+<td>Wal pointer</td>
+<td><code>~/.cache/wal/wal</code> (<strong>text path file</strong>, never a symlink)</td>
 </tr>
 </tbody>
 </table>
@@ -919,14 +923,29 @@ dots appearance theme apply neon-city --wallpaper ~/Pictures/Wallpapers/neon-cit
 <pre class="hljs">dots appearance set-wallpaper &lt;path&gt;
 dots appearance set-mode dark|light
 dots appearance set-variant expressive
-dots appearance set-gtk Orchis-Dark
+dots appearance set-gtk Orchis-Light-Compact
 dots appearance set-icons Numix-Circle
 dots appearance status
-dots appearance doctor</pre><h2 id="quickshell">Quickshell</h2>
+dots appearance doctor</pre><p>GTK entrypoint (canonical for scripts and Quickshell):</p>
+<pre class="hljs">dots-gtk-theme -q -p list
+dots-gtk-theme -q -p current
+dots-gtk-theme -q -p current-icon
+dots-gtk-theme -q apply Orchis-Light-Compact Numix-Circle <span class="hljs-literal">true</span>
+dots-gtk-theme -q color-scheme dark
+dots-gtk-theme -q theme vapor-dreams</pre><h2 id="quickshell">Quickshell</h2>
 <ul>
 <li>Orchestrator: <code>ThemePipeline</code> singleton (IPC target <code>appearance</code>)</li>
 <li>Control Center pane configures themes, wallpaper, mode, variant, scheme, GTK, icons</li>
+<li>GTK/icon apply always goes through <code>dots-gtk-theme</code> (never inline <code>gtk-theme-manager.sh</code> or raw <code>gsettings</code> from QML)</li>
+<li>Launcher actions: <code>theme</code> / <code>appearance</code></li>
 </ul>
+<h2 id="consistency-checks">Consistency checks</h2>
+<pre class="hljs">./scripts/test-appearance-consistency.sh --<span class="hljs-built_in">source</span>   <span class="hljs-comment"># CI / repo</span>
+./scripts/test-appearance-consistency.sh             <span class="hljs-comment"># live doctor + GTK</span>
+dots appearance doctor</pre><h2 id="historical-note">Historical note</h2>
+<p>Older docs referred to sticky “rices” (<code>rices/&lt;id&gt;/</code>, IPC <code>rice</code>, <code>dots-rice</code>).
+That model was removed; this page is the current contract. The wiki filename
+<code>Rice-System-Theme-Management</code> is kept only for stable links.</p>
 <p class="page" id="Smart-Colors-System"></p><h1>🧠 Smart Colors System</h1>
 <h1 id="smart-colors-system">Smart Colors System</h1>
 <p>Smart Colors generates semantic colors and Material Design 3 palettes from the current wallpaper, then keeps Quickshell synchronized.</p>
@@ -939,13 +958,15 @@ dots appearance doctor</pre><h2 id="quickshell">Quickshell</h2>
 <h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
 <h3 id="maintained-path-hyprland-quickshell-">Maintained path (Hyprland + Quickshell)</h3>
 <ol>
-<li><code>dots-wallpaper-set &lt;image&gt;</code> (or Control Center Apply / <code>Rice.setWallpaper</code>)</li>
-<li>When Quickshell is running → IPC <code>rice setWallpaper</code></li>
+<li><code>dots-wallpaper-set &lt;image&gt;</code> (or Control Center Apply / <code>appearance.setWallpaper</code>)</li>
+<li>When Quickshell is running → IPC <code>appearance setWallpaper</code></li>
 <li>Otherwise → <code>apply-appearance.sh</code> wallpaper-only path:<ul>
-<li><code>wal -i</code> (honors light/dark from current rice / scheme state)</li>
-<li>write <code>~/.local/state/dots/wallpaper/path</code></li>
+<li><code>wal -i</code> (honors light/dark from scheme state)</li>
+<li>write <code>~/.local/state/dots/wallpaper/path</code> (canonical pointer)</li>
+<li>rewrite <code>~/.cache/wal/wal</code> as a <strong>text path file</strong> (never an image symlink)</li>
 <li><code>generate-m3-colors.py</code> → <code>scheme.json</code></li>
 <li><code>dots-color-scheme sync-state</code> → <code>scheme/state.json</code></li>
+<li><code>dots-gtk-theme color-scheme</code> to keep GTK/libadwaita in lockstep</li>
 </ul>
 </li>
 <li><code>Colours.qml</code> reloads via file watch or <code>dots-quickshell ipc colours reload</code> (real IPC + touch fallback)</li>
@@ -954,7 +975,7 @@ dots appearance doctor</pre><h2 id="quickshell">Quickshell</h2>
 <ol>
 <li>Explicit argument</li>
 <li><code>~/.local/state/dots/wallpaper/path</code> (canonical persistent pointer)</li>
-<li><code>~/.cache/wal/wal</code> (pywal symlink; last resort)</li>
+<li><code>~/.cache/wal/wal</code> (text path file; last resort — not a symlink)</li>
 </ol>
 <h2 id="main-commands">Main Commands</h2>
 <pre class="hljs">dots-smart-colors --generate --m3
@@ -975,9 +996,9 @@ dots-wal-reload</pre><h2 id="generated-cache">Generated Cache</h2>
 <h2 id="data-flow">Data Flow</h2>
 <pre class="hljs">flowchart LR
   <span class="hljs-function"><span class="hljs-title">wallpaper</span>[WallpaperChange] --&gt;</span> set[dots-wallpaper-set]
-  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> rice[RiceIpcOrShellFallback]
-  <span class="hljs-function"><span class="hljs-title">rice</span> --&gt;</span> wal[pywal]
-  <span class="hljs-function"><span class="hljs-title">rice</span> --&gt;</span> m3[generate-m3-colors]
+  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> appearance[AppearanceIpcOrShellFallback]
+  <span class="hljs-function"><span class="hljs-title">appearance</span> --&gt;</span> wal[pywal]
+  <span class="hljs-function"><span class="hljs-title">appearance</span> --&gt;</span> m3[generate-m3-colors]
   <span class="hljs-function"><span class="hljs-title">m3</span> --&gt;</span> scheme[schemeJson]
   <span class="hljs-function"><span class="hljs-title">m3</span> --&gt;</span> state[schemeStateJson]
   <span class="hljs-function"><span class="hljs-title">scheme</span> --&gt;</span> colours[QuickshellColoursService]
@@ -989,11 +1010,10 @@ dots-smart-colors --generate --m3
 ls -la ~/.cache/dots/smart-colors/
 
 <span class="hljs-comment"># Force shell-side reload path</span>
-dots-quickshell ipc colours reload</pre><h2 id="notes">Notes</h2>
-<ul>
-<li>Legacy Waybar/EWW/Rofi integrations are no longer part of the maintained path.</li>
-<li>The supported default stack is Hyprland + Quickshell.</li>
-</ul>
+dots-quickshell ipc colours reload
+
+<span class="hljs-comment"># Confirm appearance consistency</span>
+dots appearance doctor</pre><p>See also: <a href="#Rice-System-Theme-Management">Appearance Themes</a></p>
 <p class="page" id="Window-Managers"></p><h1>🪟 Window Managers Overview</h1>
 <h1 id="-hyprland-configuration-guide">🪟 Hyprland Configuration Guide</h1>
 <p>This guide provides an overview of how to customize Hyprland, the dynamic tiling Wayland compositor used in this dotfiles setup.</p>
@@ -1684,10 +1704,10 @@ dots lockscreen --lock --lock-effect=pixel</pre><h3 id="automatic-updates">Autom
             <span class="hljs-string">&quot;&quot;</span>)))</pre><h3 id="wal-reload">Wal Reload</h3>
 <p>Automatically updates lockscreen when changing themes:</p>
 <pre class="hljs">dots wal-reload  <span class="hljs-comment"># Updates wallpaper and lockscreen</span></pre><h3 id="appearance">Appearance</h3>
-<p>Rice / appearance apply regenerates lockscreen colors via <code>dots-hyprlock-theme</code> after scheme generation. Historical note — older docs mentioned per-rice <code>apply.sh</code>; that path is no longer maintained. Equivalent hook:</p>
-<pre class="hljs"><span class="hljs-keyword">if</span> <span class="hljs-built_in">command</span> -v dots-lockscreen &amp;&gt;/dev/null; <span class="hljs-keyword">then</span>
-  dots-lockscreen --update=<span class="hljs-string">&quot;<span class="hljs-variable">$wallpaper</span>&quot;</span>
-<span class="hljs-keyword">fi</span></pre><h2 id="hyprlock-configuration">Hyprlock Configuration</h2>
+<p>Theme / wallpaper apply regenerates lockscreen colors via <code>dots-hyprlock-theme</code>
+after scheme generation (Quickshell <code>ThemePipeline</code> and shell <code>apply-appearance.sh</code>).</p>
+<pre class="hljs">dots appearance theme apply vapor-dreams
+dots-hyprlock-theme</pre><h2 id="hyprlock-configuration">Hyprlock Configuration</h2>
 <p>The script dynamically generates a hyprlock configuration with these features:</p>
 <pre class="hljs">background {
   <span class="hljs-attr">path</span> = &lt;effect-image&gt;
@@ -1706,21 +1726,22 @@ input-field {
   <span class="hljs-attr">font_color</span> = rgba(&lt;fg-color&gt;)
   <span class="hljs-attr">fail_color</span> = rgba(&lt;error-color&gt;)
   <span class="hljs-comment"># ... and more</span>
-}</pre><h2 id="rice-style-aware-layouts">Rice-Style-Aware Layouts</h2>
-<p>The lockscreen automatically adapts its layout based on your current rice&#39;s <code>style</code> field in <code>config.json</code>. This provides a cohesive aesthetic experience across your entire desktop.</p>
+}</pre><h2 id="style-aware-layouts">Style-Aware Layouts</h2>
+<p>The lockscreen adapts layout from the <strong>current wallpaper path</strong> and optional
+theme-pack <code>tags</code> (there is no sticky “current theme” id).</p>
 <h3 id="available-layouts">Available Layouts</h3>
 <table>
 <thead>
 <tr>
 <th>Layout</th>
-<th>Rice Styles</th>
+<th>Matching tags / path hints</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><strong>Default</strong></td>
-<td>Any unlisted style</td>
+<td>Any unmatched</td>
 <td>Clean, centered layout with standard typography</td>
 </tr>
 <tr>
@@ -1730,7 +1751,7 @@ input-field {
 </tr>
 <tr>
 <td><strong>Cozy</strong></td>
-<td>cozy, kawaii, cute, warm</td>
+<td>cozy, kawaii, cute, warm, soft</td>
 <td>Soft, rounded elements with pastel accents</td>
 </tr>
 <tr>
@@ -1740,21 +1761,23 @@ input-field {
 </tr>
 <tr>
 <td><strong>Minimal</strong></td>
-<td>minimal, clean, productive</td>
+<td>minimal, clean</td>
 <td>Ultra-clean with minimal UI elements</td>
 </tr>
 </tbody>
 </table>
 <h3 id="how-it-works">How It Works</h3>
 <ol>
-<li>When locking, the script reads <code>style</code> from your current rice&#39;s <code>config.json</code></li>
-<li>Based on the style, it selects the appropriate layout template</li>
-<li>Colors are pulled from the smart-colors cache</li>
-<li>The hyprlock configuration is generated dynamically</li>
+<li><code>dots-lockscreen</code> resolves the wallpaper from <code>~/.local/state/dots/wallpaper/path</code></li>
+<li>Path segments (e.g. <code>…/vapor-dreams/…</code>) provide a first hint</li>
+<li>If the parent folder matches a theme pack id, <code>tags</code> from <code>theme.json</code> refine the layout</li>
+<li>Colors come from the smart-colors / hyprlock cache</li>
 </ol>
-<h3 id="rice-configuration">Rice Configuration</h3>
-<p>To enable style-aware layouts, set <code>style</code> in your rice&#39;s <code>config.json</code>:</p>
-<pre class="hljs">{ <span class="hljs-attr">&quot;style&quot;</span>: <span class="hljs-string">&quot;cyberpunk&quot;</span> }</pre><p>The style matching is case-insensitive and supports partial matches (e.g., &quot;cozy warm&quot; matches the Cozy layout).</p>
+<h3 id="theme-pack-tags">Theme pack tags</h3>
+<pre class="hljs">{
+  <span class="hljs-attr">&quot;id&quot;</span>: <span class="hljs-string">&quot;neon-city&quot;</span>,
+  <span class="hljs-attr">&quot;tags&quot;</span>: [<span class="hljs-string">&quot;cyberpunk&quot;</span>, <span class="hljs-string">&quot;neon&quot;</span>, <span class="hljs-string">&quot;dark&quot;</span>, <span class="hljs-string">&quot;city&quot;</span>]
+}</pre><p>Matching is case-insensitive and supports partial keyword matches.</p>
 <h2 id="comparison-with-betterlockscreen">Comparison with Betterlockscreen</h2>
 <table>
 <thead>
@@ -1826,7 +1849,7 @@ convert --version</pre><h3 id="hyprlock-not-found">Hyprlock not found</h3>
 <h2 id="see-also">See Also</h2>
 <ul>
 <li><a href="#Smart-Colors-System">Smart Colors System</a></li>
-<li><a href="#Rice-System-Theme-Management">Rice System</a></li>
+<li><a href="#Rice-System-Theme-Management">Appearance Themes</a></li>
 <li><a href="#EWW-Widgets">EWW Widgets</a></li>
 <li><a href="#Hyprland-Setup">Hyprland Setup</a></li>
 </ul>
@@ -1921,18 +1944,19 @@ dots-quickshell ipc sidebar toggle    <span class="hljs-comment"># Toggle notifi
 <li>Quickshell&#39;s <code>Colours</code> service watches the file and reloads automatically</li>
 </ol>
 <h3 id="scheme-configuration">Scheme Configuration</h3>
-<p>Each appearance (rice) configures its M3 scheme via <code>config.json</code>:</p>
+<p>Each appearance theme pack configures its M3 scheme via <code>theme.json</code>:</p>
 <pre class="hljs">{
   <span class="hljs-attr">&quot;schemeType&quot;</span>: <span class="hljs-string">&quot;vibrant&quot;</span>,
   <span class="hljs-attr">&quot;darkMode&quot;</span>: <span class="hljs-literal">true</span>,
-  <span class="hljs-attr">&quot;accentColor&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,
-  <span class="hljs-attr">&quot;barPosition&quot;</span>: <span class="hljs-string">&quot;top&quot;</span>
+  <span class="hljs-attr">&quot;gtkTheme&quot;</span>: <span class="hljs-string">&quot;Orchis-Light-Compact&quot;</span>,
+  <span class="hljs-attr">&quot;gtkPreferDark&quot;</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">&quot;iconTheme&quot;</span>: <span class="hljs-string">&quot;Numix-Circle&quot;</span>
 }</pre><h3 id="appearance-commands">Appearance Commands</h3>
 <pre class="hljs">dots appearance list
-dots appearance current
-dots appearance apply machines
-dots appearance set-variant tonalspot
-dots appearance set-mode light</pre><hr>
+dots appearance theme apply vapor-dreams
+dots appearance set-variant tonal-spot
+dots appearance set-mode light
+dots appearance doctor</pre><hr>
 <h2 id="-architecture">🏗️ Architecture</h2>
 <h3 id="unified-drawers-model">Unified Drawers Model</h3>
 <p>The active shell now follows a unified drawers architecture inspired by <code>reference/shell</code>:</p>
@@ -2043,7 +2067,7 @@ dots appearance set-mode light</pre><hr>
 }</pre><h3 id="reference-parity-status">Reference Parity Status</h3>
 <ul>
 <li><strong>Matched</strong>: wallpaper-driven M3 theming pipeline, left-rail shell feel, top control center, launcher command modes, right-edge OSD/session controls, rounded frame and edge exclusions.</li>
-<li><strong>Intentional deviations</strong>: Hornero-specific <code>dots-*</code> integrations, rice selector mode in launcher, AI chat module.</li>
+<li><strong>Intentional deviations</strong>: Hornero-specific <code>dots-*</code> integrations, appearance/theme selector mode in launcher, AI chat module.</li>
 <li><strong>In progress hardening</strong>: deeper panel unification and additional popout parity refinements.</li>
 </ul>
 <hr>
@@ -2202,12 +2226,12 @@ dots-quickshell restart</pre><h2 id="hyprland-layout-and-exclusions">Hyprland la
 smb://nas.local/share  🌐 NAS Share</pre><h3 id="removing-emojis">Removing Emojis</h3>
 <p>If you prefer a minimalist look, edit the template and delete the emoji / icon column (they are just literal characters). Re-apply with:</p>
 <pre class="hljs">chezmoi apply --force --include=files</pre><h3 id="recommended-folder-set">Recommended Folder Set</h3>
-<p>The template includes: Home, Projects, Dev, Downloads, Documents, Pictures, Music, Videos, .config, LocalShare, Rices, Wallpapers, Bin. Remove or reorder directly in the template to reflect your workflow.</p>
+<p>The template includes: Home, Projects, Dev, Downloads, Documents, Pictures, Music, Videos, .config, LocalShare, Themes, Wallpapers, Bin. Remove or reorder directly in the template to reflect your workflow.</p>
 <h3 id="adding-extra-bookmarks-optional-manual-pattern-">Adding Extra Bookmarks (Optional Manual Pattern)</h3>
 <p>If a specific setup needs additional paths (e.g. a theme assets folder), just append them manually after changing appearance. Since we removed automation, we intentionally keep this lightweight. If automation becomes desirable again, a simple helper script or a chezmoi data-driven conditional can be reintroduced later.</p>
 <h3 id="keeping-things-clean">Keeping Things Clean</h3>
 <p>If a bookmarked directory no longer exists, Thunar will still show it (but inaccessible). Periodically prune obsolete lines manually. You can safely create missing directories with:</p>
-<pre class="hljs">mkdir -p ~/Projects ~/Dev ~/.<span class="hljs-built_in">local</span>/share/dots/rices ~/.<span class="hljs-built_in">local</span>/share/wallpapers</pre><h3 id="restoring-resetting">Restoring / Resetting</h3>
+<pre class="hljs">mkdir -p ~/Projects ~/Dev ~/.<span class="hljs-built_in">local</span>/share/dots/themes ~/.<span class="hljs-built_in">local</span>/share/dots/wallpapers ~/Pictures/Wallpapers</pre><h3 id="restoring-resetting">Restoring / Resetting</h3>
 <p>Accidentally broke the file? Just re-apply:</p>
 <pre class="hljs">chezmoi apply --force --include=files</pre><h3 id="font-emoji-issues">Font / Emoji Issues</h3>
 <p>If emojis appear as empty squares, install a font with emoji coverage (e.g. Noto Color Emoji or a Nerd Font variant) or remove the symbols.</p>
@@ -2920,7 +2944,7 @@ dots keyboard-help --search=workspace</pre><h2 id="theme-and-color-workflows">Th
 <h3 id="appearance">appearance</h3>
 <ul>
 <li>Unified appearance API for Quickshell UI and scripts</li>
-<li>Manages full themes/rices plus variant/mode/wallpaper syncing</li>
+<li>Manages appearance theme packs plus variant/mode/wallpaper syncing</li>
 </ul>
 <pre class="hljs">dots appearance list
 dots appearance current
@@ -4395,7 +4419,7 @@ dots keyboard-help --search=workspace</pre><h2 id="theme-and-color-workflows">Th
 <h3 id="appearance">appearance</h3>
 <ul>
 <li>Unified appearance API for Quickshell UI and scripts</li>
-<li>Manages full themes/rices plus variant/mode/wallpaper syncing</li>
+<li>Manages appearance theme packs plus variant/mode/wallpaper syncing</li>
 </ul>
 <pre class="hljs">dots appearance list
 dots appearance current
@@ -4435,7 +4459,7 @@ one-shot recipes — they never own a sticky “current theme”.</p>
 <thead>
 <tr>
 <th>Concern</th>
-<th>Path</th>
+<th>Path / tool</th>
 </tr>
 </thead>
 <tbody>
@@ -4453,7 +4477,11 @@ one-shot recipes — they never own a sticky “current theme”.</p>
 </tr>
 <tr>
 <td>GTK / icons</td>
-<td><code>~/.config/gtk-3.0/settings.ini</code> + gsettings</td>
+<td>via <code>dots-gtk-theme</code> → <code>settings.ini</code> + gsettings</td>
+</tr>
+<tr>
+<td>Wal pointer</td>
+<td><code>~/.cache/wal/wal</code> (<strong>text path file</strong>, never a symlink)</td>
 </tr>
 </tbody>
 </table>
@@ -4469,14 +4497,29 @@ dots appearance theme apply neon-city --wallpaper ~/Pictures/Wallpapers/neon-cit
 <pre class="hljs">dots appearance set-wallpaper &lt;path&gt;
 dots appearance set-mode dark|light
 dots appearance set-variant expressive
-dots appearance set-gtk Orchis-Dark
+dots appearance set-gtk Orchis-Light-Compact
 dots appearance set-icons Numix-Circle
 dots appearance status
-dots appearance doctor</pre><h2 id="quickshell">Quickshell</h2>
+dots appearance doctor</pre><p>GTK entrypoint (canonical for scripts and Quickshell):</p>
+<pre class="hljs">dots-gtk-theme -q -p list
+dots-gtk-theme -q -p current
+dots-gtk-theme -q -p current-icon
+dots-gtk-theme -q apply Orchis-Light-Compact Numix-Circle <span class="hljs-literal">true</span>
+dots-gtk-theme -q color-scheme dark
+dots-gtk-theme -q theme vapor-dreams</pre><h2 id="quickshell">Quickshell</h2>
 <ul>
 <li>Orchestrator: <code>ThemePipeline</code> singleton (IPC target <code>appearance</code>)</li>
 <li>Control Center pane configures themes, wallpaper, mode, variant, scheme, GTK, icons</li>
+<li>GTK/icon apply always goes through <code>dots-gtk-theme</code> (never inline <code>gtk-theme-manager.sh</code> or raw <code>gsettings</code> from QML)</li>
+<li>Launcher actions: <code>theme</code> / <code>appearance</code></li>
 </ul>
+<h2 id="consistency-checks">Consistency checks</h2>
+<pre class="hljs">./scripts/test-appearance-consistency.sh --<span class="hljs-built_in">source</span>   <span class="hljs-comment"># CI / repo</span>
+./scripts/test-appearance-consistency.sh             <span class="hljs-comment"># live doctor + GTK</span>
+dots appearance doctor</pre><h2 id="historical-note">Historical note</h2>
+<p>Older docs referred to sticky “rices” (<code>rices/&lt;id&gt;/</code>, IPC <code>rice</code>, <code>dots-rice</code>).
+That model was removed; this page is the current contract. The wiki filename
+<code>Rice-System-Theme-Management</code> is kept only for stable links.</p>
 <p class="page" id="Smart-Colors-System"></p><h1>🧠 Smart Colors</h1>
 <h1 id="smart-colors-system">Smart Colors System</h1>
 <p>Smart Colors generates semantic colors and Material Design 3 palettes from the current wallpaper, then keeps Quickshell synchronized.</p>
@@ -4489,13 +4532,15 @@ dots appearance doctor</pre><h2 id="quickshell">Quickshell</h2>
 <h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
 <h3 id="maintained-path-hyprland-quickshell-">Maintained path (Hyprland + Quickshell)</h3>
 <ol>
-<li><code>dots-wallpaper-set &lt;image&gt;</code> (or Control Center Apply / <code>Rice.setWallpaper</code>)</li>
-<li>When Quickshell is running → IPC <code>rice setWallpaper</code></li>
+<li><code>dots-wallpaper-set &lt;image&gt;</code> (or Control Center Apply / <code>appearance.setWallpaper</code>)</li>
+<li>When Quickshell is running → IPC <code>appearance setWallpaper</code></li>
 <li>Otherwise → <code>apply-appearance.sh</code> wallpaper-only path:<ul>
-<li><code>wal -i</code> (honors light/dark from current rice / scheme state)</li>
-<li>write <code>~/.local/state/dots/wallpaper/path</code></li>
+<li><code>wal -i</code> (honors light/dark from scheme state)</li>
+<li>write <code>~/.local/state/dots/wallpaper/path</code> (canonical pointer)</li>
+<li>rewrite <code>~/.cache/wal/wal</code> as a <strong>text path file</strong> (never an image symlink)</li>
 <li><code>generate-m3-colors.py</code> → <code>scheme.json</code></li>
 <li><code>dots-color-scheme sync-state</code> → <code>scheme/state.json</code></li>
+<li><code>dots-gtk-theme color-scheme</code> to keep GTK/libadwaita in lockstep</li>
 </ul>
 </li>
 <li><code>Colours.qml</code> reloads via file watch or <code>dots-quickshell ipc colours reload</code> (real IPC + touch fallback)</li>
@@ -4504,7 +4549,7 @@ dots appearance doctor</pre><h2 id="quickshell">Quickshell</h2>
 <ol>
 <li>Explicit argument</li>
 <li><code>~/.local/state/dots/wallpaper/path</code> (canonical persistent pointer)</li>
-<li><code>~/.cache/wal/wal</code> (pywal symlink; last resort)</li>
+<li><code>~/.cache/wal/wal</code> (text path file; last resort — not a symlink)</li>
 </ol>
 <h2 id="main-commands">Main Commands</h2>
 <pre class="hljs">dots-smart-colors --generate --m3
@@ -4525,9 +4570,9 @@ dots-wal-reload</pre><h2 id="generated-cache">Generated Cache</h2>
 <h2 id="data-flow">Data Flow</h2>
 <pre class="hljs">flowchart LR
   <span class="hljs-function"><span class="hljs-title">wallpaper</span>[WallpaperChange] --&gt;</span> set[dots-wallpaper-set]
-  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> rice[RiceIpcOrShellFallback]
-  <span class="hljs-function"><span class="hljs-title">rice</span> --&gt;</span> wal[pywal]
-  <span class="hljs-function"><span class="hljs-title">rice</span> --&gt;</span> m3[generate-m3-colors]
+  <span class="hljs-function"><span class="hljs-title">set</span> --&gt;</span> appearance[AppearanceIpcOrShellFallback]
+  <span class="hljs-function"><span class="hljs-title">appearance</span> --&gt;</span> wal[pywal]
+  <span class="hljs-function"><span class="hljs-title">appearance</span> --&gt;</span> m3[generate-m3-colors]
   <span class="hljs-function"><span class="hljs-title">m3</span> --&gt;</span> scheme[schemeJson]
   <span class="hljs-function"><span class="hljs-title">m3</span> --&gt;</span> state[schemeStateJson]
   <span class="hljs-function"><span class="hljs-title">scheme</span> --&gt;</span> colours[QuickshellColoursService]
@@ -4539,11 +4584,10 @@ dots-smart-colors --generate --m3
 ls -la ~/.cache/dots/smart-colors/
 
 <span class="hljs-comment"># Force shell-side reload path</span>
-dots-quickshell ipc colours reload</pre><h2 id="notes">Notes</h2>
-<ul>
-<li>Legacy Waybar/EWW/Rofi integrations are no longer part of the maintained path.</li>
-<li>The supported default stack is Hyprland + Quickshell.</li>
-</ul>
+dots-quickshell ipc colours reload
+
+<span class="hljs-comment"># Confirm appearance consistency</span>
+dots appearance doctor</pre><p>See also: <a href="#Rice-System-Theme-Management">Appearance Themes</a></p>
 
         </div> <!-- /div.col-md-9 -->
       </div> <!-- /div.row -->
