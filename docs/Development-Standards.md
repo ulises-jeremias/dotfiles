@@ -35,7 +35,7 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 **Variables:**
 
-- Local variables: `snake_case` (e.g., `config_file`, `rice_name`)
+- Local variables: `snake_case` (e.g., `config_file`, `theme_id`)
 - Constants: `UPPER_CASE` with `readonly` (e.g., `readonly CONFIG_DIR`)
 - Environment exports: `UPPER_CASE` (e.g., `export WAYBAR_PROFILE`)
 

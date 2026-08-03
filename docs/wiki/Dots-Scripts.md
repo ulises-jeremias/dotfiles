@@ -70,7 +70,7 @@ dots keyboard-help --search=workspace
 ### appearance
 
 - Unified appearance API for Quickshell UI and scripts
-- Manages full themes/rices plus variant/mode/wallpaper syncing
+- Manages appearance theme packs plus variant/mode/wallpaper syncing
 
 ```bash
 dots appearance list

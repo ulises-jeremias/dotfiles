@@ -29,6 +29,7 @@ Singleton {
     property string _pendingThemeId: ""
     property bool _runThemeSideEffects: false
     property string _lastError: ""
+    readonly property string lastError: _lastError
     property bool _startupRestored: false
 
     signal applyFinished(bool ok)

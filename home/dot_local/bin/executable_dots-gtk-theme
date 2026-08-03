@@ -357,6 +357,14 @@ cmd_icons() {
 		fi
 	done
 
+	if ((${#icons[@]} == 0)); then
+		if [[ $use_plain == true ]]; then
+			return 1
+		fi
+		echo -e "${YELLOW}⚠️  No icon themes found${NC}"
+		return 1
+	fi
+
 	local unique_icons
 	unique_icons=$(printf '%s\n' "${icons[@]}" | sort -u)
 

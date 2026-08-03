@@ -100,11 +100,12 @@
 
 **Integration:**
 
-Rices specify their animation profile via `hyprlandAnimations` in `config.json`:
-
-```json
-{ "hyprlandAnimations": "cyberpunk" }
-```
+Optional Hyprland animation profiles live under
+`~/.config/hypr/hyprland.conf.d/animations-*.conf`
+(cyberpunk, cozy, vaporwave, minimal, nature). The active session sources
+`animations.conf` by default. Theme packs do **not** auto-swap Hyprland animation
+profiles (no sticky theme id); pick a profile manually or keep the default.
+Quickshell motion scaling is controlled from Control Center → Appearance → Animations.
 
 ## 4. Legacy Removal Note
 

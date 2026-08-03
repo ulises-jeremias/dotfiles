@@ -77,7 +77,20 @@ Item {
     property string deferredMode: ""
     property string deferredGtk: ""
     property string deferredIcon: ""
+    property string applyStatusMessage: ""
+    property bool applyFailed: false
     readonly property bool hasPendingChanges: themeDirty || schemeDirty || variantDirty || modeDirty || wallpaperDirty || gtkDirty || iconDirty
+    readonly property bool pipelineBusy: ThemePipeline.busy
+    readonly property bool canApply: hasPendingChanges && !pipelineBusy
+    readonly property string footerStatusText: {
+        if (pipelineBusy)
+            return qsTr("Applying appearance…");
+        if (applyFailed && applyStatusMessage)
+            return applyStatusMessage;
+        if (hasPendingChanges)
+            return qsTr("Pending appearance changes — press Apply to commit");
+        return qsTr("No pending changes");
+    }
     property bool previewActive: false
     property string previewSource: ""
     property string previewTitle: ""
@@ -466,8 +479,11 @@ Item {
         gtkDirty = false;
         iconDirty = false;
         // Seed live GTK/icon so section checkmarks reflect current state.
+        // Do not overwrite a user-staged selection if a previous seed is still in flight.
         liveGtkProc.running = true;
         liveIconProc.running = true;
+        applyFailed = false;
+        applyStatusMessage = "";
         if (!previewActive) {
             previewWallpaperPath = pendingWallpaperPath;
             previewVariant = pendingVariant;
@@ -774,23 +790,41 @@ Item {
 
                         StyledText {
                             Layout.fillWidth: true
-                            text: root.hasPendingChanges ? qsTr("Pending appearance changes") : qsTr("No pending changes")
-                            color: root.hasPendingChanges ? Colours.palette.m3primary : Colours.palette.m3outline
+                            text: root.footerStatusText
+                            color: {
+                                if (root.applyFailed)
+                                    return Colours.palette.m3error;
+                                if (root.pipelineBusy || root.hasPendingChanges)
+                                    return Colours.palette.m3primary;
+                                return Colours.palette.m3outline;
+                            }
                             font.pointSize: Appearance.font.size.small
+                            wrapMode: Text.WordWrap
+                        }
+
+                        CircularIndicator {
+                            visible: root.pipelineBusy
+                            running: root.pipelineBusy
+                            implicitSize: Appearance.font.size.large * 1.4
+                            strokeWidth: Appearance.padding.small * 0.5
                         }
 
                         IconButton {
                             icon: "refresh"
                             type: IconButton.Text
-                            enabled: root.hasPendingChanges
+                            enabled: root.hasPendingChanges && !root.pipelineBusy
+                            Accessible.name: qsTr("Reset pending appearance changes")
                             onClicked: root.resetPendingSelections()
                         }
 
                         IconButton {
-                            icon: "check"
+                            icon: root.pipelineBusy ? "hourglass_top" : "check"
                             type: IconButton.Filled
-                            enabled: root.hasPendingChanges
+                            enabled: root.canApply
+                            Accessible.name: qsTr("Apply appearance changes")
                             onClicked: {
+                                root.applyFailed = false;
+                                root.applyStatusMessage = "";
                                 root.commitSelection();
                                 root.saveConfig();
                             }
@@ -808,6 +842,9 @@ Item {
         command: ["dots-gtk-theme", "-q", "-p", "current"]
         stdout: StdioCollector {
             onStreamFinished: {
+                // Never clobber a staged GTK selection with a late live-seed result.
+                if (root.gtkDirty)
+                    return;
                 const name = text.trim();
                 if (name && name !== "Unknown")
                     root.pendingGtkTheme = name;
@@ -820,6 +857,8 @@ Item {
         command: ["dots-gtk-theme", "-q", "-p", "current-icon"]
         stdout: StdioCollector {
             onStreamFinished: {
+                if (root.iconDirty)
+                    return;
                 const name = text.trim();
                 if (name && name !== "Unknown")
                     root.pendingIconTheme = name;
@@ -844,9 +883,18 @@ Item {
                 root.deferredMode = "";
                 root.deferredGtk = "";
                 root.deferredIcon = "";
+                root.applyFailed = true;
+                root.applyStatusMessage = ThemePipeline.lastError || qsTr("Appearance apply failed");
                 return;
             }
+            root.applyFailed = false;
+            root.applyStatusMessage = "";
             root._flushDeferredPipelineExtras();
+            // Refresh live GTK/icon checkmarks after a successful pipeline apply.
+            if (!root.gtkDirty)
+                liveGtkProc.running = true;
+            if (!root.iconDirty)
+                liveIconProc.running = true;
         }
     }
 

@@ -18,7 +18,7 @@ CollapsibleSection {
     required property var session
 
     title: qsTr("Icon theme")
-    description: qsTr("Desktop icon set (staged until Apply)")
+    description: qsTr("Desktop icon set — staged until Apply")
     showBackground: true
 
     property var iconNames: []

@@ -76,7 +76,11 @@ StyledRect {
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: root.subtitleText || qsTr("Preview updates here before applying")
+                    text: {
+                        if (root.rootPane.previewPaletteQueued || !!root.rootPane.previewRunningKey && Object.keys(root.rootPane.previewPalette ?? {}).length === 0)
+                            return qsTr("Generating palette preview…");
+                        return root.subtitleText || qsTr("Preview updates here before applying");
+                    }
                     color: previewColor("m3outline", Colours.palette.m3outline)
                     font.pointSize: Appearance.font.size.small
                     elide: Text.ElideRight

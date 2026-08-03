@@ -28,6 +28,9 @@ CollapsibleSection {
     function wallpaperPathFor(theme: var, filename: string): string {
         if (!theme || !filename)
             return "";
+        const mapped = theme.wallpaperPaths?.[filename];
+        if (mapped)
+            return mapped;
         if (theme.wallpaperPath && theme.defaultWallpaper === filename)
             return theme.wallpaperPath;
         const dir = theme.wallpaperDir || theme.id || "";
@@ -53,15 +56,15 @@ CollapsibleSection {
                 Layout.fillWidth: true
                 spacing: 0
 
-                readonly property bool isCurrent: modelData.id === previewController.pendingThemeId
+                readonly property bool isStaged: modelData.id === previewController.pendingThemeId
                 readonly property bool isExpanded: modelData.id === sectionRoot.selectedThemeId
 
                 StyledRect {
                     Layout.fillWidth: true
 
-                    color: Qt.alpha(Colours.tPalette.m3surfaceContainer, themeItem.isCurrent ? Colours.tPalette.m3surfaceContainer.a : 0)
+                    color: Qt.alpha(Colours.tPalette.m3surfaceContainer, themeItem.isStaged ? Colours.tPalette.m3surfaceContainer.a : 0)
                     radius: Appearance.rounding.normal
-                    border.width: themeItem.isCurrent ? 1 : 0
+                    border.width: themeItem.isStaged ? 1 : 0
                     border.color: Colours.palette.m3primary
 
                     StateLayer {
@@ -147,11 +150,20 @@ CollapsibleSection {
                                 }
                             }
 
-                            MaterialIcon {
-                                visible: themeItem.isCurrent
-                                text: "check"
-                                color: Colours.palette.m3primary
-                                font.pointSize: Appearance.font.size.large
+                            StyledRect {
+                                visible: themeItem.isStaged
+                                radius: Appearance.rounding.full
+                                color: Qt.alpha(Colours.palette.m3primaryContainer, 0.85)
+                                implicitWidth: stagedChip.implicitWidth + Appearance.padding.small * 2
+                                implicitHeight: stagedChip.implicitHeight + Appearance.padding.smaller * 2
+
+                                StyledText {
+                                    id: stagedChip
+                                    anchors.centerIn: parent
+                                    text: previewController.themeDirty ? qsTr("Staged") : qsTr("Selected")
+                                    font.pointSize: Appearance.font.size.smaller
+                                    color: Colours.palette.m3onPrimaryContainer
+                                }
                             }
                         }
 

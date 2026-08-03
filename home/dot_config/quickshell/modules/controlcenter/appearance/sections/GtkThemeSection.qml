@@ -18,7 +18,7 @@ CollapsibleSection {
     required property var session
 
     title: qsTr("GTK theme")
-    description: qsTr("Application window theme (staged until Apply)")
+    description: qsTr("Application chrome theme — staged until Apply")
     showBackground: true
 
     property var themeNames: []

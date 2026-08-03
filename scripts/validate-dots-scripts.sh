@@ -15,8 +15,8 @@ ENTRYPOINT_SCRIPTS=(
 
 # Scripts to exclude from validation (third-party or special cases)
 EXCLUDED_SCRIPTS=(
-  "executable_dots-checkupdates"       # Third-party script from pacman-contrib
-  "executable_dots-git-notify"         # Third-party script with custom argument parsing
+  "executable_dots-checkupdates" # Third-party script from pacman-contrib
+  "executable_dots-git-notify"   # Third-party script with custom argument parsing
 )
 
 errors=0
@@ -107,6 +107,17 @@ if ! diff -q <(echo "$scripts_in_dir") <(echo "$scripts_in_list") >/dev/null; th
   comm -23 <(echo "$scripts_in_dir") <(echo "$scripts_in_list")
   echo "Scripts in list but not in directory:"
   comm -13 <(echo "$scripts_in_dir") <(echo "$scripts_in_list")
+  errors=$((errors + 1))
+fi
+
+# Appearance theme pack + GTK/wal contract (source tree)
+if [[ -x ${DOTFILES_ROOT}/scripts/test-appearance-consistency.sh ]]; then
+  if ! "${DOTFILES_ROOT}/scripts/test-appearance-consistency.sh" --source; then
+    echo "❌ Appearance consistency checks failed"
+    errors=$((errors + 1))
+  fi
+else
+  echo "⚠️  scripts/test-appearance-consistency.sh missing or not executable"
   errors=$((errors + 1))
 fi
 

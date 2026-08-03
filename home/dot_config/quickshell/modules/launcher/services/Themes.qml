@@ -87,6 +87,7 @@ Searcher {
         readonly property string wallpaperDir: modelData.wallpaperDir || id
         readonly property string defaultWallpaper: modelData.defaultWallpaper || ""
         readonly property string wallpaperPath: modelData.wallpaperPath ?? ""
+        readonly property var wallpaperPaths: modelData.wallpaperPaths ?? ({})
         readonly property var tags: modelData.tags ?? []
         readonly property bool darkMode: modelData.darkMode !== undefined ? !!modelData.darkMode : true
         readonly property string schemeType: modelData.schemeType || "tonal-spot"

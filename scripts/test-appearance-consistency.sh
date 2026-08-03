@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+# Appearance system consistency tests (theme packs + GTK + wal contract).
+# Copyright (C) 2019-2026 Ulises Jeremias Cornejo Fandos
+# Licensed under MIT.
+#
+# Usage:
+#   ./scripts/test-appearance-consistency.sh           # live ($HOME)
+#   ./scripts/test-appearance-consistency.sh --source  # validate repo tree only
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SOURCE_ONLY=false
+[[ ${1:-} == "--source" ]] && SOURCE_ONLY=true
+
+PASS=0
+FAIL=0
+SKIP=0
+
+pass() {
+  PASS=$((PASS + 1))
+  printf '  PASS  %s\n' "$*"
+}
+fail() {
+  FAIL=$((FAIL + 1))
+  printf '  FAIL  %s\n' "$*" >&2
+}
+skip() {
+  SKIP=$((SKIP + 1))
+  printf '  SKIP  %s\n' "$*"
+}
+
+echo "== appearance consistency =="
+
+# ── Source tree ──────────────────────────────────────────────────────────────
+THEMES_SRC="${ROOT}/home/dot_local/share/dots/themes"
+LIST_THEMES="${ROOT}/home/dot_local/lib/dots/list-themes.py"
+GTK_MGR="${ROOT}/home/dot_local/lib/dots/gtk-theme-manager.sh"
+GTK_BIN="${ROOT}/home/dot_local/bin/executable_dots-gtk-theme"
+QS_PIPE="${ROOT}/home/dot_config/quickshell/services/ThemePipeline.qml"
+
+[[ -d $THEMES_SRC ]] || {
+  echo "missing themes dir: $THEMES_SRC" >&2
+  exit 1
+}
+
+theme_count=0
+for theme_json in "$THEMES_SRC"/*/theme.json; do
+  [[ -f $theme_json ]] || continue
+  theme_count=$((theme_count + 1))
+  dir="$(dirname "$theme_json")"
+  id="$(basename "$dir")"
+  if python3 - "$theme_json" "$id" <<'PY'; then
+import json, sys
+path, expected = sys.argv[1], sys.argv[2]
+data = json.load(open(path, encoding="utf-8"))
+required = ("schemaVersion", "id", "name", "darkMode", "schemeType", "gtkTheme", "iconTheme", "defaultWallpaper", "wallpaperDir")
+missing = [k for k in required if k not in data]
+if missing:
+    raise SystemExit(f"missing keys {missing}")
+if data.get("id") != expected:
+    raise SystemExit(f"id mismatch: {data.get('id')!r} != {expected!r}")
+if not isinstance(data.get("tags", []), list):
+    raise SystemExit("tags must be a list")
+PY
+    pass "theme.json valid: $id"
+  else
+    fail "theme.json invalid: $id"
+  fi
+  if [[ -f $dir/preview.jpg || -f $dir/preview.png || -f $dir/preview.webp ]]; then
+    pass "preview asset: $id"
+  else
+    fail "missing preview for $id"
+  fi
+done
+[[ $theme_count -ge 1 ]] && pass "found $theme_count theme packs" || fail "no theme packs"
+
+if [[ -f $LIST_THEMES ]]; then
+  if DOTS_THEMES_DIR="$THEMES_SRC" DOTS_WALLPAPERS_DIR="${ROOT}/home/dot_local/share/dots/wallpapers" \
+    python3 "$LIST_THEMES" "$THEMES_SRC" >/tmp/dots-themes-test.json 2>/tmp/dots-themes-test.err; then
+    if python3 - <<'PY'; then
+import json
+data = json.load(open("/tmp/dots-themes-test.json", encoding="utf-8"))
+assert isinstance(data, list) and data, "empty theme list"
+for t in data:
+    assert "wallpaperPaths" in t, f"{t.get('id')}: missing wallpaperPaths"
+    assert isinstance(t["wallpaperPaths"], dict)
+    for name in t.get("wallpapers", []):
+        assert name in t["wallpaperPaths"], f"{t.get('id')}: {name} missing from wallpaperPaths"
+print("ok", len(data))
+PY
+      pass "list-themes.py JSON + wallpaperPaths"
+    else
+      fail "list-themes.py schema check"
+    fi
+  else
+    fail "list-themes.py failed: $(head -c 200 /tmp/dots-themes-test.err)"
+  fi
+else
+  fail "list-themes.py missing"
+fi
+
+# No stale rice IPC / sticky current writers in QS appearance path
+if rg -n 'target:\s*"rice"|IpcHandler.*rice|dots-rice|nwg-look' "$QS_PIPE" \
+  "${ROOT}/home/dot_config/quickshell/modules/controlcenter/appearance" 2>/dev/null; then
+  fail "stale rice/nwg-look references in appearance QS"
+else
+  pass "no stale rice IPC in appearance QS"
+fi
+
+if rg -n 'gsettings set org.gnome.desktop.interface (gtk-theme|icon-theme)' \
+  "${ROOT}/home/dot_config/quickshell" 2>/dev/null; then
+  fail "raw gsettings GTK/icon writes in Quickshell"
+else
+  pass "Quickshell does not write GTK/icons via gsettings"
+fi
+
+if rg -n 'gtk-theme-manager\.sh' "${ROOT}/home/dot_config/quickshell/services/ThemePipeline.qml" 2>/dev/null; then
+  fail "ThemePipeline still sources gtk-theme-manager.sh"
+else
+  pass "ThemePipeline uses dots-gtk-theme CLI"
+fi
+
+if rg -n 'readlink -f "\$HOME/\.cache/wal/wal"|readlink -f \$HOME/\.cache/wal/wal' \
+  "$GTK_MGR" "$GTK_BIN" "${ROOT}/home/dot_local/lib/dots/apply-appearance.sh" 2>/dev/null; then
+  fail "unsafe readlink on wal text pointer"
+else
+  pass "no unsafe wal readlink in GTK apply path"
+fi
+
+[[ $SOURCE_ONLY == true ]] && {
+  echo
+  echo "Results: $PASS pass, $FAIL fail, $SKIP skip (source-only)"
+  [[ $FAIL -eq 0 ]]
+  exit $?
+}
+
+# ── Live environment ─────────────────────────────────────────────────────────
+if ! command -v dots-gtk-theme >/dev/null 2>&1; then
+  skip "dots-gtk-theme not on PATH (live checks)"
+else
+  if out="$(dots-gtk-theme -q -p current 2>/dev/null)" && [[ -n $out && $out != "Unknown" ]]; then
+    pass "dots-gtk-theme current: $out"
+  else
+    fail "dots-gtk-theme current"
+  fi
+  if out="$(dots-gtk-theme -q -p current-icon 2>/dev/null)" && [[ -n $out && $out != "Unknown" ]]; then
+    pass "dots-gtk-theme current-icon: $out"
+  else
+    fail "dots-gtk-theme current-icon"
+  fi
+  if mapfile -t themes < <(dots-gtk-theme -q -p list 2>/dev/null); then
+    [[ ${#themes[@]} -gt 0 ]] && pass "dots-gtk-theme list (${#themes[@]} themes)" || fail "dots-gtk-theme list empty"
+  else
+    fail "dots-gtk-theme list"
+  fi
+fi
+
+if command -v dots-appearance >/dev/null 2>&1; then
+  if dots appearance doctor >/tmp/dots-appearance-doctor.txt 2>&1; then
+    if grep -q '^OK:' /tmp/dots-appearance-doctor.txt; then
+      pass "dots appearance doctor OK"
+    else
+      fail "dots appearance doctor missing OK"
+      cat /tmp/dots-appearance-doctor.txt >&2 || true
+    fi
+  else
+    fail "dots appearance doctor exited nonzero"
+    cat /tmp/dots-appearance-doctor.txt >&2 || true
+  fi
+else
+  skip "dots-appearance not on PATH"
+fi
+
+wal="$HOME/.cache/wal/wal"
+if [[ -L $wal ]]; then
+  fail "$HOME/.cache/wal/wal is a symlink (must be text path file)"
+elif [[ -f $wal ]]; then
+  line="$(head -n 1 "$wal" | tr -d '\r')"
+  if [[ -f $line ]]; then
+    pass "wal pointer is text path -> image"
+  else
+    fail "wal pointer does not resolve to an image: $line"
+  fi
+else
+  skip "wal pointer missing"
+fi
+
+echo
+echo "Results: $PASS pass, $FAIL fail, $SKIP skip"
+[[ $FAIL -eq 0 ]]

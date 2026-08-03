@@ -7,9 +7,9 @@
 
 set -euo pipefail
 
-if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+if [[ -r "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
 	# shellcheck source=/dev/null
-	source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+	source "$HOME/.local/lib/dots/wallpaper-resolver.sh" 2>/dev/null || true
 fi
 
 SCHEME_FILE="${HOME}/.cache/dots/smart-colors/scheme.json"
@@ -74,9 +74,13 @@ resolve_wallpaper() {
 
 	local wall=""
 	if [[ -f $CURRENT_WALL_CACHE ]]; then
-		wall=$(<"$CURRENT_WALL_CACHE")
-	elif [[ -e $WAL_WALL_LINK ]]; then
-		wall=$(readlink -f "$WAL_WALL_LINK" 2>/dev/null || true)
+		wall="$(head -n 1 "$CURRENT_WALL_CACHE" 2>/dev/null | tr -d '\r' || true)"
+	elif [[ -L $WAL_WALL_LINK ]]; then
+		# Legacy pywal image symlink
+		wall="$(readlink -f "$WAL_WALL_LINK" 2>/dev/null || true)"
+	elif [[ -f $WAL_WALL_LINK ]]; then
+		# Canonical: text path file (never treat the wal file itself as the image)
+		wall="$(head -n 1 "$WAL_WALL_LINK" 2>/dev/null | tr -d '\r' || true)"
 	fi
 
 	if [[ -n ${wall:-} && -f $wall ]]; then

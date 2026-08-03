@@ -457,24 +457,34 @@ PY
 
 # Function to get current GTK theme
 get_current_gtk_theme() {
+	local value=""
 	if [[ -f $GTK3_CONFIG ]]; then
-		grep "^gtk-theme-name=" "$GTK3_CONFIG" | cut -d'=' -f2
-	elif [[ -f $GTK2_CONFIG ]]; then
-		grep "^gtk-theme-name=" "$GTK2_CONFIG" | cut -d'"' -f2
-	else
-		echo "Unknown"
+		value="$(grep "^gtk-theme-name=" "$GTK3_CONFIG" 2> /dev/null | cut -d'=' -f2 || true)"
 	fi
+	if [[ -z $value && -f $GTK2_CONFIG ]]; then
+		value="$(grep "^gtk-theme-name=" "$GTK2_CONFIG" 2> /dev/null | cut -d'"' -f2 || true)"
+	fi
+	if [[ -z $value ]] && command -v gsettings > /dev/null 2>&1; then
+		value="$(gsettings get org.gnome.desktop.interface gtk-theme 2> /dev/null | tr -d "'" || true)"
+	fi
+	printf '%s\n' "${value:-Unknown}"
+	return 0
 }
 
 # Function to get current icon theme
 get_current_icon_theme() {
+	local value=""
 	if [[ -f $GTK3_CONFIG ]]; then
-		grep "^gtk-icon-theme-name=" "$GTK3_CONFIG" | cut -d'=' -f2
-	elif command -v gsettings > /dev/null 2>&1; then
-		gsettings get org.gnome.desktop.interface icon-theme 2> /dev/null | tr -d "'"
-	else
-		echo ""
+		value="$(grep "^gtk-icon-theme-name=" "$GTK3_CONFIG" 2> /dev/null | cut -d'=' -f2 || true)"
 	fi
+	if [[ -z $value ]] && command -v gsettings > /dev/null 2>&1; then
+		value="$(gsettings get org.gnome.desktop.interface icon-theme 2> /dev/null | tr -d "'" || true)"
+	fi
+	if [[ -z $value && -f $GTK2_CONFIG ]]; then
+		value="$(grep "^gtk-icon-theme-name=" "$GTK2_CONFIG" 2> /dev/null | cut -d'"' -f2 || true)"
+	fi
+	printf '%s\n' "${value:-}"
+	return 0
 }
 
 # Function to list installed GTK themes
