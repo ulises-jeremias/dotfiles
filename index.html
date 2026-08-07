@@ -953,6 +953,7 @@ That model was removed; this page is the current contract. The wiki filename
 <ul>
 <li>Quickshell is the main consumer through <code>~/.cache/dots/smart-colors/scheme.json</code>.</li>
 <li><code>dots-wal-reload</code> and <code>dots-wallpaper-set</code> trigger palette refresh and Quickshell IPC reload.</li>
+<li>M3 generation goes through <code>dots-m3-colors</code> (prefers <code>/usr/bin/python3</code> when it has <code>materialyoucolor</code>, so pyenv shims do not break the pipeline).</li>
 <li>Script consumers can source shell/env exports from the same cache directory.</li>
 </ul>
 <h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
@@ -4527,6 +4528,7 @@ That model was removed; this page is the current contract. The wiki filename
 <ul>
 <li>Quickshell is the main consumer through <code>~/.cache/dots/smart-colors/scheme.json</code>.</li>
 <li><code>dots-wal-reload</code> and <code>dots-wallpaper-set</code> trigger palette refresh and Quickshell IPC reload.</li>
+<li>M3 generation goes through <code>dots-m3-colors</code> (prefers <code>/usr/bin/python3</code> when it has <code>materialyoucolor</code>, so pyenv shims do not break the pipeline).</li>
 <li>Script consumers can source shell/env exports from the same cache directory.</li>
 </ul>
 <h2 id="wallpaper-pipeline-contract">Wallpaper Pipeline Contract</h2>
