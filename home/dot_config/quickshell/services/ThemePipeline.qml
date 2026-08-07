@@ -13,7 +13,8 @@ Singleton {
     readonly property string wallpapersDir: `${Paths.data}/wallpapers`
     readonly property string picturesWallpapers: `${Paths.pictures}/Wallpapers`
     readonly property string wallpaperPointer: Paths.wallpaperPointer
-    readonly property string m3Script: `${Quickshell.env("HOME")}/.local/lib/dots/generate-m3-colors.py`
+    // Prefer dots-m3-colors so pyenv shims do not hide Arch python-materialyoucolor.
+    readonly property string m3Bin: `${Quickshell.env("HOME")}/.local/bin/dots-m3-colors`
     readonly property string schemeJson: `${Paths.cache}/smart-colors/scheme.json`
 
     readonly property bool busy: _busy || _queue.length > 0
@@ -344,7 +345,7 @@ done
         readonly property string mode: root._pendingDarkMode ? "dark" : "light"
         readonly property string schemeType: root._pendingSchemeType || "tonal-spot"
         command: [
-            "python3", root.m3Script,
+            root.m3Bin,
             "--image", image,
             "--scheme-type", schemeType,
             "--mode", mode,
