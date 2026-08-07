@@ -173,7 +173,6 @@ ensure_scheme_file() {
 
 regenerate_scheme() {
 	ensure_state
-	command -v python3 >/dev/null 2>&1 || return 1
 	[[ -f $M3_SCRIPT ]] || return 1
 
 	local wallpaper
@@ -193,12 +192,34 @@ regenerate_scheme() {
 		accent_hex="$(cat "$accent_override")"
 		[[ -n $accent_hex ]] && accent_args=(--source-color "$accent_hex")
 	fi
-	python3 "$M3_SCRIPT" \
-		--image "$wallpaper" \
-		--output "$SCHEME_FILE" \
-		--mode "$mode" \
-		--scheme-type "$flavour" \
-		"${accent_args[@]}" >/dev/null 2>&1 || return 1
+
+	# Prefer system Python with materialyoucolor over pyenv shims on PATH.
+	# shellcheck source=/dev/null
+	source "${HOME}/.local/lib/dots/python-m3.sh" 2>/dev/null || true
+	if declare -f dots_run_m3_colors >/dev/null 2>&1; then
+		dots_run_m3_colors \
+			--image "$wallpaper" \
+			--output "$SCHEME_FILE" \
+			--mode "$mode" \
+			--scheme-type "$flavour" \
+			"${accent_args[@]}" >/dev/null 2>&1 || return 1
+	elif command -v dots-m3-colors >/dev/null 2>&1; then
+		dots-m3-colors \
+			--image "$wallpaper" \
+			--output "$SCHEME_FILE" \
+			--mode "$mode" \
+			--scheme-type "$flavour" \
+			"${accent_args[@]}" >/dev/null 2>&1 || return 1
+	elif command -v python3 >/dev/null 2>&1; then
+		python3 "$M3_SCRIPT" \
+			--image "$wallpaper" \
+			--output "$SCHEME_FILE" \
+			--mode "$mode" \
+			--scheme-type "$flavour" \
+			"${accent_args[@]}" >/dev/null 2>&1 || return 1
+	else
+		return 1
+	fi
 
 	# Regenerate hyprlock theme colors from the new scheme
 	if command -v dots-hyprlock-theme >/dev/null 2>&1; then
@@ -316,7 +337,9 @@ cmd_mode() {
 }
 
 cmd_regenerate() {
-	ensure_scheme_file
+	# Force a full M3 rewrite from the current wallpaper + state flavour/mode.
+	# ensure_scheme_file alone is a no-op when scheme.json already exists.
+	regenerate_scheme
 }
 
 # Sync state.json from the meta already present in scheme.json (no regenerate).

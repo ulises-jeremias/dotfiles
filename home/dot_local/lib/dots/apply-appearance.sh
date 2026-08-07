@@ -162,12 +162,29 @@ _dots_aa_run_palette() {
 		echo "apply-appearance: missing generate-m3-colors.py" >&2
 		return 1
 	}
+	# Prefer system Python with materialyoucolor over pyenv shims on PATH.
+	# shellcheck source=/dev/null
+	source "${HOME}/.local/lib/dots/python-m3.sh" 2> /dev/null || true
 	mkdir -p "$(dirname "$DOTS_SCHEME_FILE")"
-	python3 "$DOTS_M3_SCRIPT" \
-		--image "$wallpaper" \
-		--scheme-type "$scheme_type" \
-		--mode "$dark_mode" \
-		--output "$DOTS_SCHEME_FILE" || return 1
+	if declare -f dots_run_m3_colors > /dev/null 2>&1; then
+		dots_run_m3_colors \
+			--image "$wallpaper" \
+			--scheme-type "$scheme_type" \
+			--mode "$dark_mode" \
+			--output "$DOTS_SCHEME_FILE" || return 1
+	elif command -v dots-m3-colors > /dev/null 2>&1; then
+		dots-m3-colors \
+			--image "$wallpaper" \
+			--scheme-type "$scheme_type" \
+			--mode "$dark_mode" \
+			--output "$DOTS_SCHEME_FILE" || return 1
+	else
+		python3 "$DOTS_M3_SCRIPT" \
+			--image "$wallpaper" \
+			--scheme-type "$scheme_type" \
+			--mode "$dark_mode" \
+			--output "$DOTS_SCHEME_FILE" || return 1
+	fi
 
 	if command -v dots-color-scheme > /dev/null 2>&1; then
 		dots-color-scheme sync-state > /dev/null 2>&1 || return 1

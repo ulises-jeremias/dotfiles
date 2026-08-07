@@ -164,6 +164,30 @@ else
 	pass "ThemePipeline uses dots-gtk-theme CLI"
 fi
 
+M3_BIN="${ROOT}/home/dot_local/bin/executable_dots-m3-colors"
+M3_LIB="${ROOT}/home/dot_local/lib/dots/python-m3.sh"
+COLOR_SCHEME_BIN="${ROOT}/home/dot_local/bin/executable_dots-color-scheme"
+
+if [[ -f $M3_BIN && -f $M3_LIB ]]; then
+	pass "dots-m3-colors + python-m3.sh present"
+else
+	fail "missing dots-m3-colors and/or python-m3.sh"
+fi
+
+if grep -En 'dots-m3-colors|m3Bin' "$QS_PIPE" > /dev/null 2>&1 \
+	&& ! grep -En '["'\'']python3["'\''].*generate-m3-colors|generate-m3-colors\.py' "$QS_PIPE" > /dev/null 2>&1; then
+	pass "ThemePipeline invokes dots-m3-colors (not bare python3)"
+else
+	fail "ThemePipeline still invokes generate-m3-colors via bare python3"
+fi
+
+if grep -En 'cmd_regenerate' "$COLOR_SCHEME_BIN" > /dev/null 2>&1 \
+	&& grep -A5 'cmd_regenerate()' "$COLOR_SCHEME_BIN" | grep -Eq 'regenerate_scheme'; then
+	pass "dots-color-scheme regenerate calls regenerate_scheme"
+else
+	fail "dots-color-scheme regenerate is a no-op (must call regenerate_scheme)"
+fi
+
 # Intentional: match the literal shell source pattern containing $HOME.
 # shellcheck disable=SC2016
 if grep -En 'readlink -f "\$HOME/\.cache/wal/wal"|readlink -f \$HOME/\.cache/wal/wal' \

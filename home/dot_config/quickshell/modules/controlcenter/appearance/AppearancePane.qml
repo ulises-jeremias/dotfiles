@@ -115,7 +115,7 @@ Item {
     property string previewRequestKey: ""
     property string previewRunningKey: ""
     property int previewQuality: 8
-    readonly property string m3ScriptPath: `${Quickshell.env("HOME")}/.local/lib/dots/generate-m3-colors.py`
+    readonly property string m3ScriptPath: `${Quickshell.env("HOME")}/.local/bin/dots-m3-colors`
 
     anchors.fill: parent
 
@@ -700,7 +700,6 @@ Item {
     Process {
         id: previewPaletteProc
         command: [
-            "python3",
             root.m3ScriptPath,
             "--image",
             root.previewGenWallpaper,

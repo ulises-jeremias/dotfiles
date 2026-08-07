@@ -63,6 +63,8 @@ Singleton {
             root.scheme = scheme.name;
             flavour = scheme.flavour;
             currentLight = scheme.mode === "light";
+            // Live scheme from disk supersedes any wallpaper-preview palette.
+            showPreview = false;
         } else {
             previewLight = scheme.mode === "light";
         }

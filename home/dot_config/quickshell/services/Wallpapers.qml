@@ -124,8 +124,7 @@ Searcher {
         id: getPreviewColoursProc
 
         command: [
-            "python3",
-            `${Quickshell.env("HOME")}/.local/lib/dots/generate-m3-colors.py`,
+            `${Quickshell.env("HOME")}/.local/bin/dots-m3-colors`,
             "--image",
             root.previewPath,
             "--mode",

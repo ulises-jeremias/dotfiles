@@ -28,6 +28,7 @@ scripts_list=(
 	"🚀 launcher: Unified application launcher (quickshell > minimal)"
 	"🔒 lockscreen: Wayland lockscreen with hyprlock (betterlockscreen alternative)"
 	"🎤 microphone: Monitor and toggle microphone mute status with visual indicators"
+	"🎨 m3-colors: Generate Material Design 3 scheme.json using a Python with materialyoucolor (prefers system Python over pyenv)"
 	"🔄 next-workspace: Switch to the next existing Hyprland workspace"
 	"🌙 night-mode: Toggle night mode/blue light filter"
 	"⚡ performance: Monitor system performance and run benchmarks"

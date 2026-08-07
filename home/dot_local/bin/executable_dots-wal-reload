@@ -67,12 +67,29 @@ if [[ -f $STATE_JSON ]]; then
 fi
 [[ $mode == "light" || $mode == "dark" ]] || mode="dark"
 
-if [[ -n ${wallpaper:-} && -f $wallpaper && -f $M3_SCRIPT ]] && command -v python3 >/dev/null 2>&1; then
-	python3 "$M3_SCRIPT" \
-		--image "$wallpaper" \
-		--scheme-type "$flavour" \
-		--mode "$mode" \
-		--output "$SCHEME_JSON" 2>/dev/null || true
+if [[ -n ${wallpaper:-} && -f $wallpaper && -f $M3_SCRIPT ]]; then
+	# Prefer system Python with materialyoucolor over pyenv shims on PATH.
+	# shellcheck source=/dev/null
+	source "${HOME}/.local/lib/dots/python-m3.sh" 2>/dev/null || true
+	if declare -f dots_run_m3_colors >/dev/null 2>&1; then
+		dots_run_m3_colors \
+			--image "$wallpaper" \
+			--scheme-type "$flavour" \
+			--mode "$mode" \
+			--output "$SCHEME_JSON" 2>/dev/null || true
+	elif command -v dots-m3-colors >/dev/null 2>&1; then
+		dots-m3-colors \
+			--image "$wallpaper" \
+			--scheme-type "$flavour" \
+			--mode "$mode" \
+			--output "$SCHEME_JSON" 2>/dev/null || true
+	elif command -v python3 >/dev/null 2>&1; then
+		python3 "$M3_SCRIPT" \
+			--image "$wallpaper" \
+			--scheme-type "$flavour" \
+			--mode "$mode" \
+			--output "$SCHEME_JSON" 2>/dev/null || true
+	fi
 	if command -v dots-color-scheme >/dev/null 2>&1; then
 		dots-color-scheme sync-state >/dev/null 2>&1 || true
 	fi

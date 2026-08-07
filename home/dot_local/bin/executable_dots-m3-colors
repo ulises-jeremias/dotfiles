@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2026 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## dots-m3-colors: Run generate-m3-colors.py with a Python that has materialyoucolor.
+## Prefers /usr/bin/python3 (Arch python-materialyoucolor) over pyenv/asdf PATH shims.
+
+set -euo pipefail
+
+SCRIPT="${HOME}/.local/lib/dots/generate-m3-colors.py"
+[[ -f $SCRIPT ]] || {
+	echo "dots-m3-colors: missing $SCRIPT" >&2
+	exit 1
+}
+
+_dots_m3_python() {
+	if [[ -x /usr/bin/python3 ]] && /usr/bin/python3 -c 'import materialyoucolor' >/dev/null 2>&1; then
+		printf '%s\n' /usr/bin/python3
+		return 0
+	fi
+	if command -v python3 >/dev/null 2>&1 && python3 -c 'import materialyoucolor' >/dev/null 2>&1; then
+		command -v python3
+		return 0
+	fi
+	return 1
+}
+
+py="$(_dots_m3_python)" || {
+	echo "dots-m3-colors: materialyoucolor not found." >&2
+	echo "  Arch: yay -S --needed python-materialyoucolor" >&2
+	echo "  Or install materialyoucolor into the Python that wins on PATH." >&2
+	exit 1
+}
+
+exec "$py" "$SCRIPT" "$@"

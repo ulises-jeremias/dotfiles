@@ -6,6 +6,7 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 
 - Quickshell is the main consumer through `~/.cache/dots/smart-colors/scheme.json`.
 - `dots-wal-reload` and `dots-wallpaper-set` trigger palette refresh and Quickshell IPC reload.
+- M3 generation goes through `dots-m3-colors` (prefers `/usr/bin/python3` when it has `materialyoucolor`, so pyenv shims do not break the pipeline).
 - Script consumers can source shell/env exports from the same cache directory.
 
 ## Wallpaper Pipeline Contract

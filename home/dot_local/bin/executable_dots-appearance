@@ -349,6 +349,17 @@ cmd_doctor() {
 		echo "FAIL: colors-hyprlock.conf missing or empty" >&2
 		ok=1
 	fi
+	# shellcheck source=/dev/null
+	source "${HOME}/.local/lib/dots/python-m3.sh" 2>/dev/null || true
+	local m3_py=""
+	if declare -f dots_python_m3 >/dev/null 2>&1; then
+		m3_py="$(dots_python_m3 2>/dev/null || true)"
+	fi
+	echo "m3.python      : ${m3_py:-"(missing)"}"
+	if [[ -z $m3_py ]]; then
+		echo "FAIL: no Python with materialyoucolor (install python-materialyoucolor; pyenv shims alone are not enough)" >&2
+		ok=1
+	fi
 	if [[ -f ${HOME}/.local/state/dots/wallpaper/path.txt ]]; then
 		echo "FAIL: orphan wallpaper/path.txt present (use wallpaper/path)" >&2
 		ok=1
