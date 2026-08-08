@@ -45,7 +45,7 @@ source ~/.local/lib/dots/logging.sh || exit
 SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_NAME
 readonly CACHE_DIR="$HOME/.cache/dots/default-apps"
-readonly CONFIG_FILE="$HOME/.config/dots/default-apps.conf"
+readonly CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/dots/default-apps.conf"
 
 # Logging adapter to preserve existing call sites.
 log() {
@@ -174,8 +174,8 @@ list_defaults() {
 
     # Special handling for terminal (uses exo config, not MIME)
     if [[ $category == "terminal" ]]; then
-      if [[ -f ~/.config/xfce4/helpers.rc ]]; then
-        default_app=$(grep "^TerminalEmulator=" ~/.config/xfce4/helpers.rc 2>/dev/null | cut -d'=' -f2)
+      if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/xfce4/helpers.rc" ]]; then
+        default_app=$(grep "^TerminalEmulator=" "${XDG_CONFIG_HOME:-$HOME/.config}/xfce4/helpers.rc" 2>/dev/null | cut -d'=' -f2)
         [[ -z $default_app ]] && default_app="Not set"
       else
         default_app="Not set"
@@ -316,8 +316,8 @@ show_terminal_selector() {
 
   # Get current default
   local current_term=""
-  if [[ -f ~/.config/xfce4/helpers.rc ]]; then
-    current_term=$(grep "^TerminalEmulator=" ~/.config/xfce4/helpers.rc 2>/dev/null | cut -d'=' -f2)
+  if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/xfce4/helpers.rc" ]]; then
+    current_term=$(grep "^TerminalEmulator=" "${XDG_CONFIG_HOME:-$HOME/.config}/xfce4/helpers.rc" 2>/dev/null | cut -d'=' -f2)
   fi
 
   # Build menu with available terminals
@@ -352,11 +352,11 @@ show_terminal_selector() {
   term_cmd="${term_cmd#  }"
 
   # Set as default in exo config
-  mkdir -p ~/.config/xfce4
-  if [[ -f ~/.config/xfce4/helpers.rc ]]; then
-    sed -i "s/^TerminalEmulator=.*/TerminalEmulator=$term_cmd/" ~/.config/xfce4/helpers.rc
+  mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/xfce4"
+  if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/xfce4/helpers.rc" ]]; then
+    sed -i "s/^TerminalEmulator=.*/TerminalEmulator=$term_cmd/" "${XDG_CONFIG_HOME:-$HOME/.config}/xfce4/helpers.rc"
   else
-    echo "TerminalEmulator=$term_cmd" >~/.config/xfce4/helpers.rc
+    echo "TerminalEmulator=$term_cmd" >"${XDG_CONFIG_HOME:-$HOME/.config}/xfce4/helpers.rc"
   fi
 
   log "INFO" "Set $term_cmd as default terminal emulator"

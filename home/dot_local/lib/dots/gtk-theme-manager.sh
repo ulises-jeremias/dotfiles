@@ -24,7 +24,7 @@ fi
 
 # GTK configuration paths
 readonly GTK2_CONFIG="$HOME/.gtkrc-2.0"
-readonly GTK3_CONFIG="$HOME/.config/gtk-3.0/settings.ini"
+readonly GTK3_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini"
 
 # Function to log messages
 log() {

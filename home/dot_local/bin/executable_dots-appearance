@@ -152,8 +152,8 @@ cmd_status() {
 		flavour="$(python3 -c "import json;print(json.load(open('$state_file')).get('flavour',''))" 2>/dev/null || true)"
 		mode="$(python3 -c "import json;print(json.load(open('$state_file')).get('mode',''))" 2>/dev/null || true)"
 	fi
-	if [[ -f ${HOME}/.config/gtk-3.0/settings.ini ]]; then
-		gtk_theme="$(grep -E '^gtk-theme-name=' "${HOME}/.config/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
+	if [[ -f ${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini ]]; then
+		gtk_theme="$(grep -E '^gtk-theme-name=' "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
 	fi
 	if command -v gsettings >/dev/null 2>&1; then
 		icon_theme="$(gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'\"" || true)"
@@ -284,9 +284,9 @@ cmd_doctor() {
 	local hyprlock_bytes=0
 	[[ -f $hyprlock_conf ]] && hyprlock_bytes="$(wc -c <"$hyprlock_conf" | tr -d ' ')"
 	local gtk_theme_ini="" gtk_prefer_dark="" gtk_color_scheme=""
-	if [[ -f ${HOME}/.config/gtk-3.0/settings.ini ]]; then
-		gtk_theme_ini="$(grep -E '^gtk-theme-name=' "${HOME}/.config/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
-		gtk_prefer_dark="$(grep -E '^gtk-application-prefer-dark-theme=' "${HOME}/.config/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
+	if [[ -f ${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini ]]; then
+		gtk_theme_ini="$(grep -E '^gtk-theme-name=' "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
+		gtk_prefer_dark="$(grep -E '^gtk-application-prefer-dark-theme=' "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
 	fi
 	if command -v gsettings >/dev/null 2>&1; then
 		gtk_color_scheme="$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | tr -d "'\"" || true)"

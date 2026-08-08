@@ -14,7 +14,7 @@
 
 set -euo pipefail
 
-readonly SNAPPY_CONFIG_DIR="$HOME/.config/snappy-switcher"
+readonly SNAPPY_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/snappy-switcher"
 readonly SNAPPY_CONFIG_FILE="${SNAPPY_CONFIG_DIR}/config.ini"
 
 snappy_log() {
