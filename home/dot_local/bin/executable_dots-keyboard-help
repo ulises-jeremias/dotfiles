@@ -20,7 +20,7 @@ set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
-readonly KEYBINDINGS_FILE="${HOME}/.config/hypr/hyprland.conf.d/keybindings.conf"
+readonly KEYBINDINGS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.conf.d/keybindings.conf"
 
 if [[ ${DOTS_BYPASS_QUICKSHELL:-0} != 1 ]] && pgrep -x quickshell >/dev/null 2>&1; then
   dots-settings-gui --pane=system menu
