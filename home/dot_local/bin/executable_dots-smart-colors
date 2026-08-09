@@ -843,7 +843,7 @@ EOF
 
   # Generate CopyQ theme file (.ini format)
   local COPYQ_THEME_FILE="${SMART_COLORS_DIR}/colors-copyq.ini"
-  local COPYQ_CONFIG_DIR="${HOME}/.config/copyq"
+  local COPYQ_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/copyq"
   local COPYQ_THEMES_DIR="${COPYQ_CONFIG_DIR}/themes"
 
   # Create themes directory if it doesn't exist

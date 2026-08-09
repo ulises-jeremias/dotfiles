@@ -170,7 +170,7 @@ setup_auto_snapshots() {
 	echo "⚙️  Setting up automatic snapshots..."
 
 	# Create systemd timer for automatic snapshots
-	local timer_dir="$HOME/.config/systemd/user"
+	local timer_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 	mkdir -p "$timer_dir"
 
 	# Service file

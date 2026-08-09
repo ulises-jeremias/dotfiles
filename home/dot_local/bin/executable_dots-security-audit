@@ -62,7 +62,7 @@ check_file_permissions() {
     fi
   fi
 
-  local cred_dir="$HOME/.config/private_credentials"
+  local cred_dir="${XDG_CONFIG_HOME:-$HOME/.config}/private_credentials"
   if [[ -d $cred_dir ]]; then
     find "$cred_dir" -type f 2>/dev/null | while IFS= read -r f; do
       local perms
@@ -93,7 +93,7 @@ check_file_permissions() {
   fi
 
   echo "  Checking for suspicious SUID/SGID files..."
-  find "$HOME/.local" "$HOME/.config" -type f \( -perm -4000 -o -perm -2000 \) 2>/dev/null | while IFS= read -r file; do
+  find "$HOME/.local" "${XDG_CONFIG_HOME:-$HOME/.config}" -type f \( -perm -4000 -o -perm -2000 \) 2>/dev/null | while IFS= read -r file; do
     echo "⚠️  Found SUID/SGID file in user directory: $file"
   done
 
@@ -124,7 +124,7 @@ scan_for_secrets() {
   local issues=0
 
   local scan_locations=(
-    "$HOME/.config"
+    "${XDG_CONFIG_HOME:-$HOME/.config}"
     "$HOME/.local/share"
     "$HOME/.zshrc"
     "$HOME/.bashrc"
@@ -343,7 +343,9 @@ check_system_security() {
 
 run_security_audit() {
   local failures=0
-  export NAN_DOC_TS="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  local NAN_DOC_TS
+  NAN_DOC_TS="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  export NAN_DOC_TS
 
   echo "🔐 Running comprehensive security audit..."
   echo "Timestamp: $NAN_DOC_TS" >"$SECURITY_LOG"
@@ -365,7 +367,9 @@ run_security_audit() {
 
 run_security_audit_json() {
   local failures=0
-  export NAN_DOC_TS="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  local NAN_DOC_TS
+  NAN_DOC_TS="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  export NAN_DOC_TS
 
   local perm_out sec_out sys_out
   perm_out=$(check_file_permissions 2>&1); [[ $? -gt 0 ]] && ((failures++))
@@ -404,7 +408,7 @@ apply_security_fixes() {
     find "$HOME/.ssh" -name "*.pub" -exec chmod 644 {} \; && echo "✅ Fixed SSH public key permissions (644)"
   fi
 
-  local cred_dir="$HOME/.config/private_credentials"
+  local cred_dir="${XDG_CONFIG_HOME:-$HOME/.config}/private_credentials"
   if [[ -d $cred_dir ]]; then
     find "$cred_dir" -type f -exec chmod 600 {} \; && chmod 700 "$cred_dir" && echo "✅ Fixed credential file permissions"
   fi
@@ -434,7 +438,8 @@ apply_security_fixes() {
 }
 
 generate_security_report() {
-  local report_file="$HOME/.cache/dots/security_report_$(date +%Y%m%d).md"
+  local report_file
+  report_file="$HOME/.cache/dots/security_report_$(date +%Y%m%d).md"
 
   {
     echo "# dots-security-audit Report"
