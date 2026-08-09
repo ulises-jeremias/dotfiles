@@ -60,7 +60,12 @@ PRESETS_DIR="${HOME}/.local/share/dots/shell-presets"
 CURRENT_PRESET_FILE="${HOME}/.local/state/dots/current-shell-preset"
 
 export QML_IMPORT_PATH="${QML_IMPORT_PATH:-${HOME}/.local/lib/quickshell/qml:${HOME}/.local/usr/lib/qt6/qml}"
-export QML2_IMPORT_PATH="${QML2_IMPORT_PATH:-${HOME}/.local/usr/lib/qt6/qml:${XDG_CONFIG_HOME:-$HOME/.config}/quickshell}"
+# Ensure XDG quickshell path is present even when QML2_IMPORT_PATH is inherited from Hyprland (which may predate fix)
+if [[ -z "${QML2_IMPORT_PATH:-}" ]]; then
+  export QML2_IMPORT_PATH="${HOME}/.local/usr/lib/qt6/qml:${XDG_CONFIG_HOME:-$HOME/.config}/quickshell"
+elif [[ "$QML2_IMPORT_PATH" != *"${XDG_CONFIG_HOME:-$HOME/.config}/quickshell"* ]]; then
+  export QML2_IMPORT_PATH="${QML2_IMPORT_PATH}:${XDG_CONFIG_HOME:-$HOME/.config}/quickshell"
+fi
 export QS_PLUGIN_PATH="${QS_PLUGIN_PATH:-${HOME}/.local/lib/quickshell}"
 
 is_running() {
