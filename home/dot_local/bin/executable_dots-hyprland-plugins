@@ -5,32 +5,162 @@
 ##
 ## Idempotent bootstrap for HyprPM-managed plugins (e.g. ScrollOverview).
 ## Ensures the configured plugin repositories are installed and enabled, then
-## reloads the running session. Safe to run at every Hyprland login: it is a
+## reloads the running session. Safe to run at every Hyprland login: fast
 ## no-op when everything is already in place.
 ##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Usage:
+##     @script.name [OPTIONS]
+##
+## Options:
+##     -h, --help      Show this help message.
+##     -v, --verbose   Enable verbose output.
+##     -q, --quiet     Suppress output.
+##     -f, --force     Force header rebuild (hyprpm update -f) and reload.
+##         --check     Check if plugins are installed/enabled (no changes).
+##         --no-update Skip hyprpm header update (fast autostart path).
 
 set -euo pipefail
 
-source ~/.local/lib/dots/logging.sh
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit 1
+source ~/.local/lib/dots/logging.sh 2>/dev/null || true
 
 readonly SCROLLOVERVIEW_REPO="https://github.com/yayuuu/hyprland-scroll-overview.git"
 readonly SCROLLOVERVIEW_ENABLE="scrolloverview"
 
-log_info "Ensuring hyprpm headers are up to date..."
-# Non-forced: returns immediately when headers are already valid.
-hyprpm update
-
-log_info "Ensuring ScrollOverview repository is installed..."
-plugin_list="$(hyprpm list 2>/dev/null)"
-if ! grep -Fq -- 'hyprland-scroll-overview' <<<"$plugin_list"; then
-	hyprpm add "${SCROLLOVERVIEW_REPO}"
+# Adjust log level from EasyOptions flags
+if [[ ${verbose:-} == "yes" ]]; then
+	DOTS_LOG_LEVEL=$LOG_LEVEL_DEBUG
+elif [[ ${quiet:-} == "yes" ]]; then
+	DOTS_LOG_LEVEL=$LOG_LEVEL_ERROR
 fi
 
-log_info "Enabling ScrollOverview..."
-hyprpm enable "${SCROLLOVERVIEW_ENABLE}"
+_log_info() {
+	if [[ ${quiet:-} == "yes" ]]; then
+		return 0
+	fi
+	if declare -f log_info >/dev/null 2>&1; then
+		log_info "$*"
+	elif declare -f log >/dev/null 2>&1; then
+		log "INFO" "$*"
+	else
+		echo "[INFO] $*"
+	fi
+}
 
-log_info "Reloading plugins into the running session..."
-hyprpm reload -n 2>/dev/null || true
+_log_debug() {
+	if [[ ${quiet:-} == "yes" ]]; then
+		return 0
+	fi
+	if [[ ${verbose:-} != "yes" && ${debug:-} != "yes" ]]; then
+		return 0
+	fi
+	if declare -f log_debug >/dev/null 2>&1; then
+		log_debug "$*"
+	elif declare -f log >/dev/null 2>&1; then
+		log "DEBUG" "$*"
+	else
+		echo "[DEBUG] $*" >&2
+	fi
+}
 
-log_info "Done."
+_log_warn() {
+	if declare -f log_warn >/dev/null 2>&1; then
+		log_warn "$*"
+	elif declare -f log >/dev/null 2>&1; then
+		log "WARN" "$*"
+	else
+		echo "[WARN] $*" >&2
+	fi
+}
+
+_log_error() {
+	if declare -f log_error >/dev/null 2>&1; then
+		log_error "$*"
+	elif declare -f log >/dev/null 2>&1; then
+		log "ERROR" "$*"
+	else
+		echo "[ERROR] $*" >&2
+	fi
+}
+
+_is_plugin_installed() {
+	local list="$1"
+	grep -Fq -- 'hyprland-scroll-overview' <<<"$list"
+}
+
+_is_plugin_enabled() {
+	local list="$1"
+	# hyprpm list shows enabled plugins; check for scrolloverview handle
+	grep -Fq -- "$SCROLLOVERVIEW_ENABLE" <<<"$list"
+}
+
+# --check: no changes, just report status
+if [[ ${check:-} == "yes" ]]; then
+	if ! command -v hyprpm >/dev/null 2>&1; then
+		_log_error "hyprpm not found"
+		exit 1
+	fi
+	plugin_list="$(hyprpm list 2>/dev/null || true)"
+	if _is_plugin_installed "$plugin_list" && _is_plugin_enabled "$plugin_list"; then
+		_log_info "ScrollOverview: installed and enabled"
+		exit 0
+	else
+		_log_warn "ScrollOverview: not installed or not enabled"
+		exit 1
+	fi
+fi
+
+if ! command -v hyprpm >/dev/null 2>&1; then
+	_log_error "hyprpm not found — is hyprland installed?"
+	exit 1
+fi
+
+# Header update — skip on --no-update for fast autostart path
+if [[ ${no_update:-} == "yes" ]]; then
+	_log_debug "Skipping hyprpm header update (--no-update)"
+else
+	if [[ ${force:-} == "yes" ]]; then
+		_log_info "Rebuilding hyprpm headers (forced)..."
+		hyprpm update -f
+	else
+		_log_info "Ensuring hyprpm headers are up to date..."
+		# Non-forced: returns quickly when headers already valid
+		hyprpm update
+	fi
+fi
+
+_log_info "Ensuring ScrollOverview repository is installed..."
+plugin_list="$(hyprpm list 2>/dev/null || true)"
+need_reload=false
+if ! _is_plugin_installed "$plugin_list"; then
+	_log_info "Installing ScrollOverview repository..."
+	hyprpm add "${SCROLLOVERVIEW_REPO}"
+	plugin_list="$(hyprpm list 2>/dev/null || true)"
+	need_reload=true
+else
+	_log_debug "ScrollOverview repository already installed"
+fi
+
+if ! _is_plugin_enabled "$plugin_list"; then
+	_log_info "Enabling ScrollOverview..."
+	hyprpm enable "${SCROLLOVERVIEW_ENABLE}"
+	need_reload=true
+else
+	_log_debug "ScrollOverview already enabled"
+	if [[ ${force:-} == "yes" ]]; then
+		_log_info "Force-enabling ScrollOverview..."
+		hyprpm enable "${SCROLLOVERVIEW_ENABLE}" 2>/dev/null || true
+		need_reload=true
+	fi
+fi
+
+if [[ $need_reload == true || ${force:-} == "yes" ]]; then
+	_log_info "Reloading plugins into the running session..."
+	hyprpm reload -n 2>/dev/null || true
+else
+	_log_debug "No reload needed — plugins already active"
+fi
+
+_log_info "Done."
