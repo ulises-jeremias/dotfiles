@@ -255,6 +255,9 @@ cmd_set_icons() {
 }
 
 # Sync GTK color-scheme / prefer-dark with live light|dark mode.
+# Persists to live scheme state so next boot and wal-restore respect the
+# user preference (previously this was ephemeral and reverted to state.json
+# mode on every login).
 cmd_color_scheme() {
 	local mode="${1:-}"
 	[[ $mode == "light" || $mode == "dark" ]] || {
@@ -263,7 +266,29 @@ cmd_color_scheme() {
 		return 1
 	}
 	if apply_gtk_color_scheme "$mode"; then
-		log "" "${GREEN}✅ GTK color-scheme synced:${NC} $mode"
+		# Persist mode to live appearance state (best effort, no hard fail).
+		if command -v python3 >/dev/null 2>&1; then
+			local state_file="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
+			mkdir -p "$(dirname "$state_file")" 2>/dev/null || true
+			python3 - "$state_file" "$mode" 2>/dev/null <<'PY' || true
+import json
+import pathlib
+import sys
+path = pathlib.Path(sys.argv[1])
+mode = sys.argv[2]
+try:
+    data = json.loads(path.read_text(encoding="utf-8"))
+except Exception:
+    data = {}
+data["mode"] = mode
+# Ensure required keys exist so dots-color-scheme doctor stays happy
+data.setdefault("name", "dynamic")
+data.setdefault("flavour", "tonal-spot")
+data.setdefault("variant", "tonalspot")
+path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+PY
+		fi
+		log "" "${GREEN}✅ GTK color-scheme synced:${NC} $mode (persisted to state.json)"
 	else
 		log "ERROR" "Failed to sync GTK color-scheme"
 		return 1
