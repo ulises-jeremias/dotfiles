@@ -4,3 +4,6 @@ Name=Wal Restore Colorscheme
 Comment=Restore pywal + M3 palette from live appearance state
 Exec=dots-wal-reload
 X-GNOME-Autostart-enabled=true
+# Hyprland uses Quickshell ThemePipeline for appearance restore; avoid
+# double-apply race with dex --autostart --environment Hyprland.
+NotShowIn=Hyprland;
