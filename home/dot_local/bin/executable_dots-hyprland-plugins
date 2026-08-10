@@ -29,11 +29,16 @@ source ~/.local/lib/dots/logging.sh 2>/dev/null || true
 readonly SCROLLOVERVIEW_REPO="https://github.com/yayuuu/hyprland-scroll-overview.git"
 readonly SCROLLOVERVIEW_ENABLE="scrolloverview"
 
-# Adjust log level from EasyOptions flags
+# Adjust log level from EasyOptions flags — guard against unset constants when
+# logging.sh is unavailable (set -u would otherwise exit on --verbose/--quiet).
 if [[ ${verbose:-} == "yes" ]]; then
-	DOTS_LOG_LEVEL=$LOG_LEVEL_DEBUG
+	if [[ -n ${LOG_LEVEL_DEBUG:-} ]]; then
+		DOTS_LOG_LEVEL=$LOG_LEVEL_DEBUG
+	fi
 elif [[ ${quiet:-} == "yes" ]]; then
-	DOTS_LOG_LEVEL=$LOG_LEVEL_ERROR
+	if [[ -n ${LOG_LEVEL_ERROR:-} ]]; then
+		DOTS_LOG_LEVEL=$LOG_LEVEL_ERROR
+	fi
 fi
 
 _log_info() {
@@ -156,9 +161,16 @@ else
 	fi
 fi
 
-if [[ $need_reload == true || ${force:-} == "yes" ]]; then
+# HyprPM state persists across reboots but a new Hyprland process needs
+# hyprpm reload to actually load enabled plugins into the session. The
+# autostart --no-update path must still reload, while preserving the
+# fast skip of header updates and the force-based reload semantics.
+if [[ $need_reload == true || ${force:-} == "yes" || ${no_update:-} == "yes" ]]; then
 	_log_info "Reloading plugins into the running session..."
-	hyprpm reload -n 2>/dev/null || true
+	if ! hyprpm reload -n 2>/dev/null; then
+		_log_warn "hyprpm reload failed (not in Hyprland session? run with --check to verify)"
+		exit 1
+	fi
 else
 	_log_debug "No reload needed — plugins already active"
 fi
