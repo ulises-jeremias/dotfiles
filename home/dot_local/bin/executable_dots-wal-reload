@@ -10,15 +10,16 @@ set -euo pipefail
 
 # Hyprland race: dex --autostart may fire wal-restore before Quickshell
 # finishes launching (hyprland.conf exec-once ordering). If we are in a
-# Hyprland session but Quickshell is not yet running, wait briefly for it
-# so we can delegate to ThemePipeline instead of doing a direct wal -R +
-# GTK override that ignores theme.json gtkPreferDark.
-if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && ! pgrep -x quickshell >/dev/null 2>&1; then
+# Hyprland session, wait briefly for Quickshell IPC to be ready (process
+# plus appearance target) before falling back to direct wal -R + GTK.
+# Verifies IPC readiness, not just process presence, so we do not apply
+# state.json mode via the fallback and ignore theme.json gtkPreferDark.
+if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
 	for _w in $(seq 1 30); do
-		sleep 0.5
-		if pgrep -x quickshell >/dev/null 2>&1; then
+		if pgrep -x quickshell >/dev/null 2>&1 && quickshell ipc call appearance isBusy >/dev/null 2>&1; then
 			break
 		fi
+		sleep 0.5
 	done
 fi
 
