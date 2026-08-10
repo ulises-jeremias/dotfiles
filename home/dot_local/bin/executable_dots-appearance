@@ -368,22 +368,21 @@ cmd_doctor() {
 		echo "FAIL: orphan smart-colors/wallpaper cache present" >&2
 		ok=1
 	fi
+	# GTK light with dark mode is intentional for many theme packs
+	# (e.g. gruvbox darkMode=true + gtkPreferDark=false → Orchis-Light-Compact).
+	# Downgrade to WARN so user light preference + dark wal does not fail doctor.
 	if [[ -n $state_mode && -n $gtk_prefer_dark ]]; then
 		if [[ $state_mode == "dark" && $gtk_prefer_dark == "false" ]]; then
-			echo "FAIL: GTK prefer-dark=false while live mode is dark" >&2
-			ok=1
+			echo "WARN: GTK prefer-dark=false while live mode is dark (light GTK + dark palette — intentional if theme sets gtkPreferDark=false or you prefer light GTK)" >&2
 		elif [[ $state_mode == "light" && $gtk_prefer_dark == "true" ]]; then
-			echo "FAIL: GTK prefer-dark=true while live mode is light" >&2
-			ok=1
+			echo "WARN: GTK prefer-dark=true while live mode is light (dark GTK + light palette — check theme gtkPreferDark)" >&2
 		fi
 	fi
 	if [[ -n $state_mode && -n $gtk_color_scheme ]]; then
 		if [[ $state_mode == "dark" && $gtk_color_scheme != "prefer-dark" ]]; then
-			echo "FAIL: gsettings color-scheme=$gtk_color_scheme while live mode is dark" >&2
-			ok=1
+			echo "WARN: gsettings color-scheme=$gtk_color_scheme while live mode is dark (mismatch — was GTK manually set to light?)" >&2
 		elif [[ $state_mode == "light" && $gtk_color_scheme != "prefer-light" ]]; then
-			echo "FAIL: gsettings color-scheme=$gtk_color_scheme while live mode is light" >&2
-			ok=1
+			echo "WARN: gsettings color-scheme=$gtk_color_scheme while live mode is light (mismatch — was GTK manually set to dark?)" >&2
 		fi
 	fi
 	if [[ -n $wal_target && -f $wal_target ]]; then
