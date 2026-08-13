@@ -1,6 +1,6 @@
 {
   "nodes": {
-    "caelestia-cli": {
+    "cli": {
       "inputs": {
         "caelestia-shell": [],
         "nixpkgs": [
@@ -59,7 +59,7 @@
     },
     "root": {
       "inputs": {
-        "caelestia-cli": "caelestia-cli",
+        "cli": "cli",
         "nixpkgs": "nixpkgs",
         "quickshell": "quickshell"
       }

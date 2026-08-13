@@ -154,7 +154,7 @@ Singleton {
     FileView {
         id: kbLayoutFile
 
-        path: Quickshell.env("CAELESTIA_XKB_RULES_PATH") || "/usr/share/X11/xkb/rules/base.lst"
+        path: Quickshell.env("HORNERO_XKB_RULES_PATH") || "/usr/share/X11/xkb/rules/base.lst"
         onLoaded: {
             const layoutMatch = text().match(/! layout\n([\s\S]*?)\n\n/);
             if (layoutMatch) {

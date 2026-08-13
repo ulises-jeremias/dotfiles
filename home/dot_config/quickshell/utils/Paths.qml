@@ -20,8 +20,8 @@ Singleton {
 
     readonly property string imagecache: `${cache}/imagecache`
     readonly property string notifimagecache: `${imagecache}/notifs`
-    readonly property string wallsdir: Quickshell.env("CAELESTIA_WALLPAPERS_DIR") || absolutePath(Config.paths.wallpaperDir)
-    readonly property string recsdir: Quickshell.env("CAELESTIA_RECORDINGS_DIR") || `${videos}/Recordings`
+    readonly property string wallsdir: Quickshell.env("HORNERO_WALLPAPERS_DIR") || absolutePath(Config.paths.wallpaperDir)
+    readonly property string recsdir: Quickshell.env("HORNERO_RECORDINGS_DIR") || `${videos}/Recordings`
     readonly property string libdir: Quickshell.env("DOTS_LIB_DIR") || Quickshell.env("HORNERO_LIB_DIR") || "/usr/lib/hornero"
 
     function toLocalFile(path: url): string {
