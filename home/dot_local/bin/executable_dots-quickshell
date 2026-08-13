@@ -43,7 +43,7 @@
 ##     dots-quickshell ipc colours reload
 ##     dots-quickshell ipc wallpaper set ~/Pictures/wall.png
 ##     dots-quickshell preset list
-##     dots-quickshell preset apply caelestia-left
+##     dots-quickshell preset apply hornero-left
 ##     dots-quickshell preset select
 ##     dots-quickshell config get bar.position
 ##     dots-quickshell config set bar.position top
@@ -61,7 +61,7 @@ CURRENT_PRESET_FILE="${HOME}/.local/state/dots/current-shell-preset"
 
 export QML_IMPORT_PATH="${QML_IMPORT_PATH:-${HOME}/.local/lib/quickshell/qml:${HOME}/.local/usr/lib/qt6/qml}"
 # Ensure XDG quickshell path is present even when QML2_IMPORT_PATH is inherited from Hyprland (which may predate fix)
-if [[ -z "${QML2_IMPORT_PATH:-}" ]]; then
+if [[ -z ${QML2_IMPORT_PATH:-} ]]; then
 	export QML2_IMPORT_PATH="${HOME}/.local/usr/lib/qt6/qml:${XDG_CONFIG_HOME:-$HOME/.config}/quickshell"
 elif [[ ":$QML2_IMPORT_PATH:" != *:"${XDG_CONFIG_HOME:-$HOME/.config}/quickshell":* ]]; then
 	export QML2_IMPORT_PATH="${QML2_IMPORT_PATH}:${XDG_CONFIG_HOME:-$HOME/.config}/quickshell"
@@ -544,10 +544,20 @@ cmd_rebuild() {
 
 	log_info "Configuring Hornero plugin (${version})..."
 	mkdir -p "$build_dir"
+	# Drop a pre-rebrand CMake cache that still has INSTALL_*DIR=.../caelestia.
+	# CACHE STRING defaults in CMakeLists.txt do not overwrite an existing cache.
+	if [[ -f ${build_dir}/CMakeCache.txt ]] && grep -qF 'caelestia' "${build_dir}/CMakeCache.txt"; then
+		log_info "Stale CMake cache still references caelestia; reconfiguring from scratch..."
+		rm -rf "$build_dir"
+		mkdir -p "$build_dir"
+	fi
 	cmake -S "$shell_dir" -B "$build_dir" -G Ninja \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX="$install_prefix" \
+		-DENABLE_MODULES="extras;plugin" \
+		-DINSTALL_LIBDIR="usr/lib/hornero" \
 		-DINSTALL_QMLDIR="${install_prefix}/qml" \
+		-DINSTALL_QSCONFDIR="etc/xdg/quickshell/hornero" \
 		-DVERSION="$version" \
 		-DGIT_REVISION="$revision" || {
 		log_error "CMake configure failed"
@@ -568,6 +578,10 @@ cmd_rebuild() {
 		[[ $was_running == true ]] && cmd_start
 		return 1
 	}
+
+	# Leftover packaged-shell copy + version binary from the old CACHE paths.
+	rm -rf "${install_prefix}/etc/xdg/quickshell/caelestia" \
+		"${install_prefix}/usr/lib/caelestia"
 
 	log_info "Hornero plugin rebuilt and installed"
 

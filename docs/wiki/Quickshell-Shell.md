@@ -254,7 +254,11 @@ dots-quickshell ipc colours reload
 # Ensure build deps are installed
 yay -S --needed cmake ninja qt6-base qt6-declarative aubio cava pipewire
 
-# Rebuild manually
+# Preferred: pins INSTALL_LIBDIR/INSTALL_QSCONFDIR to hornero and drops a stale
+# CMake cache that still has caelestia paths.
+dots-quickshell rebuild
+
+# Manual plugin-only rebuild
 cd ~/.config/quickshell/plugin
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build

@@ -151,6 +151,26 @@ else
 	pass "no stale rice IPC in appearance QS"
 fi
 
+if grep -REn 'CAELESTIA_' \
+	"${ROOT}/home/dot_config/quickshell/utils" \
+	"${ROOT}/home/dot_config/quickshell/services" \
+	"${ROOT}/home/dot_config/quickshell/modules" \
+	"${ROOT}/home/dot_config/quickshell/nix" \
+	"${ROOT}/home/dot_config/hypr/hyprland.conf.d/environment.conf" \
+	"${ROOT}/home/dot_local/bin/executable_dots-quickshell" > /dev/null 2>&1; then
+	fail "CAELESTIA_ identifiers still present in Hornero runtime/packaging"
+else
+	pass "no CAELESTIA_ identifiers in Hornero runtime/packaging"
+fi
+
+if grep -En 'INSTALL_LIBDIR="usr/lib/hornero"' "${ROOT}/home/dot_local/bin/executable_dots-quickshell" > /dev/null 2>&1 \
+	&& grep -En 'INSTALL_QSCONFDIR="etc/xdg/quickshell/hornero"' "${ROOT}/home/dot_local/bin/executable_dots-quickshell" > /dev/null 2>&1 \
+	&& grep -En 'ENABLE_MODULES="extras;plugin"' "${ROOT}/home/dot_local/bin/executable_dots-quickshell" > /dev/null 2>&1; then
+	pass "dots-quickshell rebuild pins Hornero CMake install dirs"
+else
+	fail "dots-quickshell rebuild missing Hornero INSTALL_* / ENABLE_MODULES flags"
+fi
+
 if grep -REn 'gsettings set org\.gnome\.desktop\.interface (gtk-theme|icon-theme)' \
 	"${ROOT}/home/dot_config/quickshell" > /dev/null 2>&1; then
 	fail "raw gsettings GTK/icon writes in Quickshell"

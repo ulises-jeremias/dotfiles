@@ -1,5 +1,5 @@
 {
-  description = "Desktop shell for Caelestia dots";
+  description = "Hornero desktop shell";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -9,7 +9,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    caelestia-cli = {
+    # Optional upstream CLI. The GitHub URL and `caelestia-shell` input key are
+    # the upstream flake's names — we cannot rename those without forking it.
+    cli = {
       url = "github:caelestia-dots/cli";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.caelestia-shell.follows = "";
@@ -27,9 +29,8 @@
       );
   in {
     formatter = forAllSystems (pkgs: pkgs.alejandra);
-
     packages = forAllSystems (pkgs: rec {
-      caelestia-shell = pkgs.callPackage ./nix {
+      hornero-shell = pkgs.callPackage ./nix {
         rev = self.rev or self.dirtyRev;
         stdenv = pkgs.clangStdenv;
         quickshell = inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
@@ -37,21 +38,21 @@
           withI3 = false;
         };
         app2unit = pkgs.callPackage ./nix/app2unit.nix {inherit pkgs;};
-        caelestia-cli = inputs.caelestia-cli.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        cli = inputs.cli.packages.${pkgs.stdenv.hostPlatform.system}.default;
       };
-      with-cli = caelestia-shell.override {withCli = true;};
-      debug = caelestia-shell.override {debug = true;};
-      default = caelestia-shell;
+      with-cli = hornero-shell.override {withCli = true;};
+      debug = hornero-shell.override {debug = true;};
+      default = hornero-shell;
     });
 
     devShells = forAllSystems (pkgs: {
       default = let
-        shell = self.packages.${pkgs.stdenv.hostPlatform.system}.caelestia-shell;
+        shell = self.packages.${pkgs.stdenv.hostPlatform.system}.hornero-shell;
       in
         pkgs.mkShell.override {stdenv = shell.stdenv;} {
           inputsFrom = [shell shell.plugin shell.extras];
           packages = with pkgs; [clazy material-symbols rubik nerd-fonts.caskaydia-cove];
-          CAELESTIA_XKB_RULES_PATH = "${pkgs.xkeyboard-config}/share/xkeyboard-config-2/rules/base.lst";
+          HORNERO_XKB_RULES_PATH = "${pkgs.xkeyboard-config}/share/xkeyboard-config-2/rules/base.lst";
         };
     });
 
