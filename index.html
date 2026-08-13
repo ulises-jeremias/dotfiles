@@ -2169,7 +2169,11 @@ dots-quickshell ipc colours reload</pre><h3 id="plugin-build-fails">Plugin build
 <pre class="hljs"><span class="hljs-comment"># Ensure build deps are installed</span>
 yay -S --needed cmake ninja qt6-base qt6-declarative aubio cava pipewire
 
-<span class="hljs-comment"># Rebuild manually</span>
+<span class="hljs-comment"># Preferred: pins INSTALL_LIBDIR/INSTALL_QSCONFDIR to hornero and drops a stale</span>
+<span class="hljs-comment"># CMake cache that still has caelestia paths.</span>
+dots-quickshell rebuild
+
+<span class="hljs-comment"># Manual plugin-only rebuild</span>
 <span class="hljs-built_in">cd</span> ~/.config/quickshell/plugin
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
