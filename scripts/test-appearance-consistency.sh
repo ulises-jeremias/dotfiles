@@ -188,6 +188,52 @@ else
 	fail "dots-color-scheme regenerate is a no-op (must call regenerate_scheme)"
 fi
 
+if grep -En 'normalize_gtk_color_scheme|follow \| default \| prefer-light' "$GTK_MGR" > /dev/null 2>&1 \
+	&& grep -En 'write_live_gtk_color_scheme' "$GTK_MGR" > /dev/null 2>&1; then
+	pass "gtk-theme-manager has gtkColorScheme policy helpers"
+else
+	fail "gtk-theme-manager missing gtkColorScheme policy helpers"
+fi
+
+if grep -En 'data\["mode"\] = mode' "$GTK_BIN" > /dev/null 2>&1; then
+	fail "dots-gtk-theme color-scheme still writes shell mode"
+else
+	pass "dots-gtk-theme color-scheme does not write shell mode"
+fi
+
+if grep -En 'color-scheme follow' "$COLOR_SCHEME_BIN" > /dev/null 2>&1 \
+	&& grep -En 'gtkColorScheme' "$COLOR_SCHEME_BIN" > /dev/null 2>&1; then
+	pass "dots-color-scheme mode only syncs GTK when policy is follow"
+else
+	fail "dots-color-scheme mode still always overwrites GTK color-scheme"
+fi
+
+if grep -En 'sync-color-scheme' "${ROOT}/home/dot_local/lib/dots/apply-appearance.sh" > /dev/null 2>&1 \
+	&& grep -En 'sync-color-scheme' "${ROOT}/home/dot_local/bin/executable_dots-wal-reload" > /dev/null 2>&1; then
+	pass "wallpaper/wal-reload re-apply GTK policy instead of forcing mode"
+else
+	fail "wallpaper/wal-reload still force GTK color-scheme from shell mode"
+fi
+
+if grep -En 'function setGtkColorScheme' "$QS_PIPE" > /dev/null 2>&1 \
+	&& [[ -f ${ROOT}/home/dot_config/quickshell/modules/controlcenter/appearance/sections/GtkColorSchemeSection.qml ]]; then
+	pass "ThemePipeline + Appearance pane expose GTK color scheme"
+else
+	fail "missing setGtkColorScheme IPC or GtkColorSchemeSection"
+fi
+
+if grep -En 'gtkColorScheme' "$LIST_THEMES" > /dev/null 2>&1; then
+	pass "list-themes.py exposes gtkColorScheme"
+else
+	fail "list-themes.py missing gtkColorScheme"
+fi
+
+if grep -En 'fontFamilyClock' "${ROOT}/home/dot_config/quickshell/modules/controlcenter/appearance/sections/FontsSection.qml" > /dev/null 2>&1; then
+	pass "FontsSection exposes clock font"
+else
+	fail "FontsSection missing clock font"
+fi
+
 # Intentional: match the literal shell source pattern containing $HOME.
 # shellcheck disable=SC2016
 if grep -En 'readlink -f "\$HOME/\.cache/wal/wal"|readlink -f \$HOME/\.cache/wal/wal' \

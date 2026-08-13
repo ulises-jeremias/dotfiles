@@ -24,10 +24,14 @@
 ##     list                    List installed GTK themes
 ##     current                 Show current GTK theme
 ##     current-icon            Show current icon theme
-##     apply <theme> [icon] [prefer-dark]
-##                             Apply GTK theme (prefer-dark: true|false)
-##     set-icons <icon>        Update icon theme (keeps current GTK theme)
-##     color-scheme <mode>     Sync gtk prefer-dark / color-scheme (light|dark)
+##     current-color-scheme    Show persisted GTK color-scheme policy
+##     apply <theme> [icon] [color-scheme]
+##                             Apply GTK theme. Optional color-scheme:
+##                             follow|default|prefer-light|prefer-dark|true|false
+##     set-icons <icon>        Update icon theme (keeps current GTK theme + policy)
+##     color-scheme <policy>   Set GTK color-scheme policy
+##                             (follow|default|prefer-light|prefer-dark|light|dark)
+##     sync-color-scheme       Re-apply persisted GTK color-scheme policy
 ##     detect [wallpaper]      Detect optimal theme for wallpaper
 ##     theme [theme-id]        Apply GTK theme from appearance theme pack
 ##     auto                    Auto-detect and apply optimal theme
@@ -38,9 +42,11 @@
 ##     @script.name -p list
 ##     @script.name -q -p current
 ##     @script.name -q -p current-icon
-##     @script.name apply Orchis-Dark-Compact Numix-Circle true
+##     @script.name -q -p current-color-scheme
+##     @script.name apply Orchis-Dark-Compact Numix-Circle prefer-light
 ##     @script.name set-icons Papirus-Dark
-##     @script.name color-scheme dark
+##     @script.name color-scheme prefer-light
+##     @script.name color-scheme follow
 ##     @script.name theme vapor-dreams
 ##     @script.name detect ~/Pictures/wallpaper.jpg
 ##     @script.name auto
@@ -201,34 +207,34 @@ cmd_current_icon() {
 cmd_apply() {
 	local theme_name="$1"
 	local icon_theme="${2:-}"
-	local prefer_dark="${3:-}"
+	local color_scheme="${3:-}"
 
 	if [[ -z $icon_theme ]]; then
 		icon_theme="$(get_current_icon_theme 2>/dev/null || true)"
 		[[ -n $icon_theme ]] || icon_theme="Numix-Circle"
 	fi
-	if [[ -z $prefer_dark ]]; then
-		# Derive from live scheme state when callers omit prefer-dark.
-		local mode="dark"
-		local state_json="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
-		if [[ -f $state_json ]]; then
-			mode="$(python3 -c "import json;print(json.load(open('$state_json')).get('mode','dark'))" 2>/dev/null || echo dark)"
-		fi
-		prefer_dark=$([[ $mode == "light" ]] && echo false || echo true)
-	fi
 
 	log "" "${BLUE}🎨 Applying GTK Theme:${NC} $theme_name"
-	log "DEBUG" "Icon theme: $icon_theme, prefer dark: $prefer_dark"
+	log "DEBUG" "Icon theme: $icon_theme, color-scheme: ${color_scheme:-live-policy}"
 
-	if apply_gtk_theme "$theme_name" "$icon_theme" "$prefer_dark"; then
-		log "" "${GREEN}✅ Theme applied successfully${NC}"
+	if [[ -n $color_scheme ]]; then
+		if apply_gtk_theme "$theme_name" "$icon_theme" "$color_scheme"; then
+			log "" "${GREEN}✅ Theme applied successfully${NC}"
+		else
+			log "ERROR" "Failed to apply theme"
+			return 1
+		fi
 	else
-		log "ERROR" "Failed to apply theme"
-		return 1
+		if apply_gtk_theme "$theme_name" "$icon_theme"; then
+			log "" "${GREEN}✅ Theme applied successfully${NC}"
+		else
+			log "ERROR" "Failed to apply theme"
+			return 1
+		fi
 	fi
 }
 
-# Update icon theme while preserving the current GTK theme + prefer-dark.
+# Update icon theme while preserving the current GTK theme + color-scheme policy.
 cmd_set_icons() {
 	local icon_theme="${1:-}"
 	[[ -n $icon_theme ]] || {
@@ -237,16 +243,11 @@ cmd_set_icons() {
 		return 1
 	}
 
-	local gtk_theme prefer_dark
+	local gtk_theme
 	gtk_theme="$(get_current_gtk_theme)"
-	prefer_dark="false"
-	if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" ]]; then
-		prefer_dark="$(grep "^gtk-application-prefer-dark-theme=" "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" | cut -d'=' -f2 || echo false)"
-	fi
-	[[ $prefer_dark == "1" || $prefer_dark == "true" ]] && prefer_dark="true" || prefer_dark="false"
 
 	log "" "${BLUE}🎯 Applying icon theme:${NC} $icon_theme (gtk=$gtk_theme)"
-	if apply_gtk_theme "$gtk_theme" "$icon_theme" "$prefer_dark"; then
+	if apply_gtk_theme "$gtk_theme" "$icon_theme"; then
 		log "" "${GREEN}✅ Icon theme applied successfully${NC}"
 	else
 		log "ERROR" "Failed to apply icon theme"
@@ -254,43 +255,44 @@ cmd_set_icons() {
 	fi
 }
 
-# Sync GTK color-scheme / prefer-dark with live light|dark mode.
-# Persists to live scheme state so next boot and wal-restore respect the
-# user preference (previously this was ephemeral and reverted to state.json
-# mode on every login).
+cmd_current_color_scheme() {
+	local use_plain=false
+	[[ ${plain:-} == "yes" || ${1:-} == "--plain" || ${1:-} == "-p" || ${1:-} == "plain" ]] && use_plain=true
+
+	local policy
+	policy="$(get_current_gtk_color_scheme)"
+
+	if [[ $use_plain == true ]]; then
+		printf '%s\n' "$policy"
+		return 0
+	fi
+
+	log "" "${BLUE}🎨 GTK color-scheme policy:${NC} $policy"
+}
+
+# Set GTK color-scheme policy. Never writes shell `mode`.
 cmd_color_scheme() {
-	local mode="${1:-}"
-	[[ $mode == "light" || $mode == "dark" ]] || {
-		log "ERROR" "Mode must be light or dark"
-		log "" "Usage: $(basename "$0") color-scheme <light|dark>"
+	local requested="${1:-}"
+	local policy
+	policy="$(normalize_gtk_color_scheme "$requested")"
+	[[ $policy != "invalid" && -n $requested ]] || {
+		log "ERROR" "Policy must be follow|default|prefer-light|prefer-dark|light|dark"
+		log "" "Usage: $(basename "$0") color-scheme <follow|default|prefer-light|prefer-dark|light|dark>"
 		return 1
 	}
-	if apply_gtk_color_scheme "$mode"; then
-		# Persist mode to live appearance state (best effort, no hard fail).
-		if command -v python3 >/dev/null 2>&1; then
-			local state_file="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
-			mkdir -p "$(dirname "$state_file")" 2>/dev/null || true
-			python3 - "$state_file" "$mode" 2>/dev/null <<'PY' || true
-import json
-import pathlib
-import sys
-path = pathlib.Path(sys.argv[1])
-mode = sys.argv[2]
-try:
-    data = json.loads(path.read_text(encoding="utf-8"))
-except Exception:
-    data = {}
-data["mode"] = mode
-# Ensure required keys exist so dots-color-scheme doctor stays happy
-data.setdefault("name", "dynamic")
-data.setdefault("flavour", "tonal-spot")
-data.setdefault("variant", "tonalspot")
-path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
-PY
-		fi
-		log "" "${GREEN}✅ GTK color-scheme synced:${NC} $mode (persisted to state.json)"
+	if apply_gtk_color_scheme "$policy"; then
+		log "" "${GREEN}✅ GTK color-scheme policy:${NC} $policy"
 	else
 		log "ERROR" "Failed to sync GTK color-scheme"
+		return 1
+	fi
+}
+
+cmd_sync_color_scheme() {
+	if sync_gtk_color_scheme; then
+		log "" "${GREEN}✅ GTK color-scheme re-applied:${NC} $(get_current_gtk_color_scheme)"
+	else
+		log "ERROR" "Failed to re-apply GTK color-scheme"
 		return 1
 	fi
 }
@@ -502,10 +504,13 @@ main() {
 	"current-icon" | "current-icons" | "icon-current")
 		cmd_current_icon "${cmd_args[@]}"
 		;;
+	"current-color-scheme" | "current-scheme")
+		cmd_current_color_scheme "${cmd_args[@]}"
+		;;
 	"apply" | "set")
 		if [[ ${#cmd_args[@]} -eq 0 ]]; then
 			log "ERROR" "Theme name required for apply command"
-			log "" "Usage: $(basename "$0") apply <theme-name> [icon-theme] [prefer-dark]"
+			log "" "Usage: $(basename "$0") apply <theme-name> [icon-theme] [color-scheme]"
 			exit 1
 		fi
 		cmd_apply "${cmd_args[@]}"
@@ -520,11 +525,14 @@ main() {
 		;;
 	"color-scheme" | "scheme")
 		if [[ ${#cmd_args[@]} -eq 0 ]]; then
-			log "ERROR" "Mode required (light|dark)"
-			log "" "Usage: $(basename "$0") color-scheme <light|dark>"
+			log "ERROR" "Policy required (follow|default|prefer-light|prefer-dark|light|dark)"
+			log "" "Usage: $(basename "$0") color-scheme <follow|default|prefer-light|prefer-dark|light|dark>"
 			exit 1
 		fi
 		cmd_color_scheme "${cmd_args[0]}"
+		;;
+	"sync-color-scheme" | "sync-scheme")
+		cmd_sync_color_scheme
 		;;
 	"detect" | "analyze")
 		cmd_detect "${cmd_args[@]}"

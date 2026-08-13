@@ -76,7 +76,7 @@ Each appearance theme pack configures its M3 scheme via `theme.json`:
   "schemeType": "vibrant",
   "darkMode": true,
   "gtkTheme": "Orchis-Light-Compact",
-  "gtkPreferDark": false,
+  "gtkColorScheme": "prefer-light",
   "iconTheme": "Numix-Circle"
 }
 ```
@@ -88,6 +88,7 @@ dots appearance list
 dots appearance theme apply vapor-dreams
 dots appearance set-variant tonal-spot
 dots appearance set-mode light
+dots appearance set-gtk-color-scheme prefer-light
 dots appearance doctor
 ```
 

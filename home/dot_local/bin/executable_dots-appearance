@@ -143,7 +143,7 @@ EOF
 }
 
 cmd_status() {
-	local wallpaper="" mode="" flavour="" gtk_theme="" icon_theme=""
+	local wallpaper="" mode="" flavour="" gtk_theme="" icon_theme="" gtk_color_scheme=""
 	if command -v dots-wallpaper-current >/dev/null 2>&1; then
 		wallpaper="$(dots-wallpaper-current 2>/dev/null || true)"
 	fi
@@ -151,7 +151,9 @@ cmd_status() {
 	if [[ -f $state_file ]]; then
 		flavour="$(python3 -c "import json;print(json.load(open('$state_file')).get('flavour',''))" 2>/dev/null || true)"
 		mode="$(python3 -c "import json;print(json.load(open('$state_file')).get('mode',''))" 2>/dev/null || true)"
+		gtk_color_scheme="$(python3 -c "import json;print(json.load(open('$state_file')).get('gtkColorScheme','') or 'follow')" 2>/dev/null || true)"
 	fi
+	[[ -n $gtk_color_scheme ]] || gtk_color_scheme="follow"
 	if [[ -f ${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini ]]; then
 		gtk_theme="$(grep -E '^gtk-theme-name=' "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
 	fi
@@ -160,18 +162,20 @@ cmd_status() {
 	fi
 
 	if [[ ${1:-} == "--json" ]]; then
-		printf '{"wallpaper":%s,"mode":%s,"flavour":%s,"gtkTheme":%s,"iconTheme":%s}\n' \
+		printf '{"wallpaper":%s,"mode":%s,"flavour":%s,"gtkTheme":%s,"iconTheme":%s,"gtkColorScheme":%s}\n' \
 			"$(json_escape "${wallpaper:-}")" \
 			"$(json_escape "${mode:-}")" \
 			"$(json_escape "${flavour:-}")" \
 			"$(json_escape "${gtk_theme:-}")" \
-			"$(json_escape "${icon_theme:-}")"
+			"$(json_escape "${icon_theme:-}")" \
+			"$(json_escape "${gtk_color_scheme:-}")"
 	else
-		echo "wallpaper : ${wallpaper:-}"
-		echo "mode      : ${mode:-}"
-		echo "flavour   : ${flavour:-}"
-		echo "gtkTheme  : ${gtk_theme:-}"
-		echo "iconTheme : ${icon_theme:-}"
+		echo "wallpaper      : ${wallpaper:-}"
+		echo "mode           : ${mode:-}"
+		echo "flavour        : ${flavour:-}"
+		echo "gtkTheme       : ${gtk_theme:-}"
+		echo "iconTheme      : ${icon_theme:-}"
+		echo "gtkColorScheme : ${gtk_color_scheme:-}"
 	fi
 }
 
@@ -204,16 +208,26 @@ cmd_set_gtk() {
 			exit 0
 		fi
 	fi
-	local prefer="true" mode="dark"
-	local state_json="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
-	if [[ -f $state_json ]]; then
-		mode="$(python3 -c "import json;print(json.load(open('$state_json')).get('mode','dark'))" 2>/dev/null || echo dark)"
-	fi
-	prefer=$([[ $mode == "light" ]] && echo false || echo true)
 	local icon
 	icon="$(gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'" || true)"
 	[[ -n $icon ]] || icon="Numix-Circle"
-	dots-gtk-theme -q apply "$theme" "$icon" "$prefer"
+	# Omit color-scheme so live gtkColorScheme policy is preserved.
+	dots-gtk-theme -q apply "$theme" "$icon"
+}
+
+cmd_set_gtk_color_scheme() {
+	local policy="${1:-}"
+	[[ -n $policy ]] || {
+		echo "Usage: dots-appearance set-gtk-color-scheme <follow|default|prefer-light|prefer-dark>" >&2
+		exit 1
+	}
+	if pgrep -x quickshell >/dev/null 2>&1; then
+		if quickshell ipc call appearance setGtkColorScheme "$policy" >/dev/null 2>&1; then
+			_wait_appearance_ipc || exit 1
+			exit 0
+		fi
+	fi
+	dots-gtk-theme -q color-scheme "$policy"
 }
 
 cmd_set_icons() {
@@ -283,7 +297,7 @@ cmd_doctor() {
 	local hyprlock_conf="${HOME}/.cache/dots/smart-colors/colors-hyprlock.conf"
 	local hyprlock_bytes=0
 	[[ -f $hyprlock_conf ]] && hyprlock_bytes="$(wc -c <"$hyprlock_conf" | tr -d ' ')"
-	local gtk_theme_ini="" gtk_prefer_dark="" gtk_color_scheme=""
+	local gtk_theme_ini="" gtk_prefer_dark="" gtk_color_scheme="" gtk_color_policy=""
 	if [[ -f ${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini ]]; then
 		gtk_theme_ini="$(grep -E '^gtk-theme-name=' "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
 		gtk_prefer_dark="$(grep -E '^gtk-application-prefer-dark-theme=' "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini" 2>/dev/null | head -n1 | cut -d= -f2- || true)"
@@ -291,6 +305,10 @@ cmd_doctor() {
 	if command -v gsettings >/dev/null 2>&1; then
 		gtk_color_scheme="$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | tr -d "'\"" || true)"
 	fi
+	if [[ -f $state_file ]]; then
+		gtk_color_policy="$(python3 -c "import json;print(json.load(open('$state_file')).get('gtkColorScheme','') or 'follow')" 2>/dev/null || true)"
+	fi
+	[[ -n $gtk_color_policy ]] || gtk_color_policy="follow"
 
 	echo "wallpaper.ptr  : ${pointer_val:-"(missing)"}"
 	echo "wallpaper.res  : ${resolved:-"(missing)"}"
@@ -298,6 +316,7 @@ cmd_doctor() {
 	echo "hyprlock.conf  : ${hyprlock_bytes} bytes"
 	echo "gtk.theme.ini  : ${gtk_theme_ini:-"(missing)"}"
 	echo "gtk.preferDark : ${gtk_prefer_dark:-"(missing)"}"
+	echo "gtk.colorPolicy: ${gtk_color_policy}"
 	echo "gtk.colorScheme: ${gtk_color_scheme:-"(missing)"}"
 
 	if [[ -e $HOME/.local/share/dots/rices/.current_rice || -e $HOME/.cache/dots/current_rice || -e $HOME/.local/state/dots/rice/current ]]; then
@@ -368,21 +387,22 @@ cmd_doctor() {
 		echo "FAIL: orphan smart-colors/wallpaper cache present" >&2
 		ok=1
 	fi
-	# GTK light with dark mode is intentional for many theme packs
-	# (e.g. gruvbox darkMode=true + gtkPreferDark=false → Orchis-Light-Compact).
-	# Downgrade to WARN so user light preference + dark wal does not fail doctor.
-	if [[ -n $state_mode && -n $gtk_prefer_dark ]]; then
-		if [[ $state_mode == "dark" && $gtk_prefer_dark == "false" ]]; then
-			echo "WARN: GTK prefer-dark=false while live mode is dark (light GTK + dark palette — intentional if theme sets gtkPreferDark=false or you prefer light GTK)" >&2
-		elif [[ $state_mode == "light" && $gtk_prefer_dark == "true" ]]; then
-			echo "WARN: GTK prefer-dark=true while live mode is light (dark GTK + light palette — check theme gtkPreferDark)" >&2
+	# GTK color-scheme is independent of shell mode unless policy is follow.
+	# Light GTK + dark palette is intentional for many theme packs.
+	if [[ $gtk_color_policy == "follow" ]]; then
+		if [[ -n $state_mode && -n $gtk_prefer_dark ]]; then
+			if [[ $state_mode == "dark" && $gtk_prefer_dark == "false" ]]; then
+				echo "WARN: GTK prefer-dark=false while follow-policy mode is dark" >&2
+			elif [[ $state_mode == "light" && $gtk_prefer_dark == "true" ]]; then
+				echo "WARN: GTK prefer-dark=true while follow-policy mode is light" >&2
+			fi
 		fi
-	fi
-	if [[ -n $state_mode && -n $gtk_color_scheme ]]; then
-		if [[ $state_mode == "dark" && $gtk_color_scheme != "prefer-dark" ]]; then
-			echo "WARN: gsettings color-scheme=$gtk_color_scheme while live mode is dark (mismatch — was GTK manually set to light?)" >&2
-		elif [[ $state_mode == "light" && $gtk_color_scheme != "prefer-light" ]]; then
-			echo "WARN: gsettings color-scheme=$gtk_color_scheme while live mode is light (mismatch — was GTK manually set to dark?)" >&2
+		if [[ -n $state_mode && -n $gtk_color_scheme ]]; then
+			if [[ $state_mode == "dark" && $gtk_color_scheme != "prefer-dark" ]]; then
+				echo "WARN: gsettings color-scheme=$gtk_color_scheme while follow-policy mode is dark" >&2
+			elif [[ $state_mode == "light" && $gtk_color_scheme != "prefer-light" ]]; then
+				echo "WARN: gsettings color-scheme=$gtk_color_scheme while follow-policy mode is light" >&2
+			fi
 		fi
 	fi
 	if [[ -n $wal_target && -f $wal_target ]]; then
@@ -406,6 +426,7 @@ set-variant) cmd_set_variant "${1:-}" ;;
 set-mode) cmd_set_mode "${1:-}" ;;
 set-wallpaper) cmd_set_wallpaper "${1:-}" ;;
 set-gtk) cmd_set_gtk "${1:-}" ;;
+set-gtk-color-scheme) cmd_set_gtk_color_scheme "${1:-}" ;;
 set-icons) cmd_set_icons "${1:-}" ;;
 sync) cmd_sync ;;
 doctor) cmd_doctor ;;
@@ -424,6 +445,7 @@ Commands:
   set-mode <dark|light>
   set-wallpaper <path>
   set-gtk <theme>
+  set-gtk-color-scheme <follow|default|prefer-light|prefer-dark>
   set-icons <theme>
   sync
   doctor

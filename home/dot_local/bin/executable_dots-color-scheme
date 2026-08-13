@@ -119,12 +119,19 @@ import pathlib
 import sys
 path = pathlib.Path(sys.argv[1])
 name, flavour, mode, variant = sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
-state = {
-    "name": name,
-    "flavour": flavour,
-    "mode": mode,
-    "variant": variant,
-}
+state = {}
+if path.is_file():
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(loaded, dict):
+            state = loaded
+    except Exception:
+        state = {}
+state["name"] = name
+state["flavour"] = flavour
+state["mode"] = mode
+state["variant"] = variant
+# gtkColorScheme is independent of shell mode — never clobber it here.
 path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
 PY
 }
@@ -324,14 +331,19 @@ cmd_mode() {
 	variant="$(read_state_field variant)"
 	write_state "${name:-dynamic}" "$flavour" "$mode" "${variant:-tonalspot}"
 	regenerate_scheme || true
-	# Keep GTK/libadwaita color-scheme aligned with live appearance mode.
-	if command -v dots-gtk-theme >/dev/null 2>&1; then
-		dots-gtk-theme -q color-scheme "$mode" >/dev/null 2>&1 || true
-	elif [[ -f ${HOME}/.local/lib/dots/gtk-theme-manager.sh ]]; then
-		# shellcheck source=/dev/null
-		source "${HOME}/.local/lib/dots/gtk-theme-manager.sh"
-		if declare -f apply_gtk_color_scheme >/dev/null 2>&1; then
-			apply_gtk_color_scheme "$mode" || true
+	# Only push GTK when policy is follow (missing key = follow for legacy boots).
+	local gtk_policy="follow"
+	gtk_policy="$(read_state_field gtkColorScheme 2>/dev/null || true)"
+	[[ -n $gtk_policy ]] || gtk_policy="follow"
+	if [[ $gtk_policy == "follow" ]]; then
+		if command -v dots-gtk-theme >/dev/null 2>&1; then
+			dots-gtk-theme -q color-scheme follow >/dev/null 2>&1 || true
+		elif [[ -f ${HOME}/.local/lib/dots/gtk-theme-manager.sh ]]; then
+			# shellcheck source=/dev/null
+			source "${HOME}/.local/lib/dots/gtk-theme-manager.sh"
+			if declare -f apply_gtk_color_scheme >/dev/null 2>&1; then
+				apply_gtk_color_scheme follow || true
+			fi
 		fi
 	fi
 }

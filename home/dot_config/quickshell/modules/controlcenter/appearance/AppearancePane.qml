@@ -29,6 +29,7 @@ Item {
     property string fontFamilyMaterial: Config.appearance.font.family.material ?? "Material Symbols Rounded"
     property string fontFamilyMono: Config.appearance.font.family.mono ?? "CaskaydiaCove NF"
     property string fontFamilySans: Config.appearance.font.family.sans ?? "Rubik"
+    property string fontFamilyClock: Config.appearance.font.family.clock ?? "Rubik"
     property real fontSizeScale: Config.appearance.font.size.scale ?? 1
     property real paddingScale: Config.appearance.padding.scale ?? 1
     property real roundingScale: Config.appearance.rounding.scale ?? 1
@@ -63,6 +64,7 @@ Item {
     property string stagedThemeWallpaper: ""
     property string pendingGtkTheme: ""
     property string pendingIconTheme: ""
+    property string pendingGtkColorScheme: "follow"
     property string wallpaperScopeDir: ""
     property bool wallpaperShowAll: false
     property bool themeDirty: false
@@ -72,14 +74,16 @@ Item {
     property bool wallpaperDirty: false
     property bool gtkDirty: false
     property bool iconDirty: false
+    property bool gtkColorSchemeDirty: false
     // True only when Theme mode was toggled by the user (not implied by theme stage).
     property bool modeOverrideDirty: false
     property string deferredMode: ""
     property string deferredGtk: ""
     property string deferredIcon: ""
+    property string deferredGtkColorScheme: ""
     property string applyStatusMessage: ""
     property bool applyFailed: false
-    readonly property bool hasPendingChanges: themeDirty || schemeDirty || variantDirty || modeDirty || wallpaperDirty || gtkDirty || iconDirty
+    readonly property bool hasPendingChanges: themeDirty || schemeDirty || variantDirty || modeDirty || wallpaperDirty || gtkDirty || iconDirty || gtkColorSchemeDirty
     readonly property bool pipelineBusy: ThemePipeline.busy
     readonly property bool canApply: hasPendingChanges && !pipelineBusy
     readonly property string footerStatusText: {
@@ -102,6 +106,7 @@ Item {
     property string previewGtkTheme: ""
     property string previewIconTheme: ""
     property string previewGtkPrefer: ""
+    property string previewGtkColorScheme: ""
     property string previewWallpaperLabel: ""
     property string previewThemeId: ""
     property var previewTags: []
@@ -142,6 +147,25 @@ Item {
             return v;
         default:
             return "tonal-spot";
+        }
+    }
+
+    function normalizeGtkColorScheme(value: string): string {
+        return ThemePipeline.normalizeGtkColorScheme(value) || "follow";
+    }
+
+    function gtkColorSchemeLabel(value: string): string {
+        switch (normalizeGtkColorScheme(value)) {
+        case "follow":
+            return qsTr("Follow theme mode");
+        case "default":
+            return qsTr("Auto (apps decide)");
+        case "prefer-light":
+            return qsTr("Prefer light");
+        case "prefer-dark":
+            return qsTr("Prefer dark");
+        default:
+            return value || "—";
         }
     }
 
@@ -225,6 +249,7 @@ Item {
         previewGtkTheme = "";
         previewIconTheme = "";
         previewGtkPrefer = "";
+        previewGtkColorScheme = "";
         previewWallpaperLabel = "";
         previewThemeId = "";
         previewTags = [];
@@ -245,6 +270,8 @@ Item {
         previewMode = pendingMode;
         previewGtkTheme = pendingGtkTheme;
         previewIconTheme = pendingIconTheme;
+        previewGtkColorScheme = pendingGtkColorScheme;
+        previewGtkPrefer = pendingGtkColorScheme;
         previewWallpaperLabel = pendingWallpaperPath ? pendingWallpaperPath.split("/").pop() : "";
         scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, pendingMode, previewSchemeType);
     }
@@ -265,6 +292,8 @@ Item {
         previewMode = pendingMode;
         previewGtkTheme = pendingGtkTheme;
         previewIconTheme = pendingIconTheme;
+        previewGtkColorScheme = pendingGtkColorScheme;
+        previewGtkPrefer = pendingGtkColorScheme;
         scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, pendingMode, previewSchemeType);
     }
 
@@ -283,7 +312,27 @@ Item {
         previewVariant = previewSchemeType;
         previewGtkTheme = pendingGtkTheme;
         previewIconTheme = pendingIconTheme;
+        previewGtkColorScheme = pendingGtkColorScheme;
+        previewGtkPrefer = pendingGtkColorScheme;
         scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, mode, previewSchemeType);
+    }
+
+    function startGtkColorSchemePreview(policy: string): void {
+        const normalized = normalizeGtkColorScheme(policy);
+        previewActive = true;
+        previewSource = "gtk-color-scheme";
+        previewTitle = gtkColorSchemeLabel(normalized);
+        previewSubtitle = qsTr("GTK color scheme");
+        previewGtkColorScheme = normalized;
+        previewGtkPrefer = normalized;
+        previewMode = pendingMode;
+        previewGtkTheme = pendingGtkTheme;
+        previewIconTheme = pendingIconTheme;
+        previewSchemeType = normalizeSchemeType(pendingVariant);
+        previewVariant = previewSchemeType;
+        previewWallpaperPath = previewWallpaperPath || pendingWallpaperPath;
+        previewWallpaperLabel = pendingWallpaperPath ? pendingWallpaperPath.split("/").pop() : "";
+        scheduleGeneratedPreview(previewWallpaperPath || pendingWallpaperPath, pendingMode, previewSchemeType);
     }
 
     function startWallpaperPreview(path: string, label: string): void {
@@ -301,6 +350,8 @@ Item {
             previewMode = previewMode || pendingMode;
             previewGtkTheme = pendingGtkTheme;
             previewIconTheme = pendingIconTheme;
+            previewGtkColorScheme = pendingGtkColorScheme;
+            previewGtkPrefer = pendingGtkColorScheme;
         }
         previewWallpaperPath = path;
         previewSchemeType = normalizeSchemeType(previewVariant || pendingVariant);
@@ -325,17 +376,8 @@ Item {
         previewSchemeType = normalizeSchemeType(modelData.schemeType ?? "");
         previewGtkTheme = modelData.gtkTheme || "Orchis-Light-Compact";
         previewIconTheme = modelData.iconTheme || "";
-        if (modelData.gtkPreferDark !== undefined)
-            previewGtkPrefer = modelData.gtkPreferDark ? "prefer-dark" : "prefer-light";
-        else {
-            const gtk = (previewGtkTheme || "").toLowerCase();
-            if (gtk.indexOf("light") >= 0)
-                previewGtkPrefer = "prefer-light";
-            else if (gtk.indexOf("dark") >= 0)
-                previewGtkPrefer = "prefer-dark";
-            else
-                previewGtkPrefer = modelData.darkMode ? "prefer-dark" : "prefer-light";
-        }
+        previewGtkColorScheme = modelData.gtkColorScheme || ThemePipeline.resolveGtkColorScheme(modelData, !!modelData.darkMode);
+        previewGtkPrefer = previewGtkColorScheme;
         previewWallpaperLabel = modelData.defaultWallpaper || (previewWallpaperPath ? previewWallpaperPath.split("/").pop() : "");
         previewThemeId = modelData.id || "";
         previewTags = modelData.tags ?? [];
@@ -408,9 +450,15 @@ Item {
             else
                 ThemePipeline.setIcons(pendingIconTheme);
         }
+        if (gtkColorSchemeDirty && pendingGtkColorScheme) {
+            if (pipelineJob)
+                deferredGtkColorScheme = pendingGtkColorScheme;
+            else
+                ThemePipeline.setGtkColorScheme(pendingGtkColorScheme);
+        }
 
         // If a pipeline job is in flight, wait for applyFinished. If already idle, flush now.
-        if ((deferredMode || deferredGtk || deferredIcon) && !ThemePipeline.busy)
+        if ((deferredMode || deferredGtk || deferredIcon || deferredGtkColorScheme) && !ThemePipeline.busy)
             root._flushDeferredPipelineExtras();
 
         themeDirty = false;
@@ -421,6 +469,7 @@ Item {
         wallpaperDirty = false;
         gtkDirty = false;
         iconDirty = false;
+        gtkColorSchemeDirty = false;
         stagedThemeWallpaper = "";
         clearPreview();
     }
@@ -458,6 +507,11 @@ Item {
             deferredIcon = "";
             ThemePipeline.setIcons(theme);
         }
+        if (deferredGtkColorScheme) {
+            const policy = deferredGtkColorScheme;
+            deferredGtkColorScheme = "";
+            ThemePipeline.setGtkColorScheme(policy);
+        }
     }
 
     function stageThemeApply(themeId: string): void {
@@ -483,6 +537,8 @@ Item {
                 pendingGtkTheme = theme.gtkTheme;
             if (theme.iconTheme)
                 pendingIconTheme = theme.iconTheme;
+            if (theme.gtkColorScheme)
+                pendingGtkColorScheme = theme.gtkColorScheme;
         }
     }
 
@@ -502,6 +558,11 @@ Item {
     function stageIconTheme(theme: string): void {
         pendingIconTheme = theme;
         iconDirty = !!theme;
+    }
+
+    function stageGtkColorScheme(policy: string): void {
+        pendingGtkColorScheme = normalizeGtkColorScheme(policy);
+        gtkColorSchemeDirty = !!pendingGtkColorScheme;
     }
 
     function stageSchemeApply(name: string, flavour: string): void {
@@ -548,13 +609,16 @@ Item {
         deferredMode = "";
         deferredGtk = "";
         deferredIcon = "";
+        deferredGtkColorScheme = "";
         wallpaperDirty = false;
         gtkDirty = false;
         iconDirty = false;
+        gtkColorSchemeDirty = false;
         // Seed live GTK/icon so section checkmarks reflect current state.
         // Do not overwrite a user-staged selection if a previous seed is still in flight.
         liveGtkProc.running = true;
         liveIconProc.running = true;
+        liveGtkColorSchemeProc.running = true;
         applyFailed = false;
         applyStatusMessage = "";
         if (!previewActive) {
@@ -571,6 +635,7 @@ Item {
         Config.appearance.font.family.material = root.fontFamilyMaterial;
         Config.appearance.font.family.mono = root.fontFamilyMono;
         Config.appearance.font.family.sans = root.fontFamilySans;
+        Config.appearance.font.family.clock = root.fontFamilyClock;
         Config.appearance.font.size.scale = root.fontSizeScale;
 
         Config.appearance.padding.scale = root.paddingScale;
@@ -759,7 +824,7 @@ Item {
 
                     readonly property var rootPane: sidebarFlickable.rootPane
 
-                    readonly property bool allSectionsExpanded: themesSection.expanded && gtkThemeSection.expanded && iconThemeSection.expanded && themeModeSection.expanded && colorVariantSection.expanded && colorSchemeSection.expanded && animationsSection.expanded && fontsSection.expanded && scalesSection.expanded && transparencySection.expanded && borderSection.expanded && backgroundSection.expanded
+                    readonly property bool allSectionsExpanded: themesSection.expanded && themeModeSection.expanded && colorVariantSection.expanded && colorSchemeSection.expanded && gtkThemeSection.expanded && gtkColorSchemeSection.expanded && iconThemeSection.expanded && fontsSection.expanded && animationsSection.expanded && scalesSection.expanded && transparencySection.expanded && borderSection.expanded && backgroundSection.expanded
 
                     RowLayout {
                         spacing: Appearance.spacing.smaller
@@ -781,13 +846,14 @@ Item {
                             onClicked: {
                                 const shouldExpand = !sidebarLayout.allSectionsExpanded;
                                 themesSection.expanded = shouldExpand;
-                                gtkThemeSection.expanded = shouldExpand;
-                                iconThemeSection.expanded = shouldExpand;
                                 themeModeSection.expanded = shouldExpand;
                                 colorVariantSection.expanded = shouldExpand;
                                 colorSchemeSection.expanded = shouldExpand;
-                                animationsSection.expanded = shouldExpand;
+                                gtkThemeSection.expanded = shouldExpand;
+                                gtkColorSchemeSection.expanded = shouldExpand;
+                                iconThemeSection.expanded = shouldExpand;
                                 fontsSection.expanded = shouldExpand;
+                                animationsSection.expanded = shouldExpand;
                                 scalesSection.expanded = shouldExpand;
                                 transparencySection.expanded = shouldExpand;
                                 borderSection.expanded = shouldExpand;
@@ -798,18 +864,6 @@ Item {
 
                     ThemesSection {
                         id: themesSection
-                        session: root.session
-                        previewController: root
-                    }
-
-                    GtkThemeSection {
-                        id: gtkThemeSection
-                        session: root.session
-                        previewController: root
-                    }
-
-                    IconThemeSection {
-                        id: iconThemeSection
                         session: root.session
                         previewController: root
                     }
@@ -832,13 +886,31 @@ Item {
                         previewController: root
                     }
 
-                    AnimationsSection {
-                        id: animationsSection
-                        rootPane: sidebarFlickable.rootPane
+                    GtkThemeSection {
+                        id: gtkThemeSection
+                        session: root.session
+                        previewController: root
+                    }
+
+                    GtkColorSchemeSection {
+                        id: gtkColorSchemeSection
+                        session: root.session
+                        previewController: root
+                    }
+
+                    IconThemeSection {
+                        id: iconThemeSection
+                        session: root.session
+                        previewController: root
                     }
 
                     FontsSection {
                         id: fontsSection
+                        rootPane: sidebarFlickable.rootPane
+                    }
+
+                    AnimationsSection {
+                        id: animationsSection
                         rootPane: sidebarFlickable.rootPane
                     }
 
@@ -940,6 +1012,20 @@ Item {
         }
     }
 
+    Process {
+        id: liveGtkColorSchemeProc
+        command: ["dots-gtk-theme", "-q", "-p", "current-color-scheme"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (root.gtkColorSchemeDirty)
+                    return;
+                const policy = root.normalizeGtkColorScheme(text.trim());
+                if (policy)
+                    root.pendingGtkColorScheme = policy;
+            }
+        }
+    }
+
     Connections {
         target: root.session
 
@@ -957,6 +1043,7 @@ Item {
                 root.deferredMode = "";
                 root.deferredGtk = "";
                 root.deferredIcon = "";
+                root.deferredGtkColorScheme = "";
                 root.applyFailed = true;
                 root.applyStatusMessage = ThemePipeline.lastError || qsTr("Appearance apply failed");
                 return;
@@ -969,6 +1056,8 @@ Item {
                 liveGtkProc.running = true;
             if (!root.iconDirty)
                 liveIconProc.running = true;
+            if (!root.gtkColorSchemeDirty)
+                liveGtkColorSchemeProc.running = true;
             // User selected something else while we were busy — apply it now.
             if (root.hasPendingChanges)
                 root.commitPending();

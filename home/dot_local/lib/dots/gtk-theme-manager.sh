@@ -25,6 +25,8 @@ fi
 # GTK configuration paths
 readonly GTK2_CONFIG="$HOME/.gtkrc-2.0"
 readonly GTK3_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini"
+readonly GTK4_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0/settings.ini"
+readonly DOTS_SCHEME_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
 
 # Function to log messages
 log() {
@@ -83,7 +85,6 @@ is_icon_theme_installed() {
 apply_gtk_theme() {
 	local gtk_theme="$1"
 	local icon_theme="${2:-elementary}"
-	local prefer_dark="${3:-false}"
 
 	log "INFO" "Applying GTK theme: $gtk_theme, icons: $icon_theme"
 
@@ -164,18 +165,16 @@ gtk-xft-rgba="rgb"
 EOF
 	fi
 
-	# Update GTK3 configuration
+	# Update GTK3 configuration (color-scheme / prefer-dark is applied below).
 	if [[ -f $GTK3_CONFIG ]]; then
 		sed -i "s/^gtk-theme-name=.*/gtk-theme-name=$gtk_theme/" "$GTK3_CONFIG"
 		sed -i "s/^gtk-icon-theme-name=.*/gtk-icon-theme-name=$icon_theme/" "$GTK3_CONFIG"
-		sed -i "s/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=$prefer_dark/" "$GTK3_CONFIG"
 		log "INFO" "Updated GTK3 configuration"
 	else
 		log "WARN" "GTK3 config not found, creating configuration"
 		mkdir -p "$(dirname "$GTK3_CONFIG")"
 		cat > "$GTK3_CONFIG" << EOF
 [Settings]
-gtk-application-prefer-dark-theme=$prefer_dark
 gtk-theme-name=$gtk_theme
 gtk-icon-theme-name=$icon_theme
 gtk-font-name=sans 11
@@ -199,67 +198,194 @@ EOF
 	if command -v gsettings > /dev/null 2>&1; then
 		gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" 2> /dev/null || true
 		gsettings set org.gnome.desktop.interface icon-theme "$icon_theme" 2> /dev/null || true
-		# Older schemas expose this key; portals/libadwaita use color-scheme instead.
-		gsettings set org.gnome.desktop.interface gtk-application-prefer-dark-theme "$prefer_dark" > /dev/null 2>&1 || true
 		log "INFO" "Updated gsettings"
 	fi
 
-	# Keep portal/libadwaita color-scheme in lockstep with prefer-dark.
-	if [[ $prefer_dark == "true" ]]; then
-		apply_gtk_color_scheme dark
-	else
-		apply_gtk_color_scheme light
-	fi
+	_gtk_ini_set "$GTK4_CONFIG" "gtk-theme-name" "$gtk_theme"
+	_gtk_ini_set "$GTK4_CONFIG" "gtk-icon-theme-name" "$icon_theme"
 
-	# XFCE4 settings support removed - using gsettings only
-	# If running XFCE4 session, gsettings should be sufficient
-	# Legacy xfconf-query support can be re-enabled if needed
+	# Color-scheme is independent of the GTK theme name. An explicit 3rd arg
+	# (true/false or a gtkColorScheme policy) sets/persists policy; otherwise
+	# re-apply the live policy so a theme-name change cannot clobber it.
+	if [[ -n ${3:-} ]]; then
+		local policy
+		policy="$(normalize_gtk_color_scheme "$3")"
+		if [[ $policy == "invalid" ]]; then
+			log "WARN" "Unknown GTK color-scheme '$3', re-applying live policy"
+			sync_gtk_color_scheme
+		else
+			apply_gtk_color_scheme "$policy"
+		fi
+	else
+		sync_gtk_color_scheme
+	fi
 
 	log "INFO" "GTK theme applied successfully: $gtk_theme"
 	return 0
 }
 
-# Sync GTK/libadwaita light-dark preference without changing the theme name.
-# mode: "dark" | "light"
+# Canonical gtkColorScheme policy: follow | default | prefer-light | prefer-dark
+# Aliases: light→prefer-light, dark→prefer-dark, auto→default.
+normalize_gtk_color_scheme() {
+	local raw
+	raw="$(printf '%s' "${1:-}" | tr '[:upper:]' '[:lower:]' | tr '_' '-')"
+	case "$raw" in
+		follow | follow-mode | follow-theme | follow-theme-mode) printf 'follow\n' ;;
+		default | auto | apps | apps-decide) printf 'default\n' ;;
+		prefer-light | light) printf 'prefer-light\n' ;;
+		prefer-dark | dark) printf 'prefer-dark\n' ;;
+		true | 1 | yes) printf 'prefer-dark\n' ;;
+		false | 0 | no) printf 'prefer-light\n' ;;
+		*) printf 'invalid\n' ;;
+	esac
+}
+
+read_live_shell_mode() {
+	local mode="dark"
+	if [[ -f $DOTS_SCHEME_STATE ]]; then
+		mode="$(python3 -c "import json;print(json.load(open('$DOTS_SCHEME_STATE')).get('mode','dark'))" 2> /dev/null || echo dark)"
+	fi
+	if [[ $mode == "light" || $mode == "dark" ]]; then
+		printf '%s\n' "$mode"
+	else
+		printf 'dark\n'
+	fi
+}
+
+# Persisted policy. Missing key → follow (legacy: GTK tracked shell mode).
+read_live_gtk_color_scheme() {
+	local policy=""
+	if [[ -f $DOTS_SCHEME_STATE ]]; then
+		policy="$(python3 -c "import json;print(json.load(open('$DOTS_SCHEME_STATE')).get('gtkColorScheme','') or '')" 2> /dev/null || true)"
+	fi
+	policy="$(normalize_gtk_color_scheme "${policy:-follow}")"
+	if [[ $policy == "invalid" ]]; then
+		policy="follow"
+	fi
+	printf '%s\n' "$policy"
+}
+
+write_live_gtk_color_scheme() {
+	local policy="$1"
+	policy="$(normalize_gtk_color_scheme "$policy")"
+	[[ $policy != "invalid" ]] || return 1
+	mkdir -p "$(dirname "$DOTS_SCHEME_STATE")" 2> /dev/null || true
+	python3 - "$DOTS_SCHEME_STATE" "$policy" << 'PY' || true
+import json
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+policy = sys.argv[2]
+try:
+    data = json.loads(path.read_text(encoding="utf-8"))
+except Exception:
+    data = {}
+if not isinstance(data, dict):
+    data = {}
+data["gtkColorScheme"] = policy
+data.setdefault("name", "dynamic")
+data.setdefault("flavour", "tonal-spot")
+data.setdefault("variant", "tonalspot")
+data.setdefault("mode", "dark")
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+PY
+}
+
+# Resolve follow → prefer-light|prefer-dark from shell mode. Other policies pass through.
+effective_gtk_color_scheme() {
+	local policy
+	policy="$(normalize_gtk_color_scheme "${1:-}")"
+	if [[ $policy == "invalid" ]]; then
+		policy="$(read_live_gtk_color_scheme)"
+	fi
+	if [[ $policy == "follow" ]]; then
+		local mode
+		mode="$(read_live_shell_mode)"
+		if [[ $mode == "light" ]]; then
+			printf 'prefer-light\n'
+		else
+			printf 'prefer-dark\n'
+		fi
+		return 0
+	fi
+	printf '%s\n' "$policy"
+}
+
+_gtk_ini_set() {
+	local file="$1"
+	local key="$2"
+	local value="$3"
+	mkdir -p "$(dirname "$file")" || return 1
+	if [[ ! -f $file ]]; then
+		printf '[Settings]\n%s=%s\n' "$key" "$value" > "$file" || return 1
+		return 0
+	fi
+	if grep -q "^${key}=" "$file" 2> /dev/null; then
+		sed -i "s|^${key}=.*|${key}=${value}|" "$file"
+	else
+		if ! grep -q '^\[Settings\]' "$file" 2> /dev/null; then
+			printf '[Settings]\n' >> "$file"
+		fi
+		printf '%s=%s\n' "$key" "$value" >> "$file"
+	fi
+}
+
+_gtk_write_prefer_dark() {
+	local prefer_dark="$1"
+	_gtk_ini_set "$GTK3_CONFIG" "gtk-application-prefer-dark-theme" "$prefer_dark"
+	_gtk_ini_set "$GTK4_CONFIG" "gtk-application-prefer-dark-theme" "$prefer_dark"
+}
+
+# Sync GTK/libadwaita color-scheme without changing the theme name.
+# Accepts follow|default|prefer-light|prefer-dark|light|dark.
+# Persists gtkColorScheme in state.json — never writes shell `mode`.
 apply_gtk_color_scheme() {
-	local mode="${1:-dark}"
-	local prefer_dark="true"
-	local color_scheme="prefer-dark"
-	if [[ $mode == "light" ]]; then
-		prefer_dark="false"
-		color_scheme="prefer-light"
-	elif [[ $mode != "dark" ]]; then
-		log "ERROR" "apply_gtk_color_scheme: mode must be light or dark (got: $mode)"
+	local requested="${1:-follow}"
+	local policy
+	policy="$(normalize_gtk_color_scheme "$requested")"
+	if [[ $policy == "invalid" ]]; then
+		log "ERROR" "apply_gtk_color_scheme: expected follow|default|prefer-light|prefer-dark|light|dark (got: $requested)"
 		return 1
 	fi
 
-	if [[ -f $GTK3_CONFIG ]]; then
-		if grep -q '^gtk-application-prefer-dark-theme=' "$GTK3_CONFIG" 2> /dev/null; then
-			sed -i "s/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=$prefer_dark/" "$GTK3_CONFIG"
-		else
-			printf '\ngtk-application-prefer-dark-theme=%s\n' "$prefer_dark" >> "$GTK3_CONFIG"
-		fi
-	else
-		mkdir -p "$(dirname "$GTK3_CONFIG")" || {
-			log "ERROR" "Failed to create directory for $GTK3_CONFIG"
-			return 1
-		}
-		if ! cat > "$GTK3_CONFIG" << EOF; then
-[Settings]
-gtk-application-prefer-dark-theme=$prefer_dark
-EOF
-			log "ERROR" "Failed to write $GTK3_CONFIG"
-			return 1
-		fi
-		log "INFO" "Created GTK3 config for color-scheme sync"
-	fi
+	write_live_gtk_color_scheme "$policy"
+
+	local effective prefer_dark="false" color_scheme="prefer-dark"
+	effective="$(effective_gtk_color_scheme "$policy")"
+	case "$effective" in
+		default)
+			prefer_dark="false"
+			color_scheme="default"
+			;;
+		prefer-light)
+			prefer_dark="false"
+			color_scheme="prefer-light"
+			;;
+		*)
+			prefer_dark="true"
+			color_scheme="prefer-dark"
+			;;
+	esac
+
+	_gtk_write_prefer_dark "$prefer_dark"
 
 	if command -v gsettings > /dev/null 2>&1; then
 		gsettings set org.gnome.desktop.interface gtk-application-prefer-dark-theme "$prefer_dark" > /dev/null 2>&1 || true
 		gsettings set org.gnome.desktop.interface color-scheme "$color_scheme" > /dev/null 2>&1 || true
 	fi
-	log "INFO" "GTK color-scheme set to $color_scheme"
+	log "INFO" "GTK color-scheme policy=$policy effective=$color_scheme"
 	return 0
+}
+
+# Re-apply persisted policy (follow resolves from current shell mode).
+sync_gtk_color_scheme() {
+	apply_gtk_color_scheme "$(read_live_gtk_color_scheme)"
+}
+
+get_current_gtk_color_scheme() {
+	read_live_gtk_color_scheme
 }
 
 # Function to detect optimal GTK theme based on wallpaper colors
@@ -401,7 +527,7 @@ apply_theme_gtk_theme() {
 
 	log "INFO" "Applying GTK theme from appearance pack: $theme_id"
 
-	local gtk_theme="" icon_theme="Numix-Circle" prefer_dark="auto"
+	local gtk_theme="" icon_theme="Numix-Circle" color_scheme="prefer-dark"
 	local theme_json="$HOME/.local/share/dots/themes/$theme_id/theme.json"
 
 	if [[ ! -f $theme_json ]]; then
@@ -416,16 +542,19 @@ import json, sys
 data = json.load(open(sys.argv[1], encoding="utf-8"))
 gtk = data.get("gtkTheme") or "auto"
 icon = data.get("iconTheme") or "Numix-Circle"
-if "gtkPreferDark" in data and data["gtkPreferDark"] is not None:
-    prefer = "true" if data["gtkPreferDark"] else "false"
+scheme = data.get("gtkColorScheme")
+if scheme:
+    prefer = str(scheme)
+elif "gtkPreferDark" in data and data["gtkPreferDark"] is not None:
+    prefer = "prefer-dark" if data["gtkPreferDark"] else "prefer-light"
 else:
     gtk_lc = str(gtk).lower()
     if "light" in gtk_lc:
-        prefer = "false"
+        prefer = "prefer-light"
     elif "dark" in gtk_lc:
-        prefer = "true"
+        prefer = "prefer-dark"
     else:
-        prefer = "true" if data.get("darkMode", True) else "false"
+        prefer = "prefer-dark" if data.get("darkMode", True) else "prefer-light"
 print(gtk)
 print(icon)
 print(prefer)
@@ -433,8 +562,11 @@ PY
 	)"
 	gtk_theme="$(sed -n '1p' <<< "$meta")"
 	icon_theme="$(sed -n '2p' <<< "$meta")"
-	prefer_dark="$(sed -n '3p' <<< "$meta")"
-	prefer_dark="$(normalize_prefer_dark "$prefer_dark")"
+	color_scheme="$(sed -n '3p' <<< "$meta")"
+	color_scheme="$(normalize_gtk_color_scheme "$color_scheme")"
+	if [[ $color_scheme == "invalid" ]]; then
+		color_scheme="prefer-dark"
+	fi
 
 	if [[ -z $gtk_theme ]] || [[ $gtk_theme == "auto" ]]; then
 		local wal_wallpaper=""
@@ -448,11 +580,8 @@ PY
 			local theme_info
 			theme_info=$(detect_optimal_gtk_theme "$wal_wallpaper")
 			gtk_theme="${theme_info%:*}"
-			if [[ $prefer_dark == "auto" ]]; then
-				prefer_dark="$(normalize_prefer_dark "${theme_info#*:}")"
-			fi
 		else
-			if [[ $prefer_dark == "true" ]]; then
+			if [[ $color_scheme == "prefer-dark" ]]; then
 				gtk_theme="Orchis-Dark-Compact"
 			else
 				gtk_theme="Orchis-Light-Compact"
@@ -460,11 +589,7 @@ PY
 		fi
 	fi
 
-	if [[ $prefer_dark == "auto" ]]; then
-		prefer_dark="false"
-	fi
-
-	apply_gtk_theme "$gtk_theme" "$icon_theme" "$prefer_dark"
+	apply_gtk_theme "$gtk_theme" "$icon_theme" "$color_scheme"
 }
 
 # Function to get current GTK theme

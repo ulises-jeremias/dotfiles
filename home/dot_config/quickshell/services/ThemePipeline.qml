@@ -30,6 +30,8 @@ Singleton {
     property string _pendingThemeId: ""
     // "true" | "false" | "" (infer from gtk theme name / shell mode)
     property string _pendingGtkPreferDark: ""
+    // follow | default | prefer-light | prefer-dark | "" (wallpaper jobs sync live policy)
+    property string _pendingGtkColorScheme: ""
     property bool _runThemeSideEffects: false
     property string _lastError: ""
     readonly property string lastError: _lastError
@@ -38,14 +40,8 @@ Singleton {
     signal applyFinished(bool ok)
 
     function resolveGtkPreferDark(cfg: var, darkMode: bool): string {
-        if (cfg && cfg.gtkPreferDark !== undefined && cfg.gtkPreferDark !== null && cfg.gtkPreferDark !== "")
-            return cfg.gtkPreferDark ? "true" : "false";
-        const gtk = ((cfg && cfg.gtkTheme) ? cfg.gtkTheme : "").toLowerCase();
-        if (gtk.indexOf("light") >= 0)
-            return "false";
-        if (gtk.indexOf("dark") >= 0)
-            return "true";
-        return darkMode ? "true" : "false";
+        const scheme = root.resolveGtkColorScheme(cfg, darkMode);
+        return scheme === "prefer-light" || scheme === "default" ? "false" : "true";
     }
 
     function resolveGtkPreferFromName(gtkTheme: string, darkMode: bool): string {
@@ -55,6 +51,50 @@ Singleton {
         if (gtk.indexOf("dark") >= 0)
             return "true";
         return darkMode ? "true" : "false";
+    }
+
+    function normalizeGtkColorScheme(value: string): string {
+        const raw = (value ?? "").toLowerCase().replace(/_/g, "-");
+        switch (raw) {
+        case "follow":
+        case "follow-mode":
+        case "follow-theme":
+        case "follow-theme-mode":
+            return "follow";
+        case "default":
+        case "auto":
+        case "apps":
+        case "apps-decide":
+            return "default";
+        case "prefer-light":
+        case "light":
+        case "false":
+        case "0":
+        case "no":
+            return "prefer-light";
+        case "prefer-dark":
+        case "dark":
+        case "true":
+        case "1":
+        case "yes":
+            return "prefer-dark";
+        default:
+            return "";
+        }
+    }
+
+    function resolveGtkColorScheme(cfg: var, darkMode: bool): string {
+        const fromField = root.normalizeGtkColorScheme((cfg && cfg.gtkColorScheme) ? String(cfg.gtkColorScheme) : "");
+        if (fromField)
+            return fromField;
+        if (cfg && cfg.gtkPreferDark !== undefined && cfg.gtkPreferDark !== null && cfg.gtkPreferDark !== "")
+            return cfg.gtkPreferDark ? "prefer-dark" : "prefer-light";
+        const gtk = ((cfg && cfg.gtkTheme) ? cfg.gtkTheme : "").toLowerCase();
+        if (gtk.indexOf("light") >= 0)
+            return "prefer-light";
+        if (gtk.indexOf("dark") >= 0)
+            return "prefer-dark";
+        return darkMode ? "prefer-dark" : "prefer-light";
     }
 
     function applyTheme(id: string, wallpaperPath: string): void {
@@ -91,6 +131,16 @@ Singleton {
         });
     }
 
+    function setGtkColorScheme(policy: string): void {
+        const normalized = root.normalizeGtkColorScheme(policy);
+        if (!normalized)
+            return;
+        _enqueue({
+            kind: "gtk-color-scheme",
+            gtkColorScheme: normalized
+        });
+    }
+
     function setIcons(theme: string): void {
         if (!theme)
             return;
@@ -102,7 +152,7 @@ Singleton {
 
     function _enqueue(job: var): void {
         const tail = _queue.length ? _queue[_queue.length - 1] : null;
-        if (tail && tail.kind === job.kind && tail.themeId === job.themeId && tail.wallpaper === job.wallpaper && tail.gtkTheme === job.gtkTheme && tail.iconTheme === job.iconTheme)
+        if (tail && tail.kind === job.kind && tail.themeId === job.themeId && tail.wallpaper === job.wallpaper && tail.gtkTheme === job.gtkTheme && tail.iconTheme === job.iconTheme && tail.gtkColorScheme === job.gtkColorScheme)
             return;
         _queue = _queue.concat([job]);
         _pump();
@@ -122,6 +172,7 @@ Singleton {
         _pendingThemeName = "";
         _pendingThemeId = "";
         _pendingGtkPreferDark = "";
+        _pendingGtkColorScheme = "";
 
         if (job.kind === "theme") {
             _runThemeSideEffects = true;
@@ -141,9 +192,10 @@ Singleton {
             walReloadProc.running = true;
         } else if (job.kind === "gtk") {
             gtkStandaloneProc.themeName = job.gtkTheme || "";
-            gtkStandaloneProc.mode = Colours.currentLight ? "light" : "dark";
-            gtkStandaloneProc.preferDark = root.resolveGtkPreferFromName(job.gtkTheme || "", !Colours.currentLight);
             gtkStandaloneProc.running = true;
+        } else if (job.kind === "gtk-color-scheme") {
+            gtkColorSchemeProc.policy = job.gtkColorScheme || "follow";
+            gtkColorSchemeProc.running = true;
         } else if (job.kind === "icons") {
             iconOnlyProc.themeName = job.iconTheme || "";
             iconOnlyProc.running = true;
@@ -223,6 +275,7 @@ Singleton {
             root._pendingIconTheme = cfg.iconTheme || "";
             root._pendingThemeName = cfg.name || themeLoader.themeId;
             root._pendingGtkPreferDark = root.resolveGtkPreferDark(cfg, root._pendingDarkMode);
+            root._pendingGtkColorScheme = root.resolveGtkColorScheme(cfg, root._pendingDarkMode);
 
             const wp = themeLoader.wallpaperOverride;
             if (wp) {
@@ -286,6 +339,7 @@ done
         _pendingSchemeType = cfg.schemeType || "tonal-spot";
         _pendingDarkMode = cfg.darkMode !== undefined ? !!cfg.darkMode : true;
         _pendingGtkPreferDark = root.resolveGtkPreferDark(cfg, _pendingDarkMode);
+        _pendingGtkColorScheme = root.resolveGtkColorScheme(cfg, _pendingDarkMode);
         walPrepProc.running = true;
     }
 
@@ -374,8 +428,7 @@ done
             gtkFinalizeProc.themeName = root._runThemeSideEffects ? (root._pendingGtkTheme || "") : "";
             gtkFinalizeProc.iconTheme = root._runThemeSideEffects ? (root._pendingIconTheme || "") : "";
             gtkFinalizeProc.themeId = root._runThemeSideEffects ? (root._pendingThemeId || "") : "";
-            gtkFinalizeProc.mode = root._pendingDarkMode ? "dark" : "light";
-            gtkFinalizeProc.preferDark = root._pendingGtkPreferDark || root.resolveGtkPreferFromName(root._pendingGtkTheme, root._pendingDarkMode);
+            gtkFinalizeProc.colorScheme = root._runThemeSideEffects ? (root._pendingGtkColorScheme || "") : "";
             gtkFinalizeProc.running = true;
         }
     }
@@ -391,40 +444,35 @@ done
         property string themeName: ""
         property string iconTheme: ""
         property string themeId: ""
-        property string mode: "dark"
-        property string preferDark: "true"
+        property string colorScheme: ""
         command: ["bash", "-c", `
 set -euo pipefail
-prefer="\${DOTS_GTK_PREFER:-}"
-if [[ -z "\$prefer" ]]; then
-  prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
-fi
+policy="\${DOTS_GTK_COLOR_SCHEME:-}"
 if [[ -n "\${DOTS_THEME_ID:-}" && ( -z "\${DOTS_GTK_THEME:-}" || "\${DOTS_GTK_THEME}" == "auto" ) ]]; then
   dots-gtk-theme -q theme "\${DOTS_THEME_ID}" || true
-  if [[ "\$prefer" == "false" ]]; then
-    dots-gtk-theme -q color-scheme light || true
+  if [[ -n "\$policy" ]]; then
+    dots-gtk-theme -q color-scheme "\$policy" || true
   else
-    dots-gtk-theme -q color-scheme dark || true
+    dots-gtk-theme -q sync-color-scheme || true
   fi
 elif [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
-  if [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
-    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME}" "\$prefer" || true
+  if [[ -n "\$policy" ]]; then
+    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" "\$policy" || true
   else
-    # Omit icon: dots-gtk-theme apply resolves the live icon theme.
-    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "" "\$prefer" || true
+    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" || true
   fi
 elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
   dots-gtk-theme -q set-icons "\${DOTS_ICON_THEME}" || true
-  if [[ "\$prefer" == "false" ]]; then
-    dots-gtk-theme -q color-scheme light || true
+  if [[ -n "\$policy" ]]; then
+    dots-gtk-theme -q color-scheme "\$policy" || true
   else
-    dots-gtk-theme -q color-scheme dark || true
+    dots-gtk-theme -q sync-color-scheme || true
   fi
 else
-  if [[ "\$prefer" == "false" ]]; then
-    dots-gtk-theme -q color-scheme light || true
+  if [[ -n "\$policy" ]]; then
+    dots-gtk-theme -q color-scheme "\$policy" || true
   else
-    dots-gtk-theme -q color-scheme dark || true
+    dots-gtk-theme -q sync-color-scheme || true
   fi
 fi
 `]
@@ -432,36 +480,29 @@ fi
             "DOTS_GTK_THEME": gtkFinalizeProc.themeName,
             "DOTS_ICON_THEME": gtkFinalizeProc.iconTheme,
             "DOTS_THEME_ID": gtkFinalizeProc.themeId,
-            "DOTS_MODE": gtkFinalizeProc.mode,
-            "DOTS_GTK_PREFER": gtkFinalizeProc.preferDark
+            "DOTS_GTK_COLOR_SCHEME": gtkFinalizeProc.colorScheme
         })
         onExited: (exitCode, exitStatus) => {
             root._finishJob(true, "");
         }
     }
 
-    // Queued GTK override through dots-gtk-theme.
+    // Queued GTK override through dots-gtk-theme. Preserves live gtkColorScheme.
     Process {
         id: gtkStandaloneProc
         property string themeName: ""
-        property string mode: "dark"
-        property string preferDark: "true"
-        command: ["bash", "-c", `
-set -euo pipefail
-prefer="\${DOTS_GTK_PREFER:-}"
-if [[ -z "\$prefer" ]]; then
-  prefer=$([[ "\${DOTS_MODE}" == "light" ]] && echo false || echo true)
-fi
-# Omit icon: dots-gtk-theme apply resolves the live icon theme.
-dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "" "\$prefer"
-`]
-        environment: ({
-            "DOTS_GTK_THEME": gtkStandaloneProc.themeName,
-            "DOTS_MODE": gtkStandaloneProc.mode,
-            "DOTS_GTK_PREFER": gtkStandaloneProc.preferDark
-        })
+        command: ["dots-gtk-theme", "-q", "apply", gtkStandaloneProc.themeName]
         onExited: (exitCode, exitStatus) => {
             root._finishJob(exitCode === 0, exitCode === 0 ? "" : `setGtk failed (exit ${exitCode})`);
+        }
+    }
+
+    Process {
+        id: gtkColorSchemeProc
+        property string policy: "follow"
+        command: ["dots-gtk-theme", "-q", "color-scheme", gtkColorSchemeProc.policy]
+        onExited: (exitCode, exitStatus) => {
+            root._finishJob(exitCode === 0, exitCode === 0 ? "" : `setGtkColorScheme failed (exit ${exitCode})`);
         }
     }
 
@@ -534,6 +575,10 @@ dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "" "\$prefer"
 
         function setGtk(theme: string): void {
             root.setGtk(theme);
+        }
+
+        function setGtkColorScheme(policy: string): void {
+            root.setGtkColorScheme(policy);
         }
 
         function setIcons(theme: string): void {

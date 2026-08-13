@@ -46,6 +46,39 @@ StyledRect {
         return mode === "light" ? qsTr("Light") : qsTr("Dark");
     }
 
+    function gtkColorSchemeLabel(value: string): string {
+        switch ((value || "").toLowerCase()) {
+        case "follow":
+            return qsTr("Follow theme mode");
+        case "default":
+        case "auto":
+            return qsTr("Auto (apps decide)");
+        case "prefer-light":
+        case "light":
+            return qsTr("Prefer light");
+        case "prefer-dark":
+        case "dark":
+            return qsTr("Prefer dark");
+        default:
+            return value || "—";
+        }
+    }
+
+    function gtkColorSchemeIcon(value: string): string {
+        switch ((value || "").toLowerCase()) {
+        case "follow":
+            return "sync";
+        case "default":
+        case "auto":
+            return "contrast";
+        case "prefer-light":
+        case "light":
+            return "light_mode";
+        default:
+            return "dark_mode";
+        }
+    }
+
     function basename(path: string): string {
         if (!path)
             return "";
@@ -324,9 +357,9 @@ StyledRect {
                             }
 
                             RecipeRow {
-                                icon: root.gtkPreferText === "prefer-light" ? "light_mode" : "dark_mode"
-                                label: qsTr("GTK prefer")
-                                value: root.gtkPreferText || "—"
+                                icon: root.gtkColorSchemeIcon(root.gtkPreferText)
+                                label: qsTr("GTK color scheme")
+                                value: root.gtkColorSchemeLabel(root.gtkPreferText)
                             }
 
                             RecipeRow {

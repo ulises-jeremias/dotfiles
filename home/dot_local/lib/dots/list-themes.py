@@ -41,6 +41,26 @@ def wallpaper_index(theme_id: str, wallpaper_dir: str, walls_root: Path) -> dict
     return dict(sorted(paths.items()))
 
 
+def _gtk_color_scheme(data: dict) -> str:
+    raw = str(data.get("gtkColorScheme") or "").strip().lower().replace("_", "-")
+    if raw in {"follow", "default", "prefer-light", "prefer-dark"}:
+        return raw
+    if raw in {"light"}:
+        return "prefer-light"
+    if raw in {"dark"}:
+        return "prefer-dark"
+    if raw in {"auto", "apps"}:
+        return "default"
+    if "gtkPreferDark" in data and data["gtkPreferDark"] is not None:
+        return "prefer-dark" if data["gtkPreferDark"] else "prefer-light"
+    gtk = str(data.get("gtkTheme") or "").lower()
+    if "light" in gtk:
+        return "prefer-light"
+    if "dark" in gtk:
+        return "prefer-dark"
+    return "prefer-dark" if data.get("darkMode", True) else "prefer-light"
+
+
 def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:
     path = theme_dir / "theme.json"
     if not path.is_file():
@@ -85,6 +105,7 @@ def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:
                 else bool(data.get("darkMode", True))
             )
         ),
+        "gtkColorScheme": _gtk_color_scheme(data),
         "defaultWallpaper": default,
         "wallpaperDir": wallpaper_dir,
         "wallpapers": walls,

@@ -298,6 +298,99 @@ CollapsibleSection {
         }
     }
 
+    CollapsibleSection {
+        id: clockFontSection
+        title: qsTr("Clock font family")
+        expanded: false
+        showBackground: true
+        nested: true
+
+        Loader {
+            Layout.fillWidth: true
+            Layout.preferredHeight: item ? Math.min(item.contentHeight, 300) : 0
+            active: clockFontSection.expanded
+
+            sourceComponent: StyledListView {
+                id: clockFontList
+                property alias contentHeight: clockFontList.contentHeight
+
+                clip: true
+                spacing: Appearance.spacing.small / 2
+                model: Qt.fontFamilies()
+
+                StyledScrollBar.vertical: StyledScrollBar {
+                    flickable: clockFontList
+                }
+
+                delegate: StyledRect {
+                    required property string modelData
+                    required property int index
+
+                    width: ListView.view.width
+
+                    readonly property bool isCurrent: modelData === rootPane.fontFamilyClock
+                    color: Qt.alpha(Colours.tPalette.m3surfaceContainer, isCurrent ? Colours.tPalette.m3surfaceContainer.a : 0)
+                    radius: Appearance.rounding.normal
+                    border.width: isCurrent ? 1 : 0
+                    border.color: Colours.palette.m3primary
+
+                    StateLayer {
+                        function onClicked(): void {
+                            rootPane.fontFamilyClock = modelData;
+                            rootPane.saveConfig();
+                        }
+                    }
+
+                    ColumnLayout {
+                        id: fontFamilyClockRow
+
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.margins: Appearance.padding.normal
+
+                        spacing: 1
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: Appearance.spacing.normal
+
+                            StyledText {
+                                text: modelData
+                                font.pointSize: Appearance.font.size.normal
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                            }
+
+                            Loader {
+                                active: isCurrent
+
+                                sourceComponent: MaterialIcon {
+                                    text: "check"
+                                    color: Colours.palette.m3onSurfaceVariant
+                                    font.pointSize: Appearance.font.size.large
+                                }
+                            }
+                        }
+
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: "12:34 · Thursday 13 Aug"
+                            font.family: modelData
+                            font.pointSize: Appearance.font.size.small
+                            color: Colours.palette.m3onSurfaceVariant
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    implicitHeight: fontFamilyClockRow.implicitHeight + Appearance.padding.normal * 2
+                }
+            }
+        }
+    }
+
     SectionContainer {
         contentSpacing: Appearance.spacing.normal
 

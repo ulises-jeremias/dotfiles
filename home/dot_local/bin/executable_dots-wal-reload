@@ -14,7 +14,7 @@ set -euo pipefail
 # plus appearance target) before falling back to direct wal -R + GTK.
 # Verifies IPC readiness, not just process presence, so we do not apply
 # state.json mode via the fallback and ignore theme.json gtkPreferDark.
-if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
 	for _w in $(seq 1 30); do
 		if pgrep -x quickshell >/dev/null 2>&1 && quickshell ipc call appearance isBusy >/dev/null 2>&1; then
 			break
@@ -109,12 +109,14 @@ if [[ -n ${wallpaper:-} && -f $wallpaper && -f $M3_SCRIPT ]]; then
 		dots-color-scheme sync-state >/dev/null 2>&1 || true
 	fi
 	if command -v dots-gtk-theme >/dev/null 2>&1; then
-		dots-gtk-theme -q color-scheme "$mode" >/dev/null 2>&1 || true
+		dots-gtk-theme -q sync-color-scheme >/dev/null 2>&1 || true
 	elif [[ -f $HOME/.local/lib/dots/gtk-theme-manager.sh ]]; then
 		# shellcheck source=/dev/null
 		source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2>/dev/null || true
-		if declare -f apply_gtk_color_scheme >/dev/null 2>&1; then
-			apply_gtk_color_scheme "$mode" >/dev/null 2>&1 || true
+		if declare -f sync_gtk_color_scheme >/dev/null 2>&1; then
+			sync_gtk_color_scheme >/dev/null 2>&1 || true
+		elif declare -f apply_gtk_color_scheme >/dev/null 2>&1; then
+			apply_gtk_color_scheme follow >/dev/null 2>&1 || true
 		fi
 	fi
 	if command -v dots-hyprlock-theme >/dev/null 2>&1; then
