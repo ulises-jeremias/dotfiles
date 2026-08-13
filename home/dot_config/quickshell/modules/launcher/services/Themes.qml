@@ -93,16 +93,25 @@ Searcher {
         readonly property string schemeType: modelData.schemeType || "tonal-spot"
         readonly property string gtkTheme: modelData.gtkTheme || "Orchis-Light-Compact"
         readonly property string iconTheme: modelData.iconTheme || ""
-        readonly property bool gtkPreferDark: {
+        readonly property string gtkColorScheme: {
+            const raw = (modelData.gtkColorScheme ?? "").toString().toLowerCase().replace(/_/g, "-");
+            switch (raw) {
+            case "follow":
+            case "default":
+            case "prefer-light":
+            case "prefer-dark":
+                return raw;
+            }
             if (modelData.gtkPreferDark !== undefined)
-                return !!modelData.gtkPreferDark;
+                return modelData.gtkPreferDark ? "prefer-dark" : "prefer-light";
             const gtk = gtkTheme.toLowerCase();
             if (gtk.indexOf("light") >= 0)
-                return false;
+                return "prefer-light";
             if (gtk.indexOf("dark") >= 0)
-                return true;
-            return darkMode;
+                return "prefer-dark";
+            return darkMode ? "prefer-dark" : "prefer-light";
         }
+        readonly property bool gtkPreferDark: gtkColorScheme === "prefer-dark" || gtkColorScheme === "follow" && darkMode
         function onClicked(list: AppList): void {
             list.visibilities.launcher = false;
             ThemePipeline.applyTheme(id, wallpaperPath || "");

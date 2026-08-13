@@ -143,9 +143,9 @@ CollapsibleSection {
                                             bits.push(modelData.schemeType);
                                         if (modelData.gtkTheme)
                                             bits.push(modelData.gtkTheme);
-                                        const prefer = modelData.gtkPreferDark === undefined ? "" : (modelData.gtkPreferDark ? "prefer-dark" : "prefer-light");
-                                        if (prefer)
-                                            bits.push(prefer);
+                                        const scheme = modelData.gtkColorScheme || "";
+                                        if (scheme)
+                                            bits.push(scheme);
                                         if (modelData.iconTheme)
                                             bits.push(modelData.iconTheme);
                                         return bits.join(" · ");

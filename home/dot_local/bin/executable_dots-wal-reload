@@ -14,41 +14,41 @@ set -euo pipefail
 # plus appearance target) before falling back to direct wal -R + GTK.
 # Verifies IPC readiness, not just process presence, so we do not apply
 # state.json mode via the fallback and ignore theme.json gtkPreferDark.
-if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
-	for _w in $(seq 1 30); do
-		if pgrep -x quickshell >/dev/null 2>&1 && quickshell ipc call appearance isBusy >/dev/null 2>&1; then
-			break
-		fi
-		sleep 0.5
-	done
+if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
+  for _w in $(seq 1 30); do
+    if pgrep -x quickshell >/dev/null 2>&1 && quickshell ipc call appearance isBusy >/dev/null 2>&1; then
+      break
+    fi
+    sleep 0.5
+  done
 fi
 
 if pgrep -x quickshell >/dev/null 2>&1; then
-	if quickshell ipc call appearance reload >/dev/null 2>&1; then
-		busy=""
-		for _i in $(seq 1 120); do
-			if ! busy="$(quickshell ipc call appearance isBusy 2>/dev/null)"; then
-				echo "Error: could not read appearance job status via Quickshell IPC" >&2
-				exit 1
-			fi
-			busy="${busy//$'\r'/}"
-			busy="${busy//$'\n'/}"
-			[[ $busy == "1" ]] || break
-			sleep 0.5
-		done
-		if [[ $busy == "1" ]]; then
-			echo "Error: appearance reload timed out" >&2
-			exit 1
-		fi
-		last_error="$(quickshell ipc call appearance lastError 2>/dev/null || true)"
-		last_error="${last_error//$'\r'/}"
-		last_error="${last_error//$'\n'/}"
-		if [[ -n $last_error ]]; then
-			echo "Error: appearance reload failed: $last_error" >&2
-			exit 1
-		fi
-		exit 0
-	fi
+  if quickshell ipc call appearance reload >/dev/null 2>&1; then
+    busy=""
+    for _i in $(seq 1 120); do
+      if ! busy="$(quickshell ipc call appearance isBusy 2>/dev/null)"; then
+        echo "Error: could not read appearance job status via Quickshell IPC" >&2
+        exit 1
+      fi
+      busy="${busy//$'\r'/}"
+      busy="${busy//$'\n'/}"
+      [[ $busy == "1" ]] || break
+      sleep 0.5
+    done
+    if [[ $busy == "1" ]]; then
+      echo "Error: appearance reload timed out" >&2
+      exit 1
+    fi
+    last_error="$(quickshell ipc call appearance lastError 2>/dev/null || true)"
+    last_error="${last_error//$'\r'/}"
+    last_error="${last_error//$'\n'/}"
+    if [[ -n $last_error ]]; then
+      echo "Error: appearance reload failed: $last_error" >&2
+      exit 1
+    fi
+    exit 0
+  fi
 fi
 
 # Fallback: direct wal reload + M3 from live state prefs
@@ -59,65 +59,67 @@ STATE_JSON="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
 
 wallpaper=""
 if [[ -f $WALL_POINTER ]]; then
-	wallpaper="$(head -n 1 "$WALL_POINTER" 2>/dev/null | tr -d '\r' || true)"
+  wallpaper="$(head -n 1 "$WALL_POINTER" 2>/dev/null | tr -d '\r' || true)"
 fi
 
 if command -v wal >/dev/null 2>&1; then
-	wal -R -q 2>/dev/null || true
+  wal -R -q 2>/dev/null || true
 fi
 
 # wal -R may recreate ~/.cache/wal/wal as an image symlink; writers that
 # echo into that path would truncate the wallpaper. Keep a text path file.
 if [[ -n ${wallpaper:-} && -f $wallpaper ]]; then
-	mkdir -p "$HOME/.cache/wal"
-	rm -f "$HOME/.cache/wal/wal"
-	printf '%s\n' "$wallpaper" >"$HOME/.cache/wal/wal"
+  mkdir -p "$HOME/.cache/wal"
+  rm -f "$HOME/.cache/wal/wal"
+  printf '%s\n' "$wallpaper" >"$HOME/.cache/wal/wal"
 fi
 
 mode="dark"
 flavour="tonal-spot"
 if [[ -f $STATE_JSON ]]; then
-	mode="$(python3 -c "import json;print(json.load(open('$STATE_JSON')).get('mode','dark'))" 2>/dev/null || echo dark)"
-	flavour="$(python3 -c "import json;print(json.load(open('$STATE_JSON')).get('flavour','tonal-spot'))" 2>/dev/null || echo tonal-spot)"
+  mode="$(python3 -c "import json;print(json.load(open('$STATE_JSON')).get('mode','dark'))" 2>/dev/null || echo dark)"
+  flavour="$(python3 -c "import json;print(json.load(open('$STATE_JSON')).get('flavour','tonal-spot'))" 2>/dev/null || echo tonal-spot)"
 fi
 [[ $mode == "light" || $mode == "dark" ]] || mode="dark"
 
 if [[ -n ${wallpaper:-} && -f $wallpaper && -f $M3_SCRIPT ]]; then
-	# Prefer system Python with materialyoucolor over pyenv shims on PATH.
-	# shellcheck source=/dev/null
-	source "${HOME}/.local/lib/dots/python-m3.sh" 2>/dev/null || true
-	if declare -f dots_run_m3_colors >/dev/null 2>&1; then
-		dots_run_m3_colors \
-			--image "$wallpaper" \
-			--scheme-type "$flavour" \
-			--mode "$mode" \
-			--output "$SCHEME_JSON" 2>/dev/null || true
-	elif command -v dots-m3-colors >/dev/null 2>&1; then
-		dots-m3-colors \
-			--image "$wallpaper" \
-			--scheme-type "$flavour" \
-			--mode "$mode" \
-			--output "$SCHEME_JSON" 2>/dev/null || true
-	elif command -v python3 >/dev/null 2>&1; then
-		python3 "$M3_SCRIPT" \
-			--image "$wallpaper" \
-			--scheme-type "$flavour" \
-			--mode "$mode" \
-			--output "$SCHEME_JSON" 2>/dev/null || true
-	fi
-	if command -v dots-color-scheme >/dev/null 2>&1; then
-		dots-color-scheme sync-state >/dev/null 2>&1 || true
-	fi
-	if command -v dots-gtk-theme >/dev/null 2>&1; then
-		dots-gtk-theme -q color-scheme "$mode" >/dev/null 2>&1 || true
-	elif [[ -f $HOME/.local/lib/dots/gtk-theme-manager.sh ]]; then
-		# shellcheck source=/dev/null
-		source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2>/dev/null || true
-		if declare -f apply_gtk_color_scheme >/dev/null 2>&1; then
-			apply_gtk_color_scheme "$mode" >/dev/null 2>&1 || true
-		fi
-	fi
-	if command -v dots-hyprlock-theme >/dev/null 2>&1; then
-		dots-hyprlock-theme >/dev/null 2>&1 || true
-	fi
+  # Prefer system Python with materialyoucolor over pyenv shims on PATH.
+  # shellcheck source=/dev/null
+  source "${HOME}/.local/lib/dots/python-m3.sh" 2>/dev/null || true
+  if declare -f dots_run_m3_colors >/dev/null 2>&1; then
+    dots_run_m3_colors \
+      --image "$wallpaper" \
+      --scheme-type "$flavour" \
+      --mode "$mode" \
+      --output "$SCHEME_JSON" 2>/dev/null || true
+  elif command -v dots-m3-colors >/dev/null 2>&1; then
+    dots-m3-colors \
+      --image "$wallpaper" \
+      --scheme-type "$flavour" \
+      --mode "$mode" \
+      --output "$SCHEME_JSON" 2>/dev/null || true
+  elif command -v python3 >/dev/null 2>&1; then
+    python3 "$M3_SCRIPT" \
+      --image "$wallpaper" \
+      --scheme-type "$flavour" \
+      --mode "$mode" \
+      --output "$SCHEME_JSON" 2>/dev/null || true
+  fi
+  if command -v dots-color-scheme >/dev/null 2>&1; then
+    dots-color-scheme sync-state >/dev/null 2>&1 || true
+  fi
+  if command -v dots-gtk-theme >/dev/null 2>&1; then
+    dots-gtk-theme -q sync-color-scheme >/dev/null 2>&1 || true
+  elif [[ -f $HOME/.local/lib/dots/gtk-theme-manager.sh ]]; then
+    # shellcheck source=/dev/null
+    source "$HOME/.local/lib/dots/gtk-theme-manager.sh" 2>/dev/null || true
+    if declare -f sync_gtk_color_scheme >/dev/null 2>&1; then
+      sync_gtk_color_scheme >/dev/null 2>&1 || true
+    elif declare -f apply_gtk_color_scheme >/dev/null 2>&1; then
+      apply_gtk_color_scheme follow >/dev/null 2>&1 || true
+    fi
+  fi
+  if command -v dots-hyprlock-theme >/dev/null 2>&1; then
+    dots-hyprlock-theme >/dev/null 2>&1 || true
+  fi
 fi

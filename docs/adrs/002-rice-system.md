@@ -16,8 +16,10 @@ packs, but they are apply-once recipes — not a live source of truth.
 - **Live SoT**
   - Wallpaper: `~/.local/state/dots/wallpaper/path`
   - Palette: `~/.cache/dots/smart-colors/scheme.json`
-  - Mode/flavour prefs: `~/.local/state/dots/scheme/state.json`
-  - GTK/icons: gtk `settings.ini` + gsettings
+  - Mode/flavour prefs: `~/.local/state/dots/scheme/state.json` (`mode` is shell/M3 only)
+  - GTK color-scheme policy: `gtkColorScheme` in the same `state.json`
+    (`follow` | `default` | `prefer-light` | `prefer-dark`) — independent of `mode`
+  - GTK/icons: gtk-3.0 + gtk-4.0 `settings.ini` + gsettings
   - Shell chrome: QS `Config` / `~/.config/hornero/shell.json`
 - **Theme packs** (optional recipes): `~/.local/share/dots/themes/<id>/theme.json`
   - Apply once via Control Center Themes or `dots appearance theme apply <id>`
@@ -26,7 +28,7 @@ packs, but they are apply-once recipes — not a live source of truth.
   `~/Pictures/Wallpapers/<id>/`
 - **Orchestrator**: Quickshell `ThemePipeline.qml` (IPC target `appearance`) +
   `apply-appearance.sh` shell fallback
-- **CLI**: `dots appearance …` (`theme`, `set-wallpaper`, `set-mode`, `set-gtk`, …)
+- **CLI**: `dots appearance …` (`theme`, `set-wallpaper`, `set-mode`, `set-gtk`, `set-gtk-color-scheme`, …)
 
 Removed: `~/.local/share/dots/rices/`, `dots-rice`, `rice/current`, per-rice
 `config.sh` / `apply.sh`, IPC target `rice`.
@@ -36,7 +38,10 @@ Removed: `~/.local/share/dots/rices/`, `dots-rice`, `rice/current`, per-rice
 ### Positive
 
 - One live appearance model; theme packs are inspiration, not identity
-- Control Center can configure wallpaper, mode, variant, scheme, GTK, icons
+- Control Center can configure wallpaper, mode, variant, scheme, GTK theme,
+  GTK color-scheme (independent of Theme mode), icons, and shell chrome
+- GTK color-scheme is live SoT (`gtkColorScheme`); Theme mode only pushes GTK
+  when the policy is `follow` (missing key = follow for legacy boots)
 - Offline apply without Quickshell
 
 ### Negative

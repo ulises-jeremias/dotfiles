@@ -20,8 +20,8 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
    - write `~/.local/state/dots/wallpaper/path` (canonical pointer)
    - rewrite `~/.cache/wal/wal` as a **text path file** (never an image symlink)
    - `generate-m3-colors.py` → `scheme.json`
-   - `dots-color-scheme sync-state` → `scheme/state.json`
-   - `dots-gtk-theme color-scheme` to keep GTK/libadwaita in lockstep
+   - `dots-color-scheme sync-state` → `scheme/state.json` (preserves `gtkColorScheme`)
+   - `dots-gtk-theme sync-color-scheme` re-applies the persisted GTK policy (`follow` tracks Theme mode; sticky `prefer-light` / `prefer-dark` / `default` are left alone)
 4. `Colours.qml` reloads via file watch or `dots-quickshell ipc colours reload` (real IPC + touch fallback)
 
 ### Wallpaper resolution priority
