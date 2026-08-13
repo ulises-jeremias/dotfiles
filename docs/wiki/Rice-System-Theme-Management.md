@@ -5,14 +5,14 @@ one-shot recipes — they never own a sticky “current theme”.
 
 ## Live sources of truth
 
-| Concern        | Path / tool                                              |
-|----------------|----------------------------------------------------------|
-| Wallpaper      | `~/.local/state/dots/wallpaper/path`                     |
-| Palette        | `~/.cache/dots/smart-colors/scheme.json`                 |
-| Mode / flavour | `~/.local/state/dots/scheme/state.json` (`mode`)         |
-| GTK color scheme | `gtkColorScheme` in the same `state.json`              |
-| GTK / icons    | via `dots-gtk-theme` → gtk-3.0 + gtk-4.0 `settings.ini` + gsettings |
-| Wal pointer    | `~/.cache/wal/wal` (**text path file**, never a symlink) |
+| Concern          | Path / tool                                                         |
+|------------------|---------------------------------------------------------------------|
+| Wallpaper        | `~/.local/state/dots/wallpaper/path`                                |
+| Palette          | `~/.cache/dots/smart-colors/scheme.json`                            |
+| Mode / flavour   | `~/.local/state/dots/scheme/state.json` (`mode`)                    |
+| GTK color scheme | `gtkColorScheme` in the same `state.json`                           |
+| GTK / icons      | via `dots-gtk-theme` → gtk-3.0 + gtk-4.0 `settings.ini` + gsettings |
+| Wal pointer      | `~/.cache/wal/wal` (**text path file**, never a symlink)            |
 
 ## Theme packs
 
