@@ -1,0 +1,67 @@
+{{ if and .personal (not .ephemeral) -}}
+{{   if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+readonly sshd_config_dir="/etc/ssh/sshd_config.d"
+readonly sshd_drop_in="${sshd_config_dir}/10-hornero-config.conf"
+
+# Install the OpenSSH server so this machine accepts inbound connections
+# from the other personal machines over the local network.
+sudo pacman -S --noconfirm --needed openssh
+
+# Harden the SSH daemon through a numbered drop-in so the stock sshd_config
+# stays untouched and keeps winning against later drop-ins (first match wins).
+sudo mkdir -p "${sshd_config_dir}"
+sudo tee "${sshd_drop_in}" > /dev/null <<EOF
+# Managed by HorneroConfig via chezmoi -- do not edit manually.
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+AllowUsers {{ .chezmoi.username }}
+EOF
+
+sudo chmod 644 "${sshd_drop_in}"
+
+# Validate the resulting configuration before (re)starting the service.
+sudo sshd -t
+
+sudo systemctl enable sshd
+sudo systemctl restart sshd
+
+{{   else if or (eq .osid "linux-pop") (eq .osid "linux-ubuntu") -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly sshd_config_dir="/etc/ssh/sshd_config.d"
+readonly sshd_drop_in="${sshd_config_dir}/10-hornero-config.conf"
+
+# Install the OpenSSH server so this machine accepts inbound connections
+# from the other personal machines over the local network.
+sudo DEBIAN_FRONTEND=noninteractive apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server
+
+# Harden the SSH daemon through a numbered drop-in (first match wins).
+sudo mkdir -p "${sshd_config_dir}"
+sudo tee "${sshd_drop_in}" > /dev/null <<EOF
+# Managed by HorneroConfig via chezmoi -- do not edit manually.
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+AllowUsers {{ .chezmoi.username }}
+EOF
+
+sudo chmod 644 "${sshd_drop_in}"
+
+# Validate the resulting configuration before (re)starting the service.
+sudo sshd -t
+
+sudo systemctl enable sshd
+sudo systemctl restart sshd
+
+{{   end -}}
+{{ end -}}

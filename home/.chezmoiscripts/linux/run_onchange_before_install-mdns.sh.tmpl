@@ -1,0 +1,33 @@
+{{ if and .personal (not .ephemeral) -}}
+{{   if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+readonly nsswitch_conf="/etc/nsswitch.conf"
+
+# Avahi provides mDNS (.local) name resolution between machines on the LAN,
+# so SSH aliases keep working even when DHCP leases change over time.
+sudo pacman -S --noconfirm --needed avahi nss-mdns
+
+# Register mDNS lookups in nsswitch before regular DNS (idempotent).
+if ! grep -qE '^hosts:[[:space:]].*mdns_minimal' "${nsswitch_conf}"; then
+  sudo sed -i -E '/^hosts:/ s/\bdns\b/mdns_minimal [NOTFOUND=return] dns/' "${nsswitch_conf}"
+fi
+
+sudo systemctl enable --now avahi-daemon
+
+{{   else if or (eq .osid "linux-pop") (eq .osid "linux-ubuntu") -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# libnss-mdns registers mDNS lookups through its package hooks on Debian-based
+# systems, so only the services need to be managed here.
+sudo DEBIAN_FRONTEND=noninteractive apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y avahi-daemon libnss-mdns
+
+sudo systemctl enable --now avahi-daemon
+
+{{   end -}}
+{{ end -}}

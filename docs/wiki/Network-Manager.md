@@ -92,6 +92,36 @@ journalctl -u NetworkManager.service
 
 ---
 
+## 🔐 SSH Between Personal Machines
+
+Personal machines (`hornero` and `colibri`) can reach each other over the local
+network with SSH, reusing the **same personal key** (`~/.ssh/personal_rsa`) that
+is already deployed by `chezmoi` on both of them.
+
+### What the dotfiles manage
+
+| Piece | Managed by | Purpose |
+|---|---|---|
+| `~/.ssh/authorized_keys` | `private_dot_ssh/private_authorized_keys.tmpl` | Accepts inbound logins from the other machine |
+| `/etc/ssh/sshd_config.d/10-hornero-config.conf` | `run_onchange_before_install-ssh-server.sh.tmpl` | Enables and hardens `sshd` (key-only auth, no root login) |
+| Avahi + nss-mdns | `run_onchange_before_install-mdns.sh.tmpl` | Resolves `<hostname>.local` even when DHCP addresses change |
+| `~/.ssh/config` aliases | `private_dot_ssh/executable_config` | `ssh hornero` / `ssh colibri` just work |
+
+### First-time connection
+
+Host keys are intentionally not managed by the dotfiles, so accept the remote
+fingerprint the first time you connect (TOFU — trust on first use):
+
+```sh
+ssh hornero    # from colibri
+ssh colibri    # from hornero
+```
+
+If mDNS is blocked by your router or access point, pin the current IP directly
+in `~/.ssh/config` under the corresponding `Host` block as a fallback.
+
+---
+
 ## 🆘 Need Help?
 
 - [NetworkManager Arch Wiki](https://wiki.archlinux.org/title/NetworkManager)
