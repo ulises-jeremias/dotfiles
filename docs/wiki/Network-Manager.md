@@ -100,12 +100,12 @@ is already deployed by `chezmoi` on both of them.
 
 ### What the dotfiles manage
 
-| Piece | Managed by | Purpose |
-|---|---|---|
-| `~/.ssh/authorized_keys` | `private_dot_ssh/private_authorized_keys.tmpl` | Accepts inbound logins from the other machine |
-| `/etc/ssh/sshd_config.d/10-hornero-config.conf` | `run_onchange_before_install-ssh-server.sh.tmpl` | Enables and hardens `sshd` (key-only auth, no root login) |
-| Avahi + nss-mdns | `run_onchange_before_install-mdns.sh.tmpl` | Resolves `<hostname>.local` even when DHCP addresses change |
-| `~/.ssh/config` aliases | `private_dot_ssh/executable_config` | `ssh hornero` / `ssh colibri` just work |
+| Piece                                           | Managed by                                       | Purpose                                                     |
+|-------------------------------------------------|--------------------------------------------------|-------------------------------------------------------------|
+| `~/.ssh/authorized_keys`                        | `private_dot_ssh/private_authorized_keys.tmpl`   | Accepts inbound logins from the other machine               |
+| `/etc/ssh/sshd_config.d/10-hornero-config.conf` | `run_onchange_before_install-ssh-server.sh.tmpl` | Enables and hardens `sshd` (key-only auth, no root login)   |
+| Avahi + nss-mdns                                | `run_onchange_before_install-mdns.sh.tmpl`       | Resolves `<hostname>.local` even when DHCP addresses change |
+| `~/.ssh/config` aliases                         | `private_dot_ssh/executable_config`              | `ssh hornero` / `ssh colibri` just work                     |
 
 ### First-time connection
 
