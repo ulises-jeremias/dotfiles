@@ -11,6 +11,12 @@ readonly sshd_drop_in="${sshd_config_dir}/10-hornero-config.conf"
 # from the other personal machines over the local network.
 sudo pacman -S --noconfirm --needed openssh
 
+# Generate host keys if missing: on a fresh install sshd exits with
+# "no hostkeys available" until at least one key pair exists.
+if ! ls /etc/ssh/ssh_host_*_key >/dev/null 2>&1; then
+    sudo ssh-keygen -A
+fi
+
 # Harden the SSH daemon through a numbered drop-in so the stock sshd_config
 # stays untouched and keeps winning against later drop-ins (first match wins).
 sudo mkdir -p "${sshd_config_dir}"
@@ -43,6 +49,12 @@ readonly sshd_drop_in="${sshd_config_dir}/10-hornero-config.conf"
 # from the other personal machines over the local network.
 sudo DEBIAN_FRONTEND=noninteractive apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server
+
+# Generate host keys if missing (Debian/Ubuntu postinst normally does this,
+# but guard anyway for minimal/cloud images).
+if ! ls /etc/ssh/ssh_host_*_key >/dev/null 2>&1; then
+    sudo ssh-keygen -A
+fi
 
 # Harden the SSH daemon through a numbered drop-in (first match wins).
 sudo mkdir -p "${sshd_config_dir}"
