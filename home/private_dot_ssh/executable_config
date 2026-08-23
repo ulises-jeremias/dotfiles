@@ -13,3 +13,15 @@ Host gitlab gitlab.com
 Host bitbucket bitbucket.org
     HostName bitbucket.org
     IdentityFile ~/.ssh/bitbucket_rsa
+
+# Personal machines over the local network (mDNS).
+# Both hosts authenticate with the same personal key.
+Host hornero hornero.local
+    HostName hornero.local
+    IdentityFile ~/.ssh/personal_rsa
+    IdentitiesOnly yes
+
+Host colibri colibri.local
+    HostName colibri.local
+    IdentityFile ~/.ssh/personal_rsa
+    IdentitiesOnly yes
