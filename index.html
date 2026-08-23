@@ -4070,6 +4070,49 @@ nmcli device wifi connect <span class="hljs-string">&quot;HomeWiFi&quot;</span> 
 nmcli device
 nmcli connection show
 journalctl -u NetworkManager.service</pre><hr>
+<h2 id="-ssh-between-personal-machines">🔐 SSH Between Personal Machines</h2>
+<p>Personal machines (<code>hornero</code> and <code>colibri</code>) can reach each other over the local
+network with SSH, reusing the <strong>same personal key</strong> (<code>~/.ssh/personal_rsa</code>) that
+is already deployed by <code>chezmoi</code> on both of them.</p>
+<h3 id="what-the-dotfiles-manage">What the dotfiles manage</h3>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Managed by</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.ssh/authorized_keys</code></td>
+<td><code>private_dot_ssh/private_authorized_keys.tmpl</code></td>
+<td>Accepts inbound logins from the other machine</td>
+</tr>
+<tr>
+<td><code>/etc/ssh/sshd_config.d/10-hornero-config.conf</code></td>
+<td><code>run_onchange_before_install-ssh-server.sh.tmpl</code></td>
+<td>Enables and hardens <code>sshd</code> (key-only auth, no root login)</td>
+</tr>
+<tr>
+<td>Avahi + nss-mdns</td>
+<td><code>run_onchange_before_install-mdns.sh.tmpl</code></td>
+<td>Resolves <code>&lt;hostname&gt;.local</code> even when DHCP addresses change</td>
+</tr>
+<tr>
+<td><code>~/.ssh/config</code> aliases</td>
+<td><code>private_dot_ssh/executable_config</code></td>
+<td><code>ssh hornero</code> / <code>ssh colibri</code> just work</td>
+</tr>
+</tbody>
+</table>
+<h3 id="first-time-connection">First-time connection</h3>
+<p>Host keys are intentionally not managed by the dotfiles, so accept the remote
+fingerprint the first time you connect (TOFU — trust on first use):</p>
+<pre class="hljs">ssh hornero    <span class="hljs-comment"># from colibri</span>
+ssh colibri    <span class="hljs-comment"># from hornero</span></pre><p>If mDNS is blocked by your router or access point, pin the current IP directly
+in <code>~/.ssh/config</code> under the corresponding <code>Host</code> block as a fallback.</p>
+<hr>
 <h2 id="-need-help-">🆘 Need Help?</h2>
 <ul>
 <li><a href="https://wiki.archlinux.org/title/NetworkManager">NetworkManager Arch Wiki</a></li>
