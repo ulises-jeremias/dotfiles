@@ -64,7 +64,7 @@
 ### ✨ Highlights
 
 🧠 **Smart Color Intelligence** — Automatic theme-aware color adaptation  
-🎨 **13 Beautiful Themes** — Cyberpunk, Cozy, Vaporwave, Nature & more  
+🎨 **12 Beautiful Themes** — Cyberpunk, Cozy, Vaporwave, Nature & more  
 ⚡ **One-Command Setup** — From zero to hero in minutes  
 🌊 **Hyprland/Wayland** — Modern compositor with smooth animations  
 🔧 **100+ Automation Scripts** — Comprehensive tooling ecosystem  
@@ -159,13 +159,13 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 
 ### 🎨 Appearance Themes & Themes
 
-Choose from **13 stunning themes** organized by aesthetic: Cyberpunk, Cozy, Vaporwave, Nature, and Cosmic:
+Choose from **12 stunning themes** organized by aesthetic: Cyberpunk, Cozy,
+Vaporwave, Nature, and Cosmic. The live count comes straight from
+`dots appearance theme list`, so new packs appear automatically:
 
 ```bash
-dots appearance list        # List available appearances 🎯
-dots appearance apply flowers
-dots appearance theme apply flowers     # Apply a specific theme
 dots appearance theme list              # See all available themes
+dots appearance theme apply vapor-dreams
 ```
 
 > 📖 [Explore all themes →](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management)
