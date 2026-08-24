@@ -160,8 +160,8 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 ### 🎨 Appearance Themes & Themes
 
 Choose from **12 stunning themes** organized by aesthetic: Cyberpunk, Cozy,
-Vaporwave, Nature, and Cosmic. The live count comes straight from
-`dots appearance theme list`, so new packs appear automatically:
+Vaporwave, Nature, and Cosmic. Run `dots appearance theme list` for the
+full, current list:
 
 ```bash
 dots appearance theme list              # See all available themes
