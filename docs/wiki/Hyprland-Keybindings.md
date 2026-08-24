@@ -12,7 +12,7 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+V`              | Clipboard manager (`dots-clipboard`)                   |
 | `Super+?` or `Super+/` | Keyboard shortcuts help overlay (`dots-keyboard-help`) |
 | `Super+D`              | Dashboard (Quickshell IPC)                             |
-| `Super+Shift+Tab`      | Task switcher (`dots-snappy-switcher prev`)            |
+| `Alt+Shift+Tab`        | Task switcher (`dots-snappy-switcher prev`)            |
 | `Alt+Tab`              | Task switcher (`dots-snappy-switcher next`)            |
 | `Super+E`              | Terminal file manager (`yazi` in a kitty popup)        |
 | `Super+F`              | GUI file manager (`exo-open --launch FileManager`)     |
@@ -27,7 +27,7 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+Shift+Q`      | Close focused window                                        |
 | `Alt+Q`              | Close focused window                                        |
 | `Alt+F4`             | Close focused window                                        |
-| `Super+F`            | Smart floating (toggle + center + resize)                   |
+| `Super+Shift+F`      | Smart floating (toggle + center + resize)                   |
 | `Super+M`            | Toggle fullscreen                                           |
 | `Super+Shift+M`      | Toggle maximize (fullscreen, mode 1)                        |
 | `Super+Shift+Space`  | Focus toggle (floating <-> tiled)                           |
@@ -216,8 +216,12 @@ Once in resize mode:
 Keybindings live in:
 
 ```bash
-~/.config/hypr/hyprland.conf.d/keybindings.conf
+$XDG_CONFIG_HOME/hypr/hyprland.conf.d/keybindings.conf
 ```
+
+`XDG_CONFIG_HOME` defaults to `~/.config` when unset, so the path above
+resolves to `~/.config/hypr/hyprland.conf.d/keybindings.conf` on a standard
+setup.
 
 Hyprland does not hot-reload custom files that do not exist, so add your own
 bindings directly at the end of this file or create a new file and source it
@@ -228,7 +232,7 @@ from `hyprland.conf`.
 To add custom keybindings, edit:
 
 ```bash
-~/.config/hypr/hyprland.conf.d/keybindings.conf
+$XDG_CONFIG_HOME/hypr/hyprland.conf.d/keybindings.conf
 ```
 
 Example:
