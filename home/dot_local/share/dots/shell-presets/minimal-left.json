@@ -1,16 +1,46 @@
 {
   "_name": "Minimal Left",
-  "_description": "Clean left sidebar — workspaces and power only",
-  "_icon": "✨",
+  "_description": "Clean left sidebar \u2014 workspaces and power only",
+  "_icon": "\u2728",
+  "_iconMaterial": "view_sidebar",
   "bar": {
     "position": "left",
-    "entries": ["logo", "workspaces", "spacer", "power"],
-    "statusIcons": [],
-    "scrollActions": { "up": "volume", "down": "volume" }
+    "style": "attached",
+    "persistent": true,
+    "entries": [
+      {
+        "id": "logo",
+        "enabled": true
+      },
+      {
+        "id": "workspaces",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "power",
+        "enabled": true
+      }
+    ],
+    "status": {},
+    "scrollActions": {
+      "workspaces": true,
+      "volume": true,
+      "brightness": true
+    }
   },
   "appearance": {
-    "rounding": 20,
-    "padding": 6,
-    "spacing": 6
+    "rounding": {
+      "scale": 1.2
+    },
+    "padding": {
+      "scale": 0.9
+    },
+    "spacing": {
+      "scale": 0.9
+    }
   }
 }

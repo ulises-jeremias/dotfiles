@@ -1,0 +1,64 @@
+{
+  "_name": "Dock Bottom",
+  "_description": "macOS-style floating dock \u2014 chunky icons, cozy vibes",
+  "_icon": "\ud83d\udedf",
+  "_iconMaterial": "dock_to_bottom",
+  "bar": {
+    "position": "bottom",
+    "style": "dock",
+    "floatingMargin": 12,
+    "persistent": true,
+    "showOnHover": true,
+    "entries": [
+      {
+        "id": "logo",
+        "enabled": true
+      },
+      {
+        "id": "workspaces",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "tray",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "power",
+        "enabled": true
+      }
+    ],
+    "sizes": {
+      "innerWidth": 56
+    },
+    "status": {},
+    "scrollActions": {
+      "workspaces": true,
+      "volume": false,
+      "brightness": false
+    }
+  },
+  "appearance": {
+    "rounding": {
+      "scale": 1.5
+    },
+    "padding": {
+      "scale": 1.2
+    },
+    "spacing": {
+      "scale": 1.2
+    },
+    "transparency": {
+      "enabled": true,
+      "base": 0.85,
+      "layers": 0.4
+    }
+  }
+}

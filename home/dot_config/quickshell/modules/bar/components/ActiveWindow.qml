@@ -13,22 +13,26 @@ Item {
     required property Brightness.Monitor monitor
     property color colour: Colours.palette.m3primary
 
-    readonly property int maxHeight: {
-        const otherModules = bar.children.filter(c => c.id && c.item !== this && c.id !== "spacer");
-        const otherHeight = otherModules.reduce((acc, curr) => acc + (curr.item.nonAnimHeight ?? curr.height), 0);
-        // Length - 2 cause repeater counts as a child
-        return bar.height - otherHeight - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
+    readonly property bool vertical: Config.bar.isVertical()
+
+    readonly property int maxLength: {
+        const children = bar.container.children;
+        const otherModules = children.filter(c => c.id && c.item !== this && c.id !== "spacer");
+        const otherLength = otherModules.reduce((acc, curr) => acc + ((root.vertical ? curr.item.nonAnimHeight : curr.item.nonAnimWidth) ?? (root.vertical ? curr.height : curr.width)), 0);
+        // Length - 1 cause repeater counts as a child
+        return (root.vertical ? bar.height : bar.width) - otherLength - Appearance.spacing.normal * (children.length - 1) - bar.vPadding * 2;
     }
     property Title current: text1
 
     clip: true
-    implicitWidth: Math.max(icon.implicitWidth, current.implicitHeight)
-    implicitHeight: icon.implicitHeight + current.implicitWidth + current.anchors.topMargin
+    implicitWidth: root.vertical ? Math.max(icon.implicitWidth, current.implicitHeight) : icon.implicitWidth + current.implicitWidth + current.anchors.leftMargin
+    implicitHeight: root.vertical ? icon.implicitHeight + current.implicitWidth + current.anchors.topMargin : Math.max(icon.implicitHeight, current.implicitHeight)
 
     MaterialIcon {
         id: icon
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
+        anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
 
         animate: true
         text: Icons.getAppCategoryIcon(Hypr.activeToplevel?.lastIpcObject.class, "desktop_windows")
@@ -50,7 +54,7 @@ Item {
         font.pointSize: Appearance.font.size.smaller
         font.family: Appearance.font.family.mono
         elide: Qt.ElideRight
-        elideWidth: root.maxHeight - icon.height
+        elideWidth: root.maxLength - (root.vertical ? icon.height : icon.width + Appearance.spacing.small)
 
         onTextChanged: {
             const next = root.current === text1 ? text2 : text1;
@@ -67,31 +71,46 @@ Item {
         }
     }
 
+    Behavior on implicitWidth {
+        Anim {
+            duration: Appearance.anim.durations.expressiveDefaultSpatial
+            easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+        }
+    }
+
     component Title: StyledText {
         id: text
 
-        anchors.horizontalCenter: icon.horizontalCenter
-        anchors.top: icon.bottom
+        anchors.horizontalCenter: root.vertical ? icon.horizontalCenter : undefined
+        anchors.top: root.vertical ? icon.bottom : undefined
         anchors.topMargin: Appearance.spacing.small
+        anchors.verticalCenter: root.vertical ? undefined : icon.verticalCenter
+        anchors.left: root.vertical ? undefined : icon.right
+        anchors.leftMargin: Appearance.spacing.small
 
         font.pointSize: metrics.font.pointSize
         font.family: metrics.font.family
         color: root.colour
         opacity: root.current === this ? 1 : 0
 
-        transform: [
-            Translate {
-                x: Config.bar.activeWindow.inverted ? -implicitWidth + text.implicitHeight : 0
-            },
-            Rotation {
-                angle: Config.bar.activeWindow.inverted ? 270 : 90
-                origin.x: text.implicitHeight / 2
-                origin.y: text.implicitHeight / 2
-            }
-        ]
+        transform: root.vertical ? [vertTranslate, vertRotation] : []
 
-        width: implicitHeight
-        height: implicitWidth
+        width: root.vertical ? implicitHeight : implicitWidth
+        height: root.vertical ? implicitWidth : implicitHeight
+
+        Translate {
+            id: vertTranslate
+
+            x: Config.bar.activeWindow.inverted ? -text.implicitWidth + text.implicitHeight : 0
+        }
+
+        Rotation {
+            id: vertRotation
+
+            angle: Config.bar.activeWindow.inverted ? 270 : 90
+            origin.x: text.implicitHeight / 2
+            origin.y: text.implicitHeight / 2
+        }
 
         Behavior on opacity {
             Anim {}

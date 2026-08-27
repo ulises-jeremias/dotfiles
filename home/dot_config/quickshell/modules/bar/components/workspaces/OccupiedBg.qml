@@ -52,6 +52,7 @@ Item {
 
             required property var modelData
 
+            readonly property bool vertical: Config.bar.isVertical()
             readonly property Workspace start: root.workspaces.count > 0 ? root.workspaces.itemAt(getWsIdx(modelData.start)) ?? null : null
             readonly property Workspace end: root.workspaces.count > 0 ? root.workspaces.itemAt(getWsIdx(modelData.end)) ?? null : null
 
@@ -62,11 +63,13 @@ Item {
                 return i % Config.bar.workspaces.shown;
             }
 
-            anchors.horizontalCenter: root.horizontalCenter
+            anchors.horizontalCenter: vertical ? root.horizontalCenter : undefined
+            anchors.verticalCenter: vertical ? undefined : root.verticalCenter
 
-            y: (start?.y ?? 0) - 1
-            implicitWidth: Config.bar.sizes.innerWidth - Appearance.padding.small * 2 + 2
-            implicitHeight: start && end ? end.y + end.size - start.y + 2 : 0
+            x: vertical ? 0 : (start?.x ?? 0) - 1
+            y: vertical ? (start?.y ?? 0) - 1 : 0
+            implicitWidth: vertical ? Config.bar.sizes.innerWidth - Appearance.padding.small * 2 + 2 : (start && end ? end.x + end.size - start.x + 2 : 0)
+            implicitHeight: vertical ? (start && end ? end.y + end.size - start.y + 2 : 0) : Config.bar.sizes.innerWidth - Appearance.padding.small * 2 + 2
 
             color: Colours.layer(Colours.palette.m3surfaceContainerHigh, 2)
             radius: Appearance.rounding.full
@@ -80,7 +83,15 @@ Item {
                 }
             }
 
+            Behavior on x {
+                Anim {}
+            }
+
             Behavior on y {
+                Anim {}
+            }
+
+            Behavior on implicitWidth {
                 Anim {}
             }
 

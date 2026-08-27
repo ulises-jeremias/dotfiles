@@ -168,9 +168,15 @@ Item {
 
         required property string name
         readonly property bool shouldBeActive: root.wrapper.currentName === name
+        readonly property bool barVertical: Config.bar.isVertical()
+        readonly property string barPosition: Config.bar.position
 
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
+        anchors.verticalCenter: barVertical ? parent.verticalCenter : undefined
+        anchors.horizontalCenter: barVertical ? undefined : parent.horizontalCenter
+        anchors.right: barVertical && barPosition === "left" ? parent.right : undefined
+        anchors.left: barVertical && barPosition === "right" ? parent.left : undefined
+        anchors.bottom: !barVertical && barPosition === "top" ? parent.bottom : undefined
+        anchors.top: !barVertical && barPosition === "bottom" ? parent.top : undefined
 
         opacity: 0
         scale: 0.8

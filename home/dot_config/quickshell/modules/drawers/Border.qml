@@ -11,6 +11,9 @@ Item {
 
     required property Item bar
 
+    readonly property bool barFloating: Config.bar.isFloating()
+    readonly property string barPosition: Config.bar.position
+
     anchors.fill: parent
 
     StyledRect {
@@ -34,10 +37,14 @@ Item {
         layer.enabled: true
         visible: false
 
+        // The cutout reaches the screen edge on the bar's edge when floating,
+        // so the pill floats over the wallpaper instead of a solid frame strip
         Rectangle {
             anchors.fill: parent
-            anchors.margins: Config.border.thickness
-            anchors.leftMargin: root.bar.implicitWidth
+            anchors.leftMargin: root.barPosition === "left" && root.barFloating ? 0 : root.bar.marginLeft
+            anchors.rightMargin: root.barPosition === "right" && root.barFloating ? 0 : root.bar.marginRight
+            anchors.topMargin: root.barPosition === "top" && root.barFloating ? 0 : root.bar.marginTop
+            anchors.bottomMargin: root.barPosition === "bottom" && root.barFloating ? 0 : root.bar.marginBottom
             radius: Config.border.rounding
         }
     }

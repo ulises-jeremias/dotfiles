@@ -19,6 +19,9 @@ Item {
     readonly property real nonAnimHeight: children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight
     readonly property Item current: content.item?.current ?? null
 
+    readonly property bool barVertical: Config.bar.isVertical()
+    readonly property string barPosition: Config.bar.position
+
     property string currentName
     property real currentCenter
     property bool hasCurrent
@@ -101,8 +104,13 @@ Item {
         id: content
 
         shouldBeActive: root.hasCurrent && !root.detachedMode
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        // Hug the edge adjacent to the bar so the popout grows outwards from it
+        anchors.right: root.barVertical && root.barPosition === "left" ? parent.right : undefined
+        anchors.left: root.barVertical && root.barPosition === "right" ? parent.left : undefined
+        anchors.bottom: !root.barVertical && root.barPosition === "top" ? parent.bottom : undefined
+        anchors.top: !root.barVertical && root.barPosition === "bottom" ? parent.top : undefined
+        anchors.verticalCenter: root.barVertical ? parent.verticalCenter : undefined
+        anchors.horizontalCenter: root.barVertical ? undefined : parent.horizontalCenter
 
         sourceComponent: Content {
             wrapper: root

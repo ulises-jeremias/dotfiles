@@ -1,13 +1,18 @@
 {
-  "_name": "Minimal Top",
-  "_description": "Minimal top bar \u2014 workspaces + clock",
-  "_icon": "\u2728",
-  "_iconMaterial": "minimize",
+  "_name": "Floating Island",
+  "_description": "Pill-shaped floating island on top \u2014 glassy and glowy",
+  "_icon": "\ud83c\udfdd\ufe0f",
+  "_iconMaterial": "web_asset",
   "bar": {
     "position": "top",
-    "style": "attached",
+    "style": "floating",
+    "floatingMargin": 12,
     "persistent": true,
     "entries": [
+      {
+        "id": "logo",
+        "enabled": true
+      },
       {
         "id": "workspaces",
         "enabled": true
@@ -25,11 +30,20 @@
         "enabled": true
       },
       {
+        "id": "statusIcons",
+        "enabled": true
+      },
+      {
         "id": "power",
         "enabled": true
       }
     ],
-    "status": {},
+    "status": {
+      "showAudio": true,
+      "showNetwork": true,
+      "showBluetooth": true,
+      "showBattery": true
+    },
     "scrollActions": {
       "workspaces": true,
       "volume": true,
@@ -38,13 +52,18 @@
   },
   "appearance": {
     "rounding": {
-      "scale": 1.2
+      "scale": 1.6
     },
     "padding": {
-      "scale": 0.8
+      "scale": 1.0
     },
     "spacing": {
       "scale": 1.0
+    },
+    "transparency": {
+      "enabled": true,
+      "base": 0.8,
+      "layers": 0.5
     }
   }
 }

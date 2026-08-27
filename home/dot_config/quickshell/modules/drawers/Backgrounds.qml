@@ -18,8 +18,10 @@ Shape {
     required property Item bar
 
     anchors.fill: parent
-    anchors.margins: Config.border.thickness
-    anchors.leftMargin: bar.implicitWidth
+    anchors.leftMargin: bar.marginLeft
+    anchors.rightMargin: bar.marginRight
+    anchors.topMargin: bar.marginTop
+    anchors.bottomMargin: bar.marginBottom
     preferredRendererType: Shape.CurveRenderer
 
     Osd.Background {

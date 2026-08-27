@@ -11,6 +11,8 @@ StyledRect {
     required property Repeater workspaces
     required property Item mask
 
+    readonly property bool vertical: Config.bar.isVertical()
+
     readonly property int currentWsIdx: {
         let i = activeWsId - 1;
         while (i < 0)
@@ -18,16 +20,16 @@ StyledRect {
         return i % Config.bar.workspaces.shown;
     }
 
-    property real leading: workspaces.count > 0 ? workspaces.itemAt(currentWsIdx)?.y ?? 0 : 0
-    property real trailing: workspaces.count > 0 ? workspaces.itemAt(currentWsIdx)?.y ?? 0 : 0
+    property real leading: workspaces.count > 0 ? (vertical ? workspaces.itemAt(currentWsIdx)?.y : workspaces.itemAt(currentWsIdx)?.x) ?? 0 : 0
+    property real trailing: workspaces.count > 0 ? (vertical ? workspaces.itemAt(currentWsIdx)?.y : workspaces.itemAt(currentWsIdx)?.x) ?? 0 : 0
     property real currentSize: workspaces.count > 0 ? workspaces.itemAt(currentWsIdx)?.size ?? 0 : 0
     property real offset: Math.min(leading, trailing)
     property real size: {
         const s = Math.abs(leading - trailing) + currentSize;
         if (Config.bar.workspaces.activeTrail && lastWs > currentWsIdx) {
             const ws = workspaces.itemAt(lastWs);
-            // console.log(ws, lastWs);
-            return ws ? Math.min(ws.y + ws.size - offset, s) : 0;
+            const wsEnd = vertical ? (ws ? ws.y + ws.size : 0) : (ws ? ws.x + ws.size : 0);
+            return ws ? Math.min(wsEnd - offset, s) : 0;
         }
         return s;
     }
@@ -41,9 +43,10 @@ StyledRect {
     }
 
     clip: true
-    y: offset + mask.y
-    implicitWidth: Config.bar.sizes.innerWidth - Appearance.padding.small * 2
-    implicitHeight: size
+    x: vertical ? 0 : offset + mask.x
+    y: vertical ? offset + mask.y : 0
+    implicitWidth: vertical ? Config.bar.sizes.innerWidth - Appearance.padding.small * 2 : size
+    implicitHeight: vertical ? size : Config.bar.sizes.innerWidth - Appearance.padding.small * 2
     radius: Appearance.rounding.full
     color: Colours.palette.m3primary
 
@@ -52,12 +55,13 @@ StyledRect {
         sourceColor: Colours.palette.m3onSurface
         colorizationColor: Colours.palette.m3onPrimary
 
-        x: 0
-        y: -parent.offset
+        x: root.vertical ? 0 : -parent.offset
+        y: root.vertical ? -parent.offset : 0
         implicitWidth: root.mask.implicitWidth
         implicitHeight: root.mask.implicitHeight
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
+        anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
     }
 
     Behavior on leading {

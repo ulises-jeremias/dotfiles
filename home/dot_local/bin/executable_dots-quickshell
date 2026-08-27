@@ -35,6 +35,7 @@
 ##
 ## Options:
 ##     -v, --verbose      Verbose output
+##     -j, --json         Machine-readable JSON output (for preset list)
 ##     -h, --help         Show this help message
 ##
 ## Examples:
@@ -207,7 +208,7 @@ cmd_preset() {
 	shift 2>/dev/null || true
 
 	case "$action" in
-	list) preset_list ;;
+	list) preset_list "${1:-}" ;;
 	apply) preset_apply "${1:-}" ;;
 	select) preset_select ;;
 	current) preset_current ;;
@@ -227,6 +228,33 @@ preset_list() {
 	local current=""
 	[[ -f $CURRENT_PRESET_FILE ]] && current=$(<"$CURRENT_PRESET_FILE")
 
+	# Machine-readable output for the in-shell layout picker and scripts
+	if [[ ${1:-} == "--json" || ${json:-} == "yes" ]]; then
+		python3 - "$PRESETS_DIR" "$current" <<'EOF'
+import json, sys, glob, os
+presets_dir, current = sys.argv[1], sys.argv[2]
+out = []
+for f in sorted(glob.glob(os.path.join(presets_dir, "*.json"))):
+    name = os.path.splitext(os.path.basename(f))[0]
+    try:
+        d = json.load(open(f))
+    except (OSError, json.JSONDecodeError):
+        continue
+    out.append({
+        "name": name,
+        "display": d.get("_name", name),
+        "description": d.get("_description", ""),
+        "icon": d.get("_icon", "📦"),
+        "iconMaterial": d.get("_iconMaterial", "widgets"),
+        "position": d.get("bar", {}).get("position", "left"),
+        "style": d.get("bar", {}).get("style", "attached"),
+        "active": name == current,
+    })
+print(json.dumps(out))
+EOF
+		return $?
+	fi
+
 	local count=0
 	for preset_file in "$PRESETS_DIR"/*.json; do
 		[[ -f $preset_file ]] || continue
@@ -245,7 +273,7 @@ preset_list() {
 
 		local position entries
 		position=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('bar',{}).get('position',''))" "$preset_file" 2>/dev/null || echo "")
-		entries=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(', '.join(d.get('bar',{}).get('entries',[])))" "$preset_file" 2>/dev/null || echo "")
+		entries=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); es=d.get('bar',{}).get('entries',[]); print(', '.join(e.get('id','?') for e in es if isinstance(e,dict) and e.get('enabled',True)))" "$preset_file" 2>/dev/null || echo "")
 		[[ -n $position ]] && echo -e "   bar: ${position} | ${entries}"
 		echo ""
 		count=$((count + 1))

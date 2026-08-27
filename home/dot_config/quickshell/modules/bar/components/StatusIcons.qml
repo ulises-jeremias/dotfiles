@@ -14,36 +14,47 @@ StyledRect {
     id: root
 
     property color colour: Colours.palette.m3secondary
-    readonly property alias items: iconColumn
+    readonly property alias items: iconGrid
+    readonly property bool vertical: Config.bar.isVertical()
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Appearance.rounding.full
 
     clip: true
-    implicitWidth: Config.bar.sizes.innerWidth
-    implicitHeight: iconColumn.implicitHeight + Appearance.padding.normal * 2 - (Config.bar.status.showLockStatus && !Hypr.capsLock && !Hypr.numLock ? iconColumn.spacing : 0)
+    implicitWidth: vertical ? Config.bar.sizes.innerWidth : iconGrid.implicitWidth + Appearance.padding.normal * 2
+    implicitHeight: vertical ? iconGrid.implicitHeight + Appearance.padding.normal * 2 - (Config.bar.status.showLockStatus && !Hypr.capsLock && !Hypr.numLock ? iconGrid.rowSpacing : 0) : Config.bar.sizes.innerWidth
 
-    ColumnLayout {
-        id: iconColumn
+    GridLayout {
+        id: iconGrid
 
-        anchors.left: parent.left
+        anchors.left: root.vertical ? parent.left : undefined
         anchors.right: parent.right
+        anchors.top: root.vertical ? undefined : parent.top
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: Appearance.padding.normal
+        anchors.rightMargin: root.vertical ? 0 : Appearance.padding.normal
+        anchors.bottomMargin: root.vertical ? Appearance.padding.normal : 0
 
-        spacing: Appearance.spacing.smaller / 2
+        flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
+        rows: root.vertical ? -1 : 1
+        columns: root.vertical ? 1 : -1
+        rowSpacing: Appearance.spacing.smaller / 2
+        columnSpacing: Appearance.spacing.smaller / 2
 
         // Lock keys status
         WrappedLoader {
             name: "lockstatus"
             active: Config.bar.status.showLockStatus
 
-            sourceComponent: ColumnLayout {
-                spacing: 0
+            sourceComponent: GridLayout {
+                flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
+                rows: root.vertical ? -1 : 1
+                columns: root.vertical ? 1 : -1
+                rowSpacing: 0
+                columnSpacing: 0
 
                 Item {
-                    implicitWidth: capslockIcon.implicitWidth
-                    implicitHeight: Hypr.capsLock ? capslockIcon.implicitHeight : 0
+                    implicitWidth: root.vertical ? capslockIcon.implicitWidth : (Hypr.capsLock ? capslockIcon.implicitWidth : 0)
+                    implicitHeight: root.vertical ? (Hypr.capsLock ? capslockIcon.implicitHeight : 0) : capslockIcon.implicitHeight
 
                     MaterialIcon {
                         id: capslockIcon
@@ -71,10 +82,11 @@ StyledRect {
                 }
 
                 Item {
-                    Layout.topMargin: Hypr.capsLock && Hypr.numLock ? iconColumn.spacing : 0
+                    Layout.topMargin: root.vertical && Hypr.capsLock && Hypr.numLock ? iconGrid.rowSpacing : 0
+                    Layout.leftMargin: !root.vertical && Hypr.capsLock && Hypr.numLock ? iconGrid.columnSpacing : 0
 
-                    implicitWidth: numlockIcon.implicitWidth
-                    implicitHeight: Hypr.numLock ? numlockIcon.implicitHeight : 0
+                    implicitWidth: root.vertical ? numlockIcon.implicitWidth : (Hypr.numLock ? numlockIcon.implicitWidth : 0)
+                    implicitHeight: root.vertical ? (Hypr.numLock ? numlockIcon.implicitHeight : 0) : numlockIcon.implicitHeight
 
                     MaterialIcon {
                         id: numlockIcon
@@ -166,13 +178,18 @@ StyledRect {
 
         // Bluetooth section
         WrappedLoader {
-            Layout.preferredHeight: implicitHeight
+            Layout.preferredHeight: root.vertical ? implicitHeight : -1
+            Layout.preferredWidth: root.vertical ? -1 : implicitWidth
 
             name: "bluetooth"
             active: Config.bar.status.showBluetooth
 
-            sourceComponent: ColumnLayout {
-                spacing: Appearance.spacing.smaller / 2
+            sourceComponent: GridLayout {
+                flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
+                rows: root.vertical ? -1 : 1
+                columns: root.vertical ? 1 : -1
+                rowSpacing: Appearance.spacing.smaller / 2
+                columnSpacing: Appearance.spacing.smaller / 2
 
                 // Bluetooth icon
                 MaterialIcon {
@@ -264,7 +281,7 @@ StyledRect {
     component WrappedLoader: Loader {
         required property string name
 
-        Layout.alignment: Qt.AlignHCenter
+        Layout.alignment: root.vertical ? Qt.AlignHCenter : Qt.AlignVCenter
         visible: active
     }
 }

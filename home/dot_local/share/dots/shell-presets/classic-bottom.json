@@ -1,16 +1,72 @@
 {
   "_name": "Classic Bottom",
-  "_description": "Bottom bar — dock-like layout",
-  "_icon": "🖥️",
+  "_description": "Bottom bar \u2014 dock-like layout with all status icons",
+  "_icon": "\ud83d\udda5\ufe0f",
+  "_iconMaterial": "vertical_align_bottom",
   "bar": {
     "position": "bottom",
-    "entries": ["logo", "workspaces", "spacer", "clock", "spacer", "statusIcons", "power"],
-    "statusIcons": ["audio", "mic", "network", "bluetooth", "battery"],
-    "scrollActions": { "up": "volume", "down": "volume" }
+    "style": "attached",
+    "persistent": true,
+    "entries": [
+      {
+        "id": "logo",
+        "enabled": true
+      },
+      {
+        "id": "workspaces",
+        "enabled": true
+      },
+      {
+        "id": "activeWindow",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "clock",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "tray",
+        "enabled": true
+      },
+      {
+        "id": "statusIcons",
+        "enabled": true
+      },
+      {
+        "id": "power",
+        "enabled": true
+      }
+    ],
+    "status": {
+      "showAudio": true,
+      "showMicrophone": true,
+      "showNetwork": true,
+      "showBluetooth": true,
+      "showBattery": true
+    },
+    "scrollActions": {
+      "workspaces": true,
+      "volume": true,
+      "brightness": false
+    }
   },
   "appearance": {
-    "rounding": 12,
-    "padding": 6,
-    "spacing": 10
+    "rounding": {
+      "scale": 0.75
+    },
+    "padding": {
+      "scale": 0.9
+    },
+    "spacing": {
+      "scale": 0.9
+    }
   }
 }

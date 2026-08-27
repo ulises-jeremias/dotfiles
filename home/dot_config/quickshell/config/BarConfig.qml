@@ -4,6 +4,19 @@ JsonObject {
     property bool persistent: true
     property bool showOnHover: true
     property int dragThreshold: 20
+    // Layout: which screen edge the bar attaches to, and how
+    property string position: "left" // left | right | top | bottom
+    property string style: "attached" // attached | floating | dock
+    property int floatingMargin: 8
+
+    function isVertical(): bool {
+        return position === "left" || position === "right";
+    }
+
+    function isFloating(): bool {
+        return style !== "attached";
+    }
+
     property ScrollActions scrollActions: ScrollActions {}
     property Popouts popouts: Popouts {}
     property Workspaces workspaces: Workspaces {}

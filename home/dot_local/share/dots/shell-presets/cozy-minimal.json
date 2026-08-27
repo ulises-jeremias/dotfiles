@@ -1,11 +1,12 @@
 {
-  "_name": "Minimal Top",
-  "_description": "Minimal top bar \u2014 workspaces + clock",
-  "_icon": "\u2728",
-  "_iconMaterial": "minimize",
+  "_name": "Cozy Minimal",
+  "_description": "Soft floating top bar \u2014 rounded, gentle, distraction-free",
+  "_icon": "\ud83c\udf38",
+  "_iconMaterial": "weekend",
   "bar": {
     "position": "top",
-    "style": "attached",
+    "style": "floating",
+    "floatingMargin": 10,
     "persistent": true,
     "entries": [
       {
@@ -25,11 +26,18 @@
         "enabled": true
       },
       {
+        "id": "statusIcons",
+        "enabled": true
+      },
+      {
         "id": "power",
         "enabled": true
       }
     ],
-    "status": {},
+    "status": {
+      "showNetwork": true,
+      "showBattery": true
+    },
     "scrollActions": {
       "workspaces": true,
       "volume": true,
@@ -38,13 +46,18 @@
   },
   "appearance": {
     "rounding": {
-      "scale": 1.2
+      "scale": 1.4
     },
     "padding": {
-      "scale": 0.8
+      "scale": 1.1
     },
     "spacing": {
-      "scale": 1.0
+      "scale": 1.1
+    },
+    "transparency": {
+      "enabled": true,
+      "base": 0.9,
+      "layers": 0.4
     }
   }
 }

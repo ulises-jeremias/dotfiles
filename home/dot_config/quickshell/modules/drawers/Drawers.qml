@@ -57,10 +57,10 @@ Variants {
             WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
             mask: Region {
-                x: bar.implicitWidth + win.dragMaskPadding
-                y: Config.border.thickness + win.dragMaskPadding
-                width: win.width - bar.implicitWidth - Config.border.thickness - win.dragMaskPadding * 2
-                height: win.height - Config.border.thickness * 2 - win.dragMaskPadding * 2
+                x: bar.marginLeft + win.dragMaskPadding
+                y: bar.marginTop + win.dragMaskPadding
+                width: win.width - bar.marginLeft - bar.marginRight - win.dragMaskPadding * 2
+                height: win.height - bar.marginTop - bar.marginBottom - win.dragMaskPadding * 2
                 intersection: Intersection.Xor
 
                 regions: regions.instances
@@ -79,8 +79,8 @@ Variants {
                 Region {
                     required property Item modelData
 
-                    x: modelData.x + bar.implicitWidth
-                    y: modelData.y + Config.border.thickness
+                    x: modelData.x + bar.marginLeft
+                    y: modelData.y + bar.marginTop
                     width: modelData.width
                     height: modelData.height
                     intersection: Intersection.Subtract
@@ -164,8 +164,10 @@ Variants {
                 BarWrapper {
                     id: bar
 
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
+                    anchors.left: (!Config.bar.isVertical() || Config.bar.position === "left") ? parent.left : undefined
+                    anchors.right: (!Config.bar.isVertical() || Config.bar.position === "right") ? parent.right : undefined
+                    anchors.top: (Config.bar.isVertical() || Config.bar.position === "top") ? parent.top : undefined
+                    anchors.bottom: (Config.bar.isVertical() || Config.bar.position === "bottom") ? parent.bottom : undefined
 
                     screen: scope.modelData
                     visibilities: visibilities
