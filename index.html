@@ -2020,6 +2020,17 @@ dots appearance doctor</pre><hr>
 </li>
 <li>Drawers interaction surface (<code>modules/drawers/Interactions.qml</code>) handles hover/wheel behavior.</li>
 </ul>
+<h3 id="bar-entries">Bar entries</h3>
+<p>Available entry ids for <code>bar.entries</code>:</p>
+<p><code>logo</code> · <code>workspaces</code> · <code>activeWindow</code> · <code>audioSlider</code> · <code>brightnessSlider</code> ·
+<code>tray</code> · <code>clock</code> · <code>statusIcons</code> · <code>power</code> · <code>spacer</code></p>
+<p><code>audioSlider</code> and <code>brightnessSlider</code> are inline M3 sliders intended for
+horizontal (top/bottom) bars — the classic reference bars use them.</p>
+<h3 id="visualizer">Visualizer</h3>
+<p><code>background.visualiser</code> draws cava bars on the screen edges behind the
+wallpaper gradient (bar side excluded). <code>autoHide: true</code> (default) only
+shows them when every window on the workspace is floating. The <code>gaming</code>
+preset enables it permanently.</p>
 <h3 id="layout-geometry">Layout geometry</h3>
 <p>Bar styles have distinct window-management contracts:</p>
 <table>
