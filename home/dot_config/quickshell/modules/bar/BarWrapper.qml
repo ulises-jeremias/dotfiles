@@ -13,26 +13,45 @@ Item {
     required property PersistentProperties visibilities
     required property BarPopouts.Wrapper popouts
     required property bool disabled
+    required property bool frameVisible
 
     readonly property string position: Config.bar.position
     readonly property bool vertical: Config.bar.isVertical()
     readonly property bool floating: Config.bar.isFloating()
+    readonly property int frameInset: frameVisible ? Config.border.thickness : 0
     readonly property int padding: Math.max(Appearance.padding.smaller, Config.border.thickness)
     // Size of the bar across its screen edge (including the float gap when floating)
     readonly property int thickness: Config.bar.sizes.innerWidth + padding * 2 + (floating ? Config.bar.floatingMargin : 0)
     readonly property int contentWidth: thickness // kept for external references
-    readonly property int exclusiveZone: !disabled && (Config.bar.persistent || visibilities.bar) ? thickness : Config.border.thickness
+    readonly property int exclusiveZone: Config.bar.reservesSpace() && !disabled && (Config.bar.persistent || visibilities.bar) ? thickness : frameInset
     readonly property bool shouldBeVisible: !disabled && (Config.bar.persistent || visibilities.bar || isHovered)
     property bool isHovered
 
     // Animated size along the bar's main axis
     readonly property int currentThickness: vertical ? implicitWidth : implicitHeight
+    readonly property Item visualItem: content.item?.visualItem ?? null
+    readonly property real visualX: x + (visualItem?.x ?? 0)
+    readonly property real visualY: y + (visualItem?.y ?? 0)
+    readonly property real visualWidth: visualItem?.width ?? 0
+    readonly property real visualHeight: visualItem?.height ?? 0
 
-    // Margins reserved on each screen edge (used by drawers mask, panels, border, backgrounds)
-    readonly property int marginLeft: position === "left" ? currentThickness : Config.border.thickness
-    readonly property int marginRight: position === "right" ? currentThickness : Config.border.thickness
-    readonly property int marginTop: position === "top" ? currentThickness : Config.border.thickness
-    readonly property int marginBottom: position === "bottom" ? currentThickness : Config.border.thickness
+    // Shell panels avoid the visible bar even when a floating bar overlays clients.
+    readonly property int marginLeft: position === "left" ? currentThickness : frameInset
+    readonly property int marginRight: position === "right" ? currentThickness : frameInset
+    readonly property int marginTop: position === "top" ? currentThickness : frameInset
+    readonly property int marginBottom: position === "bottom" ? currentThickness : frameInset
+
+    // Layer-shell reservations are independent from shell panel placement.
+    readonly property int reservedLeft: position === "left" ? exclusiveZone : frameInset
+    readonly property int reservedRight: position === "right" ? exclusiveZone : frameInset
+    readonly property int reservedTop: position === "top" ? exclusiveZone : frameInset
+    readonly property int reservedBottom: position === "bottom" ? exclusiveZone : frameInset
+
+    function containsVisualPoint(x: real, y: real): bool {
+        if (!visualItem || !root.visible)
+            return false;
+        return x >= visualX && x <= visualX + visualWidth && y >= visualY && y <= visualY + visualHeight;
+    }
 
     function closeTray(): void {
         content.item?.closeTray();
@@ -46,9 +65,9 @@ Item {
         content.item?.handleWheel(pos, angleDelta);
     }
 
-    visible: (vertical ? width : height) > Config.border.thickness
-    implicitWidth: Config.border.thickness
-    implicitHeight: Config.border.thickness
+    visible: (vertical ? width : height) > frameInset
+    implicitWidth: frameInset
+    implicitHeight: frameInset
 
     states: [
         State {

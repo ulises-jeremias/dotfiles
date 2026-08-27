@@ -13,28 +13,28 @@ Scope {
 
     ExclusionZone {
         anchors.left: true
-        exclusiveZone: Config.bar.position === "left" ? root.bar.exclusiveZone : Config.border.thickness
+        exclusiveZone: root.bar.reservedLeft
     }
 
     ExclusionZone {
         anchors.top: true
-        exclusiveZone: Config.bar.position === "top" ? root.bar.exclusiveZone : Config.border.thickness
+        exclusiveZone: root.bar.reservedTop
     }
 
     ExclusionZone {
         anchors.right: true
-        exclusiveZone: Config.bar.position === "right" ? root.bar.exclusiveZone : Config.border.thickness
+        exclusiveZone: root.bar.reservedRight
     }
 
     ExclusionZone {
         anchors.bottom: true
-        exclusiveZone: Config.bar.position === "bottom" ? root.bar.exclusiveZone : Config.border.thickness
+        exclusiveZone: root.bar.reservedBottom
     }
 
     component ExclusionZone: StyledWindow {
         screen: root.screen
         name: "border-exclusion"
-        exclusiveZone: Config.border.thickness
+        exclusiveZone: 0
         mask: Region {}
         implicitWidth: 1
         implicitHeight: 1

@@ -58,14 +58,29 @@ Variants {
             WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session || visibilities.layoutPicker ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
             mask: Region {
-                x: bar.marginLeft + win.dragMaskPadding
-                y: bar.marginTop + win.dragMaskPadding
-                width: win.width - bar.marginLeft - bar.marginRight - win.dragMaskPadding * 2
-                height: win.height - bar.marginTop - bar.marginBottom - win.dragMaskPadding * 2
-                intersection: Intersection.Xor
-
-                regions: regions.instances
+                regions: win.hasFullscreen ? [] : inputRegions.instances
             }
+
+            // DEBUG overlay disabled for production
+            // Item {
+            //     id: debugOverlay
+            //     anchors.fill: parent
+            //     visible: false
+            //     z: 999
+            //     Repeater {
+            //         model: inputRegions.model
+            //         Rectangle {
+            //             required property var modelData
+            //             x: modelData.x
+            //             y: modelData.y
+            //             width: modelData.width
+            //             height: modelData.height
+            //             color: "#60ff0000"
+            //             border.color: "#ffff0000"
+            //             border.width: 2
+            //         }
+            //     }
+            // }
 
             anchors.top: true
             anchors.bottom: true
@@ -73,18 +88,66 @@ Variants {
             anchors.right: true
 
             Variants {
-                id: regions
+                id: inputRegions
 
-                model: panels.children
+                model: {
+                    const trigger = Math.max(bar.frameInset, win.dragMaskPadding, 1);
+                    const rects = [
+                        {
+                            x: 0,
+                            y: 0,
+                            width: win.width,
+                            height: trigger
+                        },
+                        {
+                            x: 0,
+                            y: win.height - trigger,
+                            width: win.width,
+                            height: trigger
+                        },
+                        {
+                            x: 0,
+                            y: trigger,
+                            width: trigger,
+                            height: Math.max(0, win.height - trigger * 2)
+                        },
+                        {
+                            x: win.width - trigger,
+                            y: trigger,
+                            width: trigger,
+                            height: Math.max(0, win.height - trigger * 2)
+                        }
+                    ];
+
+                    if (bar.visible && bar.visualWidth > 0 && bar.visualHeight > 0) {
+                        rects.push({
+                            x: bar.visualX,
+                            y: bar.visualY,
+                            width: bar.visualWidth,
+                            height: bar.visualHeight
+                        });
+                    }
+
+                    for (const panel of panels.children) {
+                        if (panel.width > 0 && panel.height > 0) {
+                            rects.push({
+                                x: panel.x + bar.marginLeft,
+                                y: panel.y + bar.marginTop,
+                                width: panel.width,
+                                height: panel.height
+                            });
+                        }
+                    }
+                    return rects;
+                }
 
                 Region {
-                    required property Item modelData
+                    required property var modelData
 
-                    x: modelData.x + bar.marginLeft
-                    y: modelData.y + bar.marginTop
+                    x: modelData.x
+                    y: modelData.y
                     width: modelData.width
                     height: modelData.height
-                    intersection: Intersection.Subtract
                 }
             }
 
@@ -126,6 +189,7 @@ Variants {
 
                 Border {
                     bar: bar
+                    visible: bar.frameVisible
                 }
 
                 Backgrounds {
@@ -150,6 +214,7 @@ Variants {
             }
 
             Interactions {
+                enabled: !win.hasFullscreen
                 screen: scope.modelData
                 popouts: panels.popouts
                 visibilities: visibilities
@@ -176,9 +241,10 @@ Variants {
                     visibilities: visibilities
                     popouts: panels.popouts
 
-                    disabled: scope.barDisabled
+                    disabled: scope.barDisabled || win.hasFullscreen
+                    frameVisible: Config.border.frameEnabled && !win.hasFullscreen
 
-                    Component.onCompleted: Visibilities.bars.set(scope.modelData, this)
+                    Component.onCompleted: Visibilities.setBar(scope.modelData, this)
                 }
             }
         }

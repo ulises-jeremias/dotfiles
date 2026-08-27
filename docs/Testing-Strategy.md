@@ -45,6 +45,7 @@ Testing ensures reliability across diverse environments:
 4. **Dependencies**: Verify behavior with missing deps
 5. **Integration**: Check interaction with other components
 6. **Appearance contract**: `./scripts/test-appearance-consistency.sh --source`
+7. **Shell layout contract**: `./scripts/test-shell-layout-consistency.sh`
 
 ### For Visual Changes
 
@@ -84,6 +85,8 @@ Testing ensures reliability across diverse environments:
 - [ ] Scales to different resolutions
 - [ ] Handles multiple monitors
 - [ ] Integrates with window manager
+- [ ] Layout reservations match `hyprctl monitors -j`
+- [ ] Rounded desktop frame follows the active preset
 
 **For Theme Packs:**
 

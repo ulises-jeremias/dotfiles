@@ -6,7 +6,9 @@
   "bar": {
     "position": "top",
     "style": "attached",
+    "floatingMargin": 8,
     "persistent": true,
+    "showOnHover": true,
     "entries": [
       {
         "id": "workspaces",
@@ -29,12 +31,18 @@
         "enabled": true
       }
     ],
+    "sizes": {
+      "innerWidth": 40
+    },
     "status": {},
     "scrollActions": {
       "workspaces": true,
       "volume": true,
       "brightness": false
     }
+  },
+  "border": {
+    "frameEnabled": false
   },
   "appearance": {
     "rounding": {

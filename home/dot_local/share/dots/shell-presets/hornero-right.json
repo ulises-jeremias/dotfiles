@@ -6,7 +6,9 @@
   "bar": {
     "position": "right",
     "style": "attached",
+    "floatingMargin": 8,
     "persistent": true,
+    "showOnHover": true,
     "entries": [
       {
         "id": "logo",
@@ -45,6 +47,9 @@
         "enabled": true
       }
     ],
+    "sizes": {
+      "innerWidth": 40
+    },
     "status": {
       "showAudio": true,
       "showMicrophone": true,
@@ -57,6 +62,9 @@
       "volume": true,
       "brightness": true
     }
+  },
+  "border": {
+    "frameEnabled": true
   },
   "appearance": {
     "rounding": {

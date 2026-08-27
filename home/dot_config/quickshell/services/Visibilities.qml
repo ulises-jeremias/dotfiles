@@ -10,6 +10,12 @@ Singleton {
         screens.set(Hypr.monitorFor(screen), visibilities);
     }
 
+    function setBar(screen: ShellScreen, bar: var): void {
+        const updated = new Map(bars);
+        updated.set(screen, bar);
+        bars = updated;
+    }
+
     function getForActive(): PersistentProperties {
         return screens.get(Hypr.focusedMonitor);
     }

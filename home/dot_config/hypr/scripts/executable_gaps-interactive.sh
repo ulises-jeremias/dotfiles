@@ -25,8 +25,9 @@ show_menu() {
   echo "2) Decrease (-5)"
   echo "3) Increase All (Shift +5)"
   echo "4) Decrease All (Shift -5)"
-  echo "5) Reset (0)"
-  printf "Choice [1-5]: "
+  echo "5) Set to zero"
+  echo "6) Restore defaults"
+  printf "Choice [1-6]: "
   local n
   read -r n || return 1
   case "$n" in
@@ -34,7 +35,8 @@ show_menu() {
     2) echo "Decrease (-5)" ;;
     3) echo "Increase All (Shift +5)" ;;
     4) echo "Decrease All (Shift -5)" ;;
-    5) echo "Reset (0)" ;;
+    5) echo "Set to zero" ;;
+    6) echo "Restore defaults" ;;
     *) return 1 ;;
   esac
 }
@@ -69,8 +71,11 @@ case "$main_choice" in
       "Decrease All (Shift -5)")
         hyprctl keyword general:gaps_in $((current - 5))
         ;;
-      "Reset (0)")
-        hyprctl keyword general:gaps_in 12
+      "Set to zero")
+        hyprctl keyword general:gaps_in 0
+        ;;
+      "Restore defaults")
+        hyprctl keyword general:gaps_in 6
         ;;
     esac
     ;;
@@ -92,7 +97,10 @@ case "$main_choice" in
       "Decrease All (Shift -5)")
         hyprctl keyword general:gaps_out $((current - 5))
         ;;
-      "Reset (0)")
+      "Set to zero")
+        hyprctl keyword general:gaps_out 0
+        ;;
+      "Restore defaults")
         hyprctl keyword general:gaps_out 18
         ;;
     esac

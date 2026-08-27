@@ -14,8 +14,10 @@ dots-quickshell restart
 
 - [ ] Left rail does not overlap client windows.
 - [ ] Top/bottom bar modes reserve space correctly (no window content under bar).
-- [ ] Rounded desktop frame is visible on all monitors.
-- [ ] Right-edge notch panels open inside shell frame and do not clip incorrectly.
+- [ ] Attached and dock modes reserve their visible thickness; floating mode overlays client space.
+- [ ] Rounded desktop frame is visible for Hornero Left/Right and absent for frameless presets.
+- [ ] Frameless presets reserve zero pixels on non-bar edges.
+- [ ] Right-edge notch panels open inside their usable shell area and do not clip incorrectly.
 
 ## Core interaction flow
 
@@ -28,6 +30,7 @@ dots-quickshell restart
 ## Popouts and side controls
 
 - [ ] Audio/network/bluetooth/battery popouts align to bar position.
+- [ ] Top/bottom popouts use horizontal geometry rather than a mirrored side-rail shape.
 - [ ] Popouts never render detached off-screen.
 - [ ] OSD appears on right edge and updates for volume/brightness changes.
 
@@ -48,3 +51,6 @@ dots-quickshell restart
 - [ ] No duplicate IPC handler warnings at startup.
 - [ ] No missing file warnings for battery/lock LEDs on current hardware.
 - [ ] No missing dependency crash when optional tools are absent (`ddcutil`, etc.).
+- [ ] Applying presets in different orders produces the same final owned fields.
+- [ ] Config save and shell restart preserve bar position, style, floating margin, and frame state.
+- [ ] Quickshell is never restarted while the session is locked.

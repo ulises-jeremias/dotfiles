@@ -6,7 +6,9 @@
   "bar": {
     "position": "bottom",
     "style": "floating",
+    "floatingMargin": 8,
     "persistent": true,
+    "showOnHover": true,
     "entries": [
       {
         "id": "workspaces",
@@ -21,6 +23,9 @@
         "enabled": true
       }
     ],
+    "sizes": {
+      "innerWidth": 40
+    },
     "status": {
       "showAudio": true,
       "showNetwork": true
@@ -30,6 +35,9 @@
       "volume": true,
       "brightness": false
     }
+  },
+  "border": {
+    "frameEnabled": false
   },
   "appearance": {
     "rounding": {

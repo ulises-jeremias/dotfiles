@@ -216,6 +216,9 @@ Singleton {
             persistent: bar.persistent,
             showOnHover: bar.showOnHover,
             dragThreshold: bar.dragThreshold,
+            position: bar.position,
+            style: bar.style,
+            floatingMargin: bar.floatingMargin,
             scrollActions: {
                 workspaces: bar.scrollActions.workspaces,
                 volume: bar.scrollActions.volume,
@@ -273,6 +276,7 @@ Singleton {
 
     function serializeBorder(): var {
         return {
+            frameEnabled: border.frameEnabled,
             thickness: border.thickness,
             rounding: border.rounding
         };

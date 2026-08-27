@@ -41,7 +41,8 @@ Item {
             }
         }
 
-        return Math.min((QsWindow.window?.screen?.height ?? 0) - Config.border.thickness * 2, height + padding * 2);
+        const availableHeight = root.panels ? root.panels.height : (QsWindow.window?.screen?.height ?? 0);
+        return Math.min(availableHeight, height + padding * 2);
     }
 
     ClippingWrapperRectangle {
