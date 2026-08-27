@@ -77,7 +77,8 @@ Singleton {
     Process {
         id: ddcProc
 
-        command: ["ddcutil", "detect", "--brief"]
+        // Avoid "binary not found" warnings on machines without ddcutil
+        command: ["sh", "-c", "command -v ddcutil >/dev/null 2>&1 && ddcutil detect --brief"]
         stdout: StdioCollector {
             onStreamFinished: root.ddcMonitors = text.trim().split("\n\n").filter(d => d.startsWith("Display ")).map(d => ({
                         busNum: d.match(/I2C bus:[ ]*\/dev\/i2c-([0-9]+)/)[1],
