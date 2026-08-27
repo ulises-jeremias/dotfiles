@@ -29,6 +29,7 @@
 ##     sidebar toggle     Toggle notification sidebar
 ##     utilities toggle   Toggle utilities panel
 ##     bar toggle         Toggle bar visibility
+##     layoutpicker toggle  Toggle shell layout picker
 ##     colours reload     Reload color scheme
 ##     wallpaper set <path>  Set wallpaper
 ##     wallpaper get      Get current wallpaper path
@@ -175,8 +176,10 @@ cmd_ipc() {
 	show | open) action="toggle" ;;
 	esac
 
-	local drawer_targets="launcher session dashboard sidebar bar osd utilities"
+	local drawer_targets="launcher session dashboard sidebar bar osd utilities layoutpicker layout-picker"
 	if [[ " $drawer_targets " == *" $target "* ]]; then
+		# Normalize aliases to the actual visibility property names
+		[[ $target == "layoutpicker" || $target == "layout-picker" ]] && target="layoutPicker"
 		log_debug "Sending IPC (drawer): drawers $action $target $*"
 		quickshell ipc call drawers "$action" "$target" "$@"
 		return $?

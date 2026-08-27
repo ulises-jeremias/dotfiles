@@ -35,7 +35,7 @@ See [Development Standards](docs/Development-Standards.md) for complete requirem
 
 - **Appearance Themes** - Apply-once theme packs + live wallpaper/scheme/GTK controls
 - **Smart Colors** - Semantic color adaptation cached in `~/.cache/dots/smart-colors/`
-- **Quickshell** - Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)
+- **Quickshell** - Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat) with multi-layout bar (`bar.position`: left/right/top/bottom, `bar.style`: attached/floating/dock) and shell presets (`~/.local/share/dots/shell-presets/*.json`, applied live via `dots-quickshell preset apply <name>` or the in-shell layout picker)
 - **Hornero C++ Plugin** - Performance-critical Quickshell extensions (image analysis, audio, calculator)
 - **Dots CLI** - Unified script interface
 - **Chaotic-AUR** - Precompiled AUR packages for faster installation

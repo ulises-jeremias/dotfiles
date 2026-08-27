@@ -49,12 +49,13 @@ Variants {
                 visibilities.launcher = false;
                 visibilities.session = false;
                 visibilities.dashboard = false;
+                visibilities.layoutPicker = false;
             }
 
             screen: scope.modelData
             name: "drawers"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
-            WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session || visibilities.layoutPicker ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
             mask: Region {
                 x: bar.marginLeft + win.dragMaskPadding
@@ -90,13 +91,14 @@ Variants {
             HyprlandFocusGrab {
                 id: focusGrab
 
-                active: (visibilities.launcher && Config.launcher.enabled) || (visibilities.session && Config.session.enabled) || (visibilities.sidebar && Config.sidebar.enabled) || (!Config.dashboard.showOnHover && visibilities.dashboard && Config.dashboard.enabled) || (panels.popouts.currentName.startsWith("traymenu") && panels.popouts.current?.depth > 1)
+                active: (visibilities.launcher && Config.launcher.enabled) || (visibilities.session && Config.session.enabled) || (visibilities.sidebar && Config.sidebar.enabled) || (!Config.dashboard.showOnHover && visibilities.dashboard && Config.dashboard.enabled) || visibilities.layoutPicker || (panels.popouts.currentName.startsWith("traymenu") && panels.popouts.current?.depth > 1)
                 windows: [win]
                 onCleared: {
                     visibilities.launcher = false;
                     visibilities.session = false;
                     visibilities.sidebar = false;
                     visibilities.dashboard = false;
+                    visibilities.layoutPicker = false;
                     panels.popouts.hasCurrent = false;
                     bar.closeTray();
                 }
@@ -104,7 +106,7 @@ Variants {
 
             StyledRect {
                 anchors.fill: parent
-                opacity: visibilities.session && Config.session.enabled ? 0.5 : 0
+                opacity: (visibilities.session && Config.session.enabled) || visibilities.layoutPicker ? 0.5 : 0
                 color: Colours.palette.m3scrim
 
                 Behavior on opacity {
@@ -142,6 +144,7 @@ Variants {
                 property bool dashboard
                 property bool utilities
                 property bool sidebar
+                property bool layoutPicker
 
                 Component.onCompleted: Visibilities.load(scope.modelData, this)
             }

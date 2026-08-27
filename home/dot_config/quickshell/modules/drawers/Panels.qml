@@ -4,6 +4,7 @@ import qs.modules.notifications as Notifications
 import qs.modules.session as Session
 import qs.modules.launcher as Launcher
 import qs.modules.dashboard as Dashboard
+import qs.modules.layoutpicker as LayoutPicker
 import qs.modules.bar.popouts as BarPopouts
 import qs.modules.utilities as Utilities
 import qs.modules.utilities.toasts as Toasts
@@ -27,6 +28,7 @@ Item {
     readonly property alias utilities: utilities
     readonly property alias toasts: toasts
     readonly property alias sidebar: sidebar
+    readonly property alias layoutPicker: layoutPicker
 
     anchors.fill: parent
     anchors.leftMargin: bar.marginLeft
@@ -147,5 +149,14 @@ Item {
         anchors.top: notifications.bottom
         anchors.bottom: utilities.top
         anchors.right: parent.right
+    }
+
+    LayoutPicker.Wrapper {
+        id: layoutPicker
+
+        visibilities: root.visibilities
+        panels: root
+
+        anchors.centerIn: parent
     }
 }

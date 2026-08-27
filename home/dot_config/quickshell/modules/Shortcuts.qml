@@ -82,6 +82,17 @@ Scope {
     }
 
     CustomShortcut {
+        name: "layoutPicker"
+        description: "Toggle shell layout picker"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            const visibilities = Visibilities.getForActive();
+            visibilities.layoutPicker = !visibilities.layoutPicker;
+        }
+    }
+
+    CustomShortcut {
         name: "utilities"
         description: "Toggle utilities"
         onPressed: {
