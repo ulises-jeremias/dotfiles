@@ -240,9 +240,11 @@ Item {
         StyledSlider {
             id: slider
 
-            enabled: !!Players.active
+            // No player: the slider (and its -1:-1 timestamps) add noise to
+            // the empty state, so collapse it away
+            visible: !!Players.active
             implicitWidth: 280
-            implicitHeight: Appearance.padding.normal * 3
+            implicitHeight: Players.active ? Appearance.padding.normal * 3 : 0
 
             onMoved: {
                 const active = Players.active;
@@ -277,7 +279,10 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            implicitHeight: Math.max(position.implicitHeight, length.implicitHeight)
+            // Hide the timestamp row entirely when nothing is playing
+            // (position/length report -1 and would render as "-1:-1")
+            implicitHeight: Players.active?.length >= 0 ? Math.max(position.implicitHeight, length.implicitHeight) : 0
+            visible: Players.active?.length >= 0
 
             StyledText {
                 id: position
