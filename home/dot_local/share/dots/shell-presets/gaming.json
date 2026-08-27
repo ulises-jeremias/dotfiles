@@ -6,7 +6,7 @@
   "bar": {
     "position": "bottom",
     "style": "floating",
-    "floatingMargin": 8,
+    "floatingMargin": 14,
     "persistent": true,
     "showOnHover": true,
     "entries": [

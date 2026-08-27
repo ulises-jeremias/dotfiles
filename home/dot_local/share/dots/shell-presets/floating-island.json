@@ -1,12 +1,12 @@
 {
   "_name": "Floating Island",
-  "_description": "Pill-shaped floating island on top \u2014 glassy and glowy",
-  "_icon": "\ud83c\udfdd\ufe0f",
+  "_description": "Pill-shaped floating island on top — glassy and glowy",
+  "_icon": "🏝️",
   "_iconMaterial": "web_asset",
   "bar": {
     "position": "top",
     "style": "floating",
-    "floatingMargin": 12,
+    "floatingMargin": 16,
     "persistent": true,
     "showOnHover": true,
     "entries": [

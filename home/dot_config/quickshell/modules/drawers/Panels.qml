@@ -31,10 +31,10 @@ Item {
     readonly property alias layoutPicker: layoutPicker
 
     anchors.fill: parent
-    anchors.leftMargin: bar.marginLeft
-    anchors.rightMargin: bar.marginRight
-    anchors.topMargin: bar.marginTop
-    anchors.bottomMargin: bar.marginBottom
+    anchors.leftMargin: bar.marginLeft + (bar.floating && bar.position === "left" ? Appearance.spacing.normal : 0)
+    anchors.rightMargin: bar.marginRight + (bar.floating && bar.position === "right" ? Appearance.spacing.normal : 0)
+    anchors.topMargin: bar.marginTop + (bar.floating && bar.position === "top" ? Appearance.spacing.normal : 0)
+    anchors.bottomMargin: bar.marginBottom + (bar.floating && bar.position === "bottom" ? Appearance.spacing.normal : 0)
 
     Osd.Wrapper {
         id: osd

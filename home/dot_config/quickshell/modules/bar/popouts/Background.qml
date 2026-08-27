@@ -16,7 +16,8 @@ ShapePath {
     property real sideRounding: startX > 0 ? -1 : 1
 
     strokeWidth: -1
-    fillColor: wrapper.usesConnectedBackground ? Colours.palette.m3surface : "transparent"
+    // Only paint while a popout is actually hosted (wrapper.visible tracks size)
+    fillColor: wrapper.visible && wrapper.usesConnectedBackground ? Colours.palette.m3surface : "transparent"
 
     PathArc {
         relativeX: root.roundingX

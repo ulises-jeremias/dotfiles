@@ -167,7 +167,7 @@ Item {
         id: popout
 
         required property string name
-        readonly property bool shouldBeActive: root.wrapper.currentName === name
+        readonly property bool shouldBeActive: root.wrapper.hasCurrent && root.wrapper.currentName === name
         readonly property bool barVertical: root.wrapper.barVertical
         readonly property string barPosition: root.wrapper.barPosition
 

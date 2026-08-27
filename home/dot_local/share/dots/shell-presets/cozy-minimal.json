@@ -1,12 +1,12 @@
 {
   "_name": "Cozy Minimal",
-  "_description": "Soft floating top bar \u2014 rounded, gentle, distraction-free",
-  "_icon": "\ud83c\udf38",
+  "_description": "Soft floating top bar — rounded, gentle, distraction-free",
+  "_icon": "🌸",
   "_iconMaterial": "weekend",
   "bar": {
     "position": "top",
     "style": "floating",
-    "floatingMargin": 10,
+    "floatingMargin": 14,
     "persistent": true,
     "showOnHover": true,
     "entries": [

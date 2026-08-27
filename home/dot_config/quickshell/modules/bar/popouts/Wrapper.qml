@@ -27,6 +27,7 @@ Item {
     property real currentCenter
     property bool hasCurrent
 
+
     property string detachedMode
     property string queuedMode
     readonly property bool isDetached: detachedMode.length > 0
@@ -47,6 +48,8 @@ Item {
 
     function close(): void {
         hasCurrent = false;
+        currentName = "";
+        currentCenter = 0;
         animCurve = Appearance.anim.curves.emphasizedAccel;
         animLength = Appearance.anim.durations.normal;
         detachedMode = "";

@@ -20,7 +20,7 @@ OWNED_DEFAULTS: dict[str, Any] = {
     "bar": {
         "position": "left",
         "style": "attached",
-        "floatingMargin": 8,
+        "floatingMargin": 14,
         "persistent": True,
         "showOnHover": True,
         "sizes": {"innerWidth": 40},

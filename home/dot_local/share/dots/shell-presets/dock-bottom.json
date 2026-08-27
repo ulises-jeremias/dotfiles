@@ -1,12 +1,12 @@
 {
   "_name": "Dock Bottom",
-  "_description": "macOS-style floating dock \u2014 chunky icons, cozy vibes",
-  "_icon": "\ud83d\udedf",
+  "_description": "macOS-style floating dock — chunky icons, cozy vibes",
+  "_icon": "🛟",
   "_iconMaterial": "dock_to_bottom",
   "bar": {
     "position": "bottom",
     "style": "dock",
-    "floatingMargin": 12,
+    "floatingMargin": 16,
     "persistent": true,
     "showOnHover": true,
     "entries": [
