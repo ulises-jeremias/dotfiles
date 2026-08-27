@@ -2026,6 +2026,10 @@ dots appearance doctor</pre><hr>
 <code>tray</code> · <code>clock</code> · <code>statusIcons</code> · <code>power</code> · <code>spacer</code></p>
 <p><code>audioSlider</code> and <code>brightnessSlider</code> are inline M3 sliders intended for
 horizontal (top/bottom) bars — the classic reference bars use them.</p>
+<h3 id="per-screen-layouts">Per-screen layouts</h3>
+<p><code>bar.perScreen</code> overrides the global layout per monitor:</p>
+<pre class="hljs"><span class="hljs-string">&quot;perScreen&quot;</span>: { <span class="hljs-attr">&quot;DP-1&quot;</span>: { <span class="hljs-attr">&quot;position&quot;</span>: <span class="hljs-string">&quot;bottom&quot;</span>, <span class="hljs-attr">&quot;style&quot;</span>: <span class="hljs-string">&quot;floating&quot;</span> } }</pre><p>Apply via <code>dots-quickshell config set bar.perScreen &#39;{...}&#39;</code>. Keys not
+present fall back to the global <code>bar.position</code> / <code>bar.style</code>.</p>
 <h3 id="visualizer">Visualizer</h3>
 <p><code>background.visualiser</code> draws cava bars on the screen edges behind the
 wallpaper gradient (bar side excluded). <code>autoHide: true</code> (default) only
