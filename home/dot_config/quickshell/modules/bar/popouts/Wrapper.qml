@@ -59,7 +59,7 @@ Item {
     implicitWidth: nonAnimWidth
     implicitHeight: nonAnimHeight
 
-    focus: hasCurrent
+    focus: hasCurrent || isDetached
     Keys.onEscapePressed: {
         // Forward escape to password popout if active, otherwise close
         if (currentName === "wirelesspassword" && content.item) {

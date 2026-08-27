@@ -95,7 +95,20 @@ Variants {
                     if (win.hasFullscreen)
                         return [];
                     const trigger = Math.max(bar.frameInset, win.dragMaskPadding, 1);
-                    const rects = [
+                    const rects = [];
+                    if (panels.popouts.isDetached) {
+                        // Detached popouts grab all clicks so outside-clicks
+                        // can close them (see Interactions.onPressed)
+                        rects.push({
+                            x: 0,
+                            y: 0,
+                            width: win.width,
+                            height: win.height,
+                            isEdge: true
+                        });
+                        return rects;
+                    }
+                    rects.push(
                         {
                             x: 0,
                             y: 0,
@@ -124,7 +137,7 @@ Variants {
                             height: Math.max(0, win.height - trigger * 2),
                             isEdge: true
                         }
-                    ];
+                    );
 
                     if (bar.visible && bar.visualWidth > 0 && bar.visualHeight > 0) {
                         rects.push({

@@ -92,7 +92,12 @@ CustomMouseArea {
     anchors.fill: parent
     hoverEnabled: true
 
-    onPressed: event => dragStart = Qt.point(event.x, event.y)
+    onPressed: event => {
+        dragStart = Qt.point(event.x, event.y);
+        // Clicking outside a detached popout (and outside the bar) closes it
+        if (popouts.isDetached && !inPopoutPanel(event.x, event.y) && !inBarArea(event.x, event.y))
+            popouts.close();
+    }
     onContainsMouseChanged: {
         if (!containsMouse) {
             // Only hide if not activated by shortcut
@@ -125,6 +130,10 @@ CustomMouseArea {
         const y = event.y;
         const dragX = x - dragStart.x;
         const dragY = y - dragStart.y;
+        // The visible bar wins over edge-panel hover regions: for top/bottom
+        // bar layouts those regions would otherwise overlap the bar strip and
+        // steal hover from bar popouts (audio, network, tray, ...).
+        const inBar = inBarArea(x, y);
 
         // Show bar in non-exclusive mode on hover
         if (!visibilities.bar && Config.bar.showOnHover && inBarRevealArea(x, y))
@@ -140,8 +149,8 @@ CustomMouseArea {
         }
 
         if (panels.sidebar.width === 0) {
-            // Show osd on hover
-            const showOsd = inRightPanel(panels.osd, x, y);
+            // Show osd on hover (bar area takes priority over edge panels)
+            const showOsd = !inBar && inRightPanel(panels.osd, x, y);
 
             // Always update visibility based on hover if not in shortcut mode
             if (!osdShortcutActive) {
@@ -171,8 +180,8 @@ CustomMouseArea {
             }
         } else {
             const outOfSidebar = x < width - panels.sidebar.width;
-            // Show osd on hover
-            const showOsd = outOfSidebar && inRightPanel(panels.osd, x, y);
+            // Show osd on hover (bar area takes priority over edge panels)
+            const showOsd = !inBar && outOfSidebar && inRightPanel(panels.osd, x, y);
 
             // Always update visibility based on hover if not in shortcut mode
             if (!osdShortcutActive) {
@@ -199,7 +208,7 @@ CustomMouseArea {
 
         // Show launcher on hover, or show/hide on drag if hover is disabled
         if (Config.launcher.showOnHover) {
-            if (!visibilities.launcher && inBottomPanel(panels.launcher, x, y))
+            if (!visibilities.launcher && !inBar && inBottomPanel(panels.launcher, x, y))
                 visibilities.launcher = true;
         } else if (pressed && inBottomPanel(panels.launcher, dragStart.x, dragStart.y) && withinPanelWidth(panels.launcher, x, y)) {
             if (dragY < -Config.launcher.dragThreshold)
@@ -208,8 +217,8 @@ CustomMouseArea {
                 visibilities.launcher = false;
         }
 
-        // Show dashboard on hover
-        const showDashboard = Config.dashboard.showOnHover && inTopPanel(panels.dashboard, x, y);
+        // Show dashboard on hover (bar area takes priority)
+        const showDashboard = Config.dashboard.showOnHover && !inBar && inTopPanel(panels.dashboard, x, y);
 
         // Always update visibility based on hover if not in shortcut mode
         if (!dashboardShortcutActive) {
@@ -227,8 +236,8 @@ CustomMouseArea {
                 visibilities.dashboard = false;
         }
 
-        // Show utilities on hover
-        const showUtilities = inBottomPanel(panels.utilities, x, y);
+        // Show utilities on hover (bar area takes priority)
+        const showUtilities = !inBar && inBottomPanel(panels.utilities, x, y);
 
         // Always update visibility based on hover if not in shortcut mode
         if (!utilitiesShortcutActive) {
