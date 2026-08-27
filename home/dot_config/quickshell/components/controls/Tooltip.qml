@@ -82,9 +82,13 @@ Popup {
             if (!target || !parent || !tooltipRect)
                 return;
 
-            // Get target position in parent's coordinate system
-            const targetPos = target.mapToItem(parent, 0, 0);
-            const targetCenterX = targetPos.x + target.width / 2;
+            // The target can be destroyed between the hover event and this
+            // call (layout switches, entry reloads) — bail out instead of
+            // throwing a TypeError from mapToItem.
+            try {
+                // Get target position in parent's coordinate system
+                const targetPos = target.mapToItem(parent, 0, 0);
+                const targetCenterX = targetPos.x + target.width / 2;
 
             // Get tooltip size (use width/height if available, otherwise implicit)
             const tooltipWidth = tooltipRect.width > 0 ? tooltipRect.width : tooltipRect.implicitWidth;
@@ -107,6 +111,9 @@ Popup {
             // Update popup position
             x = newX;
             y = newY;
+            } catch (e) {
+                // Target destroyed mid-layout — skip this positioning pass
+            }
         });
     }
 

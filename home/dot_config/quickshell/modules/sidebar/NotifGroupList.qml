@@ -92,8 +92,13 @@ Item {
 
             containmentMask: QtObject {
                 function contains(p: point): bool {
-                    if (!root.container.contains(notif.mapToItem(root.container, p)))
+                    try {
+                        if (!root.container.contains(notif.mapToItem(root.container, p)))
+                            return false;
+                    } catch (e) {
+                        // Notif item destroyed mid hover (list reset) — not contained
                         return false;
+                    }
                     return notifInner.contains(p);
                 }
             }
