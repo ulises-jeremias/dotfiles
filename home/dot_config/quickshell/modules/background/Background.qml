@@ -62,10 +62,10 @@ Loader {
                 active: Config.background.desktopClock.enabled
 
                 anchors.margins: Appearance.padding.large * 2
-                anchors.leftMargin: anchors.margins + (Config.bar.position === "left" ? win.barOffset : 0)
-                anchors.rightMargin: anchors.margins + (Config.bar.position === "right" ? win.barOffset : 0)
-                anchors.topMargin: anchors.margins + (Config.bar.position === "top" ? win.barOffset : 0)
-                anchors.bottomMargin: anchors.margins + (Config.bar.position === "bottom" ? win.barOffset : 0)
+                anchors.leftMargin: anchors.margins + (Config.bar.positionFor(win.screen.name) === "left" ? win.barOffset : 0)
+                anchors.rightMargin: anchors.margins + (Config.bar.positionFor(win.screen.name) === "right" ? win.barOffset : 0)
+                anchors.topMargin: anchors.margins + (Config.bar.positionFor(win.screen.name) === "top" ? win.barOffset : 0)
+                anchors.bottomMargin: anchors.margins + (Config.bar.positionFor(win.screen.name) === "bottom" ? win.barOffset : 0)
 
                 state: Config.background.desktopClock.position
                 states: [

@@ -98,8 +98,8 @@ Item {
         x: {
             if (isDetached)
                 return (root.width - nonAnimWidth) / 2;
-            if (Config.bar.isVertical())
-                return Config.bar.position === "right" ? root.width - nonAnimWidth : 0;
+            if (Config.bar.isVerticalFor(root.screen.name))
+                return Config.bar.positionFor(root.screen.name) === "right" ? root.width - nonAnimWidth : 0;
 
             const off = currentCenter - bar.marginLeft - nonAnimWidth / 2;
             const diff = root.width - Math.floor(off + nonAnimWidth);
@@ -110,8 +110,8 @@ Item {
         y: {
             if (isDetached)
                 return (root.height - nonAnimHeight) / 2;
-            if (!Config.bar.isVertical())
-                return Config.bar.position === "bottom" ? root.height - nonAnimHeight : 0;
+            if (!Config.bar.isVerticalFor(root.screen.name))
+                return Config.bar.positionFor(root.screen.name) === "bottom" ? root.height - nonAnimHeight : 0;
 
             const off = currentCenter - bar.marginTop - nonAnimHeight / 2;
             const diff = root.height - Math.floor(off + nonAnimHeight);

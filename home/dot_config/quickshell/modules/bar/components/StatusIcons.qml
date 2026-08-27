@@ -13,9 +13,11 @@ import QtQuick.Layouts
 StyledRect {
     id: root
 
+    required property ShellScreen screen
+
     property color colour: Colours.palette.m3secondary
     readonly property alias items: iconGrid
-    readonly property bool vertical: Config.bar.isVertical()
+    readonly property bool vertical: Config.bar.isVerticalFor(screen.name)
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Appearance.rounding.full

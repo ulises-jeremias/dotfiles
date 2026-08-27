@@ -60,10 +60,10 @@ Item {
                     id: content
 
                     anchors.fill: parent
-                    anchors.leftMargin: (root.shellBar?.marginLeft ?? root.frameInset) + (Config.bar.position === "left" ? root.barSpacing : 0)
-                    anchors.rightMargin: (root.shellBar?.marginRight ?? root.frameInset) + (Config.bar.position === "right" ? root.barSpacing : 0)
-                    anchors.topMargin: (root.shellBar?.marginTop ?? root.frameInset) + (Config.bar.position === "top" ? root.barSpacing : 0)
-                    anchors.bottomMargin: (root.shellBar?.marginBottom ?? root.frameInset) + (Config.bar.position === "bottom" ? root.barSpacing : 0)
+                    anchors.leftMargin: (root.shellBar?.marginLeft ?? root.frameInset) + (Config.bar.positionFor(root.screen.name) === "left" ? root.barSpacing : 0)
+                    anchors.rightMargin: (root.shellBar?.marginRight ?? root.frameInset) + (Config.bar.positionFor(root.screen.name) === "right" ? root.barSpacing : 0)
+                    anchors.topMargin: (root.shellBar?.marginTop ?? root.frameInset) + (Config.bar.positionFor(root.screen.name) === "top" ? root.barSpacing : 0)
+                    anchors.bottomMargin: (root.shellBar?.marginBottom ?? root.frameInset) + (Config.bar.positionFor(root.screen.name) === "bottom" ? root.barSpacing : 0)
 
                     Side {
                         content: content

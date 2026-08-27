@@ -9,6 +9,8 @@ import QtQuick
 Item {
     id: root
 
+    required property ShellScreen screen
+
     required property Repeater workspaces
     required property var occupied
     required property int groupOffset
@@ -52,7 +54,7 @@ Item {
 
             required property var modelData
 
-            readonly property bool vertical: Config.bar.isVertical()
+            readonly property bool vertical: Config.bar.isVerticalFor(screen.name)
             readonly property Workspace start: root.workspaces.count > 0 ? root.workspaces.itemAt(getWsIdx(modelData.start)) ?? null : null
             readonly property Workspace end: root.workspaces.count > 0 ? root.workspaces.itemAt(getWsIdx(modelData.end)) ?? null : null
 

@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import Quickshell
 import qs.components
 import qs.services
 import qs.config
@@ -9,12 +10,14 @@ import QtQuick
 StyledRect {
     id: root
 
+    required property ShellScreen screen
+
     readonly property alias layout: layout
     readonly property alias expandIcon: expandIcon
     // Repeater of the active orientation (exposed by the loaded Column/Row)
     readonly property var items: layout.item?.trayItems ?? null
 
-    readonly property bool vertical: Config.bar.isVertical()
+    readonly property bool vertical: Config.bar.isVerticalFor(screen.name)
 
     readonly property int padding: Config.bar.tray.background ? Appearance.padding.normal : Appearance.padding.small
     readonly property int spacing: Config.bar.tray.background ? Appearance.spacing.small : 0

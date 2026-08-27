@@ -17,8 +17,8 @@ Item {
     required property PersistentProperties visibilities
     required property BarPopouts.Wrapper popouts
 
-    readonly property bool vertical: Config.bar.isVertical()
-    readonly property bool floating: Config.bar.isFloating()
+    readonly property bool vertical: Config.bar.isVerticalFor(screen.name)
+    readonly property bool floating: Config.bar.isFloatingFor(screen.name)
     readonly property int edgePadding: Appearance.padding.large
     readonly property int barPadding: Math.max(Appearance.padding.smaller, Config.border.thickness)
     // Fixed main-axis thickness of the bar content (excludes the float gap)
@@ -274,19 +274,25 @@ Item {
                     DelegateChoice {
                         roleValue: "tray"
                         delegate: WrappedLoader {
-                            sourceComponent: Tray {}
+                            sourceComponent: Tray {
+                                screen: root.screen
+                            }
                         }
                     }
                     DelegateChoice {
                         roleValue: "clock"
                         delegate: WrappedLoader {
-                            sourceComponent: Clock {}
+                            sourceComponent: Clock {
+                                screen: root.screen
+                            }
                         }
                     }
                     DelegateChoice {
                         roleValue: "statusIcons"
                         delegate: WrappedLoader {
-                            sourceComponent: StatusIcons {}
+                            sourceComponent: StatusIcons {
+                                screen: root.screen
+                            }
                         }
                     }
                     DelegateChoice {

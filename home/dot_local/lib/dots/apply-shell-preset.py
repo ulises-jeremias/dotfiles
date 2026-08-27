@@ -24,6 +24,7 @@ OWNED_DEFAULTS: dict[str, Any] = {
         "persistent": True,
         "showOnHover": True,
         "sizes": {"innerWidth": 40},
+        "perScreen": {},
         "status": {
             "showAudio": False,
             "showMicrophone": False,

@@ -11,8 +11,8 @@ Item {
 
     required property Item bar
 
-    readonly property bool barFloating: Config.bar.isFloating()
-    readonly property string barPosition: Config.bar.position
+    readonly property bool barFloating: bar.floating
+    readonly property string barPosition: bar.position
 
     anchors.fill: parent
 

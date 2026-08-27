@@ -86,6 +86,11 @@ with tempfile.TemporaryDirectory() as temporary:
     assert marker_path.read_text(encoding="utf-8") == "dock-bottom\n"
 
 bar_config = (config_qml.parent / "BarConfig.qml").read_text(encoding="utf-8")
+assert '"perScreen": {}' not in json.dumps(OWNED := module.OWNED_DEFAULTS["bar"]) or True
+assert module.OWNED_DEFAULTS["bar"]["perScreen"] == {}
+assert "positionFor" in bar_config and "isFloatingFor" in bar_config
+config_source_pos = config_qml.read_text(encoding="utf-8")
+assert "perScreen: bar.perScreen" in config_source_pos
 bar_wrapper = (config_qml.parent.parent / "modules/bar/BarWrapper.qml").read_text(encoding="utf-8")
 exclusions = (config_qml.parent.parent / "modules/drawers/Exclusions.qml").read_text(encoding="utf-8")
 assert 'return style !== "floating"' in bar_config

@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import Quickshell
 import qs.components
 import qs.services
 import qs.config
@@ -9,8 +10,10 @@ import QtQuick.Layouts
 Item {
     id: root
 
+    required property ShellScreen screen
+
     property color colour: Colours.palette.m3tertiary
-    readonly property bool vertical: Config.bar.isVertical()
+    readonly property bool vertical: Config.bar.isVerticalFor(screen.name)
 
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight

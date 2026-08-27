@@ -8,17 +8,42 @@ JsonObject {
     property string position: "left" // left | right | top | bottom
     property string style: "attached" // attached | floating | dock
     property int floatingMargin: 8
+    // Optional per-screen overrides: { "MONITOR-NAME": { position, style } }
+    property var perScreen: ({})
+
+    function positionFor(screenName: string): string {
+        const override = perScreen[screenName];
+        return (override && override.position) ? override.position : position;
+    }
+
+    function styleFor(screenName: string): string {
+        const override = perScreen[screenName];
+        return (override && override.style) ? override.style : style;
+    }
 
     function isVertical(): bool {
         return position === "left" || position === "right";
+    }
+
+    function isVerticalFor(screenName: string): bool {
+        const p = positionFor(screenName);
+        return p === "left" || p === "right";
     }
 
     function isFloating(): bool {
         return style !== "attached";
     }
 
+    function isFloatingFor(screenName: string): bool {
+        return styleFor(screenName) !== "attached";
+    }
+
     function reservesSpace(): bool {
         return style !== "floating";
+    }
+
+    function reservesSpaceFor(screenName: string): bool {
+        return styleFor(screenName) !== "floating";
     }
 
     property ScrollActions scrollActions: ScrollActions {}

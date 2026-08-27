@@ -219,6 +219,7 @@ Singleton {
             position: bar.position,
             style: bar.style,
             floatingMargin: bar.floatingMargin,
+            perScreen: bar.perScreen,
             scrollActions: {
                 workspaces: bar.scrollActions.workspaces,
                 volume: bar.scrollActions.volume,

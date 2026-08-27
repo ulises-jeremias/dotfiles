@@ -19,8 +19,8 @@ Item {
     readonly property real nonAnimHeight: children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight
     readonly property Item current: content.item?.current ?? null
 
-    readonly property bool barVertical: Config.bar.isVertical()
-    readonly property string barPosition: Config.bar.position
+    readonly property bool barVertical: Config.bar.isVerticalFor(screen.name)
+    readonly property string barPosition: Config.bar.positionFor(screen.name)
     readonly property bool usesConnectedBackground: Config.border.frameEnabled && Config.bar.style === "attached" && barVertical
 
     property string currentName

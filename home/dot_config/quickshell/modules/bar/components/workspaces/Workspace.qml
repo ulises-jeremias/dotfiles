@@ -9,12 +9,14 @@ import QtQuick.Layouts
 GridLayout {
     id: root
 
+    required property ShellScreen screen
+
     required property int index
     required property int activeWsId
     required property var occupied
     required property int groupOffset
 
-    readonly property bool vertical: Config.bar.isVertical()
+    readonly property bool vertical: Config.bar.isVerticalFor(screen.name)
     readonly property bool isWorkspace: true // Flag for finding workspace children
     // Unanimated prop for others to use as reference (main-axis size)
     readonly property int size: (vertical ? implicitHeight : implicitWidth) + (hasWindows ? Appearance.padding.small : 0)

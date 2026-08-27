@@ -1,3 +1,4 @@
+import Quickshell
 import qs.components
 import qs.components.effects
 import qs.services
@@ -7,11 +8,13 @@ import QtQuick
 StyledRect {
     id: root
 
+    required property ShellScreen screen
+
     required property int activeWsId
     required property Repeater workspaces
     required property Item mask
 
-    readonly property bool vertical: Config.bar.isVertical()
+    readonly property bool vertical: Config.bar.isVerticalFor(screen.name)
 
     readonly property int currentWsIdx: {
         let i = activeWsId - 1;

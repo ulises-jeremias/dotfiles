@@ -15,15 +15,17 @@ Item {
     required property bool disabled
     required property bool frameVisible
 
-    readonly property string position: Config.bar.position
-    readonly property bool vertical: Config.bar.isVertical()
-    readonly property bool floating: Config.bar.isFloating()
+    readonly property string screenName: screen.name
+    readonly property string position: Config.bar.positionFor(screenName)
+    readonly property bool vertical: Config.bar.isVerticalFor(screenName)
+    readonly property bool floating: Config.bar.isFloatingFor(screenName)
+    readonly property bool reserves: Config.bar.reservesSpaceFor(screenName)
     readonly property int frameInset: frameVisible ? Config.border.thickness : 0
     readonly property int padding: Math.max(Appearance.padding.smaller, Config.border.thickness)
     // Size of the bar across its screen edge (including the float gap when floating)
     readonly property int thickness: Config.bar.sizes.innerWidth + padding * 2 + (floating ? Config.bar.floatingMargin : 0)
     readonly property int contentWidth: thickness // kept for external references
-    readonly property int exclusiveZone: Config.bar.reservesSpace() && !disabled && (Config.bar.persistent || visibilities.bar) ? thickness : frameInset
+    readonly property int exclusiveZone: reserves && !disabled && (Config.bar.persistent || visibilities.bar) ? thickness : frameInset
     readonly property bool shouldBeVisible: !disabled && (Config.bar.persistent || visibilities.bar || isHovered)
     property bool isHovered
 

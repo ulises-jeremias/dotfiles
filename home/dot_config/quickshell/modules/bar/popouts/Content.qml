@@ -168,8 +168,8 @@ Item {
 
         required property string name
         readonly property bool shouldBeActive: root.wrapper.currentName === name
-        readonly property bool barVertical: Config.bar.isVertical()
-        readonly property string barPosition: Config.bar.position
+        readonly property bool barVertical: root.wrapper.barVertical
+        readonly property string barPosition: root.wrapper.barPosition
 
         anchors.verticalCenter: barVertical ? parent.verticalCenter : undefined
         anchors.horizontalCenter: barVertical ? undefined : parent.horizontalCenter

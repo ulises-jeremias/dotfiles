@@ -247,10 +247,10 @@ Variants {
                 BarWrapper {
                     id: bar
 
-                    anchors.left: (!Config.bar.isVertical() || Config.bar.position === "left") ? parent.left : undefined
-                    anchors.right: (!Config.bar.isVertical() || Config.bar.position === "right") ? parent.right : undefined
-                    anchors.top: (Config.bar.isVertical() || Config.bar.position === "top") ? parent.top : undefined
-                    anchors.bottom: (Config.bar.isVertical() || Config.bar.position === "bottom") ? parent.bottom : undefined
+                    anchors.left: (!bar.vertical || bar.position === "left") ? parent.left : undefined
+                    anchors.right: (!bar.vertical || bar.position === "right") ? parent.right : undefined
+                    anchors.top: (bar.vertical || bar.position === "top") ? parent.top : undefined
+                    anchors.bottom: (bar.vertical || bar.position === "bottom") ? parent.bottom : undefined
 
                     screen: scope.modelData
                     visibilities: visibilities
