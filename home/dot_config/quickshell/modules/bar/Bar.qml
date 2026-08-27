@@ -204,12 +204,12 @@ Item {
 
         x: {
             if (root.vertical)
-                return Config.bar.position === "left" ? 0 : parent.width - width;
+                return Config.bar.positionFor(root.screen.name) === "left" ? root.floatingMargin : parent.width - width - root.floatingMargin;
             return root.floating ? Math.round((parent.width - width) / 2) : 0;
         }
         y: {
             if (!root.vertical)
-                return Config.bar.position === "top" ? 0 : parent.height - height;
+                return Config.bar.positionFor(root.screen.name) === "top" ? root.floatingMargin : parent.height - height - root.floatingMargin;
             return root.floating ? Math.round((parent.height - height) / 2) : 0;
         }
 

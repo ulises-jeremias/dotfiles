@@ -7,6 +7,7 @@ import qs.config
 import qs.utils
 import qs.modules.bar
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick
@@ -226,6 +227,92 @@ Variants {
                 property bool layoutPicker
 
                 Component.onCompleted: Visibilities.load(scope.modelData, this)
+            }
+
+            // DEBUG: red borders on every panel + bar. Toggle with:
+            //   qs ipc call debug borders
+            Item {
+                id: debugBorders
+
+                anchors.fill: parent
+                visible: false
+                z: 1000
+
+                // Bar wrapper (edge strip) — orange
+                Rectangle {
+                    x: bar.x
+                    y: bar.y
+                    width: bar.width
+                    height: bar.height
+                    color: "transparent"
+                    border.color: "#FF8800"
+                    border.width: 2
+                }
+
+                // Bar pill (visual extent) — bright red
+                Rectangle {
+                    x: bar.visualX
+                    y: bar.visualY
+                    width: bar.visualWidth
+                    height: bar.visualHeight
+                    color: "transparent"
+                    border.color: "#FF2020"
+                    border.width: 3
+                }
+
+                // Every panel (launcher, dashboard, session, sidebar,
+                // utilities, notifications, popouts, osd, toasts...) — red
+                Repeater {
+                    model: panels.children
+
+                    Rectangle {
+                        required property Item modelData
+
+                        x: modelData.x + bar.marginLeft
+                        y: modelData.y + bar.marginTop
+                        width: modelData.width
+                        height: modelData.height
+                        color: "transparent"
+                        border.color: "#FF2020"
+                        border.width: 2
+                    }
+                }
+            }
+
+            IpcHandler {
+                target: "debug"
+
+                function borders(): string {
+                    debugBorders.visible = !debugBorders.visible;
+                    return debugBorders.visible ? "borders ON" : "borders OFF";
+                }
+
+                function dump(): string {
+                    const panelsDump = [];
+                    for (const p of panels.children)
+                        panelsDump.push({
+                            name: p.objectName || String(p).split("_")[0],
+                            x: p.x, y: p.y, width: p.width, height: p.height,
+                            visible: p.visible
+                        });
+                    return JSON.stringify({
+                        win: {w: win.width, h: win.height},
+                        bar: {
+                            x: bar.x, y: bar.y, w: bar.width, h: bar.height,
+                            implicitW: bar.implicitWidth, implicitH: bar.implicitHeight,
+                            position: bar.position, vertical: bar.vertical,
+                            floating: bar.floating, thickness: bar.thickness,
+                            currentThickness: bar.currentThickness,
+                            pill: {x: bar.visualX, y: bar.visualY, w: bar.visualWidth, h: bar.visualHeight},
+                            disabled: bar.disabled
+                        },
+                        panelsMargins: {
+                            left: bar.marginLeft, top: bar.marginTop,
+                            right: bar.marginRight, bottom: bar.marginBottom
+                        },
+                        panels: panelsDump
+                    });
+                }
             }
 
             Interactions {

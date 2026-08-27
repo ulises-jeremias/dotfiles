@@ -38,6 +38,7 @@ Item {
 
     Osd.Wrapper {
         id: osd
+        objectName: "osd"
 
         clip: session.width > 0 || sidebar.width > 0
         screen: root.screen
@@ -50,6 +51,7 @@ Item {
 
     Notifications.Wrapper {
         id: notifications
+        objectName: "notifications"
 
         visibilities: root.visibilities
         panels: root
@@ -60,6 +62,7 @@ Item {
 
     Session.Wrapper {
         id: session
+        objectName: "session"
 
         clip: sidebar.width > 0
         visibilities: root.visibilities
@@ -72,6 +75,7 @@ Item {
 
     Launcher.Wrapper {
         id: launcher
+        objectName: "launcher"
 
         screen: root.screen
         visibilities: root.visibilities
@@ -83,6 +87,7 @@ Item {
 
     Dashboard.Wrapper {
         id: dashboard
+        objectName: "dashboard"
 
         visibilities: root.visibilities
 
@@ -92,6 +97,7 @@ Item {
 
     BarPopouts.Wrapper {
         id: popouts
+        objectName: "popouts"
 
         screen: root.screen
 
@@ -123,6 +129,7 @@ Item {
 
     Utilities.Wrapper {
         id: utilities
+        objectName: "utilities"
 
         visibilities: root.visibilities
         sidebar: sidebar
@@ -142,6 +149,7 @@ Item {
 
     Sidebar.Wrapper {
         id: sidebar
+        objectName: "sidebar"
 
         visibilities: root.visibilities
         panels: root
@@ -153,6 +161,7 @@ Item {
 
     LayoutPicker.Wrapper {
         id: layoutPicker
+        objectName: "layoutPicker"
 
         visibilities: root.visibilities
         panels: root
