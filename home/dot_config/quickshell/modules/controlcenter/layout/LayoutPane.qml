@@ -6,6 +6,7 @@ import qs.components.containers
 import qs.components.controls
 import qs.components.effects
 import qs.config
+import qs.services
 import qs.modules.layoutpicker
 import Quickshell.Widgets
 import QtQuick

@@ -7,6 +7,7 @@ import qs.components.controls
 import qs.components.effects
 import qs.components.containers
 import qs.config
+import qs.services
 import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
