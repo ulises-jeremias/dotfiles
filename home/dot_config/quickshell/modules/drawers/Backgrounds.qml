@@ -50,15 +50,18 @@ Shape {
     Launcher.Background {
         wrapper: root.panels.launcher
 
+        // Track the wrapper's outer edge: identical to the panel edge when the
+        // bar is attached, but stops at the wrapper when the bar floats
+        // (otherwise the connection "wings" dangle next to the floating pill)
         startX: (root.width - wrapper.width) / 2 - rounding
-        startY: root.height
+        startY: wrapper.y + wrapper.height
     }
 
     Dashboard.Background {
         wrapper: root.panels.dashboard
 
         startX: (root.width - wrapper.width) / 2 - rounding
-        startY: 0
+        startY: wrapper.y
     }
 
     BarPopouts.Background {
@@ -90,7 +93,7 @@ Shape {
         sidebar: sidebar
 
         startX: root.width
-        startY: root.height
+        startY: wrapper.y + wrapper.height
     }
 
     Sidebar.Background {
