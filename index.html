@@ -1091,14 +1091,18 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <tbody>
 <tr>
 <td><code>Super+Return</code></td>
-<td>Terminal (Kitty)</td>
+<td>Terminal (<code>exo-open --launch TerminalEmulator</code>)</td>
 </tr>
 <tr>
-<td><code>Super+D</code></td>
-<td>Application launcher (Quickshell)</td>
+<td><code>Super+T</code></td>
+<td>Terminal</td>
 </tr>
 <tr>
-<td><code>Alt+Ctrl+C</code></td>
+<td><code>Ctrl+Space</code></td>
+<td>Application launcher (<code>dots-launcher</code>)</td>
+</tr>
+<tr>
+<td><code>Super+V</code></td>
 <td>Clipboard manager (<code>dots-clipboard</code>)</td>
 </tr>
 <tr>
@@ -1106,24 +1110,36 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <td>Keyboard shortcuts help overlay (<code>dots-keyboard-help</code>)</td>
 </tr>
 <tr>
-<td><code>Super+Ctrl+Space</code></td>
-<td>AI assistant (sgpt via IBus)</td>
+<td><code>Super+D</code></td>
+<td>Dashboard (Quickshell IPC)</td>
 </tr>
 <tr>
-<td><code>Super+Shift+Tab</code></td>
+<td><code>Alt+Shift+Tab</code></td>
 <td>Task switcher (<code>dots-snappy-switcher prev</code>)</td>
 </tr>
 <tr>
-<td><code>Super+E</code></td>
-<td>File manager (Thunar)</td>
+<td><code>Alt+Tab</code></td>
+<td>Task switcher (<code>dots-snappy-switcher next</code>)</td>
 </tr>
 <tr>
-<td><code>Super+Shift+S</code></td>
-<td>Screenshot tool (grimblast/grim)</td>
+<td><code>Super+E</code></td>
+<td>Terminal file manager (<code>yazi</code> in a kitty popup)</td>
+</tr>
+<tr>
+<td><code>Super+F</code></td>
+<td>GUI file manager (<code>exo-open --launch FileManager</code>)</td>
+</tr>
+<tr>
+<td><code>Super+W</code></td>
+<td>Web browser (<code>exo-open --launch WebBrowser</code>)</td>
 </tr>
 <tr>
 <td><code>Print</code></td>
-<td>Screenshot (area selection)</td>
+<td>Screenshot of the current screen (<code>dots screenshooter</code>)</td>
+</tr>
+<tr>
+<td><code>Shift+Print</code></td>
+<td>Screenshot with region selection (<code>dots screenshooter -r</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -1137,28 +1153,32 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 </thead>
 <tbody>
 <tr>
-<td><code>Super+Q</code></td>
+<td><code>Super+Shift+Q</code></td>
 <td>Close focused window</td>
 </tr>
 <tr>
-<td><code>Super+Shift+Q</code></td>
-<td>Kill focused window (force)</td>
+<td><code>Alt+Q</code></td>
+<td>Close focused window</td>
 </tr>
 <tr>
-<td><code>Super+F</code></td>
-<td>Toggle fullscreen</td>
+<td><code>Alt+F4</code></td>
+<td>Close focused window</td>
 </tr>
 <tr>
 <td><code>Super+Shift+F</code></td>
 <td>Smart floating (toggle + center + resize)</td>
 </tr>
 <tr>
-<td><code>Super+Shift+Space</code></td>
-<td>Focus toggle (floating ↔ tiled)</td>
+<td><code>Super+M</code></td>
+<td>Toggle fullscreen</td>
 </tr>
 <tr>
-<td><code>Super+Ctrl+C</code></td>
-<td>Center floating window</td>
+<td><code>Super+Shift+M</code></td>
+<td>Toggle maximize (fullscreen, mode 1)</td>
+</tr>
+<tr>
+<td><code>Super+Shift+Space</code></td>
+<td>Focus toggle (floating <-> tiled)</td>
 </tr>
 <tr>
 <td><code>Super+Space</code></td>
@@ -1178,11 +1198,15 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 </tr>
 <tr>
 <td><code>Super+&#39;</code></td>
-<td>Toggle focus fit mode (center ↔ fit)</td>
+<td>Toggle focus fit mode (center <-> fit)</td>
+</tr>
+<tr>
+<td><code>Super+Shift+P</code></td>
+<td>Pin window to all workspaces</td>
 </tr>
 <tr>
 <td><code>Super+Ctrl+W</code></td>
-<td>Toggle layout profile (scrolling ↔ dwindle)</td>
+<td>Toggle layout profile (scrolling <-> dwindle)</td>
 </tr>
 <tr>
 <td><code>Super+Ctrl+Shift+W</code></td>
@@ -1297,28 +1321,16 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <td>Switch to workspace 1-10 (numpad)</td>
 </tr>
 <tr>
-<td><code>Super+Alt+Left</code></td>
-<td>Previous active workspace</td>
-</tr>
-<tr>
-<td><code>Super+Alt+Right</code></td>
-<td>Next active workspace</td>
-</tr>
-<tr>
-<td><code>Super+Ctrl+Left</code></td>
-<td>Previous existing workspace</td>
-</tr>
-<tr>
-<td><code>Super+Ctrl+Right</code></td>
-<td>Next existing workspace</td>
-</tr>
-<tr>
 <td><code>Super+Tab</code></td>
-<td>Cycle through workspaces</td>
+<td>Cycle forward through workspaces</td>
 </tr>
 <tr>
-<td><code>Super+O</code></td>
-<td>Toggle ScrollOverview (niri-style overview)</td>
+<td><code>Super+Shift+Tab</code></td>
+<td>Cycle backward through workspaces</td>
+</tr>
+<tr>
+<td><code>Super+Mouse Wheel Down/Up</code></td>
+<td>Next / previous workspace</td>
 </tr>
 </tbody>
 </table>
@@ -1339,9 +1351,13 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <td><code>Super+Shift+KP_1-9,0</code></td>
 <td>Move window to workspace 1-10 (numpad)</td>
 </tr>
+<tr>
+<td><code>Super+Ctrl+Shift+1-9,0</code></td>
+<td>Move window silently (no switch)</td>
+</tr>
 </tbody>
 </table>
-<h2 id="scratchpad">Scratchpad</h2>
+<h2 id="scratchpad-special-workspace-">Scratchpad (Special Workspace)</h2>
 <table>
 <thead>
 <tr>
@@ -1351,12 +1367,12 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 </thead>
 <tbody>
 <tr>
-<td><code>Super+Z</code></td>
-<td>Toggle scratchpad visibility</td>
+<td><code>Super+S</code></td>
+<td>Toggle special workspace (<code>magic</code>)</td>
 </tr>
 <tr>
-<td><code>Super+Shift+Z</code></td>
-<td>Move window to scratchpad</td>
+<td><code>Super+Shift+S</code></td>
+<td>Move window to special workspace</td>
 </tr>
 </tbody>
 </table>
@@ -1403,6 +1419,33 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 </tr>
 </tbody>
 </table>
+<h2 id="group-management">Group Management</h2>
+<table>
+<thead>
+<tr>
+<th>Keybinding</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Super+G</code></td>
+<td>Toggle group</td>
+</tr>
+<tr>
+<td><code>Super+,</code></td>
+<td>Focus previous member in group</td>
+</tr>
+<tr>
+<td><code>Super+.</code></td>
+<td>Focus next member in group</td>
+</tr>
+<tr>
+<td><code>Super+Shift+O</code></td>
+<td>Lock/unlock active group</td>
+</tr>
+</tbody>
+</table>
 <h2 id="gaps-control">Gaps Control</h2>
 <table>
 <thead>
@@ -1413,23 +1456,13 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 </thead>
 <tbody>
 <tr>
-<td><code>Super+G, +</code></td>
-<td>Increase gaps</td>
-</tr>
-<tr>
-<td><code>Super+G, -</code></td>
-<td>Decrease gaps</td>
-</tr>
-<tr>
-<td><code>Super+G, 0</code></td>
-<td>Reset gaps to default</td>
-</tr>
-<tr>
-<td><code>Super+G, Shift+0</code></td>
-<td>Remove all gaps</td>
+<td><code>Super+Shift+G</code></td>
+<td>Interactive gaps adjustment (<code>gaps-interactive.sh</code>)</td>
 </tr>
 </tbody>
 </table>
+<p>The interactive script walks you through increasing, decreasing, resetting,
+and removing gaps without memorizing separate keys.</p>
 <h2 id="system-controls">System Controls</h2>
 <table>
 <thead>
@@ -1440,12 +1473,20 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 </thead>
 <tbody>
 <tr>
-<td><code>Super+Ctrl+P</code></td>
+<td><code>Super+Ctrl+B</code></td>
 <td>Toggle Bar (Quickshell)</td>
 </tr>
 <tr>
-<td><code>Super+Ctrl+M</code></td>
-<td>Toggle Notification Center (Quickshell)</td>
+<td><code>Super+Ctrl+P</code></td>
+<td>Dashboard (Quickshell IPC)</td>
+</tr>
+<tr>
+<td><code>Super+X</code></td>
+<td>Power menu (<code>dots-power-menu</code>)</td>
+</tr>
+<tr>
+<td><code>Super+L</code></td>
+<td>Lock screen (Quickshell IPC lock)</td>
 </tr>
 <tr>
 <td><code>Super+Shift+R</code></td>
@@ -1454,14 +1495,6 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <tr>
 <td><code>Super+Shift+E</code></td>
 <td>Exit Hyprland</td>
-</tr>
-<tr>
-<td><code>Super+X</code></td>
-<td>System power menu (Quickshell)</td>
-</tr>
-<tr>
-<td><code>Super+L</code></td>
-<td>Lock screen (Hyprlock)</td>
 </tr>
 </tbody>
 </table>
@@ -1507,11 +1540,11 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <tbody>
 <tr>
 <td><code>XF86AudioRaiseVolume</code></td>
-<td>Increase volume (+1%)</td>
+<td>Increase volume (+5%)</td>
 </tr>
 <tr>
 <td><code>XF86AudioLowerVolume</code></td>
-<td>Decrease volume (-1%)</td>
+<td>Decrease volume (-5%)</td>
 </tr>
 <tr>
 <td><code>XF86AudioMute</code></td>
@@ -1534,11 +1567,19 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <tbody>
 <tr>
 <td><code>XF86MonBrightnessUp</code></td>
-<td>Increase brightness</td>
+<td>Increase brightness (+10%)</td>
 </tr>
 <tr>
 <td><code>XF86MonBrightnessDown</code></td>
-<td>Decrease brightness</td>
+<td>Decrease brightness (-10%)</td>
+</tr>
+<tr>
+<td><code>Shift+XF86MonBrightnessUp</code></td>
+<td>Increase brightness (+1%)</td>
+</tr>
+<tr>
+<td><code>Shift+XF86MonBrightnessDown</code></td>
+<td>Decrease brightness (-1%)</td>
 </tr>
 </tbody>
 </table>
@@ -1559,12 +1600,12 @@ chezmoi apply</pre><p>For more info, check the <a href="https://wiki.hyprland.or
 <td><code>Super+Right Click</code></td>
 <td>Resize window</td>
 </tr>
-<tr>
-<td><code>Super+Middle Click</code></td>
-<td>Toggle floating</td>
-</tr>
 </tbody>
 </table>
+<h2 id="touchpad-gestures">Touchpad Gestures</h2>
+<p>Three-finger horizontal swipes switch workspaces (see <code>gestures</code> block in
+<code>hyprland.conf</code>). There is currently no gesture bound to the ScrollOverview;
+toggle it with <code>Super+O</code>.</p>
 <h2 id="scrolloverview-niri-style-overview-">ScrollOverview (niri-style overview)</h2>
 <p>Toggle a bird&#39;s-eye view of all workspaces and windows, powered by the
 <a href="https://github.com/yayuuu/hyprland-scroll-overview">hyprland-scroll-overview</a>
@@ -1580,10 +1621,6 @@ plugin.</p>
 <tr>
 <td><code>Super+O</code></td>
 <td>Toggle the overview on the active monitor</td>
-</tr>
-<tr>
-<td>3-finger swipe up</td>
-<td>Toggle the overview (touchpad gesture)</td>
 </tr>
 </tbody>
 </table>
@@ -1623,23 +1660,17 @@ they use the <code>submap_universal</code> flag.</p>
 <li><code>L</code> / <code>Right</code> - Grow width</li>
 <li><code>Escape</code> / <code>Return</code> - Exit resize mode</li>
 </ul>
-<h3 id="gaps-mode-super-g-">Gaps Mode (<code>Super+G</code>)</h3>
-<p>Interactive gaps adjustment:</p>
-<ul>
-<li><code>+</code> / <code>=</code> - Increase gaps</li>
-<li><code>-</code> - Decrease gaps</li>
-<li><code>0</code> - Reset to default</li>
-<li><code>Shift+0</code> - Remove all gaps</li>
-<li><code>Escape</code> / <code>Return</code> - Exit gaps mode</li>
-</ul>
 <h2 id="configuration-files">Configuration Files</h2>
-<p>Keybindings are organized in:</p>
-<pre class="hljs">~/.config/hypr/hyprland.conf.d/
-├── keybindings.conf           <span class="hljs-comment"># Core keybindings</span>
-├── keybindings-media.conf     <span class="hljs-comment"># Media and volume controls</span>
-└── keybindings-custom.conf    <span class="hljs-comment"># User customizations</span></pre><h2 id="customization">Customization</h2>
+<p>Keybindings live in:</p>
+<pre class="hljs"><span class="hljs-variable">$XDG_CONFIG_HOME</span>/hypr/hyprland.conf.d/keybindings.conf</pre><p><code>XDG_CONFIG_HOME</code> defaults to <code>~/.config</code> when unset, so the path above
+resolves to <code>~/.config/hypr/hyprland.conf.d/keybindings.conf</code> on a standard
+setup.</p>
+<p>Hyprland does not hot-reload custom files that do not exist, so add your own
+bindings directly at the end of this file or create a new file and source it
+from <code>hyprland.conf</code>.</p>
+<h2 id="customization">Customization</h2>
 <p>To add custom keybindings, edit:</p>
-<pre class="hljs">~/.config/hypr/hyprland.conf.d/keybindings-custom.conf</pre><p>Example:</p>
+<pre class="hljs"><span class="hljs-variable">$XDG_CONFIG_HOME</span>/hypr/hyprland.conf.d/keybindings.conf</pre><p>Example:</p>
 <pre class="hljs"><span class="hljs-comment"># Custom application launcher</span>
 <span class="hljs-attr">bind</span> = <span class="hljs-variable">$Mod</span>, B, exec, firefox
 
