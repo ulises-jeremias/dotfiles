@@ -93,6 +93,18 @@ for field in ("reservedLeft", "reservedTop", "reservedRight", "reservedBottom"):
     assert field in bar_wrapper
     assert f"root.bar.{field}" in exclusions
 
+# Classic reference bars expose the inline sliders; gaming owns the cava visualizer
+classic_entries = presets["classic-top"]["bar"]["entries"]
+for entry_id in ("audioSlider", "brightnessSlider"):
+    assert any(e.get("id") == entry_id and e.get("enabled") for e in classic_entries), "classic-top missing inline sliders"
+assert presets["gaming"]["background"]["visualiser"]["enabled"] is True
+assert module.OWNED_DEFAULTS["background"]["visualiser"] == {"enabled": False, "autoHide": True}
+
+# Inline slider widget must exist and register both entry ids
+bar_source = config_qml.parent.parent.joinpath("modules/bar/Bar.qml").read_text(encoding="utf-8")
+for entry_id in ("audioSlider", "brightnessSlider"):
+    assert f'roleValue: "{entry_id}"' in bar_source, f"Bar.qml missing DelegateChoice for {entry_id}"
+
 config_source = config_qml.read_text(encoding="utf-8")
 for field in (
     "position: bar.position",

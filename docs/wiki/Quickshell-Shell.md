@@ -108,6 +108,23 @@ The active shell now follows a unified drawers architecture inspired by `referen
   - `modules/bar/BarWrapper.qml`
 - Drawers interaction surface (`modules/drawers/Interactions.qml`) handles hover/wheel behavior.
 
+### Bar entries
+
+Available entry ids for `bar.entries`:
+
+`logo` · `workspaces` · `activeWindow` · `audioSlider` · `brightnessSlider` ·
+`tray` · `clock` · `statusIcons` · `power` · `spacer`
+
+`audioSlider` and `brightnessSlider` are inline M3 sliders intended for
+horizontal (top/bottom) bars — the classic reference bars use them.
+
+### Visualizer
+
+`background.visualiser` draws cava bars on the screen edges behind the
+wallpaper gradient (bar side excluded). `autoHide: true` (default) only
+shows them when every window on the workspace is floating. The `gaming`
+preset enables it permanently.
+
 ### Layout geometry
 
 Bar styles have distinct window-management contracts:
