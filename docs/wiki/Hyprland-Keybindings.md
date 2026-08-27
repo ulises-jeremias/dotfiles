@@ -6,32 +6,38 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 
 | Keybinding             | Function                                               |
 |------------------------|--------------------------------------------------------|
-| `Super+Return`         | Terminal (Kitty)                                       |
-| `Super+D`              | Application launcher (Quickshell)                      |
-| `Alt+Ctrl+C`           | Clipboard manager (`dots-clipboard`)                   |
+| `Super+Return`         | Terminal (`exo-open --launch TerminalEmulator`)        |
+| `Super+T`              | Terminal                                               |
+| `Ctrl+Space`           | Application launcher (`dots-launcher`)                 |
+| `Super+V`              | Clipboard manager (`dots-clipboard`)                   |
 | `Super+?` or `Super+/` | Keyboard shortcuts help overlay (`dots-keyboard-help`) |
-| `Super+Ctrl+Space`     | AI assistant (sgpt via IBus)                           |
-| `Super+Shift+Tab`      | Task switcher (`dots-snappy-switcher prev`)            |
-| `Super+E`              | File manager (Thunar)                                  |
-| `Super+Shift+S`        | Screenshot tool (grimblast/grim)                       |
-| `Print`                | Screenshot (area selection)                            |
+| `Super+D`              | Dashboard (Quickshell IPC)                             |
+| `Alt+Shift+Tab`        | Task switcher (`dots-snappy-switcher prev`)            |
+| `Alt+Tab`              | Task switcher (`dots-snappy-switcher next`)            |
+| `Super+E`              | Terminal file manager (`yazi` in a kitty popup)        |
+| `Super+F`              | GUI file manager (`exo-open --launch FileManager`)     |
+| `Super+W`              | Web browser (`exo-open --launch WebBrowser`)           |
+| `Print`                | Screenshot of the current screen (`dots screenshooter`)|
+| `Shift+Print`          | Screenshot with region selection (`dots screenshooter -r`) |
 
 ## Window Management
 
 | Keybinding           | Function                                                    |
 |----------------------|-------------------------------------------------------------|
-| `Super+Q`            | Close focused window                                        |
-| `Super+Shift+Q`      | Kill focused window (force)                                 |
-| `Super+F`            | Toggle fullscreen                                           |
+| `Super+Shift+Q`      | Close focused window                                        |
+| `Alt+Q`              | Close focused window                                        |
+| `Alt+F4`             | Close focused window                                        |
 | `Super+Shift+F`      | Smart floating (toggle + center + resize)                   |
-| `Super+Shift+Space`  | Focus toggle (floating ↔ tiled)                             |
-| `Super+Ctrl+C`       | Center floating window                                      |
+| `Super+M`            | Toggle fullscreen                                           |
+| `Super+Shift+M`      | Toggle maximize (fullscreen, mode 1)                        |
+| `Super+Shift+Space`  | Focus toggle (floating <-> tiled)                           |
 | `Super+Space`        | Toggle tiling/floating                                      |
 | `Super+P`            | Focus parent (group)                                        |
 | `Super+C`            | Focus child (group)                                         |
 | `Super+U`            | Promote focused window to its own column (scrolling layout) |
-| `Super+'`            | Toggle focus fit mode (center ↔ fit)                        |
-| `Super+Ctrl+W`       | Toggle layout profile (scrolling ↔ dwindle)                 |
+| `Super+'`            | Toggle focus fit mode (center <-> fit)                      |
+| `Super+Shift+P`      | Pin window to all workspaces                                |
+| `Super+Ctrl+W`       | Toggle layout profile (scrolling <-> dwindle)               |
 | `Super+Ctrl+Shift+W` | Force scrolling profile                                     |
 | `Super+Ctrl+Alt+W`   | Force dwindle profile                                       |
 
@@ -65,16 +71,13 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 
 ## Workspace Navigation
 
-| Keybinding         | Function                                    |
-|--------------------|---------------------------------------------|
-| `Super+1-9,0`      | Switch to workspace 1-10                    |
-| `Super+KP_1-9,0`   | Switch to workspace 1-10 (numpad)           |
-| `Super+Alt+Left`   | Previous active workspace                   |
-| `Super+Alt+Right`  | Next active workspace                       |
-| `Super+Ctrl+Left`  | Previous existing workspace                 |
-| `Super+Ctrl+Right` | Next existing workspace                     |
-| `Super+Tab`        | Cycle through workspaces                    |
-| `Super+O`          | Toggle ScrollOverview (niri-style overview) |
+| Keybinding                    | Function                                    |
+|-------------------------------|---------------------------------------------|
+| `Super+1-9,0`                 | Switch to workspace 1-10                    |
+| `Super+KP_1-9,0`              | Switch to workspace 1-10 (numpad)           |
+| `Super+Tab`                   | Cycle forward through workspaces            |
+| `Super+Shift+Tab`             | Cycle backward through workspaces           |
+| `Super+Mouse Wheel Down/Up`   | Next / previous workspace                   |
 
 ## Window to Workspace
 
@@ -82,13 +85,14 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 |------------------------|----------------------------------------|
 | `Super+Shift+1-9,0`    | Move window to workspace 1-10          |
 | `Super+Shift+KP_1-9,0` | Move window to workspace 1-10 (numpad) |
+| `Super+Ctrl+Shift+1-9,0` | Move window silently (no switch)     |
 
-## Scratchpad
+## Scratchpad (Special Workspace)
 
-| Keybinding      | Function                     |
-|-----------------|------------------------------|
-| `Super+Z`       | Toggle scratchpad visibility |
-| `Super+Shift+Z` | Move window to scratchpad    |
+| Keybinding      | Function                             |
+|-----------------|--------------------------------------|
+| `Super+S`       | Toggle special workspace (`magic`)   |
+| `Super+Shift+S` | Move window to special workspace     |
 
 ## Scrolling Layout (Niri-style)
 
@@ -103,25 +107,34 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+Alt+F`                             | Fit active column into view                  |
 | `Super+Alt+Shift+F`                       | Fit visible columns into view                |
 
+## Group Management
+
+| Keybinding       | Function                          |
+|------------------|-----------------------------------|
+| `Super+G`        | Toggle group                      |
+| `Super+,`        | Focus previous member in group    |
+| `Super+.`        | Focus next member in group        |
+| `Super+Shift+O`  | Lock/unlock active group          |
+
 ## Gaps Control
 
-| Keybinding         | Function              |
-|--------------------|-----------------------|
-| `Super+G, +`       | Increase gaps         |
-| `Super+G, -`       | Decrease gaps         |
-| `Super+G, 0`       | Reset gaps to default |
-| `Super+G, Shift+0` | Remove all gaps       |
+| Keybinding       | Function                                            |
+|------------------|-----------------------------------------------------|
+| `Super+Shift+G`  | Interactive gaps adjustment (`gaps-interactive.sh`) |
+
+The interactive script walks you through increasing, decreasing, resetting,
+and removing gaps without memorizing separate keys.
 
 ## System Controls
 
-| Keybinding      | Function                                |
-|-----------------|-----------------------------------------|
-| `Super+Ctrl+P`  | Toggle Bar (Quickshell)                 |
-| `Super+Ctrl+M`  | Toggle Notification Center (Quickshell) |
-| `Super+Shift+R` | Reload Hyprland configuration           |
-| `Super+Shift+E` | Exit Hyprland                           |
-| `Super+X`       | System power menu (Quickshell)          |
-| `Super+L`       | Lock screen (Hyprlock)                  |
+| Keybinding      | Function                                  |
+|-----------------|-------------------------------------------|
+| `Super+Ctrl+B`  | Toggle Bar (Quickshell)                   |
+| `Super+Ctrl+P`  | Dashboard (Quickshell IPC)                |
+| `Super+X`       | Power menu (`dots-power-menu`)            |
+| `Super+L`       | Lock screen (Quickshell IPC lock)         |
+| `Super+Shift+R` | Reload Hyprland configuration             |
+| `Super+Shift+E` | Exit Hyprland                             |
 
 ## Media Controls
 
@@ -137,25 +150,32 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 
 | Keybinding             | Function               |
 |------------------------|------------------------|
-| `XF86AudioRaiseVolume` | Increase volume (+1%)  |
-| `XF86AudioLowerVolume` | Decrease volume (-1%)  |
+| `XF86AudioRaiseVolume` | Increase volume (+5%)  |
+| `XF86AudioLowerVolume` | Decrease volume (-5%)  |
 | `XF86AudioMute`        | Toggle mute            |
 | `XF86AudioMicMute`     | Toggle microphone mute |
 
 ## Brightness Controls
 
-| Keybinding              | Function            |
-|-------------------------|---------------------|
-| `XF86MonBrightnessUp`   | Increase brightness |
-| `XF86MonBrightnessDown` | Decrease brightness |
+| Keybinding              | Function                       |
+|-------------------------|--------------------------------|
+| `XF86MonBrightnessUp`   | Increase brightness (+10%)     |
+| `XF86MonBrightnessDown` | Decrease brightness (-10%)     |
+| `Shift+XF86MonBrightnessUp`   | Increase brightness (+1%) |
+| `Shift+XF86MonBrightnessDown` | Decrease brightness (-1%) |
 
 ## Mouse Bindings
 
-| Action               | Function        |
-|----------------------|-----------------|
-| `Super+Left Click`   | Move window     |
-| `Super+Right Click`  | Resize window   |
-| `Super+Middle Click` | Toggle floating |
+| Action              | Function      |
+|---------------------|---------------|
+| `Super+Left Click`  | Move window   |
+| `Super+Right Click` | Resize window |
+
+## Touchpad Gestures
+
+Three-finger horizontal swipes switch workspaces (see `gestures` block in
+`hyprland.conf`). There is currently no gesture bound to the ScrollOverview;
+toggle it with `Super+O`.
 
 ## ScrollOverview (niri-style overview)
 
@@ -163,10 +183,9 @@ Toggle a bird's-eye view of all workspaces and windows, powered by the
 [hyprland-scroll-overview](https://github.com/yayuuu/hyprland-scroll-overview)
 plugin.
 
-| Keybinding        | Function                                  |
-|-------------------|-------------------------------------------|
-| `Super+O`         | Toggle the overview on the active monitor |
-| 3-finger swipe up | Toggle the overview (touchpad gesture)    |
+| Keybinding | Function                                  |
+|------------|-------------------------------------------|
+| `Super+O`  | Toggle the overview on the active monitor |
 
 ### ScrollOverview submap
 
@@ -192,33 +211,28 @@ Once in resize mode:
 - `L` / `Right` - Grow width
 - `Escape` / `Return` - Exit resize mode
 
-### Gaps Mode (`Super+G`)
-
-Interactive gaps adjustment:
-
-- `+` / `=` - Increase gaps
-- `-` - Decrease gaps
-- `0` - Reset to default
-- `Shift+0` - Remove all gaps
-- `Escape` / `Return` - Exit gaps mode
-
 ## Configuration Files
 
-Keybindings are organized in:
+Keybindings live in:
 
 ```bash
-~/.config/hypr/hyprland.conf.d/
-├── keybindings.conf           # Core keybindings
-├── keybindings-media.conf     # Media and volume controls
-└── keybindings-custom.conf    # User customizations
+$XDG_CONFIG_HOME/hypr/hyprland.conf.d/keybindings.conf
 ```
+
+`XDG_CONFIG_HOME` defaults to `~/.config` when unset, so the path above
+resolves to `~/.config/hypr/hyprland.conf.d/keybindings.conf` on a standard
+setup.
+
+Hyprland does not hot-reload custom files that do not exist, so add your own
+bindings directly at the end of this file or create a new file and source it
+from `hyprland.conf`.
 
 ## Customization
 
 To add custom keybindings, edit:
 
 ```bash
-~/.config/hypr/hyprland.conf.d/keybindings-custom.conf
+$XDG_CONFIG_HOME/hypr/hyprland.conf.d/keybindings.conf
 ```
 
 Example:
