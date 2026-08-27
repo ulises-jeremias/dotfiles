@@ -54,6 +54,11 @@ Item {
             iconName: "workspaces"
             text: qsTr("Workspaces")
         }
+
+        Tab {
+            iconName: "dashboard_customize"
+            text: qsTr("Layout")
+        }
     }
 
     Item {

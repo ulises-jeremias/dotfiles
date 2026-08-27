@@ -72,6 +72,14 @@ JsonObject {
             dangerous: false
         },
         {
+            name: "Layout",
+            icon: "dashboard_customize",
+            description: "Change the shell bar layout",
+            command: ["layoutpicker"],
+            enabled: true,
+            dangerous: false
+        },
+        {
             name: "Transparency",
             icon: "opacity",
             description: "Change shell transparency",
