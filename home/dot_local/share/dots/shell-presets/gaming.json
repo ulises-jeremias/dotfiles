@@ -60,6 +60,9 @@
     "visualiser": {
       "enabled": true,
       "autoHide": false
+    },
+    "desktopClock": {
+      "enabled": false
     }
   }
 }

@@ -43,6 +43,7 @@ OWNED_DEFAULTS: dict[str, Any] = {
     "border": {"frameEnabled": True},
     "background": {
         "visualiser": {"enabled": False, "autoHide": True},
+        "desktopClock": {"enabled": False},
     },
     "appearance": {
         "rounding": {"scale": 1.0},

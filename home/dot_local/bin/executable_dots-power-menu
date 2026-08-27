@@ -26,7 +26,7 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 MODE=${mode:-auto}
 launch_quickshell() {
-  pgrep -x quickshell >/dev/null 2>&1 || return 1
+  pgrep -x qs 2>/dev/null || pgrep -x quickshell >/dev/null 2>&1 || return 1
   dots-quickshell ipc session toggle
   return 0
 }

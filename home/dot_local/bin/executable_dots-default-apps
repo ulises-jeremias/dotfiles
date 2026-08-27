@@ -472,7 +472,7 @@ main() {
   check_dependencies
   init_cache
 
-  if pgrep -x quickshell >/dev/null 2>&1 && [[ ${gui:-yes} == yes ]] && [[ ${list:-no} != yes ]] && [[ ${info:-no} != yes ]] && [[ -z ${set:-} ]] && [[ -z ${type:-} ]]; then
+  if pgrep -x qs 2>/dev/null || pgrep -x quickshell >/dev/null 2>&1 && [[ ${gui:-yes} == yes ]] && [[ ${list:-no} != yes ]] && [[ ${info:-no} != yes ]] && [[ -z ${set:-} ]] && [[ -z ${type:-} ]]; then
     ~/.local/bin/dots-settings-gui --pane=launcher menu >/dev/null 2>&1 || true
     notify-send "Default Applications" "Use Launcher settings in Quickshell control center." -u low || true
     exit 0

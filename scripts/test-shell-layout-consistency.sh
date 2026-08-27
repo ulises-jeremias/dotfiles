@@ -99,6 +99,8 @@ for entry_id in ("audioSlider", "brightnessSlider"):
     assert any(e.get("id") == entry_id and e.get("enabled") for e in classic_entries), "classic-top missing inline sliders"
 assert presets["gaming"]["background"]["visualiser"]["enabled"] is True
 assert module.OWNED_DEFAULTS["background"]["visualiser"] == {"enabled": False, "autoHide": True}
+assert module.OWNED_DEFAULTS["background"]["desktopClock"] == {"enabled": False}
+assert presets["gaming"]["background"]["desktopClock"]["enabled"] is False
 
 # Inline slider widget must exist and register both entry ids
 bar_source = config_qml.parent.parent.joinpath("modules/bar/Bar.qml").read_text(encoding="utf-8")

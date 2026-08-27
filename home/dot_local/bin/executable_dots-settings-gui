@@ -20,12 +20,12 @@ set_start_pane() {
 open_settings() {
   set_start_pane "$PANE"
 
-  if ! pgrep -x quickshell >/dev/null 2>&1; then
+  if ! pgrep -x qs 2>/dev/null || pgrep -x quickshell >/dev/null 2>&1; then
     ~/.local/bin/dots-quickshell start >/dev/null 2>&1 || true
     sleep 1
   fi
 
-  if pgrep -x quickshell >/dev/null 2>&1; then
+  if pgrep -x qs 2>/dev/null || pgrep -x quickshell >/dev/null 2>&1; then
     ~/.local/bin/dots-quickshell ipc utilities toggle
     return 0
   fi

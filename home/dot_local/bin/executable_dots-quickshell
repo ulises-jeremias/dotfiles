@@ -459,7 +459,7 @@ else:
 config_set() {
   local key="${1:-}"
   local value="${2:-}"
-  if [[ -z $key ]]; then
+  if [[ -z $key ]] || [[ -z ${value+x} ]]; then
     log_error "Usage: dots-quickshell config set <key> <value>"
     log_info "Key uses dot-notation: bar.position, appearance.rounding, etc."
     return 1
@@ -468,7 +468,7 @@ config_set() {
   ensure_config_dir
 
   python3 -c "
-import json, sys
+import fcntl, json, math, os, sys, tempfile
 
 key = sys.argv[1]
 raw_value = sys.argv[2]
@@ -479,11 +479,19 @@ try:
 except json.JSONDecodeError:
     value = raw_value
 
-try:
-    with open(config_path) as f:
-        config = json.load(f)
-except (FileNotFoundError, json.JSONDecodeError):
-    config = {}
+lock_path = config_path + '.lock'
+if not os.path.exists(lock_path):
+    legacy = os.path.join(os.path.dirname(config_path), '.' + os.path.basename(config_path) + '.lock')
+    if os.path.exists(legacy):
+        lock_path = legacy
+with open(lock_path, 'a+') as lock:
+    fcntl.flock(lock, fcntl.LOCK_EX)
+    try:
+        with open(config_path) as f:
+            config = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        config = {}
+    mode = os.stat(config_path).st_mode & 0o777 if os.path.exists(config_path) else 0o644
 
 parts = key.split('.')
 obj = config
@@ -493,12 +501,20 @@ for p in parts[:-1]:
     obj = obj[p]
 obj[parts[-1]] = value
 
-with open(config_path, 'w') as f:
-    json.dump(config, f, indent=2)
-    f.write('\n')
+content = json.dumps(config, indent=2, allow_nan=False) + '\n'
+fd, tmp = tempfile.mkstemp(prefix='.' + os.path.basename(config_path) + '.', dir=os.path.dirname(config_path))
+with os.fdopen(fd, 'w') as f:
+    f.write(content)
+    f.flush()
+    os.fsync(f.fileno())
+os.chmod(tmp, mode)
+os.replace(tmp, config_path)
 
 print(f'{key} = {json.dumps(value)}')
-" "$key" "$value" "$SHELL_CONFIG"
+" "$key" "$value" "$SHELL_CONFIG" || {
+    log_error "Failed to set ${key}"
+    return 1
+  }
 
   log_info "Config updated"
   if is_running; then
