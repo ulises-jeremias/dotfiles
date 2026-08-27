@@ -8,6 +8,7 @@
     "style": "floating",
     "floatingMargin": 10,
     "persistent": true,
+    "showOnHover": true,
     "entries": [
       {
         "id": "workspaces",
@@ -34,6 +35,9 @@
         "enabled": true
       }
     ],
+    "sizes": {
+      "innerWidth": 40
+    },
     "status": {
       "showNetwork": true,
       "showBattery": true
@@ -43,6 +47,9 @@
       "volume": true,
       "brightness": false
     }
+  },
+  "border": {
+    "frameEnabled": false
   },
   "appearance": {
     "rounding": {

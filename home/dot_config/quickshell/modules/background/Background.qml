@@ -21,6 +21,8 @@ Loader {
             id: win
 
             required property ShellScreen modelData
+            readonly property Item shellBar: Visibilities.bars.get(modelData) ?? null
+            readonly property int barOffset: shellBar && !shellBar.disabled ? shellBar.currentThickness : 0
 
             screen: modelData
             name: "background"
@@ -60,7 +62,10 @@ Loader {
                 active: Config.background.desktopClock.enabled
 
                 anchors.margins: Appearance.padding.large * 2
-                anchors.leftMargin: Appearance.padding.large * 2 + Config.bar.sizes.innerWidth + Math.max(Appearance.padding.smaller, Config.border.thickness)
+                anchors.leftMargin: anchors.margins + (Config.bar.position === "left" ? win.barOffset : 0)
+                anchors.rightMargin: anchors.margins + (Config.bar.position === "right" ? win.barOffset : 0)
+                anchors.topMargin: anchors.margins + (Config.bar.position === "top" ? win.barOffset : 0)
+                anchors.bottomMargin: anchors.margins + (Config.bar.position === "bottom" ? win.barOffset : 0)
 
                 state: Config.background.desktopClock.position
                 states: [

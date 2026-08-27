@@ -28,6 +28,7 @@ Item {
     // Kept for ActiveWindow compat (main-axis end padding)
     readonly property int vPadding: edgePadding
     readonly property GridLayout container: layout
+    readonly property Item visualItem: pill
 
     function closeTray(): void {
         if (!Config.bar.tray.compact)
@@ -41,10 +42,20 @@ Item {
         }
     }
 
+    function resetPopout(): void {
+        popouts.hasCurrent = false;
+        popouts.currentName = "";
+        popouts.currentCenter = 0;
+        closeTray();
+    }
+
     function checkPopout(pos: real): void {
-        // pos is a main-axis coordinate in window space; convert to layout space
-        // (the pill may be offset when floating, and the layout has inner margins)
-        const pt = layout.mapFromItem(pill, vertical ? pill.width / 2 : pos - pill.x, vertical ? pos - pill.y : pill.height / 2);
+        try {
+            if (!pill || !layout)
+                return;
+            // pos is a main-axis coordinate in window space; convert to layout space
+            // (the pill may be offset when floating, and the layout has inner margins)
+            const pt = layout.mapFromItem(pill, vertical ? pill.width / 2 : pos - pill.x, vertical ? pos - pill.y : pill.height / 2);
         const axisPos = vertical ? pt.y : pt.x;
         const ch = layout.childAt(pt.x, pt.y) as WrappedLoader;
 
@@ -62,15 +73,33 @@ Item {
         const itemLength = vertical ? item.implicitHeight : item.implicitWidth;
 
         if (id === "statusIcons" && Config.bar.popouts.statusIcons) {
+            if (!item || !item.items)
+                return;
             const items = item.items;
-            const icon = vertical ? items.childAt(items.width / 2, mapToItem(items, 0, pos).y) : items.childAt(mapToItem(items, pos, 0).x, items.height / 2);
+            if (!items || typeof items.childAt !== "function")
+                return;
+            const mapped = vertical ? root.mapToItem(items, 0, pos) : root.mapToItem(items, pos, 0);
+            if (!mapped)
+                return;
+            const icon = vertical ? items.childAt(items.width / 2, mapped.y) : items.childAt(mapped.x, items.height / 2);
             if (icon) {
                 popouts.currentName = icon.name;
-                popouts.currentCenter = Qt.binding(() => vertical ? icon.mapToItem(null, 0, icon.implicitHeight / 2).y : icon.mapToItem(null, icon.implicitWidth / 2, 0).x);
+                const iconRef = icon;
+                popouts.currentCenter = Qt.binding(() => {
+                    try {
+                        if (!iconRef || typeof iconRef.mapToItem !== "function")
+                            return 0;
+                        return vertical ? iconRef.mapToItem(null, 0, iconRef.implicitHeight / 2).y : iconRef.mapToItem(null, iconRef.implicitWidth / 2, 0).x;
+                    } catch (e) {
+                        return 0;
+                    }
+                });
                 popouts.hasCurrent = true;
             }
         } else if (id === "tray" && Config.bar.popouts.tray) {
-            const overExpandIcon = vertical ? item.expandIcon.contains(mapToItem(item.expandIcon, item.implicitWidth / 2, pos)) : item.expandIcon.contains(mapToItem(item.expandIcon, pos, item.implicitHeight / 2));
+            if (!item || !item.expandIcon)
+                return;
+            const overExpandIcon = vertical ? item.expandIcon.contains(root.mapToItem(item.expandIcon, item.implicitWidth / 2, pos)) : item.expandIcon.contains(root.mapToItem(item.expandIcon, pos, item.implicitHeight / 2));
             if (!Config.bar.tray.compact || (item.expanded && !overExpandIcon)) {
                 const layoutLength = vertical ? item.layout.implicitHeight : item.layout.implicitWidth;
                 const count = item.items?.count ?? 0;
@@ -78,7 +107,16 @@ Item {
                 const trayItem = item.items?.itemAt(index) ?? null;
                 if (trayItem) {
                     popouts.currentName = `traymenu${index}`;
-                    popouts.currentCenter = Qt.binding(() => vertical ? trayItem.mapToItem(null, 0, trayItem.implicitHeight / 2).y : trayItem.mapToItem(null, trayItem.implicitWidth / 2, 0).x);
+                    const trayRef = trayItem;
+                    popouts.currentCenter = Qt.binding(() => {
+                        try {
+                            if (!trayRef || typeof trayRef.mapToItem !== "function")
+                                return 0;
+                            return vertical ? trayRef.mapToItem(null, 0, trayRef.implicitHeight / 2).y : trayRef.mapToItem(null, trayRef.implicitWidth / 2, 0).x;
+                        } catch (e) {
+                            return 0;
+                        }
+                    });
                     popouts.hasCurrent = true;
                 } else {
                     popouts.hasCurrent = false;
@@ -88,9 +126,25 @@ Item {
                 item.expanded = true;
             }
         } else if (id === "activeWindow" && Config.bar.popouts.activeWindow) {
+            if (!item)
+                return;
             popouts.currentName = id.toLowerCase();
-            popouts.currentCenter = vertical ? item.mapToItem(null, 0, itemLength / 2).y : item.mapToItem(null, itemLength / 2, 0).x;
+            const winRef = item;
+            const len = itemLength;
+            popouts.currentCenter = Qt.binding(() => {
+                try {
+                    if (!winRef || typeof winRef.mapToItem !== "function")
+                        return 0;
+                    return vertical ? winRef.mapToItem(null, 0, len / 2).y : winRef.mapToItem(null, len / 2, 0).x;
+                } catch (e) {
+                    return 0;
+                }
+            });
             popouts.hasCurrent = true;
+        }
+        } catch (e) {
+            // During layout transitions the bar items may be temporarily undefined
+            popouts.hasCurrent = false;
         }
     }
 
@@ -121,6 +175,22 @@ Item {
         }
     }
 
+    Connections {
+        target: Config.bar
+
+        function onEntriesChanged(): void {
+            root.resetPopout();
+        }
+
+        function onPositionChanged(): void {
+            root.resetPopout();
+        }
+
+        function onStyleChanged(): void {
+            root.resetPopout();
+        }
+    }
+
     // The pill: actual bar content container. Attached bars fill the whole edge
     // strip (content glued to the interior side so it slides out on hide instead
     // of squishing); floating bars are content-sized and centered on the cross
@@ -145,10 +215,10 @@ Item {
 
         // Own background when floating (attached bars are backed by the screen border frame)
         StyledRect {
-            visible: root.floating
+            visible: root.floating || !Config.border.frameEnabled
             anchors.fill: parent
             color: Colours.layer(Colours.palette.m3surface, 1)
-            radius: Appearance.rounding.full
+            radius: root.floating ? Appearance.rounding.full : 0
         }
 
         GridLayout {

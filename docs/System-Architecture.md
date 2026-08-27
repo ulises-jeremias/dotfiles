@@ -52,7 +52,7 @@
 **Architecture:**
 
 - QML/QtQuick-based shell using Quickshell framework
-- Unified drawers composition (`Drawers`, `Exclusions`, `BorderFrame`, `Interactions`, `Panels`)
+- Unified drawers composition (`Drawers`, `Exclusions`, `Border`, `Interactions`, `Panels`)
 - C++ plugin (Hornero) for performance-critical features: image analysis, audio visualization, calculator
 - Services layer (QML singletons) for system integration
 - Modules for UI components: left rail bar, launcher, dashboard, notifications, right-notch controls
@@ -81,9 +81,11 @@
 **Design Constraints:**
 
 - All services are QML singletons with `pragma Singleton`
-- UI delegates to dots-* scripts via Process components
+- UI delegates to dots-\* scripts via Process components
 - Theming uses Material Design 3 via wallpaper-driven `scheme.json`
 - Edge exclusions must reserve shell space in Hyprland
+- Frame, panel, and Hyprland reservation insets are separate geometry concerns
+- The rounded desktop frame is preset-controlled and only enabled by default for Hornero reference layouts
 - C++ plugin built with CMake, installed by Chezmoi script
 
 ## 3.1 Hyprland Animations

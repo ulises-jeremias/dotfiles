@@ -17,6 +17,10 @@ JsonObject {
         return style !== "attached";
     }
 
+    function reservesSpace(): bool {
+        return style !== "floating";
+    }
+
     property ScrollActions scrollActions: ScrollActions {}
     property Popouts popouts: Popouts {}
     property Workspaces workspaces: Workspaces {}

@@ -1,3 +1,4 @@
+import qs.components
 import qs.services
 import qs.config
 import qs.modules.osd as Osd
@@ -66,6 +67,22 @@ Shape {
 
         startX: wrapper.x
         startY: wrapper.y - rounding * sideRounding
+    }
+
+    StyledRect {
+        readonly property BarPopouts.Wrapper wrapper: root.panels.popouts
+
+        x: wrapper.x
+        y: wrapper.y
+        width: wrapper.width
+        height: wrapper.height
+        visible: wrapper.visible && !wrapper.usesConnectedBackground
+        color: Colours.palette.m3surface
+        radius: wrapper.isDetached ? Appearance.rounding.normal : Config.border.rounding
+
+        Behavior on color {
+            CAnim {}
+        }
     }
 
     Utilities.Background {

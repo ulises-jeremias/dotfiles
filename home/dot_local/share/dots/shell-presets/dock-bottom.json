@@ -45,6 +45,9 @@
       "brightness": false
     }
   },
+  "border": {
+    "frameEnabled": false
+  },
   "appearance": {
     "rounding": {
       "scale": 1.5

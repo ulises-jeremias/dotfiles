@@ -21,6 +21,7 @@ Item {
 
     readonly property bool barVertical: Config.bar.isVertical()
     readonly property string barPosition: Config.bar.position
+    readonly property bool usesConnectedBackground: Config.border.frameEnabled && Config.bar.style === "attached" && barVertical
 
     property string currentName
     property real currentCenter

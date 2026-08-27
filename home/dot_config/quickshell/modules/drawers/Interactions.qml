@@ -18,17 +18,23 @@ CustomMouseArea {
     property bool osdShortcutActive
     property bool utilitiesShortcutActive
 
-    // Whether a point (window coords) is over the bar's screen edge
+    // Whether a point is over the visible bar surface.
     function inBarArea(x: real, y: real): bool {
+        return bar.containsVisualPoint(x, y);
+    }
+
+    // Hidden bars retain a small edge trigger without reserving client space.
+    function inBarRevealArea(x: real, y: real): bool {
+        const trigger = Math.max(Config.border.thickness, 1);
         switch (Config.bar.position) {
         case "right":
-            return x > width - bar.marginRight;
+            return x > width - trigger;
         case "top":
-            return y < bar.marginTop;
+            return y < trigger;
         case "bottom":
-            return y > height - bar.marginBottom;
+            return y > height - trigger;
         default:
-            return x < bar.marginLeft;
+            return x < trigger;
         }
     }
 
@@ -121,11 +127,11 @@ CustomMouseArea {
         const dragY = y - dragStart.y;
 
         // Show bar in non-exclusive mode on hover
-        if (!visibilities.bar && Config.bar.showOnHover && inBarArea(x, y))
+        if (!visibilities.bar && Config.bar.showOnHover && inBarRevealArea(x, y))
             bar.isHovered = true;
 
         // Show/hide bar on drag (cross-axis drag from the bar's edge)
-        if (pressed && inBarArea(dragStart.x, dragStart.y)) {
+        if (pressed && (inBarArea(dragStart.x, dragStart.y) || (!bar.shouldBeVisible && inBarRevealArea(dragStart.x, dragStart.y)))) {
             const crossDrag = Config.bar.isVertical() ? (Config.bar.position === "left" ? dragX : -dragX) : (Config.bar.position === "top" ? dragY : -dragY);
             if (crossDrag > Config.bar.dragThreshold)
                 visibilities.bar = true;

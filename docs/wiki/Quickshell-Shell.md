@@ -12,7 +12,7 @@ Quickshell is the unified desktop shell for HorneroConfig, built with QML/QtQuic
 Quickshell provides all desktop shell functionality through modular QML components:
 
 | Module            | Description                                                          |
-|-------------------|----------------------------------------------------------------------|
+| ----------------- | -------------------------------------------------------------------- |
 | **Left Rail Bar** | Vertical/horizontal rail with workspaces, clock, status icons, power |
 | **Launcher**      | App search, calculator, wallpaper browser, appearance selector       |
 | **Dashboard**     | Tabbed system overview, media, performance, weather                  |
@@ -102,18 +102,37 @@ The active shell now follows a unified drawers architecture inspired by `referen
 
 - A dedicated drawers layer (`modules/drawers/Drawers.qml`) owns interaction orchestration.
 - Edge exclusion windows (`modules/drawers/Exclusions.qml`) reserve space in Hyprland.
-- A global rounded desktop frame (`modules/drawers/BorderFrame.qml`) provides shell chrome.
+- An optional rounded desktop frame (`modules/drawers/Border.qml`) provides shell chrome for Hornero reference layouts.
 - Bar behavior is split into content and wrapper:
-  - `modules/bar/BarContent.qml`
+  - `modules/bar/Bar.qml`
   - `modules/bar/BarWrapper.qml`
 - Drawers interaction surface (`modules/drawers/Interactions.qml`) handles hover/wheel behavior.
+
+### Layout geometry
+
+Bar styles have distinct window-management contracts:
+
+| Style      | Surface            | Hyprland space reservation         | Default desktop frame |
+| ---------- | ------------------ | ---------------------------------- | --------------------- |
+| `attached` | Full screen edge   | Bar thickness                      | Preset-controlled     |
+| `floating` | Content-sized pill | None (overlay)                     | Disabled              |
+| `dock`     | Content-sized pill | Pill thickness and floating margin | Disabled              |
+
+The rounded Caelestia-style desktop frame is enabled by `border.frameEnabled`.
+It is part of the Hornero Left and Hornero Right presets, not a requirement for
+classic, minimal, floating, dock, or gaming layouts.
+
+Hyprland applies its own outer gap after Quickshell reserves an edge. The
+effective distance to a tiled client is therefore `reserved shell inset +
+gaps_out + client border`. Shell presets do not silently change compositor
+gaps.
 
 ### Services Layer
 
 QML singletons providing system integration:
 
 | Service        | Purpose                                            |
-|----------------|----------------------------------------------------|
+| -------------- | -------------------------------------------------- |
 | `Colours`      | M3 theming, transparency, wallpaper luminance      |
 | `Hypr`         | Hyprland IPC (workspaces, monitors, keyboard)      |
 | `Audio`        | PipeWire audio, Cava visualization, beat detection |
@@ -149,9 +168,11 @@ Shell behavior is configured via `~/.config/hornero/shell.json`:
 
 ```json
 {
-  "border": { "thickness": 2, "rounding": 24 },
+  "border": { "frameEnabled": true, "thickness": 2, "rounding": 24 },
   "bar": {
     "position": "left",
+    "style": "attached",
+    "floatingMargin": 8,
     "showOnHover": false,
     "sizes": { "innerWidth": 48 }
   },
@@ -166,7 +187,7 @@ Shell behavior is configured via `~/.config/hornero/shell.json`:
 
 ### Reference Parity Status
 
-- **Matched**: wallpaper-driven M3 theming pipeline, left-rail shell feel, top control center, launcher command modes, right-edge OSD/session controls, rounded frame and edge exclusions.
+- **Matched**: wallpaper-driven M3 theming pipeline, left-rail shell feel, top control center, launcher command modes, right-edge OSD/session controls, optional rounded frame and edge exclusions.
 - **Intentional deviations**: Hornero-specific `dots-*` integrations, appearance/theme selector mode in launcher, AI chat module.
 - **In progress hardening**: deeper panel unification and additional popout parity refinements.
 
@@ -175,7 +196,7 @@ Shell behavior is configured via `~/.config/hornero/shell.json`:
 ## ⌨️ Keybindings
 
 | Keybinding             | Action                    |
-|------------------------|---------------------------|
+| ---------------------- | ------------------------- |
 | `Super+D`              | Toggle launcher           |
 | `Super+X`              | Toggle session/power menu |
 | `Super+Ctrl+B`         | Toggle bar                |

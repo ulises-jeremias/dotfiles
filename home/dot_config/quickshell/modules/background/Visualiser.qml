@@ -15,6 +15,9 @@ Item {
     required property ShellScreen screen
     required property Item wallpaper
 
+    readonly property Item shellBar: Visibilities.bars.get(screen) ?? null
+    readonly property int frameInset: Config.border.frameEnabled ? Config.border.thickness : 0
+    readonly property int barSpacing: Appearance.spacing.small * Config.background.visualiser.spacing
     readonly property bool shouldBeActive: Config.background.visualiser.enabled && (!Config.background.visualiser.autoHide || (Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true))
     property real offset: shouldBeActive ? 0 : screen.height * 0.2
 
@@ -57,8 +60,10 @@ Item {
                     id: content
 
                     anchors.fill: parent
-                    anchors.margins: Config.border.thickness
-                    anchors.leftMargin: Visibilities.bars.get(root.screen).exclusiveZone + Appearance.spacing.small * Config.background.visualiser.spacing
+                    anchors.leftMargin: (root.shellBar?.marginLeft ?? root.frameInset) + (Config.bar.position === "left" ? root.barSpacing : 0)
+                    anchors.rightMargin: (root.shellBar?.marginRight ?? root.frameInset) + (Config.bar.position === "right" ? root.barSpacing : 0)
+                    anchors.topMargin: (root.shellBar?.marginTop ?? root.frameInset) + (Config.bar.position === "top" ? root.barSpacing : 0)
+                    anchors.bottomMargin: (root.shellBar?.marginBottom ?? root.frameInset) + (Config.bar.position === "bottom" ? root.barSpacing : 0)
 
                     Side {
                         content: content
@@ -69,6 +74,15 @@ Item {
                     }
 
                     Behavior on anchors.leftMargin {
+                        Anim {}
+                    }
+                    Behavior on anchors.rightMargin {
+                        Anim {}
+                    }
+                    Behavior on anchors.topMargin {
+                        Anim {}
+                    }
+                    Behavior on anchors.bottomMargin {
                         Anim {}
                     }
                 }

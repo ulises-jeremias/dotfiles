@@ -16,10 +16,10 @@ Item {
     property int contentHeight
 
     readonly property real maxHeight: {
-        let max = screen.height - Config.border.thickness * 2 - Appearance.spacing.large;
+        let max = (parent ? parent.height : screen.height) - Appearance.spacing.large;
         if (visibilities.dashboard)
             max -= panels.dashboard.nonAnimHeight;
-        return max;
+        return Math.max(0, max);
     }
 
     onMaxHeightChanged: timer.start()
