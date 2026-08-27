@@ -12,7 +12,7 @@ This is the authoritative guide for AI agents working on HorneroConfig. Follow t
 ### Core Principles (The Hornero Way)
 
 1. **Theme-Adaptive** - All visuals adapt to any color palette automatically
-2. **Modular** - Components work independently yet integrate seamlessly  
+2. **Modular** - Components work independently yet integrate seamlessly
 3. **Single Source of Truth** - Configuration flows from centralized sources
 4. **Graceful Degradation** - Function even with missing dependencies
 5. **Security by Default** - Never commit secrets, validate all inputs
