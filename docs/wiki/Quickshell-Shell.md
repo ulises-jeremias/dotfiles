@@ -118,6 +118,17 @@ Available entry ids for `bar.entries`:
 `audioSlider` and `brightnessSlider` are inline M3 sliders intended for
 horizontal (top/bottom) bars — the classic reference bars use them.
 
+### Per-screen layouts
+
+`bar.perScreen` overrides the global layout per monitor:
+
+```json
+"perScreen": { "DP-1": { "position": "bottom", "style": "floating" } }
+```
+
+Apply via `dots-quickshell config set bar.perScreen '{...}'`. Keys not
+present fall back to the global `bar.position` / `bar.style`.
+
 ### Visualizer
 
 `background.visualiser` draws cava bars on the screen edges behind the
