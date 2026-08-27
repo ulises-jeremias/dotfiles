@@ -1,7 +1,7 @@
 {
   "_name": "Classic Bottom",
-  "_description": "Bottom bar \u2014 dock-like layout with all status icons",
-  "_icon": "\ud83d\udda5\ufe0f",
+  "_description": "Bottom bar — dock-like layout with all status icons",
+  "_icon": "🖥️",
   "_iconMaterial": "vertical_align_bottom",
   "bar": {
     "position": "bottom",
@@ -19,7 +19,11 @@
         "enabled": true
       },
       {
-        "id": "activeWindow",
+        "id": "audioSlider",
+        "enabled": true
+      },
+      {
+        "id": "brightnessSlider",
         "enabled": true
       },
       {
@@ -32,10 +36,6 @@
       },
       {
         "id": "spacer",
-        "enabled": true
-      },
-      {
-        "id": "tray",
         "enabled": true
       },
       {

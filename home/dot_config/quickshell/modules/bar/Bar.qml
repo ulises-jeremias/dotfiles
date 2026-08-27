@@ -290,6 +290,24 @@ Item {
                         }
                     }
                     DelegateChoice {
+                        roleValue: "audioSlider"
+                        delegate: WrappedLoader {
+                            sourceComponent: InlineSlider {
+                                screen: root.screen
+                                kind: "audio"
+                            }
+                        }
+                    }
+                    DelegateChoice {
+                        roleValue: "brightnessSlider"
+                        delegate: WrappedLoader {
+                            sourceComponent: InlineSlider {
+                                screen: root.screen
+                                kind: "brightness"
+                            }
+                        }
+                    }
+                    DelegateChoice {
                         roleValue: "power"
                         delegate: WrappedLoader {
                             sourceComponent: Power {

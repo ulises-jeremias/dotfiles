@@ -1,7 +1,7 @@
 {
   "_name": "Gaming",
-  "_description": "Bottom bar \u2014 minimal footprint, no logo",
-  "_icon": "\ud83c\udfae",
+  "_description": "Bottom bar — minimal footprint, no logo",
+  "_icon": "🎮",
   "_iconMaterial": "sports_esports",
   "bar": {
     "position": "bottom",
@@ -55,5 +55,11 @@
   },
   "osd": {
     "hideDelay": 1000
+  },
+  "background": {
+    "visualiser": {
+      "enabled": true,
+      "autoHide": false
+    }
   }
 }

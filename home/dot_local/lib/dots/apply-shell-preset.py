@@ -41,6 +41,9 @@ OWNED_DEFAULTS: dict[str, Any] = {
         },
     },
     "border": {"frameEnabled": True},
+    "background": {
+        "visualiser": {"enabled": False, "autoHide": True},
+    },
     "appearance": {
         "rounding": {"scale": 1.0},
         "padding": {"scale": 1.0},
