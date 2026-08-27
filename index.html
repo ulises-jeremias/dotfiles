@@ -2012,14 +2012,53 @@ dots appearance doctor</pre><hr>
 <ul>
 <li>A dedicated drawers layer (<code>modules/drawers/Drawers.qml</code>) owns interaction orchestration.</li>
 <li>Edge exclusion windows (<code>modules/drawers/Exclusions.qml</code>) reserve space in Hyprland.</li>
-<li>A global rounded desktop frame (<code>modules/drawers/BorderFrame.qml</code>) provides shell chrome.</li>
+<li>An optional rounded desktop frame (<code>modules/drawers/Border.qml</code>) provides shell chrome for Hornero reference layouts.</li>
 <li>Bar behavior is split into content and wrapper:<ul>
-<li><code>modules/bar/BarContent.qml</code></li>
+<li><code>modules/bar/Bar.qml</code></li>
 <li><code>modules/bar/BarWrapper.qml</code></li>
 </ul>
 </li>
 <li>Drawers interaction surface (<code>modules/drawers/Interactions.qml</code>) handles hover/wheel behavior.</li>
 </ul>
+<h3 id="layout-geometry">Layout geometry</h3>
+<p>Bar styles have distinct window-management contracts:</p>
+<table>
+<thead>
+<tr>
+<th>Style</th>
+<th>Surface</th>
+<th>Hyprland space reservation</th>
+<th>Default desktop frame</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>attached</code></td>
+<td>Full screen edge</td>
+<td>Bar thickness</td>
+<td>Preset-controlled</td>
+</tr>
+<tr>
+<td><code>floating</code></td>
+<td>Content-sized pill</td>
+<td>None (overlay)</td>
+<td>Disabled</td>
+</tr>
+<tr>
+<td><code>dock</code></td>
+<td>Content-sized pill</td>
+<td>Pill thickness and floating margin</td>
+<td>Disabled</td>
+</tr>
+</tbody>
+</table>
+<p>The rounded Caelestia-style desktop frame is enabled by <code>border.frameEnabled</code>.
+It is part of the Hornero Left and Hornero Right presets, not a requirement for
+classic, minimal, floating, dock, or gaming layouts.</p>
+<p>Hyprland applies its own outer gap after Quickshell reserves an edge. The
+effective distance to a tiled client is therefore <code>reserved shell inset +
+gaps_out + client border</code>. Shell presets do not silently change compositor
+gaps.</p>
 <h3 id="services-layer">Services Layer</h3>
 <p>QML singletons providing system integration:</p>
 <table>
@@ -2101,9 +2140,11 @@ dots appearance doctor</pre><hr>
 <h3 id="configuration">Configuration</h3>
 <p>Shell behavior is configured via <code>~/.config/hornero/shell.json</code>:</p>
 <pre class="hljs">{
-  <span class="hljs-attr">&quot;border&quot;</span>: { <span class="hljs-attr">&quot;thickness&quot;</span>: <span class="hljs-number">2</span>, <span class="hljs-attr">&quot;rounding&quot;</span>: <span class="hljs-number">24</span> },
+  <span class="hljs-attr">&quot;border&quot;</span>: { <span class="hljs-attr">&quot;frameEnabled&quot;</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">&quot;thickness&quot;</span>: <span class="hljs-number">2</span>, <span class="hljs-attr">&quot;rounding&quot;</span>: <span class="hljs-number">24</span> },
   <span class="hljs-attr">&quot;bar&quot;</span>: {
     <span class="hljs-attr">&quot;position&quot;</span>: <span class="hljs-string">&quot;left&quot;</span>,
+    <span class="hljs-attr">&quot;style&quot;</span>: <span class="hljs-string">&quot;attached&quot;</span>,
+    <span class="hljs-attr">&quot;floatingMargin&quot;</span>: <span class="hljs-number">8</span>,
     <span class="hljs-attr">&quot;showOnHover&quot;</span>: <span class="hljs-literal">false</span>,
     <span class="hljs-attr">&quot;sizes&quot;</span>: { <span class="hljs-attr">&quot;innerWidth&quot;</span>: <span class="hljs-number">48</span> }
   },
@@ -2115,7 +2156,7 @@ dots appearance doctor</pre><hr>
   }
 }</pre><h3 id="reference-parity-status">Reference Parity Status</h3>
 <ul>
-<li><strong>Matched</strong>: wallpaper-driven M3 theming pipeline, left-rail shell feel, top control center, launcher command modes, right-edge OSD/session controls, rounded frame and edge exclusions.</li>
+<li><strong>Matched</strong>: wallpaper-driven M3 theming pipeline, left-rail shell feel, top control center, launcher command modes, right-edge OSD/session controls, optional rounded frame and edge exclusions.</li>
 <li><strong>Intentional deviations</strong>: Hornero-specific <code>dots-*</code> integrations, appearance/theme selector mode in launcher, AI chat module.</li>
 <li><strong>In progress hardening</strong>: deeper panel unification and additional popout parity refinements.</li>
 </ul>
@@ -2227,8 +2268,10 @@ dots-quickshell restart</pre><h2 id="hyprland-layout-and-exclusions">Hyprland la
 <ul>
 <li>[ ] Left rail does not overlap client windows.</li>
 <li>[ ] Top/bottom bar modes reserve space correctly (no window content under bar).</li>
-<li>[ ] Rounded desktop frame is visible on all monitors.</li>
-<li>[ ] Right-edge notch panels open inside shell frame and do not clip incorrectly.</li>
+<li>[ ] Attached and dock modes reserve their visible thickness; floating mode overlays client space.</li>
+<li>[ ] Rounded desktop frame is visible for Hornero Left/Right and absent for frameless presets.</li>
+<li>[ ] Frameless presets reserve zero pixels on non-bar edges.</li>
+<li>[ ] Right-edge notch panels open inside their usable shell area and do not clip incorrectly.</li>
 </ul>
 <h2 id="core-interaction-flow">Core interaction flow</h2>
 <ul>
@@ -2241,6 +2284,7 @@ dots-quickshell restart</pre><h2 id="hyprland-layout-and-exclusions">Hyprland la
 <h2 id="popouts-and-side-controls">Popouts and side controls</h2>
 <ul>
 <li>[ ] Audio/network/bluetooth/battery popouts align to bar position.</li>
+<li>[ ] Top/bottom popouts use horizontal geometry rather than a mirrored side-rail shape.</li>
 <li>[ ] Popouts never render detached off-screen.</li>
 <li>[ ] OSD appears on right edge and updates for volume/brightness changes.</li>
 </ul>
@@ -2261,6 +2305,9 @@ dots-quickshell restart</pre><h2 id="hyprland-layout-and-exclusions">Hyprland la
 <li>[ ] No duplicate IPC handler warnings at startup.</li>
 <li>[ ] No missing file warnings for battery/lock LEDs on current hardware.</li>
 <li>[ ] No missing dependency crash when optional tools are absent (<code>ddcutil</code>, etc.).</li>
+<li>[ ] Applying presets in different orders produces the same final owned fields.</li>
+<li>[ ] Config save and shell restart preserve bar position, style, floating margin, and frame state.</li>
+<li>[ ] Quickshell is never restarted while the session is locked.</li>
 </ul>
 <p class="page" id="Thunar-Side-Panel"></p><h1>📁 Thunar File Manager</h1>
 <h2 id="thunar-side-panel-static-bookmarks-">Thunar Side Panel (Static Bookmarks)</h2>
