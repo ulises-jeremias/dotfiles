@@ -8,14 +8,16 @@
 ## Usage: source ~/.local/lib/dots/logging.sh
 
 # Initialize logging if not already initialized
-if [[ -z ${DOTS_LOG_INITIALIZED:-} ]]; then
-  readonly DOTS_LOG_DIR="${DOTS_LOG_DIR:-$HOME/.cache/dots/logs}"
-  readonly DOTS_LOG_FILE="${DOTS_LOG_FILE:-$DOTS_LOG_DIR/$(basename "${0:-dots-script}" .sh).log}"
+if [[ -z ${DOTS_LOG_INITIALIZED:-} ]] || [[ -z ${DOTS_LOG_FILE:-} ]]; then
+  DOTS_LOG_DIR="${DOTS_LOG_DIR:-$HOME/.cache/dots/logs}"
+  DOTS_LOG_FILE="${DOTS_LOG_FILE:-$DOTS_LOG_DIR/$(basename "${0:-dots-script}" .sh).log}"
 
   # Create log directory if it doesn't exist
   mkdir -p "$DOTS_LOG_DIR"
 
   export DOTS_LOG_INITIALIZED=1
+  export DOTS_LOG_DIR
+  export DOTS_LOG_FILE
 fi
 
 # Log levels
@@ -78,7 +80,7 @@ log() {
   fi
 
   # Always log to file
-  echo "$log_entry" >>"$DOTS_LOG_FILE" 2>/dev/null || true
+  echo "$log_entry" >>"${DOTS_LOG_FILE:-$HOME/.cache/dots/logs/dots.log}" 2>/dev/null || true
 }
 
 # Convenience functions

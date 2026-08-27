@@ -71,12 +71,13 @@ Variants {
             //         model: inputRegions.model
             //         Rectangle {
             //             required property var modelData
-            //             x: modelData.x
-            //             y: modelData.y
-            //             width: modelData.width
-            //             height: modelData.height
-            //             color: "#60ff0000"
-            //             border.color: "#ffff0000"
+            //             readonly property bool isEdge: modelData !== null && typeof modelData === "object" && modelData.isEdge === true
+            //             x: isEdge ? modelData.x : modelData.x + bar.marginLeft
+            //             y: isEdge ? modelData.y : modelData.y + bar.marginTop
+            //             width: isEdge ? modelData.width : (modelData.width > 0 && modelData.height > 0 ? modelData.width : 0)
+            //             height: isEdge ? modelData.height : (modelData.width > 0 && modelData.height > 0 ? modelData.height : 0)
+            //             color: isEdge ? "#3000ff00" : "#60ff0000"
+            //             border.color: isEdge ? "#8000ff00" : "#ffff0000"
             //             border.width: 2
             //         }
             //     }
@@ -91,31 +92,37 @@ Variants {
                 id: inputRegions
 
                 model: {
+                    if (win.hasFullscreen)
+                        return [];
                     const trigger = Math.max(bar.frameInset, win.dragMaskPadding, 1);
                     const rects = [
                         {
                             x: 0,
                             y: 0,
                             width: win.width,
-                            height: trigger
+                            height: trigger,
+                            isEdge: true
                         },
                         {
                             x: 0,
                             y: win.height - trigger,
                             width: win.width,
-                            height: trigger
+                            height: trigger,
+                            isEdge: true
                         },
                         {
                             x: 0,
                             y: trigger,
                             width: trigger,
-                            height: Math.max(0, win.height - trigger * 2)
+                            height: Math.max(0, win.height - trigger * 2),
+                            isEdge: true
                         },
                         {
                             x: win.width - trigger,
                             y: trigger,
                             width: trigger,
-                            height: Math.max(0, win.height - trigger * 2)
+                            height: Math.max(0, win.height - trigger * 2),
+                            isEdge: true
                         }
                     ];
 
@@ -124,30 +131,25 @@ Variants {
                             x: bar.visualX,
                             y: bar.visualY,
                             width: bar.visualWidth,
-                            height: bar.visualHeight
+                            height: bar.visualHeight,
+                            isEdge: true
                         });
                     }
 
-                    for (const panel of panels.children) {
-                        if (panel.width > 0 && panel.height > 0) {
-                            rects.push({
-                                x: panel.x + bar.marginLeft,
-                                y: panel.y + bar.marginTop,
-                                width: panel.width,
-                                height: panel.height
-                            });
-                        }
-                    }
+                    // Panels as live Items for reactive geometry during animations
+                    for (const p of panels.children)
+                        rects.push(p);
                     return rects;
                 }
 
                 Region {
                     required property var modelData
 
-                    x: modelData.x
-                    y: modelData.y
-                    width: modelData.width
-                    height: modelData.height
+                    readonly property bool isEdge: modelData !== null && typeof modelData === "object" && modelData.isEdge === true
+                    x: isEdge ? modelData.x : modelData.x + bar.marginLeft
+                    y: isEdge ? modelData.y : modelData.y + bar.marginTop
+                    width: isEdge ? modelData.width : (modelData.width > 0 && modelData.height > 0 ? modelData.width : 0)
+                    height: isEdge ? modelData.height : (modelData.width > 0 && modelData.height > 0 ? modelData.height : 0)
                 }
             }
 

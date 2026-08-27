@@ -38,6 +38,7 @@ Item {
             return;
         currentName = name; // optimistic; the re-list corrects if it failed
         applyProc.command = ["dots-quickshell", "preset", "apply", name];
+        console.log("[layoutpicker] apply", name, "via", applyProc.command);
         applyProc.running = true;
     }
 
@@ -71,7 +72,14 @@ Item {
     Process {
         id: applyProc
 
+        stdout: StdioCollector {
+            onStreamFinished: console.log("[layoutpicker] apply stdout:", text)
+        }
+        stderr: StdioCollector {
+            onStreamFinished: console.warn("[layoutpicker] apply stderr:", text)
+        }
         onExited: (exitCode, exitStatus) => {
+            console.log("[layoutpicker] apply exit", exitCode, exitStatus);
             // Re-sync the active marker from disk (source of truth)
             root.reload();
         }
