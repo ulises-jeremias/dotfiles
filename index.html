@@ -741,9 +741,9 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <div align="center">
   <h1>🏠 HorneroConfig - Comprehensive Dotfiles Framework</h1>
 
-  <a href="https://ulises-jeremias.github.io/dotfiles">Docs</a> |
-  <a href="#">Changelog</a> |
-  <a href="https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CONTRIBUTING.md">Contributing</a>
+<a href="https://ulises-jeremias.github.io/dotfiles">Docs</a> |
+<a href="#">Changelog</a> |
+<a href="https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CONTRIBUTING.md">Contributing</a>
 
 </div> <!-- center -->
 
@@ -770,7 +770,7 @@ into a harmonious blend of elegance and efficiency.</p>
 <h2 id="-key-features">✨ Key Features</h2>
 <ul>
 <li><strong>🎨 Advanced Appearance Themes</strong>: Switch between beautiful desktop themes instantly</li>
-<li><strong>🧠 Smart Colors</strong>: Intelligent color adaptation for optimal readability and theme consistency  </li>
+<li><strong>🧠 Smart Colors</strong>: Intelligent color adaptation for optimal readability and theme consistency</li>
 <li><strong>🐚 Quickshell</strong>: Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)</li>
 <li><strong>🎨 Material Design 3</strong>: Intelligent color theming from wallpaper analysis</li>
 <li><strong>🌊 Hyprland</strong>: Dynamic tiling Wayland compositor with smooth animations</li>
@@ -843,7 +843,7 @@ This dotfiles setup includes references to my personal LastPass vault for storin
 <ul>
 <li>🌊 Compositor settings (Hyprland)</li>
 <li>💻 Terminal experience (Zsh, Kitty)</li>
-<li>🎨 Theme and color schemes (Rofi, Waybar, Pywal)</li>
+<li>🎨 Theme and color schemes (Quickshell M3, pywal, smart colors)</li>
 <li>🛠️ Utility scripts (<code>dots</code>) and workflow helpers</li>
 <li>🔒 Security tools and system behaviors</li>
 </ul>
@@ -858,7 +858,7 @@ Use <code>chezmoi diff</code> to preview your changes before applying.</p>
 <ul>
 <li><strong>Semantic Colors</strong>: Error, success, warning, info colors that adapt to any palette</li>
 <li><strong>Theme Intelligence</strong>: Automatically selects optimal colors based on wallpaper</li>
-<li><strong>Application Integration</strong>: Works with Waybar, EWW, Hyprland, and custom scripts</li>
+<li><strong>Application Integration</strong>: Works with Hyprland, Quickshell, terminals, and custom scripts</li>
 <li><strong>Automatic Updates</strong>: Colors refresh automatically when changing wallpapers</li>
 </ul>
 <p>Learn more: <a href="#Smart-Colors-System">Smart Colors System</a></p>
@@ -1743,13 +1743,14 @@ dots lockscreen --lock --lock-effect=pixel</pre><h3 id="automatic-updates">Autom
 <li><code>SMART_ERROR</code>: Wrong password indicator</li>
 </ul>
 <h2 id="integration">Integration</h2>
-<h3 id="eww-powermenu">EWW Powermenu</h3>
-<p>The lockscreen is integrated into the EWW powermenu:</p>
-<pre class="hljs">(<span class="hljs-name">defwidget</span> lock []
-  (<span class="hljs-name">box</span> <span class="hljs-symbol">:class</span> <span class="hljs-string">&quot;genwin&quot;</span> <span class="hljs-symbol">:vexpand</span> <span class="hljs-string">&quot;false&quot;</span> <span class="hljs-symbol">:hexpand</span> <span class="hljs-string">&quot;false&quot;</span>
-    (<span class="hljs-name">button</span> <span class="hljs-symbol">:class</span> <span class="hljs-string">&quot;btn_lock&quot;</span>
-            <span class="hljs-symbol">:onclick</span> <span class="hljs-string">&quot;~/.local/bin/dots-power-menu --mode=minimal; dots-lockscreen -l blur&quot;</span>
-            <span class="hljs-string">&quot;&quot;</span>)))</pre><h3 id="wal-reload">Wal Reload</h3>
+<h3 id="session-controls">Session Controls</h3>
+<p>The lockscreen is part of the Quickshell lock module
+(<code>modules/lock</code>), driven by PAM authentication and exposed over IPC:</p>
+<pre class="hljs">dots-quickshell ipc lock lock    <span class="hljs-comment"># lock the session</span>
+dots-quickshell ipc lock unlock  <span class="hljs-comment"># escape-hatch unlock (no PAM)</span>
+qs ipc call lock isLocked        <span class="hljs-comment"># query lock state</span></pre><p>The idle pipeline (see <code>modules/IdleMonitors</code>) locks the session
+automatically after the configured inactivity timeout.`</p>
+<h3 id="wal-reload">Wal Reload</h3>
 <p>Automatically updates lockscreen when changing themes:</p>
 <pre class="hljs">dots wal-reload  <span class="hljs-comment"># Updates wallpaper and lockscreen</span></pre><h3 id="appearance">Appearance</h3>
 <p>Theme / wallpaper apply regenerates lockscreen colors via <code>dots-hyprlock-theme</code>
@@ -1898,7 +1899,6 @@ convert --version</pre><h3 id="hyprlock-not-found">Hyprlock not found</h3>
 <ul>
 <li><a href="#Smart-Colors-System">Smart Colors System</a></li>
 <li><a href="#Rice-System-Theme-Management">Appearance Themes</a></li>
-<li><a href="#EWW-Widgets">EWW Widgets</a></li>
 <li><a href="#Hyprland-Setup">Hyprland Setup</a></li>
 </ul>
 <p class="page" id="Quickshell-Shell"></p><h1>🐚 Quickshell Shell</h1>
@@ -2668,7 +2668,7 @@ ycd ~/Projects   <span class="hljs-comment"># start in specific directory</span>
 <li><strong>Wrapper script</strong>: <code>dots-yazi</code> (or <code>dots yazi</code>)</li>
 <li><strong>Hyprland keybinding</strong>: <code>Super+E</code> opens yazi popup</li>
 <li><strong>Thunar context menu</strong>: &quot;Open in Yazi&quot; right-click option</li>
-<li><strong>Waybar</strong>: yazi popup windows get file manager icon</li>
+<li><strong>Quickshell</strong>: yazi popup windows get the file manager icon in the dock/status area</li>
 <li><strong>Smart colors</strong>: automatic terminal color inheritance</li>
 </ul>
 <hr>
@@ -3888,7 +3888,7 @@ sudo reboot</pre><hr>
 <li>❌ <strong>Additional latency</strong>: 5-15ms per frame copy</li>
 <li>❌ <strong>NVIDIA always active</strong>: Doesn&#39;t enter deep power-save</li>
 <li>❌ <strong>Higher power consumption</strong>: ~5-10W extra even without gaming</li>
-<li>⚠️  <strong>Possible tearing</strong>: If VRR isn&#39;t properly configured</li>
+<li>⚠️ <strong>Possible tearing</strong>: If VRR isn&#39;t properly configured</li>
 </ul>
 <h2 id="solutions-and-trade-offs">Solutions and Trade-offs</h2>
 <h3 id="-option-1-keep-reverse-prime-current-configuration-">✅ Option 1: Keep Reverse PRIME (Current Configuration)</h3>
@@ -4139,7 +4139,7 @@ Like everything else in this setup, the Network Manager integration is <strong>f
 <pre class="hljs">nmcli device wifi list
 nmcli device wifi connect &lt;SSID&gt; password &lt;password&gt;</pre><p>Use this for scripting, automating, or managing networks programmatically.</p>
 <h3 id="3-network-manager-applet-gui-tray-icon">3. <strong><code>network-manager-applet</code></strong> – GUI tray icon</h3>
-<p>If you&#39;re running a system tray (e.g., via Waybar), you can use the applet to manage Wi-Fi and VPNs.</p>
+<p>The Quickshell system tray (bar status icons) exposes the network applet to manage Wi-Fi and VPNs.</p>
 <p>Install:</p>
 <pre class="hljs">sudo pacman -S network-manager-applet  <span class="hljs-comment"># Arch-based</span></pre><hr>
 <h2 id="-dotfiles-integration">📁 Dotfiles Integration</h2>
@@ -4279,7 +4279,7 @@ The testing setup allows you to experiment safely without affecting your real co
 <p>You can try out:</p>
 <ul>
 <li>🪟 Window manager (Hyprland)</li>
-<li>🎨 Themes (Rofi, Waybar, Zsh prompt)</li>
+<li>🎨 Themes (Quickshell M3 colors, GTK, Zsh prompt)</li>
 <li>🧩 Modules and utilities</li>
 <li>🧪 Custom scripts or aliases</li>
 <li>🛡️ Security configurations and defaults</li>
@@ -4465,9 +4465,9 @@ height = screen_height × 65%
 <div align="center">
   <h1>🏠 HorneroConfig - Comprehensive Dotfiles Framework</h1>
 
-  <a href="https://ulises-jeremias.github.io/dotfiles">Docs</a> |
-  <a href="#">Changelog</a> |
-  <a href="https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CONTRIBUTING.md">Contributing</a>
+<a href="https://ulises-jeremias.github.io/dotfiles">Docs</a> |
+<a href="#">Changelog</a> |
+<a href="https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CONTRIBUTING.md">Contributing</a>
 
 </div> <!-- center -->
 
@@ -4494,7 +4494,7 @@ into a harmonious blend of elegance and efficiency.</p>
 <h2 id="-key-features">✨ Key Features</h2>
 <ul>
 <li><strong>🎨 Advanced Appearance Themes</strong>: Switch between beautiful desktop themes instantly</li>
-<li><strong>🧠 Smart Colors</strong>: Intelligent color adaptation for optimal readability and theme consistency  </li>
+<li><strong>🧠 Smart Colors</strong>: Intelligent color adaptation for optimal readability and theme consistency</li>
 <li><strong>🐚 Quickshell</strong>: Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)</li>
 <li><strong>🎨 Material Design 3</strong>: Intelligent color theming from wallpaper analysis</li>
 <li><strong>🌊 Hyprland</strong>: Dynamic tiling Wayland compositor with smooth animations</li>
