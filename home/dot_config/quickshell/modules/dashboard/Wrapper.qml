@@ -40,7 +40,7 @@ Item {
     implicitWidth: content.implicitWidth
 
     onContentHeightChanged: {
-        if (state === "visible" && !heightAnim.running)
+        if (state === "visible")
             implicitHeight = contentHeight;
     }
 

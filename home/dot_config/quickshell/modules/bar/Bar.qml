@@ -207,12 +207,12 @@ Item {
 
         x: {
             if (root.vertical)
-                return Config.bar.positionFor(root.screen.name) === "left" ? root.floatGap : parent.width - width - root.floatGap;
+                return Config.bar.positionFor(root.screen.name) === "left" ? floatGap : parent.width - width - floatGap;
             return root.floating ? Math.round((parent.width - width) / 2) : 0;
         }
         y: {
             if (!root.vertical)
-                return Config.bar.positionFor(root.screen.name) === "top" ? root.floatGap : parent.height - height - root.floatGap;
+                return Config.bar.positionFor(root.screen.name) === "top" ? floatGap : parent.height - height - floatGap;
             return root.floating ? Math.round((parent.height - height) / 2) : 0;
         }
 
