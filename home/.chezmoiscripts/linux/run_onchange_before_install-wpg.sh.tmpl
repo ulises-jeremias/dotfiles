@@ -3,6 +3,8 @@
 {{ if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 yay -S --noconfirm --needed \
   feh \
   python-pywal \

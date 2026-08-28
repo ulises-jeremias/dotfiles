@@ -1,0 +1,200 @@
+#!/usr/bin/env bash
+
+## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
+## Licensed under MIT.
+##
+## Animation profile manager for Hyprland.
+## Applies the orphaned animation profiles from
+## hyprland.conf.d/animations-<profile>.conf live via hyprctl keywords.
+##
+## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
+##
+## Usage:
+##     @script.name [OPTIONS]
+##
+## Options:
+##     -h, --help              Show this help message
+##         --set=PROFILE       Apply an animation profile (default|cozy|cyberpunk|nature|minimal|vaporwave)
+##         --next              Cycle to the next profile
+##         --current           Print the active profile
+##         --list              List available profiles
+##         --restore           Restore persisted profile from state file
+##         --ephemeral         Do not persist the selection to disk
+##         --quiet             Disable desktop notifications
+
+set -euo pipefail
+
+source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+readonly CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.conf.d"
+readonly STATE_DIR="${HOME}/.local/state/dots/hypr-animations"
+readonly STATE_FILE="${STATE_DIR}/current"
+readonly DEFAULT_PROFILE="default"
+readonly PROFILES=(default cozy cyberpunk nature minimal vaporwave)
+
+notify_profile() {
+  local message="$1"
+
+  if [[ ${quiet:-no} == yes ]]; then
+    return 0
+  fi
+
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -u low -i preferences-desktop "Hyprland Animations" "$message" || true
+  fi
+}
+
+is_valid_profile() {
+  local candidate="$1"
+  local profile
+
+  for profile in "${PROFILES[@]}"; do
+    [[ $candidate == "$profile" ]] && return 0
+  done
+  return 1
+}
+
+ensure_hyprctl() {
+  if ! command -v hyprctl >/dev/null 2>&1; then
+    echo "[ERROR] hyprctl not found. This command requires Hyprland." >&2
+    return 1
+  fi
+}
+
+profile_conf() {
+  local profile="$1"
+
+  if [[ $profile == "$DEFAULT_PROFILE" ]]; then
+    printf '%s\n' "${CONF_DIR}/animations.conf"
+  else
+    printf '%s\n' "${CONF_DIR}/animations-${profile}.conf"
+  fi
+}
+
+current_profile() {
+  local value=""
+
+  if [[ -f $STATE_FILE ]]; then
+    value="$(awk 'NF {print $1; exit}' "$STATE_FILE")"
+  fi
+
+  if ! is_valid_profile "$value"; then
+    value="$DEFAULT_PROFILE"
+  fi
+
+  printf '%s\n' "$value"
+}
+
+save_state() {
+  local profile="$1"
+  mkdir -p "$STATE_DIR"
+  printf '%s\n' "$profile" >"$STATE_FILE"
+}
+
+apply_profile() {
+  local profile="$1"
+  local conf
+  conf="$(profile_conf "$profile")"
+
+  if [[ ! -f $conf ]]; then
+    echo "[ERROR] Profile config not found: ${conf}" >&2
+    return 1
+  fi
+
+  # Beziers must be defined before the animations that reference them.
+  while IFS= read -r line; do
+    hyprctl keyword bezier "$line" >/dev/null
+  done < <(awk '/^[[:space:]]*bezier = /{sub(/^[[:space:]]*bezier =[[:space:]]*/, ""); print}' "$conf")
+
+  while IFS= read -r line; do
+    hyprctl keyword animation "$line" >/dev/null
+  done < <(awk '/^[[:space:]]*animation = /{sub(/^[[:space:]]*animation =[[:space:]]*/, ""); print}' "$conf")
+}
+
+next_profile() {
+  local current
+  current="$(current_profile)"
+  local total=${#PROFILES[@]}
+  local index=0
+  local i
+
+  for ((i = 0; i < total; i++)); do
+    if [[ ${PROFILES[$i]} == "$current" ]]; then
+      index=$i
+      break
+    fi
+  done
+
+  printf '%s\n' "${PROFILES[$(( (index + 1) % total ))]}"
+}
+
+set_profile() {
+  local profile="$1"
+
+  if ! is_valid_profile "$profile"; then
+    echo "[ERROR] Unsupported profile: ${profile}" >&2
+    echo "Available: ${PROFILES[*]}" >&2
+    return 1
+  fi
+
+  ensure_hyprctl
+
+  apply_profile "$profile"
+
+  if [[ ${ephemeral:-no} != yes ]]; then
+    save_state "$profile"
+  fi
+
+  notify_profile "Switched to ${profile} animations"
+}
+
+usage_examples() {
+  cat <<EOF
+Examples:
+  dots hypr-animations --set=cozy     # slow, smooth, bouncy
+  dots hypr-animations --next         # cycle profiles
+  dots hypr-animations --current      # print active profile
+  dots hypr-animations --restore      # re-apply after reload
+EOF
+}
+
+main() {
+  local command=""
+
+  [[ ${set:-} != "" ]] && command="set"
+  [[ ${next:-no} == yes ]] && command="next"
+  [[ ${current:-no} == yes ]] && command="current"
+  [[ ${list:-no} == yes ]] && command="list"
+  [[ ${restore:-no} == yes ]] && command="restore"
+
+  case "$command" in
+    set)
+      set_profile "$set"
+      ;;
+    next)
+      set_profile "$(next_profile)"
+      ;;
+    current)
+      current_profile
+      ;;
+    list)
+      printf '%s\n' "${PROFILES[@]}"
+      ;;
+    restore)
+      ensure_hyprctl
+      set_profile "$(current_profile)"
+      ;;
+    "")
+      echo "No command specified. Use --help for usage." >&2
+      usage_examples
+      exit 1
+      ;;
+    *)
+      echo "Unknown command combination." >&2
+      usage_examples
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

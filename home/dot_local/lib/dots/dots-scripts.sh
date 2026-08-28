@@ -19,6 +19,7 @@ scripts_list=(
 	"🎨 gtk-theme: Intelligent GTK theme management with appearance integration and auto-detection"
 	"🎨 accent-override: Set or clear a hex accent color override for the M3 color scheme"
 	"🧭 hypr-layout: Manage Hyprland layout profiles with persistence and restore support"
+	"✨ hypr-animations: Switch Hyprland animation profiles (default, cozy, cyberpunk, nature, minimal, vaporwave)"
 	"🖥️ hypr-monitors: Manage Hyprland monitor configurations and layouts"
 	"🧩 hyprland-plugins: Idempotent bootstrap of HyprPM-managed plugins (e.g. ScrollOverview)"
 	"🎨 hyprlock-theme: Generate hyprlock color overrides from the current smart-colors M3 palette"

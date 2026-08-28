@@ -41,6 +41,20 @@ jobs:
       - name: Validate script standards
         run: ./scripts/validate-dots-scripts.sh
 
+      - name: Smoke test chezmoi templates
+        run: |
+          curl -fsLS get.chezmoi.io | sh -s -- -b "${HOME}/.local/bin"
+          export PATH="${HOME}/.local/bin:${PATH}"
+          chezmoi init
+          fail=0
+          while IFS= read -r -d "" tmpl; do
+            if ! chezmoi execute-template --source=. < "$tmpl" > /dev/null; then
+              echo "::error::Template render failed: $tmpl"
+              fail=1
+            fi
+          done < <(find home/.chezmoiscripts -name "*.tmpl" -print0)
+          exit $fail
+
       - name: Install Dotfiles
         run: ./install.sh
 

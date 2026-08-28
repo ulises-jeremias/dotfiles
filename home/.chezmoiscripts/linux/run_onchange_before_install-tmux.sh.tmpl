@@ -1,5 +1,7 @@
 {{- if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 sudo pacman -S --noconfirm --needed tmux fzf bat
 {{- end -}}

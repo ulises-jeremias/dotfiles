@@ -3,6 +3,8 @@
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # GPU-accelerated screen recording
 yay -S --noconfirm --needed \
   gpu-screen-recorder \
