@@ -41,6 +41,55 @@ For more info, check the [Hyprland documentation](https://wiki.hyprland.org/).
 
 ---
 
+## 🧩 Modular Config Layout
+
+`hyprland.conf` is a thin entrypoint that sources focused fragments from
+`~/.config/hypr/hyprland.conf.d/`:
+
+| Fragment            | Controls                                                |
+| ------------------- | ------------------------------------------------------- |
+| `monitors.conf`     | Output resolution, position, scaling                    |
+| `autostart.conf`    | Startup services and apps                               |
+| `environment.conf`  | Environment variables (IME, cursors, XDG portals)       |
+| `input.conf`        | Keyboards, mice, touchpads, gestures                    |
+| `layout.conf`       | Tiling gaps, borders, decorations                       |
+| `keybindings.conf`  | All keybinds (see `dots keyboard-help`)                 |
+| `window-rules.conf` | Per-window rules (floating, opacity, workspace pinning) |
+| `animations.conf`   | Active animation profile                                |
+| `colors.conf`       | Compositor colors and shadows                           |
+| `plugins.conf`      | Plugin loading (e.g. ScrollOverview)                    |
+
+### Animation Profiles
+
+`animations.conf` is swappable — six profiles ship with the repo:
+
+```sh
+dots hypr-animations --list            # default cozy cyberpunk nature minimal vaporwave
+dots hypr-animations --set=cozy        # slow, bouncy, gentle
+dots hypr-animations --next            # cycle profiles
+```
+
+The selection persists and survives reloads (`--restore` re-applies it
+after `hyprctl reload`).
+
+### Keybindings Reference
+
+`dots keyboard-help` prints every keybind grouped by section, with
+filtering:
+
+```sh
+dots keyboard-help --category "Media"    # substring match on section
+dots keyboard-help --search "workspace"  # search key or action
+```
+
+### Screen-Specific Config
+
+`monitors.conf` supports per-monitor overrides; the Quickshell layer also
+supports per-screen bar layouts via `bar.perScreen` — see
+[Quickshell Shell](Quickshell-Shell).
+
+---
+
 ## 🔧 Pro Tips
 
 - Add compositor-specific autostart scripts
