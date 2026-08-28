@@ -105,7 +105,7 @@ GridLayout {
 
             Repeater {
                 model: ScriptModel {
-                    values: Hypr.toplevels.values.filter(c => c.workspace?.id === root.ws)
+                    values: Hypr.toplevels.values.filter(c => c.workspace?.id === root.ws).slice(0, Config.bar.workspaces.maxWindowIcons)
                 }
 
                 MaterialIcon {
@@ -147,7 +147,7 @@ GridLayout {
 
             Repeater {
                 model: ScriptModel {
-                    values: Hypr.toplevels.values.filter(c => c.workspace?.id === root.ws)
+                    values: Hypr.toplevels.values.filter(c => c.workspace?.id === root.ws).slice(0, Config.bar.workspaces.maxWindowIcons)
                 }
 
                 MaterialIcon {

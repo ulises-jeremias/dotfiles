@@ -50,7 +50,12 @@ Item {
     TextMetrics {
         id: metrics
 
-        text: Hypr.activeToplevel?.title ?? qsTr("Desktop")
+        readonly property string rawTitle: Hypr.activeToplevel?.title ?? qsTr("Desktop")
+        readonly property string compactTitle: {
+            const idx = Math.max(rawTitle.lastIndexOf(" — "), rawTitle.lastIndexOf(" - "), rawTitle.lastIndexOf(" – "));
+            return idx > 0 ? rawTitle.slice(idx + 3).trim() : rawTitle;
+        }
+        text: Config.bar.activeWindow.compact ? compactTitle : rawTitle
         font.pointSize: Appearance.font.size.smaller
         font.family: Appearance.font.family.mono
         elide: Qt.ElideRight

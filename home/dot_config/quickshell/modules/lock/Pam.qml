@@ -31,8 +31,7 @@ Scope {
             } else {
                 buffer = buffer.slice(0, -1);
             }
-        } else if (" abcdefghijklmnopqrstuvwxyz1234567890`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?".includes(event.text.toLowerCase())) {
-            // No illegal characters (you are insane if you use unicode in your password)
+        } else if (/^\S$/.test(event.text)) {
             buffer += event.text;
         }
     }

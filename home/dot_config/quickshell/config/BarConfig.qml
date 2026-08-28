@@ -109,6 +109,7 @@ JsonObject {
 
     component Workspaces: JsonObject {
         property int shown: 5
+        property int maxWindowIcons: 5
         property bool activeIndicator: true
         property bool occupiedBg: true
         property bool showWindows: true
@@ -131,6 +132,7 @@ JsonObject {
         property bool recolour: false
         property bool compact: false
         property list<var> iconSubs: []
+        property list<string> hiddenIcons: []
     }
 
     component Status: JsonObject {
@@ -146,6 +148,8 @@ JsonObject {
 
     component Clock: JsonObject {
         property bool showIcon: true
+        property bool showDate: false
+        property bool background: false
     }
 
     component Sizes: JsonObject {
