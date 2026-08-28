@@ -30,11 +30,16 @@ Item {
     readonly property alias sidebar: sidebar
     readonly property alias layoutPicker: layoutPicker
 
+    // Floating bars must keep real distance from panels/widgets/edges:
+    // the wrapper only reserves pill thickness, so panels add a generous
+    // breathing gap on the bar edge (spacing.large + the built-in margin).
+    readonly property real floatBreathing: bar.floating ? Appearance.spacing.large : 0
+
     anchors.fill: parent
-    anchors.leftMargin: bar.marginLeft + (bar.floating && bar.position === "left" ? Appearance.spacing.normal : 0)
-    anchors.rightMargin: bar.marginRight + (bar.floating && bar.position === "right" ? Appearance.spacing.normal : 0)
-    anchors.topMargin: bar.marginTop + (bar.floating && bar.position === "top" ? Appearance.spacing.normal : 0)
-    anchors.bottomMargin: bar.marginBottom + (bar.floating && bar.position === "bottom" ? Appearance.spacing.normal : 0)
+    anchors.leftMargin: bar.marginLeft + (bar.floating && bar.position === "left" ? root.floatBreathing : 0)
+    anchors.rightMargin: bar.marginRight + (bar.floating && bar.position === "right" ? root.floatBreathing : 0)
+    anchors.topMargin: bar.marginTop + (bar.floating && bar.position === "top" ? root.floatBreathing : 0)
+    anchors.bottomMargin: bar.marginBottom + (bar.floating && bar.position === "bottom" ? root.floatBreathing : 0)
 
     Osd.Wrapper {
         id: osd

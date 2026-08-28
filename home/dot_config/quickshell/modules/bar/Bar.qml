@@ -159,7 +159,7 @@ Item {
                 Hypr.dispatch(`togglespecialworkspace ${specialWs.slice(8)}`);
             else if (angleDelta.y < 0 || (Config.bar.workspaces.perMonitorWorkspaces ? mon.activeWorkspace?.id : Hypr.activeWsId) > 1)
                 Hypr.dispatch(`workspace r${angleDelta.y > 0 ? "-" : "+"}1`);
-        } else if (pos < (vertical ? screen.height : screen.width) / 2 && Config.bar.scrollActions.volume) {
+        } else if (pos < (vertical ? parent.height : parent.width) / 2 && Config.bar.scrollActions.volume) {
             // Volume scroll on first half
             if (angleDelta.y > 0)
                 Audio.incrementVolume();
