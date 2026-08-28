@@ -60,6 +60,7 @@
 - [📁 Yazi](Dots-Scripts#yazi--terminal-file-manager) - terminal file manager
 
 ### 🎵 **Studio & Audio**
+- [🔊 Audio Devices](Audio-Devices)
 
 - [🎵 Studio Setup](Studio)
 
