@@ -87,7 +87,8 @@
 - [🏠 Home](Home) - Start here
 - [📜 Dots Scripts](Dots-Scripts) ⭐ - All tools & fallbacks
 - [🎨 Appearance Themes](Rice-System-Theme-Management) - Theme switching
-- [🖼️ Theme Gallery](Theme-Gallery) - Visual theme browser
+- [🖼️ Theme Gallery](Theme-Gallery)
+- [❄️ Nix / Home-Manager](Nix-Home-Manager) - Visual theme browser
 - [🧠 Smart Colors](Smart-Colors-System) - Adaptive theming
 
 **Recent Updates:**
