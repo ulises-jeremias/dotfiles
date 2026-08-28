@@ -202,14 +202,17 @@ Item {
         width: root.vertical ? root.pillThickness : (root.floating ? layout.implicitWidth + root.pillPadding * 2 : parent.width)
         height: root.vertical ? (root.floating ? layout.implicitHeight + root.pillPadding * 2 : parent.height) : root.pillThickness
 
+        // Floating gap: only when actually floating; attached bars glue to the edge
+        readonly property real floatGap: root.floating ? Config.bar.floatingMargin : 0
+
         x: {
             if (root.vertical)
-                return Config.bar.positionFor(root.screen.name) === "left" ? root.floatingMargin : parent.width - width - root.floatingMargin;
+                return Config.bar.positionFor(root.screen.name) === "left" ? root.floatGap : parent.width - width - root.floatGap;
             return root.floating ? Math.round((parent.width - width) / 2) : 0;
         }
         y: {
             if (!root.vertical)
-                return Config.bar.positionFor(root.screen.name) === "top" ? root.floatingMargin : parent.height - height - root.floatingMargin;
+                return Config.bar.positionFor(root.screen.name) === "top" ? root.floatGap : parent.height - height - root.floatGap;
             return root.floating ? Math.round((parent.height - height) / 2) : 0;
         }
 

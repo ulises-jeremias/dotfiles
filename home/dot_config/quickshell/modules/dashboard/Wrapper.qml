@@ -31,10 +31,18 @@ Item {
     }
 
     readonly property real nonAnimHeight: state === "visible" ? (content.item?.nonAnimHeight ?? 0) : 0
+    // Plain snapshot of the content height: PropertyChanges binds to this
+    // instead of chasing content.implicitHeight directly (launcher pattern).
+    property int contentHeight: 0
 
     visible: height > 0
     implicitHeight: 0
     implicitWidth: content.implicitWidth
+
+    onContentHeightChanged: {
+        if (state === "visible" && !heightAnim.running)
+            implicitHeight = contentHeight;
+    }
 
     onStateChanged: {
         if (state === "visible" && timer.running) {
@@ -48,7 +56,7 @@ Item {
         when: root.visibilities.dashboard && Config.dashboard.enabled
 
         PropertyChanges {
-            root.implicitHeight: content.implicitHeight
+            root.implicitHeight: root.contentHeight
         }
     }
 
@@ -100,6 +108,8 @@ Item {
             visibilities: root.visibilities
             state: root.dashState
             facePicker: root.facePicker
+
+            Component.onCompleted: root.contentHeight = Qt.binding(() => implicitHeight)
         }
     }
 }
