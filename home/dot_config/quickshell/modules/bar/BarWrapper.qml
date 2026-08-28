@@ -29,6 +29,8 @@ Item {
     readonly property bool shouldBeVisible: !disabled && (Config.bar.persistent || visibilities.bar || isHovered)
     property bool isHovered
 
+    clip: true
+
     // Animated size along the bar's main axis
     readonly property int currentThickness: vertical ? implicitWidth : implicitHeight
     readonly property Item visualItem: content.item?.visualItem ?? null
