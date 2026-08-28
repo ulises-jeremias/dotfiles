@@ -44,6 +44,7 @@ StyledClippingRect {
         }
 
         Loader {
+            asynchronous: true
             active: Config.bar.workspaces.occupiedBg
 
             anchors.fill: parent
@@ -82,6 +83,7 @@ StyledClippingRect {
         }
 
         Loader {
+            asynchronous: true
             anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
             anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
             active: Config.bar.workspaces.activeIndicator
@@ -97,7 +99,7 @@ StyledClippingRect {
         MouseArea {
             anchors.fill: layout
             onClicked: event => {
-                const ws = layout.childAt(event.x, event.y).ws;
+                const ws = layout.childAt(event.x, event.y)?.ws; if (!ws) return;
                 if (Hypr.activeWsId !== ws)
                     Hypr.dispatch(`workspace ${ws}`);
                 else

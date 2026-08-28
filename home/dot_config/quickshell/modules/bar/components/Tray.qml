@@ -147,7 +147,7 @@ StyledRect {
         anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
         anchors.right: root.vertical ? undefined : parent.right
 
-        active: Config.bar.tray.compact
+        active: Config.bar.tray.compact && layout.children.length > 0
 
         sourceComponent: Item {
             implicitWidth: root.vertical ? expandIconInner.implicitWidth : expandIconInner.implicitWidth - Appearance.padding.small * 2
