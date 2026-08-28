@@ -227,7 +227,11 @@ Item {
         GridLayout {
             id: layout
 
-            anchors.fill: parent
+            // Floating: centerIn positions without forcing size, so
+            // implicitWidth/Height are children-driven (no circular ref).
+            // Attached: fill the wrapper strip as before.
+            anchors.centerIn: root.floating ? parent : undefined
+            anchors.fill: root.floating ? undefined : parent
             anchors.margins: root.pillPadding
 
             flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
