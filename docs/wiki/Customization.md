@@ -61,7 +61,7 @@ All changes will be synced to your system.
 
 - 🌊 Compositor settings (Hyprland)
 - 💻 Terminal experience (Zsh, Kitty)
-- 🎨 Theme and color schemes (Rofi, Waybar, Pywal)
+- 🎨 Theme and color schemes (Quickshell M3, pywal, smart colors)
 - 🛠️ Utility scripts (`dots`) and workflow helpers
 - 🔒 Security tools and system behaviors
 
@@ -78,7 +78,7 @@ The dotfiles include an **intelligent color system** that automatically optimize
 
 - **Semantic Colors**: Error, success, warning, info colors that adapt to any palette
 - **Theme Intelligence**: Automatically selects optimal colors based on wallpaper
-- **Application Integration**: Works with Waybar, EWW, Hyprland, and custom scripts
+- **Application Integration**: Works with Hyprland, Quickshell, terminals, and custom scripts
 - **Automatic Updates**: Colors refresh automatically when changing wallpapers
 
 Learn more: [Smart Colors System](Smart-Colors-System)

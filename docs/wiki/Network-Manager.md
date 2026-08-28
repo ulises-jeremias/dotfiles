@@ -34,7 +34,7 @@ Use this for scripting, automating, or managing networks programmatically.
 
 ### 3. **`network-manager-applet`** – GUI tray icon
 
-If you're running a system tray (e.g., via Waybar), you can use the applet to manage Wi-Fi and VPNs.
+The Quickshell system tray (bar status icons) exposes the network applet to manage Wi-Fi and VPNs.
 
 Install:
 
@@ -101,7 +101,7 @@ is already deployed by `chezmoi` on both of them.
 ### What the dotfiles manage
 
 | Piece                                           | Managed by                                       | Purpose                                                     |
-|-------------------------------------------------|--------------------------------------------------|-------------------------------------------------------------|
+| ----------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------- |
 | `~/.ssh/authorized_keys`                        | `private_dot_ssh/private_authorized_keys.tmpl`   | Accepts inbound logins from the other machine               |
 | `/etc/ssh/sshd_config.d/10-hornero-config.conf` | `run_onchange_before_install-ssh-server.sh.tmpl` | Enables and hardens `sshd` (key-only auth, no root login)   |
 | Avahi + nss-mdns                                | `run_onchange_before_install-mdns.sh.tmpl`       | Resolves `<hostname>.local` even when DHCP addresses change |

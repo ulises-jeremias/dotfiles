@@ -13,7 +13,7 @@ This section covers the **audio production** stack installed by HorneroConfig, i
 The following REAPER files are tracked by chezmoi under `home/dot_config/REAPER/`:
 
 | File                                                         | Description                                                  |
-|--------------------------------------------------------------|--------------------------------------------------------------|
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `reaper-fxtags.ini`                                          | FX plugin tags — user-curated organization of all plugins    |
 | `ProjectTemplates/Basic Vocal Tracking - Linux Scarlett.RPP` | Project template for vocal recording with Scarlett interface |
 
@@ -28,7 +28,7 @@ PipeWire is the foundation of the audio stack. It replaces PulseAudio and JACK w
 ### Installed packages
 
 | Package          | Role                                         |
-|------------------|----------------------------------------------|
+| ---------------- | -------------------------------------------- |
 | `pipewire`       | Core audio/video server                      |
 | `pipewire-alsa`  | ALSA compatibility layer                     |
 | `pipewire-pulse` | PulseAudio compatibility layer               |
@@ -98,7 +98,7 @@ sudo pacman -S reaper
 ### Installed packages
 
 | Package         | Role                    |
-|-----------------|-------------------------|
+| --------------- | ----------------------- |
 | `guitarix`      | Virtual guitar amp      |
 | `gxplugins.lv2` | Guitarix LV2 plugin set |
 
@@ -127,7 +127,7 @@ A curated set of open-source LV2 plugins is installed for mixing, mastering, and
 ### Installed packages
 
 | Package            | Description                                                     |
-|--------------------|-----------------------------------------------------------------|
+| ------------------ | --------------------------------------------------------------- |
 | `calf`             | Studio-quality LV2 effects (EQ, reverb, compressor, chorus…)    |
 | `lsp-plugins`      | Linux Studio Plugins — professional mixing/mastering suite      |
 | `lsp-plugins-docs` | Documentation for LSP Plugins                                   |
@@ -148,7 +148,7 @@ sudo pacman -S calf lsp-plugins lsp-plugins-docs x42-plugins
 ### Installed packages (AUR)
 
 | Package       | Role                                             |
-|---------------|--------------------------------------------------|
+| ------------- | ------------------------------------------------ |
 | `yabridge`    | Wine-based VST bridge                            |
 | `yabridgectl` | CLI tool to manage yabridge plugin installations |
 

@@ -33,7 +33,7 @@ These docs include:
 You can try out:
 
 - 🪟 Window manager (Hyprland)
-- 🎨 Themes (Rofi, Waybar, Zsh prompt)
+- 🎨 Themes (Quickshell M3 colors, GTK, Zsh prompt)
 - 🧩 Modules and utilities
 - 🧪 Custom scripts or aliases
 - 🛡️ Security configurations and defaults

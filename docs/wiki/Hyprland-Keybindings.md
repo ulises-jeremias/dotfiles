@@ -4,26 +4,26 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 
 ## Applications and Utilities
 
-| Keybinding             | Function                                               |
-|------------------------|--------------------------------------------------------|
-| `Super+Return`         | Terminal (`exo-open --launch TerminalEmulator`)        |
-| `Super+T`              | Terminal                                               |
-| `Ctrl+Space`           | Application launcher (`dots-launcher`)                 |
-| `Super+V`              | Clipboard manager (`dots-clipboard`)                   |
-| `Super+?` or `Super+/` | Keyboard shortcuts help overlay (`dots-keyboard-help`) |
-| `Super+D`              | Dashboard (Quickshell IPC)                             |
-| `Alt+Shift+Tab`        | Task switcher (`dots-snappy-switcher prev`)            |
-| `Alt+Tab`              | Task switcher (`dots-snappy-switcher next`)            |
-| `Super+E`              | Terminal file manager (`yazi` in a kitty popup)        |
-| `Super+F`              | GUI file manager (`exo-open --launch FileManager`)     |
-| `Super+W`              | Web browser (`exo-open --launch WebBrowser`)           |
-| `Print`                | Screenshot of the current screen (`dots screenshooter`)|
+| Keybinding             | Function                                                   |
+| ---------------------- | ---------------------------------------------------------- |
+| `Super+Return`         | Terminal (`exo-open --launch TerminalEmulator`)            |
+| `Super+T`              | Terminal                                                   |
+| `Ctrl+Space`           | Application launcher (`dots-launcher`)                     |
+| `Super+V`              | Clipboard manager (`dots-clipboard`)                       |
+| `Super+?` or `Super+/` | Keyboard shortcuts help overlay (`dots-keyboard-help`)     |
+| `Super+D`              | Dashboard (Quickshell IPC)                                 |
+| `Alt+Shift+Tab`        | Task switcher (`dots-snappy-switcher prev`)                |
+| `Alt+Tab`              | Task switcher (`dots-snappy-switcher next`)                |
+| `Super+E`              | Terminal file manager (`yazi` in a kitty popup)            |
+| `Super+F`              | GUI file manager (`exo-open --launch FileManager`)         |
+| `Super+W`              | Web browser (`exo-open --launch WebBrowser`)               |
+| `Print`                | Screenshot of the current screen (`dots screenshooter`)    |
 | `Shift+Print`          | Screenshot with region selection (`dots screenshooter -r`) |
 
 ## Window Management
 
 | Keybinding           | Function                                                    |
-|----------------------|-------------------------------------------------------------|
+| -------------------- | ----------------------------------------------------------- |
 | `Super+Shift+Q`      | Close focused window                                        |
 | `Alt+Q`              | Close focused window                                        |
 | `Alt+F4`             | Close focused window                                        |
@@ -44,7 +44,7 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 ## Window Focus
 
 | Keybinding                | Function           |
-|---------------------------|--------------------|
+| ------------------------- | ------------------ |
 | `Super+H` / `Super+Left`  | Focus window left  |
 | `Super+J` / `Super+Down`  | Focus window down  |
 | `Super+K` / `Super+Up`    | Focus window up    |
@@ -53,7 +53,7 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 ## Window Movement
 
 | Keybinding                            | Function          |
-|---------------------------------------|-------------------|
+| ------------------------------------- | ----------------- |
 | `Super+Shift+H` / `Super+Shift+Left`  | Move window left  |
 | `Super+Shift+J` / `Super+Shift+Down`  | Move window down  |
 | `Super+Shift+K` / `Super+Shift+Up`    | Move window up    |
@@ -62,7 +62,7 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 ## Window Resizing
 
 | Keybinding     | Function             |
-|----------------|----------------------|
+| -------------- | -------------------- |
 | `Super+R`      | Enter resize mode    |
 | `Super+Ctrl+H` | Resize shrink width  |
 | `Super+Ctrl+J` | Resize grow height   |
@@ -71,33 +71,33 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 
 ## Workspace Navigation
 
-| Keybinding                    | Function                                    |
-|-------------------------------|---------------------------------------------|
-| `Super+1-9,0`                 | Switch to workspace 1-10                    |
-| `Super+KP_1-9,0`              | Switch to workspace 1-10 (numpad)           |
-| `Super+Tab`                   | Cycle forward through workspaces            |
-| `Super+Shift+Tab`             | Cycle backward through workspaces           |
-| `Super+Mouse Wheel Down/Up`   | Next / previous workspace                   |
+| Keybinding                  | Function                          |
+| --------------------------- | --------------------------------- |
+| `Super+1-9,0`               | Switch to workspace 1-10          |
+| `Super+KP_1-9,0`            | Switch to workspace 1-10 (numpad) |
+| `Super+Tab`                 | Cycle forward through workspaces  |
+| `Super+Shift+Tab`           | Cycle backward through workspaces |
+| `Super+Mouse Wheel Down/Up` | Next / previous workspace         |
 
 ## Window to Workspace
 
-| Keybinding             | Function                               |
-|------------------------|----------------------------------------|
-| `Super+Shift+1-9,0`    | Move window to workspace 1-10          |
-| `Super+Shift+KP_1-9,0` | Move window to workspace 1-10 (numpad) |
-| `Super+Ctrl+Shift+1-9,0` | Move window silently (no switch)     |
+| Keybinding               | Function                               |
+| ------------------------ | -------------------------------------- |
+| `Super+Shift+1-9,0`      | Move window to workspace 1-10          |
+| `Super+Shift+KP_1-9,0`   | Move window to workspace 1-10 (numpad) |
+| `Super+Ctrl+Shift+1-9,0` | Move window silently (no switch)       |
 
 ## Scratchpad (Special Workspace)
 
-| Keybinding      | Function                             |
-|-----------------|--------------------------------------|
-| `Super+S`       | Toggle special workspace (`magic`)   |
-| `Super+Shift+S` | Move window to special workspace     |
+| Keybinding      | Function                           |
+| --------------- | ---------------------------------- |
+| `Super+S`       | Toggle special workspace (`magic`) |
+| `Super+Shift+S` | Move window to special workspace   |
 
 ## Scrolling Layout (Niri-style)
 
 | Keybinding                                | Function                                     |
-|-------------------------------------------|----------------------------------------------|
+| ----------------------------------------- | -------------------------------------------- |
 | `Super+Alt+H`                             | Move layout viewport one column to the left  |
 | `Super+Alt+L`                             | Move layout viewport one column to the right |
 | `Super+Alt+,`                             | Swap active column with left neighbor        |
@@ -109,37 +109,37 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 
 ## Group Management
 
-| Keybinding       | Function                          |
-|------------------|-----------------------------------|
-| `Super+G`        | Toggle group                      |
-| `Super+,`        | Focus previous member in group    |
-| `Super+.`        | Focus next member in group        |
-| `Super+Shift+O`  | Lock/unlock active group          |
+| Keybinding      | Function                       |
+| --------------- | ------------------------------ |
+| `Super+G`       | Toggle group                   |
+| `Super+,`       | Focus previous member in group |
+| `Super+.`       | Focus next member in group     |
+| `Super+Shift+O` | Lock/unlock active group       |
 
 ## Gaps Control
 
-| Keybinding       | Function                                            |
-|------------------|-----------------------------------------------------|
-| `Super+Shift+G`  | Interactive gaps adjustment (`gaps-interactive.sh`) |
+| Keybinding      | Function                                            |
+| --------------- | --------------------------------------------------- |
+| `Super+Shift+G` | Interactive gaps adjustment (`gaps-interactive.sh`) |
 
 The interactive script walks you through increasing, decreasing, resetting,
 and removing gaps without memorizing separate keys.
 
 ## System Controls
 
-| Keybinding      | Function                                  |
-|-----------------|-------------------------------------------|
-| `Super+Ctrl+B`  | Toggle Bar (Quickshell)                   |
-| `Super+Ctrl+P`  | Dashboard (Quickshell IPC)                |
-| `Super+X`       | Power menu (`dots-power-menu`)            |
-| `Super+L`       | Lock screen (Quickshell IPC lock)         |
-| `Super+Shift+R` | Reload Hyprland configuration             |
-| `Super+Shift+E` | Exit Hyprland                             |
+| Keybinding      | Function                          |
+| --------------- | --------------------------------- |
+| `Super+Ctrl+B`  | Toggle Bar (Quickshell)           |
+| `Super+Ctrl+P`  | Dashboard (Quickshell IPC)        |
+| `Super+X`       | Power menu (`dots-power-menu`)    |
+| `Super+L`       | Lock screen (Quickshell IPC lock) |
+| `Super+Shift+R` | Reload Hyprland configuration     |
+| `Super+Shift+E` | Exit Hyprland                     |
 
 ## Media Controls
 
 | Keybinding       | Function         |
-|------------------|------------------|
+| ---------------- | ---------------- |
 | `XF86AudioPlay`  | Play/pause media |
 | `XF86AudioPause` | Pause media      |
 | `XF86AudioNext`  | Next track       |
@@ -149,7 +149,7 @@ and removing gaps without memorizing separate keys.
 ## Volume Controls
 
 | Keybinding             | Function               |
-|------------------------|------------------------|
+| ---------------------- | ---------------------- |
 | `XF86AudioRaiseVolume` | Increase volume (+5%)  |
 | `XF86AudioLowerVolume` | Decrease volume (-5%)  |
 | `XF86AudioMute`        | Toggle mute            |
@@ -157,17 +157,17 @@ and removing gaps without memorizing separate keys.
 
 ## Brightness Controls
 
-| Keybinding              | Function                       |
-|-------------------------|--------------------------------|
-| `XF86MonBrightnessUp`   | Increase brightness (+10%)     |
-| `XF86MonBrightnessDown` | Decrease brightness (-10%)     |
-| `Shift+XF86MonBrightnessUp`   | Increase brightness (+1%) |
-| `Shift+XF86MonBrightnessDown` | Decrease brightness (-1%) |
+| Keybinding                    | Function                   |
+| ----------------------------- | -------------------------- |
+| `XF86MonBrightnessUp`         | Increase brightness (+10%) |
+| `XF86MonBrightnessDown`       | Decrease brightness (-10%) |
+| `Shift+XF86MonBrightnessUp`   | Increase brightness (+1%)  |
+| `Shift+XF86MonBrightnessDown` | Decrease brightness (-1%)  |
 
 ## Mouse Bindings
 
 | Action              | Function      |
-|---------------------|---------------|
+| ------------------- | ------------- |
 | `Super+Left Click`  | Move window   |
 | `Super+Right Click` | Resize window |
 
@@ -184,7 +184,7 @@ Toggle a bird's-eye view of all workspaces and windows, powered by the
 plugin.
 
 | Keybinding | Function                                  |
-|------------|-------------------------------------------|
+| ---------- | ----------------------------------------- |
 | `Super+O`  | Toggle the overview on the active monitor |
 
 ### ScrollOverview submap
@@ -194,7 +194,7 @@ navigation. Normal Hyprland binds outside this submap are not handled unless
 they use the `submap_universal` flag.
 
 | Keybinding                       | Function                                                                  |
-|----------------------------------|---------------------------------------------------------------------------|
+| -------------------------------- | ------------------------------------------------------------------------- |
 | `Left` / `Right` / `Up` / `Down` | Move selection between windows (and across workspaces at the layout edge) |
 | `Return`                         | Select the workspace under the cursor                                     |
 | `Escape`                         | Close the overview                                                        |

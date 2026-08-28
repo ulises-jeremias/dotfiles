@@ -262,9 +262,8 @@ pre-commit run --all-files  # Run all checks
 
 ## 🌍 Platform Support
 
-🐧 **Arch Linux** — Full support with AUR packages  
-🐧 **Ubuntu/Debian** — Supported (manual dependencies)  
-🐧 **Fedora/RHEL** — Supported (manual dependencies)  
+🐧 **Arch Linux** — Full support with AUR packages (primary target)  
+🐧 **Ubuntu/Debian** — Partial: the Docker install fragment supports Ubuntu/Pop!\_OS; everything else is Arch-only (manual porting required)  
 ☁️ **Cloud Dev** — GitHub Codespaces, Gitpod, VS Code Remote
 
 > 📖 [Platform-specific guides →](https://github.com/ulises-jeremias/dotfiles/wiki/Home)

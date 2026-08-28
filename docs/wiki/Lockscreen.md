@@ -139,17 +139,19 @@ Colors used:
 
 ## Integration
 
-### EWW Powermenu
+### Session Controls
 
-The lockscreen is integrated into the EWW powermenu:
+The lockscreen is part of the Quickshell lock module
+(`modules/lock`), driven by PAM authentication and exposed over IPC:
 
-```lisp
-(defwidget lock []
-  (box :class "genwin" :vexpand "false" :hexpand "false"
-    (button :class "btn_lock"
-            :onclick "~/.local/bin/dots-power-menu --mode=minimal; dots-lockscreen -l blur"
-            "")))
+```bash
+dots-quickshell ipc lock lock    # lock the session
+dots-quickshell ipc lock unlock  # escape-hatch unlock (no PAM)
+qs ipc call lock isLocked        # query lock state
 ```
+
+The idle pipeline (see `modules/IdleMonitors`) locks the session
+automatically after the configured inactivity timeout.`
 
 ### Wal Reload
 
@@ -202,7 +204,7 @@ theme-pack `tags` (there is no sticky “current theme” id).
 ### Available Layouts
 
 | Layout        | Matching tags / path hints     | Description                                     |
-|---------------|--------------------------------|-------------------------------------------------|
+| ------------- | ------------------------------ | ----------------------------------------------- |
 | **Default**   | Any unmatched                  | Clean, centered layout with standard typography |
 | **Cyberpunk** | cyberpunk, neon, futuristic    | Glowing neon elements, tech-inspired fonts      |
 | **Cozy**      | cozy, kawaii, cute, warm, soft | Soft, rounded elements with pastel accents      |
@@ -230,7 +232,7 @@ Matching is case-insensitive and supports partial keyword matches.
 ## Comparison with Betterlockscreen
 
 | Feature           | betterlockscreen          | dots-lockscreen       |
-|-------------------|---------------------------|-----------------------|
+| ----------------- | ------------------------- | --------------------- |
 | Platform          | X11 (i3lock)              | Wayland (hyprlock)    |
 | Effects           | 6 effects                 | 4 core effects        |
 | Multi-monitor     | Native support            | Via hyprlock          |
@@ -293,5 +295,4 @@ dots lockscreen --update=~/.local/state/dots/wallpaper/path
 
 - [Smart Colors System](Smart-Colors-System.md)
 - [Appearance Themes](Rice-System-Theme-Management.md)
-- [EWW Widgets](EWW-Widgets.md)
 - [Hyprland Setup](../Hyprland-Setup.md)

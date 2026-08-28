@@ -4,7 +4,7 @@
 
 Testing ensures reliability across diverse environments:
 
-- Multiple Linux distributions (Arch, Ubuntu, Fedora)
+- Arch Linux (primary); Ubuntu/Pop!_OS for the Docker install fragment
 - Hyprland window manager (Wayland)
 - Appearance theme packs (apply-once recipes)
 - Multiple hardware configurations (laptop, desktop, VM)

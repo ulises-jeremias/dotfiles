@@ -30,7 +30,7 @@ dots yazi --fix-previews
 All config lives in `~/.config/yazi/`:
 
 | File          | Purpose                                   |
-|---------------|-------------------------------------------|
+| ------------- | ----------------------------------------- |
 | `yazi.toml`   | General settings, openers, preview config |
 | `keymap.toml` | Custom keybindings (layered on defaults)  |
 | `theme.toml`  | Color scheme / flavor selection           |
@@ -54,7 +54,7 @@ Files open with `xdg-open` by default. Directories can also open in Thunar. Text
 ### Navigation
 
 | Key       | Action                   |
-|-----------|--------------------------|
+| --------- | ------------------------ |
 | `h` / `l` | Parent / Enter directory |
 | `j` / `k` | Move down / up           |
 | `~`       | Go home                  |
@@ -63,7 +63,7 @@ Files open with `xdg-open` by default. Directories can also open in Thunar. Text
 ### Quick Directories (g + key)
 
 | Key  | Directory              |
-|------|------------------------|
+| ---- | ---------------------- |
 | `gh` | Home                   |
 | `gp` | ~/Projects             |
 | `gd` | ~/Downloads            |
@@ -81,7 +81,7 @@ Files open with `xdg-open` by default. Directories can also open in Thunar. Text
 ### File Operations
 
 | Key     | Action                      |
-|---------|-----------------------------|
+| ------- | --------------------------- |
 | `Space` | Toggle select               |
 | `y`     | Copy (yank)                 |
 | `x`     | Cut                         |
@@ -97,7 +97,7 @@ Files open with `xdg-open` by default. Directories can also open in Thunar. Text
 ### Power Features
 
 | Key     | Action             |
-|---------|--------------------|
+| ------- | ------------------ |
 | `f`     | Filter files       |
 | `/`     | Search             |
 | `z`     | Jump with zoxide   |
@@ -110,7 +110,7 @@ Files open with `xdg-open` by default. Directories can also open in Thunar. Text
 ### Sorting (o + key)
 
 | Key  | Sort by   |
-|------|-----------|
+| ---- | --------- |
 | `on` | Name      |
 | `os` | Size      |
 | `om` | Modified  |
@@ -163,7 +163,7 @@ The `Super+E` keybinding in Hyprland opens yazi in a floating popup window.
 - **Wrapper script**: `dots-yazi` (or `dots yazi`)
 - **Hyprland keybinding**: `Super+E` opens yazi popup
 - **Thunar context menu**: "Open in Yazi" right-click option
-- **Waybar**: yazi popup windows get file manager icon
+- **Quickshell**: yazi popup windows get the file manager icon in the dock/status area
 - **Smart colors**: automatic terminal color inheritance
 
 ---

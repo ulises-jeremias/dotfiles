@@ -99,7 +99,6 @@ sudo pacman -S nvidia-dkms
   ```
 
 - Ensure `nvidia-drm.modeset=1` is passed:
-
   - For GRUB: edit `/etc/default/grub` and run `sudo grub-mkconfig -o /boot/grub/grub.cfg`
   - For systemd-boot with UKI: add `--cmdline 'nvidia-drm.modeset=1'` in your `mkinitcpio.preset`
 
@@ -211,7 +210,6 @@ If your laptop uses both an integrated Intel GPU and a dedicated NVIDIA GPU:
    ```
 
 4. For systemd-boot with UKI:
-
    - Add `--cmdline 'nvidia-drm.modeset=1'` to your preset in `/etc/mkinitcpio.d/linux.preset`
    - Then regenerate:
 

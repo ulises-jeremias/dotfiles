@@ -69,16 +69,17 @@ dots-smart-colors --analyze --colors
 
 ---
 
-```ini
+````ini
 # Smart floating script integration
 ```conf
-```
+````
 
 **Hyprland Floating Window Configuration**:
 
 ```conf
 # Hyprland floating window rules are configured in hyprland.conf
 ```
+
 ```text
 
 # Global floating window constraints

@@ -62,11 +62,13 @@ To use the smart-colors theme in CopyQ:
 To customize CopyQ's appearance:
 
 1. **Regenerate the theme**:
+
    ```bash
    dots-smart-colors --generate
    ```
 
 2. **Edit the theme file** (if needed):
+
    ```bash
    $EDITOR ~/.config/copyq/themes/hornero-smart-colors.ini
    ```
@@ -97,6 +99,7 @@ CopyQ uses CSS files from `/usr/share/copyq/themes/` (or `~/.config/copyq/themes
 To customize CSS:
 
 1. Copy the CSS file you want to modify:
+
    ```bash
    cp /usr/share/copyq/themes/items.css ~/.config/copyq/themes/
    ```
@@ -182,11 +185,13 @@ The CSS is regenerated from the template with current theme colors and symlinked
 If CopyQ's theme doesn't update:
 
 1. **Check theme file exists**:
+
    ```bash
    ls -la ~/.config/copyq/themes/hornero-smart-colors.ini
    ```
 
 2. **Regenerate theme**:
+
    ```bash
    dots-smart-colors --generate
    ```
@@ -197,6 +202,7 @@ If CopyQ's theme doesn't update:
    - Click "OK" to apply
 
 4. **Restart CopyQ** (if needed):
+
    ```bash
    copyq exit
    copyq &
@@ -207,11 +213,13 @@ If CopyQ's theme doesn't update:
 If colors don't match your current theme:
 
 1. **Regenerate smart colors**:
+
    ```bash
    dots-smart-colors --generate
    ```
 
 2. **Check theme file**:
+
    ```bash
    cat ~/.cache/dots/smart-colors/colors-copyq.ini
    ```

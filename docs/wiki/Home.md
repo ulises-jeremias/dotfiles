@@ -5,9 +5,9 @@
 <div align="center">
   <h1>🏠 HorneroConfig - Comprehensive Dotfiles Framework</h1>
 
-  [Docs](https://ulises-jeremias.github.io/dotfiles) |
-  [Changelog](#) |
-  [Contributing](https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CONTRIBUTING.md)
+[Docs](https://ulises-jeremias.github.io/dotfiles) |
+[Changelog](#) |
+[Contributing](https://github.com/ulises-jeremias/dotfiles/blob/main/.github/CONTRIBUTING.md)
 
 </div> <!-- center -->
 
@@ -38,7 +38,7 @@ into a harmonious blend of elegance and efficiency.
 ## ✨ Key Features
 
 - **🎨 Advanced Appearance Themes**: Switch between beautiful desktop themes instantly
-- **🧠 Smart Colors**: Intelligent color adaptation for optimal readability and theme consistency  
+- **🧠 Smart Colors**: Intelligent color adaptation for optimal readability and theme consistency
 - **🐚 Quickshell**: Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)
 - **🎨 Material Design 3**: Intelligent color theming from wallpaper analysis
 - **🌊 Hyprland**: Dynamic tiling Wayland compositor with smooth animations
