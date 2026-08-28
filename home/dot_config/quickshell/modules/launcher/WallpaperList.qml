@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import "items"
+import qs.config
 import qs.components.controls
 import qs.services
 import qs.config
@@ -16,6 +17,7 @@ PathView {
     required property var content
 
     readonly property int itemWidth: Config.launcher.sizes.wallpaperWidth * 0.8 + Appearance.padding.larger * 2
+    readonly property string colorFilter: Wallpapers.colorFilter
 
     readonly property int numItems: {
         const screen = QsWindow.window?.screen;

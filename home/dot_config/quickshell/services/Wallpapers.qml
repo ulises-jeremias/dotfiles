@@ -17,6 +17,7 @@ Searcher {
     property string previewPath
     property string actualCurrent
     property bool previewColourLock
+    property string colorFilter: ""
 
     function setWallpaper(path: string): void {
         actualCurrent = path;

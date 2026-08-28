@@ -5,6 +5,7 @@ JsonObject {
     property bool wallpaperEnabled: true
     property DesktopClock desktopClock: DesktopClock {}
     property Visualiser visualiser: Visualiser {}
+    property Video video: Video {}
 
     component DesktopClock: JsonObject {
         property bool enabled: false
@@ -25,6 +26,14 @@ JsonObject {
         property bool enabled: true
         property real opacity: 0.7
         property real blur: 0.4
+    }
+
+    component Video: JsonObject {
+        property bool enabled: true
+        property bool pauseOnFullscreen: true
+        property bool pauseOnGameMode: false
+        property bool batteryLimitEnabled: false
+        property int batteryLimit: 20
     }
 
     component Visualiser: JsonObject {
