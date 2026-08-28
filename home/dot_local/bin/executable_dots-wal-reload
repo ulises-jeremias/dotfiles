@@ -3,6 +3,10 @@
 ## Copyright (C) 2019-2026 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
+## ## Re-apply the current wallpaper color pipeline (pywal -> M3 -> apps)
+##
+## Usage:
+##     @script.name [OPTION] ARGUMENTS...
 ## Wal reload — IPC stub for Quickshell ThemePipeline.
 ## When Quickshell is running, delegates to appearance.reload via IPC.
 

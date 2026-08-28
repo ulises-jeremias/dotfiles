@@ -56,6 +56,12 @@ for script in "${DOTS_BIN_DIR}"/executable_dots-*; do
       errors=$((errors + 1))
     fi
 
+    # Check for help text: a "Usage:" line or the easyoptions "@script.name" form
+    if ! grep -q -m1 -E "Usage:|@script\.name" "$script"; then
+      echo "❌ Missing help text (Usage: or @script.name block): $script_name"
+      errors=$((errors + 1))
+    fi
+
     # Check for set -euo pipefail (required for robustness)
     if ! grep -q "^set -euo pipefail" "$script"; then
       echo "❌ Missing 'set -euo pipefail': $script_name"

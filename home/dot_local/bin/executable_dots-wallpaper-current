@@ -3,6 +3,10 @@
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
+## ## Print the path of the currently applied wallpaper
+##
+## Usage:
+##     @script.name [OPTION] ARGUMENTS...
 ## Print the resolved absolute path to the current wallpaper (same rules as wallpaper-resolver).
 set -euo pipefail
 

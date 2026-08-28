@@ -3,6 +3,10 @@
 ## Copyright (C) 2019-2026 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
+## ## Generate M3 (Material You) color palettes from the current wallpaper
+##
+## Usage:
+##     @script.name [OPTION] ARGUMENTS...
 ## dots-m3-colors: Run generate-m3-colors.py with a Python that has materialyoucolor.
 ## Prefers /usr/bin/python3 (Arch python-materialyoucolor) over pyenv/asdf PATH shims.
 
