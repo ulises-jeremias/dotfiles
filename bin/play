@@ -22,12 +22,14 @@ PLAYGROUND_DIR="$(realpath "${ROOT}/playground")"
 
 . "${ROOT}/lib/easy-options/easyoptions.sh" || exit
 
-# Check if Docker Compose is installed
-if ! (command -v docker-compose &>/dev/null || command -v docker &>/dev/null && docker compose version &>/dev/null); then
-  echo "Docker Compose is not installed. Please install Docker Compose to proceed."
-  exit 1
-else
+# Check if Docker Compose is installed (v2 plugin preferred, v1 fallback)
+if docker compose version &>/dev/null || command -v docker-compose &>/dev/null; then
   echo "Docker Compose is installed."
+else
+  echo "Docker Compose is not installed. Please install it to proceed:" >&2
+  echo "  Arch:   sudo pacman -S docker-compose" >&2
+  echo "  Plugin: sudo pacman -S docker-buildx && docker compose version" >&2
+  exit 1
 fi
 
 # If all checks pass
