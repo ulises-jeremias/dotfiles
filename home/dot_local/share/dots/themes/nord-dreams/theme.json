@@ -3,12 +3,18 @@
   "id": "nord-dreams",
   "name": "Nord Dreams",
   "description": "Cool arctic Nord tones and frosty calm",
-  "tags": ["nord", "cool", "minimal", "dark"],
+  "tags": [
+    "nord",
+    "cool",
+    "minimal",
+    "dark"
+  ],
   "darkMode": true,
   "schemeType": "tonal-spot",
   "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Numix-Circle",
   "defaultWallpaper": "nord-aurora-01.png",
   "wallpaperDir": "nord-dreams",
-  "gtkPreferDark": false
+  "gtkPreferDark": false,
+  "colorOnly": true
 }

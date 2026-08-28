@@ -3,12 +3,18 @@
   "id": "catppuccin-mocha",
   "name": "Catppuccin Mocha",
   "description": "Cozy dark Catppuccin with soft pastels",
-  "tags": ["catppuccin", "pastel", "cozy", "dark"],
+  "tags": [
+    "catppuccin",
+    "pastel",
+    "cozy",
+    "dark"
+  ],
   "darkMode": true,
   "schemeType": "tonal-spot",
   "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Papirus-Dark",
   "defaultWallpaper": "catppuccin-mauve-02.png",
   "wallpaperDir": "catppuccin-mocha",
-  "gtkPreferDark": false
+  "gtkPreferDark": false,
+  "colorOnly": true
 }

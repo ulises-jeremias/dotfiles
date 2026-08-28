@@ -3,12 +3,17 @@
   "id": "catppuccin-latte",
   "name": "Catppuccin Latte",
   "description": "Light Catppuccin mauve for soft daytime sessions",
-  "tags": ["catppuccin", "pastel", "light"],
+  "tags": [
+    "catppuccin",
+    "pastel",
+    "light"
+  ],
   "darkMode": false,
   "schemeType": "tonal-spot",
   "gtkTheme": "Orchis-Light-Compact",
   "iconTheme": "Papirus",
   "defaultWallpaper": "catppuccin-latte-01.png",
   "wallpaperDir": "catppuccin-latte",
-  "gtkPreferDark": false
+  "gtkPreferDark": false,
+  "colorOnly": true
 }

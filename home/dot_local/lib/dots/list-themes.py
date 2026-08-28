@@ -88,6 +88,7 @@ def load_theme(theme_dir: Path, walls_root: Path) -> dict | None:
     return {
         "id": theme_id,
         "name": data.get("name") or theme_id,
+        "colorOnly": bool(data.get("colorOnly", False)),
         "description": data.get("description") or "",
         "tags": data.get("tags") or [],
         "darkMode": bool(data.get("darkMode", True)),
