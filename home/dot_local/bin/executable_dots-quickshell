@@ -328,15 +328,56 @@ preset_apply() {
     return 1
   fi
 
+  read_layout_fields() {
+    python3 - "$1" <<'PYEOF'
+import json, sys
+try:
+    config = json.load(open(sys.argv[1]))
+except (FileNotFoundError, json.JSONDecodeError):
+    config = {}
+bar = config.get("bar", {})
+print("|".join(str(bar.get(k, "")) for k in ("position", "style", "floatingMargin")))
+PYEOF
+  }
+
+  local before_layout after_layout
+  before_layout="$(read_layout_fields "$SHELL_CONFIG")"
+
   python3 "$PRESET_MERGER" "$SHELL_CONFIG" "$preset_file" "$CURRENT_PRESET_FILE" "$name" || {
     log_error "Failed to apply preset: ${name}"
     return 1
   }
 
+  after_layout="$(read_layout_fields "$SHELL_CONFIG")"
+
   log_info "Preset applied: ${display_name}"
 
   if is_running; then
-    log_info "Quickshell will reload automatically"
+    if [[ $after_layout != "$before_layout" ]]; then
+      # Layout-affecting changes need a full restart: Quickshell's surgical
+      # hot-reload keeps stale bar geometry when position/style change.
+      if qs ipc call lock isLocked 2>/dev/null | grep -q true; then
+        log_warn "Session locked: run 'dots-quickshell restart' after unlocking"
+      else
+        log_info "Layout changed — restarting Quickshell for clean geometry"
+        cmd_restart
+      fi
+    else
+      log_info "Quickshell will reload automatically"
+    fi
+  fi
+
+  if is_running; then
+    if [[ $after_layout != "$before_layout" ]]; then
+      if qs ipc call lock isLocked 2>/dev/null | grep -q true; then
+        log_warn "Session is locked: layout change needs a manual restart (dots-quickshell restart)"
+      else
+        log_info "Layout changed — restarting Quickshell for clean geometry"
+        cmd_restart
+      fi
+    else
+      log_info "Quickshell will reload automatically"
+    fi
   fi
 }
 

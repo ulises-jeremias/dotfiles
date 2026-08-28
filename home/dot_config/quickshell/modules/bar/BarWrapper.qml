@@ -23,9 +23,9 @@ Item {
     readonly property int frameInset: frameVisible ? Config.border.thickness : 0
     readonly property int padding: Math.max(Appearance.padding.smaller, Config.border.thickness)
     // Size of the bar across its screen edge (including the float gap when floating)
-    readonly property int thickness: Config.bar.sizes.innerWidth + padding * 2 + (floating ? Config.bar.floatingMargin : 0)
+    readonly property int thickness: Config.bar.sizes.innerWidth + padding * 2
     readonly property int contentWidth: thickness // kept for external references
-    readonly property int exclusiveZone: reserves && !disabled && (Config.bar.persistent || visibilities.bar) ? thickness : frameInset
+    readonly property int exclusiveZone: reserves && !disabled && (Config.bar.persistent || visibilities.bar) ? thickness + (floating ? Config.bar.floatingMargin : 0) : frameInset
     readonly property bool shouldBeVisible: !disabled && (Config.bar.persistent || visibilities.bar || isHovered)
     property bool isHovered
 
