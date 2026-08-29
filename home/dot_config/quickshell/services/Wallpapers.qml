@@ -116,7 +116,6 @@ Searcher {
 
         recursive: true
         path: Paths.wallsdir
-        filter: FileSystemModel.Images
     }
 
     Component.onCompleted: Qt.callLater(() => reloadWallpaperPath())
