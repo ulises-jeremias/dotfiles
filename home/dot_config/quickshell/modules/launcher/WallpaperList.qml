@@ -50,7 +50,16 @@ PathView {
 
         readonly property string search: root.search.text.split(" ").slice(1).join(" ")
 
-        values: Wallpapers.query(search)
+        values: {
+            const results = Wallpapers.query(search);
+            const filter = Wallpapers.colorFilter;
+            if (!filter)
+                return results;
+            return results.filter(w => {
+                const name = (w.name || w.relativePath || "").toLowerCase();
+                return name.includes(filter);
+            });
+        }
         onValuesChanged: root.currentIndex = search ? 0 : values.findIndex(w => w.path === Wallpapers.actualCurrent)
     }
 

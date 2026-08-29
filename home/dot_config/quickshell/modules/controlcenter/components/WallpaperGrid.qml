@@ -25,11 +25,19 @@ Item {
     readonly property string scopeBasePath: wallpaperScopeDir ? `${Paths.pictures}/Wallpapers/${wallpaperScopeDir}` : ""
     readonly property string scopeDataPath: wallpaperScopeDir ? `${Paths.data}/wallpapers/${wallpaperScopeDir}` : ""
     readonly property var displayModel: {
+        let entries = Wallpapers.list;
+        const filter = Wallpapers.colorFilter;
+        if (filter) {
+            entries = entries.filter(entry => {
+                const name = (entry?.name || entry?.relativePath || "").toLowerCase();
+                return name.includes(filter);
+            });
+        }
         if (showAllWallpapers || !wallpaperScopeDir)
-            return Wallpapers.list;
+            return entries;
         const pics = scopeBasePath;
         const data = scopeDataPath;
-        return Wallpapers.list.filter(entry => {
+        return entries.filter(entry => {
             const p = entry?.path ?? "";
             return p.startsWith(`${pics}/`) || p === pics || p.startsWith(`${data}/`) || p === data
                 || p.includes(`/Wallpapers/${wallpaperScopeDir}/`)
