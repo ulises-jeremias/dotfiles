@@ -7,9 +7,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 PYTHONDONTWRITEBYTECODE=1 python3 - \
-  "${ROOT}/home/dot_local/lib/dots/apply-shell-preset.py" \
-  "${ROOT}/home/dot_local/share/dots/shell-presets" \
-  "${ROOT}/home/dot_config/quickshell/config/Config.qml" <<'PY'
+	"${ROOT}/home/dot_local/lib/dots/apply-shell-preset.py" \
+	"${ROOT}/home/dot_local/share/dots/shell-presets" \
+	"${ROOT}/home/dot_config/quickshell/config/Config.qml" << 'PY'
 import importlib.util
 import json
 import math
