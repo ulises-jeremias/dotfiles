@@ -8,16 +8,26 @@ JsonObject {
     property string position: "left" // left | right | top | bottom
     property string style: "attached" // attached | floating | dock
     property int floatingMargin: 8
-    // Optional per-screen overrides: { "MONITOR-NAME": { position, style } }
-    property var perScreen: ({})
+    // Optional per-screen overrides: [{ screen: "MONITOR-NAME", position: "...", style: "..." }]
+    property list<var> perScreen: []
+
+    function getOverride(screenName: string): var {
+        if (!perScreen || !Array.isArray(perScreen))
+            return null;
+        for (let i = 0; i < perScreen.length; i++) {
+            if (perScreen[i] && perScreen[i].screen === screenName)
+                return perScreen[i];
+        }
+        return null;
+    }
 
     function positionFor(screenName: string): string {
-        const override = perScreen[screenName];
+        const override = getOverride(screenName);
         return (override && override.position) ? override.position : position;
     }
 
     function styleFor(screenName: string): string {
-        const override = perScreen[screenName];
+        const override = getOverride(screenName);
         return (override && override.style) ? override.style : style;
     }
 

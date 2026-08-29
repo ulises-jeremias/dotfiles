@@ -42,10 +42,11 @@ jobs:
         run: ./scripts/validate-dots-scripts.sh
 
       - name: Smoke test chezmoi templates
+        shell: bash
         run: |
           curl -fsLS get.chezmoi.io | sh -s -- -b "${HOME}/.local/bin"
           export PATH="${HOME}/.local/bin:${PATH}"
-          chezmoi init
+          chezmoi init --source=.
           fail=0
           while IFS= read -r -d "" tmpl; do
             if ! chezmoi execute-template --source=. < "$tmpl" > /dev/null; then

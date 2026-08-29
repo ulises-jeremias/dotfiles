@@ -12,7 +12,7 @@ Quickshell is the unified desktop shell for HorneroConfig, built with QML/QtQuic
 Quickshell provides all desktop shell functionality through modular QML components:
 
 | Module            | Description                                                          |
-| ----------------- | -------------------------------------------------------------------- |
+|-------------------|----------------------------------------------------------------------|
 | **Left Rail Bar** | Vertical/horizontal rail with workspaces, clock, status icons, power |
 | **Launcher**      | App search, calculator, wallpaper browser, appearance selector       |
 | **Dashboard**     | Tabbed system overview, media, performance, weather                  |
@@ -123,10 +123,12 @@ horizontal (top/bottom) bars — the classic reference bars use them.
 `bar.perScreen` overrides the global layout per monitor:
 
 ```json
-"perScreen": { "DP-1": { "position": "bottom", "style": "floating" } }
+"perScreen": [
+  { "screen": "DP-1", "position": "bottom", "style": "floating" }
+]
 ```
 
-Apply via `dots-quickshell config set bar.perScreen '{...}'`. Keys not
+Apply via `dots-quickshell config set bar.perScreen '[{"screen": "DP-1", "position": "bottom", "style": "floating"}]'`. Entries not
 present fall back to the global `bar.position` / `bar.style`.
 
 ### Visualizer
@@ -141,7 +143,7 @@ preset enables it permanently.
 Bar styles have distinct window-management contracts:
 
 | Style      | Surface            | Hyprland space reservation         | Default desktop frame |
-| ---------- | ------------------ | ---------------------------------- | --------------------- |
+|------------|--------------------|------------------------------------|-----------------------|
 | `attached` | Full screen edge   | Bar thickness                      | Preset-controlled     |
 | `floating` | Content-sized pill | None (overlay)                     | Disabled              |
 | `dock`     | Content-sized pill | Pill thickness and floating margin | Disabled              |
@@ -160,7 +162,7 @@ gaps.
 QML singletons providing system integration:
 
 | Service        | Purpose                                            |
-| -------------- | -------------------------------------------------- |
+|----------------|----------------------------------------------------|
 | `Colours`      | M3 theming, transparency, wallpaper luminance      |
 | `Hypr`         | Hyprland IPC (workspaces, monitors, keyboard)      |
 | `Audio`        | PipeWire audio, Cava visualization, beat detection |
@@ -224,7 +226,7 @@ Shell behavior is configured via `~/.config/hornero/shell.json`:
 ## ⌨️ Keybindings
 
 | Keybinding             | Action                    |
-| ---------------------- | ------------------------- |
+|------------------------|---------------------------|
 | `Super+D`              | Toggle launcher           |
 | `Super+X`              | Toggle session/power menu |
 | `Super+Ctrl+B`         | Toggle bar                |
