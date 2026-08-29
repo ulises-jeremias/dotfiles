@@ -42,6 +42,7 @@ jobs:
         run: ./scripts/validate-dots-scripts.sh
 
       - name: Smoke test chezmoi templates
+        shell: bash
         run: |
           curl -fsLS get.chezmoi.io | sh -s -- -b "${HOME}/.local/bin"
           export PATH="${HOME}/.local/bin:${PATH}"
