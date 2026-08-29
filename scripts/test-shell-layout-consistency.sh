@@ -6,7 +6,19 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-PYTHONDONTWRITEBYTECODE=1 python3 - \
+PYTHON_BIN=""
+if command -v python3 > /dev/null 2>&1; then
+	PYTHON_BIN="$(command -v python3)"
+elif command -v python > /dev/null 2>&1; then
+	PYTHON_BIN="$(command -v python)"
+fi
+
+if [[ -z $PYTHON_BIN ]]; then
+	echo "  SKIP  test-shell-layout-consistency.sh (python not available)"
+	exit 0
+fi
+
+PYTHONDONTWRITEBYTECODE=1 "$PYTHON_BIN" - \
 	"${ROOT}/home/dot_local/lib/dots/apply-shell-preset.py" \
 	"${ROOT}/home/dot_local/share/dots/shell-presets" \
 	"${ROOT}/home/dot_config/quickshell/config/Config.qml" << 'PY'
