@@ -123,10 +123,12 @@ horizontal (top/bottom) bars — the classic reference bars use them.
 `bar.perScreen` overrides the global layout per monitor:
 
 ```json
-"perScreen": { "DP-1": { "position": "bottom", "style": "floating" } }
+"perScreen": [
+  { "screen": "DP-1", "position": "bottom", "style": "floating" }
+]
 ```
 
-Apply via `dots-quickshell config set bar.perScreen '{...}'`. Keys not
+Apply via `dots-quickshell config set bar.perScreen '[{"screen": "DP-1", "position": "bottom", "style": "floating"}]'`. Entries not
 present fall back to the global `bar.position` / `bar.style`.
 
 ### Visualizer
