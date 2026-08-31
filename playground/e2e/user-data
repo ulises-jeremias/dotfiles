@@ -1,0 +1,20 @@
+#cloud-config
+users:
+  - name: hornero
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: false
+ssh_pwauth: false
+disable_root: true
+write_files:
+  - path: /home/hornero/.ssh/authorized_keys
+    content: |
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA1c1cgbIuanjXtXQQSdBgv97D3VpZTQve+Cx0t6VPiW dotfiles-e2e
+    owner: hornero:hornero
+    permissions: '0600'
+runcmd:
+  - chown -R hornero:hornero /home/hornero/.ssh
+  - chmod 700 /home/hornero/.ssh
+  - chmod 600 /home/hornero/.ssh/authorized_keys
+  - systemctl enable sshd
+  - systemctl restart sshd
