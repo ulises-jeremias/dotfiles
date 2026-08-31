@@ -79,6 +79,7 @@ e2e_session_ready() {
 e2e_hypr_env() {
 	echo 'export HYPRLAND_INSTANCE_SIGNATURE=$(ls -t $XDG_RUNTIME_DIR/hypr/ | grep -v ".lock" | head -1)
 export WAYLAND_DISPLAY=wayland-1
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export XDG_SESSION_TYPE=wayland
 export XDG_CURRENT_DESKTOP=Hyprland
 export QML_IMPORT_PATH=$HOME/.local/lib/quickshell/qml

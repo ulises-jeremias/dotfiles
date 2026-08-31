@@ -31,6 +31,19 @@ fi
 if e2e_ssh 'pgrep -x qs > /dev/null' > /dev/null 2>&1; then
 	echo "==> Quickshell already running"
 else
+	# shellcheck disable=SC2016  # remote script, no local expansion wanted
+	echo "==> waiting for the Wayland socket (Hyprland creates it after pgrep shows up)"
+	for _ in $(seq 1 30); do
+		# shellcheck disable=SC2016  # remote script, no local expansion wanted
+		e2e_ssh 'test -S $XDG_RUNTIME_DIR/wayland-1' > /dev/null 2>&1 && break
+		sleep 1
+	done
+	# shellcheck disable=SC2016  # remote script, no local expansion wanted
+	e2e_ssh 'test -S $XDG_RUNTIME_DIR/wayland-1' || {
+		echo "error: Wayland socket never appeared" >&2
+		exit 1
+	}
+
 	echo "==> starting Quickshell"
 	# The inner $(...) are evaluated by the guest shell, not locally.
 	e2e_ssh_bg "$(e2e_hypr_env)
