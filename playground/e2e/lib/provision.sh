@@ -41,6 +41,7 @@ PACMAN_PKGS='hyprland quickshell xdg-desktop-portal-hyprland \
 	grim slurp wf-recorder \
 	kitty qt6-svg qt6-multimedia qt6-declarative \
 	cmake ninja git \
+	networkmanager adwaita-icon-theme \
 	noto-fonts noto-fonts-emoji ttf-jetbrains-mono-nerd \
 	libqalculate aubio cava libcava'
 e2e_ssh "sudo pacman -Sy --noconfirm --needed --overwrite '/usr/lib/*' ${PACMAN_PKGS}"
