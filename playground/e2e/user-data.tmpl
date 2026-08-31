@@ -1,4 +1,6 @@
 #cloud-config
+# Template used by lib/run.sh. The placeholder __E2E_SSH_PUBKEY__ is replaced
+# with the ephemeral E2E SSH public key before building the seed ISO.
 users:
   - name: hornero
     sudo: ALL=(ALL) NOPASSWD:ALL
@@ -9,7 +11,7 @@ disable_root: true
 write_files:
   - path: /home/hornero/.ssh/authorized_keys
     content: |
-      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA1c1cgbIuanjXtXQQSdBgv97D3VpZTQve+Cx0t6VPiW dotfiles-e2e
+      __E2E_SSH_PUBKEY__
     owner: hornero:hornero
     permissions: '0600'
 runcmd:
