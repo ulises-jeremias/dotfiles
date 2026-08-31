@@ -19,17 +19,16 @@ Item {
 
     onSourceChanged: {
         if (!source) {
-            current = null;
-        } else {
-            Qt.callLater(() => {
-                if (!current && source) {
-                    if (Images.isVideo(source))
-                        current = videoComp.createObject(this, { path: source });
-                    else
-                        current = imgComp.createObject(this, { path: source });
-                }
-            });
+            if (current) {
+                current.destroy();
+                current = null;
+            }
+            return;
         }
+        if (Images.isVideo(source))
+            current = videoComp.createObject(this, { path: source });
+        else
+            current = imgComp.createObject(this, { path: source });
     }
 
     Component.onCompleted: {
