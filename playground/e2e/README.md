@@ -5,7 +5,7 @@ Real end-to-end testing for the Hornero dotfiles: boots an **Arch Linux VM**
 tree, starts **Hyprland + Quickshell**, and captures **screenshots and
 screen recordings** as artifacts.
 
-```
+```text
 Host (Arch, Docker + /dev/kvm)
 └── Docker container (dotfiles-e2e-qemu)          [non-root runner, kvm group]
     └── QEMU VM (Arch cloud image, virtio-vga)    [user: hornero]
@@ -71,7 +71,7 @@ Environment knobs: `E2E_FPS` (default `10`),
 
 Everything lands in `playground/e2e/artifacts/` (gitignored):
 
-```
+```text
 artifacts/
 ├── console.log                 # VM serial console (boot + cloud-init)
 ├── assertions.json             # machine-readable PASS/FAIL report

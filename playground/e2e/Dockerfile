@@ -23,8 +23,8 @@ RUN mkdir -p /workspace /vm /artifacts /ssh \
 
 WORKDIR /workspace
 
-USER runner
+USER 1000
 
 # The container is healthy while the QEMU process is alive.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
-	CMD pgrep -f qemu-system > /dev/null || exit 1
+	CMD ["pgrep", "-f", "qemu-system"]

@@ -33,6 +33,10 @@ DISABLE:
 DISABLE_LINTERS:
   - REPOSITORY_GITLEAKS
   - REPOSITORY_KICS
+  # DevSkim flags "Accessing localhost" (DS162092) as a hygiene finding.
+  # The E2E harness connects to localhost/127.0.0.1 by design (SSH port
+  # forward into the test VM), so every report is a false positive.
+  - REPOSITORY_DEVSKIM
   # osv-scanner scans dependency manifests (package.json, Cargo.toml, etc.).
   # This repo has none, so the scanner exits with "No package sources found"
   # and fails the run on every commit. Nothing for it to do here.
