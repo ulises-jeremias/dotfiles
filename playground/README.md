@@ -2,6 +2,11 @@
 
 This playground provides a development environment using Vagrant with Docker Compose, running on Arch Linux. It's designed to provide a consistent and isolated development environment.
 
+> **E2E desktop testing**: see [`e2e/README.md`](e2e/README.md) for the
+> QEMU/KVM harness that boots an Arch VM, applies the working tree, and
+> captures screenshots and screen recordings of the real Hyprland +
+> Quickshell session (`./e2e/scenarios/desktop-smoke.sh`).
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
