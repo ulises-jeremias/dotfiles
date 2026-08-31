@@ -1,1 +1,6 @@
 megalinter-reports/
+
+# E2E testing artifacts
+playground/e2e/cache/
+playground/e2e/ssh/
+playground/e2e/artifacts/

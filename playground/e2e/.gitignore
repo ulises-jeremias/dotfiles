@@ -1,0 +1,6 @@
+cache/
+ssh/
+artifacts/
+*.qcow2
+id_ed25519
+id_ed25519.pub
