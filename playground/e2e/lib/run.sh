@@ -90,6 +90,7 @@ docker run -d \
 	-device virtio-net-pci,netdev=net0 \
 	-display vnc=:0 \
 	-serial "file:/artifacts/console.log" \
+	-monitor "unix:/artifacts/monitor.sock,server,nowait" \
 	-usb -device qemu-xhci -device usb-tablet > /dev/null
 
 echo "==> VM started. VNC :0, SSH localhost:${E2E_SSH_PORT}, console: ${E2E_ARTIFACTS_DIR}/console.log"

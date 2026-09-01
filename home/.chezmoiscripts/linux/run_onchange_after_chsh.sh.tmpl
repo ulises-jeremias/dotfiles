@@ -3,5 +3,11 @@
 
 set -eufo pipefail
 
-chsh -s /usr/bin/zsh
+# Prefer root chsh: the plain form prompts for the user's PAM password,
+# which breaks non-interactive installs (SSH/TTY-less first setup).
+if [[ $(id -u) -eq 0 ]] || sudo -n true 2> /dev/null; then
+	sudo chsh -s /usr/bin/zsh "$USER"
+else
+	chsh -s /usr/bin/zsh
+fi
 {{- end -}}

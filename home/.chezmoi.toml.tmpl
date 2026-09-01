@@ -5,6 +5,10 @@
 {{- $ephemeral := false -}}{{/* true if this machine is ephemeral, e.g. a cloud or VM instance */}}
 {{- $headless := false -}}{{/* true if this machine does not have a screen and keyboard */}}
 {{- $personal := false -}}{{/* true if this machine should have personal secrets */}}
+{{- $e2e := false -}}{{/* true if this is the E2E test VM (full desktop, no secrets, no prompts) */}}
+{{- if env "DOTS_E2E" -}}
+{{-   $e2e = true -}}
+{{- end -}}
 {{- "" -}}
 
 {{- $osid := .chezmoi.os -}}
@@ -33,7 +37,12 @@
 {{-   $ephemeral = true -}}
 {{- end -}}
 
-{{- if not $ephemeral -}}
+{{- if $e2e -}}
+{{/* E2E VM: full desktop install like a real machine, but never personal
+     (LastPass/SSH secrets stay out) and never interactive. */}}
+{{-   $ephemeral = false -}}
+{{-   $headless = false -}}
+{{- else if not $ephemeral -}}
 {{-   if or (eq $hostname "hornero") (eq $hostname "colibri") -}}
 {{-     $personal = true -}}
 {{-     $docker = true -}}
@@ -65,6 +74,7 @@
 
 [data]
     docker = {{ $docker }}
+    e2e = {{ $e2e }}
     ephemeral = {{ $ephemeral }}
     headless = {{ $headless }}
     hostname = {{ $hostname | quote }}

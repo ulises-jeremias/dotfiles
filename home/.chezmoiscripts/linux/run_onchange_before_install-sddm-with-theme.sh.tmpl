@@ -8,7 +8,12 @@ set -euo pipefail
 sudo pacman -S --noconfirm --needed \
   sddm
 
-sudo systemctl enable --now sddm
+{{ if not .e2e }}sudo systemctl enable --now sddm
+{{ else }}# E2E: install the display manager but keep it disabled.
+# The E2E harness starts Hyprland manually over SSH; SDDM must not grab
+# the DRM device first.
+sudo systemctl disable sddm 2> /dev/null || true
+{{ end }}
 
 yay -S --noconfirm --needed \
   sddm-theme-aerial-git

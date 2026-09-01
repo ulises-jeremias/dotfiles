@@ -23,6 +23,17 @@ echo "🔧 Setting up Chaotic-AUR repository..."
 {{   $sudo = "" -}}
 {{ end -}}
 
+# Enable the multilib repository. A fresh Arch install ships with it
+# commented out, and lib32-* dependencies (e.g. Lutris/Wine) fail to
+# resolve without it.
+if ! grep -q "^\[multilib\]" /etc/pacman.conf 2> /dev/null; then
+  echo "Enabling the multilib repository..."
+  {{ $sudo }}sed -i \
+    '/^#\[multilib\]$/,/^#Include = \/etc\/pacman.d\/mirrorlist$/s/^#//' \
+    /etc/pacman.conf
+  {{ $sudo }}pacman -Sy
+fi
+
 # Check if Chaotic-AUR is already configured
 if grep -q "chaotic-aur" /etc/pacman.conf 2>/dev/null; then
   echo "✓ Chaotic-AUR already configured"

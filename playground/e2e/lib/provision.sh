@@ -35,7 +35,7 @@ if test -f /etc/pacman.d/chaotic-mirrorlist && ! grep -q "^\[chaotic-aur\]" /etc
 fi' > /dev/null
 
 echo "==> installing desktop stack (this takes a while on first boot)"
-PACMAN_PKGS='hyprland quickshell xdg-desktop-portal-hyprland \
+PACMAN_PKGS='hyprland xdg-desktop-portal-hyprland \
 	pipewire wireplumber pipewire-pulse \
 	seatd polkit-gnome \
 	grim slurp wf-recorder \

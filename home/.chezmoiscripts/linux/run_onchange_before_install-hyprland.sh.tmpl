@@ -73,7 +73,14 @@ yay -S --noconfirm --needed \
 # which runs after this install phase, and by autostart on every login.
 #
 # Force header rebuild to match the installed Hyprland version.
-hyprpm update -f
+# When there is no active Hyprland session (first install over SSH/TTY)
+# hyprpm cannot complete; the run_onchange_after script and the autostart
+# exec-once entry bootstrap the plugin at the next login.
+if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+	hyprpm update -f
+else
+	echo "No active Hyprland session, skipping hyprpm update (will bootstrap at login)"
+fi
 
 {{      end -}}
 
