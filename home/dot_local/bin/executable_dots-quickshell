@@ -104,9 +104,14 @@ cmd_start() {
   fi
 
   log_info "Starting Quickshell..."
+  # Icon theme resolution: without a Qt platform theme, QIcon::fromTheme
+  # misses most theme icons and tray/launcher icons render as broken
+  # checkerboard placeholders. The gtk3 platform theme reads the user's
+  # gtk icon theme (and its Inherits chain), matching GTK apps.
   env QML2_IMPORT_PATH="${QML2_IMPORT_PATH}" \
     QML_IMPORT_PATH="${QML_IMPORT_PATH}" \
     QS_PLUGIN_PATH="${QS_PLUGIN_PATH}" \
+    QT_QPA_PLATFORMTHEME="${QUICKSHELL_QT_PLATFORM_THEME:-gtk3}" \
     nohup "$QUICKSHELL_BIN" >/dev/null 2>&1 &
   sleep 1
 

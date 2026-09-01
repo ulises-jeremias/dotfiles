@@ -121,7 +121,10 @@ StackView {
                             sourceComponent: IconImage {
                                 implicitSize: label.implicitHeight
 
-                                source: item.modelData.icon
+                                // Menu entry icons are arbitrary app-provided
+                                // names; fall back instead of rendering a
+                                // broken placeholder when the theme lacks them.
+                                source: item.modelData.icon.includes("?fallback=") || item.modelData.icon.startsWith("file:") ? item.modelData.icon : `${item.modelData.icon}?fallback=image-missing`
                             }
                         }
 

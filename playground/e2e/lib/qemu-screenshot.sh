@@ -14,7 +14,8 @@ out="${1:-${E2E_ARTIFACTS_DIR}/screenshots/qemu-desktop.png}"
 mkdir -p "$(dirname "${out}")"
 
 MONITOR="${E2E_ARTIFACTS_DIR}/monitor.sock"
-PPM="/tmp/e2e-qemu-frame.ppm"
+# QEMU runs inside the container where artifacts is mounted at /artifacts.
+PPM="/artifacts/e2e-qemu-frame.ppm"
 
 [[ -S ${MONITOR} ]] || {
 	echo "error: QEMU monitor socket not found at ${MONITOR}" >&2

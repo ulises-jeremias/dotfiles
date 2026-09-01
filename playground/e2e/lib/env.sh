@@ -85,5 +85,6 @@ export XDG_CURRENT_DESKTOP=Hyprland
 export QML_IMPORT_PATH=$HOME/.local/lib/quickshell/qml
 export QML2_IMPORT_PATH=$HOME/.local/lib/quickshell/qml
 export QS_PLUGIN_PATH=$HOME/.local/lib/quickshell
-export XDG_CONFIG_HOME=$HOME/.config'
+export XDG_CONFIG_HOME=$HOME/.config
+export QT_QPA_PLATFORMTHEME=gtk3'
 }

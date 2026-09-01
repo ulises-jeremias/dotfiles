@@ -36,7 +36,7 @@ bash "${E2E_LIB_DIR}/start-session.sh" || fail "session start"
 echo "==> running assertions"
 KERNEL="$(e2e_ssh 'uname -r')" || fail "uname"
 e2e_ssh 'pgrep -x Hyprland > /dev/null' || fail "Hyprland running"
-e2e_ssh 'pgrep -x qs > /dev/null' || fail "Quickshell running"
+e2e_ssh 'pgrep -x qs > /dev/null 2>&1 || pgrep -x quickshell > /dev/null' || fail "Quickshell running"
 MONITOR="$(e2e_ssh "$(e2e_hypr_env)
 hyprctl -j monitors" | jq -r '.[0].name')" || fail "hyprctl monitors"
 RESERVED="$(e2e_ssh "$(e2e_hypr_env)

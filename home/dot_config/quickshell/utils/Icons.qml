@@ -216,6 +216,14 @@ Singleton {
             const [name, path] = icon.split("?path=");
             icon = Qt.resolvedUrl(`${path}/${name.slice(name.lastIndexOf("/") + 1)}`);
         }
-        return icon;
+
+        // StatusNotifier icon coverage varies wildly between themes; an
+        // unresolvable name renders as a broken checkerboard placeholder.
+        // Give IconImage an explicit fallback so it always paints something.
+        if (!icon || icon === "")
+            return "";
+        if (icon.startsWith("file:"))
+            return icon;
+        return icon.includes("?fallback=") ? icon : `${icon}?fallback=image-missing`;
     }
 }

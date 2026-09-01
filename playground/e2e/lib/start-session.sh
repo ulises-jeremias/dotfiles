@@ -28,7 +28,7 @@ if ! e2e_session_ready; then
 	exit 1
 fi
 
-if e2e_ssh 'pgrep -x qs > /dev/null' > /dev/null 2>&1; then
+if e2e_ssh 'pgrep -x qs > /dev/null 2>&1 || pgrep -x quickshell > /dev/null' > /dev/null 2>&1; then
 	echo "==> Quickshell already running"
 else
 	# shellcheck disable=SC2016  # remote script, no local expansion wanted
@@ -45,13 +45,13 @@ else
 	}
 
 	echo "==> starting Quickshell"
-	# The inner $(...) are evaluated by the guest shell, not locally.
+	# Use the user's launcher (sets QML paths + QT platform theme itself).
 	e2e_ssh_bg "$(e2e_hypr_env)
-nohup qs > /tmp/qs.log 2>&1 < /dev/null & disown"
-	sleep 12
+nohup $HOME/.local/bin/dots-quickshell start > /tmp/dots-quickshell.log 2>&1 < /dev/null & disown"
+	sleep 10
 fi
 
-if e2e_ssh 'pgrep -x qs > /dev/null' > /dev/null 2>&1; then
+if e2e_ssh 'pgrep -x qs > /dev/null 2>&1 || pgrep -x quickshell > /dev/null' > /dev/null 2>&1; then
 	echo "==> session is up (Hyprland + Quickshell)"
 else
 	echo "error: Quickshell did not start. Check /tmp/qs.log inside the VM." >&2
