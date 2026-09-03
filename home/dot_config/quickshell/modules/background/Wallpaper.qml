@@ -27,6 +27,8 @@ Item {
         }
         if (Images.isVideo(source))
             current = videoComp.createObject(this, { path: source });
+        else if (Images.isAnimatedImage(source))
+            current = animatedImgComp.createObject(this, { path: source });
         else
             current = imgComp.createObject(this, { path: source });
     }
@@ -38,6 +40,8 @@ Item {
                 if (!current && source) {
                     if (Images.isVideo(source))
                         current = videoComp.createObject(this, { path: source });
+                    else if (Images.isAnimatedImage(source))
+                        current = animatedImgComp.createObject(this, { path: source });
                     else
                         current = imgComp.createObject(this, { path: source });
                 }
@@ -230,6 +234,46 @@ Item {
                     player.stop();
                     player.source = "";
                     vidRoot.destroy();
+                }
+            }
+        }
+    }
+
+    // ── Animated image wallpaper (gif/apng) ─────────────────────────────
+    // A plain Image plays animated formats natively; CachingImage would
+    // pin a single cached frame and lose the animation.
+    Component {
+        id: animatedImgComp
+
+        Image {
+            id: animImg
+
+            property bool isReady: status === Image.Ready
+
+            anchors.fill: parent
+            asynchronous: true
+            fillMode: Image.PreserveAspectCrop
+            opacity: 0
+
+            onStatusChanged: {
+                if (status === Image.Ready)
+                    fadeInAnimImg.start();
+            }
+
+            Anim on opacity {
+                id: fadeInAnimImg
+
+                running: false
+                from: 0
+                to: 1
+            }
+
+            Timer {
+                running: root.current !== animImg && root.current?.isReady
+                interval: fadeInAnimImg.duration || 500
+                onTriggered: {
+                    animImg.source = "";
+                    animImg.destroy();
                 }
             }
         }
