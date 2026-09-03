@@ -240,19 +240,22 @@ Item {
     }
 
     // ── Animated image wallpaper (gif/apng) ─────────────────────────────
-    // A plain Image plays animated formats natively; CachingImage would
-    // pin a single cached frame and lose the animation.
+    // AnimatedImage plays the frames via QMovie; CachingImage would pin a
+    // single cached frame and plain Image would only show the first one.
     Component {
         id: animatedImgComp
 
-        Image {
+        AnimatedImage {
             id: animImg
 
-            property bool isReady: status === Image.Ready
+            property string path
+            property bool isReady: status === Image.Ready && path !== ""
 
             anchors.fill: parent
             asynchronous: true
             fillMode: Image.PreserveAspectCrop
+            source: path ? path : ""
+            playing: true
             opacity: 0
 
             onStatusChanged: {
