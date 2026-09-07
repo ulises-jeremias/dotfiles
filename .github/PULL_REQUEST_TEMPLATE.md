@@ -1,33 +1,25 @@
-<!--
+## Summary
 
-Please title your PR as follows: `time: fix foo bar`.
-Always start with the thing you are fixing, then describe the fix.
-Don't use past tense (e.g. "fixed foo bar").
+Describe the change and the reason behind it.
 
-Explain what your PR does and why.
+Closes #ISSUE
 
-If you are adding a new function, please document it and add tests:
+## Type of change
 
-```
-// foo does foo and bar
-fn foo() {
+- [ ] Feature
+- [ ] Fix
+- [ ] Docs
+- [ ] Refactor
+- [ ] Chore
 
-// file_test.v
-fn test_foo() {
-    assert foo() == ...
-    ...
-}
-```
+## Validation
 
-If you are fixing a bug, please add a test that covers it.
+- [ ] `bash scripts/validate-dots-scripts.sh`
+- [ ] `bash scripts/test-appearance-consistency.sh`
+- [ ] `bash scripts/test-shell-layout-consistency.sh`
+- [ ] Relevant workflow(s) reviewed
+- [ ] Documentation updated when behavior changed
 
-Before submitting a PR, please:
-  - run the tests with `./bin/test`
+## Risks and rollout notes
 
-I try to process PRs as soon as possible. They should be handled within 24 hours.
-
-Applying labels to PRs is not needed.
-
-Thanks a lot for your contribution!
-
-->
+Describe potential impact and mitigation if needed.
