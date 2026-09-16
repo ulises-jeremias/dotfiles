@@ -14,6 +14,26 @@
 ## Print the resolved absolute path to the current wallpaper (same rules as wallpaper-resolver).
 set -euo pipefail
 
+# horneroctl delegation (HORNEROCTL_BIN override, default horneroctl on
+# PATH): prefer `horneroctl wallpaper current` when the subcommand exists.
+# No HORNEROCTL_DELEGATED skip is needed (horneroctl reads natively and
+# never calls back), but the guard is honored for symmetry.
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+  _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+  if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+    _horneroctl_help="$("$_horneroctl_bin" wallpaper --help 2>/dev/null || true)"
+    case "$_horneroctl_help" in
+    *"Usage: horneroctl wallpaper"*)
+      if [[ $# -gt 0 ]]; then
+        exec "$_horneroctl_bin" wallpaper current "$1"
+      fi
+      exec "$_horneroctl_bin" wallpaper current
+      ;;
+    esac
+  fi
+  unset _horneroctl_bin _horneroctl_help
+fi
+
 if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
   # shellcheck source=/dev/null
   source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
