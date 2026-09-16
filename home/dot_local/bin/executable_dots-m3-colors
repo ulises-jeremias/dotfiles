@@ -12,6 +12,23 @@
 
 set -euo pipefail
 
+# horneroctl delegation (HORNEROCTL_BIN override, default horneroctl on
+# PATH): prefer `horneroctl appearance colors m3` when the subcommand
+# exists. Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
+# call runs the legacy body below instead of calling back.
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+	_horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+	if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+		_horneroctl_help="$("$_horneroctl_bin" appearance colors --help 2>/dev/null || true)"
+		case "$_horneroctl_help" in
+		*"appearance colors m3"*)
+			exec "$_horneroctl_bin" appearance colors m3 --yes -- "$@"
+			;;
+		esac
+	fi
+	unset _horneroctl_bin _horneroctl_help
+fi
+
 SCRIPT="${HOME}/.local/lib/dots/generate-m3-colors.py"
 [[ -f $SCRIPT ]] || {
 	echo "dots-m3-colors: missing $SCRIPT" >&2

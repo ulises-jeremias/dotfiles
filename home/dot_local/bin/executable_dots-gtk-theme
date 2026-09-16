@@ -53,6 +53,49 @@
 
 set -euo pipefail
 
+# horneroctl delegation (HORNEROCTL_BIN override, default horneroctl on
+# PATH): prefer `horneroctl appearance sync|status` when the guarded
+# subcommands exist. Skipped under HORNEROCTL_DELEGATED so a
+# horneroctl-driven backend call runs the legacy body below instead of
+# calling back. Only the bare `current|status` reader and
+# `sync-color-scheme` (any verbosity flags) delegate; list, apply,
+# set-icons, color-scheme, detect, theme, auto, icons, and info stay legacy.
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+	_horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+	if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+		_horneroctl_help="$("$_horneroctl_bin" appearance --help 2>/dev/null || true)"
+		case "$_horneroctl_help" in
+		*"colors ..."*)
+			if [[ $# -eq 1 ]]; then
+				case "${1:-}" in
+				current | status)
+					exec "$_horneroctl_bin" appearance status
+					;;
+				esac
+			fi
+			_dots_gtk_verb=""
+			for _a in "$@"; do
+				case "$_a" in
+				-*) ;;
+				*)
+					if [[ -n $_dots_gtk_verb ]]; then
+						_dots_gtk_verb="many"
+					else
+						_dots_gtk_verb="$_a"
+					fi
+					;;
+				esac
+			done
+			if [[ $_dots_gtk_verb == sync-color-scheme ]]; then
+				exec "$_horneroctl_bin" appearance sync --yes
+			fi
+			unset _dots_gtk_verb _a
+			;;
+		esac
+	fi
+	unset _horneroctl_bin _horneroctl_help
+fi
+
 # Source EasyOptions for argument parsing
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
