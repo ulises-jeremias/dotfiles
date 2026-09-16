@@ -23,6 +23,13 @@
 ##   -s, --sound        Include desktop audio in the recording
 ##       --sr           Record a selected region with desktop audio (-r and -s combined)
 ##       --fps=FPS      Frames per second (default: 30)
+##
+## Delegation: start/stop/pause run via horneroctl capture record
+## (HORNEROCTL_BIN override, default horneroctl on PATH) when that
+## subcommand exists, else the legacy gpu-screen-recorder flow below.
+## Dots flags map 1:1 onto horneroctl flags (region, sound, sr, fps).
+## Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
+## call runs the legacy body instead of calling back.
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
@@ -159,6 +166,25 @@ do_pause() {
 # ── dispatch ──────────────────────────────────────────────────────────────────
 
 cmd="${arguments[0]:-}"
+
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+	_horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+	if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+		_horneroctl_help="$("$_horneroctl_bin" capture --help 2>/dev/null || true)"
+		case "$_horneroctl_help" in
+			*"Usage: horneroctl capture"*)
+				_horneroctl_args=()
+				[[ -n ${region:-} ]] && _horneroctl_args+=(--region)
+				[[ -n ${sound:-} ]] && _horneroctl_args+=(--sound)
+				[[ -n ${sr:-} ]] && _horneroctl_args+=(--sr)
+				[[ -n ${fps:-} ]] && _horneroctl_args+=(--fps "$fps")
+				case "$cmd" in
+					start|stop|pause) exec "$_horneroctl_bin" capture record "$cmd" "${_horneroctl_args[@]}" --yes ;;
+				esac
+				;;
+		esac
+	fi
+fi
 
 case "$cmd" in
 start)
