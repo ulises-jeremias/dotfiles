@@ -1,6 +1,7 @@
 pragma Singleton
 
 import Quickshell
+import qs.modules.welcome as WelcomeModule
 import QtQuick
 
 // Welcome controller: owns the top-level window lifecycle and the current
@@ -64,7 +65,7 @@ Singleton {
         return {
             open: root.opened,
             page: root.currentPage,
-            showOnLogin: State.showOnLogin
+            showOnLogin: WelcomeModule.State.showOnLogin
         };
     }
 }

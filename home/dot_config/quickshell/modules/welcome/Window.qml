@@ -3,6 +3,7 @@ import qs.components.controls
 import qs.services
 import qs.config
 import qs.modules.welcome
+import qs.modules.welcome as WelcomeModule
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
@@ -20,7 +21,13 @@ FloatingWindow {
     minimumSize.height: 600
 
     visible: true
-    onClosing: Welcome.close()
+    // FloatingWindow has no closing signal (that belongs to QML Window):
+    // sync state when the surface hides, following the FileDialog /
+    // WindowFactory onVisibleChanged pattern.
+    onVisibleChanged: {
+        if (!visible && Welcome.opened)
+            Welcome.close();
+    }
 
     Behavior on color {
         CAnim {}
@@ -123,7 +130,7 @@ FloatingWindow {
                     Layout.preferredHeight: 28
                     source: Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logo.svg`)
                     fillMode: Image.PreserveAspectFit
-                    accessible.name: qsTr("Hornero logo")
+                    Accessible.name: qsTr("Hornero logo")
                 }
 
                 StyledText {
@@ -246,7 +253,7 @@ FloatingWindow {
         // ── Footer ───────────────────────────────────────────────────
         StyledRect {
             Layout.fillWidth: true
-            Layout.preferredHeight: State.writeFailed ? 88 : 64
+            Layout.preferredHeight: WelcomeModule.State.writeFailed ? 88 : 64
             color: Colours.layer(Colours.palette.m3surfaceContainer, 1)
 
             RowLayout {
@@ -263,8 +270,8 @@ FloatingWindow {
                     id: loginSwitch
 
                     focusPolicy: Qt.TabFocus
-                    checked: State.showOnLogin
-                    onToggled: State.writeShowOnLogin(checked)
+                    checked: WelcomeModule.State.showOnLogin
+                    onToggled: WelcomeModule.State.writeShowOnLogin(checked)
                 }
 
                 StyledRect {
@@ -278,8 +285,8 @@ FloatingWindow {
                 }
 
                 StyledText {
-                    visible: State.writeFailed
-                    text: State.lastWriteError !== "" ? State.lastWriteError : qsTr("Preference kept for this session only")
+                    visible: WelcomeModule.State.writeFailed
+                    text: WelcomeModule.State.lastWriteError !== "" ? WelcomeModule.State.lastWriteError : qsTr("Preference kept for this session only")
                     color: Colours.palette.m3error
                     font.pointSize: Appearance.font.size.smaller
                     elide: Text.ElideRight

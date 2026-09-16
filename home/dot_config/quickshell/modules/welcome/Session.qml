@@ -1,6 +1,7 @@
 pragma Singleton
 
 import qs.modules.welcome
+import qs.modules.welcome as WelcomeModule
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -12,7 +13,7 @@ import QtQuick
 // (survives a Quickshell reload; the runtime dir is per-session by
 // definition). The marker is read via FileView; filesystem writes belong
 // to the single writer (`horneroctl welcome mark-seen --yes`, issued by
-// State.markSeen through noteAlreadySeen).
+// WelcomeModule.State.markSeen through noteAlreadySeen).
 Singleton {
     id: root
 
@@ -38,7 +39,7 @@ Singleton {
         return `${base}/hornero/welcome/seen-${root.sessionId}`;
     }
 
-    readonly property bool shouldAutoOpen: State.ready && root.markerKnown && State.showOnLogin && !root.markerExists && !root._noted
+    readonly property bool shouldAutoOpen: WelcomeModule.State.ready && root.markerKnown && WelcomeModule.State.showOnLogin && !root.markerExists && !root._noted
 
     // The runtime marker is shell-owned ephemeral plumbing (PATH_CONTRACT
     // row 13): `install -D` creates missing parents without a shell, and
@@ -51,7 +52,7 @@ Singleton {
         root._noted = true;
         markerWrite.command = ["install", "-D", "/dev/null", root.markerPath];
         markerWrite.running = true;
-        State.markSeen();
+        WelcomeModule.State.markSeen();
     }
 
     Process {
