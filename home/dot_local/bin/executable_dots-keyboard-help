@@ -18,10 +18,27 @@
 ##                             "Mouse", "Media", "Screenshots", "System",
 ##                             "Group" (substring match, case-insensitive)
 ##         --search=TERM       Search for specific keybinding
+##
+## Delegation: the readout runs via `horneroctl hardware keyboard keys`
+## when that subcommand exists (HORNEROCTL_BIN override, default
+## horneroctl on PATH), else the parser below. Filter flags map
+## one-to-one (DOTS_BYPASS_QUICKSHELL passes through untouched).
 
 set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl hardware keyboard keys` when that subcommand exists;
+# otherwise parse the keybindings file below. No cycle risk:
+# `hardware keyboard keys` never calls back into this script (its
+# quickshell branch asks dots-settings-gui, owned elsewhere).
+USE_HORNERO_KEYS=0
+if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hardware keyboard keys --help >/dev/null 2>&1; then
+  USE_HORNERO_KEYS=1
+fi
 
 readonly KEYBINDINGS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.conf.d/keybindings.conf"
 
@@ -95,6 +112,15 @@ show_help() {
 
 # Main function
 main() {
+  # The readout (including the quickshell branch and filter flags)
+  # delegates to horneroctl when available; otherwise parse locally.
+  if ((USE_HORNERO_KEYS)); then
+    HORNERO_KEYS_ARGS=()
+    [[ -n ${category:-} ]] && HORNERO_KEYS_ARGS+=(--category="$category")
+    [[ -n ${search:-} ]] && HORNERO_KEYS_ARGS+=(--search="$search")
+    exec "$HORNEROCTL_BIN" hardware keyboard keys "${HORNERO_KEYS_ARGS[@]}"
+  fi
+
   if [[ ! -f $KEYBINDINGS_FILE ]]; then
     echo "[ERROR] Keybindings configuration not found" >&2
     exit 1
