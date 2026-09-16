@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "hornero-dark",
+  "name": "Hornero Dark",
+  "description": "Flagship HorneroOS dark wallpaper with warm dark desktop",
+  "tags": [
+    "hornero",
+    "flagship",
+    "dark"
+  ],
+  "darkMode": true,
+  "schemeType": "tonal-spot",
+  "gtkTheme": "Orchis-Light-Compact",
+  "iconTheme": "Papirus",
+  "defaultWallpaper": "hornero-os-dark.png",
+  "wallpaperDir": "hornero",
+  "gtkPreferDark": true
+}

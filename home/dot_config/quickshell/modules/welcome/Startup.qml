@@ -13,8 +13,9 @@ QtObject {
     property bool _done: false
 
     // NOTE: Connections {} cannot be a child of QtObject (no default
-    // property), so signals are wired imperatively. Same lifetime as the
-    // singletons, no disconnect needed.
+    // property), so signals are wired imperatively. The welcome import is
+    // aliased because unqualified State collides with QtQuick.State.
+    // Same lifetime as the singletons, no disconnect needed.
     Component.onCompleted: {
         WelcomeModule.State.readyChanged.connect(root.evaluate);
         WelcomeModule.Session.markerKnownChanged.connect(root.evaluate);
