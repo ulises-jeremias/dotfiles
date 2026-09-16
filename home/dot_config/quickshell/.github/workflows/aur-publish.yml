@@ -1,0 +1,53 @@
+---
+# Continuous AUR publishing: on version tags (v*), stamp pkgver and the
+# git source tag from the release tag, then push the packaging PKGBUILD
+# via the shared publish action (it regenerates .SRCINFO itself).
+
+name: aur-publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  aur-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      # yamllint disable rule:line-length
+      - name: Checkout release tag
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        # yamllint enable rule:line-length
+        with:
+          fetch-depth: 0
+      - name: Stamp pkgver and source tag
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          ver="${tag#v}"
+          pkgbuild=packaging/PKGBUILD
+          repo_url="git+https://github.com/HorneroOS/shell.git"
+          # Exactly one mutation target each: fail loudly otherwise.
+          [ "$(grep -c '^pkgver=' "${pkgbuild}")" -eq 1 ]
+          [ "$(grep -Fc "${repo_url}" "${pkgbuild}")" -eq 1 ]
+          if grep -Fq '#tag=' "${pkgbuild}"; then
+            grep -Fq "${repo_url}#tag=${tag}" "${pkgbuild}" \
+              || { echo "STAMP-FAIL: already stamped with a different tag" >&2; exit 1; }
+            echo "stamp: already at ${tag}, skipping"
+          else
+            sed -i "s/^pkgver=.*/pkgver=${ver}/" "${pkgbuild}"
+            sed -i "s|${repo_url}|${repo_url}#tag=${tag}|" "${pkgbuild}"
+          fi
+          grep -E '^(pkgver|source)=' "${pkgbuild}"
+      - name: Publish AUR package
+        # yamllint disable rule:line-length
+        uses: ulises-jeremias/github-actions-aur-publish@507f0dba7755bdc2ad351232405bd7e4cd4a4a67  # v1
+        # yamllint enable rule:line-length
+        with:
+          pkgname: hornero-shell
+          pkgbuild: packaging/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Release ${{ github.ref_name }}

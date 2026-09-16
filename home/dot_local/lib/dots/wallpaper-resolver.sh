@@ -1,13 +1,32 @@
 # shellcheck shell=bash
 # Shared wallpaper resolution helpers for dots scripts.
 #
-# Canonical pointer (one line, absolute path), PERSISTENT across reboots:
-#   $DOTS_WALLPAPER_POINTER_FILE  (default: ~/.local/state/dots/wallpaper/path)
+# Path contract (HorneroOS/hornero docs/PATH_CONTRACT.md, row 9):
+# canonical $XDG_STATE_HOME/hornero/wallpaper/path first,
+# $XDG_STATE_HOME/dots/wallpaper/path fallback (reads only).
+# New writes go to hornero/*; the dots/* fallback is never written.
 # Must match Quickshell Paths.state + "/wallpaper/path".
 #
-# Priority: explicit path > canonical state pointer > wal link.
+# Priority: explicit path > canonical hornero pointer > dots fallback > wal link.
+HORNERO_STATE_DIR="${HORNERO_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/hornero}"
 DOTS_STATE_DIR="${DOTS_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dots}"
+HORNERO_WALLPAPER_POINTER_FILE="${HORNERO_WALLPAPER_POINTER_FILE:-$HORNERO_STATE_DIR/wallpaper/path}"
 DOTS_WALLPAPER_POINTER_FILE="${DOTS_WALLPAPER_POINTER_FILE:-$DOTS_STATE_DIR/wallpaper/path}"
+
+# Canonical-first read: explicit HORNERO_* override is already in the var;
+# otherwise prefer the hornero file when present, else the dots fallback.
+_dots_resolve_pointer_for_read() {
+	if [[ -f $HORNERO_WALLPAPER_POINTER_FILE ]]; then
+		printf '%s\n' "$HORNERO_WALLPAPER_POINTER_FILE"
+	else
+		printf '%s\n' "$DOTS_WALLPAPER_POINTER_FILE"
+	fi
+}
+
+# Canonical write target: always hornero/* (dots/* is read-only fallback).
+_dots_resolve_pointer_for_write() {
+	printf '%s\n' "$HORNERO_WALLPAPER_POINTER_FILE"
+}
 
 dots_strip_file_uri() {
 	local s="${1:-}"
@@ -96,6 +115,7 @@ dots_current_wallpaper() {
 	fi
 
 	local candidates=(
+		"$HORNERO_WALLPAPER_POINTER_FILE"
 		"$DOTS_WALLPAPER_POINTER_FILE"
 		"$HOME/.cache/wal/wal"
 	)

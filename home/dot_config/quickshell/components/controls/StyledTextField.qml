@@ -9,8 +9,10 @@ import QtQuick.Controls
 TextField {
     id: root
 
-    color: Colours.palette.m3onSurface
-    placeholderTextColor: Colours.palette.m3outline
+    color: root.enabled ? Colours.palette.m3onSurface : Qt.alpha(Colours.palette.m3onSurface, 0.38)
+    placeholderTextColor: root.enabled ? Colours.palette.m3outline : Qt.alpha(Colours.palette.m3outline, 0.38)
+    selectionColor: Colours.palette.m3primary
+    selectedTextColor: Colours.palette.m3onPrimary
     font.family: Appearance.font.family.sans
     font.pointSize: Appearance.font.size.smaller
     renderType: echoMode === TextField.Password ? TextField.QtRendering : TextField.NativeRendering

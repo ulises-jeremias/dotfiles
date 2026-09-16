@@ -16,6 +16,7 @@ Switch {
     indicator: StyledRect {
         radius: Appearance.rounding.full
         color: root.checked ? Colours.palette.m3primary : Colours.layer(Colours.palette.m3surfaceContainerHighest, root.cLayer)
+        opacity: root.enabled ? 1 : 0.5
 
         implicitWidth: implicitHeight * 1.7
         implicitHeight: Appearance.font.size.normal + Appearance.padding.smaller * 2

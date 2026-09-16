@@ -1,5 +1,6 @@
 #include "hyprextras.hpp"
 
+#include <QJsonDocument>
 #include <qdir.h>
 #include <qjsonarray.h>
 #include <qlocalsocket.h>

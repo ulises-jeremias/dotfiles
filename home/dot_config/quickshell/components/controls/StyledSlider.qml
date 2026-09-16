@@ -7,6 +7,8 @@ import QtQuick.Templates
 Slider {
     id: root
 
+    opacity: root.enabled ? 1 : 0.5
+
     background: Item {
         StyledRect {
             anchors.top: parent.top

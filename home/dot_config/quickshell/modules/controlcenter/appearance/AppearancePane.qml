@@ -13,6 +13,7 @@ import qs.services
 import qs.config
 import qs.utils
 import qs.modules.controlcenter
+import Hornero
 import Hornero.Models
 import Quickshell
 import Quickshell.Widgets
@@ -114,6 +115,12 @@ Item {
     property string previewGenWallpaper: ""
     property string previewGenMode: "dark"
     property string previewGenSchemeType: "tonal-spot"
+    // Native instant tone for the palette-generation input (issue #2, step
+    // (b)): dominant colour + luminance straight from the ImageAnalyser
+    // plugin. The full generated palette below still needs dots-m3-colors.
+    readonly property color previewNativeDominant: previewAnalyser.dominantColour
+    readonly property real previewNativeLuminance: previewAnalyser.luminance
+    readonly property bool previewNativeReady: previewAnalyser.luminance > 0
     property bool previewPaletteQueued: false
     property var previewPalette: ({})
     property var previewPaletteCache: ({})
@@ -616,6 +623,9 @@ Item {
         gtkColorSchemeDirty = false;
         // Seed live GTK/icon so section checkmarks reflect current state.
         // Do not overwrite a user-staged selection if a previous seed is still in flight.
+        // Native gsettings reads first (GtkSettings); the dots-gtk-theme
+        // queries below are compat fallbacks that yield when native wins.
+        GtkSettings.refreshLive();
         liveGtkProc.running = true;
         liveIconProc.running = true;
         liveGtkColorSchemeProc.running = true;
@@ -762,6 +772,16 @@ Item {
         }
     }
 
+    ImageAnalyser {
+        id: previewAnalyser
+
+        source: root.previewGenWallpaper
+    }
+
+    // TODO(hornero-compat): full M3 preview palettes need materialyoucolor
+    // via dots-m3-colors; native dominant/luminance comes from
+    // previewAnalyser above. Thin compat adapter; see
+    // docs/NATIVE-APPEARANCE.md.
     Process {
         id: previewPaletteProc
         command: [
@@ -983,6 +1003,8 @@ Item {
         rightContent: appearanceRightContentComponent
     }
 
+    // TODO(hornero-compat): dots-gtk-theme live-query compat fallback. Yields
+    // to the native GtkSettings reads; kept for hosts without gsettings.
     Process {
         id: liveGtkProc
         command: ["dots-gtk-theme", "-q", "-p", "current"]
@@ -991,6 +1013,9 @@ Item {
                 // Never clobber a staged GTK selection with a late live-seed result.
                 if (root.gtkDirty)
                     return;
+                // Native GtkSettings read wins when available.
+                if (GtkSettings.liveGtkTheme)
+                    return;
                 const name = text.trim();
                 if (name && name !== "Unknown")
                     root.pendingGtkTheme = name;
@@ -998,12 +1023,15 @@ Item {
         }
     }
 
+    // TODO(hornero-compat): dots-gtk-theme live-query compat fallback; see above.
     Process {
         id: liveIconProc
         command: ["dots-gtk-theme", "-q", "-p", "current-icon"]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (root.iconDirty)
+                    return;
+                if (GtkSettings.liveIconTheme)
                     return;
                 const name = text.trim();
                 if (name && name !== "Unknown")
@@ -1012,6 +1040,7 @@ Item {
         }
     }
 
+    // TODO(hornero-compat): dots-gtk-theme live-query compat fallback; see above.
     Process {
         id: liveGtkColorSchemeProc
         command: ["dots-gtk-theme", "-q", "-p", "current-color-scheme"]
@@ -1019,10 +1048,33 @@ Item {
             onStreamFinished: {
                 if (root.gtkColorSchemeDirty)
                     return;
+                if (GtkSettings.liveColorScheme)
+                    return;
                 const policy = root.normalizeGtkColorScheme(text.trim());
                 if (policy)
                     root.pendingGtkColorScheme = policy;
             }
+        }
+    }
+
+    // Native live seeds (issue #2, step (c)): gsettings reads via
+    // GtkSettings populate pending selections unless the user staged one.
+    Connections {
+        target: GtkSettings
+
+        function onLiveGtkThemeChanged(): void {
+            if (!root.gtkDirty && GtkSettings.liveGtkTheme)
+                root.pendingGtkTheme = GtkSettings.liveGtkTheme;
+        }
+
+        function onLiveIconThemeChanged(): void {
+            if (!root.iconDirty && GtkSettings.liveIconTheme)
+                root.pendingIconTheme = GtkSettings.liveIconTheme;
+        }
+
+        function onLiveColorSchemeChanged(): void {
+            if (!root.gtkColorSchemeDirty && GtkSettings.liveColorScheme)
+                root.pendingGtkColorScheme = GtkSettings.liveColorScheme;
         }
     }
 

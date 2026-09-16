@@ -12,6 +12,8 @@ import QtQuick.Layouts
 // Hosts: layoutpicker modal (drawers), controlcenter pane, dashboard tab.
 // Data comes from `dots-quickshell preset list --json`; applying a preset
 // deep-merges into shell.json and live-reloads (no shell restart needed).
+// TODO(hornero-compat): dots-quickshell is an external runtime CLI with a
+// vendored fallback dataset in presets/; see docs/COMPAT.md (A, C).
 Item {
     id: root
 
@@ -198,7 +200,8 @@ Item {
     StyledText {
         anchors.centerIn: parent
         visible: root.count === 0
-        text: qsTr("No presets found — check ~/.local/share/dots/shell-presets")
+        // Path contract row 2: canonical hornero/* first, legacy dots/* fallback.
+        text: qsTr("No presets found — check ~/.local/share/hornero/shell-presets")
         color: Colours.palette.m3onSurfaceVariant
     }
 

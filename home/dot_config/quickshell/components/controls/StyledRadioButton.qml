@@ -8,6 +8,7 @@ RadioButton {
     id: root
 
     font.pointSize: Appearance.font.size.smaller
+    opacity: root.enabled ? 1 : 0.5
 
     implicitWidth: implicitIndicatorWidth + implicitContentWidth + contentItem.anchors.leftMargin
     implicitHeight: Math.max(implicitIndicatorHeight, implicitContentHeight)

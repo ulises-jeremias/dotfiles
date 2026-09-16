@@ -125,6 +125,7 @@ Singleton {
 
     function serializeAppearance(): var {
         return {
+            theme: appearance.theme,
             rounding: {
                 scale: appearance.rounding.scale
             },
@@ -491,6 +492,9 @@ Singleton {
         };
     }
 
+    // Runtime path contract row 6: shell.json is already canonical
+    // ($XDG_CONFIG_HOME/hornero/shell.json) with no dots/* fallback. A
+    // missing user file means compiled defaults apply (see onLoadFailed).
     FileView {
         id: fileView
 

@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+## Provenance: COPY (never moved) from ulises-jeremias/dotfiles@b26db04
+## home/dot_local/bin/executable_dots-night-mode via read-only reference clone.
+## Local changes vs upstream: `executable_` chezmoi deploy prefix stripped;
+## state file honors ${XDG_CACHE_HOME:-$HOME/.cache} instead of hardcoded $HOME/.cache.
 
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
@@ -17,8 +21,24 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Simple state file for when detection is ambiguous
-NIGHT_MODE_STATE_FILE="$HOME/.cache/dots/night_mode_state"
+# Simple state file for when detection is ambiguous.
+#
+# Path contract (HorneroOS/hornero docs/PATH_CONTRACT.md): canonical
+# hornero/* first, dots/* fallback for reads; writes go to hornero/*.
+HORNERO_NIGHT_MODE_STATE_FILE="${HORNERO_NIGHT_MODE_STATE_FILE:-${XDG_CACHE_HOME:-$HOME/.cache}/hornero/night_mode_state}"
+NIGHT_MODE_STATE_FILE_FALLBACK="${NIGHT_MODE_STATE_FILE:-${XDG_CACHE_HOME:-$HOME/.cache}/dots/night_mode_state}"
+# Write target is always canonical.
+NIGHT_MODE_STATE_FILE="$HORNERO_NIGHT_MODE_STATE_FILE"
+
+# Canonical-first read: prefer the hornero file when present, else the
+# dots fallback (read-only; never written).
+night_mode_state_file_for_read() {
+  if [[ -f $HORNERO_NIGHT_MODE_STATE_FILE ]]; then
+    printf '%s\n' "$HORNERO_NIGHT_MODE_STATE_FILE"
+  else
+    printf '%s\n' "$NIGHT_MODE_STATE_FILE_FALLBACK"
+  fi
+}
 
 # Ensure cache directory exists
 mkdir -p "$(dirname "$NIGHT_MODE_STATE_FILE")"
@@ -42,9 +62,11 @@ is_night_mode_active() {
   if pgrep -f "redshift.*-l" >/dev/null 2>&1 || pgrep -f "gammastep.*-l" >/dev/null 2>&1; then
     # These are daemon modes - check if they're currently in night mode
     # For now, we'll assume they're in day mode unless we have evidence otherwise
-    if [[ -f $NIGHT_MODE_STATE_FILE ]]; then
+    local _nm_state_file
+    _nm_state_file="$(night_mode_state_file_for_read)"
+    if [[ -f $_nm_state_file ]]; then
       local state
-      state=$(cat "$NIGHT_MODE_STATE_FILE" 2>/dev/null)
+      state=$(cat "$_nm_state_file" 2>/dev/null)
       [[ $state == "enabled" ]] && return 0
     fi
     return 1
@@ -69,9 +91,11 @@ is_night_mode_active() {
   fi
 
   # Fallback to state file
-  if [[ -f $NIGHT_MODE_STATE_FILE ]]; then
+  local _nm_state_file
+  _nm_state_file="$(night_mode_state_file_for_read)"
+  if [[ -f $_nm_state_file ]]; then
     local state
-    state=$(cat "$NIGHT_MODE_STATE_FILE" 2>/dev/null)
+    state=$(cat "$_nm_state_file" 2>/dev/null)
     [[ $state == "enabled" ]] && return 0
   fi
 
@@ -346,9 +370,11 @@ show_current_status() {
   fi
 
   # Show state file info
-  if [[ -f $NIGHT_MODE_STATE_FILE ]]; then
+  local _nm_state_file
+  _nm_state_file="$(night_mode_state_file_for_read)"
+  if [[ -f $_nm_state_file ]]; then
     local state_content
-    state_content=$(cat "$NIGHT_MODE_STATE_FILE" 2>/dev/null || echo "unknown")
+    state_content=$(cat "$_nm_state_file" 2>/dev/null || echo "unknown")
     echo "State file: ${state_content}"
   else
     echo "State file: not found"

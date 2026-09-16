@@ -11,9 +11,6 @@ import QtQuick
 Searcher {
     id: root
 
-    readonly property string themesDir: `${Quickshell.env("HOME")}/.local/share/dots/themes`
-    readonly property string loaderScript: `${Quickshell.env("HOME")}/.local/lib/dots/list-themes.py`
-
     function transformSearch(search: string): string {
         const prefix = Config.launcher.actionPrefix;
         for (const cmd of ["theme", "appearance"]) {
@@ -33,6 +30,32 @@ Searcher {
 
     function reload(): void {
         loadProc.running = true;
+    }
+
+    // First-class built-in themes (P2 appearance tokens): always listed
+    // first, even when the dots-owned registry is absent. Full palettes
+    // live in Colours; ThemePipeline applies these ids natively.
+    function _withBuiltIns(items: var): var {
+        const builtIns = [
+            {
+                "id": "hornero-dark",
+                "name": "Hornero Dark",
+                "description": "Default dark theme with rose accent",
+                "darkMode": true,
+                "schemeType": "tonal-spot",
+                "tags": ["hornero", "dark", "builtin"]
+            },
+            {
+                "id": "hornero-light",
+                "name": "Hornero Light",
+                "description": "Default light theme with rose accent",
+                "darkMode": false,
+                "schemeType": "tonal-spot",
+                "tags": ["hornero", "light", "builtin"]
+            }
+        ];
+        const rest = Array.isArray(items) ? items.filter(item => item && item.id !== "hornero-dark" && item.id !== "hornero-light") : [];
+        return builtIns.concat(rest);
     }
 
     function themeById(id: string): var {
@@ -57,20 +80,24 @@ Searcher {
         Theme {}
     }
 
+    // TODO(hornero-compat): theme listing stays on the dots-appearance compat
+    // adapter (theme-pack registry owned by dots tooling; THEMES_DIR resolved
+    // CLI-side via DOTS_THEMES_DIR, empty-model fallback when absent).
+    // See docs/COMPAT.md (disposition A) and docs/GTK-PACK-OWNERSHIP.md.
     Process {
         id: loadProc
 
         running: true
-        command: ["python3", root.loaderScript, root.themesDir]
+        command: ["dots-appearance", "theme", "list"]
 
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
                     const parsed = JSON.parse(text);
-                    themes.model = Array.isArray(parsed) ? parsed : [];
+                    themes.model = root._withBuiltIns(parsed);
                 } catch (e) {
                     console.warn("Themes.qml: failed to parse theme list:", e);
-                    themes.model = [];
+                    themes.model = root._withBuiltIns([]);
                 }
             }
         }

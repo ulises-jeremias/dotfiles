@@ -4,6 +4,7 @@
 #include <QtDBus/qdbuserror.h>
 #include <QtDBus/qdbusinterface.h>
 #include <QtDBus/qdbusreply.h>
+#include <QtDBus/qdbusextratypes.h>
 
 namespace hornero::internal {
 

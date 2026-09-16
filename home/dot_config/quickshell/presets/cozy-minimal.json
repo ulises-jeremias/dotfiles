@@ -1,0 +1,70 @@
+{
+  "_name": "Cozy Minimal",
+  "_description": "Soft floating top bar — rounded, gentle, distraction-free",
+  "_icon": "🌸",
+  "_iconMaterial": "weekend",
+  "bar": {
+    "position": "top",
+    "style": "floating",
+    "floatingMargin": 14,
+    "persistent": true,
+    "showOnHover": true,
+    "entries": [
+      {
+        "id": "workspaces",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "clock",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "statusIcons",
+        "enabled": true
+      },
+      {
+        "id": "power",
+        "enabled": true
+      }
+    ],
+    "sizes": {
+      "innerWidth": 40
+    },
+    "status": {
+      "showNetwork": true,
+      "showBattery": true
+    },
+    "scrollActions": {
+      "workspaces": true,
+      "volume": true,
+      "brightness": false
+    }
+  },
+  "border": {
+    "frameEnabled": false
+  },
+  "appearance": {
+    "rounding": {
+      "scale": 1.4
+    },
+    "padding": {
+      "scale": 1.1
+    },
+    "spacing": {
+      "scale": 1.1
+    },
+    "transparency": {
+      "enabled": true,
+      "base": 0.9,
+      "layers": 0.4
+    }
+  }
+}

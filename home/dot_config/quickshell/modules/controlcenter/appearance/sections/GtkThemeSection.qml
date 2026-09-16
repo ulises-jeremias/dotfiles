@@ -29,6 +29,10 @@ CollapsibleSection {
 
     Component.onCompleted: reloadThemes()
 
+    // TODO(hornero-compat): theme listing stays on the dots-gtk-theme compat
+    // adapter. A native directory scan is not yet deterministic (index.theme
+    // parsing plus de-dup across /usr/share/themes, ~/.local/share/themes,
+    // ~/.themes); see docs/NATIVE-APPEARANCE.md.
     Process {
         id: listProc
 

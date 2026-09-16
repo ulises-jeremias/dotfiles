@@ -9,13 +9,26 @@ import QtQuick
 Singleton {
     id: root
 
+    // Runtime path contract rows 1/11: canonical hornero/* first, legacy
+    // dots/* fallback (reads only). Writes (schemeJson output, wallpaper
+    // pointer) always target the canonical location.
     readonly property string themesDir: `${Paths.data}/themes`
+    readonly property string themesDirFallback: `${Paths.dataFallback}/themes`
     readonly property string wallpapersDir: `${Paths.data}/wallpapers`
+    readonly property string wallpapersDirFallback: `${Paths.dataFallback}/wallpapers`
     readonly property string picturesWallpapers: `${Paths.pictures}/Wallpapers`
     readonly property string wallpaperPointer: Paths.wallpaperPointer
     // Prefer dots-m3-colors so pyenv shims do not hide Arch python-materialyoucolor.
+    // GTK application is native-first via GtkSettings (gsettings); the
+    // dots-gtk-theme compat fallback lives there. Remaining dots-* calls
+    // below are thin compat adapters for tooling this repo does not own yet.
+    // TODO(hornero-compat): dots-m3-colors / dots-color-scheme remain
+    // external runtime CLIs; see docs/COMPAT.md (disposition A) and
+    // docs/NATIVE-APPEARANCE.md.
     readonly property string m3Bin: `${Quickshell.env("HOME")}/.local/bin/dots-m3-colors`
+    // Contract row 4: canonical scheme.json (written by m3Proc below).
     readonly property string schemeJson: `${Paths.cache}/smart-colors/scheme.json`
+    readonly property string schemeJsonFallback: `${Paths.cacheFallback}/smart-colors/scheme.json`
 
     readonly property bool busy: _busy || _queue.length > 0
     property bool _busy: false
@@ -36,6 +49,8 @@ Singleton {
     property string _lastError: ""
     readonly property string lastError: _lastError
     property bool _startupRestored: false
+    // True while a GTK apply is delegated to the native GtkSettings layer.
+    property bool _awaitingGtk: false
 
     signal applyFinished(bool ok)
 
@@ -177,8 +192,13 @@ Singleton {
         if (job.kind === "theme") {
             _runThemeSideEffects = true;
             _pendingThemeId = job.themeId || "";
+            if (Colours.isBuiltInTheme(job.themeId || "")) {
+                root._applyBuiltInTheme(job.themeId, job.wallpaper || "");
+                return;
+            }
             themeLoader.themeId = job.themeId;
             themeLoader.wallpaperOverride = job.wallpaper || "";
+            themeLoader.fallbackRunning = false;
             themeLoader.running = true;
         } else if (job.kind === "wallpaper") {
             _pendingWallpaper = job.wallpaper;
@@ -191,17 +211,47 @@ Singleton {
             _pendingDarkMode = !Colours.currentLight;
             walReloadProc.running = true;
         } else if (job.kind === "gtk") {
-            gtkStandaloneProc.themeName = job.gtkTheme || "";
-            gtkStandaloneProc.running = true;
+            _awaitingGtk = true;
+            GtkSettings.applyGtkTheme(job.gtkTheme || "");
         } else if (job.kind === "gtk-color-scheme") {
-            gtkColorSchemeProc.policy = job.gtkColorScheme || "follow";
-            gtkColorSchemeProc.running = true;
+            _awaitingGtk = true;
+            GtkSettings.applyColorScheme(job.gtkColorScheme || "follow", !Colours.currentLight);
         } else if (job.kind === "icons") {
-            iconOnlyProc.themeName = job.iconTheme || "";
-            iconOnlyProc.running = true;
+            _awaitingGtk = true;
+            GtkSettings.applyIconTheme(job.iconTheme || "");
         } else {
             _finishJob(false, "unknown job kind");
         }
+    }
+
+    // First-class built-in themes (hornero-dark / hornero-light): the full
+    // semantic palette lives in Colours, so apply needs no wallpaper, wal,
+    // or dots-m3-colors round-trip — correct switching with no light/dark
+    // leakage. GTK follows natively (empty themeId keeps GtkSettings off
+    // the dots-owned registry path); only the color-scheme policy applies.
+    // dots-owned extras (snappy switcher packs) are skipped for built-ins.
+    function _applyBuiltInTheme(id: string, wallpaper: string): void {
+        const darkMode = id !== "hornero-light";
+        Colours.applyBuiltInTheme(id);
+        _pendingThemeName = darkMode ? "Hornero Dark" : "Hornero Light";
+        _pendingSchemeType = "tonal-spot";
+        _pendingDarkMode = darkMode;
+        _pendingGtkTheme = "";
+        _pendingIconTheme = "";
+        _pendingGtkPreferDark = darkMode ? "true" : "false";
+        _pendingGtkColorScheme = darkMode ? "prefer-dark" : "prefer-light";
+        if (wallpaper) {
+            _pendingWallpaper = wallpaper;
+            writeWallpaperPointer.running = true;
+        }
+        hyprlockProc.running = true;
+        hyprReloadProc.running = true;
+        if (_pendingThemeName) {
+            notifyProc.themeName = _pendingThemeName;
+            notifyProc.running = true;
+        }
+        _awaitingGtk = true;
+        GtkSettings.applyFull("", "", "", _pendingGtkColorScheme, _pendingDarkMode);
     }
 
     function _finishJob(ok: bool, err: string): void {
@@ -226,6 +276,8 @@ Singleton {
         });
     }
 
+    // TODO(hornero-compat): dots-color-scheme owns scheme persistence; no
+    // native equivalent yet. Thin compat adapter; see docs/NATIVE-APPEARANCE.md.
     Process {
         id: ensureSchemeProc
         command: ["dots-color-scheme", "regenerate"]
@@ -240,8 +292,41 @@ Singleton {
         property string themeId: ""
         property string wallpaperOverride: ""
         property bool running: false
+        property bool fallbackRunning: false
         property string resolvedWallpaper: ""
         property var pendingConfig: ({})
+    }
+
+    // Shared theme.json handling for the canonical and fallback FileViews.
+    function _handleThemeText(rawText: string): void {
+        themeLoader.running = false;
+        themeLoader.fallbackRunning = false;
+
+        let cfg = {};
+        try {
+            cfg = JSON.parse(rawText);
+        } catch (e) {
+            root._finishJob(false, `invalid theme.json for ${themeLoader.themeId}`);
+            return;
+        }
+
+        themeLoader.pendingConfig = cfg;
+        root._pendingSchemeType = cfg.schemeType || "tonal-spot";
+        root._pendingDarkMode = cfg.darkMode !== undefined ? !!cfg.darkMode : true;
+        root._pendingGtkTheme = cfg.gtkTheme || "";
+        root._pendingIconTheme = cfg.iconTheme || "";
+        root._pendingThemeName = cfg.name || themeLoader.themeId;
+        root._pendingGtkPreferDark = root.resolveGtkPreferDark(cfg, root._pendingDarkMode);
+        root._pendingGtkColorScheme = root.resolveGtkColorScheme(cfg, root._pendingDarkMode);
+
+        const wp = themeLoader.wallpaperOverride;
+        if (wp) {
+            themeLoader.resolvedWallpaper = wp;
+            root._pendingWallpaper = wp;
+            root._startWalFromTheme();
+        } else {
+            resolveWallpaperProc.running = true;
+        }
     }
 
     FileView {
@@ -258,37 +343,39 @@ Singleton {
                 root._finishJob(false, `failed to read theme.json for ${themeLoader.themeId}`);
                 return;
             }
-            themeLoader.running = false;
+            root._handleThemeText(rawText);
+        }
 
-            let cfg = {};
+        onLoadFailed: err => {
+            themeLoader.running = false;
+            if (err === FileViewError.FileNotFound && !themeLoader.fallbackRunning) {
+                themeLoader.fallbackRunning = true;
+            } else {
+                root._finishJob(false, `theme.json not found for ${themeLoader.themeId}`);
+            }
+        }
+    }
+
+    // Legacy dots/* theme packs (contract row 1, fallback read only).
+    FileView {
+        id: themeFileViewFallback
+        path: themeLoader.fallbackRunning ? `${root.themesDirFallback}/${themeLoader.themeId}/theme.json` : ""
+
+        onLoaded: {
+            let rawText = "";
             try {
-                cfg = JSON.parse(rawText);
+                rawText = text();
             } catch (e) {
-                root._finishJob(false, `invalid theme.json for ${themeLoader.themeId}`);
+                console.warn("ThemePipeline: failed to read fallback theme.json for", themeLoader.themeId, e);
+                themeLoader.fallbackRunning = false;
+                root._finishJob(false, `failed to read theme.json for ${themeLoader.themeId}`);
                 return;
             }
-
-            themeLoader.pendingConfig = cfg;
-            root._pendingSchemeType = cfg.schemeType || "tonal-spot";
-            root._pendingDarkMode = cfg.darkMode !== undefined ? !!cfg.darkMode : true;
-            root._pendingGtkTheme = cfg.gtkTheme || "";
-            root._pendingIconTheme = cfg.iconTheme || "";
-            root._pendingThemeName = cfg.name || themeLoader.themeId;
-            root._pendingGtkPreferDark = root.resolveGtkPreferDark(cfg, root._pendingDarkMode);
-            root._pendingGtkColorScheme = root.resolveGtkColorScheme(cfg, root._pendingDarkMode);
-
-            const wp = themeLoader.wallpaperOverride;
-            if (wp) {
-                themeLoader.resolvedWallpaper = wp;
-                root._pendingWallpaper = wp;
-                root._startWalFromTheme();
-            } else {
-                resolveWallpaperProc.running = true;
-            }
+            root._handleThemeText(rawText);
         }
 
         onLoadFailed: {
-            themeLoader.running = false;
+            themeLoader.fallbackRunning = false;
             root._finishJob(false, `theme.json not found for ${themeLoader.themeId}`);
         }
     }
@@ -298,13 +385,14 @@ Singleton {
         command: ["sh", "-c", `
 cfg_default="$DOTS_DEFAULT"
 theme_dir="$DOTS_WALLPAPER_DIR"
-for base in "$DOTS_PIC/$theme_dir" "$DOTS_DATA/$theme_dir"; do
+// Contract row 11: canonical hornero/* wallpapers first, legacy dots/* fallback.
+for base in "$DOTS_PIC/$theme_dir" "$DOTS_DATA/$theme_dir" "$DOTS_DATA_FALLBACK/$theme_dir"; do
   if [ -n "$cfg_default" ] && [ -f "$base/$cfg_default" ]; then
     readlink -f "$base/$cfg_default"
     exit 0
   fi
 done
-for base in "$DOTS_PIC/$theme_dir" "$DOTS_DATA/$theme_dir"; do
+for base in "$DOTS_PIC/$theme_dir" "$DOTS_DATA/$theme_dir" "$DOTS_DATA_FALLBACK/$theme_dir"; do
   [ -d "$base" ] || continue
   find -L "$base" -maxdepth 1 \\( -type f -o -type l \\) \\( \
     -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \
@@ -317,7 +405,8 @@ done
             "DOTS_DEFAULT": themeLoader.pendingConfig.defaultWallpaper || "",
             "DOTS_WALLPAPER_DIR": themeLoader.pendingConfig.wallpaperDir || themeLoader.themeId,
             "DOTS_PIC": root.picturesWallpapers,
-            "DOTS_DATA": root.wallpapersDir
+            "DOTS_DATA": root.wallpapersDir,
+            "DOTS_DATA_FALLBACK": root.wallpapersDirFallback
         })
 
         stdout: StdioCollector {
@@ -393,6 +482,9 @@ done
         }
     }
 
+    // TODO(hornero-compat): full M3 palette generation needs materialyoucolor
+    // via dots-m3-colors; the native ImageAnalyser layer (WallpaperAnalysis,
+    // Colours.wallLuminance/wallDominantColour) covers instant tone analysis.
     Process {
         id: m3Proc
         readonly property string image: root._pendingWallpaper || Wallpapers.actualCurrent
@@ -414,6 +506,8 @@ done
         }
     }
 
+    // TODO(hornero-compat): dots-color-scheme owns scheme persistence; no
+    // native equivalent yet. Thin compat adapter; see docs/NATIVE-APPEARANCE.md.
     Process {
         id: syncStateProc
         command: ["dots-color-scheme", "sync-state"]
@@ -424,12 +518,11 @@ done
             }
             touchSchemeProc.running = true;
             root._runSideEffects();
-            // Finalize GTK via the canonical dots-gtk-theme CLI before completing.
-            gtkFinalizeProc.themeName = root._runThemeSideEffects ? (root._pendingGtkTheme || "") : "";
-            gtkFinalizeProc.iconTheme = root._runThemeSideEffects ? (root._pendingIconTheme || "") : "";
-            gtkFinalizeProc.themeId = root._runThemeSideEffects ? (root._pendingThemeId || "") : "";
-            gtkFinalizeProc.colorScheme = root._runThemeSideEffects ? (root._pendingGtkColorScheme || "") : "";
-            gtkFinalizeProc.running = true;
+            // Finalize GTK through the native GtkSettings layer (gsettings
+            // first, dots-gtk-theme compat fallback inside). Completes via
+            // the GtkSettings connection below.
+            root._awaitingGtk = true;
+            GtkSettings.applyFull(root._runThemeSideEffects ? (root._pendingGtkTheme || "") : "", root._runThemeSideEffects ? (root._pendingIconTheme || "") : "", root._runThemeSideEffects ? (root._pendingThemeId || "") : "", root._runThemeSideEffects ? (root._pendingGtkColorScheme || "") : "", root._pendingDarkMode);
         }
     }
 
@@ -438,71 +531,16 @@ done
         command: ["touch", root.schemeJson]
     }
 
-    // Apply GTK via dots-gtk-theme (canonical CLI) then complete the job.
-    Process {
-        id: gtkFinalizeProc
-        property string themeName: ""
-        property string iconTheme: ""
-        property string themeId: ""
-        property string colorScheme: ""
-        command: ["bash", "-c", `
-set -euo pipefail
-policy="\${DOTS_GTK_COLOR_SCHEME:-}"
-if [[ -n "\${DOTS_THEME_ID:-}" && ( -z "\${DOTS_GTK_THEME:-}" || "\${DOTS_GTK_THEME}" == "auto" ) ]]; then
-  dots-gtk-theme -q theme "\${DOTS_THEME_ID}" || true
-  if [[ -n "\$policy" ]]; then
-    dots-gtk-theme -q color-scheme "\$policy" || true
-  else
-    dots-gtk-theme -q sync-color-scheme || true
-  fi
-elif [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
-  if [[ -n "\$policy" ]]; then
-    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" "\$policy" || true
-  else
-    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" || true
-  fi
-elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
-  dots-gtk-theme -q set-icons "\${DOTS_ICON_THEME}" || true
-  if [[ -n "\$policy" ]]; then
-    dots-gtk-theme -q color-scheme "\$policy" || true
-  else
-    dots-gtk-theme -q sync-color-scheme || true
-  fi
-else
-  if [[ -n "\$policy" ]]; then
-    dots-gtk-theme -q color-scheme "\$policy" || true
-  else
-    dots-gtk-theme -q sync-color-scheme || true
-  fi
-fi
-`]
-        environment: ({
-            "DOTS_GTK_THEME": gtkFinalizeProc.themeName,
-            "DOTS_ICON_THEME": gtkFinalizeProc.iconTheme,
-            "DOTS_THEME_ID": gtkFinalizeProc.themeId,
-            "DOTS_GTK_COLOR_SCHEME": gtkFinalizeProc.colorScheme
-        })
-        onExited: (exitCode, exitStatus) => {
-            root._finishJob(true, "");
-        }
-    }
+    // GTK applies run through the native GtkSettings layer (gsettings first,
+    // dots-gtk-theme compat fallback inside) and complete via its signal.
+    Connections {
+        target: GtkSettings
 
-    // Queued GTK override through dots-gtk-theme. Preserves live gtkColorScheme.
-    Process {
-        id: gtkStandaloneProc
-        property string themeName: ""
-        command: ["dots-gtk-theme", "-q", "apply", gtkStandaloneProc.themeName]
-        onExited: (exitCode, exitStatus) => {
-            root._finishJob(exitCode === 0, exitCode === 0 ? "" : `setGtk failed (exit ${exitCode})`);
-        }
-    }
-
-    Process {
-        id: gtkColorSchemeProc
-        property string policy: "follow"
-        command: ["dots-gtk-theme", "-q", "color-scheme", gtkColorSchemeProc.policy]
-        onExited: (exitCode, exitStatus) => {
-            root._finishJob(exitCode === 0, exitCode === 0 ? "" : `setGtkColorScheme failed (exit ${exitCode})`);
+        function onApplyFinished(ok: bool, error: string): void {
+            if (!root._awaitingGtk)
+                return;
+            root._awaitingGtk = false;
+            root._finishJob(ok, error);
         }
     }
 
@@ -526,21 +564,16 @@ fi
         command: ["hyprctl", "reload"]
     }
 
+    // TODO(hornero-compat): dots-snappy-switcher is a dots-owned side effect
+    // with no native equivalent yet; see docs/NATIVE-APPEARANCE.md.
     Process {
         id: snappyProc
         property string themeId: ""
         command: ["dots-snappy-switcher", "apply-theme-pack", snappyProc.themeId]
     }
 
-    Process {
-        id: iconOnlyProc
-        property string themeName: ""
-        command: ["dots-gtk-theme", "-q", "set-icons", iconOnlyProc.themeName]
-        onExited: (exitCode, exitStatus) => {
-            root._finishJob(exitCode === 0, exitCode === 0 ? "" : `setIcons failed (exit ${exitCode})`);
-        }
-    }
-
+    // TODO(hornero-compat): dots-hyprlock-theme is a dots-owned side effect
+    // with no native equivalent yet; see docs/NATIVE-APPEARANCE.md.
     Process {
         id: hyprlockProc
         command: ["dots-hyprlock-theme"]
@@ -549,13 +582,13 @@ fi
     Process {
         id: notifyProc
         property string themeName: ""
-        command: ["notify-send", "HorneroConfig", `${notifyProc.themeName} theme applied`]
+        command: ["notify-send", "Hornero Shell", `${notifyProc.themeName} theme applied`]
     }
 
     Process {
         id: notifyFailProc
         property string message: ""
-        command: ["notify-send", "-u", "critical", "HorneroConfig", notifyFailProc.message || "Appearance apply failed"]
+        command: ["notify-send", "-u", "critical", "Hornero Shell", notifyFailProc.message || "Appearance apply failed"]
     }
 
     IpcHandler {

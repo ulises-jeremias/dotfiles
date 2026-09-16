@@ -1,0 +1,76 @@
+{
+  "_name": "Floating Island",
+  "_description": "Pill-shaped floating island on top — glassy and glowy",
+  "_icon": "🏝️",
+  "_iconMaterial": "web_asset",
+  "bar": {
+    "position": "top",
+    "style": "floating",
+    "floatingMargin": 16,
+    "persistent": true,
+    "showOnHover": true,
+    "entries": [
+      {
+        "id": "logo",
+        "enabled": true
+      },
+      {
+        "id": "workspaces",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "clock",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "statusIcons",
+        "enabled": true
+      },
+      {
+        "id": "power",
+        "enabled": true
+      }
+    ],
+    "sizes": {
+      "innerWidth": 40
+    },
+    "status": {
+      "showAudio": true,
+      "showNetwork": true,
+      "showBluetooth": true,
+      "showBattery": true
+    },
+    "scrollActions": {
+      "workspaces": true,
+      "volume": true,
+      "brightness": false
+    }
+  },
+  "border": {
+    "frameEnabled": false
+  },
+  "appearance": {
+    "rounding": {
+      "scale": 1.6
+    },
+    "padding": {
+      "scale": 1.0
+    },
+    "spacing": {
+      "scale": 1.0
+    },
+    "transparency": {
+      "enabled": true,
+      "base": 0.8,
+      "layers": 0.5
+    }
+  }
+}

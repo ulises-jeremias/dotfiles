@@ -36,6 +36,9 @@ Searcher {
         Scheme {}
     }
 
+    // TODO(hornero-compat): scheme list/current/set ops are owned by
+    // dots-color-scheme; no native palette store exists yet in HorneroOS.
+    // Thin compat adapter; see docs/NATIVE-APPEARANCE.md.
     Process {
         id: getSchemes
 

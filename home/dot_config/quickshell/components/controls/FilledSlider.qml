@@ -12,6 +12,8 @@ Slider {
     property real oldValue
     property bool initialized
 
+    opacity: root.enabled ? 1 : 0.5
+
     orientation: Qt.Vertical
 
     background: StyledRect {

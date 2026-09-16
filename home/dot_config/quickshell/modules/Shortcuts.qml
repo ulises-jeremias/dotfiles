@@ -1,5 +1,6 @@
 import qs.components.misc
 import qs.modules.controlcenter
+import qs.modules.welcome
 import qs.services
 import Hornero
 import Quickshell
@@ -121,13 +122,50 @@ Scope {
             const visibilities = Visibilities.getForActive();
             return Object.keys(visibilities).filter(k => typeof visibilities[k] === "boolean").join("\n");
         }
+
+        // Read-only: "true"/"false" for a known drawer, "" otherwise.
+        function state(drawer: string): string {
+            if (list().split("\n").includes(drawer)) {
+                const visibilities = Visibilities.getForActive();
+                return visibilities[drawer] ? "true" : "false";
+            }
+            return "";
+        }
     }
 
     IpcHandler {
         target: "controlCenter"
 
-        function open(): void {
-            WindowFactory.create();
+        function open(pane: string): void {
+            const id = (pane ?? "").toString().trim();
+            if (id === "") {
+                WindowFactory.create();
+                return;
+            }
+            if (PaneRegistry.getById(id)) {
+                WindowFactory.create(null, {
+                    pane: id
+                });
+            } else {
+                console.warn(`[IPC] Unknown control-center pane "${id}" — opening default`);
+                WindowFactory.create();
+            }
+        }
+    }
+
+    IpcHandler {
+        target: "welcome"
+
+        function open(page: string): void {
+            Welcome.open((page ?? "").toString());
+        }
+
+        function close(): void {
+            Welcome.close();
+        }
+
+        function status(): string {
+            return JSON.stringify(Welcome.status());
         }
     }
 

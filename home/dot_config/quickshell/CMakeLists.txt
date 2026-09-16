@@ -1,14 +1,18 @@
 cmake_minimum_required(VERSION 3.19)
 
+# Standalone-friendly version detection: fall back to 0.0.0/unknown with a
+# warning when git tags are unavailable (e.g. fresh HorneroOS/shell clone).
 if(NOT DEFINED VERSION)
     execute_process(COMMAND git describe --tags --abbrev=0
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
         OUTPUT_VARIABLE VERSION
         OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
     )
 
     if("${VERSION}" STREQUAL "")
-        message(FATAL_ERROR "VERSION is not set and failed to get from git")
+        message(WARNING "VERSION is not set and failed to get from git; using 0.0.0")
+        set(VERSION "0.0.0")
     endif()
 endif()
 
@@ -17,10 +21,12 @@ if(NOT DEFINED GIT_REVISION)
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
         OUTPUT_VARIABLE GIT_REVISION
         OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
     )
 
     if("${GIT_REVISION}" STREQUAL "")
-        message(FATAL_ERROR "GIT_REVISION is not set and failed to get from git")
+        message(WARNING "GIT_REVISION is not set and failed to get from git; using unknown")
+        set(GIT_REVISION "unknown")
     endif()
 endif()
 
@@ -52,16 +58,28 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 if("extras" IN_LIST ENABLE_MODULES)
-    add_subdirectory(extras)
+    if(EXISTS "${CMAKE_SOURCE_DIR}/extras/CMakeLists.txt")
+        add_subdirectory(extras)
+    else()
+        message(WARNING "extras module requested but extras/CMakeLists.txt is missing; skipping")
+    endif()
 endif()
 
 if("plugin" IN_LIST ENABLE_MODULES)
-    add_subdirectory(plugin)
+    if(EXISTS "${CMAKE_SOURCE_DIR}/plugin/CMakeLists.txt")
+        add_subdirectory(plugin)
+    else()
+        message(WARNING "plugin module requested but plugin/CMakeLists.txt is missing; skipping")
+    endif()
 endif()
 
 if("shell" IN_LIST ENABLE_MODULES)
     foreach(dir assets components config modules services utils)
         install(DIRECTORY ${dir} DESTINATION "${INSTALL_QSCONFDIR}")
     endforeach()
-    install(FILES shell.qml LICENSE DESTINATION "${INSTALL_QSCONFDIR}")
+    install(FILES shell.qml LICENSE.GPL-3.0 NOTICE DESTINATION "${INSTALL_QSCONFDIR}")
+    install(DIRECTORY presets DESTINATION "${INSTALL_QSCONFDIR}")
+    # Welcome Center launcher entry; picked up by the launcher through the
+    # system DesktopEntries service (no shell-side registration needed).
+    install(FILES assets/hornero-welcome.desktop DESTINATION "share/applications")
 endif()

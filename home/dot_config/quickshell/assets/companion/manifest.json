@@ -1,0 +1,621 @@
+{
+  "manifestVersion": 1,
+  "canvas": {
+    "width": 512,
+    "height": 512
+  },
+  "baseline": {
+    "feetY": 472,
+    "flyCenter": [
+      256,
+      256
+    ]
+  },
+  "skins": {
+    "argentina": {
+      "label": "Argentina",
+      "fallbackChain": [
+        "argentina",
+        "default"
+      ],
+      "animations": {
+        "idle": {
+          "id": "idle",
+          "frames": [
+            {
+              "file": "frames/argentina-idle.png",
+              "size": [
+                209,
+                448
+              ],
+              "offset": [
+                151,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 900,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "walk": {
+          "id": "walk",
+          "frames": [
+            {
+              "file": "frames/argentina-walk.png",
+              "size": [
+                234,
+                448
+              ],
+              "offset": [
+                139,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            },
+            {
+              "file": "frames/argentina-idle.png",
+              "size": [
+                209,
+                448
+              ],
+              "offset": [
+                151,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 320,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "fly": {
+          "id": "fly",
+          "frames": [
+            {
+              "file": "frames/default-fly.png",
+              "size": [
+                211,
+                448
+              ],
+              "offset": [
+                151,
+                32
+              ],
+              "anchorPx": [
+                256,
+                256
+              ]
+            }
+          ],
+          "frameMs": 500,
+          "loop": true,
+          "next": "idle",
+          "anchor": "center"
+        },
+        "greet": {
+          "id": "greet",
+          "frames": [
+            {
+              "file": "frames/argentina-walk.png",
+              "size": [
+                234,
+                448
+              ],
+              "offset": [
+                139,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 650,
+          "loop": false,
+          "next": "idle",
+          "anchor": "feet"
+        }
+      }
+    },
+    "blue-gold": {
+      "label": "Blue-Gold",
+      "fallbackChain": [
+        "blue-gold",
+        "default"
+      ],
+      "animations": {
+        "idle": {
+          "id": "idle",
+          "frames": [
+            {
+              "file": "frames/blue-gold-idle.png",
+              "size": [
+                213,
+                448
+              ],
+              "offset": [
+                149,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 900,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "walk": {
+          "id": "walk",
+          "frames": [
+            {
+              "file": "frames/blue-gold-walk.png",
+              "size": [
+                248,
+                448
+              ],
+              "offset": [
+                132,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            },
+            {
+              "file": "frames/blue-gold-idle.png",
+              "size": [
+                213,
+                448
+              ],
+              "offset": [
+                149,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 320,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "fly": {
+          "id": "fly",
+          "frames": [
+            {
+              "file": "frames/default-fly.png",
+              "size": [
+                211,
+                448
+              ],
+              "offset": [
+                151,
+                32
+              ],
+              "anchorPx": [
+                256,
+                256
+              ]
+            }
+          ],
+          "frameMs": 500,
+          "loop": true,
+          "next": "idle",
+          "anchor": "center"
+        },
+        "greet": {
+          "id": "greet",
+          "frames": [
+            {
+              "file": "frames/blue-gold-walk.png",
+              "size": [
+                248,
+                448
+              ],
+              "offset": [
+                132,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 650,
+          "loop": false,
+          "next": "idle",
+          "anchor": "feet"
+        }
+      }
+    },
+    "default": {
+      "label": "Hornero",
+      "fallbackChain": [
+        "default"
+      ],
+      "animations": {
+        "idle": {
+          "id": "idle",
+          "frames": [
+            {
+              "file": "frames/default-idle.png",
+              "size": [
+                208,
+                448
+              ],
+              "offset": [
+                152,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 900,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "walk": {
+          "id": "walk",
+          "frames": [
+            {
+              "file": "frames/default-walk.png",
+              "size": [
+                237,
+                448
+              ],
+              "offset": [
+                137,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            },
+            {
+              "file": "frames/default-idle.png",
+              "size": [
+                208,
+                448
+              ],
+              "offset": [
+                152,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 320,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "fly": {
+          "id": "fly",
+          "frames": [
+            {
+              "file": "frames/default-fly.png",
+              "size": [
+                211,
+                448
+              ],
+              "offset": [
+                151,
+                32
+              ],
+              "anchorPx": [
+                256,
+                256
+              ]
+            }
+          ],
+          "frameMs": 500,
+          "loop": true,
+          "next": "idle",
+          "anchor": "center"
+        },
+        "greet": {
+          "id": "greet",
+          "frames": [
+            {
+              "file": "frames/default-walk.png",
+              "size": [
+                237,
+                448
+              ],
+              "offset": [
+                137,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 650,
+          "loop": false,
+          "next": "idle",
+          "anchor": "feet"
+        }
+      }
+    },
+    "gaucho": {
+      "label": "Gaucho",
+      "fallbackChain": [
+        "gaucho",
+        "default"
+      ],
+      "animations": {
+        "idle": {
+          "id": "idle",
+          "frames": [
+            {
+              "file": "frames/gaucho-idle.png",
+              "size": [
+                208,
+                448
+              ],
+              "offset": [
+                152,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 900,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "walk": {
+          "id": "walk",
+          "frames": [
+            {
+              "file": "frames/gaucho-walk.png",
+              "size": [
+                214,
+                448
+              ],
+              "offset": [
+                149,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            },
+            {
+              "file": "frames/gaucho-idle.png",
+              "size": [
+                208,
+                448
+              ],
+              "offset": [
+                152,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 320,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "fly": {
+          "id": "fly",
+          "frames": [
+            {
+              "file": "frames/default-fly.png",
+              "size": [
+                211,
+                448
+              ],
+              "offset": [
+                151,
+                32
+              ],
+              "anchorPx": [
+                256,
+                256
+              ]
+            }
+          ],
+          "frameMs": 500,
+          "loop": true,
+          "next": "idle",
+          "anchor": "center"
+        },
+        "greet": {
+          "id": "greet",
+          "frames": [
+            {
+              "file": "frames/gaucho-walk.png",
+              "size": [
+                214,
+                448
+              ],
+              "offset": [
+                149,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 650,
+          "loop": false,
+          "next": "idle",
+          "anchor": "feet"
+        }
+      }
+    },
+    "red": {
+      "label": "Rojo",
+      "fallbackChain": [
+        "red",
+        "default"
+      ],
+      "animations": {
+        "idle": {
+          "id": "idle",
+          "frames": [
+            {
+              "file": "frames/red-idle.png",
+              "size": [
+                215,
+                448
+              ],
+              "offset": [
+                148,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 900,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "walk": {
+          "id": "walk",
+          "frames": [
+            {
+              "file": "frames/red-walk.png",
+              "size": [
+                286,
+                448
+              ],
+              "offset": [
+                113,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            },
+            {
+              "file": "frames/red-idle.png",
+              "size": [
+                215,
+                448
+              ],
+              "offset": [
+                148,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 320,
+          "loop": true,
+          "next": "idle",
+          "anchor": "feet"
+        },
+        "fly": {
+          "id": "fly",
+          "frames": [
+            {
+              "file": "frames/default-fly.png",
+              "size": [
+                211,
+                448
+              ],
+              "offset": [
+                151,
+                32
+              ],
+              "anchorPx": [
+                256,
+                256
+              ]
+            }
+          ],
+          "frameMs": 500,
+          "loop": true,
+          "next": "idle",
+          "anchor": "center"
+        },
+        "greet": {
+          "id": "greet",
+          "frames": [
+            {
+              "file": "frames/red-walk.png",
+              "size": [
+                286,
+                448
+              ],
+              "offset": [
+                113,
+                24
+              ],
+              "anchorPx": [
+                256,
+                472
+              ]
+            }
+          ],
+          "frameMs": 650,
+          "loop": false,
+          "next": "idle",
+          "anchor": "feet"
+        }
+      }
+    }
+  },
+  "assistantStates": {
+    "resting": "idle",
+    "listening": "greet",
+    "thinking": "walk",
+    "speaking": "fly"
+  }
+}

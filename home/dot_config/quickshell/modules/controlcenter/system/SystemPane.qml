@@ -9,6 +9,7 @@ import qs.components.containers
 import qs.components.misc
 import qs.services
 import qs.config
+import qs.modules.welcome
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.UPower
@@ -305,6 +306,13 @@ Item {
                             text: qsTr("Quick actions")
                             font.pointSize: Appearance.font.size.normal
                             font.weight: 500
+                        }
+
+                        ActionTile {
+                            icon: "waving_hand"
+                            label: qsTr("Hornero Welcome")
+                            description: qsTr("Open the Welcome Center tour")
+                            action: () => Welcome.open("start")
                         }
 
                         ActionTile {

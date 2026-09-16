@@ -1,0 +1,7 @@
+# makepkg byproducts (never commit built packages, build trees,
+# or the named git-source checkout dir).
+*.pkg.tar.*
+src/
+pkg/
+# Named git-source checkout dir ($srcdir/<name> for "<name>::git+...").
+/hornero-shell/

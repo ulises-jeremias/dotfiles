@@ -1,0 +1,600 @@
+pragma ComponentBehavior: Bound
+
+import qs.modules.companion
+import qs.modules.controlcenter
+import qs.modules.welcome
+import qs.services
+import Quickshell
+import Quickshell.Io
+import Quickshell.Wayland
+import QtQuick
+
+// Companion overlay host: exactly ONE companion window on exactly one
+// monitor (Variants over screens, a single delegate visible). Wires the
+// store's behavior states to the animation player, hybrid frame-plus-
+// transform motion (bob, takeoff/fly/landing, bounce), drag with
+// monitor-aware persisted position, speech bubble, right-click menu,
+// edge-summon peek/fly-in, sleep-after-idle, and every suppression
+// input (session lock, fullscreen, game mode, area picker).
+//
+// Input-region safety: Overlay layer, Ignore exclusion, no keyboard
+// focus, and a window sized to the sprite (plus bubble/menu only while
+// open), so the companion never steals clicks or keyboard input.
+// Disabled (CompanionStore.enabled == false) unloads every window:
+// zero surfaces, zero timers, zero cost.
+Scope {
+    id: root
+
+    // WlSessionLock passed from shell.qml (Lock exposes it as `lock`).
+    required property var lock
+
+    readonly property bool hasFullscreen: Hypr.focusedWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen === 2) ?? false
+
+    Binding {
+        target: CompanionStore
+        property: "suppressLocked"
+        value: root.lock !== null && root.lock !== undefined && root.lock.locked
+    }
+
+    Binding {
+        target: CompanionStore
+        property: "suppressFullscreen"
+        value: root.hasFullscreen
+    }
+
+    Binding {
+        target: CompanionStore
+        property: "suppressGameMode"
+        value: GameMode.enabled
+    }
+
+    // Slow idle poll: sleep after a long idle. 30 s granularity keeps
+    // the steady-state cost at zero (no per-frame work while idling).
+    Timer {
+        interval: 30000
+        running: CompanionStore.enabled
+        repeat: true
+        onTriggered: CompanionStore.checkIdle()
+    }
+
+    Variants {
+        model: CompanionStore.enabled ? Quickshell.screens : []
+
+        PanelWindow {
+            id: win
+
+            required property ShellScreen modelData
+
+            readonly property int sizePx: Math.round(128 * CompanionStore.sizeScale)
+            readonly property int screenW: win.modelData.width
+            readonly property int screenH: win.modelData.height
+            readonly property bool screenKnown: Quickshell.screens.some(s => s.name === CompanionStore.screenName)
+            readonly property string targetScreen: (CompanionStore.screenName !== "" && win.screenKnown) ? CompanionStore.screenName : (Hypr.focusedMonitor !== null && Hypr.focusedMonitor !== undefined ? Hypr.focusedMonitor.name : Quickshell.screens[0].name)
+            readonly property bool isMine: win.modelData.name === win.targetScreen
+            readonly property bool peekMode: CompanionStore.state === "peeking"
+            readonly property bool menuOpen: menu.visible
+            readonly property bool flipped: (win.px + win.sizePx / 2) > win.screenW / 2
+            readonly property string resolvedTheme: CompanionStore.bubbleTheme === "auto" ? (Colours.light ? "light" : "dark") : CompanionStore.bubbleTheme
+
+            // Free position inside the screen, committed to the store
+            // (as fractions + monitor name) on drag release.
+            property int px: 0
+            property int py: 0
+            property real bobY: 0
+            property bool dragging: false
+
+            function clampPos(): void {
+                win.px = Math.max(0, Math.min(win.px, win.screenW - win.sizePx));
+                win.py = Math.max(0, Math.min(win.py, win.screenH - win.sizePx));
+            }
+
+            function syncFromStore(): void {
+                if (win.dragging)
+                    return;
+                win.px = Math.round(CompanionStore.posX * win.screenW - win.sizePx / 2);
+                win.py = Math.round(CompanionStore.posY * win.screenH - win.sizePx);
+                win.clampPos();
+            }
+
+            function commitToStore(): void {
+                CompanionStore.posX = (win.px + win.sizePx / 2) / win.screenW;
+                CompanionStore.posY = (win.py + win.sizePx) / win.screenH;
+                CompanionStore.screenName = win.modelData.name;
+            }
+
+            // Takeoff: hop to the edge, fly to the stored perch, land
+            // with a bounce. Reduced motion skips straight to the perch.
+            function startFlyIn(): void {
+                flyAnim.stop();
+                if (CompanionStore.reducedMotion) {
+                    win.syncFromStore();
+                    CompanionStore.requestState("idle");
+                    return;
+                }
+                win.px = CompanionStore.edge === "left" ? 8 : win.screenW - win.sizePx - 8;
+                win.py = Math.round(win.screenH * 0.45);
+                flyTargetX = Math.round(CompanionStore.posX * win.screenW - win.sizePx / 2);
+                flyTargetY = Math.round(CompanionStore.posY * win.screenH - win.sizePx);
+                flyAnim.start();
+            }
+
+            function startFlyOut(): void {
+                flyOutAnim.stop();
+                if (CompanionStore.reducedMotion) {
+                    CompanionStore.requestState("hidden");
+                    return;
+                }
+                flyOutTargetX = CompanionStore.edge === "left" ? -win.sizePx : win.screenW;
+                flyOutAnim.start();
+            }
+
+            property int flyTargetX: 0
+            property int flyTargetY: 0
+            property int flyOutTargetX: 0
+
+            ParallelAnimation {
+                id: flyAnim
+
+                NumberAnimation {
+                    target: win
+                    property: "px"
+                    to: win.flyTargetX
+                    duration: 1100
+                    easing.type: Easing.InOutQuad
+                }
+                NumberAnimation {
+                    target: win
+                    property: "py"
+                    to: win.flyTargetY
+                    duration: 1100
+                    easing.type: Easing.InOutQuad
+                }
+                onFinished: {
+                    win.clampPos();
+                    win.commitToStore();
+                    landAnim.start();
+                }
+            }
+
+            // Landing bounce: quick squash-and-settle on the sprite.
+            SequentialAnimation {
+                id: landAnim
+
+                NumberAnimation {
+                    target: sprite
+                    property: "scale"
+                    to: 1.18
+                    duration: 120
+                    easing.type: Easing.OutQuad
+                }
+                NumberAnimation {
+                    target: sprite
+                    property: "scale"
+                    to: 1.0
+                    duration: 260
+                    easing.type: Easing.OutBounce
+                }
+                onFinished: {
+                    if (CompanionStore.state === "entering")
+                        CompanionStore.requestState("idle");
+                }
+            }
+
+            ParallelAnimation {
+                id: flyOutAnim
+
+                NumberAnimation {
+                    target: win
+                    property: "px"
+                    to: win.flyOutTargetX
+                    duration: 700
+                    easing.type: Easing.InQuad
+                }
+                onFinished: {
+                    if (CompanionStore.state === "leaving")
+                        CompanionStore.requestState("hidden");
+                }
+            }
+
+            // Idle bob: gentle float while resting. Never runs under
+            // reduced motion, while sleeping, or while busy.
+            SequentialAnimation {
+                id: bobAnim
+
+                loops: Animation.Infinite
+                running: !CompanionStore.reducedMotion && (CompanionStore.state === "idle" || CompanionStore.state === "hovering") && !win.dragging
+
+                NumberAnimation {
+                    target: win
+                    property: "bobY"
+                    to: -4
+                    duration: 1400
+                    easing.type: Easing.InOutSine
+                }
+                NumberAnimation {
+                    target: win
+                    property: "bobY"
+                    to: 4
+                    duration: 1400
+                    easing.type: Easing.InOutSine
+                }
+            }
+
+            Timer {
+                id: peekTimer
+                interval: 1100
+                onTriggered: {
+                    if (CompanionStore.state === "peeking")
+                        CompanionStore.requestState("entering");
+                }
+            }
+
+            Timer {
+                id: excitedTimer
+                interval: 2500
+                onTriggered: {
+                    if (CompanionStore.state === "excited")
+                        CompanionStore.requestState("idle");
+                }
+            }
+
+            Connections {
+                target: CompanionStore
+                function onStateChanged(): void {
+                    const s = CompanionStore.state;
+                    if (s === "entering")
+                        win.startFlyIn();
+                    else if (s === "leaving")
+                        win.startFlyOut();
+                    else if (s === "peeking")
+                        peekTimer.restart();
+                    else if (s === "excited")
+                        excitedTimer.restart();
+                    if (s !== "dragging" && !win.dragging)
+                        win.syncFromStore();
+                }
+                function onActiveAnimationChanged(): void {
+                    win.loadReel();
+                }
+                function onSkinChanged(): void {
+                    win.loadReel();
+                }
+                function onPosXChanged(): void {
+                    win.syncFromStore();
+                }
+                function onPosYChanged(): void {
+                    win.syncFromStore();
+                }
+            }
+
+            function loadReel(): void {
+                const r = Companion.reel(CompanionStore.skin, CompanionStore.activeAnimation);
+                player.setReel(r.files, r.frameMs, r.loop);
+                player.playing = true;
+            }
+
+            screen: win.modelData
+            color: "transparent"
+            WlrLayershell.namespace: "hornero-companion"
+            WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.exclusionMode: ExclusionMode.Ignore
+            WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+
+            anchors.top: true
+            anchors.left: true
+            margins.top: win.py + Math.round(win.bobY)
+            margins.left: win.px
+
+            // Explicit size bound to the column's implicit size: the
+            // layer surface does NOT track implicit content changes
+            // (verified live: show/hide popups never resize an
+            // auto-sized window), but it does follow explicit
+            // width/height, so popups always fit without clipping.
+            width: stack.implicitWidth
+            height: stack.implicitHeight
+
+            visible: win.isMine && CompanionStore.visible
+
+            Component.onCompleted: {
+                win.syncFromStore();
+                win.loadReel();
+            }
+
+            // Bubble above, sprite below; the window hugs both.
+            Column {
+                id: stack
+
+                spacing: 2
+
+                Bubble {
+                    id: bubble
+
+                    visible: CompanionStore.bubbleOpen
+                    // Content-sized (natural width up to maxWidth, at
+                    // least the sprite width): binding to stack.width
+                    // starves the box because the window in turn sizes
+                    // from the column, clipping the sprite out.
+                    width: Math.min(bubble.maxWidth, Math.max(bubble.implicitWidth, win.sizePx))
+                    text: CompanionStore.bubbleText
+                    theme: win.resolvedTheme
+                    flip: win.flipped
+
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton
+                        onClicked: CompanionStore.dismissBubble()
+                    }
+                }
+
+                Item {
+                    id: spriteRow
+
+                    // Peek mode: a slim on-edge sliver instead of the
+                    // full sprite, so summoning never covers content.
+                    // Plain Items report zero implicit size, so mirror
+                    // the explicit size: the window sizes from the
+                    // column's implicit size and would otherwise clip
+                    // the sprite out entirely.
+                    width: win.peekMode ? 28 : win.sizePx
+                    height: win.sizePx
+                    implicitWidth: win.peekMode ? 28 : win.sizePx
+                    implicitHeight: win.sizePx
+                    clip: true
+
+                    Player {
+                        id: player
+
+                        anchors.fill: parent
+                        fallbackFrame: Companion.frameSource("default", "idle")
+                        onFinished: CompanionStore.clearOverride()
+                    }
+
+                    Image {
+                        id: sprite
+
+                        width: win.sizePx
+                        height: win.sizePx
+                        // Peek sliver shows the middle slice. The frames
+                        // are centered portraits, so an edge-facing slice
+                        // would be transparent; the middle always shows
+                        // part of the bird from either edge. The offset
+                        // is negative: it pulls the middle of the image
+                        // into the 28 px clip box.
+                        x: win.peekMode ? -Math.round((win.sizePx - 28) / 2) : 0
+                        source: player.currentFrame
+                        fillMode: Image.PreserveAspectFit
+                        cache: true
+                        asynchronous: true
+                        opacity: CompanionStore.state === "sleeping" ? 0.55 : 1.0
+                    }
+
+                    MouseArea {
+                        id: mouse
+
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        cursorShape: win.dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+
+                        property int lastX: 0
+                        property int lastY: 0
+                        // Set once the pointer actually moves: a drag
+                        // release also emits clicked, so onClicked must
+                        // ignore press-release sequences that moved.
+                        property bool moved: false
+
+                        onPressed: function (ev) {
+                            if (ev.button === Qt.RightButton)
+                                return;
+                            mouse.moved = false;
+                            CompanionStore.markActive();
+                            if (CompanionStore.state === "peeking") {
+                                CompanionStore.summon();
+                                return;
+                            }
+                            if (CompanionStore.state === "idle" || CompanionStore.state === "hovering" || CompanionStore.state === "sleeping" || CompanionStore.state === "excited") {
+                                win.dragging = true;
+                                CompanionStore.requestState("dragging");
+                                mouse.lastX = ev.x;
+                                mouse.lastY = ev.y;
+                            }
+                        }
+                        onPositionChanged: function (ev) {
+                            if (!win.dragging)
+                                return;
+                            win.px = win.px + Math.round(ev.x - mouse.lastX);
+                            win.py = win.py + Math.round(ev.y - mouse.lastY);
+                            win.clampPos();
+                            mouse.moved = true;
+                        }
+                        onReleased: function (ev) {
+                            if (ev.button === Qt.RightButton) {
+                                menu.open();
+                                return;
+                            }
+                            if (win.dragging) {
+                                win.dragging = false;
+                                win.commitToStore();
+                                CompanionStore.requestState("idle");
+                            }
+                        }
+                        onClicked: function (ev) {
+                            if (ev.button === Qt.RightButton) {
+                                menu.open();
+                                return;
+                            }
+                            // Plain click (no drag): excited + a tip.
+                            // A drag release emits clicked too, but
+                            // mouse.moved is set by then, so drops stay
+                            // quiet and only commit the new perch.
+                            if (!win.dragging && !mouse.moved && CompanionStore.state !== "peeking") {
+                                CompanionStore.requestState("excited");
+                                const t = CompanionStore.tip();
+                                if (t !== "")
+                                    CompanionStore.say(t, 7000);
+                                else
+                                    CompanionStore.play("greet");
+                            }
+                        }
+                        onEntered: {
+                            if (CompanionStore.state === "idle" || CompanionStore.state === "sleeping")
+                                CompanionStore.requestState("hovering");
+                        }
+                        onExited: {
+                            if (CompanionStore.state === "hovering")
+                                CompanionStore.requestState("idle");
+                        }
+                    }
+                }
+
+                // Right-click menu: tip, skin, reset, hide, settings.
+                // Lives inside the column (below the sprite) so the window
+                // always contains it: as a direct window child it escaped
+                // the surface bounds (negative x when flipped) and the
+                // compositor clipped its entries. Hidden menus take no
+                // space in a positioner, and the sprite never moves.
+                Rectangle {
+                    id: menu
+
+                    visible: false
+                    width: 190
+                    height: menuCol.implicitHeight + 16
+                    implicitWidth: 190
+                    implicitHeight: menuCol.implicitHeight + 16
+                    color: win.resolvedTheme === "light" ? "#fffdf7" : win.resolvedTheme === "pampa" ? "#faf3e3" : "#211d17"
+                    border.color: win.resolvedTheme === "pampa" ? "#74acdf" : "#4a4438"
+                    border.width: 1
+                    radius: 10
+                    z: 10
+
+                    function open(): void {
+                        menu.visible = true;
+                    }
+                    function close(): void {
+                        menu.visible = false;
+                    }
+
+                    function fg(): color {
+                        return win.resolvedTheme === "dark" ? "#f5f1e8" : "#201d18";
+                    }
+
+                    Column {
+                        id: menuCol
+
+                        anchors.fill: parent
+                        anchors.margins: 8
+                        spacing: 2
+
+                        component Entry: Text {
+                            required property string label
+                            signal chosen()
+                            width: menuCol.width
+                            leftPadding: 8
+                            rightPadding: 8
+                            topPadding: 6
+                            bottomPadding: 6
+                            text: label
+                            color: menu.fg()
+                            font.pixelSize: 13
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: parent.opacity = 0.6
+                                onExited: parent.opacity = 1.0
+                                onClicked: parent.chosen()
+                            }
+                        }
+
+                        Entry {
+                            label: qsTr("Show a tip")
+                            onChosen: {
+                                menu.close();
+                                const t = CompanionStore.tip();
+                                if (t !== "")
+                                    CompanionStore.say(t, 7000);
+                            }
+                        }
+                        Entry {
+                            label: qsTr("Try another skin")
+                            onChosen: {
+                                menu.close();
+                                CompanionStore.nextSkin();
+                                CompanionStore.play("greet");
+                            }
+                        }
+                        Entry {
+                            label: qsTr("Reset position")
+                            onChosen: {
+                                menu.close();
+                                CompanionStore.resetPosition();
+                            }
+                        }
+                        Entry {
+                            label: qsTr("Take a break")
+                            onChosen: {
+                                menu.close();
+                                CompanionStore.hide();
+                            }
+                        }
+                        Entry {
+                            label: qsTr("Companion settings")
+                            onChosen: {
+                                menu.close();
+                                WindowFactory.create(null, {
+                                    pane: "companion"
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    IpcHandler {
+        target: "companion"
+
+        function show(): void {
+            CompanionStore.show();
+        }
+
+        function hide(): void {
+            CompanionStore.hide();
+        }
+
+        function toggle(): void {
+            CompanionStore.toggle();
+        }
+
+        function say(text: string, timeoutMs: int): void {
+            CompanionStore.say((text ?? "").toString(), (timeoutMs ?? 0) > 0 ? timeoutMs : 6000);
+        }
+
+        function tip(): string {
+            const t = CompanionStore.tip();
+            if (t !== "")
+                CompanionStore.say(t, 7000);
+            return t;
+        }
+
+        function play(animation: string): void {
+            CompanionStore.play((animation ?? "").toString());
+        }
+
+        function setState(state: string): void {
+            CompanionStore.requestState((state ?? "").toString());
+        }
+
+        function setSkin(skin: string): void {
+            CompanionStore.setSkin((skin ?? "").toString());
+        }
+
+        function resetPosition(): void {
+            CompanionStore.resetPosition();
+        }
+
+        function status(): string {
+            return JSON.stringify(CompanionStore.status());
+        }
+    }
+}

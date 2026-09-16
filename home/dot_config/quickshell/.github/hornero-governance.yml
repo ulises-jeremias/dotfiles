@@ -1,0 +1,31 @@
+# Repo policy for the HorneroOS deterministic PR-governance engine.
+# Merged over safe defaults; see HorneroOS/.github governance/danger.
+#
+# NOTE: services/Colours.qml flagship M3 tables are GENERATED from the
+# HorneroOS/config brand seed via scripts/gen-flagship-m3.py (--check
+# gate in CI), but the source lives in another repo, so no
+# generated_paths pair is declared here; the shell CI gate owns that
+# drift check.
+
+version: 1
+kind: shell
+visual_paths:
+  - "assets/**"
+  - "docs/assets/**"
+  - "**/*.qml"
+generated_paths: []
+policies:
+  large_threshold: 800
+  forbidden_paths:
+    - "**/.env"
+    - "**/.env.*"
+    - "**/*.pem"
+    - "**/*.key"
+    - "**/id_rsa*"
+    - "**/credentials*"
+    - "**/*secret*"
+  risky_paths:
+    - ".github/workflows/**"
+    - "plugin/**"
+    - "services/**"
+    - "config/**"

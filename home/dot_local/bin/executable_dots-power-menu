@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+## Provenance: COPY (never moved) from ulises-jeremias/dotfiles@b26db04
+## home/dot_local/bin/executable_dots-power-menu via read-only reference clone.
+## Local changes vs upstream: `executable_` chezmoi deploy prefix stripped;
+## lock action falls back to `loginctl lock-session` when dots-lockscreen
+## (shipped separately) is not installed.
 
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
@@ -31,6 +36,14 @@ launch_quickshell() {
   return 0
 }
 
+lock_session() {
+  if command -v dots-lockscreen >/dev/null 2>&1; then
+    dots-lockscreen --lock
+  else
+    loginctl lock-session
+  fi
+}
+
 launch_minimal() {
   cat <<EOF
 1) Lock
@@ -41,7 +54,7 @@ launch_minimal() {
 EOF
   read -r -p "Select action [1-5]: " choice
   case "$choice" in
-    1) ~/.local/bin/dots-lockscreen --lock ;;
+    1) lock_session ;;
     2) systemctl suspend ;;
     3) loginctl terminate-session "${XDG_SESSION_ID-}" ;;
     4) systemctl -i reboot ;;
