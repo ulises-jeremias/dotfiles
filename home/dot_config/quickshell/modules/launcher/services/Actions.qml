@@ -17,10 +17,47 @@ Searcher {
     list: variants.instances
     useFuzzy: Config.launcher.useFuzzy.actions
 
+    // Pristine compiled defaults. Config.launcher.actions is wholesale
+    // replaced by the persisted shell.json list, so a new shipped action
+    // (e.g. Welcome) would stay invisible for existing users. Merge by
+    // name instead: every shipped default stays visible, persisted edits
+    // win per action, and user-added custom entries are appended.
+    LauncherConfig {
+        id: bakedDefaults
+    }
+
     Variants {
         id: variants
 
-        model: Config.launcher.actions.filter(a => (a.enabled ?? true) && (Config.launcher.enableDangerousActions || !(a.dangerous ?? false)))
+        model: {
+            const live = Config.launcher.actions ?? [];
+            const baked = bakedDefaults.actions ?? [];
+            const byName = {};
+            for (const a of live) {
+                if (a && a.name)
+                    byName[a.name] = a;
+            }
+            const bakedNames = {};
+            const merged = baked.map(d => {
+                if (!d || !d.name)
+                    return d;
+                bakedNames[d.name] = true;
+                const o = byName[d.name] ?? {};
+                return {
+                    name: d.name,
+                    icon: o.icon ?? d.icon,
+                    description: o.description ?? d.description,
+                    command: o.command ?? d.command,
+                    enabled: o.enabled ?? d.enabled ?? true,
+                    dangerous: o.dangerous ?? d.dangerous ?? false
+                };
+            });
+            for (const a of live) {
+                if (a && a.name && !bakedNames[a.name])
+                    merged.push(a);
+            }
+            return merged.filter(a => (a.enabled ?? true) && (Config.launcher.enableDangerousActions || !(a.dangerous ?? false)));
+        }
 
         Action {}
     }
