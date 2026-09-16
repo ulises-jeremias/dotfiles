@@ -30,11 +30,27 @@ Scope {
 
     readonly property bool hasFullscreen: Hypr.focusedWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen === 2) ?? false
 
-    Binding {
-        target: CompanionStore
-        property: "suppressLocked"
-        value: root.lock !== null && root.lock !== undefined && root.lock.locked
+    // Session-lock suppression without a Binding: upstream quickshell
+    // emits lockedChanged on lock but never on unlock (guest-proven with
+    // an onLockedChanged probe), so a Binding restores never. Both edges
+    // are synced explicitly instead: lockedChanged covers locking, and
+    // the WlSessionLock unlock signal — emitted on every unlock path
+    // (IPC, shortcut, PAM) — is the restore edge.
+    function syncLocked(): void {
+        CompanionStore.suppressLocked = root.lock !== null && root.lock !== undefined && root.lock.locked;
     }
+
+    Connections {
+        target: root.lock
+        function onLockedChanged(): void {
+            root.syncLocked();
+        }
+        function onUnlock(): void {
+            CompanionStore.suppressLocked = false;
+        }
+    }
+
+    Component.onCompleted: root.syncLocked()
 
     Binding {
         target: CompanionStore
@@ -56,6 +72,10 @@ Scope {
         repeat: true
         onTriggered: CompanionStore.checkIdle()
     }
+
+    // Restart durability for the store (snapshot file I/O lives here,
+    // never in the store itself).
+    CompanionPersist {}
 
     Variants {
         model: CompanionStore.enabled ? Quickshell.screens : []
@@ -115,13 +135,14 @@ Scope {
                 CompanionStore.posX = (win.px + win.sizePx / 2) / win.screenW;
                 CompanionStore.posY = (win.py + win.sizePx) / win.screenH;
                 CompanionStore.screenName = win.modelData.name;
+                CompanionStore.markDirty();
             }
 
             // Cross-monitor drag: if the release point's global center
             // lands on another screen, adopt it so the companion can be
             // moved across the whole layout, not just its origin monitor.
-            // Coordinates are fractions, so no resync is needed: the new
-            // screen's delegate picks them up via syncFromStore.
+            // Returns true when it committed (caller then skips
+            // commitToStore, which would restore the old screen).
             function migrateScreen(): bool {
                 const gx = (win.modelData.x ?? 0) + win.px + win.sizePx / 2;
                 const gy = (win.modelData.y ?? 0) + win.py + win.sizePx / 2;
@@ -134,6 +155,7 @@ Scope {
                             CompanionStore.screenName = s.name;
                             CompanionStore.posX = (gx - sx) / s.width;
                             CompanionStore.posY = (gy - sy) / s.height;
+                            CompanionStore.markDirty();
                             return true;
                         }
                         return false;
@@ -325,14 +347,9 @@ Scope {
             margins.top: win.py + Math.round(win.bobY)
             margins.left: win.px
 
-            // Explicit size bound to the column's implicit size: the
-            // layer surface does NOT track implicit content changes
-            // (verified live: show/hide popups never resize an
-            // auto-sized window), but it does follow explicit
-            // width/height, so popups always fit without clipping.
-            // NOTE: explicit width/height (not implicit) on purpose: the
-            // layer surface does not track implicit content changes, so
-            // popups would clip. The deprecation warning is accepted.
+            // Explicit surface size from the content column: the layer
+            // surface ignores implicit-size changes, so popups sized only
+            // implicitly get clipped.
             width: stack.implicitWidth
             height: stack.implicitHeight
 
@@ -397,17 +414,13 @@ Scope {
 
                         width: win.sizePx
                         height: win.sizePx
-                        // Peek sliver shows the middle slice. The frames
-                        // are centered portraits, so an edge-facing slice
-                        // would be transparent; the middle always shows
-                        // part of the bird from either edge. The offset
-                        // is negative: it pulls the middle of the image
-                        // into the 28 px clip box.
+                        // Peek sliver shows the middle slice: centered
+                        // portraits stay visible while the edge-facing
+                        // slice is transparent padding on most skins.
                         x: win.peekMode ? -Math.round((win.sizePx - 28) / 2) : 0
-                        // Smart orientation (see updateMirror): the frames
+                        // Smart orientation (see updateMirror): frames
                         // face right, so mirror on the right half to face
-                        // the screen center. Peek sliver is unaffected: it
-                        // shows the symmetric middle slice either way.
+                        // the screen center. Peek sliver is unaffected.
                         mirror: win.mirrored
                         source: player.currentFrame
                         fillMode: Image.PreserveAspectFit
@@ -426,9 +439,9 @@ Scope {
 
                         property int lastX: 0
                         property int lastY: 0
-                        // Set once the pointer actually moves: a drag
-                        // release also emits clicked, so onClicked must
-                        // ignore press-release sequences that moved.
+                        // Set once the pointer actually moves: a
+                        // drag-release also emits clicked, which must not
+                        // misfire the excited-plus-tip path.
                         property bool moved: false
 
                         onPressed: function (ev) {
@@ -453,12 +466,15 @@ Scope {
                         onPositionChanged: function (ev) {
                             if (!win.dragging)
                                 return;
-                            win.px = win.px + Math.round(ev.x - mouse.lastX);
-                            win.py = win.py + Math.round(ev.y - mouse.lastY);
+                            const dx = Math.round(ev.x - mouse.lastX);
+                            const dy = Math.round(ev.y - mouse.lastY);
+                            if (dx !== 0 || dy !== 0)
+                                mouse.moved = true;
+                            win.px = win.px + dx;
+                            win.py = win.py + dy;
                             mouse.lastX = ev.x;
                             mouse.lastY = ev.y;
                             win.clampPos();
-                            mouse.moved = true;
                         }
                         onReleased: function (ev) {
                             if (ev.button === Qt.RightButton) {
@@ -480,9 +496,6 @@ Scope {
                                 return;
                             }
                             // Plain click (no drag): excited + a tip.
-                            // A drag release emits clicked too, but
-                            // mouse.moved is set by then, so drops stay
-                            // quiet and only commit the new perch.
                             if (!win.dragging && !mouse.moved && CompanionStore.state !== "peeking") {
                                 CompanionStore.requestState("excited");
                                 const t = CompanionStore.tip();
@@ -610,8 +623,16 @@ Scope {
     IpcHandler {
         target: "companion"
 
-        function show(): void {
-            CompanionStore.show();
+        // NOTE: this entry is `summon`, not `show`: a function literally
+        // named `show` can never be invoked through `qs ipc call`
+        // (upstream CLI quirk, guest-proven — the `show` token is
+        // swallowed as the `ipc show` subcommand and the call prints the
+        // target listing instead of dispatching; `qs ipc call companion
+        // -- show` is the only spelling that reaches it). `summon` wakes
+        // from hidden AND sleeping into the edge peek, which is the
+        // useful "show me the bird" semantic over IPC.
+        function summon(): void {
+            CompanionStore.summon();
         }
 
         function hide(): void {

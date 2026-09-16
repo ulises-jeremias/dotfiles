@@ -36,13 +36,9 @@ Item {
         root.frameMs = (frameMs ?? 0) > 0 ? frameMs : 900;
         root.loop = loop ?? true;
         root.restart();
-        // A non-looping reel with one frame (or none) plays through
-        // instantly: report finished on the next tick so one-shot
-        // overrides clear instead of sticking forever (the advance
-        // timer never runs for single-frame reels). Deferred, so the
-        // host clears the override after applying this reel; clearing
-        // back to the same base animation emits no change, so this
-        // cannot retrigger itself.
+        // Single-frame (or empty) non-looping reels never run the timer,
+        // so finished() would never fire and a one-shot override would
+        // stick forever. Complete asynchronously instead.
         if (!root.loop && root.frames.length <= 1)
             Qt.callLater(root.finished);
     }

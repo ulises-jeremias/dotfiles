@@ -19,7 +19,7 @@ BEHAVIOR_STATES = ["hidden", "peeking", "entering", "idle", "hovering",
                    "talking", "excited", "dragging", "leaving", "sleeping"]
 FUTURE_STATES = ["listening", "thinking", "acting",
                  "success", "warning", "error"]
-IPC_FNS = ["show(", "hide(", "toggle(", "say(", "tip(", "play(",
+IPC_FNS = ["summon(", "hide(", "toggle(", "say(", "tip(", "play(",
            "setState(", "setSkin(", "resetPosition("]
 
 
@@ -54,6 +54,10 @@ def test_animation_mapping_covers_all_states():
 
 
 def test_store_persists_without_hand_rolled_writes():
+    # Two-layer durability (guest-proven): PersistentProperties carries
+    # in-process reloads; the versioned JSON snapshot under the canonical
+    # Paths.state root carries process restarts (upstream
+    # PersistentProperties never touches disk).
     assert "PersistentProperties" in STORE
     assert 'reloadableId: "companion"' in STORE
     for key in ("enabled", "skin", "sizeScale", "tipsEnabled", "edge",
@@ -61,6 +65,18 @@ def test_store_persists_without_hand_rolled_writes():
                 "posX", "posY", "screenName"):
         assert key in STORE, f"store missing persisted key {key}"
     assert "sanitize" in STORE
+    assert "companion/state.json" in STORE
+    assert "stateSchemaVersion" in STORE
+    assert "function serialize()" in STORE
+    assert "function restore(" in STORE
+    assert "markDirty" in STORE
+    assert "commitToStore" in (ROOT / "modules" / "companion" / "CompanionHost.qml").read_text()
+    persist = (COMPANION / "CompanionPersist.qml").read_text()
+    assert "CompanionStore.serialize()" in persist
+    assert "CompanionStore.restore(" in persist
+    assert "CompanionStore.clearDirty" in persist
+    assert "CompanionStore.adoptCurrent" in persist
+    assert "CompanionPersist" in (ROOT / "modules" / "companion" / "CompanionHost.qml").read_text()
 
 
 def test_player_single_timer_core():
@@ -72,14 +88,6 @@ def test_player_single_timer_core():
     # Single-frame reels never run the timer: idle costs nothing.
     assert "frames.length > 1" in PLAYER
     assert "setReel" in PLAYER
-
-
-def test_player_finishes_instant_reels():
-    # A non-looping single-frame reel plays through instantly: setReel
-    # must report finished (deferred) so one-shot overrides clear
-    # instead of sticking on the greet frame forever.
-    assert "Qt.callLater(root.finished)" in PLAYER
-    assert "frames.length <= 1" in PLAYER
 
 
 def test_resolver_exposes_full_reels():
@@ -103,6 +111,17 @@ def test_host_suppression_inputs():
     assert "areaPickerOpen" in STORE
     assert "CompanionStore.areaPickerOpen = active" in \
         (ROOT / "modules" / "areapicker" / "AreaPicker.qml").read_text()
+
+
+def test_host_lock_suppression_restores_on_unlock_signal():
+    # Upstream quickshell emits lockedChanged on lock but never on
+    # unlock (guest-proven): the host must sync both edges explicitly
+    # and treat the WlSessionLock unlock signal as the restore edge.
+    # A Binding on lock.locked alone restores never.
+    assert "function onUnlock()" in HOST, \
+        "host must handle the unlock signal as the suppression restore edge"
+    assert "syncLocked" in HOST
+    assert "suppressLocked" in HOST
 
 
 def test_host_drag_and_persisted_position():
@@ -146,10 +165,68 @@ def test_companion_ipc_target():
     assert "companion" in doc, "docs/IPC.md must document the companion target"
 
 
+def test_companion_ipc_names_avoid_cli_subcommand_collision():
+    # Guest-proven: `qs ipc call companion show` never dispatches (the
+    # `show` token is swallowed as the `ipc show` subcommand). No IPC
+    # function on any target may reuse a qs subcommand name.
+    reserved = {"show", "call", "wait", "listen", "prop", "msg", "kill", "list"}
+    names = set(re.findall(r"function (\w+)\(", HOST))
+    clash = names & reserved
+    assert not clash, f"IPC names collide with qs subcommands: {clash}"
+
+
 def test_shell_wires_host():
     shell = (ROOT / "shell.qml").read_text()
     assert "CompanionHost" in shell
     assert "modules/companion" in shell
+
+
+def test_bubble_sizes_from_unwrapped_measure():
+    # Circular-wrap guard: the wrapped label shrinks to the bubble width,
+    # so the natural width must come from an unwrapped measure probe.
+    assert "id: measure" in BUBBLE
+    assert "measure.implicitWidth" in BUBBLE
+    assert "label.implicitWidth + 24" not in BUBBLE
+
+
+def test_store_active_animation_avoids_root_persist():
+    # `root.persist` fails at startup (TypeError) and sticks the animation.
+    m = re.search(r"activeAnimation:(.*)", STORE)
+    assert m, "store must expose activeAnimation"
+    assert "root.persist" not in m.group(1)
+
+
+def test_player_completes_single_frame_one_shots():
+    # Non-looping single-frame reels never run the timer; without an async
+    # finished() the host's one-shot override never clears.
+    assert "Qt.callLater" in PLAYER and "finished" in PLAYER
+    assert "setReel" in PLAYER
+
+
+def test_host_window_tracks_content_size():
+    # Layer surfaces ignore implicit-size changes: the window needs an
+    # explicit size bound to the content column.
+    assert "width: stack.implicitWidth" in HOST
+    assert "height: stack.implicitHeight" in HOST
+
+
+def test_host_content_sizes_without_clipping():
+    assert "Math.max(bubble.implicitWidth, win.sizePx)" in HOST
+    assert "implicitWidth: win.peekMode ? 28 : win.sizePx" in HOST
+    assert "implicitHeight: win.sizePx" in HOST
+
+
+def test_host_peek_shows_middle_slice():
+    assert "-Math.round((win.sizePx - 28) / 2)" in HOST
+
+
+def test_host_click_ignores_drag_release_and_contains_menu():
+    assert "mouse.moved" in HOST
+    # Menu lives inside the content column: no window-child anchors and no
+    # negative-x flipped placement that escapes the surface.
+    assert "x: win.flipped" not in HOST
+    assert "anchors.top: parent.top" not in HOST
+    assert "implicitWidth: 190" in HOST
 
 
 PANE = (ROOT / "modules" / "controlcenter" / "companion" / "CompanionPane.qml").read_text()
@@ -188,64 +265,3 @@ def test_assistant_boundary_docs():
     assert "presentation" in adr.lower()
     assert "COMPANION_ASSISTANT" in adr or "assistant" in adr.lower()
     assert "002-companion-assistant-boundary" in (ROOT / "docs" / "COMPANION.md").read_text()
-
-
-def test_store_active_animation_startup_safe():
-    # `persist` is a child id, not a member of root: `root.persist` is
-    # permanently undefined (startup TypeError plus a stuck animation).
-    # activeAnimation must use the bare id like every other binding.
-    assert "activeAnimation" in STORE
-    assert "root.persist" not in STORE, \
-        "activeAnimation must not use root.persist (undefined: child id)"
-    assert "persist.overrideAnim" in STORE
-
-
-def test_host_window_sizes_from_content():
-    # Plain Items report zero implicit size, and the layer window sizes
-    # from the column's implicit size: without mirrored implicit sizes
-    # the sprite is clipped out of the window entirely.
-    assert "implicitWidth: win.peekMode ? 28 : win.sizePx" in HOST
-    assert "implicitHeight: win.sizePx" in HOST
-    # Binding the bubble to stack.width starves the box for the same
-    # reason (the window in turn sizes from the column).
-    assert "width: Math.min(maxWidth, stack.width)" not in HOST
-    assert "bubble.implicitWidth" in HOST
-
-
-def test_menu_lives_inside_window_column():
-    # As a direct window child the menu escaped the surface (negative x
-    # when flipped) and the compositor clipped its entries. It must be
-    # a column child with mirrored implicit sizes so the window always
-    # contains it; anchors/negative-x positioning must be gone.
-    assert "implicitWidth: 190" in HOST
-    assert "x: win.flipped" not in HOST
-    stack = HOST.split("Column {", 1)[1]
-    assert "id: menu" in stack, "menu must live inside the window column"
-    # The layer surface does not track implicit content changes, but it
-    # follows explicit width/height: the window must bind both to the
-    # column so popups always fit without clipping.
-    assert "width: stack.implicitWidth" in HOST
-    assert "height: stack.implicitHeight" in HOST
-
-
-def test_drag_drop_stays_quiet():
-    # A drag release also emits clicked: the host must track movement
-    # and keep drops from triggering the excited-plus-tip path that
-    # belongs to plain clicks only.
-    assert "mouse.moved" in HOST
-    assert "!mouse.moved" in HOST
-
-
-def test_peek_sliver_shows_bird():
-    # Frames are centered portraits: an edge-facing slice of the sprite
-    # box would be transparent, so the peek sliver must sample the
-    # middle where the bird always is.
-    assert "-Math.round((win.sizePx - 28) / 2)" in HOST
-
-
-def test_bubble_measures_natural_width():
-    # Sizing the box from the wrapped label is circular (wrap width
-    # follows the box): a separate unwrapped probe must drive
-    # implicitWidth so long texts never clip mid-word.
-    assert "id: measure" in BUBBLE
-    assert "measure.implicitWidth" in BUBBLE

@@ -1,17 +1,28 @@
 pragma Singleton
 
+import qs.utils
 import Quickshell
 import QtQuick
 
 // Companion behavior store: the single source of truth for the Hornero
 // sidekick's presentation state. Mirrors the Welcome module's State.qml
 // pattern (tolerant persisted state, allowlisted transitions) but stays
-// presentation-only: it never spawns processes, never touches the
-// network, and never reaches past the running shell.
+// presentation-only: it never touches the network and never reaches past
+// the running shell.
 //
-// Persistence uses PersistentProperties (automatic atomic writes under
-// $XDG_STATE_HOME, no hand-rolled file writes). Anything structurally
-// wrong on restore is sanitized back to defaults without touching disk.
+// Durability is two-layer and both layers matter:
+// - PersistentProperties (reloadableId below) carries state across
+//   in-process config reloads only. Upstream quickshell implements it as
+//   an in-memory handoff on reload (see persistentprops.cpp: onReload
+//   copies from the old instance) — it never touches disk, so a process
+//   restart used to reset skin, position, and every preference.
+// - `$XDG_STATE_HOME/hornero/companion/state.json` (canonical Paths.state
+//   root, same layout as Welcome) carries state across restarts through
+//   CompanionPersist: tolerant versioned parse on load, debounced
+//   single-child atomic-rename writes when dirty. Anything structurally
+//   wrong on restore is sanitized back to defaults without touching disk.
+//   The writer lives outside this store so the store itself never spawns
+//   processes.
 Singleton {
     id: root
 
@@ -115,11 +126,10 @@ Singleton {
     property alias screenName: persist.screenName
     property alias overrideAnim: persist.overrideAnim
 
-    // The animation the player should show right now. NOTE: the
-    // persisted object is the child id `persist`, not a member of
-    // root — the root-qualified form is permanently undefined
-    // (startup TypeError and a stuck empty animation), so use the
-    // bare id like every other binding in this file.
+    // The animation the player should show right now.
+    // NOTE: bare `persist` (not `root.persist`): qualified access through
+    // the Singleton root fails at startup (TypeError) and leaves the
+    // animation stuck on the fallback.
     readonly property string activeAnimation: persist.overrideAnim !== "" ? persist.overrideAnim : root.animationFor(persist.state)
 
     function sanitize(): void {
@@ -162,6 +172,7 @@ Singleton {
         if (s !== "sleeping")
             root.markActive();
         persist.state = s;
+        root.markDirty();
     }
 
     // One-shot animation (greet/fly/walk/idle). Unknown names fall back
@@ -175,22 +186,26 @@ Singleton {
             persist.overrideAnim = "idle";
         }
         root.markActive();
+        root.markDirty();
     }
 
     function clearOverride(): void {
         persist.overrideAnim = "";
+        root.markDirty();
     }
 
     function show(): void {
         if (persist.state === "hidden" || persist.state === "leaving")
             persist.state = "peeking";
         root.markActive();
+        root.markDirty();
     }
 
     function hide(): void {
         if (persist.state !== "hidden")
             persist.state = "leaving";
         root.dismissBubble();
+        root.markDirty();
     }
 
     function toggle(): void {
@@ -198,6 +213,7 @@ Singleton {
             root.show();
         else
             root.hide();
+        root.markDirty();
     }
 
     // Edge summon: peek from the configured edge, then fly in.
@@ -205,6 +221,7 @@ Singleton {
         if (persist.state === "hidden" || persist.state === "sleeping")
             persist.state = "peeking";
         root.markActive();
+        root.markDirty();
     }
 
     function setSkin(skin: string): void {
@@ -215,12 +232,14 @@ Singleton {
         }
         persist.skin = s;
         root.markActive();
+        root.markDirty();
     }
 
     function nextSkin(): void {
         const i = Companion.knownSkins.indexOf(persist.skin);
         persist.skin = Companion.knownSkins[(i + 1) % Companion.knownSkins.length];
         root.markActive();
+        root.markDirty();
     }
 
     function resetPosition(): void {
@@ -228,6 +247,7 @@ Singleton {
         persist.posY = 0.72;
         persist.screenName = "";
         root.markActive();
+        root.markDirty();
     }
 
     function say(text: string, timeoutMs: int): void {
@@ -241,6 +261,7 @@ Singleton {
         if (persist.state === "idle" || persist.state === "hovering")
             persist.state = "talking";
         root.markActive();
+        root.markDirty();
     }
 
     function dismissBubble(): void {
@@ -249,6 +270,7 @@ Singleton {
         bubbleTimer.stop();
         if (persist.state === "talking")
             persist.state = "idle";
+        root.markDirty();
     }
 
     // Next tip (round-robin). Returns "" when tips are off or suppressed.
@@ -258,6 +280,7 @@ Singleton {
         const entry = root.tips[persist.tipIndex % root.tips.length];
         persist.tipIndex = (persist.tipIndex + 1) % root.tips.length;
         root.markActive();
+        root.markDirty();
         return entry.text;
     }
 
@@ -274,6 +297,7 @@ Singleton {
             return;
         if (Date.now() - persist.lastActiveMs > persist.sleepMinutes * 60000)
             persist.state = "sleeping";
+        root.markDirty();
     }
 
     // Read-only status for IPC.
@@ -293,4 +317,123 @@ Singleton {
         interval: 6000
         onTriggered: root.dismissBubble()
     }
+
+    // -- Restart durability (file-backed, see header) -------------------
+    readonly property string stateFilePath: `${Paths.state}/companion/state.json`
+    readonly property int stateSchemaVersion: 1
+    // First apply wins: the on-disk snapshot must never clobber live
+    // interaction that happened before the async load completed.
+    property bool _restored: false
+    property string _lastSaved: ""
+
+    // Fixed key order so the dirty comparison is stable.
+    function serialize(): string {
+        return JSON.stringify({
+            schemaVersion: root.stateSchemaVersion,
+            enabled: persist.enabled,
+            state: persist.state,
+            skin: persist.skin,
+            sizeScale: persist.sizeScale,
+            tipsEnabled: persist.tipsEnabled,
+            edge: persist.edge,
+            sleepMinutes: persist.sleepMinutes,
+            reducedMotion: persist.reducedMotion,
+            bubbleTheme: persist.bubbleTheme,
+            posX: persist.posX,
+            posY: persist.posY,
+            screenName: persist.screenName,
+            tipIndex: persist.tipIndex
+        });
+    }
+
+    // Dirty flag consumed by CompanionPersist (which owns the snapshot
+    // child process, so this store stays process-free). Suppressed while
+    // a restore is applying its snapshot.
+    property bool dirty: false
+    property bool _restoring: false
+
+    function markDirty(): void {
+        if (!root._restoring)
+            root.dirty = true;
+    }
+
+    function clearDirty(): void {
+        root.dirty = false;
+    }
+
+    // Live interaction won the race against the async snapshot load:
+    // later loads must not clobber it.
+    function adoptCurrent(): void {
+        root._restored = true;
+    }
+
+    // Tolerant versioned parse mirroring Welcome/State.qml: wrong types
+    // and ranges fall back per key, unknown keys are ignored, and
+    // transient motion states (which need a live animation context the
+    // host only starts on state *changes*) settle to idle. A fresh
+    // process is a fresh activity signal, so the idle clock restarts.
+    function restore(text: string): void {
+        if (root._restored)
+            return;
+        root._restoring = true;
+        try {
+            const o = JSON.parse(text);
+            if (o !== null && typeof o === "object" && !Array.isArray(o) && o.schemaVersion === root.stateSchemaVersion) {
+                if (typeof o.enabled === "boolean")
+                    persist.enabled = o.enabled;
+                if (typeof o.skin === "string" && Companion.isKnownSkin(o.skin))
+                    persist.skin = o.skin;
+                if (typeof o.sizeScale === "number")
+                    persist.sizeScale = o.sizeScale;
+                if (typeof o.tipsEnabled === "boolean")
+                    persist.tipsEnabled = o.tipsEnabled;
+                if (typeof o.edge === "string")
+                    persist.edge = o.edge;
+                if (typeof o.sleepMinutes === "number")
+                    persist.sleepMinutes = o.sleepMinutes;
+                if (typeof o.reducedMotion === "boolean")
+                    persist.reducedMotion = o.reducedMotion;
+                if (typeof o.bubbleTheme === "string")
+                    persist.bubbleTheme = o.bubbleTheme;
+                if (typeof o.posX === "number")
+                    persist.posX = o.posX;
+                if (typeof o.posY === "number")
+                    persist.posY = o.posY;
+                if (typeof o.screenName === "string")
+                    persist.screenName = o.screenName;
+                if (typeof o.tipIndex === "number")
+                    persist.tipIndex = o.tipIndex;
+                if (typeof o.state === "string") {
+                    switch (o.state) {
+                    case "hidden":
+                    case "sleeping":
+                    case "idle":
+                    case "hovering":
+                        persist.state = o.state;
+                        break;
+                    default:
+                        persist.state = "idle";
+                        break;
+                    }
+                }
+            }
+        } catch (e) {
+            // Malformed snapshot: sanitize() below recovers to defaults.
+        }
+        persist.lastActiveMs = Date.now();
+        root.sanitize();
+        root._restoring = false;
+        root._restored = true;
+    }
+
+    // Direct-assigned preference keys (bound straight from the settings
+    // UI, bypassing the mutating functions below) still mark the
+    // snapshot dirty through their change signals.
+    onEnabledChanged: root.markDirty()
+    onTipsEnabledChanged: root.markDirty()
+    onReducedMotionChanged: root.markDirty()
+    onSizeScaleChanged: root.markDirty()
+    onSleepMinutesChanged: root.markDirty()
+    onEdgeChanged: root.markDirty()
+    onBubbleThemeChanged: root.markDirty()
 }

@@ -19,12 +19,19 @@ Item {
     readonly property color fg: root.theme === "light" ? "#201d18" : root.theme === "pampa" ? "#1a1a1a" : "#f5f1e8"
     readonly property color edge: root.theme === "pampa" ? "#74acdf" : root.theme === "light" ? "#d8d2c4" : "#4a4438"
 
-    // Natural (unwrapped) text width, capped at maxWidth: sizing the
-    // box from the wrapped label is circular (the wrap width follows
-    // the box), so measure separately to avoid a too-narrow box that
-    // clips its own text.
+    // Natural width comes from an unwrapped measure probe, never the
+    // wrapped label: the label wraps to the bubble width, so sizing the
+    // bubble from the label is circular and clips text.
     implicitWidth: Math.min(root.maxWidth, Math.max(80, measure.implicitWidth + 24))
     implicitHeight: label.implicitHeight + 20
+
+    Text {
+        id: measure
+
+        visible: false
+        text: root.text
+        font.pixelSize: 13
+    }
 
     Rectangle {
         id: box
@@ -35,16 +42,6 @@ Item {
         border.color: root.edge
         border.width: 1
         opacity: 0.97
-
-        // Hidden natural-width probe: same text and font as the label
-        // but never wrapped, so the box can size to the content.
-        Text {
-            id: measure
-
-            visible: false
-            text: root.text
-            font.pixelSize: 13
-        }
 
         Text {
             id: label
