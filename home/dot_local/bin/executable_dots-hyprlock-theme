@@ -10,6 +10,11 @@
 ## hyprlock-compatible source file to colors-hyprlock.conf, which is
 ## included by ~/.config/hypr/hyprlock.conf via a `source =` directive.
 ##
+## Delegation: none — no `horneroctl power` / `horneroctl lock` verb owns
+## this generation (lock <now|status> only locks and reports), so the
+## local implementation below stays canonical. (Later: a `lock theme`
+## verb could own this generation; until then this file is that backend.)
+##
 ## Path contract (HorneroOS/hornero docs/PATH_CONTRACT.md, rows 4 and 9):
 ## canonical hornero/* first, dots/* fallback for reads; writes go to
 ## hornero/*. Base resolution is explicit env override -> XDG -> $HOME.

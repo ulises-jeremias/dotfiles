@@ -6,6 +6,12 @@
 ## Wayland lockscreen management with hyprlock
 ## Alternative to betterlockscreen for Wayland/Hyprland
 ##
+## Delegation: a bare `--lock` prefers `horneroctl lock now` when that
+## subcommand exists (HORNEROCTL_BIN override, default horneroctl on
+## PATH), else the hyprlock orchestration below. `--lock-effect`,
+## `--update`, and `--wall` always stay local: effect images and the
+## wallpaper pipeline have no horneroctl counterpart.
+##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
 ## Usage:
@@ -43,6 +49,23 @@ CURRENT_WALLPAPER="${DOTS_WALLPAPER_POINTER_FILE:-$HOME/.local/state/dots/wallpa
 DIM_LEVEL="${dim:-40}"
 BLUR_LEVEL="${blur:-5}"
 PIXEL_SCALE="${pixel:-10}"
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl lock now` for a bare `--lock` when that subcommand
+# exists; otherwise run the hyprlock orchestration below. Cycle guard:
+# `horneroctl lock now` itself prefers this script, so when calling
+# outward we pin HORNERO_LOCKSCREEN_BIN at the real hyprlock binary.
+# Without that pin the call would loop back here forever. Delegation is
+# skipped when hyprlock is missing (or an explicit effect was requested)
+# and the legacy implementation below runs instead. An explicit `--lock`
+# is the confirmation, so --yes is passed outward.
+USE_HORNERO_LOCK=0
+if [[ -z ${lock_effect:-} && -z ${update:-} ]] && command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" lock --help >/dev/null 2>&1 \
+  && command -v hyprlock >/dev/null 2>&1; then
+  USE_HORNERO_LOCK=1
+fi
 
 # Lock screen images
 LOCK_RESIZE="$CURRENT_DIR/lock_resize.png"
@@ -793,6 +816,14 @@ main() {
 	if [[ -z ${WAYLAND_DISPLAY:-} ]]; then
 		log_error "This script requires Wayland"
 		exit 1
+	fi
+
+	# A bare --lock delegates to horneroctl before the local dependency
+	# checks (horneroctl owns its backend choice from here on).
+	if ((USE_HORNERO_LOCK)) && [[ ${lock:-} == "yes" ]]; then
+		HORNERO_LOCKSCREEN_BIN="$(command -v hyprlock)"
+		export HORNERO_LOCKSCREEN_BIN
+		exec "$HORNEROCTL_BIN" lock now --yes
 	fi
 
 	# Check dependencies
