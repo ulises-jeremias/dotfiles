@@ -8,8 +8,35 @@
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
 ## Switch to the next existing workspace
+##
+## Delegation: cycling runs via `horneroctl hypr workspace <next|prev>`
+## when that subcommand exists (HORNEROCTL_BIN override, default
+## horneroctl on PATH), else the legacy i3-msg pipeline below. No cycle
+## risk: horneroctl never calls back into this script (pure i3-msg).
+## The explicit invocation is the confirmation, so --yes is passed
+## outward. Flags: -l, --left, --previous, --prev select the previous
+## workspace (legacy only understood -l/--left).
 
 set -euo pipefail
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl hypr workspace` when that subcommand exists;
+# otherwise run the legacy i3-msg pipeline kept below.
+USE_HORNERO_WORKSPACE=0
+if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hypr workspace --help >/dev/null 2>&1; then
+  USE_HORNERO_WORKSPACE=1
+fi
+
+if ((USE_HORNERO_WORKSPACE)); then
+  direction="next"
+  case "${1:-}" in
+    -l | --left | --previous | --prev) direction="prev" ;;
+  esac
+  "$HORNEROCTL_BIN" hypr workspace "$direction" --yes
+  exit 0
+fi
 
 mapfile -t workspaces < <(i3-msg -t get_config | grep "set \$WS" | cut -d " " -f3 || echo "")
 actual=$(i3-msg -t get_workspaces | jq '.[] | select(.focused).name')

@@ -19,6 +19,15 @@
 ##         --restore           Restore persisted layout from state file
 ##         --ephemeral         Do not persist selected layout to disk
 ##         --quiet             Disable desktop notifications
+##
+## Delegation: every verb runs via `horneroctl hypr layout` when that
+## subcommand exists (HORNEROCTL_BIN override, default horneroctl on
+## PATH), else the legacy hyprctl/state implementation below. No cycle
+## risk: `horneroctl hypr layout` never calls back into this script
+## (pure hyprctl keywords + state files). An explicit --set/--toggle/
+## --restore is the confirmation, so --yes is passed outward; --ephemeral
+## is passed through; --quiet needs no forwarding (horneroctl never
+## sends desktop notifications).
 
 set -euo pipefail
 
@@ -28,6 +37,35 @@ readonly STATE_DIR="${HOME}/.local/state/dots/hypr-layout"
 readonly STATE_FILE="${STATE_DIR}/current"
 readonly DEFAULT_LAYOUT="scrolling"
 readonly TOGGLE_FALLBACK="dwindle"
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl hypr layout` when that subcommand exists; otherwise
+# run the legacy implementation kept in this file.
+USE_HORNERO_LAYOUT=0
+if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hypr layout --help >/dev/null 2>&1; then
+  USE_HORNERO_LAYOUT=1
+fi
+
+# Run one layout verb via horneroctl (current/status are reads; the
+# explicit set/toggle/restore flag is the confirmation, so --yes is passed).
+hornero_layout() {
+  local leaf="$1"
+  local layout="${2:-}"
+  local args=(hypr layout "$leaf")
+  if [[ $leaf == set ]]; then
+    args+=("$layout")
+  fi
+  if [[ ${ephemeral:-no} == yes ]]; then
+    args+=(--ephemeral)
+  fi
+  case "$leaf" in
+    current | status) ;;
+    *) args+=(--yes) ;;
+  esac
+  "$HORNEROCTL_BIN" "${args[@]}"
+}
 
 notify_layout() {
   local message="$1"
@@ -140,14 +178,22 @@ toggle_layout() {
 }
 
 main() {
-  ensure_hyprctl || exit 1
-
   if [[ ${current:-no} == yes ]]; then
+    if ((USE_HORNERO_LAYOUT)); then
+      hornero_layout current
+      exit 0
+    fi
+    ensure_hyprctl || exit 1
     current_layout
     exit 0
   fi
 
   if [[ ${restore:-no} == yes ]]; then
+    if ((USE_HORNERO_LAYOUT)); then
+      hornero_layout restore
+      exit 0
+    fi
+    ensure_hyprctl || exit 1
     restore_layout
     exit 0
   fi
@@ -159,11 +205,21 @@ main() {
       exit 1
     fi
 
+    if ((USE_HORNERO_LAYOUT)); then
+      hornero_layout set "$set"
+      exit 0
+    fi
+    ensure_hyprctl || exit 1
     apply_layout "$set"
     exit 0
   fi
 
   if [[ ${toggle:-no} == yes || $# -eq 0 ]]; then
+    if ((USE_HORNERO_LAYOUT)); then
+      hornero_layout toggle
+      exit 0
+    fi
+    ensure_hyprctl || exit 1
     toggle_layout
     exit 0
   fi
