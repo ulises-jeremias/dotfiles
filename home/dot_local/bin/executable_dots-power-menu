@@ -11,6 +11,12 @@
 ## Power Menu Wrapper
 ## Quickshell-first entrypoint for session/power drawer
 ##
+## Delegation: the minimal-menu power actions run via `horneroctl power`
+## when that subcommand exists (HORNEROCTL_BIN override, default
+## horneroctl on PATH), else the legacy systemctl/loginctl calls below.
+## Locking stays with dots-lockscreen (itself a horneroctl shim); the
+## quickshell drawer path is owned by the shell family and untouched here.
+##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
 ## Usage:
@@ -30,6 +36,35 @@ set -euo pipefail
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 MODE=${mode:-auto}
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl power` as the action backend when that subcommand
+# exists; otherwise run the legacy systemctl/loginctl calls. No cycle
+# risk: `horneroctl power` never calls back into this menu.
+USE_HORNERO_POWER=0
+if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" power --help >/dev/null 2>&1; then
+  USE_HORNERO_POWER=1
+fi
+
+# Run one minimal-menu power action: via horneroctl when available
+# (the menu choice is the confirmation, so --yes is passed), else the
+# legacy implementation kept in this file.
+power_action() {
+  local verb="$1"
+  if ((USE_HORNERO_POWER)); then
+    "$HORNEROCTL_BIN" power "$verb" --yes
+    return
+  fi
+  case "$verb" in
+    suspend) systemctl suspend ;;
+    logout) loginctl terminate-session "${XDG_SESSION_ID-}" ;;
+    reboot) systemctl -i reboot ;;
+    shutdown) systemctl -i poweroff ;;
+  esac
+}
+
 launch_quickshell() {
   pgrep -x qs 2>/dev/null || pgrep -x quickshell >/dev/null 2>&1 || return 1
   dots-quickshell ipc session toggle
@@ -55,10 +90,10 @@ EOF
   read -r -p "Select action [1-5]: " choice
   case "$choice" in
     1) lock_session ;;
-    2) systemctl suspend ;;
-    3) loginctl terminate-session "${XDG_SESSION_ID-}" ;;
-    4) systemctl -i reboot ;;
-    5) systemctl -i poweroff ;;
+    2) power_action suspend ;;
+    3) power_action logout ;;
+    4) power_action reboot ;;
+    5) power_action shutdown ;;
     *) exit 0 ;;
   esac
 }
