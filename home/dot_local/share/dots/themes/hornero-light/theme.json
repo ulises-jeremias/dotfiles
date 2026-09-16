@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "hornero-light",
+  "name": "Hornero Light",
+  "description": "Flagship HorneroOS light wallpaper with soft daytime desktop",
+  "tags": [
+    "hornero",
+    "flagship",
+    "light"
+  ],
+  "darkMode": false,
+  "schemeType": "tonal-spot",
+  "gtkTheme": "Orchis-Light-Compact",
+  "iconTheme": "Papirus",
+  "defaultWallpaper": "hornero-os-light.png",
+  "wallpaperDir": "hornero",
+  "gtkPreferDark": false,
+  "colorOnly": true
+}

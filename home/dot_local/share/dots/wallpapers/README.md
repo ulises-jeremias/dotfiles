@@ -5,6 +5,7 @@ Themed wallpaper packs ship here and are symlinked into `~/Pictures/Wallpapers/<
 ```text
 wallpapers/
 ├── curated/           # uncategorized pool
+├── hornero/           # flagship HorneroOS light + dark (first-boot default)
 ├── vapor-dreams/
 ├── neon-city/
 ├── gruvbox/

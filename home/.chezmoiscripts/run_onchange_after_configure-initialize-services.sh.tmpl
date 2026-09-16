@@ -71,7 +71,7 @@ rmdir "$HOME/.local/state/dots/rice" 2>/dev/null || true
 
 wall_ptr="$HOME/.local/state/dots/wallpaper/path"
 if [[ ! -f "$wall_ptr" || ! -s "$wall_ptr" ]]; then
-  for candidate in vapor-dreams neon-city soft-morning catppuccin-mocha; do
+  for candidate in hornero-dark vapor-dreams neon-city soft-morning catppuccin-mocha; do
     theme_json="$HOME/.local/share/dots/themes/$candidate/theme.json"
     [[ -f "$theme_json" ]] || continue
     default_wp="$(python3 -c "import json;print(json.load(open('$theme_json')).get('defaultWallpaper',''))" 2>/dev/null || true)"
