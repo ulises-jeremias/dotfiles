@@ -18,6 +18,41 @@ source "${DOTS_LIB:-${HOME}/.local/lib/dots}/dots-lib.sh" 2>/dev/null || true
 
 set -euo pipefail
 
+# horneroctl delegation (HORNEROCTL_BIN override, default horneroctl on
+# PATH): prefer `horneroctl appearance accent ...` when the subcommand
+# exists. Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
+# call runs the legacy body below instead of calling back.
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+	_horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+	if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+		_horneroctl_help="$("$_horneroctl_bin" appearance accent --help 2>/dev/null || true)"
+		case "$_horneroctl_help" in
+		*"accent show"*)
+			case "${1:-}" in
+			--show)
+				if [[ $# -eq 1 ]]; then
+					exec "$_horneroctl_bin" appearance accent show
+				fi
+				;;
+			--clear)
+				if [[ $# -eq 1 ]]; then
+					exec "$_horneroctl_bin" appearance accent clear --yes
+				fi
+				;;
+			--help | -h | '')
+				;;
+			*)
+				if [[ $# -eq 1 ]]; then
+					exec "$_horneroctl_bin" appearance accent set "$1" --yes
+				fi
+				;;
+			esac
+			;;
+		esac
+	fi
+	unset _horneroctl_bin _horneroctl_help
+fi
+
 OVERRIDE_FILE="${XDG_CACHE_HOME:-${HOME}/.cache}/dots/smart-colors/accent-override"
 
 usage() {

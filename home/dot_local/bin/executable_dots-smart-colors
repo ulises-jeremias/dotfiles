@@ -24,6 +24,59 @@
 
 set -euo pipefail
 
+# horneroctl delegation (HORNEROCTL_BIN override, default horneroctl on
+# PATH): prefer `horneroctl appearance colors ...` when the subcommand
+# exists. Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
+# call runs the legacy body below instead of calling back. Only the
+# no-argument preview and the pure `--generate [--m3]` / `--export
+# --format files` generation verbs delegate; analysis, export formats,
+# concept lookup, and help stay legacy.
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+	_horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+	if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+		_horneroctl_help="$("$_horneroctl_bin" appearance colors --help 2>/dev/null || true)"
+		case "$_horneroctl_help" in
+		*"appearance colors status"*)
+			if [[ $# -eq 0 ]]; then
+				exec "$_horneroctl_bin" appearance colors status
+			fi
+			_dots_sc_generate=no _dots_sc_m3=no _dots_sc_export=no _dots_sc_files=no _dots_sc_other=no
+			_dots_sc_args=("$@")
+			for ((_dots_sc_i = 0; _dots_sc_i < $#; _dots_sc_i++)); do
+				_a="${_dots_sc_args[_dots_sc_i]}"
+				case "$_a" in
+				--generate) _dots_sc_generate=yes ;;
+				--m3) _dots_sc_m3=yes ;;
+				--export) _dots_sc_export=yes ;;
+				--format=files) _dots_sc_files=yes ;;
+				--format)
+					if [[ "${_dots_sc_args[_dots_sc_i + 1]:-}" == files ]]; then
+						_dots_sc_files=yes
+						_dots_sc_i=$((_dots_sc_i + 1))
+					else
+						_dots_sc_other=yes
+					fi
+					;;
+				*) _dots_sc_other=yes ;;
+				esac
+			done
+			unset _dots_sc_args _dots_sc_i
+			if [[ $_dots_sc_export == yes && $_dots_sc_files == yes ]]; then
+				_dots_sc_generate=yes
+			fi
+			if [[ $_dots_sc_other == no && $_dots_sc_generate == yes ]]; then
+				if [[ $_dots_sc_m3 == yes ]]; then
+					exec "$_horneroctl_bin" appearance colors generate --m3 --yes
+				fi
+				exec "$_horneroctl_bin" appearance colors generate --yes
+			fi
+			unset _dots_sc_generate _dots_sc_m3 _dots_sc_export _dots_sc_files _dots_sc_other _a
+			;;
+		esac
+	fi
+	unset _horneroctl_bin _horneroctl_help
+fi
+
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit 1
 if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
   # shellcheck source=/dev/null

@@ -7,6 +7,42 @@
 
 set -euo pipefail
 
+# horneroctl delegation (HORNEROCTL_BIN override, default horneroctl on
+# PATH): prefer `horneroctl appearance scheme set-mode|set-variant` when
+# the guarded subcommands exist. Skipped under HORNEROCTL_DELEGATED so a
+# horneroctl-driven backend call runs the legacy body below instead of
+# calling back (dots-appearance set-mode|set-variant are thin wrappers over
+# this script's mode|variant verbs, so the round trip is exact). Only
+# well-formed `mode <dark|light>` and `variant <name>` delegate; list,
+# current, set, regenerate, sync-state, and usage errors stay legacy.
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+	_horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+	if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+		_horneroctl_help="$("$_horneroctl_bin" appearance scheme --help 2>/dev/null || true)"
+		case "$_horneroctl_help" in
+		*"colors ..."*)
+			case "${1:-}" in
+			mode)
+				if [[ $# -eq 2 ]]; then
+					case "${2:-}" in
+					dark | light)
+						exec "$_horneroctl_bin" appearance scheme set-mode "${2}" --yes
+						;;
+					esac
+				fi
+				;;
+			variant)
+				if [[ $# -eq 2 && -n "${2:-}" ]]; then
+					exec "$_horneroctl_bin" appearance scheme set-variant "${2}" --yes
+				fi
+				;;
+			esac
+			;;
+		esac
+	fi
+	unset _horneroctl_bin _horneroctl_help
+fi
+
 if [[ -r "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
 	# shellcheck source=/dev/null
 	source "$HOME/.local/lib/dots/wallpaper-resolver.sh" 2>/dev/null || true
