@@ -13,6 +13,7 @@
 - **[Testing Strategy](Testing-Strategy.md)** - Playground environment and testing requirements
 - **[Security Guidelines](Security-Guidelines.md)** - Secret management, validation, and permissions
 - **[Performance Guidelines](Performance-Guidelines.md)** - Caching strategies and optimization
+- **[horneroctl Dependency](Horneroctl.md)** - Optional `horneroctl` dependency and `HORNEROCTL_BIN` override
 
 ### Architecture Decision Records (ADRs)
 

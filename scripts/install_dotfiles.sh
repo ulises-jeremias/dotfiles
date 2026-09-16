@@ -79,6 +79,10 @@ if ! command -v git >/dev/null 2>&1; then
   error "Git is not installed"
 fi
 
+if ! command -v horneroctl >/dev/null 2>&1; then
+  log_manual_action "horneroctl not found (optional): dots-* shims prefer it when present and fall back to legacy implementations otherwise. Build it from https://github.com/HorneroOS/hornero (see docs/Horneroctl.md) or point HORNEROCTL_BIN at a custom binary path."
+fi
+
 if [ -d "${DOTFILES_DIR}" ]; then
   git_clean "${DOTFILES_DIR}" "${DOTFILES_REPO}" "${DOTFILES_BRANCH}"
 else
