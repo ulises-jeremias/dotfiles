@@ -35,7 +35,9 @@ JsonObject {
             name: "Welcome",
             icon: "waving_hand",
             description: "Open the Hornero Welcome Center",
-            command: ["quickshell", "ipc", "call", "welcome", "open"],
+            // Explicit "start": the welcome IPC handler requires its
+            // page argument (open with no args is rejected).
+            command: ["quickshell", "ipc", "call", "welcome", "open", "start"],
             enabled: true,
             dangerous: false
         },
