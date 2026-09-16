@@ -21,6 +21,15 @@
 ##         --restore           Restore persisted profile from state file
 ##         --ephemeral         Do not persist the selection to disk
 ##         --quiet             Disable desktop notifications
+##
+## Delegation: every verb runs via `horneroctl hypr animations` when that
+## subcommand exists (HORNEROCTL_BIN override, default horneroctl on
+## PATH), else the legacy hyprctl/state implementation below. No cycle
+## risk: `horneroctl hypr animations` never calls back into this script
+## (pure hyprctl keywords + state files). An explicit --set/--next/
+## --restore is the confirmation, so --yes is passed outward; --ephemeral
+## is passed through; --quiet needs no forwarding (horneroctl never
+## sends desktop notifications).
 
 set -euo pipefail
 
@@ -31,6 +40,35 @@ readonly STATE_DIR="${HOME}/.local/state/dots/hypr-animations"
 readonly STATE_FILE="${STATE_DIR}/current"
 readonly DEFAULT_PROFILE="default"
 readonly PROFILES=(default cozy cyberpunk nature minimal vaporwave)
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl hypr animations` when that subcommand exists;
+# otherwise run the legacy implementation kept in this file.
+USE_HORNERO_ANIMATIONS=0
+if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hypr animations --help >/dev/null 2>&1; then
+  USE_HORNERO_ANIMATIONS=1
+fi
+
+# Run one animations verb via horneroctl (list/current are reads; the
+# explicit set/next/restore flag is the confirmation, so --yes is passed).
+hornero_animations() {
+  local leaf="$1"
+  local profile="${2:-}"
+  local args=(hypr animations "$leaf")
+  if [[ $leaf == set ]]; then
+    args+=("$profile")
+  fi
+  if [[ ${ephemeral:-no} == yes ]]; then
+    args+=(--ephemeral)
+  fi
+  case "$leaf" in
+    list | current) ;;
+    *) args+=(--yes) ;;
+  esac
+  "$HORNEROCTL_BIN" "${args[@]}"
+}
 
 notify_profile() {
   local message="$1"
@@ -166,6 +204,21 @@ main() {
   [[ ${current:-no} == yes ]] && command="current"
   [[ ${list:-no} == yes ]] && command="list"
   [[ ${restore:-no} == yes ]] && command="restore"
+
+  case "$command" in
+    set | next | current | list | restore)
+      if ((USE_HORNERO_ANIMATIONS)); then
+        case "$command" in
+          set) hornero_animations set "$set" ;;
+          next) hornero_animations next ;;
+          current) hornero_animations current ;;
+          list) hornero_animations list ;;
+          restore) hornero_animations restore ;;
+        esac
+        return
+      fi
+      ;;
+  esac
 
   case "$command" in
     set)

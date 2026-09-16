@@ -8,8 +8,42 @@
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
 ## Show a menu to manage monitor configuration in Hyprland
+##
+## Delegation: the interactive menu below is this script's UI (horneroctl
+## has no menu); once an arrangement is picked, it is applied via
+## `horneroctl hypr monitors set <mode> --yes` when that subcommand
+## exists (HORNEROCTL_BIN override, default horneroctl on PATH), else the
+## legacy hyprctl calls in the case statement. No cycle risk: horneroctl
+## never calls back into this script (pure hyprctl keywords). The menu
+## choice is the confirmation, so --yes is passed outward.
 
 set -euo pipefail
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl hypr monitors set` when that subcommand exists;
+# otherwise run the legacy hyprctl calls kept in the case statement.
+USE_HORNERO_MONITORS=0
+if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hypr monitors --help >/dev/null 2>&1; then
+  USE_HORNERO_MONITORS=1
+fi
+
+# Map a menu selection to a horneroctl monitor mode (empty = a monitor
+# line, which applies nothing, mirroring the legacy fall-through).
+mon_mode_for_selection() {
+  case "$1" in
+    "󰍺 Internal Only") printf 'internal-only' ;;
+    "󰍹 External Only") printf 'external-only' ;;
+    "󰹑 Extend Right") printf 'extend-right' ;;
+    "󰹑 Extend Left") printf 'extend-left' ;;
+    "󰹑 Extend Above") printf 'extend-above' ;;
+    "󰹑 Extend Below") printf 'extend-below' ;;
+    "󰍷 Mirror Displays") printf 'mirror' ;;
+    "󰑊 Disable All External") printf 'disable-external' ;;
+  esac
+  return 0
+}
 
 if [[ ${DOTS_BYPASS_QUICKSHELL:-0} != 1 ]] && pgrep -x quickshell >/dev/null 2>&1; then
   dots-settings-gui --pane=system menu
@@ -76,6 +110,15 @@ read -r idx || exit 1
 [[ "$idx" =~ ^[0-9]+$ ]] || exit 1
 (( idx >= 1 && idx <= ${#monitor_options[@]} )) || exit 1
 selection="${monitor_options[$((idx - 1))]}"
+
+# Delegate arrangement picks to horneroctl when available; a monitor line
+# (empty mode) falls through to the legacy no-op, exactly as before.
+mode="$(mon_mode_for_selection "$selection")"
+if [[ -n $mode && $USE_HORNERO_MONITORS == 1 ]]; then
+  "$HORNEROCTL_BIN" hypr monitors set "$mode" --yes
+  notify-send "Monitor Configuration" "Applied successfully" -i video-display
+  exit 0
+fi
 
 case "$selection" in
   "󰍺 Internal Only") # Internal Only
