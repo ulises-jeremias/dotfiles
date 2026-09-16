@@ -6,6 +6,12 @@
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
 ## Check if the network is up
+##
+## Delegation: `--once` runs via `horneroctl hardware network status`
+## when that subcommand exists (HORNEROCTL_BIN override, default
+## horneroctl on PATH), else the ping probe below. The polling loop
+## always stays local: horneroctl owns no streaming verb
+## (DOTS_PING_HOST passes through untouched).
 
 set -euo pipefail
 
@@ -37,6 +43,17 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# A single-shot `--once` delegates to horneroctl when that subcommand
+# exists (TIMEOUT maps to the ping deadline); the polling loop below
+# stays local. No cycle risk: `hardware network status` only shells out
+# to ping/ip, never back into this script.
+if [[ $ONCE == true ]] && command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hardware network --help >/dev/null 2>&1; then
+  exec "$HORNEROCTL_BIN" hardware network status --timeout="$TIMEOUT"
+fi
 
 wdisconnect="睊"
 wconnected="直"

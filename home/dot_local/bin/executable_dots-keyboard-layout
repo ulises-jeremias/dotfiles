@@ -18,6 +18,11 @@
 ## Note: For comprehensive keyboard configuration including layouts, variants,
 ##       and options, use: dots-keyboard-settings (opens LXQt config GUI)
 ##
+## Delegation: toggle, current, get, and settings run via
+## `horneroctl hardware keyboard` when that subcommand exists
+## (HORNEROCTL_BIN override, default horneroctl on PATH), else the
+## hyprctl/setxkbmap functions below.
+##
 ## Examples:
 ##   dots-keyboard-layout           # Toggle between layouts
 ##   dots-keyboard-layout --current # Show current layout
@@ -29,6 +34,21 @@ source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_NAME
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl hardware keyboard` when that subcommand exists;
+# otherwise run the local toggle/readout functions below. No cycle risk
+# for toggle/current/get (`hardware keyboard layout` only shells out to
+# hyprctl/setxkbmap); the settings branch pins
+# HORNERO_KEYBOARD_SETTINGS_BIN at the real lxqt-config-input binary so
+# the outward call cannot loop back through the dots-keyboard-settings
+# shim.
+USE_HORNERO_KEYBOARD=0
+if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hardware keyboard --help >/dev/null 2>&1; then
+  USE_HORNERO_KEYBOARD=1
+fi
 
 # Define your preferred layouts here (edit as needed)
 # Format: "layout:variant" (use empty string for no variant)
@@ -190,6 +210,24 @@ open_settings() {
 
 # Main
 main() {
+  # Reads and the explicit toggle delegate to horneroctl when available
+  # (the toggle is the confirmation, so --yes is passed); the settings
+  # branch pins the GUI backend so the call cannot loop back here.
+  if ((USE_HORNERO_KEYBOARD)); then
+    if [[ ${current:-no} == yes ]]; then
+      exec "$HORNEROCTL_BIN" hardware keyboard layout --current
+    fi
+    if [[ ${get:-no} == yes ]]; then
+      exec "$HORNEROCTL_BIN" hardware keyboard layout --get
+    fi
+    if [[ ${settings:-no} == yes ]] && command -v lxqt-config-input >/dev/null 2>&1; then
+      HORNERO_KEYBOARD_SETTINGS_BIN="$(command -v lxqt-config-input)"
+      export HORNERO_KEYBOARD_SETTINGS_BIN
+      exec "$HORNEROCTL_BIN" hardware keyboard settings
+    fi
+    exec "$HORNEROCTL_BIN" hardware keyboard layout --yes
+  fi
+
   # Handle flags
   if [[ ${current:-no} == yes ]]; then
     show_current

@@ -24,12 +24,32 @@
 ##   @script.name eDP-1 = 0.8       # Set brightness to 80%
 ##   @script.name "*" + 0.1 --temp  # Increase color temperature
 ##   @script.name --list            # Show all displays
+##
+## Delegation: brightness reads and fraction sets run via
+## `horneroctl hardware brightness` when that subcommand exists
+## (HORNEROCTL_BIN override, default horneroctl on PATH), else the
+## legacy backend calls below. `--temp` and the gamma pipeline always
+## stay local: horneroctl owns no color-temperature verb.
 
 set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
-if ! command -v bc &>/dev/null; then
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl hardware brightness` when that subcommand exists;
+# otherwise run the legacy backend calls below. No cycle risk:
+# `hardware brightness` only shells out to brightnessctl/blight/
+# xbacklight/xrandr, never back into this script. --temp stays local.
+USE_HORNERO_BRIGHTNESS=0
+if [[ ${temp:-no} != yes ]] && command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hardware brightness --help >/dev/null 2>&1; then
+  USE_HORNERO_BRIGHTNESS=1
+fi
+
+# bc is only needed by the legacy path below; a delegating run needs no
+# local arithmetic.
+if (( ! USE_HORNERO_BRIGHTNESS )) && ! command -v bc &>/dev/null; then
   echo "bc command could not be found, it's needed to run this script."
   exit
 fi
@@ -129,6 +149,9 @@ exec_op() {
 
 # Handle --list flag
 if [[ ${list:-no} == yes ]]; then
+  if ((USE_HORNERO_BRIGHTNESS)); then
+    exec "$HORNEROCTL_BIN" hardware brightness status
+  fi
   list_displays
   exit 0
 fi
@@ -165,6 +188,17 @@ else
   else
     OPVAL='0.1'
   fi
+fi
+
+# A validated DISPLAY/OP/STEP delegates to horneroctl before the local
+# backend calls (horneroctl owns backend choice and clamping from here
+# on). The explicit operation is the confirmation, so --yes is passed.
+if ((USE_HORNERO_BRIGHTNESS)); then
+  case "$OP" in
+    =) exec "$HORNEROCTL_BIN" hardware brightness set "$OPVAL" --display "$DISP" --yes ;;
+    +) exec "$HORNEROCTL_BIN" hardware brightness up --step "$OPVAL" --display "$DISP" --yes ;;
+    -) exec "$HORNEROCTL_BIN" hardware brightness down --step "$OPVAL" --display "$DISP" --yes ;;
+  esac
 fi
 
 CURRBRIGHT=$(get_brightness "$DISP")

@@ -7,6 +7,11 @@
 ##
 ## Control the microphone
 ##
+## Delegation: `--toggle` runs via `horneroctl hardware mic toggle`
+## when that subcommand exists (HORNEROCTL_BIN override, default
+## horneroctl on PATH), else the wpctl call below. The event-driven
+## listen loop always stays local: horneroctl owns no streaming verb.
+##
 ## Usage:
 ##   @script.name [OPTIONS]
 ##
@@ -21,11 +26,25 @@ set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl hardware mic toggle` when that subcommand exists;
+# otherwise run the wpctl call below. No cycle risk: `hardware mic`
+# only shells out to wpctl, never back into this script.
+USE_HORNERO_MIC=0
+if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hardware mic --help >/dev/null 2>&1; then
+  USE_HORNERO_MIC=1
+fi
+
 reset=""
 muted_color="${muted_color:-}"
 unmuted_color="${unmuted_color:-}"
-exec_toggle="${toggle:-false}"
-no_unmuted="${no_unmuted:-false}"
+# easyoptions boolean flags expand to `yes` (house convention, cf.
+# dots-keyboard-layout); compare against that, not `true`, or --toggle
+# and --no-unmuted silently fall through to the listen loop.
+exec_toggle="${toggle:-no}"
+no_unmuted="${no_unmuted:-no}"
 
 get_default_source() {
   # Get the ID of the default microphone (source)
@@ -40,7 +59,7 @@ status() {
   if [[ -n $MUTED ]]; then
     echo -e "${muted_color}${reset}" # Muted icon
   else
-    [[ ${no_unmuted} != true ]] && echo -e "${unmuted_color}${reset}" # Unmuted icon
+    [[ ${no_unmuted} != yes ]] && echo -e "${unmuted_color}${reset}" # Unmuted icon
   fi
 }
 
@@ -58,7 +77,12 @@ toggle() {
   wpctl set-mute "$DEFAULT_SOURCE" toggle
 }
 
-if [[ ${exec_toggle} == true ]]; then
+if [[ ${exec_toggle} == yes ]]; then
+  # An explicit --toggle delegates to horneroctl (the flag is the
+  # confirmation, so --yes is passed); otherwise toggle locally.
+  if ((USE_HORNERO_MIC)); then
+    exec "$HORNEROCTL_BIN" hardware mic toggle --yes
+  fi
   toggle
   exit
 fi

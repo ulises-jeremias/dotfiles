@@ -5,8 +5,28 @@
 ##
 ## Keyboard Settings Manager
 ## Opens LXQt keyboard configuration GUI
+##
+## Delegation: opening the GUI runs via `horneroctl hardware keyboard
+## settings` when that subcommand exists (HORNEROCTL_BIN override,
+## default horneroctl on PATH), else the lxqt-config-input call below.
 
 set -euo pipefail
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
+
+# Prefer `horneroctl hardware keyboard settings` when that subcommand
+# exists; otherwise open the GUI below. Cycle guard: `hardware keyboard
+# settings` itself prefers this script, so when calling outward we pin
+# HORNERO_KEYBOARD_SETTINGS_BIN at the real lxqt-config-input binary.
+# Without that pin the call would loop back here forever. Delegation is
+# skipped when lxqt-config-input is missing and the legacy path below
+# runs instead.
+USE_HORNERO_SETTINGS=0
+if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+  && "$HORNEROCTL_BIN" hardware keyboard settings --help >/dev/null 2>&1 \
+  && command -v lxqt-config-input >/dev/null 2>&1; then
+  USE_HORNERO_SETTINGS=1
+fi
 
 SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_NAME
@@ -48,6 +68,14 @@ main() {
       show_help
       ;;
     *)
+      # Opening the GUI delegates to horneroctl with the backend pinned
+      # at the real lxqt-config-input binary (see above); otherwise open
+      # it below.
+      if ((USE_HORNERO_SETTINGS)); then
+        HORNERO_KEYBOARD_SETTINGS_BIN="$(command -v lxqt-config-input)"
+        export HORNERO_KEYBOARD_SETTINGS_BIN
+        exec "$HORNEROCTL_BIN" hardware keyboard settings
+      fi
       open_keyboard_settings
       ;;
   esac
