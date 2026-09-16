@@ -3,6 +3,15 @@
 ## dots-performance-mode: Select or view performance profiles
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
+##
+## Delegation: the final profile switch runs via
+## `horneroctl apps performance mode set` (HORNEROCTL_BIN override,
+## default horneroctl on PATH) when that subcommand exists, else the
+## legacy powerprofilesctl call below. The switch passes confirmation
+## because the user picked the profile explicitly. The interactive
+## menu, the quickshell pane, and the auto-cpufreq GUI stay legacy.
+## Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
+## call runs the legacy body instead of calling back.
 ## Usage:
 ##   @script.name [OPTIONS]
 ## Options:
@@ -73,5 +82,16 @@ for p in $profiles; do
   i=$((i + 1))
 done
 
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+  _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+  if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+    _horneroctl_help="$("$_horneroctl_bin" apps --help 2>/dev/null || true)"
+    case "$_horneroctl_help" in
+      *"Usage: horneroctl apps"*)
+        exec "$_horneroctl_bin" apps performance mode set "$selected" --yes
+        ;;
+    esac
+  fi
+fi
 powerprofilesctl set "$selected"
 notify-send "Performance Mode" "Set to $selected" -u low || true

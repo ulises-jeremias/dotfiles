@@ -22,6 +22,12 @@
 ##   apply-rice-theme [id]     Deprecated alias for apply-theme-pack
 ##   status                    Show whether daemon is running
 ##
+## Delegation: every command runs via `horneroctl apps switcher`
+## (HORNEROCTL_BIN override, default horneroctl on PATH) when that
+## subcommand exists, else the legacy body below. Control commands
+## pass --yes because the user invoked this script explicitly.
+## Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
+## call runs the legacy body instead of calling back.
 
 set -euo pipefail
 
@@ -43,6 +49,33 @@ run_snappy() {
 
 cmd="${arguments[0]:-toggle}"
 arg="${arguments[1]:-}"
+
+_orig_cmd="$cmd"
+case "$cmd" in
+  daemon | next | prev | toggle | hide | select | quit | status | apply-theme | apply-theme-pack | apply-rice-theme | help | --help | -h) ;;
+  *) cmd="__unknown__" ;;
+esac
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]] && [[ "$cmd" != "__unknown__" ]] && [[ "$cmd" != help ]] && [[ "$cmd" != --help ]] && [[ "$cmd" != -h ]]; then
+  _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+  if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+    _horneroctl_help="$("$_horneroctl_bin" apps --help 2>/dev/null || true)"
+    case "$_horneroctl_help" in
+      *"Usage: horneroctl apps"*)
+        if [[ "$cmd" == status ]]; then
+          exec "$_horneroctl_bin" apps switcher status
+        elif [[ "$cmd" == apply-theme ]] || [[ "$cmd" == apply-theme-pack ]] || [[ "$cmd" == apply-rice-theme ]]; then
+          if [[ -n "$arg" ]]; then
+            exec "$_horneroctl_bin" apps switcher "$cmd" "$arg" --yes
+          elif [[ "$cmd" == apply-theme-pack ]] || [[ "$cmd" == apply-rice-theme ]]; then
+            exec "$_horneroctl_bin" apps switcher "$cmd" --yes
+          fi
+        else
+          exec "$_horneroctl_bin" apps switcher "$cmd" --yes
+        fi
+        ;;
+    esac
+  fi
+fi
 
 case "$cmd" in
 daemon)
@@ -72,7 +105,11 @@ help | --help | -h)
 	show_help
 	;;
 *)
-	echo "Unknown command: $cmd"
+	if [[ "$cmd" == "__unknown__" ]]; then
+		echo "Unknown command: $_orig_cmd"
+	else
+		echo "Unknown command: $cmd"
+	fi
 	show_help
 	exit 1
 	;;

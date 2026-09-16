@@ -6,6 +6,12 @@
 ## dots-launcher: Unified application launcher wrapper
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
+##
+## Delegation: --list and launch run via `horneroctl apps launch`
+## (HORNEROCTL_BIN override, default horneroctl on PATH) when that
+## subcommand exists, else the legacy body below. Skipped under
+## HORNEROCTL_DELEGATED so a horneroctl-driven backend call runs the
+## legacy body instead of calling back.
 ## Preference order (auto): quickshell > minimal prompt
 ## Usage:
 ##   @script.name [OPTIONS]
@@ -36,6 +42,24 @@ minimal_fallback() {
   [[ -z $cmd ]] && exit 0
   exec $cmd
 }
+
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+  _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+  if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+    _horneroctl_help="$("$_horneroctl_bin" apps --help 2>/dev/null || true)"
+    case "$_horneroctl_help" in
+      *"Usage: horneroctl apps"*)
+        if [[ $LIST == yes ]]; then
+          exec "$_horneroctl_bin" apps launch --list
+        elif [[ $BACKEND == auto ]]; then
+          exec "$_horneroctl_bin" apps launch
+        else
+          exec "$_horneroctl_bin" apps launch --backend "$BACKEND"
+        fi
+        ;;
+    esac
+  fi
+fi
 
 if [[ $LIST == yes ]]; then
   order=(quickshell minimal)

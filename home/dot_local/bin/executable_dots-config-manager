@@ -16,6 +16,13 @@
 ##         --auto                            Set up automatic snapshots.
 ##         --cleanup                         Clean old snapshots (keep last 10).
 ##
+## Delegation: --create, --list, and --restore run via
+## `horneroctl config snapshot` (HORNEROCTL_BIN override, default
+## horneroctl on PATH) when that subcommand exists, else the legacy
+## body below. Create and restore pass --yes because the user invoked
+## this script explicitly. --diff, --auto, and --cleanup stay legacy.
+## Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
+## call runs the legacy body instead of calling back.
 
 set -euo pipefail
 
@@ -230,6 +237,23 @@ cleanup_snapshots() {
 }
 
 # Main logic
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+	_horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+	if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+		_horneroctl_help="$("$_horneroctl_bin" config snapshot --help 2>/dev/null || true)"
+		case "$_horneroctl_help" in
+			*"Usage: horneroctl config snapshot"*)
+				if [[ -n "${create:-}" ]]; then
+					exec "$_horneroctl_bin" config snapshot create --yes
+				elif [[ -n "${list:-}" ]]; then
+					exec "$_horneroctl_bin" config snapshot list
+				elif [[ -n "${restore:-}" ]]; then
+					exec "$_horneroctl_bin" config snapshot restore "$restore" --yes
+				fi
+				;;
+		esac
+	fi
+fi
 if [[ -n ${create} ]]; then
 	create_snapshot
 elif [[ -n ${list} ]]; then

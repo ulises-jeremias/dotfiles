@@ -7,6 +7,15 @@
 ##
 ## Toggle the state of some applications
 ##
+## Delegation: quickshell component toggles and one-shot
+## redshift/caffeine toggles run via `horneroctl apps toggle`
+## (HORNEROCTL_BIN override, default horneroctl on PATH) when that
+## subcommand exists, else the legacy body below. Delegated toggles
+## pass --yes because the user invoked this script explicitly. The
+## redshift/caffeine monitor loops (no --toggle) stay legacy.
+## Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
+## call runs the legacy body instead of calling back.
+##
 ## Usage:
 ##   @script.name [OPTIONS]
 ##
@@ -94,6 +103,29 @@ toggle_caffeine() {
 if [[ -n ${version:-} ]]; then
   echo "dots-toggle -- Version 0.5"
   exit 0
+fi
+
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+  _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+  if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+    _horneroctl_help="$("$_horneroctl_bin" apps --help 2>/dev/null || true)"
+    case "$_horneroctl_help" in
+      *"Usage: horneroctl apps"*)
+        for _comp in bar launcher dashboard sidebar session utilities; do
+          if [[ -n "${!_comp:-}" ]]; then
+            exec "$_horneroctl_bin" apps toggle "$_comp" --yes
+          fi
+        done
+        if [[ -n "${toggle:-}" ]] && [[ "${toggle:-}" != "0" ]]; then
+          if [[ -n "${redshift:-}" ]]; then
+            exec "$_horneroctl_bin" apps toggle redshift --yes
+          elif [[ -n "${caffeine:-}" ]]; then
+            exec "$_horneroctl_bin" apps toggle caffeine --yes
+          fi
+        fi
+        ;;
+    esac
+  fi
 fi
 
 if [[ -n ${bar:-} ]]; then
