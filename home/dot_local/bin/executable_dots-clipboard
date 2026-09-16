@@ -16,12 +16,29 @@
 ## Examples:
 ##   @script.name --backend=copyq   # force copyq GUI
 ##   @script.name --backend=cliphist # force cliphist picker
+##
+## Delegation: runs via `horneroctl capture clipboard [--backend NAME]`
+## (HORNEROCTL_BIN override, default horneroctl on PATH) when that
+## subcommand exists, else the legacy backend chain below. Backend names
+## match 1:1 (auto|copyq|cliphist|minimal). Skipped under
+## HORNEROCTL_DELEGATED so a horneroctl-driven backend call runs the
+## legacy body instead of calling back.
 
 set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
 
 BACKEND=${backend:-auto}
+
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+	_horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+	if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+		_horneroctl_help="$("$_horneroctl_bin" capture --help 2>/dev/null || true)"
+		case "$_horneroctl_help" in
+			*"Usage: horneroctl capture"*) exec "$_horneroctl_bin" capture clipboard --backend "$BACKEND" ;;
+		esac
+	fi
+fi
 
 is_wayland() { [[ ${XDG_SESSION_TYPE:-} == wayland ]]; }
 
