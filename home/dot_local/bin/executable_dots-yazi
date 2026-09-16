@@ -23,6 +23,13 @@
 ##   dots-yazi --select=~/file.txt      # Open yazi with file selected
 ##   dots-yazi --cheatsheet             # Show keybinding reference
 ##   dots-yazi --fix-previews           # Check preview dependencies
+##
+## Delegation: open, --cheatsheet, and --fix-previews run via
+## `horneroctl apps terminal-file` (HORNEROCTL_BIN override, default
+## horneroctl on PATH) when that subcommand exists, else the legacy
+## body below. Skipped under HORNEROCTL_DELEGATED so a
+## horneroctl-driven backend call runs the legacy body instead of
+## calling back.
 
 set -euo pipefail
 
@@ -175,6 +182,34 @@ main() {
   if [[ "${help:-}" == "yes" ]]; then
     show_help
     exit 0
+  fi
+
+  if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+    _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+    if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+      _horneroctl_help="$("$_horneroctl_bin" apps --help 2>/dev/null || true)"
+      case "$_horneroctl_help" in
+        *"Usage: horneroctl apps"*)
+          if [[ "${cheatsheet:-}" == "yes" ]]; then
+            exec "$_horneroctl_bin" apps terminal-file --cheatsheet
+          elif [[ "${fix_previews:-}" == "yes" ]]; then
+            exec "$_horneroctl_bin" apps terminal-file --fix-previews
+          else
+            _yazi_args=()
+            if [[ "${last_dir:-}" == "yes" ]]; then
+              _yazi_args+=(--last-dir)
+            fi
+            if [[ -n "${select:-}" ]]; then
+              _yazi_args+=(--select "$select")
+            fi
+            if [[ -n "${path:-}" ]]; then
+              _yazi_args+=(--path "$path")
+            fi
+            exec "$_horneroctl_bin" apps terminal-file "${_yazi_args[@]}"
+          fi
+          ;;
+      esac
+    fi
   fi
 
   if [[ "${cheatsheet:-}" == "yes" ]]; then

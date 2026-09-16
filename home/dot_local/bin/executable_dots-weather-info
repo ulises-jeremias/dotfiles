@@ -18,10 +18,33 @@
 ##         --quote                           Get weather quote.
 ##         --quote2                          Get weather quote.
 ##
+## Delegation: every field flag runs via `horneroctl apps weather`
+## (HORNEROCTL_BIN override, default horneroctl on PATH) when that
+## subcommand exists, else the legacy body below. Skipped under
+## HORNEROCTL_DELEGATED so a horneroctl-driven backend call runs the
+## legacy body instead of calling back.
 
 set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
+
+# Delegation runs before the API-key gate: cache reads work without a
+# key through horneroctl, which surfaces its own backend errors.
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+  _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+  if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+    _horneroctl_help="$("$_horneroctl_bin" apps --help 2>/dev/null || true)"
+    case "$_horneroctl_help" in
+      *"Usage: horneroctl apps"*)
+        for _field in getdata icon temp hex stat loc quote quote2; do
+          if [[ -n "${!_field:-}" ]]; then
+            exec "$_horneroctl_bin" apps weather "--$_field"
+          fi
+        done
+        ;;
+    esac
+  fi
+fi
 
 ## Collect data
 cache_dir="$HOME/.cache/dots/weather"

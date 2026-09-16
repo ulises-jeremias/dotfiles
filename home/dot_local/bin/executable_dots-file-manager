@@ -27,6 +27,13 @@
 ##   - Or manually: handlr set inode/directory thunar.desktop
 ##   - Verify XDG tools: which handlr xdg-open exo-open
 ##   - Check file manager is installed: which thunar nautilus dolphin
+##
+## Delegation: --info and open run via `horneroctl apps files`
+## (HORNEROCTL_BIN override, default horneroctl on PATH) when that
+## subcommand exists, else the legacy body below. --select stays
+## legacy (interactive settings). Skipped under HORNEROCTL_DELEGATED
+## so a horneroctl-driven backend call runs the legacy body instead
+## of calling back.
 
 set -euo pipefail
 
@@ -104,6 +111,24 @@ main() {
   if [[ ${help:-no} == yes ]]; then
     show_help
     exit 0
+  fi
+
+  if [[ -z "${HORNEROCTL_DELEGATED:-}" ]] && [[ ${select:-no} != yes ]]; then
+    _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+    if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+      _horneroctl_help="$("$_horneroctl_bin" apps --help 2>/dev/null || true)"
+      case "$_horneroctl_help" in
+        *"Usage: horneroctl apps"*)
+          if [[ ${info:-no} == yes ]]; then
+            exec "$_horneroctl_bin" apps files --info
+          elif [[ -n "${path:-}" ]]; then
+            exec "$_horneroctl_bin" apps files --path "$path"
+          else
+            exec "$_horneroctl_bin" apps files
+          fi
+          ;;
+      esac
+    fi
   fi
 
   if [[ ${info:-no} == yes ]]; then

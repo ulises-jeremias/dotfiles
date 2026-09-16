@@ -14,6 +14,12 @@
 ##     -b, --benchmark                       Run full benchmark suite.
 ##     -r, --report                          Generate performance report.
 ##
+## Delegation: the four reads run via `horneroctl apps performance`
+## (HORNEROCTL_BIN override, default horneroctl on PATH) when that
+## subcommand exists, else the legacy body below. The default quick
+## check stays legacy. Skipped under HORNEROCTL_DELEGATED so a
+## horneroctl-driven backend call runs the legacy body instead of
+## calling back.
 
 set -euo pipefail
 
@@ -190,6 +196,25 @@ EOF
 }
 
 # Main execution
+if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+  _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+  if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+    _horneroctl_help="$("$_horneroctl_bin" apps --help 2>/dev/null || true)"
+    case "$_horneroctl_help" in
+      *"Usage: horneroctl apps"*)
+        if [[ -n "${startup:-}" ]]; then
+          exec "$_horneroctl_bin" apps performance startup
+        elif [[ -n "${memory:-}" ]]; then
+          exec "$_horneroctl_bin" apps performance memory
+        elif [[ -n "${benchmark:-}" ]]; then
+          exec "$_horneroctl_bin" apps performance benchmark
+        elif [[ -n "${report:-}" ]]; then
+          exec "$_horneroctl_bin" apps performance report
+        fi
+        ;;
+    esac
+  fi
+fi
 if [[ -n ${startup} ]]; then
   measure_shell_startup
 elif [[ -n ${memory} ]]; then

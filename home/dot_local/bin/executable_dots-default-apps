@@ -35,6 +35,13 @@
 ##   @script.name --list                             # List all defaults
 ##   @script.name --set x-scheme-handler/http firefox  # Set browser
 ##   @script.name --type=file-manager                # Show file manager options
+##
+## Delegation: the list view runs via `horneroctl config
+## default-apps list` (HORNEROCTL_BIN override, default horneroctl on
+## PATH) when that subcommand exists, else the legacy body below. The
+## gui, info, set, and type modes stay legacy (set needs a backend).
+## Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
+## call runs the legacy body instead of calling back.
 
 set -euo pipefail
 
@@ -485,6 +492,17 @@ main() {
   fi
 
   if [[ ${list:-no} == yes ]]; then
+    if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+      _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+      if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+        _horneroctl_help="$("$_horneroctl_bin" config default-apps --help 2>/dev/null || true)"
+        case "$_horneroctl_help" in
+          *"Usage: horneroctl config default-apps"*)
+            exec "$_horneroctl_bin" config default-apps list
+            ;;
+        esac
+      fi
+    fi
     list_defaults
     exit 0
   fi
