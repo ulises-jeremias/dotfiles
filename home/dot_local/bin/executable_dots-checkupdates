@@ -8,6 +8,11 @@
 ## pacman database is never touched. Drop-in for callers that only need
 ## the update list (e.g. dots-updates counting lines).
 ##
+## Delegation: a bare invocation prefers `horneroctl package check` when
+## that subcommand exists (HORNEROCTL_BIN override, default horneroctl on
+## PATH). Flagged invocations (-d/--download, -h/--help) and any
+## environment without horneroctl keep the legacy implementation below.
+##
 ## Check full documentation at: https://github.com/ulises-jeremias/dotfiles/wiki
 ##
 ## Usage:
@@ -18,6 +23,8 @@
 ##     -h, --help              Show this help message
 
 set -euo pipefail
+
+HORNEROCTL_BIN="${HORNEROCTL_BIN:-horneroctl}"
 
 DOWNLOAD_CACHE=0
 
@@ -36,6 +43,27 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+# Prefer horneroctl for a bare listing. Cycle guard: `horneroctl package
+# check` itself delegates to this script, so when calling outward we pin
+# HORNERO_CHECKUPDATES_BIN at the plain pacman-contrib backend. Without
+# that pin the call would loop back here forever. Delegation is skipped
+# when the contrib backend is missing (or resolves to this very file) and
+# the legacy throwaway-database implementation below runs instead.
+if (($# == 0)); then
+  if command -v "$HORNEROCTL_BIN" >/dev/null 2>&1 \
+    && "$HORNEROCTL_BIN" package check --help >/dev/null 2>&1; then
+    contrib="$(command -v checkupdates 2>/dev/null || true)"
+    if [[ -n $contrib ]]; then
+      self_path="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
+      contrib_path="$(readlink -f "$contrib" 2>/dev/null || echo "$contrib")"
+      if [[ $contrib_path != "$self_path" ]]; then
+        export HORNERO_CHECKUPDATES_BIN="$contrib"
+        exec "$HORNEROCTL_BIN" package check
+      fi
+    fi
+  fi
+fi
 
 if ! command -v pacman >/dev/null 2>&1; then
   echo "[ERROR] pacman not found. This command requires Arch Linux." >&2
