@@ -1,4 +1,4 @@
-import qs.modules.welcome
+import qs.modules.welcome as WelcomeModule
 import QtQuick
 
 // Login-time auto-open for the Welcome Center. Evaluates exactly once,
@@ -12,29 +12,22 @@ QtObject {
 
     property bool _done: false
 
-    Component.onCompleted: Qt.callLater(root.evaluate)
-
-    Connections {
-        target: State
-        function onReadyChanged(): void {
-            root.evaluate();
-        }
-    }
-
-    Connections {
-        target: Session
-        function onMarkerKnownChanged(): void {
-            root.evaluate();
-        }
+    // NOTE: Connections {} cannot be a child of QtObject (no default
+    // property), so signals are wired imperatively. Same lifetime as the
+    // singletons, no disconnect needed.
+    Component.onCompleted: {
+        WelcomeModule.State.readyChanged.connect(root.evaluate);
+        WelcomeModule.Session.markerKnownChanged.connect(root.evaluate);
+        Qt.callLater(root.evaluate);
     }
 
     function evaluate(): void {
         if (root._done)
             return;
-        if (!State.ready || !Session.markerKnown)
+        if (!WelcomeModule.State.ready || !WelcomeModule.Session.markerKnown)
             return;
         root._done = true;
-        if (Session.shouldAutoOpen)
-            Welcome.open("start");
+        if (WelcomeModule.Session.shouldAutoOpen)
+            WelcomeModule.Welcome.open("start");
     }
 }

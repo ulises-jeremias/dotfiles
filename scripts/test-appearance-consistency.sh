@@ -171,11 +171,16 @@ else
 	fail "dots-quickshell rebuild missing Hornero INSTALL_* / ENABLE_MODULES flags"
 fi
 
+# Scoped exception (HorneroOS cutover): services/GtkSettings.qml carries the
+# upstream native-first fallback (HorneroOS native appearance migration,
+# issue #2 step a) that writes gtk-theme/icon-theme via gsettings when the
+# dots-gtk-theme CLI compat path cannot run. Allowed ONLY in that file;
+# raw writes anywhere else in the shell still fail this check.
 if grep -REn 'gsettings set org\.gnome\.desktop\.interface (gtk-theme|icon-theme)' \
-	"${ROOT}/home/dot_config/quickshell" > /dev/null 2>&1; then
-	fail "raw gsettings GTK/icon writes in Quickshell"
+	"${ROOT}/home/dot_config/quickshell" --exclude=GtkSettings.qml > /dev/null 2>&1; then
+	fail "raw gsettings GTK/icon writes in Quickshell (outside GtkSettings.qml)"
 else
-	pass "Quickshell does not write GTK/icons via gsettings"
+	pass "Quickshell does not write GTK/icons via gsettings (except GtkSettings.qml native fallback)"
 fi
 
 if grep -En 'gtk-theme-manager\.sh' "${ROOT}/home/dot_config/quickshell/services/ThemePipeline.qml" > /dev/null 2>&1; then

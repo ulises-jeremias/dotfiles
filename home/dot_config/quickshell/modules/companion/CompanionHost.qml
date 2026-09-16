@@ -86,6 +86,21 @@ Scope {
             function clampPos(): void {
                 win.px = Math.max(0, Math.min(win.px, win.screenW - win.sizePx));
                 win.py = Math.max(0, Math.min(win.py, win.screenH - win.sizePx));
+                win.updateMirror();
+            }
+
+            // Smart orientation: face the screen center. Hysteresis
+            // (0.44/0.56) so a bird parked near the middle does not
+            // flicker. Runs inside clampPos, the funnel for every
+            // position change (drag, sync, fly-in/landing).
+            property bool mirrored: false
+
+            function updateMirror(): void {
+                const c = (win.px + win.sizePx / 2) / Math.max(1, win.screenW);
+                if (c > 0.56)
+                    win.mirrored = true;
+                else if (c < 0.44)
+                    win.mirrored = false;
             }
 
             function syncFromStore(): void {
@@ -100,6 +115,31 @@ Scope {
                 CompanionStore.posX = (win.px + win.sizePx / 2) / win.screenW;
                 CompanionStore.posY = (win.py + win.sizePx) / win.screenH;
                 CompanionStore.screenName = win.modelData.name;
+            }
+
+            // Cross-monitor drag: if the release point's global center
+            // lands on another screen, adopt it so the companion can be
+            // moved across the whole layout, not just its origin monitor.
+            // Coordinates are fractions, so no resync is needed: the new
+            // screen's delegate picks them up via syncFromStore.
+            function migrateScreen(): bool {
+                const gx = (win.modelData.x ?? 0) + win.px + win.sizePx / 2;
+                const gy = (win.modelData.y ?? 0) + win.py + win.sizePx / 2;
+                for (let i = 0; i < Quickshell.screens.length; ++i) {
+                    const s = Quickshell.screens[i];
+                    const sx = s.x ?? 0;
+                    const sy = s.y ?? 0;
+                    if (gx >= sx && gx < sx + s.width && gy >= sy && gy < sy + s.height) {
+                        if (s.name !== win.modelData.name) {
+                            CompanionStore.screenName = s.name;
+                            CompanionStore.posX = (gx - sx) / s.width;
+                            CompanionStore.posY = (gy - sy) / s.height;
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+                return false;
             }
 
             // Takeoff: hop to the edge, fly to the stored perch, land
@@ -290,6 +330,9 @@ Scope {
             // (verified live: show/hide popups never resize an
             // auto-sized window), but it does follow explicit
             // width/height, so popups always fit without clipping.
+            // NOTE: explicit width/height (not implicit) on purpose: the
+            // layer surface does not track implicit content changes, so
+            // popups would clip. The deprecation warning is accepted.
             width: stack.implicitWidth
             height: stack.implicitHeight
 
@@ -361,6 +404,11 @@ Scope {
                         // is negative: it pulls the middle of the image
                         // into the 28 px clip box.
                         x: win.peekMode ? -Math.round((win.sizePx - 28) / 2) : 0
+                        // Smart orientation (see updateMirror): the frames
+                        // face right, so mirror on the right half to face
+                        // the screen center. Peek sliver is unaffected: it
+                        // shows the symmetric middle slice either way.
+                        mirror: win.mirrored
                         source: player.currentFrame
                         fillMode: Image.PreserveAspectFit
                         cache: true
@@ -392,7 +440,10 @@ Scope {
                                 CompanionStore.summon();
                                 return;
                             }
-                            if (CompanionStore.state === "idle" || CompanionStore.state === "hovering" || CompanionStore.state === "sleeping" || CompanionStore.state === "excited") {
+                            // Draggable from any settled visible state, including
+                            // while a bubble is open ("talking"): only
+                            // hidden/leaving/entering/peeking refuse.
+                            if (CompanionStore.state === "idle" || CompanionStore.state === "hovering" || CompanionStore.state === "sleeping" || CompanionStore.state === "excited" || CompanionStore.state === "talking") {
                                 win.dragging = true;
                                 CompanionStore.requestState("dragging");
                                 mouse.lastX = ev.x;
@@ -404,6 +455,8 @@ Scope {
                                 return;
                             win.px = win.px + Math.round(ev.x - mouse.lastX);
                             win.py = win.py + Math.round(ev.y - mouse.lastY);
+                            mouse.lastX = ev.x;
+                            mouse.lastY = ev.y;
                             win.clampPos();
                             mouse.moved = true;
                         }
@@ -414,7 +467,10 @@ Scope {
                             }
                             if (win.dragging) {
                                 win.dragging = false;
-                                win.commitToStore();
+                                // migrateScreen commits directly when the
+                                // release lands on another monitor.
+                                if (!win.migrateScreen())
+                                    win.commitToStore();
                                 CompanionStore.requestState("idle");
                             }
                         }
