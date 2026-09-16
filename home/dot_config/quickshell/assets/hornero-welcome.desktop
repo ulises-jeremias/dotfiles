@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Hornero Welcome
+Comment=First-login tour and quick start for HorneroOS
+Exec=horneroctl welcome open
+NoDisplay=false
+Categories=Settings;
+Terminal=false
+StartupNotify=true

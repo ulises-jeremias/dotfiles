@@ -1,0 +1,73 @@
+{
+  "_name": "Productivity",
+  "_description": "Top bar optimized for focused work \u2014 no distractions",
+  "_icon": "\ud83d\udcbc",
+  "_iconMaterial": "work",
+  "bar": {
+    "position": "top",
+    "style": "attached",
+    "floatingMargin": 8,
+    "persistent": true,
+    "showOnHover": true,
+    "entries": [
+      {
+        "id": "workspaces",
+        "enabled": true
+      },
+      {
+        "id": "activeWindow",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "clock",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "statusIcons",
+        "enabled": true
+      },
+      {
+        "id": "power",
+        "enabled": true
+      }
+    ],
+    "sizes": {
+      "innerWidth": 40
+    },
+    "status": {
+      "showAudio": true,
+      "showNetwork": true,
+      "showBattery": true
+    },
+    "scrollActions": {
+      "workspaces": true,
+      "volume": true,
+      "brightness": false
+    }
+  },
+  "border": {
+    "frameEnabled": false
+  },
+  "appearance": {
+    "rounding": {
+      "scale": 0.75
+    },
+    "padding": {
+      "scale": 0.8
+    },
+    "spacing": {
+      "scale": 0.9
+    }
+  },
+  "notifs": {
+    "defaultExpireTimeout": 4000
+  }
+}

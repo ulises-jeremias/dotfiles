@@ -43,7 +43,7 @@ QString Qalculator::eval(const QString& expr, bool printExpr) const {
     }
 
     if (printExpr) {
-        return QString("%1 = %2").arg(parsed).arg(result);
+        return QString("%1 = %2").arg(QString::fromStdString(parsed)).arg(QString::fromStdString(result));
     }
 
     return QString::fromStdString(result);

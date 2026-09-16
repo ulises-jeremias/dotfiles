@@ -1,5 +1,7 @@
 #include "hyprdevices.hpp"
 
+#include <QJsonValue>
+#include <QVariantHash>
 #include <qjsonarray.h>
 
 namespace hornero::internal::hypr {

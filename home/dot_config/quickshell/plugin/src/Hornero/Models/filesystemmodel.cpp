@@ -1,5 +1,9 @@
 #include "filesystemmodel.hpp"
 
+#include <QPair>
+#include <QPromise>
+#include <QSet>
+#include <QStringList>
 #include <qdiriterator.h>
 #include <qfuturewatcher.h>
 #include <qtconcurrentrun.h>

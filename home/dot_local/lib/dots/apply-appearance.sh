@@ -2,14 +2,46 @@
 # Shared appearance apply pipeline (QS-down / CLI fallback).
 # Theme packs are apply-once recipes — this never writes a "current theme" id.
 
+# Path contract (HorneroOS/hornero docs/PATH_CONTRACT.md rows 1,4,5,9,11):
+# canonical hornero/* first, dots/* fallback for reads; writes go to hornero/*.
+HORNERO_THEMES_DIR="${HORNERO_THEMES_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/hornero/themes}"
 DOTS_THEMES_DIR="${DOTS_THEMES_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/dots/themes}"
+HORNERO_WALLPAPERS_DIR="${HORNERO_WALLPAPERS_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/hornero/wallpapers}"
 DOTS_WALLPAPERS_DIR="${DOTS_WALLPAPERS_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/dots/wallpapers}"
+HORNERO_STATE_DIR="${HORNERO_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/hornero}"
 DOTS_STATE_DIR="${DOTS_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dots}"
+HORNERO_CACHE_DIR="${HORNERO_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/hornero}"
 DOTS_CACHE_DIR="${DOTS_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/dots}"
+HORNERO_WALLPAPER_POINTER_FILE="${HORNERO_WALLPAPER_POINTER_FILE:-$HORNERO_STATE_DIR/wallpaper/path}"
 DOTS_WALLPAPER_POINTER_FILE="${DOTS_WALLPAPER_POINTER_FILE:-$DOTS_STATE_DIR/wallpaper/path}"
+HORNERO_SCHEME_FILE="${HORNERO_SCHEME_FILE:-$HORNERO_CACHE_DIR/smart-colors/scheme.json}"
 DOTS_SCHEME_FILE="${DOTS_SCHEME_FILE:-$DOTS_CACHE_DIR/smart-colors/scheme.json}"
 DOTS_M3_SCRIPT="${DOTS_M3_SCRIPT:-$HOME/.local/lib/dots/generate-m3-colors.py}"
 DOTS_PICTURES_WALLPAPERS="${DOTS_PICTURES_WALLPAPERS:-$HOME/Pictures/Wallpapers}"
+
+# Canonical-first resolvers. Explicit HORNERO_* overrides are already in
+# those vars; DOTS_* vars remain as read-only fallbacks.
+_dots_aa_resolve_theme_json() {
+	local theme_id="${1:-}"
+	if [[ -f $HORNERO_THEMES_DIR/$theme_id/theme.json ]]; then
+		printf '%s\n' "$HORNERO_THEMES_DIR/$theme_id/theme.json"
+	else
+		printf '%s\n' "$DOTS_THEMES_DIR/$theme_id/theme.json"
+	fi
+}
+_dots_aa_resolve_state_file() {
+	if [[ -f $HORNERO_STATE_DIR/scheme/state.json ]]; then
+		printf '%s\n' "$HORNERO_STATE_DIR/scheme/state.json"
+	else
+		printf '%s\n' "$DOTS_STATE_DIR/scheme/state.json"
+	fi
+}
+_dots_aa_pointer_for_write() {
+	printf '%s\n' "$HORNERO_WALLPAPER_POINTER_FILE"
+}
+_dots_aa_scheme_for_write() {
+	printf '%s\n' "$HORNERO_SCHEME_FILE"
+}
 
 _dots_aa_json_get() {
 	local file="$1" key="$2" default="${3:-}"
@@ -34,8 +66,10 @@ PY
 
 _dots_aa_write_pointer() {
 	local path="$1"
-	mkdir -p "$(dirname "$DOTS_WALLPAPER_POINTER_FILE")"
-	printf '%s\n' "$path" > "$DOTS_WALLPAPER_POINTER_FILE"
+	local target
+	target="$(_dots_aa_pointer_for_write)"
+	mkdir -p "$(dirname "$target")"
+	printf '%s\n' "$path" > "$target"
 }
 
 _dots_aa_normalize_scheme_type() {
@@ -100,14 +134,14 @@ _dots_aa_resolve_theme_wallpaper() {
 		}
 	fi
 
-	for base in "$DOTS_PICTURES_WALLPAPERS/$wallpaper_dir" "$DOTS_WALLPAPERS_DIR/$wallpaper_dir"; do
+	for base in "$DOTS_PICTURES_WALLPAPERS/$wallpaper_dir" "$HORNERO_WALLPAPERS_DIR/$wallpaper_dir" "$DOTS_WALLPAPERS_DIR/$wallpaper_dir"; do
 		if [[ -n $default_name && -f $base/$default_name ]]; then
 			readlink -f "$base/$default_name"
 			return 0
 		fi
 	done
 
-	for base in "$DOTS_PICTURES_WALLPAPERS/$wallpaper_dir" "$DOTS_WALLPAPERS_DIR/$wallpaper_dir"; do
+	for base in "$DOTS_PICTURES_WALLPAPERS/$wallpaper_dir" "$HORNERO_WALLPAPERS_DIR/$wallpaper_dir" "$DOTS_WALLPAPERS_DIR/$wallpaper_dir"; do
 		[[ -d $base ]] || continue
 		candidate="$(
 			find -L "$base" -maxdepth 1 \( -type f -o -type l \) \
@@ -136,6 +170,91 @@ _dots_aa_sync_gtk_color_scheme() {
 			apply_gtk_color_scheme follow > /dev/null 2>&1 || true
 		fi
 	fi
+}
+
+# Switch the installed kitty.conf include to the theme variant so the
+# terminal re-themes atomically with the rest (Preview 2 QA: light shell
+# with a dark terminal is a half-applied desktop). Best-effort reload via
+# SIGUSR1; a missing variant file or kitty.conf skips silently.
+_dots_aa_sync_kitty() {
+	local theme_id="${1:-}"
+	local kitty_dir="${XDG_CONFIG_HOME:-$HOME/.config}/kitty"
+	local variant="$kitty_dir/${theme_id}.conf"
+	[[ -f $kitty_dir/kitty.conf && -f $variant ]] || return 0
+	if grep -qE '^include (hornero-(dark|light)|pampa)\.conf$' "$kitty_dir/kitty.conf"; then
+		sed -i -E "s#^include (hornero-(dark|light)|pampa)[.]conf\$#include ${theme_id}.conf#" "$kitty_dir/kitty.conf"
+	fi
+	pkill -SIGUSR1 -x kitty > /dev/null 2>&1 || true
+}
+
+# Swap the libadwaita recoloring to the theme variant. libadwaita apps
+# ignore gtk.css theme trees (stock Adwaita blue accents) unless
+# ~/.config/gtk-4.0/gtk.css redefines the public palette; the per-variant
+# recolor.css files ship in the installed theme trees and are test-gated
+# against theme.json (tests/test_gtk_theme.sh).
+_dots_aa_sync_recolor() {
+	local theme_id="${1:-}"
+	local tree=""
+	case "$theme_id" in
+		hornero-dark) tree="Hornero-Dark" ;;
+		hornero-light) tree="Hornero-Light" ;;
+		pampa) tree="Hornero-Pampa" ;;
+		*) return 0 ;;
+	esac
+	local src="${XDG_DATA_HOME:-$HOME/.local/share}/themes/$tree/gtk-4.0/recolor.css"
+	local dest="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0/gtk.css"
+	[[ -f $src ]] || return 0
+	mkdir -p "$(dirname "$dest")"
+	cp -f "$src" "$dest"
+}
+
+# Point qt6ct at the theme's generated palette. Qt6 Widgets apps read
+# ~/.config/qt6ct/qt6ct.conf through QT_QPA_PLATFORMTHEME=qt6ct; the
+# per-theme colors/<id>.conf files are generated from canonical tokens
+# (scripts/generate-qt-schemes.py) and materialized with the rest of
+# desktop/qt6ct. Line-edit preserves the file's comments (no INI
+# rewrite). Graceful no-op when the scheme is absent (uncurated theme).
+_dots_aa_sync_qt() {
+	local theme_id="${1:-}"
+	local qt_dir="${XDG_CONFIG_HOME:-$HOME/.config}/qt6ct"
+	local scheme="$qt_dir/colors/${theme_id}.conf"
+	local conf="$qt_dir/qt6ct.conf"
+	[[ -f $scheme && -f $conf ]] || return 0
+	python3 - "$conf" "$scheme" <<'PY' || return 0
+import sys
+conf_path, scheme_path = sys.argv[1], sys.argv[2]
+lines = open(conf_path, encoding="utf-8").read().splitlines(keepends=True)
+out, in_appearance = [], False
+seen_palette, seen_path = False, False
+for line in lines:
+    stripped = line.strip()
+    if stripped.startswith("["):
+        in_appearance = stripped == "[Appearance]"
+    elif in_appearance:
+        if stripped.startswith("custom_palette"):
+            line = "custom_palette=true\n"
+            seen_palette = True
+        elif stripped.startswith("color_scheme_path"):
+            line = f"color_scheme_path={scheme_path}\n"
+            seen_path = True
+    out.append(line)
+# Ensure both keys exist even if the group had neither: insert right
+# after the [Appearance] header (or append the group).
+text = "".join(out)
+if not seen_palette or not seen_path:
+    header = "[Appearance]\n"
+    extra = ""
+    if not seen_palette:
+        extra += "custom_palette=true\n"
+    if not seen_path:
+        extra += f"color_scheme_path={scheme_path}\n"
+    if header in text:
+        text = text.replace(header, header + extra, 1)
+    else:
+        text = text.rstrip("\n") + "\n" + header + extra
+    out = text.splitlines(keepends=True)
+open(conf_path, "w", encoding="utf-8").writelines(out)
+PY
 }
 
 # Pack recipe → canonical gtkColorScheme policy.
@@ -206,25 +325,27 @@ _dots_aa_run_palette() {
 	# Prefer system Python with materialyoucolor over pyenv shims on PATH.
 	# shellcheck source=/dev/null
 	source "${HOME}/.local/lib/dots/python-m3.sh" 2> /dev/null || true
-	mkdir -p "$(dirname "$DOTS_SCHEME_FILE")"
+	local scheme_out
+	scheme_out="$(_dots_aa_scheme_for_write)"
+	mkdir -p "$(dirname "$scheme_out")"
 	if declare -f dots_run_m3_colors > /dev/null 2>&1; then
 		dots_run_m3_colors \
 			--image "$wallpaper" \
 			--scheme-type "$scheme_type" \
 			--mode "$dark_mode" \
-			--output "$DOTS_SCHEME_FILE" || return 1
+			--output "$scheme_out" || return 1
 	elif command -v dots-m3-colors > /dev/null 2>&1; then
 		dots-m3-colors \
 			--image "$wallpaper" \
 			--scheme-type "$scheme_type" \
 			--mode "$dark_mode" \
-			--output "$DOTS_SCHEME_FILE" || return 1
+			--output "$scheme_out" || return 1
 	else
 		python3 "$DOTS_M3_SCRIPT" \
 			--image "$wallpaper" \
 			--scheme-type "$scheme_type" \
 			--mode "$dark_mode" \
-			--output "$DOTS_SCHEME_FILE" || return 1
+			--output "$scheme_out" || return 1
 	fi
 
 	if command -v dots-color-scheme > /dev/null 2>&1; then
@@ -249,7 +370,8 @@ dots_apply_theme() {
 		echo "dots_apply_theme: theme id required" >&2
 		return 1
 	}
-	local config_json="$DOTS_THEMES_DIR/$theme_id/theme.json"
+	local config_json
+	config_json="$(_dots_aa_resolve_theme_json "$theme_id")"
 	[[ -f $config_json ]] || {
 		echo "dots_apply_theme: theme not found: $theme_id" >&2
 		return 1
@@ -299,6 +421,10 @@ dots_apply_theme() {
 		_dots_aa_sync_gtk_color_scheme
 	fi
 
+	_dots_aa_sync_kitty "$theme_id"
+	_dots_aa_sync_recolor "$theme_id"
+	_dots_aa_sync_qt "$theme_id"
+
 	if [[ -f $HOME/.local/lib/dots/snappy-switcher-manager.sh ]]; then
 		# shellcheck source=/dev/null
 		source "$HOME/.local/lib/dots/snappy-switcher-manager.sh" 2> /dev/null || true
@@ -328,7 +454,8 @@ dots_apply_wallpaper_only() {
 	}
 
 	local scheme_type="tonal-spot" dark_mode="dark"
-	local state_file="$DOTS_STATE_DIR/scheme/state.json"
+	local state_file
+	state_file="$(_dots_aa_resolve_state_file)"
 	if [[ -f $state_file ]]; then
 		scheme_type="$(_dots_aa_normalize_scheme_type "$(_dots_aa_json_get "$state_file" flavour tonal-spot)")"
 		dark_mode="$(_dots_aa_json_get "$state_file" mode dark)"

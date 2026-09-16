@@ -1,203 +1,93 @@
-<h1 align=center>HorneroConfig Quickshell</h1>
+# HorneroOS shell
 
-> **⚠️ ATTRIBUTION NOTICE**  
-> This Quickshell implementation was **highly inspired by and adapted from** the amazing [**caelestia-dots/shell**](https://github.com/caelestia-dots/shell) project by [@soramane](https://github.com/soramane).  
-> Original work licensed under GPL-3.0. See [LICENSE](LICENSE) for full license text.
+The official HorneroOS desktop shell, built with
+[Quickshell](https://quickshell.org/) + QML + Qt 6 for Wayland
+(Hyprland-first): bar, launcher, dashboard, control center, notifications,
+lock screen, wallpaper/theme pipeline, and a native `Hornero` C++ plugin
+for performance-critical work (image analysis, audio, calculator).
 
-<div align=center>
+![Hornero desktop](docs/assets/desktop-hero.png)
 
-**Part of the [HorneroConfig](https://github.com/ulises-jeremias/dotfiles) Framework**
+*Pre-release snapshot from the graphical test VM (1280×720).*
 
-A beautiful, functional, and highly customizable desktop shell built with [Quickshell](https://quickshell.outfoxxed.me)
+## Position in HorneroOS
 
-</div>
+- **This repo owns**: the shell runtime (`shell.qml`, `modules/`,
+  `services/`, `config/`, `utils/`, `components/`), shell-owned visual
+  assets (`assets/`), the native plugin (`plugin/`) and helper (`extras/`),
+  vendored layout presets (`presets/`), and Nix/CMake packaging.
+- **Does not own**: compositor/terminal/app defaults
+  ([HorneroOS/config](https://github.com/HorneroOS/config)), distribution
+  composition ([HorneroOS/hornero](https://github.com/HorneroOS/hornero)),
+  user overrides (`~/.config/hornero`, theme/wallpaper data), or the
+  `dots-*` helper CLIs it shells out to (external runtime contracts, see
+  `docs/COMPAT.md`).
 
----
+## Status
 
-## 🌟 Features
+Initial extraction from `ulises-jeremias/dotfiles@b26db04`
+(`feat/initial-shell-extraction`). Functional parity with the dotfiles
+shell minus personal-workstation assumptions. Known debt: `dots-*`
+compat adapters (`docs/COMPAT.md`), bare-`python3` theme loader
+(`modules/launcher/services/Themes.qml`).
 
-- 🎨 **Theme-Adaptive UI** - Automatically adapts to appearance / wallpaper palettes via Smart Colors
-- 🎯 **Unified Desktop Shell** - Bar, launcher, dashboard, notifications, and AI chat in one
-- ⚡ **High Performance** - C++ plugin (Hornero) for performance-critical operations
-- 🎵 **Audio Visualization** - Beat detection and spectrum analyzer
-- 🖼️ **Intelligent Image Analysis** - Extract dominant colors from wallpapers
-- 🧮 **Built-in Calculator** - Quick calculations via libqalculate
-- 📊 **System Monitoring** - CPU, memory, network, and battery info
-- 🔔 **Modern Notifications** - Beautiful notification center with history
-- 🚀 **Application Launcher** - Fast app search with calculator integration
-- 🎨 **Wallpaper Management** - Quick wallpaper switching with previews
-
----
-
-## 🏗️ Architecture
-
-### Components
-
-- **Bar Module** - Top/bottom panel with system information
-- **Launcher** - Application launcher with search and calculator
-- **Dashboard** - Quick access panel with media controls, weather, calendar
-- **Control Center** - Settings and appearance customization
-- **Notification Center** - Notification history and management
-- **AI Chat** - Integrated AI assistant (Ollama)
-- **Lock Screen** - Secure lock screen with fetch display
-- **Background** - Wallpaper management and audio visualizer
-
-### Hornero C++ Plugin
-
-The `plugin/` directory contains the **Hornero** C++ plugin for Quickshell, providing:
-
-- **Image Analysis** - Dominant color extraction and analysis
-- **Audio Processing** - Beat detection, spectrum analysis via libcava and aubio
-- **Calculator** - Mathematical expression evaluation via libqalculate
-- **Performance Optimizations** - Fast image caching, circular indicators
-- **System Integration** - Hyprland extensions, logind manager, D-Bus services
-
----
-
-## 📦 Installation
-
-HorneroConfig Quickshell is automatically installed as part of the main HorneroConfig dotfiles:
+## Build
 
 ```bash
-# Install HorneroConfig (includes Quickshell)
-sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/main/scripts/install_dotfiles.sh?raw=true")"
-```
-
-The installation script will:
-
-1. Install Quickshell and dependencies
-2. Build the Hornero C++ plugin
-3. Configure integration with Hyprland
-4. Set up auto-start on login
-
----
-
-## 🔧 Configuration
-
-Configuration is managed through:
-
-- **`config/Config.qml`** - Main configuration file
-- **Theme packs** - Apply-once presets from `~/.local/share/dots/themes/`
-- **Smart Colors** - Automatic color adaptation via `~/.cache/dots/smart-colors/`
-
-### Customization
-
-Apply a theme pack (wallpaper + palette + GTK) from the Control Center Appearance
-pane, or via CLI:
-
-```bash
-# List and apply a theme pack
-dots appearance theme list
-dots appearance theme apply vapor-dreams
-
-# Wallpaper / GTK / icons without changing theme pack selection
-dots appearance set-wallpaper ~/Pictures/Wallpapers/vapor-dreams/foo.png
-```
-
----
-
-## 🛠️ Building the Hornero Plugin
-
-If you need to manually rebuild the C++ plugin:
-
-```bash
-cd ~/.config/quickshell
-cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/
+cmake -S . -B build -D DISTRIBUTOR="local"
 cmake --build build
-sudo cmake --install build
 ```
 
-Dependencies:
+Requires CMake ≥ 3.19, Qt 6.9+ (Core, Qml, Gui, Quick, Concurrent, Sql,
+Network, DBus), `libqalculate`, `pipewire`, `aubio`, `libcava`/`cava`.
+`VERSION`/`GIT_REVISION` come from git tags when available, else default
+to `0.0.0`/`unknown` with a warning. Select modules with
+`-D ENABLE_MODULES="extras;plugin;shell"`.
 
-- `cmake`, `ninja`
-- `qt6-base`, `qt6-declarative`
-- `libcava`, `aubio`, `libpipewire`
-- `libqalculate`
-- `networkmanager`, `lm-sensors`
-- `brightnessctl`, `ddcutil`
+Nix: `nix build .#hornero-shell` (see `flake.nix`, `nix/`).
 
----
-
-## 🚀 Usage
-
-Quickshell starts automatically with Hyprland via the HorneroConfig configuration.
-
-Manual start:
+## Test / lint
 
 ```bash
-quickshell
+python3 -m pytest tests/ -q        # layout, appearance, IPC, path + static scans
+pre-commit run --all-files          # portable lint subset (see below)
+./scripts/check_personal_data.sh    # personal-data guard
+./scripts/check_forbidden_paths.sh  # no chezmoi/personal-path regressions
 ```
 
-### Keyboard Shortcuts
+## Run
 
-Configured via Hyprland global shortcuts. Default HorneroConfig bindings:
+```bash
+# CMake install (default INSTALL_QSCONFDIR=etc/xdg/quickshell/hornero):
+QML2_IMPORT_PATH=<install-prefix>/usr/lib/qt6/qml \
+  qs -p <install-prefix>/etc/xdg/quickshell/hornero
+# Nix layout installs the QML tree to <prefix>/share/hornero-shell
+# instead — or just run the `hornero-shell` wrapper.
+qs ipc call <target> <fn> …                  # see docs/IPC.md
+```
 
-- **Super + Space** - Toggle launcher
-- **Super + D** - Toggle dashboard
-- **Super + N** - Toggle notifications
-- **Super + L** - Lock screen
-- **Super + Shift + A** - Toggle AI chat
+Runtime knobs are env-first: `DOTS_{DATA,STATE,CACHE,CONFIG}_DIR`,
+`HORNERO_WALLPAPERS_DIR`, `HORNERO_RECORDINGS_DIR`, `HORNERO_LIB_DIR`
+(see `docs/ARCHITECTURE.md`).
 
-> See [HorneroConfig Keyboard Shortcuts](https://github.com/ulises-jeremias/dotfiles/wiki/Keyboard-Shortcuts) for complete reference
+## Provenance
 
----
+COPY-never-MOVE import from `ulises-jeremias/dotfiles@b26db04`
+(`home/dot_config/quickshell/` → repo root,
+`home/dot_local/share/dots/shell-presets/` → `presets/`).
+Full matrix: `docs/MIGRATION.md`.
 
-## 🧪 Development
-
-### File Structure
+## Structure
 
 ```text
-quickshell/
-├── components/      # Reusable QML components
-├── config/          # Configuration files
-├── modules/         # Feature modules (bar, launcher, dashboard, etc.)
-├── plugin/          # Hornero C++ plugin
-│   └── src/
-│       └── Hornero/ # Plugin source (formerly Caelestia)
-├── services/        # Backend services (audio, colors, wallpapers, etc.)
-├── utils/           # Utility QML modules
-├── shell.qml        # Main entry point
-└── CMakeLists.txt   # Build configuration
+shell.qml presets/ modules/ services/ config/ utils/ components/ assets/
+plugin/ extras/ nix/ tests/ scripts/ docs/ CMakeLists.txt flake.nix
 ```
 
-### Testing Changes
+## License
 
-```bash
-# Test without installation
-quickshell -c ~/.config/quickshell
-
-# Rebuild plugin after changes
-cd ~/.config/quickshell
-cmake --build build
-sudo cmake --install build
-```
-
----
-
-## 📄 License
-
-This Quickshell implementation is licensed under the **GNU General Public License v3.0 (GPL-3.0)**, maintaining the license of the original caelestia-dots/shell project from which it was adapted.
-
-See [LICENSE](LICENSE) for full license text and attribution details.
-
-The broader HorneroConfig framework is licensed under MIT. This Quickshell component specifically follows GPL-3.0 due to its derivation from caelestia-dots/shell.
-
----
-
-## 🙏 Acknowledgments
-
-Massive thanks to:
-
-- **[@soramane](https://github.com/soramane)** - For the beautiful caelestia-dots/shell that inspired this implementation
-- **[caelestia-dots](https://github.com/caelestia-dots)** - For the excellent reference implementation and design
-- **[Quickshell](https://quickshell.outfoxxed.me)** - For the amazing QML-based desktop shell framework
-- **[Hyprland](https://hyprland.org)** - For the smooth Wayland compositor
-
----
-
-<div align=center>
-
-**Part of [HorneroConfig](https://github.com/ulises-jeremias/dotfiles)**  
-*Building the perfect digital nest, one configuration at a time* 🏠
-
-</div>
+Dual layout (see `NOTICE`): scaffold and project docs are
+[MIT](LICENSE); the shell runtime, native code, and presets are
+[GPL-3.0-only](LICENSE.GPL-3.0) (derived from
+[caelestia-dots/shell](https://github.com/caelestia-dots/shell) by
+[@soramane](https://github.com/soramane) — credit preserved).

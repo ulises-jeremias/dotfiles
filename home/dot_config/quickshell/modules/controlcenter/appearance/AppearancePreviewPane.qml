@@ -223,6 +223,19 @@ StyledRect {
                     Layout.fillWidth: true
                     spacing: Appearance.spacing.small
 
+                    // Native instant tone (issue #2, step (b)): wallpaper
+                    // dominant colour from ImageAnalyser, shown only while
+                    // the generated M3 palette is still absent.
+                    StyledRect {
+                        visible: root.active && root.rootPane.previewNativeReady && Object.keys(root.rootPane.previewPalette ?? {}).length === 0
+                        radius: Appearance.rounding.full
+                        color: root.rootPane.previewNativeDominant
+                        implicitHeight: 22
+                        implicitWidth: 22
+                        border.width: 1
+                        border.color: Qt.alpha(previewColor("m3outline", Colours.palette.m3outline), 0.25)
+                    }
+
                     Repeater {
                         model: [
                             {

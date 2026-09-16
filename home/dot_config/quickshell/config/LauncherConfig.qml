@@ -32,6 +32,14 @@ JsonObject {
 
     property list<var> actions: [
         {
+            name: "Welcome",
+            icon: "waving_hand",
+            description: "Open the Hornero Welcome Center",
+            command: ["quickshell", "ipc", "call", "welcome", "open"],
+            enabled: true,
+            dangerous: false
+        },
+        {
             name: "Calculator",
             icon: "calculate",
             description: "Do simple math equations (powered by Qalc)",

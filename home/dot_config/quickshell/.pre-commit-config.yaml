@@ -1,0 +1,34 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-yaml
+        exclude: '^\.clang-format$'
+      - id: check-json
+      - id: trailing-whitespace
+        exclude: '\.md$'
+
+  - repo: local
+    hooks:
+      - id: personal-data-guard
+        name: personal-data guard
+        entry: ./scripts/check_personal_data.sh
+        language: script
+        pass_filenames: false
+      - id: forbidden-path-scan
+        name: forbidden-path scan
+        entry: ./scripts/check_forbidden_paths.sh
+        language: script
+        pass_filenames: false
+      - id: qml-lint
+        name: qml lint
+        entry: ./scripts/lint_qml.sh
+        language: script
+        pass_filenames: false
+      - id: pytest
+        name: pytest
+        entry: python3 -m pytest tests/ -q
+        language: system
+        pass_filenames: false

@@ -61,7 +61,12 @@ show_error() {
 }
 
 parse_documentation() {
-  documentation="$(grep "^##" "$(which "$0")")(no-trim)"
+  # Local change vs upstream EasyOptions 2015.2.28: resolve via the `command`
+  # builtin instead of the external `which` binary. Minimal systems (Arch
+  # cloud images, containers) do not ship `which`; with it absent the
+  # substitution was empty, zero options were registered, and every flag
+  # (even -q/--help) was rejected for all sourcing CLIs.
+  documentation="$(grep "^##" "$(command -v "$0" 2>/dev/null || printf '%s' "$0")")(no-trim)"
   documentation=$(echo "$documentation" | sed -r "s/## ?//" | sed -r "s/@script.name/$(basename "$0")/g" | sed "s/@#/@/g")
   documentation=${documentation%(no-trim)}
 }

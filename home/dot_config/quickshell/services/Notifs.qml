@@ -20,6 +20,20 @@ Singleton {
 
     property bool loaded
 
+    // Runtime path contract row 10: canonical hornero/* notifs.json first,
+    // legacy dots/* fallback (reads only). Saves always target the canonical
+    // file, so the first persist migrates legacy state forward.
+    property bool _storageFallbackActive: false
+
+    function _loadNotifs(rawText: string): void {
+        const data = JSON.parse(rawText);
+        for (const notif of data)
+            root.list.push(notifComp.createObject(root, notif));
+        root.list.sort((a, b) => b.time - a.time);
+        root.loaded = true;
+        root._storageFallbackActive = false;
+    }
+
     onDndChanged: {
         if (!Config.utilities.toasts.dndChanged)
             return;
@@ -89,17 +103,29 @@ Singleton {
         id: storage
 
         path: `${Paths.state}/notifs.json`
+        onLoaded: root._loadNotifs(text())
+        onLoadFailed: err => {
+            if (err === FileViewError.FileNotFound && !root._storageFallbackActive) {
+                root._storageFallbackActive = true;
+                storageFallback.reload();
+            }
+        }
+    }
+
+    // Legacy dots/* notification state (fallback read only, never written).
+    FileView {
+        id: storageFallback
+
+        path: `${Paths.stateFallback}/notifs.json`
         onLoaded: {
-            const data = JSON.parse(text());
-            for (const notif of data)
-                root.list.push(notifComp.createObject(root, notif));
-            root.list.sort((a, b) => b.time - a.time);
-            root.loaded = true;
+            if (root._storageFallbackActive)
+                root._loadNotifs(text());
         }
         onLoadFailed: err => {
-            if (err === FileViewError.FileNotFound) {
+            if (err === FileViewError.FileNotFound && root._storageFallbackActive) {
+                root._storageFallbackActive = false;
                 root.loaded = true;
-                setText("[]");
+                storage.setText("[]");
             }
         }
     }
@@ -212,6 +238,9 @@ Singleton {
                         h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
                         const hash = (h2 >>> 0).toString(16).padStart(8, 0) + (h1 >>> 0).toString(16).padStart(8, 0);
 
+                        // Contract row 10: new captures go to the canonical
+                        // hornero/* cache; absolute legacy paths stored in
+                        // notifs.json keep resolving directly.
                         const cache = `${Paths.notifimagecache}/${hash}.png`;
                         CUtils.saveItem(this, Qt.resolvedUrl(cache), () => {
                             notif.image = cache;

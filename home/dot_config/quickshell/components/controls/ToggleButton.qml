@@ -20,6 +20,7 @@ StyledRect {
     property string tooltip: ""
 
     property bool hovered: false
+    property bool disabled: false
     signal clicked
 
     Component.onCompleted: {
@@ -42,11 +43,13 @@ StyledRect {
 
     radius: toggled || toggleStateLayer.pressed ? Appearance.rounding.small : Math.min(width, height) / 2 * Math.min(1, Appearance.rounding.scale)
     color: toggled ? Colours.palette[`m3${accent.toLowerCase()}`] : Colours.palette[`m3${accent.toLowerCase()}Container`]
+    opacity: root.disabled ? 0.5 : 1
 
     StateLayer {
         id: toggleStateLayer
 
         color: root.toggled ? Colours.palette[`m3on${root.accent}`] : Colours.palette[`m3on${root.accent}Container`]
+        disabled: root.disabled
 
         function onClicked(): void {
             root.clicked();

@@ -24,9 +24,16 @@ Searcher {
         ThemePipeline.setWallpaper(path);
     }
 
+    // Instant native tone analysis for the preview path (issue #2, step
+    // (b)). The full M3 preview palette below still needs dots-m3-colors.
+    readonly property color previewDominantColour: WallpaperAnalysis.dominantColour
+    readonly property real previewLuminance: WallpaperAnalysis.luminance
+    readonly property bool previewNativeReady: WallpaperAnalysis.ready
+
     function preview(path: string): void {
         previewPath = path;
         showPreview = true;
+        WallpaperAnalysis.analyze(path);
 
         if (Colours.scheme === "dynamic")
             getPreviewColoursProc.running = true;
@@ -79,6 +86,8 @@ Searcher {
         }
     }
 
+    // TODO(hornero-compat): dots-wallpaper-current is an external runtime CLI
+    // with a FileView pointer fallback below; see docs/COMPAT.md (A, B).
     Process {
         id: resolveProc
 
@@ -121,6 +130,10 @@ Searcher {
 
     Component.onCompleted: Qt.callLater(() => reloadWallpaperPath())
 
+    // TODO(hornero-compat): full M3 preview palette needs materialyoucolor
+    // via dots-m3-colors; native dominant/luminance comes from
+    // WallpaperAnalysis above. Thin compat adapter; see
+    // docs/NATIVE-APPEARANCE.md.
     Process {
         id: getPreviewColoursProc
 

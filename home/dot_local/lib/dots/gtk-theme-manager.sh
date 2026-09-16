@@ -26,7 +26,39 @@ fi
 readonly GTK2_CONFIG="$HOME/.gtkrc-2.0"
 readonly GTK3_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini"
 readonly GTK4_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0/settings.ini"
-readonly DOTS_SCHEME_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json"
+# Path contract (HorneroOS/hornero docs/PATH_CONTRACT.md rows 1,5):
+# canonical hornero/* first, dots/* fallback for reads; writes go to hornero/*.
+HORNERO_SCHEME_STATE="${HORNERO_SCHEME_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/hornero/scheme/state.json}"
+DOTS_SCHEME_STATE_FALLBACK="${DOTS_SCHEME_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/dots/scheme/state.json}"
+DOTS_SCHEME_STATE="${DOTS_SCHEME_STATE:-$HORNERO_SCHEME_STATE}"
+HORNERO_THEMES_DIR="${HORNERO_THEMES_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/hornero/themes}"
+DOTS_THEMES_DIR_FALLBACK="${DOTS_THEMES_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/dots/themes}"
+
+# Canonical-first state file for reads; canonical when neither exists.
+_gtk_resolve_state_for_read() {
+	if [[ -f $HORNERO_SCHEME_STATE ]]; then
+		printf '%s\n' "$HORNERO_SCHEME_STATE"
+	elif [[ -f $DOTS_SCHEME_STATE_FALLBACK ]]; then
+		printf '%s\n' "$DOTS_SCHEME_STATE_FALLBACK"
+	else
+		printf '%s\n' "$HORNERO_SCHEME_STATE"
+	fi
+}
+
+# Canonical write target (dots/* is read-only fallback).
+_gtk_resolve_state_for_write() {
+	printf '%s\n' "$HORNERO_SCHEME_STATE"
+}
+
+# Canonical-first theme pack lookup (row 1).
+_gtk_resolve_theme_json() {
+	local theme_id="${1:-}"
+	if [[ -f $HORNERO_THEMES_DIR/$theme_id/theme.json ]]; then
+		printf '%s\n' "$HORNERO_THEMES_DIR/$theme_id/theme.json"
+	else
+		printf '%s\n' "$DOTS_THEMES_DIR_FALLBACK/$theme_id/theme.json"
+	fi
+}
 
 # Function to log messages
 log() {
@@ -242,8 +274,10 @@ normalize_gtk_color_scheme() {
 
 read_live_shell_mode() {
 	local mode="dark"
-	if [[ -f $DOTS_SCHEME_STATE ]]; then
-		mode="$(python3 -c "import json;print(json.load(open('$DOTS_SCHEME_STATE')).get('mode','dark'))" 2> /dev/null || echo dark)"
+	local state_file
+	state_file="$(_gtk_resolve_state_for_read)"
+	if [[ -f $state_file ]]; then
+		mode="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("mode", "dark"))' "$state_file" 2> /dev/null || echo dark)"
 	fi
 	if [[ $mode == "light" || $mode == "dark" ]]; then
 		printf '%s\n' "$mode"
@@ -255,8 +289,10 @@ read_live_shell_mode() {
 # Persisted policy. Missing key → follow (legacy: GTK tracked shell mode).
 read_live_gtk_color_scheme() {
 	local policy=""
-	if [[ -f $DOTS_SCHEME_STATE ]]; then
-		policy="$(python3 -c "import json;print(json.load(open('$DOTS_SCHEME_STATE')).get('gtkColorScheme','') or '')" 2> /dev/null || true)"
+	local state_file
+	state_file="$(_gtk_resolve_state_for_read)"
+	if [[ -f $state_file ]]; then
+		policy="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("gtkColorScheme", "") or "")' "$state_file" 2> /dev/null || true)"
 	fi
 	policy="$(normalize_gtk_color_scheme "${policy:-follow}")"
 	if [[ $policy == "invalid" ]]; then
@@ -269,8 +305,10 @@ write_live_gtk_color_scheme() {
 	local policy="$1"
 	policy="$(normalize_gtk_color_scheme "$policy")"
 	[[ $policy != "invalid" ]] || return 1
-	mkdir -p "$(dirname "$DOTS_SCHEME_STATE")" 2> /dev/null || true
-	python3 - "$DOTS_SCHEME_STATE" "$policy" << 'PY' || true
+	local state_file
+	state_file="$(_gtk_resolve_state_for_write)"
+	mkdir -p "$(dirname "$state_file")" 2> /dev/null || true
+	python3 - "$state_file" "$policy" << 'PY' || true
 import json
 import pathlib
 import sys
@@ -287,7 +325,9 @@ data["gtkColorScheme"] = policy
 data.setdefault("name", "dynamic")
 data.setdefault("flavour", "tonal-spot")
 data.setdefault("variant", "tonalspot")
-data.setdefault("mode", "dark")
+# No setdefault for "mode": shell mode is owned by the shell pipeline
+# (`dots-color-scheme sync-state`). A defaulted dark went stale on first
+# write and broke later light applies (see tests/test_gtk_state.sh).
 path.parent.mkdir(parents=True, exist_ok=True)
 path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 PY
@@ -528,7 +568,8 @@ apply_theme_gtk_theme() {
 	log "INFO" "Applying GTK theme from appearance pack: $theme_id"
 
 	local gtk_theme="" icon_theme="Numix-Circle" color_scheme="prefer-dark"
-	local theme_json="$HOME/.local/share/dots/themes/$theme_id/theme.json"
+	local theme_json
+	theme_json="$(_gtk_resolve_theme_json "$theme_id")"
 
 	if [[ ! -f $theme_json ]]; then
 		log "ERROR" "Theme pack not found: $theme_id ($theme_json)"

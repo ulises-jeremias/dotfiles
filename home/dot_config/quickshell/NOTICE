@@ -1,0 +1,40 @@
+# NOTICE — HorneroOS/shell attribution
+
+## Upstream credit (preserved from dotfiles import)
+
+This Quickshell desktop shell is adapted from and inspired by the
+**caelestia-dots/shell** project:
+
+- Original Project: <https://github.com/caelestia-dots/shell>
+- Original Author: soramane (<https://github.com/soramane>)
+- Original License: GNU General Public License v3.0 (see `LICENSE.GPL-3.0`)
+
+The original attribution header shipped in the imported `LICENSE` file is
+preserved verbatim at the top of `LICENSE.GPL-3.0`. No license headers were
+stripped from any imported file.
+
+## HorneroOS modifications
+
+- Imported from `ulises-jeremias/dotfiles@b26db04`
+  (`home/dot_config/quickshell/`, `home/dot_local/share/dots/shell-presets/`)
+  via COPY-never-MOVE into this repository (`feat/initial-shell-extraction`).
+- Personal-workstation assumptions removed: chezmoi-managed paths replaced
+  with XDG/env-based resolution (`utils/Paths.qml`), `HorneroConfig`
+  branding repointed to HorneroOS/Hornero Shell, dotfiles provenance URLs
+  repointed to HorneroOS homes. See `docs/MIGRATION.md`.
+- Runtime integration points that still call out to `dots-*` helper CLIs are
+  documented in `docs/COMPAT.md` with dispositions and in `docs/IPC.md` as
+  process contracts. They remain external runtime dependencies, not vendored
+  code.
+- Per the GPL-3.0 terms of the original work, all HorneroOS modifications to
+  the shell runtime (`shell.qml`, `modules/`, `services/`, `config/`,
+  `utils/`, `components/`, `assets/`, `plugin/`, `extras/`, `presets/`)
+  are likewise licensed under GPL-3.0-only.
+
+## License layout
+
+- `LICENSE` — MIT, covers the repository scaffold and project docs
+  (`README.md`, `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/`,
+  `tests/`, `scripts/`, CI configuration).
+- `LICENSE.GPL-3.0` — GPL-3.0-only, covers the shell runtime, native
+  plugin, helpers, and presets listed above.

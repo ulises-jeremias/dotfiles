@@ -151,7 +151,7 @@ in
 
     meta = {
       description = "Hornero desktop shell";
-      homepage = "https://github.com/ulises-jeremias/dotfiles";
+      homepage = "https://github.com/HorneroOS/shell";
       license = lib.licenses.gpl3Only;
       mainProgram = "hornero-shell";
     };

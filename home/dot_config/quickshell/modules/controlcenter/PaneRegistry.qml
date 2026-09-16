@@ -82,6 +82,12 @@ QtObject {
             readonly property string label: "osd"
             readonly property string icon: "tune"
             readonly property string component: "osd/OsdPane.qml"
+        },
+        QtObject {
+            readonly property string id: "companion"
+            readonly property string label: "companion"
+            readonly property string icon: "raven"
+            readonly property string component: "companion/CompanionPane.qml"
         }
     ]
 

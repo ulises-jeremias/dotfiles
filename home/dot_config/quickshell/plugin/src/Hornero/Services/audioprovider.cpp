@@ -2,6 +2,7 @@
 
 #include "audiocollector.hpp"
 #include "service.hpp"
+#include <QMetaObject>
 #include <qdebug.h>
 #include <qthread.h>
 
@@ -21,7 +22,10 @@ void AudioProcessor::init() {
 }
 
 void AudioProcessor::start() {
-    QMetaObject::invokeMethod(&AudioCollector::instance(), &AudioCollector::ref, Qt::QueuedConnection, this);
+    // NOTE: Qt < 6.5 has no invokeMethod overload for member pointers with
+    // arguments, so route through an argument-free lambda (same semantics).
+    auto* collector = &AudioCollector::instance();
+    QMetaObject::invokeMethod(collector, [collector, this]() { collector->ref(this); }, Qt::QueuedConnection);
     if (m_timer) {
         m_timer->start();
     }
@@ -31,7 +35,8 @@ void AudioProcessor::stop() {
     if (m_timer) {
         m_timer->stop();
     }
-    QMetaObject::invokeMethod(&AudioCollector::instance(), &AudioCollector::unref, Qt::QueuedConnection, this);
+    auto* collector = &AudioCollector::instance();
+    QMetaObject::invokeMethod(collector, [collector, this]() { collector->unref(this); }, Qt::QueuedConnection);
 }
 
 AudioProvider::AudioProvider(QObject* parent)

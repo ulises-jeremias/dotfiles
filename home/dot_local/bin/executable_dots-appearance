@@ -8,7 +8,78 @@
 
 set -euo pipefail
 
-THEMES_DIR="${THEMES_DIR:-${DOTS_THEMES_DIR:-$HOME/.local/share/dots/themes}}"
+# Path contract (HorneroOS/hornero docs/PATH_CONTRACT.md rows 1,4,5,9,11):
+# canonical hornero/* first, dots/* fallback for reads; writes go to hornero/*.
+_HORNERO_DATA_BASE="${XDG_DATA_HOME:-$HOME/.local/share}"
+_HORNERO_STATE_BASE="${XDG_STATE_HOME:-$HOME/.local/state}"
+_HORNERO_CACHE_BASE="${XDG_CACHE_HOME:-$HOME/.cache}"
+HORNERO_THEMES_DIR="${HORNERO_THEMES_DIR:-$_HORNERO_DATA_BASE/hornero/themes}"
+DOTS_THEMES_FALLBACK="${DOTS_THEMES_DIR:-$_HORNERO_DATA_BASE/dots/themes}"
+THEMES_DIR="${THEMES_DIR:-$HORNERO_THEMES_DIR}"
+HORNERO_STATE_DIR="${HORNERO_STATE_DIR:-$_HORNERO_STATE_BASE/hornero}"
+DOTS_STATE_DIR_FALLBACK="${DOTS_STATE_DIR:-$_HORNERO_STATE_BASE/dots}"
+HORNERO_CACHE_DIR="${HORNERO_CACHE_DIR:-$_HORNERO_CACHE_BASE/hornero}"
+DOTS_CACHE_DIR_FALLBACK="${DOTS_CACHE_DIR:-$_HORNERO_CACHE_BASE/dots}"
+HORNERO_SCHEME_STATE_FILE="${HORNERO_SCHEME_STATE_FILE:-$HORNERO_STATE_DIR/scheme/state.json}"
+DOTS_SCHEME_STATE_FALLBACK="${DOTS_SCHEME_STATE_FALLBACK:-$DOTS_STATE_DIR_FALLBACK/scheme/state.json}"
+HORNERO_SCHEME_FILE="${HORNERO_SCHEME_FILE:-$HORNERO_CACHE_DIR/smart-colors/scheme.json}"
+DOTS_SCHEME_FALLBACK="${DOTS_SCHEME_FALLBACK:-$DOTS_CACHE_DIR_FALLBACK/smart-colors/scheme.json}"
+HORNERO_WALLPAPER_POINTER="${HORNERO_WALLPAPER_POINTER:-$HORNERO_STATE_DIR/wallpaper/path}"
+DOTS_WALLPAPER_POINTER_FALLBACK="${DOTS_WALLPAPER_POINTER_FALLBACK:-$DOTS_STATE_DIR_FALLBACK/wallpaper/path}"
+HORNERO_HYPRLOCK_COLORS="${HORNERO_HYPRLOCK_COLORS:-$HORNERO_CACHE_DIR/smart-colors/colors-hyprlock.conf}"
+DOTS_HYPRLOCK_COLORS_FALLBACK="${DOTS_HYPRLOCK_COLORS_FALLBACK:-$DOTS_CACHE_DIR_FALLBACK/smart-colors/colors-hyprlock.conf}"
+
+# Canonical-first resolvers; canonical path when neither exists.
+_appearance_resolve_state_file() {
+	if [[ -f $HORNERO_SCHEME_STATE_FILE ]]; then
+		printf '%s\n' "$HORNERO_SCHEME_STATE_FILE"
+	elif [[ -f $DOTS_SCHEME_STATE_FALLBACK ]]; then
+		printf '%s\n' "$DOTS_SCHEME_STATE_FALLBACK"
+	else
+		printf '%s\n' "$HORNERO_SCHEME_STATE_FILE"
+	fi
+}
+_appearance_resolve_scheme_file() {
+	if [[ -f $HORNERO_SCHEME_FILE ]]; then
+		printf '%s\n' "$HORNERO_SCHEME_FILE"
+	elif [[ -f $DOTS_SCHEME_FALLBACK ]]; then
+		printf '%s\n' "$DOTS_SCHEME_FALLBACK"
+	else
+		printf '%s\n' "$HORNERO_SCHEME_FILE"
+	fi
+}
+_appearance_resolve_hyprlock_colors() {
+	if [[ -f $HORNERO_HYPRLOCK_COLORS ]]; then
+		printf '%s\n' "$HORNERO_HYPRLOCK_COLORS"
+	elif [[ -f $DOTS_HYPRLOCK_COLORS_FALLBACK ]]; then
+		printf '%s\n' "$DOTS_HYPRLOCK_COLORS_FALLBACK"
+	else
+		printf '%s\n' "$HORNERO_HYPRLOCK_COLORS"
+	fi
+}
+_appearance_resolve_pointer() {
+	if [[ -n ${DOTS_WALLPAPER_POINTER_FILE:-} ]]; then
+		printf '%s\n' "$DOTS_WALLPAPER_POINTER_FILE"
+	elif [[ -f $HORNERO_WALLPAPER_POINTER ]]; then
+		printf '%s\n' "$HORNERO_WALLPAPER_POINTER"
+	elif [[ -f $DOTS_WALLPAPER_POINTER_FALLBACK ]]; then
+		printf '%s\n' "$DOTS_WALLPAPER_POINTER_FALLBACK"
+	else
+		printf '%s\n' "$HORNERO_WALLPAPER_POINTER"
+	fi
+}
+_appearance_resolve_theme_json() {
+	local theme_id="${1:-}"
+	if [[ $THEMES_DIR != "$HORNERO_THEMES_DIR" ]]; then
+		printf '%s\n' "$THEMES_DIR/$theme_id/theme.json"
+		return 0
+	fi
+	if [[ -f $HORNERO_THEMES_DIR/$theme_id/theme.json ]]; then
+		printf '%s\n' "$HORNERO_THEMES_DIR/$theme_id/theme.json"
+	else
+		printf '%s\n' "$DOTS_THEMES_FALLBACK/$theme_id/theme.json"
+	fi
+}
 
 cmd="${1:-}"
 shift 2>/dev/null || true
@@ -46,7 +117,11 @@ _wait_appearance_ipc() {
 cmd_theme_list() {
 	local script="${HOME}/.local/lib/dots/list-themes.py"
 	if [[ -f $script ]]; then
-		python3 "$script" "$THEMES_DIR"
+		if [[ $THEMES_DIR == "$HORNERO_THEMES_DIR" ]]; then
+			python3 "$script"
+		else
+			python3 "$script" "$THEMES_DIR"
+		fi
 	else
 		echo "[]"
 	fi
@@ -58,7 +133,8 @@ cmd_theme_show() {
 		echo "Usage: dots-appearance theme show <id>" >&2
 		exit 1
 	}
-	local path="${THEMES_DIR}/${id}/theme.json"
+	local path
+	path="$(_appearance_resolve_theme_json "$id")"
 	[[ -f $path ]] || {
 		echo "Theme not found: $id" >&2
 		exit 1
@@ -147,11 +223,12 @@ cmd_status() {
 	if command -v dots-wallpaper-current >/dev/null 2>&1; then
 		wallpaper="$(dots-wallpaper-current 2>/dev/null || true)"
 	fi
-	local state_file="${HOME}/.local/state/dots/scheme/state.json"
+	local state_file
+	state_file="$(_appearance_resolve_state_file)"
 	if [[ -f $state_file ]]; then
-		flavour="$(python3 -c "import json;print(json.load(open('$state_file')).get('flavour',''))" 2>/dev/null || true)"
-		mode="$(python3 -c "import json;print(json.load(open('$state_file')).get('mode',''))" 2>/dev/null || true)"
-		gtk_color_scheme="$(python3 -c "import json;print(json.load(open('$state_file')).get('gtkColorScheme','') or 'follow')" 2>/dev/null || true)"
+		flavour="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("flavour", ""))' "$state_file" 2>/dev/null || true)"
+		mode="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("mode", ""))' "$state_file" 2>/dev/null || true)"
+		gtk_color_scheme="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("gtkColorScheme", "") or "follow")' "$state_file" 2>/dev/null || true)"
 	fi
 	[[ -n $gtk_color_scheme ]] || gtk_color_scheme="follow"
 	if [[ -f ${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini ]]; then
@@ -265,18 +342,19 @@ cmd_doctor() {
 		"$HOME/.local/state/dots/rice/current" 2>/dev/null || true
 	rmdir "$HOME/.local/state/dots/rice" 2>/dev/null || true
 
-	local scheme_file="${HOME}/.cache/dots/smart-colors/scheme.json"
-	local state_file="${HOME}/.local/state/dots/scheme/state.json"
+	local scheme_file state_file
+	scheme_file="$(_appearance_resolve_scheme_file)"
+	state_file="$(_appearance_resolve_state_file)"
 	if [[ -f $scheme_file ]]; then
-		scheme_flavour="$(python3 -c "import json;print(json.load(open('$scheme_file')).get('flavour',''))" 2>/dev/null || true)"
-		scheme_mode="$(python3 -c "import json;print(json.load(open('$scheme_file')).get('mode',''))" 2>/dev/null || true)"
+		scheme_flavour="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("flavour", ""))' "$scheme_file" 2>/dev/null || true)"
+		scheme_mode="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("mode", ""))' "$scheme_file" 2>/dev/null || true)"
 	fi
 	if [[ -f $state_file ]]; then
-		state_flavour="$(python3 -c "import json;print(json.load(open('$state_file')).get('flavour',''))" 2>/dev/null || true)"
-		state_mode="$(python3 -c "import json;print(json.load(open('$state_file')).get('mode',''))" 2>/dev/null || true)"
+		state_flavour="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("flavour", ""))' "$state_file" 2>/dev/null || true)"
+		state_mode="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("mode", ""))' "$state_file" 2>/dev/null || true)"
 	fi
 
-	pointer="${DOTS_WALLPAPER_POINTER_FILE:-$HOME/.local/state/dots/wallpaper/path}"
+	pointer="$(_appearance_resolve_pointer)"
 	local pointer_val=""
 	[[ -f $pointer ]] && pointer_val="$(head -n 1 "$pointer" | tr -d '\r')"
 	if command -v dots-wallpaper-current >/dev/null 2>&1; then
@@ -294,7 +372,7 @@ cmd_doctor() {
 	echo "state.flavour  : ${state_flavour:-"(missing)"}"
 	echo "scheme.mode    : ${scheme_mode:-"(missing)"}"
 	echo "state.mode     : ${state_mode:-"(missing)"}"
-	local hyprlock_conf="${HOME}/.cache/dots/smart-colors/colors-hyprlock.conf"
+	local hyprlock_conf="$(_appearance_resolve_hyprlock_colors)"
 	local hyprlock_bytes=0
 	[[ -f $hyprlock_conf ]] && hyprlock_bytes="$(wc -c <"$hyprlock_conf" | tr -d ' ')"
 	local gtk_theme_ini="" gtk_prefer_dark="" gtk_color_scheme="" gtk_color_policy=""
@@ -306,7 +384,7 @@ cmd_doctor() {
 		gtk_color_scheme="$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | tr -d "'\"" || true)"
 	fi
 	if [[ -f $state_file ]]; then
-		gtk_color_policy="$(python3 -c "import json;print(json.load(open('$state_file')).get('gtkColorScheme','') or 'follow')" 2>/dev/null || true)"
+		gtk_color_policy="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("gtkColorScheme", "") or "follow")' "$state_file" 2>/dev/null || true)"
 	fi
 	[[ -n $gtk_color_policy ]] || gtk_color_policy="follow"
 

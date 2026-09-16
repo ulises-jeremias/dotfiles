@@ -1,0 +1,21 @@
+#cloud-config
+# Template used by lib/boot.sh. The placeholder __VM_SSH_PUBKEY__ is replaced
+# with the ephemeral harness SSH public key before building the seed ISO.
+users:
+  - name: hornero
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: false
+    ssh_authorized_keys:
+      - __VM_SSH_PUBKEY__
+ssh_pwauth: false
+disable_root: true
+# QEMU slirp networking never lets systemd-timesyncd synchronize, so the
+# stock image's time-sync wait would stall the boot (and with it sshd and
+# cloud-init's final stage) forever. Neutralize it early; the clock does not
+# matter for screenshots. Best-effort NTP afterwards in case it can sync.
+bootcmd:
+  - systemctl mask --now systemd-time-wait-sync.service || true
+runcmd:
+  - systemctl enable --now systemd-timesyncd || true
+  - systemctl enable --now sshd

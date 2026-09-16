@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""Render deterministic Companion contact sheets for visual review.
+
+Reads assets/companion/manifest.json + frames and writes three sheets to
+assets/companion/preview/ (committed for PR review):
+
+  preview-default-animations.png  default skin, one cell per animation
+  preview-skins.png               every skin x (idle, walk, fly)
+  preview-assistant-states.png    assistant state -> resolved frame
+
+Layout, background (#191114 hornero-dark), cell size, and labels are fixed;
+no timestamps, so output is byte-deterministic for a given input tree.
+
+Usage:
+  scripts/preview-companion-assets          # write sheets
+  scripts/preview-companion-assets --check  # verify committed sheets
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import sys
+import tempfile
+from pathlib import Path
+
+try:
+    from PIL import Image, ImageDraw
+except ImportError:  # pragma: no cover
+    print("preview-companion-assets: SKIP (Pillow not installed)", file=sys.stderr)
+    sys.exit(3)
+
+ROOT = Path(__file__).resolve().parent.parent
+COMPANION = ROOT / "assets" / "companion"
+PREVIEW = COMPANION / "preview"
+
+BG = (25, 17, 20, 255)  # hornero-dark
+GRID = (62, 44, 52, 255)
+TEXT = (255, 176, 202, 255)  # hornero primary
+CELL = 256
+LABEL_H = 28
+
+
+def load_manifest() -> dict:
+    return json.loads((COMPANION / "manifest.json").read_text())
+
+
+def resolve_frame(manifest: dict, skin: str, animation: str) -> tuple[str, bool]:
+    """Return (frame path, fell back to default)."""
+    entry = manifest["skins"][skin]["animations"][animation]
+    path = entry["frames"][0]["file"]
+    return path, not path.startswith(f"frames/{skin}-")
+
+
+def sheet(cells: list[tuple[str, str]], columns: int, out: Path) -> None:
+    rows = (len(cells) + columns - 1) // columns
+    img = Image.new("RGBA", (columns * CELL, rows * (CELL + LABEL_H)), BG)
+    draw = ImageDraw.Draw(img)
+    for i, (label, rel) in enumerate(cells):
+        r, c = divmod(i, columns)
+        x0, y0 = c * CELL, r * (CELL + LABEL_H)
+        frame = Image.open(COMPANION / rel).convert("RGBA").resize(
+            (CELL, CELL), Image.LANCZOS
+        )
+        img.paste(frame, (x0, y0 + LABEL_H), frame)
+        draw.rectangle([x0, y0 + LABEL_H, x0 + CELL - 1, y0 + LABEL_H + CELL - 1],
+                       outline=GRID)
+        draw.text((x0 + 8, y0 + 7), label, fill=TEXT)
+    img.save(out, optimize=True)
+
+
+def render(out_dir: Path) -> list[str]:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    manifest = load_manifest()
+    names = []
+    anims = ["idle", "walk", "fly", "greet"]
+    cells = []
+    for anim in anims:
+        rel, _ = resolve_frame(manifest, "default", anim)
+        cells.append((f"default / {anim}", rel))
+    sheet(cells, 4, out_dir / "preview-default-animations.png")
+    names.append("preview-default-animations.png")
+    skins = ["default", "argentina", "blue-gold", "red", "gaucho"]
+    cells = []
+    for skin in skins:
+        for anim in ["idle", "walk", "fly"]:
+            rel, fallback = resolve_frame(manifest, skin, anim)
+            tag = f"{skin} / {anim}" + ("  (fallback)" if fallback else "")
+            cells.append((tag, rel))
+    sheet(cells, 3, out_dir / "preview-skins.png")
+    names.append("preview-skins.png")
+    cells = []
+    for state, anim in manifest["assistantStates"].items():
+        rel, _ = resolve_frame(manifest, "default", anim)
+        cells.append((f"{state} -> {anim}", rel))
+    sheet(cells, 4, out_dir / "preview-assistant-states.png")
+    names.append("preview-assistant-states.png")
+    return names
+
+
+def check() -> int:
+    with tempfile.TemporaryDirectory() as tmp:
+        fresh = Path(tmp)
+        names = render(fresh)
+        problems = []
+        for name in names:
+            a, b = fresh / name, PREVIEW / name
+            if not b.exists():
+                problems.append(f"missing committed sheet: {name}")
+            elif hashlib.sha256(a.read_bytes()).hexdigest() != hashlib.sha256(
+                b.read_bytes()
+            ).hexdigest():
+                problems.append(f"drift: {name}")
+        if problems:
+            print("preview-companion-assets --check: FAIL", file=sys.stderr)
+            for p in problems:
+                print(f"  {p}", file=sys.stderr)
+            return 1
+    print("preview-companion-assets --check: PASS")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
+    if args.check:
+        return check()
+    render(PREVIEW)
+    print("preview-companion-assets: wrote 3 contact sheets")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

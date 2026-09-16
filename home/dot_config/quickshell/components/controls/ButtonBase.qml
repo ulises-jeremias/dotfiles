@@ -18,6 +18,7 @@ StyledRect {
     property alias font: label.font
     property bool checked
     property bool toggle
+    property bool disabled
     property int type: ButtonBase.Filled
     property real horizontalPadding: Appearance.padding.normal
     property real verticalPadding: Appearance.padding.smaller
@@ -33,6 +34,7 @@ StyledRect {
 
     radius: internalChecked ? Appearance.rounding.small : implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
     color: type === ButtonBase.Text ? "transparent" : internalChecked ? activeColour : inactiveColour
+    opacity: root.disabled ? 0.5 : 1
     implicitWidth: Math.max(row.implicitWidth + horizontalPadding * 2, implicitHeight)
     implicitHeight: row.implicitHeight + verticalPadding * 2
 
@@ -44,6 +46,7 @@ StyledRect {
         id: stateLayer
 
         color: root.internalChecked ? root.activeOnColour : root.inactiveOnColour
+        disabled: root.disabled
 
         onClicked: {
             if (root.toggle)

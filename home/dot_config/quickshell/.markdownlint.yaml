@@ -1,0 +1,4 @@
+# markdownlint-cli2 config: defaults apply; only relax noisy rules.
+line-length: false
+list-indent: false
+table-column-style: false

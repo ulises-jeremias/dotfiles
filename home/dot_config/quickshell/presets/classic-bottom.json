@@ -1,0 +1,80 @@
+{
+  "_name": "Classic Bottom",
+  "_description": "Bottom bar — dock-like layout with all status icons",
+  "_icon": "🖥️",
+  "_iconMaterial": "vertical_align_bottom",
+  "bar": {
+    "position": "bottom",
+    "style": "attached",
+    "floatingMargin": 8,
+    "persistent": true,
+    "showOnHover": true,
+    "entries": [
+      {
+        "id": "logo",
+        "enabled": true
+      },
+      {
+        "id": "workspaces",
+        "enabled": true
+      },
+      {
+        "id": "audioSlider",
+        "enabled": true
+      },
+      {
+        "id": "brightnessSlider",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "clock",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
+        "id": "statusIcons",
+        "enabled": true
+      },
+      {
+        "id": "power",
+        "enabled": true
+      }
+    ],
+    "sizes": {
+      "innerWidth": 40
+    },
+    "status": {
+      "showAudio": true,
+      "showMicrophone": true,
+      "showNetwork": true,
+      "showBluetooth": true,
+      "showBattery": true
+    },
+    "scrollActions": {
+      "workspaces": true,
+      "volume": true,
+      "brightness": false
+    }
+  },
+  "border": {
+    "frameEnabled": false
+  },
+  "appearance": {
+    "rounding": {
+      "scale": 0.75
+    },
+    "padding": {
+      "scale": 0.9
+    },
+    "spacing": {
+      "scale": 0.9
+    }
+  }
+}

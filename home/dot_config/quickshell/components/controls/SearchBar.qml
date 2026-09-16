@@ -20,6 +20,13 @@ StyledTextField {
         anchors.fill: parent
         color: Colours.tPalette.m3surfaceContainer
         radius: Appearance.rounding.full
+        border.width: 1
+        border.color: root.activeFocus ? Colours.palette.m3primary : "transparent"
+        opacity: root.enabled ? 1 : 0.5
+
+        Behavior on border.color {
+            CAnim {}
+        }
 
         StateLayer {
             radius: parent.radius

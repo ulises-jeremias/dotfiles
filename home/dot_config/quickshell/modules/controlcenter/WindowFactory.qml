@@ -2,6 +2,7 @@ pragma Singleton
 
 import qs.components
 import qs.services
+import qs.modules.controlcenter
 import Quickshell
 import QtQuick
 
@@ -24,8 +25,16 @@ Singleton {
 
             property alias active: cc.active
             property alias navExpanded: cc.navExpanded
+            // Deep-link target validated by the caller against
+            // PaneRegistry; applied once the content exists.
+            property string pane: ""
 
             color: Colours.tPalette.m3surface
+
+            Component.onCompleted: {
+                if (win.pane !== "" && PaneRegistry.getById(win.pane))
+                    cc.active = win.pane;
+            }
 
             onVisibleChanged: {
                 if (!visible)

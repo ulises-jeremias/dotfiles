@@ -6,25 +6,53 @@
 ## dots-hyprlock-theme: Generate hyprlock color overrides from the current
 ## smart-colors M3 palette (scheme.json).
 ##
-## Reads ~/.cache/dots/smart-colors/scheme.json and writes a hyprlock-compatible
-## source file to ~/.cache/dots/smart-colors/colors-hyprlock.conf, which is
+## Reads the smart-colors scheme.json (contract row 4) and writes a
+## hyprlock-compatible source file to colors-hyprlock.conf, which is
 ## included by ~/.config/hypr/hyprlock.conf via a `source =` directive.
+##
+## Path contract (HorneroOS/hornero docs/PATH_CONTRACT.md, rows 4 and 9):
+## canonical hornero/* first, dots/* fallback for reads; writes go to
+## hornero/*. Base resolution is explicit env override -> XDG -> $HOME.
 ##
 ## Usage:
 ##     dots-hyprlock-theme [--wallpaper /path/to/image]
 
 set -euo pipefail
 
-if [[ -f "$HOME/.local/lib/dots/wallpaper-resolver.sh" ]]; then
+HORNERO_LIB_DIR="${HORNERO_LIB_DIR:-/usr/lib/hornero}"
+DOTS_LIB_DIR="${DOTS_LIB_DIR:-$HOME/.local/lib/dots}"
+if [[ -f "$HORNERO_LIB_DIR/wallpaper-resolver.sh" ]]; then
 	# shellcheck source=/dev/null
-	source "$HOME/.local/lib/dots/wallpaper-resolver.sh"
+	source "$HORNERO_LIB_DIR/wallpaper-resolver.sh"
+elif [[ -f "$DOTS_LIB_DIR/wallpaper-resolver.sh" ]]; then
+	# shellcheck source=/dev/null
+	source "$DOTS_LIB_DIR/wallpaper-resolver.sh"
 fi
 
-SMART_COLORS_DIR="${HOME}/.cache/dots/smart-colors"
-SCHEME_FILE="${SMART_COLORS_DIR}/scheme.json"
+HORNERO_CACHE_DIR="${HORNERO_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/hornero}"
+DOTS_CACHE_DIR="${DOTS_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/dots}"
+HORNERO_STATE_DIR="${HORNERO_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/hornero}"
+DOTS_STATE_DIR_FALLBACK="${DOTS_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dots}"
+HORNERO_SCHEME_FILE="${HORNERO_SCHEME_FILE:-$HORNERO_CACHE_DIR/smart-colors/scheme.json}"
+DOTS_SCHEME_FILE_FALLBACK="${DOTS_SCHEME_FILE:-$DOTS_CACHE_DIR/smart-colors/scheme.json}"
+HORNERO_WALLPAPER_POINTER_FILE="${HORNERO_WALLPAPER_POINTER_FILE:-$HORNERO_STATE_DIR/wallpaper/path}"
+DOTS_WALLPAPER_POINTER_FILE_FALLBACK="${DOTS_WALLPAPER_POINTER_FILE:-$DOTS_STATE_DIR_FALLBACK/wallpaper/path}"
+
+# Canonical-first read: prefer the hornero file when present, else the
+# dots fallback (read-only; never written).
+if [[ -f $HORNERO_SCHEME_FILE ]]; then
+	SCHEME_FILE="$HORNERO_SCHEME_FILE"
+else
+	SCHEME_FILE="$DOTS_SCHEME_FILE_FALLBACK"
+fi
+# Writes always target the canonical location.
+SMART_COLORS_DIR="$(dirname "$HORNERO_SCHEME_FILE")"
 OUTPUT_FILE="${SMART_COLORS_DIR}/colors-hyprlock.conf"
-WALLPAPER_CACHE="${SMART_COLORS_DIR}/wallpaper"
-DOTS_WALLPAPER_POINTER="${DOTS_WALLPAPER_POINTER_FILE:-${DOTS_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dots}/wallpaper/path}"
+if [[ -f $HORNERO_WALLPAPER_POINTER_FILE ]]; then
+	WALLPAPER_POINTER="$HORNERO_WALLPAPER_POINTER_FILE"
+else
+	WALLPAPER_POINTER="$DOTS_WALLPAPER_POINTER_FILE_FALLBACK"
+fi
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -73,14 +101,14 @@ secondary="$(read_colour secondary)"
 error="$(read_colour error)"
 light_mode="$(is_light_mode)"
 
-# Resolve wallpaper path — canonical pointer wins over stale cache mirrors.
+# Resolve wallpaper path — explicit arg, else canonical pointer, else the
+# dots fallback. (The legacy smart-colors/wallpaper cache mirror is not a
+# contracted fallback; dots-appearance doctor flags it as an orphan.)
 wallpaper=""
 if [[ $# -ge 1 && -n ${1:-} ]]; then
 	wallpaper="$1"
-elif [[ -f $DOTS_WALLPAPER_POINTER ]]; then
-	wallpaper="$(head -n 1 "$DOTS_WALLPAPER_POINTER" | tr -d '\r')"
-elif [[ -f $WALLPAPER_CACHE ]]; then
-	wallpaper="$(head -n 1 "$WALLPAPER_CACHE" | tr -d '\r')"
+elif [[ -f $WALLPAPER_POINTER ]]; then
+	wallpaper="$(head -n 1 "$WALLPAPER_POINTER" | tr -d '\r')"
 fi
 # Reject non-existent cache leftovers (e.g. old test PNGs).
 if [[ -n ${wallpaper:-} && ! -f $wallpaper ]]; then
@@ -159,18 +187,6 @@ label {
     shadow_passes = 3
     shadow_size = 6
     shadow_color = rgba(00000088)
-}
-
-label {
-    monitor =
-    text = \$DATE
-    text_align = center
-    color = rgba(${on_surface_variant_rgba})
-    font_size = 14
-    font_family = Rubik
-    position = 0, 80
-    halign = center
-    valign = center
 }
 
 label {

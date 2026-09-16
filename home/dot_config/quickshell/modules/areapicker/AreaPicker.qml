@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import qs.components.containers
 import qs.components.misc
+import qs.modules.companion
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
@@ -13,6 +14,10 @@ Scope {
         property bool freeze
         property bool closing
         property bool clipboardOnly
+
+        // The companion suppresses itself while the picker owns the
+        // screen (see CompanionStore.areaPickerOpen).
+        onActiveChanged: CompanionStore.areaPickerOpen = active
 
         Variants {
             model: Quickshell.screens

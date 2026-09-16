@@ -59,6 +59,8 @@ Singleton {
                     props.paused = !props.paused;
                 }
             } else if (root.needsStart) {
+                // TODO(hornero-compat): dots-recorder is an external runtime CLI;
+                // see docs/COMPAT.md (disposition A).
                 Quickshell.execDetached(["dots-recorder", "start", ...root.startArgs]);
                 props.running = true;
                 props.paused = false;

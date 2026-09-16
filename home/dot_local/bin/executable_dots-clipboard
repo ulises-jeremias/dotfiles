@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+## Provenance: COPY (never moved) from ulises-jeremias/dotfiles@b26db04
+## home/dot_local/bin/executable_dots-clipboard via read-only reference clone.
+## Local changes vs upstream: `executable_` chezmoi deploy prefix stripped.
 
 ## dots-clipboard: Clipboard manager wrapper
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos

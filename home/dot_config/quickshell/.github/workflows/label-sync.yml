@@ -1,0 +1,33 @@
+# Thin caller for the shared HorneroOS additive label sync.
+#
+# The engine lives in HorneroOS/.github (`governance/label-sync`) and is
+# versioned by `governance-*` tags: callers pin a full commit SHA with a
+# version comment (currently governance-v1.6). Runs on this repository's
+# own GITHUB_TOKEN (issues:write); no cross-repo PAT. Sync is additive:
+# missing canonical labels are created, descriptions/colors refreshed,
+# repo-specific labels never deleted.
+name: label-sync
+
+on:
+  schedule:
+    - cron: '17 3 * * 1'  # weekly convergence; dispatch manually for immediacy
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Preview planned label changes without writing'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  sync:
+    # yamllint disable rule:line-length
+    uses: HorneroOS/.github/.github/workflows/label-sync-reusable.yml@906d6dad0638773413442ffafa03a5da4da160b1  # governance-v1.6
+    # yamllint enable rule:line-length
+    with:
+      # Same engine pin as `uses:` above.
+      engine-ref: 906d6dad0638773413442ffafa03a5da4da160b1
+      dry-run: ${{ inputs.dry-run == true }}
+    permissions:
+      contents: read
+      issues: write
