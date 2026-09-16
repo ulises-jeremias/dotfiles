@@ -14,8 +14,14 @@ DEFAULTS = (ROOT / "config" / "LauncherConfig.qml").read_text()
 
 def test_welcome_action_shipped_in_defaults():
     assert re.search(r'name:\s*"Welcome"', DEFAULTS), "no Welcome default action"
-    assert "welcome" in DEFAULTS and '"open"' in DEFAULTS, \
-        "Welcome default must dispatch quickshell ipc call welcome open"
+    # The welcome IPC handler requires its page argument: an arg-less
+    # open is rejected ("Too few arguments"), so the shipped command
+    # must name the start page explicitly.
+    m = re.search(r'name:\s*"Welcome".*?command:\s*\[(.*?)\]',
+                  DEFAULTS, re.DOTALL)
+    assert m, "Welcome default has no command"
+    assert '"start"' in m.group(1), \
+        "Welcome command must pass the start page explicitly"
 
 
 def test_actions_merge_baked_defaults_by_name():
