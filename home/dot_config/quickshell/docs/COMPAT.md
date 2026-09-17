@@ -9,9 +9,9 @@ defined in `docs/MIGRATION.md` §2.
 ## Adapter rules
 
 1. Call CLIs by bare name (`dots-gtk-theme`, not `$HOME/…` paths), except
-   the two legacy `$HOME/.local/bin/…` absolute paths (`dots-m3-colors`,
-   `dots-wallpaper-current`) kept for dotfiles-era `$PATH` setups — new code
-   uses bare names.
+   the legacy `$HOME/.local/bin/…` absolute path (`dots-m3-colors`)
+   kept for dotfiles-era `$PATH` setups — new code uses bare names
+   (`horneroctl …` for wallpaper: `wallpaper current`, `wallpaper set`).
 2. Absence must degrade, not crash: guard with `FileView` fallbacks
    (wallpaper pointer), empty-model fallbacks (theme/scheme lists), or
    error signals (`ThemePipeline.lastError`).
@@ -32,8 +32,8 @@ defined in `docs/MIGRATION.md` §2.
 | `dots-color-scheme` | Scheme lists render empty; mode/variant actions no-op | `services/Colours.qml`, `services/ThemePipeline.qml` |
 | `dots-accent-override` | Accent section actions no-op | `ColorVariantSection.qml` |
 | `dots-quickshell` | `presets/*.json` vendored dataset is the fallback list | `modules/layoutpicker/PresetGrid.qml` |
-| `dots-wallpaper-current` | `FileView` on `Paths.wallpaperPointer` seeds `actualCurrent` | `services/Wallpapers.qml` |
-| `dots-wallpaper-set` | Random-wallpaper launcher action no-ops | `config/LauncherConfig.qml` |
+| `horneroctl wallpaper current` (retired `dots-wallpaper-current`) | `FileView` on `Paths.wallpaperPointer` seeds `actualCurrent` | `services/Wallpapers.qml` |
+| `horneroctl wallpaper set` (retired `dots-wallpaper-set`) | Random-wallpaper launcher action | `config/LauncherConfig.qml` |
 | `dots-night-mode` | Quick-toggle action no-ops | `QuickToggles.qml`, `SystemPane.qml` |
 | `dots-recorder` | Recording actions no-op | `services/Recorder.qml` |
 | `dots-snappy-switcher`, `dots-hyprlock-theme` | Theme side effects skipped (`\|\| true` semantics) | `services/ThemePipeline.qml` |

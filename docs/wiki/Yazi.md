@@ -124,7 +124,7 @@ Files open with `xdg-open` by default. Directories can also open in Thunar. Text
 
 Yazi inherits terminal colors via escape sequences. When you switch appearance themes:
 
-1. `dots-wal-reload` regenerates pywal colors
+1. `horneroctl wallpaper reload --yes` regenerates pywal colors
 2. Terminal (Kitty) receives new color palette
 3. Yazi automatically picks up the new colors
 
@@ -183,7 +183,7 @@ Check that you are running inside Kitty terminal. Other terminals may need ueber
 Ensure pywal/smart-colors are generating terminal colors:
 
 ```bash
-dots-wal-reload
+horneroctl wallpaper reload --yes
 ```
 
 ### Plugins not loading

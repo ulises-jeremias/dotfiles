@@ -62,7 +62,7 @@ add, enable and reload the plugin through `hyprpm`. The plugin is configured in
 
 ```mermaid
 flowchart LR
-  wallpaper[WallpaperChange] --> reload[dots-wal-reload]
+  wallpaper[WallpaperChange] --> reload[horneroctl wallpaper reload --yes]
   reload --> smart[dots-smart-colorsGenerate]
   smart --> scheme[schemeJson]
   scheme --> quickshell[QuickshellColoursReload]

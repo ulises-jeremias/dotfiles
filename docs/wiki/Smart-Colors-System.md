@@ -5,7 +5,7 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 ## Primary Contract
 
 - Quickshell is the main consumer through `~/.cache/dots/smart-colors/scheme.json`.
-- `dots-wal-reload` and `dots-wallpaper-set` trigger palette refresh and Quickshell IPC reload.
+- `horneroctl wallpaper reload --yes` and `horneroctl wallpaper set` trigger palette refresh and Quickshell IPC reload.
 - M3 generation goes through `dots-m3-colors` (prefers `/usr/bin/python3` when it has `materialyoucolor`, so pyenv shims do not break the pipeline).
 - Script consumers can source shell/env exports from the same cache directory.
 
@@ -13,7 +13,7 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 
 ### Maintained path (Hyprland + Quickshell)
 
-1. `dots-wallpaper-set <image>` (or Control Center Apply / `appearance.setWallpaper`)
+1. `horneroctl wallpaper set <image>` (or Control Center Apply / `appearance.setWallpaper`)
 2. When Quickshell is running → IPC `appearance setWallpaper`
 3. Otherwise → `apply-appearance.sh` wallpaper-only path:
    - `wal -i` (honors light/dark from scheme state)
@@ -36,7 +36,7 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 dots-smart-colors --generate --m3
 dots-smart-colors --analyze
 dots-smart-colors --concept=error
-dots-wal-reload
+horneroctl wallpaper reload --yes
 ```
 
 ## Generated Cache
@@ -58,7 +58,7 @@ Compatibility files may exist for external tooling, but they are not part of the
 
 ```mermaid
 flowchart LR
-  wallpaper[WallpaperChange] --> set[dots-wallpaper-set]
+  wallpaper[WallpaperChange] --> set[horneroctl wallpaper set]
   set --> appearance[AppearanceIpcOrShellFallback]
   appearance --> wal[pywal]
   appearance --> m3[generate-m3-colors]

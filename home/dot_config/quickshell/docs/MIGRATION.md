@@ -66,8 +66,8 @@ Dispositions:
 | native `ImageAnalyser` analysis | `services/WallpaperAnalysis.qml`, `services/Colours.qml`, `services/Wallpapers.qml`, `AppearancePane.qml` | D | HorneroOS-native path (issue #2, step b): dominantColour/luminance without shelling out |
 | `dots-accent-override` | `modules/controlcenter/appearance/sections/ColorVariantSection.qml` | A, E | Accent set/clear |
 | `dots-quickshell` | `modules/layoutpicker/PresetGrid.qml` (`preset list/apply`) | A, C, E | Listing has local fallback data: `presets/*.json` |
-| `dots-wallpaper-current` | `services/Wallpapers.qml` (`resolveProc`) | A, B | `FileView` pointer fallback keeps UI non-empty when absent |
-| `dots-wallpaper-set` | `config/LauncherConfig.qml` (random-wallpaper action) | A | Optional launcher action only |
+| `horneroctl wallpaper current` (was `dots-wallpaper-current`) | `services/Wallpapers.qml` (`resolveProc`) | native | Migrated; `FileView` pointer fallback kept |
+| `horneroctl wallpaper set` (was `dots-wallpaper-set`) | `config/LauncherConfig.qml` (random-wallpaper action) | native | Migrated from optional shim to native verb |
 | `dots-night-mode` | `modules/dashboard/dash/QuickToggles.qml`, `modules/controlcenter/system/SystemPane.qml` | A | Toggle only |
 | `dots-recorder` | `services/Recorder.qml` (`start/stop/pause`) | A, E | Screen-recording backend |
 | `dots-snappy-switcher` | `services/ThemePipeline.qml` (`apply-theme-pack`) | A | Theme-pack side effect |

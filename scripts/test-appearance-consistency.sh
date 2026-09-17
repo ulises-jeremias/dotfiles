@@ -233,11 +233,11 @@ else
 	fail "dots-color-scheme mode still always overwrites GTK color-scheme"
 fi
 
-if grep -En 'sync-color-scheme' "${ROOT}/home/dot_local/lib/dots/apply-appearance.sh" > /dev/null 2>&1 \
-	&& grep -En 'sync-color-scheme' "${ROOT}/home/dot_local/bin/executable_dots-wal-reload" > /dev/null 2>&1; then
-	pass "wallpaper/wal-reload re-apply GTK policy instead of forcing mode"
+if [ ! -e "${ROOT}/home/dot_local/bin/executable_dots-wal-reload" ] \
+	&& grep -En 'sync-color-scheme' "${ROOT}/home/dot_local/lib/dots/apply-appearance.sh" > /dev/null 2>&1; then
+	pass "wallpaper reload is native (wrapper retired), GTK policy preserved in lib"
 else
-	fail "wallpaper/wal-reload still force GTK color-scheme from shell mode"
+	fail "wallpaper reload wrapper still present or GTK policy lost"
 fi
 
 if grep -En 'function setGtkColorScheme' "$QS_PIPE" > /dev/null 2>&1 \
