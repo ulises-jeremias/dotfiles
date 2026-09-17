@@ -39,8 +39,8 @@ dots-quickshell ipc launcher toggle
 dots-quickshell ipc session toggle
 dots-quickshell ipc utilities toggle
 dots settings-gui
-dots-hypr-layout --current
-dots-hypr-layout --toggle
+horneroctl hypr layout current
+horneroctl hypr layout toggle --yes
 ```
 
 ## ScrollOverview (niri-style overview)
