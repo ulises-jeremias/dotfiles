@@ -51,17 +51,15 @@ Singleton {
 
             if (code === 0) {
                 if (root.needsStop) {
-                    Quickshell.execDetached(["dots-recorder", "stop"]);
+                    Quickshell.execDetached(["horneroctl", "capture", "record", "stop", "--yes"]);
                     props.running = false;
                     props.paused = false;
                 } else if (root.needsPause) {
-                    Quickshell.execDetached(["dots-recorder", "pause"]);
+                    Quickshell.execDetached(["horneroctl", "capture", "record", "pause", "--yes"]);
                     props.paused = !props.paused;
                 }
             } else if (root.needsStart) {
-                // TODO(hornero-compat): dots-recorder is an external runtime CLI;
-                // see docs/COMPAT.md (disposition A).
-                Quickshell.execDetached(["dots-recorder", "start", ...root.startArgs]);
+                Quickshell.execDetached(["horneroctl", "capture", "record", "start", ...root.startArgs, "--yes"]);
                 props.running = true;
                 props.paused = false;
                 props.elapsed = 0;

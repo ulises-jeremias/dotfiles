@@ -133,14 +133,14 @@ copyq exit
 
 ### Integration with Dots Scripts
 
-CopyQ is integrated with the `dots-clipboard` script:
+CopyQ is integrated via `horneroctl capture clipboard` (retired `dots-clipboard` wrapper):
 
 ```bash
 # Launch clipboard manager (auto-detects CopyQ)
-dots-clipboard
+horneroctl capture clipboard
 
 # Force CopyQ backend
-dots-clipboard --backend=copyq
+horneroctl capture clipboard --backend copyq
 ```
 
 ---

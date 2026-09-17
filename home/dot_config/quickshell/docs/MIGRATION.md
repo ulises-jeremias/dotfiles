@@ -69,13 +69,13 @@ Dispositions:
 | `horneroctl wallpaper current` (was `dots-wallpaper-current`) | `services/Wallpapers.qml` (`resolveProc`) | native | Migrated; `FileView` pointer fallback kept |
 | `horneroctl wallpaper set` (was `dots-wallpaper-set`) | `config/LauncherConfig.qml` (random-wallpaper action) | native | Migrated from optional shim to native verb |
 | `dots-night-mode` | `modules/dashboard/dash/QuickToggles.qml`, `modules/controlcenter/system/SystemPane.qml` | A | Toggle only |
-| `dots-recorder` | `services/Recorder.qml` (`start/stop/pause`) | A, E | Screen-recording backend |
+| `horneroctl capture record` (was `dots-recorder`) | `services/Recorder.qml` (`start/stop/pause`) | native | Migrated from optional shim to native verb |
 | `dots-snappy-switcher` | `services/ThemePipeline.qml` (`apply-theme-pack`) | A | Theme-pack side effect |
 | `dots-hyprlock-theme` | `services/ThemePipeline.qml` | A | Lock-screen theme side effect |
 | `dots-theme-selector` | `modules/controlcenter/system/SystemPane.qml` | A | Launched, not embedded |
 | `dots-settings-gui` | `config/LauncherConfig.qml` | A | Launched, not embedded |
 | `dots-lockscreen` | `modules/controlcenter/system/SystemPane.qml` | A | `--lock` action |
-| `dots-screenshooter` | `modules/controlcenter/system/SystemPane.qml` | A | Launched, not embedded |
+| `horneroctl capture screenshot` (was `dots-screenshooter`) | `modules/controlcenter/system/SystemPane.qml` | native | Migrated from optional shim to native verb |
 | `dots-sysupdate` | `modules/controlcenter/system/SystemPane.qml` (via `foot -e sh -c`) | A | Terminal wrapper, optional |
 | `dots-keyboard-help` | `modules/controlcenter/system/SystemPane.qml` (`DOTS_BYPASS_QUICKSHELL=1 …`) | A | Launched, not embedded |
 | `dots-appearance theme list` | `modules/launcher/services/Themes.qml` | A, E | Track 3a: theme-pack listing moved behind this CLI; bare-`python3` dropped. Registry ownership still dots-side (see `docs/GTK-PACK-OWNERSHIP.md`) |
