@@ -21,8 +21,8 @@ It defines what stays, what is removed, and why.
 - `horneroctl capture record` (was `home/dot_local/bin/executable_dots-recorder`; wrapper retired)
 - `horneroctl capture screenshot` (was `home/dot_local/bin/executable_dots-screenshooter`; wrapper retired)
 - `home/dot_local/bin/executable_dots-lockscreen`
-- `home/dot_local/bin/executable_dots-backup`
-- `home/dot_local/bin/executable_dots-security-audit`
+- `horneroctl backup` (was `home/dot_local/bin/executable_dots-backup`; wrapper retired in #294)
+- `horneroctl apps audit` (was `home/dot_local/bin/executable_dots-security-audit`; wrapper retired)
 - `home/dot_local/bin/executable_dots-keyboard-help`
 
 ## Remove (Hard Cut)

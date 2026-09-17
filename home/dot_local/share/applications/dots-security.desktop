@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Dots Security Audit
 Comment=Run security checks on your system
-Exec=dots-security-audit
+Exec=horneroctl apps audit
 Icon=security-high
 Terminal=false
 Type=Application
