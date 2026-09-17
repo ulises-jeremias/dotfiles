@@ -8,7 +8,7 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | ---------------------- | ---------------------------------------------------------- |
 | `Super+Return`         | Terminal (`exo-open --launch TerminalEmulator`)            |
 | `Super+T`              | Terminal                                                   |
-| `Ctrl+Space`           | Application launcher (`dots-launcher`)                     |
+| `Ctrl+Space`           | Application launcher (`horneroctl apps launch`)            |
 | `Super+V`              | Clipboard manager (`dots-clipboard`)                       |
 | `Super+?` or `Super+/` | Keyboard shortcuts help overlay (`dots-keyboard-help`)     |
 | `Super+D`              | Dashboard (Quickshell IPC)                                 |
