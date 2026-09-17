@@ -572,11 +572,9 @@ done
         command: ["dots-snappy-switcher", "apply-theme-pack", snappyProc.themeId]
     }
 
-    // TODO(hornero-compat): dots-hyprlock-theme is a dots-owned side effect
-    // with no native equivalent yet; see docs/NATIVE-APPEARANCE.md.
     Process {
         id: hyprlockProc
-        command: ["dots-hyprlock-theme"]
+        command: ["horneroctl", "appearance", "hyprlock", "--yes"]
     }
 
     Process {

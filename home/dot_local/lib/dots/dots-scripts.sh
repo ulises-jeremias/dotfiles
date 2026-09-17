@@ -22,7 +22,7 @@ scripts_list=(
 	"✨ hypr-animations: RETIRED — use: horneroctl hypr animations list|current|set|next|restore [--yes]"
 	"🖥️ hypr-monitors: Manage Hyprland monitor configurations and layouts"
 	"🧩 hyprland-plugins: RETIRED — use: horneroctl hypr plugins list|status|install [--yes]"
-	"🎨 hyprlock-theme: Generate hyprlock color overrides from the current smart-colors M3 palette"
+	"🎨 hyprlock-theme: RETIRED — use: horneroctl appearance hyprlock --yes"
 	"🔠 keyboard-help: Interactive keyboard shortcuts help overlay for Hyprland"
 	"⌨️ keyboard-layout: Toggle keyboard layouts for Hyprland/Wayland/X11"
 	"⚙️ keyboard-settings: RETIRED — use: horneroctl hardware keyboard settings"
