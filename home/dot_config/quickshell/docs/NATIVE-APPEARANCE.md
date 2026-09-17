@@ -111,10 +111,11 @@ outside the generated roles.
 | `Themes.qml` loader | `dots-appearance theme list` (CLI wraps the dots-owned registry; empty-model fallback when absent) | Disposition-G debt resolved track 3a: bare-`python3` dropped, registry ownership still dots-side (see `docs/GTK-PACK-OWNERSHIP.md`) |
 
 Out of scope for issue #2 (unchanged): `dots-accent-override`,
-`dots-quickshell`, `dots-night-mode`, `dots-recorder`, and launcher-only
+`dots-quickshell`, `dots-night-mode`, and launcher-only
 actions (`dots-theme-selector`, `dots-settings-gui`, `dots-lockscreen`,
-`dots-screenshooter`, `dots-sysupdate`, `dots-keyboard-help`).
-(Wallpaper `current`/`set` already migrated to `horneroctl wallpaper`.)
+`dots-sysupdate`, `dots-keyboard-help`).
+(Wallpaper `current`/`set` already migrated to `horneroctl wallpaper`;
+screenshot/record/clipboard migrated to `horneroctl capture`.)
 
 ## Contracts and checks
 

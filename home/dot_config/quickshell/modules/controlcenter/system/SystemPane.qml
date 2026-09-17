@@ -326,7 +326,7 @@ Item {
                             icon: "screenshot_monitor"
                             label: qsTr("Screenshot")
                             description: qsTr("Capture the screen with selection")
-                            action: () => root.run(["dots-screenshooter"])
+                            action: () => root.run(["horneroctl", "capture", "screenshot", "--yes"])
                         }
 
                         ActionTile {

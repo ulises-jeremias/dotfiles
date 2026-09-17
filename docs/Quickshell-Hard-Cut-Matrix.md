@@ -14,12 +14,12 @@ It defines what stays, what is removed, and why.
 - `home/dot_local/bin/executable_dots-settings-gui`
 - `home/dot_local/bin/executable_dots-launcher` (Quickshell-first, minimal rescue)
 - `home/dot_local/bin/executable_dots-power-menu` (Quickshell-first, minimal rescue)
-- `home/dot_local/bin/executable_dots-clipboard` (Wayland-first clipboard flow without legacy UI chain)
+- `horneroctl capture clipboard` (was `home/dot_local/bin/executable_dots-clipboard`; wrapper retired)
 
 ## Keep (Unique Capability, Not Replaced by Quickshell)
 
-- `home/dot_local/bin/executable_dots-recorder`
-- `home/dot_local/bin/executable_dots-screenshooter`
+- `horneroctl capture record` (was `home/dot_local/bin/executable_dots-recorder`; wrapper retired)
+- `horneroctl capture screenshot` (was `home/dot_local/bin/executable_dots-screenshooter`; wrapper retired)
 - `home/dot_local/bin/executable_dots-lockscreen`
 - `home/dot_local/bin/executable_dots-backup`
 - `home/dot_local/bin/executable_dots-security-audit`

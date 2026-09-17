@@ -35,9 +35,9 @@ defined in `docs/MIGRATION.md` §2.
 | `horneroctl wallpaper current` (retired `dots-wallpaper-current`) | `FileView` on `Paths.wallpaperPointer` seeds `actualCurrent` | `services/Wallpapers.qml` |
 | `horneroctl wallpaper set` (retired `dots-wallpaper-set`) | Random-wallpaper launcher action | `config/LauncherConfig.qml` |
 | `dots-night-mode` | Quick-toggle action no-ops | `QuickToggles.qml`, `SystemPane.qml` |
-| `dots-recorder` | Recording actions no-op | `services/Recorder.qml` |
+| `horneroctl capture record` (retired `dots-recorder`) | Recording actions no-op | `services/Recorder.qml` |
 | `dots-snappy-switcher`, `dots-hyprlock-theme` | Theme side effects skipped (`\|\| true` semantics) | `services/ThemePipeline.qml` |
-| `dots-theme-selector`, `dots-settings-gui`, `dots-lockscreen`, `dots-screenshooter`, `dots-sysupdate`, `dots-keyboard-help` | Launched actions fail silently in terminal/launcher | `SystemPane.qml`, `LauncherConfig.qml` |
+| `dots-theme-selector`, `dots-settings-gui`, `dots-lockscreen`, `horneroctl capture screenshot` (retired `dots-screenshooter`), `dots-sysupdate`, `dots-keyboard-help` | Launched actions fail silently in terminal/launcher | `SystemPane.qml`, `LauncherConfig.qml` |
 | `dots-appearance theme list` | Theme search list renders empty when absent (JSON-parse fallback) | `modules/launcher/services/Themes.qml` (`TODO(hornero-compat)`) |
 
 ## Debt to resolve in follow-ups

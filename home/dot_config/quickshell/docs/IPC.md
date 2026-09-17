@@ -81,7 +81,7 @@ The shell also *spawns* processes; the stable outbound contracts are:
 - Appearance compat fallbacks (thin, debt-marked, disposition A):
   `dots-m3-colors …`, `dots-gtk-theme -q …`, `dots-color-scheme …`
   (see `docs/COMPAT.md`).
-- Optional integrations: `dots-recorder start/stop/pause`,
+- Optional integrations: `horneroctl capture record start/stop/pause --yes`,
   `horneroctl wallpaper current`, `horneroctl wallpaper set …`,
   `dots-quickshell preset list/apply`, `dots-night-mode toggle`,
   `notify-send …`, `systemctl …`, `foot -e sh -c …`.
