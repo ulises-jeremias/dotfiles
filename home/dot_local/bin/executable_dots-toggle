@@ -73,7 +73,9 @@ toggle_quickshell_component() {
     echo "Quickshell is not running" >&2
     exit 1
   fi
-  dots-quickshell ipc "$component" toggle
+  # Legacy fallback (no horneroctl): the components here are all drawer
+  # targets, so call the normalized drawers form directly.
+  quickshell ipc call drawers toggle "$component"
   exit 0
 }
 

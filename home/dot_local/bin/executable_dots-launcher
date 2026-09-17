@@ -32,7 +32,8 @@ LIST=${list:-no}
 
 launch_quickshell() {
   pgrep -x quickshell >/dev/null 2>&1 || return 1
-  dots-quickshell ipc launcher toggle
+  # Legacy fallback (no horneroctl): normalized drawers form directly.
+  quickshell ipc call drawers toggle launcher
   return 0
 }
 

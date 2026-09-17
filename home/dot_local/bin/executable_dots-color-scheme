@@ -269,8 +269,10 @@ regenerate_scheme() {
 		dots-hyprlock-theme >/dev/null 2>&1 || true
 	fi
 
-	if pgrep -x quickshell >/dev/null 2>&1 && command -v dots-quickshell >/dev/null 2>&1; then
-		dots-quickshell ipc colours reload >/dev/null 2>&1 || true
+	if pgrep -x quickshell >/dev/null 2>&1 && command -v quickshell >/dev/null 2>&1; then
+		# Same as the old dots-quickshell ipc colours reload path: prefer
+		# the Colours handler, fall back to touching scheme.json.
+		quickshell ipc call colours reload >/dev/null 2>&1 || touch "$SCHEME_FILE" 2>/dev/null || true
 	fi
 }
 
