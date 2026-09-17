@@ -71,7 +71,7 @@ Dispositions:
 | `dots-night-mode` | `modules/dashboard/dash/QuickToggles.qml`, `modules/controlcenter/system/SystemPane.qml` | A | Toggle only |
 | `horneroctl capture record` (was `dots-recorder`) | `services/Recorder.qml` (`start/stop/pause`) | native | Migrated from optional shim to native verb |
 | `dots-snappy-switcher` | `services/ThemePipeline.qml` (`apply-theme-pack`) | A | Theme-pack side effect |
-| `dots-hyprlock-theme` | `services/ThemePipeline.qml` | A | Lock-screen theme side effect |
+| `horneroctl appearance hyprlock` (was `dots-hyprlock-theme`) | `services/ThemePipeline.qml` | native | Migrated from optional shim to native verb (byte-identical output) |
 | `dots-theme-selector` | `modules/controlcenter/system/SystemPane.qml` | A | Launched, not embedded |
 | `dots-settings-gui` | `config/LauncherConfig.qml` | A | Launched, not embedded |
 | `dots-lockscreen` | `modules/controlcenter/system/SystemPane.qml` | A | `--lock` action |

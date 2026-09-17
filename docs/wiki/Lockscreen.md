@@ -163,12 +163,13 @@ dots wal-reload  # Updates wallpaper and lockscreen
 
 ### Appearance
 
-Theme / wallpaper apply regenerates lockscreen colors via `dots-hyprlock-theme`
-after scheme generation (Quickshell `ThemePipeline` and shell `apply-appearance.sh`).
+Theme / wallpaper apply regenerates lockscreen colors via `horneroctl appearance hyprlock --yes`
+(retired `dots-hyprlock-theme` wrapper) after scheme generation (Quickshell `ThemePipeline`
+and shell `apply-appearance.sh`).
 
 ```bash
 dots appearance theme apply vapor-dreams
-dots-hyprlock-theme
+horneroctl appearance hyprlock --yes
 ```
 
 ## Hyprlock Configuration

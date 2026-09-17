@@ -264,9 +264,9 @@ regenerate_scheme() {
 		return 1
 	fi
 
-	# Regenerate hyprlock theme colors from the new scheme
-	if command -v dots-hyprlock-theme >/dev/null 2>&1; then
-		dots-hyprlock-theme >/dev/null 2>&1 || true
+	# Regenerate hyprlock theme colors from the new scheme (native; was dots-hyprlock-theme)
+	if command -v horneroctl >/dev/null 2>&1; then
+		horneroctl appearance hyprlock --yes >/dev/null 2>&1 || true
 	fi
 
 	if pgrep -x quickshell >/dev/null 2>&1 && command -v quickshell >/dev/null 2>&1; then

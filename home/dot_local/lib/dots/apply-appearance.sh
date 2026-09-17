@@ -352,8 +352,8 @@ _dots_aa_run_palette() {
 		dots-color-scheme sync-state > /dev/null 2>&1 || return 1
 	fi
 	_dots_aa_sync_gtk_color_scheme "$dark_mode"
-	if command -v dots-hyprlock-theme > /dev/null 2>&1; then
-		dots-hyprlock-theme > /dev/null 2>&1 || true
+	if command -v horneroctl > /dev/null 2>&1; then
+		horneroctl appearance hyprlock --yes > /dev/null 2>&1 || true
 	fi
 	if command -v hyprctl > /dev/null 2>&1; then
 		hyprctl reload > /dev/null 2>&1 || true

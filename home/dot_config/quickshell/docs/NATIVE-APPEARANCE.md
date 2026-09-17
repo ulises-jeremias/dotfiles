@@ -107,7 +107,7 @@ outside the generated roles.
 | `GtkSettings` full-mode with theme-pack id | `dots-gtk-theme theme` | Theme-pack id resolution is dots-owned tooling |
 | `GtkThemeSection` / `IconThemeSection` listings | `dots-gtk-theme -p list/icons` | Native directory scan needs index.theme parsing plus de-dup across system/user roots |
 | `AppearancePane` live queries (fallback branch) | `dots-gtk-theme -p current*` | Hosts without `gsettings` |
-| `ThemePipeline` side effects | `dots-snappy-switcher`, `dots-hyprlock-theme` | Dots-owned tooling with no native equivalent |
+| `ThemePipeline` side effects | `dots-snappy-switcher` | Dots-owned tooling with no native equivalent |
 | `Themes.qml` loader | `dots-appearance theme list` (CLI wraps the dots-owned registry; empty-model fallback when absent) | Disposition-G debt resolved track 3a: bare-`python3` dropped, registry ownership still dots-side (see `docs/GTK-PACK-OWNERSHIP.md`) |
 
 Out of scope for issue #2 (unchanged): `dots-accent-override`,
