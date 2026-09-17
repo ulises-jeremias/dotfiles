@@ -50,9 +50,9 @@ print_status "success" "Cache directories created"
 
 # Initialize weather data
 print_status "info" "Fetching initial weather data..."
-if command -v dots-weather-info &>/dev/null; then
+if command -v horneroctl &>/dev/null; then
   # Run in background to avoid blocking, but wait up to 10 seconds
-  timeout 10s dots-weather-info --getdata &>/dev/null || true
+  timeout 10s horneroctl apps weather --getdata &>/dev/null || true
 
   # Check if data was successfully fetched
   if [[ -f "$HOME/.cache/dots/weather/weather-degree" ]]; then
@@ -61,7 +61,7 @@ if command -v dots-weather-info &>/dev/null; then
     print_status "error" "Failed to fetch weather data (non-critical, will retry on first use)"
   fi
 else
-  print_status "error" "dots-weather-info not found (will be available after next login)"
+  print_status "error" "horneroctl not found (will be available after next login)"
 fi
 
 # Initialize appearance palette (no sticky theme id)
@@ -103,7 +103,6 @@ fi
 # Verify essential scripts are executable
 print_status "info" "Verifying script permissions..."
 essential_scripts=(
-  "$HOME/.local/bin/dots-weather-info"
   "$HOME/.local/bin/dots-night-mode"
   "$HOME/.local/bin/dots-appearance"
   "$HOME/.local/bin/dots-smart-colors"
