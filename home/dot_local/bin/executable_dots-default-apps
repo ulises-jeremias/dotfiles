@@ -37,9 +37,10 @@
 ##   @script.name --type=file-manager                # Show file manager options
 ##
 ## Delegation: the list view runs via `horneroctl config
-## default-apps list` (HORNEROCTL_BIN override, default horneroctl on
-## PATH) when that subcommand exists, else the legacy body below. The
-## gui, info, set, and type modes stay legacy (set needs a backend).
+## default-apps list` and set runs via `horneroctl config
+## default-apps set` (HORNEROCTL_BIN override, default horneroctl on
+## PATH) when those subcommands exist, else the legacy bodies below.
+## The gui, info, and type modes stay legacy (interactive).
 ## Skipped under HORNEROCTL_DELEGATED so a horneroctl-driven backend
 ## call runs the legacy body instead of calling back.
 
@@ -511,6 +512,18 @@ main() {
     if [[ -z ${arguments[0]:-} ]] || [[ -z ${arguments[1]:-} ]]; then
       log "ERROR" "Usage: --set MIME_TYPE APPLICATION"
       exit 1
+    fi
+    if [[ -z "${HORNEROCTL_DELEGATED:-}" ]]; then
+      _horneroctl_bin="${HORNEROCTL_BIN:-horneroctl}"
+      if command -v "$_horneroctl_bin" >/dev/null 2>&1; then
+        _horneroctl_help="$("$_horneroctl_bin" config default-apps --help 2>/dev/null || true)"
+        case "$_horneroctl_help" in
+          *"set <mime> <app>"*)
+            # Explicit set invocation is the confirmation: pass --yes.
+            exec "$_horneroctl_bin" config default-apps set "${arguments[0]}" "${arguments[1]}" --yes
+            ;;
+        esac
+      fi
     fi
     set_default "${arguments[0]}" "${arguments[1]}"
     exit 0

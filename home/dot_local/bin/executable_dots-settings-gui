@@ -11,22 +11,48 @@ SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_NAME
 PANE=""
 
+# horneroctl owns shell lifecycle + IPC (R1). Prefer it when the
+# installed copy knows those verbs; else use the legacy paths below.
+# config set has no horneroctl backend yet and stays on dots-quickshell.
+_use_hornero_shell() {
+  command -v horneroctl >/dev/null 2>&1 || return 1
+  horneroctl shell --help 2>/dev/null | grep -q "start \[--dry-run"
+}
+
 set_start_pane() {
   local pane="$1"
   [[ -z "$pane" ]] && return 0
   ~/.local/bin/dots-quickshell config set controlCenter.startPane "$pane" >/dev/null 2>&1 || true
 }
 
+shell_start() {
+  if _use_hornero_shell; then
+    # Explicit user action opening settings is the confirmation.
+    horneroctl shell start --yes >/dev/null 2>&1 || true
+  else
+    # Minimal legacy start (no horneroctl): full lifecycle lives there.
+    nohup quickshell >/dev/null 2>&1 &
+  fi
+}
+
+shell_toggle_utilities() {
+  if _use_hornero_shell; then
+    horneroctl shell ipc -- call drawers toggle utilities
+  else
+    quickshell ipc call drawers toggle utilities
+  fi
+}
+
 open_settings() {
   set_start_pane "$PANE"
 
   if ! pgrep -x qs 2>/dev/null || pgrep -x quickshell >/dev/null 2>&1; then
-    ~/.local/bin/dots-quickshell start >/dev/null 2>&1 || true
+    shell_start
     sleep 1
   fi
 
   if pgrep -x qs 2>/dev/null || pgrep -x quickshell >/dev/null 2>&1; then
-    ~/.local/bin/dots-quickshell ipc utilities toggle
+    shell_toggle_utilities
     return 0
   fi
 
