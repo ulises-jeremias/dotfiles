@@ -177,7 +177,7 @@ dots appearance theme apply vapor-dreams
 🐾 **[Kitty](https://sw.kovidgoyal.net/kitty)** — GPU-accelerated terminal emulator  
 🐚 **[Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Feature-rich shell with beautiful prompt  
 🔒 **[Hyprlock](https://github.com/hyprwm/hyprlock)** — Secure lock screen  
-🖼️ **Quickshell wallpaper flow** — Unified wallpaper management via `dots-wallpaper-set`  
+🖼️ **Quickshell wallpaper flow** — Unified wallpaper management via `horneroctl wallpaper set`  
 🎨 **Appearance Themes** — Instant theme switching with Material Design 3 colors
 
 > 📖 [Complete component list →](https://github.com/ulises-jeremias/dotfiles/wiki/Home)

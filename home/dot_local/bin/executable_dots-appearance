@@ -220,8 +220,8 @@ EOF
 
 cmd_status() {
 	local wallpaper="" mode="" flavour="" gtk_theme="" icon_theme="" gtk_color_scheme=""
-	if command -v dots-wallpaper-current >/dev/null 2>&1; then
-		wallpaper="$(dots-wallpaper-current 2>/dev/null || true)"
+	if command -v horneroctl >/dev/null 2>&1; then
+		wallpaper="$(horneroctl wallpaper current 2>/dev/null || true)"
 	fi
 	local state_file
 	state_file="$(_appearance_resolve_state_file)"
@@ -262,7 +262,7 @@ cmd_set_wallpaper() {
 		echo "Usage: dots-appearance set-wallpaper <path>" >&2
 		exit 1
 	}
-	dots-wallpaper-set "$wallpaper"
+	horneroctl wallpaper set --yes "$wallpaper"
 }
 
 cmd_set_variant() {
@@ -357,8 +357,8 @@ cmd_doctor() {
 	pointer="$(_appearance_resolve_pointer)"
 	local pointer_val=""
 	[[ -f $pointer ]] && pointer_val="$(head -n 1 "$pointer" | tr -d '\r')"
-	if command -v dots-wallpaper-current >/dev/null 2>&1; then
-		resolved="$(dots-wallpaper-current 2>/dev/null || true)"
+	if command -v horneroctl >/dev/null 2>&1; then
+		resolved="$(horneroctl wallpaper current 2>/dev/null || true)"
 	fi
 	if [[ -L $HOME/.cache/wal/wal ]]; then
 		wal_target="$(readlink -f "$HOME/.cache/wal/wal" 2>/dev/null || true)"
@@ -421,7 +421,7 @@ cmd_doctor() {
 		ptr_real="$(readlink -f "$pointer_val" 2>/dev/null || true)"
 		res_real="$(readlink -f "$resolved" 2>/dev/null || true)"
 		if [[ -n $ptr_real && -n $res_real && $ptr_real != "$res_real" ]]; then
-			echo "FAIL: pointer != dots-wallpaper-current ($pointer_val vs $resolved)" >&2
+			echo "FAIL: pointer != wallpaper current ($pointer_val vs $resolved)" >&2
 			ok=1
 		fi
 	fi

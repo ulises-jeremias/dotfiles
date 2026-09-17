@@ -49,7 +49,7 @@ Searcher {
         resolveProc.running = true;
     }
 
-    /** Raw pointer file content; avoids empty UI if dots-wallpaper-current fails (env/PATH). */
+    /** Raw pointer file content; avoids empty UI if the current readout fails (env/PATH). */
     function applyPointerFromFileView(pointerReadout: string): void {
         let t = pointerReadout.trim();
         if (!t.length)
@@ -86,12 +86,11 @@ Searcher {
         }
     }
 
-    // TODO(hornero-compat): dots-wallpaper-current is an external runtime CLI
-    // with a FileView pointer fallback below; see docs/COMPAT.md (A, B).
+    // Native readout with a FileView pointer fallback below.
     Process {
         id: resolveProc
 
-        command: [`${Quickshell.env("HOME")}/.local/bin/dots-wallpaper-current`]
+        command: ["horneroctl", "wallpaper", "current"]
         running: false
         stdout: StdioCollector {
             onStreamFinished: {

@@ -21,7 +21,7 @@
 ##         --update=PATH             Update lockscreen images from wallpaper
 ##     -l, --lock                    Lock screen with blur effect
 ##         --lock-effect=EFFECT      Lock screen with specific effect (dim, blur, dimblur, pixel)
-##     -w, --wall                    Set wallpaper (uses dots-wallpaper-set)
+##     -w, --wall                    Set wallpaper (uses horneroctl wallpaper set)
 ##         --wall-effect=EFFECT      Set wallpaper with specific effect
 ##         --dim=LEVEL               Dim level (0-100, default: 40)
 ##         --blur=LEVEL              Blur level (1-10, default: 5)
@@ -858,7 +858,7 @@ main() {
 		local requested_path="${wall_effect:-}"
 		local wallpaper_path=""
 
-		if command -v dots-wallpaper-set >/dev/null 2>&1; then
+		if command -v horneroctl >/dev/null 2>&1; then
 			if [[ -n $requested_path && -f $requested_path ]]; then
 				wallpaper_path="$requested_path"
 			else
@@ -868,12 +868,12 @@ main() {
 			fi
 
 			if [[ -n $wallpaper_path && -f $wallpaper_path ]]; then
-				dots-wallpaper-set "$wallpaper_path"
+				horneroctl wallpaper set --yes "$wallpaper_path"
 			else
 				log_warning "Could not resolve wallpaper path for --wall"
 			fi
 		else
-			log_warning "dots-wallpaper-set not found, skipping wallpaper update"
+			log_warning "horneroctl not found, skipping wallpaper update"
 		fi
 
 	else

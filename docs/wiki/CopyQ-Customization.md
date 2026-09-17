@@ -3,7 +3,7 @@
 CopyQ is a powerful clipboard manager integrated with HorneroConfig's smart-colors system, providing theme-adaptive styling that automatically matches your current color scheme.
 
 > [!TIP]
-> CopyQ automatically adapts to your current theme colors when you change wallpapers via `wpg` or run `dots-wal-reload`.
+> CopyQ automatically adapts to your current theme colors when you change wallpapers via `wpg` or run `horneroctl wallpaper reload --yes`.
 
 ---
 
@@ -41,7 +41,7 @@ The CopyQ theme follows HorneroConfig's visual guidelines:
 The CopyQ theme file (`.ini` format) is automatically generated when you:
 
 1. Change wallpapers via `wpg`
-2. Run `dots-wal-reload`
+2. Run `horneroctl wallpaper reload --yes`
 3. Run `dots-smart-colors --generate`
 
 The generated theme file is cached in `~/.cache/dots/smart-colors/colors-copyq.ini` and symlinked to `~/.config/copyq/themes/hornero-smart-colors.ini`.
@@ -170,8 +170,8 @@ dots-clipboard --backend=copyq
 
 CopyQ's theme automatically updates when:
 
-1. **Wallpaper Changes**: Running `wpg` or changing wallpapers triggers `dots-wal-reload`
-2. **Manual Reload**: Running `dots-wal-reload` manually
+1. **Wallpaper Changes**: Running `wpg` or changing wallpapers triggers `horneroctl wallpaper reload --yes`
+2. **Manual Reload**: Running `horneroctl wallpaper reload --yes` manually
 3. **Smart Colors Regeneration**: Running `dots-smart-colors --generate`
 
 The CSS is regenerated from the template with current theme colors and symlinked to CopyQ's config directory.
