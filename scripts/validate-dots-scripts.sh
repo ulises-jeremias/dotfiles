@@ -15,7 +15,6 @@ ENTRYPOINT_SCRIPTS=(
 
 # Scripts to exclude from validation (third-party or special cases)
 EXCLUDED_SCRIPTS=(
-  "executable_dots-checkupdates" # Third-party script from pacman-contrib
   "executable_dots-git-notify"   # Third-party script with custom argument parsing
 )
 
@@ -104,8 +103,10 @@ for script in "${ENTRYPOINT_SCRIPTS[@]}"; do
 done
 
 # Validate dots-scripts.sh is up to date
+# Entries marked RETIRED are intentional migration pointers to horneroctl
+# (script deleted on purpose); they are excluded from the sync check.
 scripts_in_dir=$(find "${DOTS_BIN_DIR}" -name "executable_dots-*" -printf "%f\n" | sed 's/executable_dots-//' | sort)
-scripts_in_list=$(grep -o '[a-zA-Z0-9-]*:' "${DOTFILES_ROOT}/home/dot_local/lib/dots/dots-scripts.sh" | sed 's/://' | sort)
+scripts_in_list=$(grep -v 'RETIRED' "${DOTFILES_ROOT}/home/dot_local/lib/dots/dots-scripts.sh" | grep -o '[a-zA-Z0-9-]*:' | sed 's/://' | sort)
 
 if ! diff -q <(echo "$scripts_in_dir") <(echo "$scripts_in_list") >/dev/null; then
   echo "❌ dots-scripts.sh is out of sync with actual scripts"
