@@ -76,7 +76,7 @@ Dispositions:
 | `dots-settings-gui` | `config/LauncherConfig.qml` | A | Launched, not embedded |
 | `dots-lockscreen` | `modules/controlcenter/system/SystemPane.qml` | A | `--lock` action |
 | `horneroctl capture screenshot` (was `dots-screenshooter`) | `modules/controlcenter/system/SystemPane.qml` | native | Migrated from optional shim to native verb |
-| `dots-sysupdate` | `modules/controlcenter/system/SystemPane.qml` (via `foot -e sh -c`) | A | Terminal wrapper, optional |
+| `horneroctl package upgrade` (was dead `dots-sysupdate` reference) | `modules/controlcenter/system/SystemPane.qml` (via `foot -e sh -c`) | native | Remapped to native polkit upgrade |
 | `dots-keyboard-help` | `modules/controlcenter/system/SystemPane.qml` (`DOTS_BYPASS_QUICKSHELL=1 …`) | A | Launched, not embedded |
 | `dots-appearance theme list` | `modules/launcher/services/Themes.qml` | A, E | Track 3a: theme-pack listing moved behind this CLI; bare-`python3` dropped. Registry ownership still dots-side (see `docs/GTK-PACK-OWNERSHIP.md`) |
 | `Paths.data/state/cache/config` (`DOTS_*_DIR` / XDG) | `utils/Paths.qml` | D | No chezmoi-managed paths; overrides via env documented in `docs/ARCHITECTURE.md` |

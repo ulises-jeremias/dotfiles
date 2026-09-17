@@ -113,9 +113,10 @@ outside the generated roles.
 Out of scope for issue #2 (unchanged): `dots-accent-override`,
 `dots-quickshell`, `dots-night-mode`, and launcher-only
 actions (`dots-theme-selector`, `dots-settings-gui`, `dots-lockscreen`,
-`dots-sysupdate`, `dots-keyboard-help`).
+`dots-keyboard-help`).
 (Wallpaper `current`/`set` already migrated to `horneroctl wallpaper`;
-screenshot/record/clipboard migrated to `horneroctl capture`.)
+screenshot/record/clipboard migrated to `horneroctl capture`;
+system-update tile migrated to `horneroctl package upgrade`.)
 
 ## Contracts and checks
 

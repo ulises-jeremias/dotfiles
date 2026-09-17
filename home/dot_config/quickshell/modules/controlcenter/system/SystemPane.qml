@@ -354,7 +354,7 @@ Item {
                             icon: "system_update_alt"
                             label: qsTr("Check updates")
                             description: qsTr("Open terminal with system update")
-                            action: () => root.run(["foot", "-e", "sh", "-c", "dots-sysupdate"])
+                            action: () => root.run(["foot", "-e", "sh", "-c", "horneroctl package upgrade --yes"])
                         }
                     }
                 }
