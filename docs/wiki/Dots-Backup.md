@@ -1,6 +1,10 @@
 # 💾 Dots Backup Guide
 
-The `dots backup` utility provides comprehensive backup and restoration capabilities for your dotfiles configuration. This tool helps you create snapshots, manage backup schedules, and restore previous configurations when needed.
+> Retired wrapper: `dots-backup` was removed in #294. Backups are native:
+> `horneroctl backup list|schedule|create|restore`. Tune with
+> `HORNERO_BACKUP_DIR` (destination) and `HORNERO_BACKUP_SOURCE` (default `~/.dotfiles`).
+
+The `horneroctl backup` verbs provide comprehensive backup and restoration capabilities for your dotfiles configuration. They create snapshots, print schedule recipes, and restore previous configurations when needed.
 
 > [!TIP]
 > Regular backups are essential for maintaining system stability and recovering from configuration issues. The backup tool integrates seamlessly with chezmoi and your dotfiles workflow.
@@ -11,35 +15,29 @@ The `dots backup` utility provides comprehensive backup and restoration capabili
 
 ```sh
 # Create a backup with default settings
-dots backup
+horneroctl backup create --yes
 
 # List all available backups
-dots backup --list
+horneroctl backup list
 
 # Restore from a specific backup
-dots backup --rollback
+horneroctl backup restore <id> --yes
 
-# Set up automated backups with cron
-dots backup --register-cron
-
-# Remove automated backups
-dots backup --unregister-cron
+# Print the cron/systemd schedule recipe (documented, not installed)
+horneroctl backup schedule
 ```
 
 ### Advanced Options
 
 ```sh
 # Custom backup location
-dots backup --backup-dir=/path/to/custom/location
+HORNERO_BACKUP_DIR=/path/to/custom/location horneroctl backup create --yes
 
 # Custom backup name
-dots backup --backup-name=my-custom-backup
+horneroctl backup create --name=my-custom-backup --yes
 
 # Custom dotfiles directory (if not using default ~/.dotfiles)
-dots backup --dotfiles-dir=/path/to/dotfiles
-
-# Custom log file location
-dots backup --log-file=/path/to/custom.log
+HORNERO_BACKUP_SOURCE=/path/to/dotfiles horneroctl backup create --yes
 ```
 
 ---
@@ -63,11 +61,11 @@ The backup tool creates comprehensive snapshots including:
 ### Setting Up Cron Jobs
 
 ```sh
-# Register daily backups at 2 AM
-dots backup --register-cron
+# Print the daily-2AM cron recipe, then install it with crontab -e
+horneroctl backup schedule
 
-# This creates a cron job that runs:
-# 0 2 * * * /home/user/.local/bin/dots-backup --backup-name=daily_$(date +\%Y\%m\%d)
+# The cron recipe runs:
+# 0 2 * * * horneroctl backup create --yes
 ```
 
 ### Managing Automated Backups
@@ -181,9 +179,10 @@ You can modify the backup script to:
 - Customize encryption settings
 
 ```sh
-# Edit the backup script
-chezmoi edit ~/.local/bin/executable_dots-backup
-chezmoi apply
+# Backups are native (no script to edit); tune destination and source:
+export HORNERO_BACKUP_DIR=/path/to/custom/location
+export HORNERO_BACKUP_SOURCE=/path/to/dotfiles
+horneroctl backup create --yes
 ```
 
 ---

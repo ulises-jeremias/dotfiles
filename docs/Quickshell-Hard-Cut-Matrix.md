@@ -9,10 +9,10 @@ It defines what stays, what is removed, and why.
 - `home/dot_local/bin/executable_dots-appearance`
 - `home/dot_local/bin/executable_dots-color-scheme`
 - `home/dot_local/bin/executable_dots-smart-colors`
-- `home/dot_local/bin/executable_dots-wallpaper-set`
-- `home/dot_local/bin/executable_dots-wal-reload`
+- `horneroctl wallpaper set` (was `home/dot_local/bin/executable_dots-wallpaper-set`; wrapper retired)
+- `horneroctl wallpaper reload` (was `home/dot_local/bin/executable_dots-wal-reload`; wrapper retired)
 - `home/dot_local/bin/executable_dots-settings-gui`
-- `home/dot_local/bin/executable_dots-launcher` (Quickshell-first, minimal rescue)
+- `horneroctl apps launch` (was `home/dot_local/bin/executable_dots-launcher`; wrapper retired in #295)
 - `home/dot_local/bin/executable_dots-power-menu` (Quickshell-first, minimal rescue)
 - `horneroctl capture clipboard` (was `home/dot_local/bin/executable_dots-clipboard`; wrapper retired)
 

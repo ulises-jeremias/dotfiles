@@ -1,6 +1,9 @@
 # Dots Scripts Utility Guide
 
-`dots` is the unified entrypoint for Hornero scripts.
+`dots` is the unified entrypoint for Hornero scripts. Most former
+`dots-*` wrappers are retired — run `dots --list` (entries marked
+`RETIRED` point at the native `horneroctl` replacement) or see
+[docs/Horneroctl.md](../Horneroctl.md) for the full migration map.
 
 ## Usage
 
@@ -10,29 +13,21 @@ dots --list
 dots <script> [options]
 ```
 
-## Quickshell-first workflows
+## Native-first workflows (horneroctl)
 
 ### launcher
 
-- Primary: `dots-quickshell ipc launcher toggle`
-- Rescue path: minimal prompt
-
 ```bash
-dots launcher
-dots launcher --backend=quickshell
+horneroctl apps launch
+horneroctl apps launch --backend=quickshell
 ```
 
 ### clipboard
 
-- Primary: `dots-quickshell ipc utilities toggle`
-- Secondary (Wayland): `cliphist` terminal picker
-- X11 fallback: `copyq`
-- Rescue path: minimal output
-
 ```bash
-dots clipboard
-dots clipboard --backend=copyq
-dots clipboard --backend=cliphist
+horneroctl capture clipboard
+horneroctl capture clipboard --backend copyq
+horneroctl capture clipboard --backend cliphist
 ```
 
 ### power-menu
@@ -57,12 +52,12 @@ dots settings-gui
 
 ### keyboard-help
 
-- Parses Hyprland keybindings dynamically
-- Viewer backend: terminal (`less`)
+- Readout: `horneroctl hardware keyboard keys [--category=CAT] [--search=TERM]`
+- Under Quickshell (no bypass): settings-gui system menu
 
 ```bash
-dots keyboard-help
-dots keyboard-help --search=workspace
+horneroctl hardware keyboard keys
+horneroctl hardware keyboard keys --search=workspace
 ```
 
 ## Theme and color workflows
@@ -80,34 +75,27 @@ dots appearance set-variant vibrant
 dots appearance set-mode dark
 ```
 
+Reads also available natively: `horneroctl appearance status`.
+
 ### smart-colors
 
 - Generates semantic colors and M3 `scheme.json`
-- Cache path: `~/.cache/dots/smart-colors/`
+- Dots cache: `~/.cache/dots/smart-colors/` (canonical writes go to `~/.cache/hornero/smart-colors/`)
 
 ```bash
 dots smart-colors --generate --m3
 dots smart-colors --concept=error
 ```
 
-### wal-reload
+Native equivalents: `horneroctl appearance colors generate --m3 --yes`,
+`horneroctl appearance colors concept error`.
 
-- Rebuilds palette from wallpaper
-- Regenerates smart colors
-- Reloads Quickshell palette through IPC
-
-```bash
-dots wal-reload
-```
-
-### wallpaper-set
-
-- Unified wallpaper entrypoint used by Quickshell and scripts
-- When Quickshell is running: IPC `appearance setWallpaper`
-- Fallback: wal + wallpaper pointer + M3 generation + `dots-color-scheme sync-state`
+### wallpaper (retired wrappers)
 
 ```bash
-dots wallpaper-set /path/to/wallpaper.jpg
+horneroctl wallpaper set /path/to/wallpaper.jpg --yes
+horneroctl wallpaper current
+horneroctl wallpaper reload --yes
 dots appearance doctor
 ```
 
@@ -115,4 +103,4 @@ dots appearance doctor
 
 - Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.
 - `dots appearance theme` remains available as a thin alias; `dots appearance` is the canonical contract.
-- `dots-*` scripts remain modular and can be called directly.
+- Retained `dots-*` scripts remain modular and can be called directly.

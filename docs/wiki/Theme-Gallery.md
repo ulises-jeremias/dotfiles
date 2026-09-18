@@ -35,7 +35,7 @@ or from the shell: **Appearance pane → Themes**, or the launcher.
 1. `theme.json` in each theme directory declares the wallpaper and metadata
 2. The wallpaper feeds the M3 color pipeline (`dots-m3-colors`) which
    generates the Material You palette consumed by Quickshell, GTK and terminals
-3. `dots wal-reload` re-runs the pipeline when you change wallpapers manually
+3. `horneroctl wallpaper reload --yes` re-runs the pipeline when you change wallpapers manually
 
 See [Smart Colors System](Smart-Colors-System) for the full pipeline and
 [Customization](Customization) for adding your own theme:
