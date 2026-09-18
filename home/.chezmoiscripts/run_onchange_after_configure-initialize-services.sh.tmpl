@@ -87,47 +87,24 @@ if [[ ! -f "$wall_ptr" || ! -s "$wall_ptr" ]]; then
   done
 fi
 
-if command -v dots-smart-colors &>/dev/null; then
+if command -v horneroctl &>/dev/null; then
   print_status "info" "Generating smart colors from current wallpaper..."
-  if timeout 15s dots-smart-colors --generate &>/dev/null; then
+  if timeout 60s horneroctl appearance colors generate --yes &>/dev/null; then
     print_status "success" "Smart colors generated"
   else
     print_status "error" "Failed to generate smart colors (non-critical)"
   fi
-elif command -v dots &>/dev/null; then
-  print_status "info" "dots available; appearance will initialize on first session"
 else
-  print_status "info" "dots command not available yet (will be available after next login)"
+  print_status "info" "horneroctl not available yet (appearance will initialize on first session)"
 fi
 
-# Verify essential scripts are executable
-print_status "info" "Verifying script permissions..."
-essential_scripts=(
-  "$HOME/.local/bin/dots-night-mode"
-  "$HOME/.local/bin/dots-appearance"
-  "$HOME/.local/bin/dots-smart-colors"
-  "$HOME/.local/bin/dots-lockscreen"
-  "$HOME/.local/bin/dots-default-apps"
-)
-
-for script in "${essential_scripts[@]}"; do
-  if [[ -f "$script" ]]; then
-    if [[ ! -x "$script" ]]; then
-      chmod +x "$script"
-      print_status "success" "Made executable: $(basename "$script")"
-    fi
-  fi
-done
-
-# Initialize night mode state file
-print_status "info" "Initializing night mode state..."
-NIGHT_MODE_STATE_FILE="$HOME/.cache/dots/night_mode_state"
-if [[ ! -f "$NIGHT_MODE_STATE_FILE" ]]; then
-  echo "day" > "$NIGHT_MODE_STATE_FILE"
-  print_status "success" "Night mode state initialized"
-else
-  print_status "success" "Night mode state already exists"
+# horneroctl is the required runtime; chezmoi already deploys it executable.
+if ! command -v horneroctl &>/dev/null; then
+  print_status "error" "horneroctl not found on PATH; install it before login session"
 fi
+
+# Night mode state is owned natively (horneroctl appearance night-mode);
+# the state file self-initializes on first toggle — nothing to seed here.
 
 # Initialize font cache
 if command -v fc-cache &>/dev/null; then

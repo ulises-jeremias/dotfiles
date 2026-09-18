@@ -79,9 +79,8 @@ Searcher {
 
         function onClicked(list: AppList): void {
             list.visibilities.launcher = false;
-            // TODO(hornero-compat): variant ops are owned by dots-color-scheme;
-            // no native palette store exists yet. See docs/NATIVE-APPEARANCE.md.
-            Quickshell.execDetached(["dots-color-scheme", "variant", variant]);
+            // Variant ops run via `horneroctl appearance scheme set-variant`.
+            Quickshell.execDetached(["horneroctl", "appearance", "scheme", "set-variant", variant, "--yes"]);
         }
     }
 }

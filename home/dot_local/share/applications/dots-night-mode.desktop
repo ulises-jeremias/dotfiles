@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Dots Night Mode
 Comment=Toggle blue light filter for eye comfort
-Exec=dots-night-mode toggle
+Exec=horneroctl appearance night-mode toggle --yes
 Icon=weather-clear-night
 Terminal=false
 Type=Application

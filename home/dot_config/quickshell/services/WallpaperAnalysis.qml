@@ -9,7 +9,7 @@ import Quickshell
 // Thin wrapper around the native `ImageAnalyser` plugin
 // (`dominantColour`/`luminance`). Covers instant wallpaper tone analysis
 // without shelling out. Full Material-3 palette generation still needs the
-// `dots-m3-colors` compat adapter (materialyoucolor lives outside this
+// M3 synthesis backend note (materialyoucolor lives outside this
 // repo); those call sites keep a TODO(hornero-compat) marker.
 // See docs/NATIVE-APPEARANCE.md.
 Singleton {

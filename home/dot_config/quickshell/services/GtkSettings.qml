@@ -7,11 +7,9 @@ import QtQuick
 // Native GTK application layer (issue #2, migration step (a)).
 //
 // Applies GTK themes, icon themes, and color-scheme policy through the
-// deterministic `gsettings` desktop APIs first. The `dots-gtk-theme` CLI is
-// kept only as a thin compat-adapter fallback for cases the native layer
-// cannot resolve deterministically (missing `gsettings`, theme-pack ids
-// owned by dots-* tooling); every fallback path is marked
-// TODO(hornero-compat). See docs/NATIVE-APPEARANCE.md.
+// deterministic `gsettings` desktop APIs first, falling back to
+// `horneroctl appearance gtk` where `gsettings` is absent.
+// See docs/NATIVE-APPEARANCE.md.
 Singleton {
     id: root
 
@@ -125,44 +123,42 @@ Singleton {
         root.applyFinished(ok, ok ? "" : _lastError);
     }
 
-    // TODO(hornero-compat): dots-gtk-theme compat fallback. Kept because the
-    // native layer cannot run where `gsettings` is absent and cannot resolve
-    // dots-owned theme-pack ids; see docs/COMPAT.md (disposition A).
+    // Fallback for hosts where `gsettings` is absent; see docs/COMPAT.md.
     function _compatFor(kind: string): var {
         if (kind === "gtk")
-            return ["dots-gtk-theme", "-q", "apply", _gtkTheme];
+            return ["horneroctl", "appearance", "gtk", "apply", _gtkTheme, "--yes"];
         if (kind === "icons")
-            return ["dots-gtk-theme", "-q", "set-icons", _iconTheme];
+            return ["horneroctl", "appearance", "gtk", "set-icons", _iconTheme, "--yes"];
         if (kind === "color-scheme")
-            return ["dots-gtk-theme", "-q", "color-scheme", _policy || "follow"];
+            return ["horneroctl", "appearance", "gtk", "color-scheme", _policy || "follow", "--yes"];
         return ["bash", "-c", `
 set -euo pipefail
 policy="\${DOTS_GTK_COLOR_SCHEME:-}"
 if [[ -n "\${DOTS_THEME_ID:-}" && ( -z "\${DOTS_GTK_THEME:-}" || "\${DOTS_GTK_THEME}" == "auto" ) ]]; then
-  dots-gtk-theme -q theme "\${DOTS_THEME_ID}" || true
+  horneroctl appearance gtk theme "\${DOTS_THEME_ID}" --yes || true
   if [[ -n "\$policy" ]]; then
-    dots-gtk-theme -q color-scheme "\$policy" || true
+    horneroctl appearance gtk color-scheme "\$policy" --yes || true
   else
-    dots-gtk-theme -q sync-color-scheme || true
+    horneroctl appearance gtk sync-color-scheme --yes || true
   fi
 elif [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
   if [[ -n "\$policy" ]]; then
-    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" "\$policy" || true
+    horneroctl appearance gtk apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" "\$policy" --yes || true
   else
-    dots-gtk-theme -q apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" || true
+    horneroctl appearance gtk apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" --yes || true
   fi
 elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
-  dots-gtk-theme -q set-icons "\${DOTS_ICON_THEME}" || true
+  horneroctl appearance gtk set-icons "\${DOTS_ICON_THEME}" --yes || true
   if [[ -n "\$policy" ]]; then
-    dots-gtk-theme -q color-scheme "\$policy" || true
+    horneroctl appearance gtk color-scheme "\$policy" --yes || true
   else
-    dots-gtk-theme -q sync-color-scheme || true
+    horneroctl appearance gtk sync-color-scheme --yes || true
   fi
 else
   if [[ -n "\$policy" ]]; then
-    dots-gtk-theme -q color-scheme "\$policy" || true
+    horneroctl appearance gtk color-scheme "\$policy" --yes || true
   else
-    dots-gtk-theme -q sync-color-scheme || true
+    horneroctl appearance gtk sync-color-scheme --yes || true
   fi
 fi
 `];
@@ -222,7 +218,7 @@ fi
     // Native live queries: current GTK/icon theme and color-scheme via
     // gsettings. Emits three lines (gtk-theme, icon-theme, color-scheme);
     // empty output means gsettings is unavailable and callers keep their
-    // dots-gtk-theme compat queries as fallback.
+    // `horneroctl appearance gtk` live queries as fallback.
     Process {
         id: liveQueryProc
 

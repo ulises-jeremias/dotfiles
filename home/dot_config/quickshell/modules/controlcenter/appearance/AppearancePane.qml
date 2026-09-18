@@ -117,7 +117,7 @@ Item {
     property string previewGenSchemeType: "tonal-spot"
     // Native instant tone for the palette-generation input (issue #2, step
     // (b)): dominant colour + luminance straight from the ImageAnalyser
-    // plugin. The full generated palette below still needs dots-m3-colors.
+    // plugin. The full generated palette below runs via `horneroctl appearance colors m3`.
     readonly property color previewNativeDominant: previewAnalyser.dominantColour
     readonly property real previewNativeLuminance: previewAnalyser.luminance
     readonly property bool previewNativeReady: previewAnalyser.luminance > 0
@@ -127,7 +127,6 @@ Item {
     property string previewRequestKey: ""
     property string previewRunningKey: ""
     property int previewQuality: 8
-    readonly property string m3ScriptPath: `${Quickshell.env("HOME")}/.local/bin/dots-m3-colors`
 
     anchors.fill: parent
 
@@ -437,12 +436,12 @@ Item {
                 const parts = pendingSchemeKey.split(" ");
                 const name = parts[0] || "dynamic";
                 const flavour = parts.slice(1).join(" ") || pendingVariant;
-                session.runAction(["dots-color-scheme", "set", "-n", name, "-f", flavour]);
+                session.runAction(["horneroctl", "appearance", "scheme", "set-variant", flavour, "--yes"]);
             } else if (variantDirty && pendingVariant) {
-                session.runAction(["dots-color-scheme", "variant", pendingVariant]);
+                session.runAction(["horneroctl", "appearance", "scheme", "set-variant", pendingVariant, "--yes"]);
             }
             if (modeDirty && pendingMode)
-                session.runAction(["dots-color-scheme", "mode", pendingMode]);
+                session.runAction(["horneroctl", "appearance", "scheme", "set-mode", pendingMode, "--yes"]);
         }
 
         if (gtkDirty && pendingGtkTheme) {
@@ -499,7 +498,7 @@ Item {
             return;
         const mode = deferredMode;
         deferredMode = "";
-        session.runAction(["dots-color-scheme", "mode", mode]);
+        session.runAction(["horneroctl", "appearance", "scheme", "set-mode", mode, "--yes"]);
     }
 
     function _flushDeferredPipelineExtras(): void {
@@ -778,14 +777,14 @@ Item {
         source: root.previewGenWallpaper
     }
 
-    // TODO(hornero-compat): full M3 preview palettes need materialyoucolor
-    // via dots-m3-colors; native dominant/luminance comes from
+    // Full M3 preview palettes run via `horneroctl appearance colors m3`;
+    // native dominant/luminance comes from
     // previewAnalyser above. Thin compat adapter; see
     // docs/NATIVE-APPEARANCE.md.
     Process {
         id: previewPaletteProc
         command: [
-            root.m3ScriptPath,
+            "horneroctl", "appearance", "colors", "m3", "--yes", "--",
             "--image",
             root.previewGenWallpaper,
             "--mode",
@@ -1003,11 +1002,11 @@ Item {
         rightContent: appearanceRightContentComponent
     }
 
-    // TODO(hornero-compat): dots-gtk-theme live-query compat fallback. Yields
-    // to the native GtkSettings reads; kept for hosts without gsettings.
+    // Live-query fallback. Yields to the native GtkSettings reads; kept for
+    // hosts without gsettings.
     Process {
         id: liveGtkProc
-        command: ["dots-gtk-theme", "-q", "-p", "current"]
+        command: ["horneroctl", "appearance", "gtk", "current"]
         stdout: StdioCollector {
             onStreamFinished: {
                 // Never clobber a staged GTK selection with a late live-seed result.
@@ -1023,10 +1022,10 @@ Item {
         }
     }
 
-    // TODO(hornero-compat): dots-gtk-theme live-query compat fallback; see above.
+    // Live-query fallback; see above.
     Process {
         id: liveIconProc
-        command: ["dots-gtk-theme", "-q", "-p", "current-icon"]
+        command: ["horneroctl", "appearance", "gtk", "current-icon"]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (root.iconDirty)
@@ -1040,10 +1039,10 @@ Item {
         }
     }
 
-    // TODO(hornero-compat): dots-gtk-theme live-query compat fallback; see above.
+    // Live-query fallback; see above.
     Process {
         id: liveGtkColorSchemeProc
-        command: ["dots-gtk-theme", "-q", "-p", "current-color-scheme"]
+        command: ["horneroctl", "appearance", "gtk", "current-color-scheme"]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (root.gtkColorSchemeDirty)

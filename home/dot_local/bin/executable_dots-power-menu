@@ -73,8 +73,8 @@ launch_quickshell() {
 }
 
 lock_session() {
-  if command -v dots-lockscreen >/dev/null 2>&1; then
-    dots-lockscreen --lock
+  if command -v horneroctl >/dev/null 2>&1; then
+    horneroctl lock now --yes
   else
     loginctl lock-session
   fi

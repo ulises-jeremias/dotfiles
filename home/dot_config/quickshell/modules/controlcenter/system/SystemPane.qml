@@ -319,7 +319,7 @@ Item {
                             icon: "lock"
                             label: qsTr("Lock screen")
                             description: qsTr("Activate hyprlock immediately")
-                            action: () => root.run(["dots-lockscreen", "--lock"])
+                            action: () => root.run(["horneroctl", "lock", "now", "--yes"])
                         }
 
                         ActionTile {
@@ -347,7 +347,7 @@ Item {
                             icon: "dark_mode"
                             label: qsTr("Night mode")
                             description: qsTr("Toggle blue-light filter")
-                            action: () => root.run(["dots-night-mode", "toggle"])
+                            action: () => root.run(["horneroctl", "appearance", "night-mode", "toggle", "--yes"])
                         }
 
                         ActionTile {
@@ -404,7 +404,7 @@ Item {
                             icon: "keyboard"
                             label: qsTr("Keyboard shortcuts")
                             description: qsTr("Show current keybinding reference")
-                            action: () => root.run(["foot", "-e", "sh", "-c", "DOTS_BYPASS_QUICKSHELL=1 dots-keyboard-help"])
+                            action: () => root.run(["foot", "-e", "sh", "-c", "horneroctl hardware keyboard keys"])
                         }
                     }
                 }
