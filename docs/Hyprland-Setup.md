@@ -49,7 +49,8 @@ The [hyprland-scroll-overview](https://github.com/yayuuu/hyprland-scroll-overvie
 plugin provides a bird's-eye view of all workspaces and windows. The Hyprland
 install script ensures the build dependencies and Hyprland headers are present,
 and the `run_onchange_after` script runs the idempotent
-`dots-hyprland-plugins` helper (also started on every login via autostart) to
+`horneroctl hypr plugins install --yes` (retired `dots-hyprland-plugins`
+wrapper; also runs on every login via autostart) to
 add, enable and reload the plugin through `hyprpm`. The plugin is configured in
 `~/.config/hypr/hyprland.conf.d/plugins.conf`.
 

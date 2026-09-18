@@ -68,7 +68,7 @@ dots lockscreen --lock --lock-effect=pixel
 The lockscreen is automatically updated when you change wallpapers using:
 
 ```bash
-dots wal-reload
+horneroctl wallpaper reload --yes
 ```
 
 ## Effects
@@ -158,7 +158,7 @@ automatically after the configured inactivity timeout.`
 Automatically updates lockscreen when changing themes:
 
 ```bash
-dots wal-reload  # Updates wallpaper and lockscreen
+horneroctl wallpaper reload --yes  # Updates wallpaper and lockscreen
 ```
 
 ### Appearance
@@ -248,8 +248,8 @@ Matching is case-insensitive and supports partial keyword matches.
 Ensure smart-colors cache exists:
 
 ```bash
-dots smart-colors analyze
-dots wal-reload
+dots-smart-colors --analyze
+horneroctl wallpaper reload --yes
 ```
 
 ### Images not generating
