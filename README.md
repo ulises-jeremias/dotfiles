@@ -187,10 +187,10 @@ dots appearance theme apply vapor-dreams
 Access **100+ built-in scripts** via the `dots` command:
 
 ```bash
-dots --list             # List all available scripts
-dots sysupdate          # Comprehensive system updates
+dots --list             # List available scripts (RETIRED entries point at horneroctl)
+horneroctl package upgrade --yes  # Comprehensive system updates
 dots smart-colors       # Intelligent color analysis
-dots security-audit     # Security analysis and hardening
+horneroctl apps audit   # Security analysis and hardening
 dots appearance apply neon-city
 ```
 
