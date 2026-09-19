@@ -199,9 +199,10 @@ else
 	fail "missing dots-m3-colors and/or python-m3.sh"
 fi
 
-if grep -En 'dots-m3-colors|m3Bin' "$QS_PIPE" > /dev/null 2>&1 \
+if { grep -En 'dots-m3-colors|m3Bin' "$QS_PIPE" > /dev/null 2>&1 \
+	|| grep -En 'horneroctl", "appearance", "colors", "m3"|horneroctl appearance colors m3' "$QS_PIPE" > /dev/null 2>&1; } \
 	&& ! grep -En '["'\'']python3["'\''].*generate-m3-colors|generate-m3-colors\.py' "$QS_PIPE" > /dev/null 2>&1; then
-	pass "ThemePipeline invokes dots-m3-colors (not bare python3)"
+	pass "ThemePipeline uses a pinned M3 backend (not bare python3)"
 else
 	fail "ThemePipeline still invokes generate-m3-colors via bare python3"
 fi
