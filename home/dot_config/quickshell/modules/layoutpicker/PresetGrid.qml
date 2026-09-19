@@ -10,10 +10,9 @@ import QtQuick.Layouts
 
 // Reusable grid of shell layout presets with mini previews.
 // Hosts: layoutpicker modal (drawers), controlcenter pane, dashboard tab.
-// Data comes from `dots-quickshell preset list --json`; applying a preset
-// deep-merges into shell.json and live-reloads (no shell restart needed).
-// TODO(hornero-compat): dots-quickshell is an external runtime CLI with a
-// vendored fallback dataset in presets/; see docs/COMPAT.md (A, C).
+// Data comes from `horneroctl shell preset list --full` (native picker
+// array); applying a preset deep-merges into shell.json via
+// `horneroctl shell preset apply --yes` and live-reloads (no restart).
 Item {
     id: root
 
@@ -39,7 +38,7 @@ Item {
         if (applyProc.running)
             return;
         currentName = name; // optimistic; the re-list corrects if it failed
-        applyProc.command = ["dots-quickshell", "preset", "apply", name];
+        applyProc.command = ["horneroctl", "shell", "preset", "apply", name, "--yes"];
         console.log("[layoutpicker] apply", name, "via", applyProc.command);
         applyProc.running = true;
     }
@@ -55,11 +54,12 @@ Item {
     Process {
         id: listProc
 
-        command: ["dots-quickshell", "preset", "list", "--json"]
+        command: ["horneroctl", "shell", "preset", "list", "--full", "--json"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    const list = JSON.parse(text);
+                    const env = JSON.parse(text);
+                    const list = JSON.parse(env.message);
                     root.presets = list;
                     const active = list.find(p => p.active);
                     if (active)

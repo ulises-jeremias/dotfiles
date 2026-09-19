@@ -103,10 +103,8 @@ Singleton {
         _busy = true;
         _lastError = "";
         _compatCommand = _compatFor(kind);
-        // Theme-pack ids are resolved by dots-* tooling; no deterministic
-        // native equivalent exists, so go straight to the compat adapter.
-        // TODO(hornero-compat): resolve theme-pack ids natively once
-        // HorneroOS owns the theme registry; see docs/NATIVE-APPEARANCE.md.
+        // Theme-pack ids resolve through `horneroctl appearance gtk theme`
+        // (native pack lookup), falling back to the compat adapter below.
         if (kind === "full" && _themeId && (!_gtkTheme || _gtkTheme === "auto")) {
             _compatKind = kind;
             compatProc.running = true;

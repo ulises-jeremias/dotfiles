@@ -55,7 +55,7 @@ alias lsa='ls -lah'
 # Seamlessly navigate in yazi then land in that directory in your shell.
 ycd() {
   local dir
-  dir="$(dots-yazi --last-dir "$@")"
+  dir="$(horneroctl apps terminal-file --last-dir "$@")"
   if [[ -n "$dir" ]] && [[ -d "$dir" ]]; then
     cd "$dir" || return
   fi

@@ -3,7 +3,7 @@ import Quickshell.Io
 JsonObject {
     // Canonical theme id. "hornero-dark" / "hornero-light" are first-class
     // built-in semantic palettes (services/Colours.qml); any other value
-    // resolves through the dots-owned theme registry (ThemePipeline).
+    // resolves through the horneroctl theme registry (ThemePipeline).
     property string theme: "hornero-dark"
     property Rounding rounding: Rounding {}
     property Spacing spacing: Spacing {}

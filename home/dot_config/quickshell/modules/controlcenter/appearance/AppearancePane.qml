@@ -622,8 +622,8 @@ Item {
         gtkColorSchemeDirty = false;
         // Seed live GTK/icon so section checkmarks reflect current state.
         // Do not overwrite a user-staged selection if a previous seed is still in flight.
-        // Native gsettings reads first (GtkSettings); the dots-gtk-theme
-        // queries below are compat fallbacks that yield when native wins.
+        // Native gsettings reads first (GtkSettings); the horneroctl gtk
+        // queries below are fallbacks that yield when native wins.
         GtkSettings.refreshLive();
         liveGtkProc.running = true;
         liveIconProc.running = true;

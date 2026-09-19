@@ -21,12 +21,10 @@
 
 set -euo pipefail
 
-source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
-
-readonly ACTION="${arguments[0]:-}"
-readonly APP_NAME="${arguments[1]:-}"
-readonly SUMMARY="${arguments[2]:-}"
-readonly BODY="${arguments[3]:-}"
+readonly ACTION="${1:-}"
+readonly APP_NAME="${2:-}"
+readonly SUMMARY="${3:-}"
+readonly BODY="${4:-}"
 
 # Logging function
 log() {

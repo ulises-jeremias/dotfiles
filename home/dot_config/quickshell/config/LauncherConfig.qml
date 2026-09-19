@@ -165,7 +165,7 @@ JsonObject {
             name: "Settings",
             icon: "settings",
             description: "Configure the shell",
-            command: ["dots-settings-gui", "menu"],
+            command: ["horneroctl", "config", "gui"],
             enabled: true,
             dangerous: false
         }

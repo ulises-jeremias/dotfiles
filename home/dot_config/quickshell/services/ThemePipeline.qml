@@ -270,8 +270,7 @@ Singleton {
         });
     }
 
-    // TODO(hornero-compat): dots-color-scheme owns scheme persistence; no
-    // native equivalent yet. Thin compat adapter; see docs/NATIVE-APPEARANCE.md.
+    // Scheme persistence runs through the native horneroctl scheme verbs.
     Process {
         id: ensureSchemeProc
         command: ["horneroctl", "appearance", "scheme", "regenerate", "--yes"]
@@ -500,8 +499,7 @@ done
         }
     }
 
-    // TODO(hornero-compat): dots-color-scheme owns scheme persistence; no
-    // native equivalent yet. Thin compat adapter; see docs/NATIVE-APPEARANCE.md.
+    // Scheme persistence runs through the native horneroctl scheme verbs.
     Process {
         id: syncStateProc
         command: ["horneroctl", "appearance", "scheme", "sync-state", "--yes"]
@@ -513,7 +511,7 @@ done
             touchSchemeProc.running = true;
             root._runSideEffects();
             // Finalize GTK through the native GtkSettings layer (gsettings
-            // first, dots-gtk-theme compat fallback inside). Completes via
+            // first, horneroctl gtk fallback inside). Completes via
             // the GtkSettings connection below.
             root._awaitingGtk = true;
             GtkSettings.applyFull(root._runThemeSideEffects ? (root._pendingGtkTheme || "") : "", root._runThemeSideEffects ? (root._pendingIconTheme || "") : "", root._runThemeSideEffects ? (root._pendingThemeId || "") : "", root._runThemeSideEffects ? (root._pendingGtkColorScheme || "") : "", root._pendingDarkMode);
@@ -526,7 +524,7 @@ done
     }
 
     // GTK applies run through the native GtkSettings layer (gsettings first,
-    // dots-gtk-theme compat fallback inside) and complete via its signal.
+    // horneroctl gtk fallback inside) and complete via its signal.
     Connections {
         target: GtkSettings
 
@@ -558,12 +556,11 @@ done
         command: ["hyprctl", "reload"]
     }
 
-    // TODO(hornero-compat): dots-snappy-switcher is a dots-owned side effect
-    // with no native equivalent yet; see docs/NATIVE-APPEARANCE.md.
+    // Snappy theme side effect runs through horneroctl (backend-owned).
     Process {
         id: snappyProc
         property string themeId: ""
-        command: ["dots-snappy-switcher", "apply-theme-pack", snappyProc.themeId]
+        command: ["horneroctl", "apps", "switcher", "apply-theme-pack", snappyProc.themeId, "--yes"]
     }
 
     Process {
