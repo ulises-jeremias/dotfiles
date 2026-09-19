@@ -380,18 +380,18 @@ cfg_default="$DOTS_DEFAULT"
 theme_dir="$DOTS_WALLPAPER_DIR"
 // Contract row 11: canonical hornero/* wallpapers first, legacy dots/* fallback.
 for base in "$DOTS_PIC/$theme_dir" "$DOTS_DATA/$theme_dir" "$DOTS_DATA_FALLBACK/$theme_dir"; do
-  if [ -n "$cfg_default" ] && [ -f "$base/$cfg_default" ]; then
-    readlink -f "$base/$cfg_default"
-    exit 0
-  fi
+    if [ -n "$cfg_default" ] && [ -f "$base/$cfg_default" ]; then
+        readlink -f "$base/$cfg_default"
+        exit 0
+    fi
 done
 for base in "$DOTS_PIC/$theme_dir" "$DOTS_DATA/$theme_dir" "$DOTS_DATA_FALLBACK/$theme_dir"; do
-  [ -d "$base" ] || continue
-  find -L "$base" -maxdepth 1 \\( -type f -o -type l \\) \\( \
-    -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \
-    -o -iname "*.gif" -o -iname "*.bmp" \
-  \\) 2>/dev/null | sort | head -n 1
-  break
+    [ -d "$base" ] || continue
+    find -L "$base" -maxdepth 1 \\( -type f -o -type l \\) \\( \
+        -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \
+        -o -iname "*.gif" -o -iname "*.bmp" \
+    \\) 2>/dev/null | sort | head -n 1
+    break
 done
 `]
         environment: ({
