@@ -133,31 +133,31 @@ Singleton {
 set -euo pipefail
 policy="\${DOTS_GTK_COLOR_SCHEME:-}"
 if [[ -n "\${DOTS_THEME_ID:-}" && ( -z "\${DOTS_GTK_THEME:-}" || "\${DOTS_GTK_THEME}" == "auto" ) ]]; then
-  horneroctl appearance gtk theme "\${DOTS_THEME_ID}" --yes || true
-  if [[ -n "\$policy" ]]; then
-    horneroctl appearance gtk color-scheme "\$policy" --yes || true
-  else
-    horneroctl appearance gtk sync-color-scheme --yes || true
-  fi
+    horneroctl appearance gtk theme "\${DOTS_THEME_ID}" --yes || true
+    if [[ -n "\$policy" ]]; then
+        horneroctl appearance gtk color-scheme "\$policy" --yes || true
+    else
+        horneroctl appearance gtk sync-color-scheme --yes || true
+    fi
 elif [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
-  if [[ -n "\$policy" ]]; then
-    horneroctl appearance gtk apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" "\$policy" --yes || true
-  else
-    horneroctl appearance gtk apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" --yes || true
-  fi
+    if [[ -n "\$policy" ]]; then
+        horneroctl appearance gtk apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" "\$policy" --yes || true
+    else
+        horneroctl appearance gtk apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" --yes || true
+    fi
 elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
-  horneroctl appearance gtk set-icons "\${DOTS_ICON_THEME}" --yes || true
-  if [[ -n "\$policy" ]]; then
-    horneroctl appearance gtk color-scheme "\$policy" --yes || true
-  else
-    horneroctl appearance gtk sync-color-scheme --yes || true
-  fi
+    horneroctl appearance gtk set-icons "\${DOTS_ICON_THEME}" --yes || true
+    if [[ -n "\$policy" ]]; then
+        horneroctl appearance gtk color-scheme "\$policy" --yes || true
+    else
+        horneroctl appearance gtk sync-color-scheme --yes || true
+    fi
 else
-  if [[ -n "\$policy" ]]; then
-    horneroctl appearance gtk color-scheme "\$policy" --yes || true
-  else
-    horneroctl appearance gtk sync-color-scheme --yes || true
-  fi
+    if [[ -n "\$policy" ]]; then
+        horneroctl appearance gtk color-scheme "\$policy" --yes || true
+    else
+        horneroctl appearance gtk sync-color-scheme --yes || true
+    fi
 fi
 `];
     }
@@ -171,14 +171,14 @@ fi
 set -euo pipefail
 command -v gsettings >/dev/null 2>&1 || exit 99
 if [[ -n "\${HORNERO_GTK_THEME:-}" && "\${HORNERO_GTK_THEME}" != "auto" ]]; then
-  gsettings set org.gnome.desktop.interface gtk-theme "\${HORNERO_GTK_THEME}"
-  gsettings set org.gnome.desktop.wm.preferences theme "\${HORNERO_GTK_THEME}"
+    gsettings set org.gnome.desktop.interface gtk-theme "\${HORNERO_GTK_THEME}"
+    gsettings set org.gnome.desktop.wm.preferences theme "\${HORNERO_GTK_THEME}"
 fi
 if [[ -n "\${HORNERO_ICON_THEME:-}" ]]; then
-  gsettings set org.gnome.desktop.interface icon-theme "\${HORNERO_ICON_THEME}"
+    gsettings set org.gnome.desktop.interface icon-theme "\${HORNERO_ICON_THEME}"
 fi
 if [[ -n "\${HORNERO_COLOR_SCHEME:-}" ]]; then
-  gsettings set org.gnome.desktop.interface color-scheme "\${HORNERO_COLOR_SCHEME}"
+    gsettings set org.gnome.desktop.interface color-scheme "\${HORNERO_COLOR_SCHEME}"
 fi
 `]
         environment: ({
