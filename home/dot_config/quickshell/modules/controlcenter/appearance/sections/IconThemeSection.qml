@@ -29,14 +29,10 @@ CollapsibleSection {
 
     Component.onCompleted: reloadIcons()
 
-    // TODO(hornero-compat): icon listing stays on the dots-gtk-theme compat
-    // adapter. A native directory scan is not yet deterministic (index.theme
-    // parsing plus de-dup across /usr/share/icons, ~/.local/share/icons,
-    // ~/.icons); see docs/NATIVE-APPEARANCE.md.
     Process {
         id: listProc
 
-        command: ["dots-gtk-theme", "-q", "-p", "icons"]
+        command: ["horneroctl", "appearance", "gtk", "icons"]
         stdout: StdioCollector {
             onStreamFinished: {
                 root.iconNames = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);

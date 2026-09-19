@@ -33,8 +33,8 @@ Searcher {
     }
 
     // First-class built-in themes (P2 appearance tokens): always listed
-    // first, even when the dots-owned registry is absent. Full palettes
-    // live in Colours; ThemePipeline applies these ids natively.
+    // first, even when the horneroctl theme registry is absent. Full
+    // palettes live in Colours; ThemePipeline applies these ids natively.
     function _withBuiltIns(items: var): var {
         const builtIns = [
             {
@@ -80,20 +80,20 @@ Searcher {
         Theme {}
     }
 
-    // TODO(hornero-compat): theme listing stays on the dots-appearance compat
-    // adapter (theme-pack registry owned by dots tooling; THEMES_DIR resolved
-    // CLI-side via DOTS_THEMES_DIR, empty-model fallback when absent).
-    // See docs/COMPAT.md (disposition A) and docs/GTK-PACK-OWNERSHIP.md.
+    // Theme listing runs on the native horneroctl picker array
+    // (`appearance theme list --full`, same shape as the retired
+    // list-themes.py); empty-model fallback when absent.
     Process {
         id: loadProc
 
         running: true
-        command: ["dots-appearance", "theme", "list"]
+        command: ["horneroctl", "appearance", "theme", "list", "--full", "--json"]
 
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    const parsed = JSON.parse(text);
+                    const env = JSON.parse(text);
+                    const parsed = JSON.parse(env.message);
                     themes.model = root._withBuiltIns(parsed);
                 } catch (e) {
                     console.warn("Themes.qml: failed to parse theme list:", e);

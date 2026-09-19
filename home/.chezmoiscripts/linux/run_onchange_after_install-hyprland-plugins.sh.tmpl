@@ -5,10 +5,8 @@
 
 set -euo pipefail
 
-BOOTSTRAP_SCRIPT="${HOME}/.local/bin/dots-hyprland-plugins"
-
-if [[ ! -x "$BOOTSTRAP_SCRIPT" ]]; then
-    echo "dots-hyprland-plugins not found, skipping plugin bootstrap"
+if ! command -v horneroctl >/dev/null 2>&1; then
+    echo "horneroctl not found, skipping plugin bootstrap"
     exit 0
 fi
 
@@ -22,7 +20,7 @@ if [[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] || ! hyprctl -j version >/dev/nul
 fi
 
 echo "Bootstrapping HyprPM plugins (ScrollOverview)..."
-"$BOOTSTRAP_SCRIPT"
+horneroctl hypr plugins install --yes
 
 {{      end -}}
 

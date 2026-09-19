@@ -168,11 +168,11 @@ CollapsibleSection {
 
                             Keys.onReturnPressed: {
                                 if (isValidHex)
-                                    Quickshell.execDetached(["dots-accent-override", `#${hexValue}`]);
+                                    Quickshell.execDetached(["horneroctl", "appearance", "accent", "set", `#${hexValue}`, "--yes"]);
                             }
                             Keys.onEnterPressed: {
                                 if (isValidHex)
-                                    Quickshell.execDetached(["dots-accent-override", `#${hexValue}`]);
+                                    Quickshell.execDetached(["horneroctl", "appearance", "accent", "set", `#${hexValue}`, "--yes"]);
                             }
                         }
                     }
@@ -190,7 +190,7 @@ CollapsibleSection {
 
                         onClicked: {
                             if (accentField.isValidHex) {
-                                Quickshell.execDetached(["dots-accent-override", `#${accentField.hexValue}`]);
+                                Quickshell.execDetached(["horneroctl", "appearance", "accent", "set", `#${accentField.hexValue}`, "--yes"]);
                             }
                         }
                     }
@@ -202,7 +202,7 @@ CollapsibleSection {
 
                         onClicked: {
                             accentField.text = "";
-                            Quickshell.execDetached(["dots-accent-override", "--clear"]);
+                            Quickshell.execDetached(["horneroctl", "appearance", "accent", "clear", "--yes"]);
                         }
                     }
                 }

@@ -36,14 +36,12 @@ Searcher {
         Scheme {}
     }
 
-    // TODO(hornero-compat): scheme list/current/set ops are owned by
-    // dots-color-scheme; no native palette store exists yet in HorneroOS.
-    // Thin compat adapter; see docs/NATIVE-APPEARANCE.md.
+    // Scheme list/current/set ops run via `horneroctl appearance scheme`.
     Process {
         id: getSchemes
 
         running: true
-        command: ["dots-color-scheme", "list"]
+        command: ["horneroctl", "appearance", "scheme", "list"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const schemeData = JSON.parse(text);
@@ -67,7 +65,7 @@ Searcher {
         id: getCurrent
 
         running: true
-        command: ["dots-color-scheme", "current"]
+        command: ["horneroctl", "appearance", "scheme", "current"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const [name, flavour, variant] = text.trim().split("\n");
@@ -85,7 +83,7 @@ Searcher {
 
         function onClicked(list: AppList): void {
             list.visibilities.launcher = false;
-            Quickshell.execDetached(["dots-color-scheme", "set", "-n", name, "-f", flavour]);
+            Quickshell.execDetached(["horneroctl", "appearance", "scheme", "set-variant", flavour, "--yes"]);
         }
     }
 }

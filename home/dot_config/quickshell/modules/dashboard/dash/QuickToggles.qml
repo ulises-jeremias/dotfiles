@@ -22,7 +22,7 @@ Item {
             icon: "dark_mode"
             label: qsTr("Night")
             active: false  // No persistent service — just fire the script
-            onToggled: Quickshell.execDetached(["dots-night-mode", "toggle"])
+            onToggled: Quickshell.execDetached(["horneroctl", "appearance", "night-mode", "toggle", "--yes"])
         }
 
         // Game mode toggle

@@ -25,7 +25,7 @@ Searcher {
     }
 
     // Instant native tone analysis for the preview path (issue #2, step
-    // (b)). The full M3 preview palette below still needs dots-m3-colors.
+    // (b)). The full M3 preview palette below runs via `horneroctl appearance colors m3`.
     readonly property color previewDominantColour: WallpaperAnalysis.dominantColour
     readonly property real previewLuminance: WallpaperAnalysis.luminance
     readonly property bool previewNativeReady: WallpaperAnalysis.ready
@@ -129,15 +129,15 @@ Searcher {
 
     Component.onCompleted: Qt.callLater(() => reloadWallpaperPath())
 
-    // TODO(hornero-compat): full M3 preview palette needs materialyoucolor
-    // via dots-m3-colors; native dominant/luminance comes from
+    // Full M3 preview palette runs via `horneroctl appearance colors m3`;
+    // native dominant/luminance comes from
     // WallpaperAnalysis above. Thin compat adapter; see
     // docs/NATIVE-APPEARANCE.md.
     Process {
         id: getPreviewColoursProc
 
         command: [
-            `${Quickshell.env("HOME")}/.local/bin/dots-m3-colors`,
+            "horneroctl", "appearance", "colors", "m3", "--yes", "--",
             "--image",
             root.previewPath,
             "--mode",

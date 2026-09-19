@@ -270,10 +270,9 @@ Singleton {
         }
     }
 
-    // TODO(hornero-compat): dots-color-scheme is an external runtime CLI;
-    // see docs/COMPAT.md (disposition A).
+    // Mode commits run via `horneroctl appearance scheme set-mode`.
     function setMode(mode: string): void {
-        Quickshell.execDetached(["dots-color-scheme", "mode", mode]);
+        Quickshell.execDetached(["horneroctl", "appearance", "scheme", "set-mode", mode, "--yes"]);
     }
 
     function reloadFromDisk(): void {
