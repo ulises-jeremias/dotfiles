@@ -132,11 +132,11 @@ in
 
     postInstall = ''
       makeWrapper ${quickshell}/bin/qs $out/bin/hornero-shell \
-      	--prefix PATH : "${lib.makeBinPath runtimeDeps}" \
-      	--set FONTCONFIG_FILE "${fontconfig}" \
-      	--set HORNERO_LIB_DIR ${extras}/lib \
+        --prefix PATH : "${lib.makeBinPath runtimeDeps}" \
+        --set FONTCONFIG_FILE "${fontconfig}" \
+        --set HORNERO_LIB_DIR ${extras}/lib \
         --set HORNERO_XKB_RULES_PATH ${xkeyboard-config}/share/xkeyboard-config-2/rules/base.lst \
-      	--add-flags "-p $out/share/hornero-shell"
+        --add-flags "-p $out/share/hornero-shell"
 
       mkdir -p $out/lib
       ln -s ${extras}/lib/* $out/lib/

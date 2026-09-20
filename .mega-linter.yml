@@ -58,6 +58,13 @@ BASH_SHELLCHECK_ARGUMENTS: --exclude=SC2317,SC2086,SC2155,SC2030,SC2031,SC2181
 BASH_EXEC_FILTER_REGEX_EXCLUDE: >-
   (^|/)(lib/.*\.sh|home/dot_local/lib/dots/.*\.sh|playground/config/\.bashrc)$
 
+# editorconfig-checker is the style authority for first-party code only.
+# Excluded: code owned upstream whose style lives elsewhere —
+# quickshell/plugin/ byte-mirrors HorneroOS/shell (fix style there, never
+# here), and utils/scripts/fzf.js is vendored from ajitid/fzf-for-js.
+EDITORCONFIG_EDITORCONFIG_CHECKER_FILTER_REGEX_EXCLUDE: >-
+  (^|/)(home/dot_config/quickshell/plugin/.*|home/dot_config/quickshell/utils/scripts/fzf\.js)$
+
 # MegaLinter APPLY_FIXES creates temp backups of chezmoi source files it
 # reformats. The backup name is .<original_name><random_number>, where the
 # original file carries a chezmoi attribute prefix (executable_, private_,
