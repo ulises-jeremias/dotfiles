@@ -28,10 +28,13 @@ charset            = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.out]
+[**.out]
 insert_final_newline = false
 
-[*.qsb]
+# NOTE: '**' (not '*') — single '*' never matches '/' so nested build
+# artifacts such as quickshell/assets/shaders/*.qsb would fall through to
+# the global utf-8/lf rules and fail as binary.
+[**.qsb]
 charset = unset
 end_of_line = unset
 insert_final_newline = unset

@@ -20,3 +20,11 @@ indent_size = 2
 
 [*.{md,yaml,yml}]
 trim_trailing_whitespace = false
+
+# Compiled Qt shader blobs (e.g. assets/shaders/*.qsb) are binary: exempt
+# them here because root = true above shadows the top-level exemptions.
+[**.qsb]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
