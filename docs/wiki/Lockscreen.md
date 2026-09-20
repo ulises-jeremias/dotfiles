@@ -5,7 +5,7 @@
 
 ## Overview
 
-`dots-lockscreen` provides a Wayland-compatible lockscreen solution using `hyprlock`. It processes wallpapers with various visual effects and integrates with the dots ecosystem's smart color system.
+Locking runs through `horneroctl power lock --yes` (hyprlock backend) or the Quickshell lock module over IPC. Colors come from the smart-colors system via `horneroctl appearance hyprlock`.
 
 ## Features
 
@@ -145,9 +145,10 @@ The lockscreen is part of the Quickshell lock module
 (`modules/lock`), driven by PAM authentication and exposed over IPC:
 
 ```bash
-dots-quickshell ipc lock lock    # lock the session
-dots-quickshell ipc lock unlock  # escape-hatch unlock (no PAM)
-qs ipc call lock isLocked        # query lock state
+horneroctl shell ipc -- call lock lock      # lock the session
+horneroctl shell ipc -- call lock unlock    # escape-hatch unlock (no PAM)
+horneroctl power lock --yes                 # lock via hyprlock
+qs ipc call lock isLocked                   # query lock state
 ```
 
 The idle pipeline (see `modules/IdleMonitors`) locks the session
@@ -214,7 +215,7 @@ theme-pack `tags` (there is no sticky “current theme” id).
 
 ### How It Works
 
-1. `dots-lockscreen` resolves the wallpaper from `~/.local/state/dots/wallpaper/path`
+1. `horneroctl power lock` resolves the wallpaper from `~/.local/state/dots/wallpaper/path`
 2. Path segments (e.g. `…/vapor-dreams/…`) provide a first hint
 3. If the parent folder matches a theme pack id, `tags` from `theme.json` refine the layout
 4. Colors come from the smart-colors / hyprlock cache
@@ -232,7 +233,7 @@ Matching is case-insensitive and supports partial keyword matches.
 
 ## Comparison with Betterlockscreen
 
-| Feature           | betterlockscreen          | dots-lockscreen       |
+| Feature           | betterlockscreen          | horneroctl lock       |
 | ----------------- | ------------------------- | --------------------- |
 | Platform          | X11 (i3lock)              | Wayland (hyprlock)    |
 | Effects           | 6 effects                 | 4 core effects        |
@@ -248,7 +249,7 @@ Matching is case-insensitive and supports partial keyword matches.
 Ensure smart-colors cache exists:
 
 ```bash
-dots-smart-colors --analyze
+horneroctl appearance colors status
 horneroctl wallpaper reload --yes
 ```
 
@@ -272,10 +273,10 @@ yay -S hyprlock
 
 ### Lock command fails
 
-Generate lockscreen images first:
+Regenerate the hyprlock colors from the active scheme first:
 
 ```bash
-dots lockscreen --update=~/.local/state/dots/wallpaper/path
+horneroctl appearance hyprlock --yes
 ```
 
 ## Dependencies
@@ -287,8 +288,8 @@ dots lockscreen --update=~/.local/state/dots/wallpaper/path
 
 ## Files
 
-- Script: `~/.local/bin/dots-lockscreen`
-- Cache: `~/.cache/dots-lockscreen/current/`
+- Command: `horneroctl power lock --yes`
+- Cache: `~/.cache/dots-lockscreen/current/` (legacy effect images)
 - Current wallpaper pointer: `~/.local/state/dots/wallpaper/path`
 - Smart colors: `~/.cache/dots/smart-colors/current.env`
 

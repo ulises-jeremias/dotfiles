@@ -4,7 +4,7 @@ Every theme ships with a wallpaper, a Material You 3 palette generated from
 it, and a preview. Switch instantly:
 
 ```bash
-dots-appearance theme apply <theme-id>
+horneroctl appearance theme apply <theme-id> --yes
 ```
 
 or from the shell: **Appearance pane → Themes**, or the launcher.
@@ -33,7 +33,7 @@ or from the shell: **Appearance pane → Themes**, or the launcher.
 ## How Theming Works
 
 1. `theme.json` in each theme directory declares the wallpaper and metadata
-2. The wallpaper feeds the M3 color pipeline (`dots-m3-colors`) which
+2. The wallpaper feeds the M3 color pipeline (`horneroctl appearance colors m3 --yes`) which
    generates the Material You palette consumed by Quickshell, GTK and terminals
 3. `horneroctl wallpaper reload --yes` re-runs the pipeline when you change wallpapers manually
 
@@ -43,7 +43,7 @@ See [Smart Colors System](Smart-Colors-System) for the full pipeline and
 ```bash
 mkdir -p ~/.local/share/dots/themes/my-theme
 # drop a wallpaper.jpg + theme.json describing the theme
-dots-appearance theme apply my-theme
+horneroctl appearance theme apply my-theme --yes
 ```
 
 ---

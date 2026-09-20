@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Dots Theme Selector
 Comment=Select GTK and icon themes
-Exec=dots-theme-selector
+Exec=horneroctl config gui --pane appearance
 Icon=preferences-desktop-theme
 Terminal=false
 Type=Application

@@ -10,10 +10,10 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+T`              | Terminal                                                   |
 | `Ctrl+Space`           | Application launcher (`horneroctl apps launch`)            |
 | `Super+V`              | Clipboard manager (`horneroctl capture clipboard`)     |
-| `Super+?` or `Super+/` | Keyboard shortcuts help overlay (`dots-keyboard-help`)     |
+| `Super+?` or `Super+/` | Keyboard shortcuts help overlay (`horneroctl hardware keyboard keys`) |
 | `Super+D`              | Dashboard (Quickshell IPC)                                 |
-| `Alt+Shift+Tab`        | Task switcher (`dots-snappy-switcher prev`)                |
-| `Alt+Tab`              | Task switcher (`dots-snappy-switcher next`)                |
+| `Alt+Shift+Tab`        | Task switcher (`horneroctl apps switcher prev`)            |
+| `Alt+Tab`              | Task switcher (`horneroctl apps switcher next`)            |
 | `Super+E`              | Terminal file manager (`yazi` in a kitty popup)            |
 | `Super+F`              | GUI file manager (`exo-open --launch FileManager`)         |
 | `Super+W`              | Web browser (`exo-open --launch WebBrowser`)               |
@@ -131,7 +131,7 @@ and removing gaps without memorizing separate keys.
 | --------------- | --------------------------------- |
 | `Super+Ctrl+B`  | Toggle Bar (Quickshell)           |
 | `Super+Ctrl+P`  | Dashboard (Quickshell IPC)        |
-| `Super+X`       | Power menu (`dots-power-menu`)    |
+| `Super+X`       | Power menu (session drawer via `horneroctl shell ipc`) |
 | `Super+L`       | Lock screen (Quickshell IPC lock) |
 | `Super+Shift+R` | Reload Hyprland configuration     |
 | `Super+Shift+E` | Exit Hyprland                     |

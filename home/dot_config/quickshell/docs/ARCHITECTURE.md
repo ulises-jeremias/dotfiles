@@ -75,11 +75,10 @@ System defaults vs user overrides:
 ## Theming pipeline
 
 `services/ThemePipeline.qml` serializes appearance jobs (theme / wallpaper /
-reload) and shells out **only** to the canonical CLIs `dots-m3-colors`
-(color generation) and `dots-gtk-theme` (GTK apply), plus
-`dots-color-scheme` (scheme state). It never invokes
-`gtk-theme-manager.sh` directly and never runs bare
-`python3 generate-m3-colors` (enforced by
+reload) and shells out **only** to the canonical `horneroctl appearance`
+verbs (`colors m3` for generation, `gtk …` for GTK apply, `scheme …` for
+scheme state). It never invokes `gtk-theme-manager.sh` directly and never
+runs bare `python3 generate-m3-colors` (enforced by
 `tests/test_appearance_consistency.py`). Theme data resolves from
 `Paths.data/themes` (canonical) with `Paths.dataFallback/themes` as the
 legacy read fallback, wallpapers from `Paths.data/wallpapers`

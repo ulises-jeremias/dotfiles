@@ -29,30 +29,30 @@ Quickshell provides all desktop shell functionality through modular QML componen
 
 ## 🚀 Management
 
-Use the `dots-quickshell` script to manage the shell:
+Use `horneroctl shell` to manage the shell:
 
 ```bash
-dots quickshell start               # Start Quickshell
-dots quickshell stop                # Stop Quickshell
-dots quickshell restart             # Restart Quickshell
-dots quickshell status              # Check if running
-dots quickshell preset list         # List shell presets
-dots quickshell preset apply <name> # Apply shell preset
-dots quickshell config get bar.position
+horneroctl shell start --yes              # Start Quickshell
+horneroctl shell stop --yes               # Stop Quickshell
+horneroctl shell restart --yes            # Restart Quickshell
+horneroctl shell status                   # Check if running
+horneroctl shell preset list              # List shell presets
+horneroctl shell preset apply <name> --yes # Apply shell preset
+jq .bar.position ~/.config/hornero/shell.json
 ```
 
 ### IPC Commands
 
 ```bash
-dots-quickshell ipc colours reload    # Reload color scheme
-dots-quickshell ipc bar toggle        # Toggle bar visibility
-dots-quickshell ipc dashboard toggle  # Toggle dashboard
-dots-quickshell ipc launcher toggle   # Toggle launcher
-dots-quickshell ipc session toggle    # Toggle session/power menu
-dots-quickshell ipc sidebar toggle    # Toggle notification sidebar
+horneroctl shell ipc -- call colours reload    # Reload color scheme
+horneroctl shell ipc -- call bar toggle        # Toggle bar visibility
+horneroctl shell ipc -- call dashboard toggle  # Toggle dashboard
+horneroctl shell ipc -- call launcher toggle   # Toggle launcher
+horneroctl shell ipc -- call drawers toggle session  # Toggle session/power menu
+horneroctl shell ipc -- call sidebar toggle    # Toggle notification sidebar
 ```
 
-Note: drawer toggles are routed through Quickshell's `drawers` IPC target internally by `dots-quickshell`, so the commands above are the stable public interface you should keep using.
+Note: drawer toggles are routed through Quickshell's `drawers` IPC target, so the commands above are the stable public interface you should keep using.
 
 ---
 
@@ -62,7 +62,7 @@ Quickshell uses **Material Design 3** (M3) color palettes generated from your wa
 
 ### Color Pipeline
 
-1. Wallpaper change triggers `dots-smart-colors --m3`
+1. Wallpaper change triggers `horneroctl appearance colors generate --m3 --yes`
 2. `generate-m3-colors.py` extracts M3 palette using `python-materialyoucolor`
 3. Palette saved to `~/.cache/dots/smart-colors/scheme.json`
 4. Quickshell's `Colours` service watches the file and reloads automatically
@@ -128,7 +128,7 @@ horizontal (top/bottom) bars — the classic reference bars use them.
 ]
 ```
 
-Apply via `dots-quickshell config set bar.perScreen '[{"screen": "DP-1", "position": "bottom", "style": "floating"}]'`. Entries not
+Apply by editing `bar.perScreen` in `~/.config/hornero/shell.json` (Quickshell reloads automatically), e.g. `[{"screen": "DP-1", "position": "bottom", "style": "floating"}]`. Entries not
 present fall back to the global `bar.position` / `bar.style`.
 
 ### Visualizer
@@ -277,7 +277,7 @@ Shell behavior is configured via `~/.config/hornero/shell.json`:
 
 ```bash
 # Check if already running
-dots-quickshell status
+horneroctl shell status
 
 # Check for errors
 quickshell 2>&1 | head -50
@@ -290,13 +290,13 @@ ls ~/.local/lib/quickshell/qml/Hornero/
 
 ```bash
 # Regenerate M3 palette
-dots-smart-colors --m3
+horneroctl appearance colors generate --m3 --yes
 
 # Check scheme.json exists
 cat ~/.cache/dots/smart-colors/scheme.json | head
 
 # Force reload
-dots-quickshell ipc colours reload
+horneroctl shell ipc -- call colours reload
 ```
 
 ### Plugin build fails
@@ -306,8 +306,8 @@ dots-quickshell ipc colours reload
 yay -S --needed cmake ninja qt6-base qt6-declarative aubio cava pipewire
 
 # Preferred: pins INSTALL_LIBDIR/INSTALL_QSCONFDIR to hornero and drops a stale
-# CMake cache that still has caelestia paths.
-dots-quickshell rebuild
+# CMake cache that still has caelestia paths: use the manual plugin-only
+# rebuild below, then `horneroctl shell restart --yes`.
 
 # Manual plugin-only rebuild
 cd ~/.config/quickshell/plugin

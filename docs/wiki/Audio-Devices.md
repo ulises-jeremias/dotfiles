@@ -63,7 +63,7 @@ Volume/mic/brightness changes raise the on-screen display
 
 - The **cava visualizer** (`background.visualiser`) feeds from the same
   PipeWire graph — enable it per preset or via
-  `dots-quickshell config set background.visualiser.enabled true`
+  `background.visualiser.enabled` in `~/.config/hornero/shell.json`
 - **Now Playing** widgets (dashboard Media tab, lockscreen) read MPRIS
   metadata through `playerctl`
 

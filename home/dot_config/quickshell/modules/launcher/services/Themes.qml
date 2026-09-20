@@ -81,8 +81,7 @@ Searcher {
     }
 
     // Theme listing runs on the native horneroctl picker array
-    // (`appearance theme list --full`, same shape as the retired
-    // list-themes.py); empty-model fallback when absent.
+    // (`appearance theme list --full`); empty-model fallback when absent.
     Process {
         id: loadProc
 

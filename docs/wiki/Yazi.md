@@ -160,7 +160,7 @@ The `Super+E` keybinding in Hyprland opens yazi in a floating popup window.
 
 ## Dots Integration
 
-- **Wrapper script**: `dots-yazi` (or `dots yazi`)
+- **Launcher**: `horneroctl apps terminal-file --last-dir`
 - **Hyprland keybinding**: `Super+E` opens yazi popup
 - **Thunar context menu**: "Open in Yazi" right-click option
 - **Quickshell**: yazi popup windows get the file manager icon in the dock/status area

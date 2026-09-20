@@ -59,26 +59,26 @@ Dispositions:
 
 | dots-* reference | Call sites (representative) | Disposition | Notes |
 |---|---|---|---|
-| `dots-gtk-theme` | `services/GtkSettings.qml` (compat fallback), `modules/controlcenter/appearance/**` (list + yielding live queries) | A, E | Native-first since issue #2: `services/GtkSettings.qml` applies via gsettings; CLI kept for theme-pack ids, listings, and hosts without gsettings. Never `gtk-theme-manager.sh` directly |
-| `dots-m3-colors` | `services/ThemePipeline.qml`, `services/Wallpapers.qml`, `modules/controlcenter/appearance/AppearancePane.qml` | A, E | Full M3 palette generation stays CLI; instant tone is native (`services/WallpaperAnalysis.qml`, `Colours.wallLuminance`/`wallDominantColour`, `AppearancePane.previewAnalyser`). Never bare `python3 generate-m3-colors` |
-| `dots-color-scheme` | `services/ThemePipeline.qml`, `services/Colours.qml`, `modules/launcher/services/Schemes.qml`, `AppearancePane.qml` | A, E | Scheme list/set/mode/variant operations; no native palette store yet, stays compat |
+| `horneroctl appearance gtk …` (was `dots-gtk-theme`) | `services/GtkSettings.qml` (gsettings-first fallback), `modules/controlcenter/appearance/**` (list + yielding live queries) | native | Migrated from compat adapter to native verbs. Never `gtk-theme-manager.sh` directly |
+| `horneroctl appearance colors m3` (was `dots-m3-colors`) | `services/ThemePipeline.qml`, `services/Wallpapers.qml`, `modules/controlcenter/appearance/AppearancePane.qml` | native | Full M3 palette generation via native verb; instant tone is native (`services/WallpaperAnalysis.qml`, `Colours.wallLuminance`/`wallDominantColour`, `AppearancePane.previewAnalyser`). Never bare `python3 generate-m3-colors` |
+| `horneroctl appearance scheme …` (was `dots-color-scheme`) | `services/ThemePipeline.qml`, `services/Colours.qml`, `modules/launcher/services/Schemes.qml`, `AppearancePane.qml` | native | Scheme list/set/mode/variant operations via the native store |
 | native `gsettings` application | `services/GtkSettings.qml` ← `services/ThemePipeline.qml`, `AppearancePane.qml` | D | HorneroOS-native path (issue #2, step a): deterministic GTK/icon/color-scheme writes + live reads |
 | native `ImageAnalyser` analysis | `services/WallpaperAnalysis.qml`, `services/Colours.qml`, `services/Wallpapers.qml`, `AppearancePane.qml` | D | HorneroOS-native path (issue #2, step b): dominantColour/luminance without shelling out |
-| `dots-accent-override` | `modules/controlcenter/appearance/sections/ColorVariantSection.qml` | A, E | Accent set/clear |
-| `dots-quickshell` | `modules/layoutpicker/PresetGrid.qml` (`preset list/apply`) | A, C, E | Listing has local fallback data: `presets/*.json` |
+| `horneroctl appearance accent …` (was `dots-accent-override`) | `modules/controlcenter/appearance/sections/ColorVariantSection.qml` | native | Accent set/clear |
+| `horneroctl shell preset …` (was `dots-quickshell`) | `modules/layoutpicker/PresetGrid.qml` (`preset list --full`/`apply`) | native | Listing has local fallback data: `presets/*.json` |
 | `horneroctl wallpaper current` (was `dots-wallpaper-current`) | `services/Wallpapers.qml` (`resolveProc`) | native | Migrated; `FileView` pointer fallback kept |
 | `horneroctl wallpaper set` (was `dots-wallpaper-set`) | `config/LauncherConfig.qml` (random-wallpaper action) | native | Migrated from optional shim to native verb |
-| `dots-night-mode` | `modules/dashboard/dash/QuickToggles.qml`, `modules/controlcenter/system/SystemPane.qml` | A | Toggle only |
+| `horneroctl appearance night-mode …` (was `dots-night-mode`) | `modules/dashboard/dash/QuickToggles.qml`, `modules/controlcenter/system/SystemPane.qml` | native | Toggle only |
 | `horneroctl capture record` (was `dots-recorder`) | `services/Recorder.qml` (`start/stop/pause`) | native | Migrated from optional shim to native verb |
 | `dots-snappy-switcher` | `services/ThemePipeline.qml` (`apply-theme-pack`) | A | Theme-pack side effect |
 | `horneroctl appearance hyprlock` (was `dots-hyprlock-theme`) | `services/ThemePipeline.qml` | native | Migrated from optional shim to native verb (byte-identical output) |
-| `dots-theme-selector` | `modules/controlcenter/system/SystemPane.qml` | A | Launched, not embedded |
+| `horneroctl config gui --pane appearance` (was `dots-theme-selector`) | `modules/controlcenter/system/SystemPane.qml` | native | Launched, not embedded |
 | `dots-settings-gui` | `config/LauncherConfig.qml` | A | Launched, not embedded |
-| `dots-lockscreen` | `modules/controlcenter/system/SystemPane.qml` | A | `--lock` action |
+| `horneroctl power lock` (was `dots-lockscreen`) | `modules/controlcenter/system/SystemPane.qml` | native | `--lock` action |
 | `horneroctl capture screenshot` (was `dots-screenshooter`) | `modules/controlcenter/system/SystemPane.qml` | native | Migrated from optional shim to native verb |
 | `horneroctl package upgrade` (was dead `dots-sysupdate` reference) | `modules/controlcenter/system/SystemPane.qml` (via `foot -e sh -c`) | native | Remapped to native polkit upgrade |
-| `dots-keyboard-help` | `modules/controlcenter/system/SystemPane.qml` (`DOTS_BYPASS_QUICKSHELL=1 …`) | A | Launched, not embedded |
-| `dots-appearance theme list` | `modules/launcher/services/Themes.qml` | A, E | Track 3a: theme-pack listing moved behind this CLI; bare-`python3` dropped. Registry ownership still dots-side (see `docs/GTK-PACK-OWNERSHIP.md`) |
+| `horneroctl hardware keyboard keys` (was `dots-keyboard-help`) | `modules/controlcenter/system/SystemPane.qml` | native | Launched, not embedded |
+| `horneroctl appearance theme list --full` (was `dots-appearance theme list`) | `modules/launcher/services/Themes.qml` | native | Track 3a complete: native registry (see `docs/GTK-PACK-OWNERSHIP.md`) |
 | `Paths.data/state/cache/config` (`DOTS_*_DIR` / XDG) | `utils/Paths.qml` | D | No chezmoi-managed paths; overrides via env documented in `docs/ARCHITECTURE.md` |
 | chezmoi-managed `~/Pictures/Wallpapers` symlink assumption | `modules/controlcenter/appearance/sections/ThemesSection.qml` (comment) | D | Comment reworded; runtime path is `Paths.wallsdir` (`HORNERO_WALLPAPERS_DIR` override) |
 | `notify-send "HorneroConfig"` titles | `services/ThemePipeline.qml` | D | Rebranded to `Hornero Shell` |
@@ -127,7 +127,7 @@ Scanned before import with the repo's guard
   `extras`/`plugin` entries are skipped gracefully if their directories
   are absent (they are present in this extraction).
 - `presets/*.json` are installed alongside the shell config dir so
-  `dots-quickshell preset list` has a vendored fallback dataset.
+  `horneroctl shell preset list` has a vendored fallback dataset.
 - `flake.lock` is kept for reproducibility; `nix/hm-module.nix` is
   unchanged apart from provenance comments.
 

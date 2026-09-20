@@ -1,9 +1,9 @@
 # horneroctl Dependency
 
-> **Required dependency** for the `dots-*` script ecosystem.
-> Migration complete (#294–#302): deleted wrappers were remapped to native
-> verbs; the retained `dots-*` scripts are thin UIs, required backends, or
-> engines with no native equivalent (see table below).
+> **Required dependency** for the Hornero scripts.
+> Migration complete (#294–#305): all wrappers were remapped to native
+> verbs and deleted; only `dots-settings-gui` and `dots-snappy-switcher`
+> stay as required native backends (see table below).
 
 ## What it is
 
@@ -27,7 +27,7 @@ error — when `horneroctl` is missing from `PATH`.
 
 ## `HORNEROCTL_BIN` override
 
-Retained shims resolve the binary through the `HORNEROCTL_BIN`
+The retained backends resolve the binary through the `HORNEROCTL_BIN`
 environment variable, defaulting to `horneroctl` on `PATH`:
 
 ```sh
@@ -49,22 +49,21 @@ Unset or empty `HORNEROCTL_BIN` means plain `horneroctl` from `PATH`.
 | `dots-hyprlock-theme` | `horneroctl appearance hyprlock --yes` (byte-identical output) |
 | `dots-performance` / `dots-keyboard-layout` / `dots-security-audit` | `horneroctl apps performance …` / `hardware keyboard layout` / `apps audit [--fix\|--report\|--json]` |
 | `dots-backup`, `dots-launcher`, `dots-toggle`, `dots-file-manager`, `dots-keyboard-settings`, `dots-weather-info`, `dots-hyprland-plugins`, `dots-dependencies` (#294/#295) | `horneroctl backup` / `apps launch` / `apps toggle` / `apps files` / `hardware keyboard settings` / `apps weather` / `hypr plugins` / `package deps` |
+| `dots-appearance`, `dots-color-scheme`, `dots-gtk-theme`, `dots-m3-colors`, `dots-smart-colors`, `dots-accent-override` | `horneroctl appearance …` / `scheme regenerate` / `gtk …` / `colors m3` / `colors generate` |
+| `dots-night-mode` | `horneroctl appearance night-mode …` |
+| `dots-theme-selector`, `dots-keyboard-help` | `horneroctl config gui --pane appearance` / `hardware keyboard keys` |
+| `dots-hypr-monitors`, `dots-power-menu`, `dots-performance-mode` | `horneroctl hypr monitors status` / shell session drawer / `apps performance mode` |
+| `dots-lockscreen` | `horneroctl power lock --yes` (bare hyprlock fallback) |
+| `dots-default-apps`, `dots-config-manager` | `horneroctl config default-apps list` / `snapshot create --dry-run` |
+| `dots-git-notify`, `dots-yazi` | `horneroctl apps git-status` / `terminal-file` |
+| `dots-quickshell` | `horneroctl shell …` / `preset apply` / edit `~/.config/hornero/shell.json` |
+| `dots` (dispatcher) | `horneroctl --help` |
 
-Run `dots --list` for the live registry: entries marked `RETIRED`
-point at their native replacement.
+Run `horneroctl --help` for the live registry.
 
 ## Retained wrappers (not useless)
 
 | Wrapper | Why it stays |
 |---|---|
-| `dots-appearance`, `dots-color-scheme`, `dots-gtk-theme`, `dots-m3-colors` | Deep Quickshell integration; repo tests assert the QML call sites; no native palette store yet |
-| `dots-accent-override` | Paired with `dots-color-scheme` (reads the `dots/*` seed path; native writes canonical-first) |
-| `dots-night-mode` | Multi-backend toggle orchestrator (redshift/gammastep/wlsunset + state files) |
-| `dots-smart-colors` | Palette engine owning the `dots/*` cache contract consumed by app configs (hypr/kitty/waybar); native writes `hornero/*` |
-| `dots-theme-selector`, `dots-keyboard-help` | Picker/router UI (quickshell forward + terminal fallback) |
-| `dots-hypr-monitors`, `dots-power-menu`, `dots-performance-mode` | Interactive menus with no native menu verb (set-ops already delegate) |
-| `dots-lockscreen` | Lock-effect image pipeline (only bare `--lock` has a native counterpart) |
-| `dots-default-apps` | Settings GUI (native `config default-apps set` stays a deferral) |
-| `dots-git-notify`, `dots-yazi`, `dots-snappy-switcher` | Required native backends (`apps git-status` / `terminal-file` / `switcher` fail without them) |
-| `dots-quickshell`, `dots-settings-gui` | Shell infra: preset apply, `config set`, control-center bridge |
-| `dots-config-manager` | `--diff` / `--auto` / `--cleanup` (snapshots already delegate) |
+| `dots-settings-gui` | Required backend: `horneroctl config gui` delegates to it |
+| `dots-snappy-switcher` | Required backend: `horneroctl apps switcher apply-theme*` delegates to it |

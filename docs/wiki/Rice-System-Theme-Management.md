@@ -11,7 +11,7 @@ one-shot recipes — they never own a sticky “current theme”.
 | Palette          | `~/.cache/dots/smart-colors/scheme.json`                            |
 | Mode / flavour   | `~/.local/state/dots/scheme/state.json` (`mode`)                    |
 | GTK color scheme | `gtkColorScheme` in the same `state.json`                           |
-| GTK / icons      | via `dots-gtk-theme` → gtk-3.0 + gtk-4.0 `settings.ini` + gsettings |
+| GTK / icons      | via `horneroctl appearance gtk` → gtk-3.0 + gtk-4.0 `settings.ini` + gsettings |
 | Wal pointer      | `~/.cache/wal/wal` (**text path file**, never a symlink)            |
 
 ## Theme packs
@@ -53,15 +53,15 @@ Packs may still ship `gtkPreferDark` (boolean); it maps to `prefer-dark` / `pref
 GTK entrypoint (canonical for scripts and Quickshell):
 
 ```bash
-dots-gtk-theme -q -p list
-dots-gtk-theme -q -p current
-dots-gtk-theme -q -p current-icon
-dots-gtk-theme -q -p current-color-scheme
-dots-gtk-theme -q apply Orchis-Light-Compact Numix-Circle prefer-light
-dots-gtk-theme -q color-scheme prefer-light
-dots-gtk-theme -q color-scheme follow
-dots-gtk-theme -q sync-color-scheme
-dots-gtk-theme -q theme vapor-dreams
+horneroctl appearance gtk list
+horneroctl appearance gtk current
+horneroctl appearance gtk current-icon
+horneroctl appearance gtk current-color-scheme
+horneroctl appearance gtk apply Orchis-Light-Compact Numix-Circle prefer-light --yes
+horneroctl appearance gtk color-scheme prefer-light --yes
+horneroctl appearance gtk color-scheme follow --yes
+horneroctl appearance gtk sync-color-scheme --yes
+horneroctl appearance gtk theme vapor-dreams --yes
 ```
 
 ## Quickshell

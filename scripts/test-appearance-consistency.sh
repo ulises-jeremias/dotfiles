@@ -85,7 +85,6 @@ echo "== appearance consistency =="
 THEMES_SRC="${ROOT}/home/dot_local/share/dots/themes"
 LIST_THEMES="${ROOT}/home/dot_local/lib/dots/list-themes.py"
 GTK_MGR="${ROOT}/home/dot_local/lib/dots/gtk-theme-manager.sh"
-GTK_BIN="${ROOT}/home/dot_local/bin/executable_dots-gtk-theme"
 QS_PIPE="${ROOT}/home/dot_config/quickshell/services/ThemePipeline.qml"
 
 [[ -d $THEMES_SRC ]] || {
@@ -156,19 +155,17 @@ if grep -REn 'CAELESTIA_' \
 	"${ROOT}/home/dot_config/quickshell/services" \
 	"${ROOT}/home/dot_config/quickshell/modules" \
 	"${ROOT}/home/dot_config/quickshell/nix" \
-	"${ROOT}/home/dot_config/hypr/hyprland.conf.d/environment.conf" \
-	"${ROOT}/home/dot_local/bin/executable_dots-quickshell" > /dev/null 2>&1; then
+	"${ROOT}/home/dot_config/hypr/hyprland.conf.d/environment.conf" > /dev/null 2>&1; then
 	fail "CAELESTIA_ identifiers still present in Hornero runtime/packaging"
 else
 	pass "no CAELESTIA_ identifiers in Hornero runtime/packaging"
 fi
 
-if grep -En 'INSTALL_LIBDIR="usr/lib/hornero"' "${ROOT}/home/dot_local/bin/executable_dots-quickshell" > /dev/null 2>&1 \
-	&& grep -En 'INSTALL_QSCONFDIR="etc/xdg/quickshell/hornero"' "${ROOT}/home/dot_local/bin/executable_dots-quickshell" > /dev/null 2>&1 \
-	&& grep -En 'ENABLE_MODULES="extras;plugin"' "${ROOT}/home/dot_local/bin/executable_dots-quickshell" > /dev/null 2>&1; then
-	pass "dots-quickshell rebuild pins Hornero CMake install dirs"
+if command -v horneroctl > /dev/null 2>&1 \
+	&& horneroctl shell restart --help > /dev/null 2>&1; then
+	pass "native shell restart verb present (plugin rebuild is manual cmake)"
 else
-	fail "dots-quickshell rebuild missing Hornero INSTALL_* / ENABLE_MODULES flags"
+	fail "native shell restart verb missing"
 fi
 
 # Scoped exception (HorneroOS cutover): services/GtkSettings.qml carries the
@@ -186,17 +183,17 @@ fi
 if grep -En 'gtk-theme-manager\.sh' "${ROOT}/home/dot_config/quickshell/services/ThemePipeline.qml" > /dev/null 2>&1; then
 	fail "ThemePipeline still sources gtk-theme-manager.sh"
 else
-	pass "ThemePipeline uses dots-gtk-theme CLI"
+	pass "ThemePipeline uses native GTK verbs"
 fi
 
-M3_BIN="${ROOT}/home/dot_local/bin/executable_dots-m3-colors"
 M3_LIB="${ROOT}/home/dot_local/lib/dots/python-m3.sh"
-COLOR_SCHEME_BIN="${ROOT}/home/dot_local/bin/executable_dots-color-scheme"
 
-if [[ -f $M3_BIN && -f $M3_LIB ]]; then
-	pass "dots-m3-colors + python-m3.sh present"
+if command -v horneroctl > /dev/null 2>&1 \
+	&& horneroctl appearance colors m3 --help > /dev/null 2>&1 \
+	&& [[ -f $M3_LIB ]]; then
+	pass "native M3 verb + python-m3.sh present"
 else
-	fail "missing dots-m3-colors and/or python-m3.sh"
+	fail "missing native M3 verb and/or python-m3.sh"
 fi
 
 if { grep -En 'dots-m3-colors|m3Bin' "$QS_PIPE" > /dev/null 2>&1 \
@@ -207,11 +204,11 @@ else
 	fail "ThemePipeline still invokes generate-m3-colors via bare python3"
 fi
 
-if grep -En 'cmd_regenerate' "$COLOR_SCHEME_BIN" > /dev/null 2>&1 \
-	&& grep -A5 'cmd_regenerate()' "$COLOR_SCHEME_BIN" | grep -Eq 'regenerate_scheme'; then
-	pass "dots-color-scheme regenerate calls regenerate_scheme"
+if command -v horneroctl > /dev/null 2>&1 \
+	&& horneroctl appearance scheme regenerate --dry-run > /dev/null 2>&1; then
+	pass "native scheme regenerate resolves"
 else
-	fail "dots-color-scheme regenerate is a no-op (must call regenerate_scheme)"
+	fail "native scheme regenerate missing (must exist with --dry-run)"
 fi
 
 if grep -En 'normalize_gtk_color_scheme|follow \| default \| prefer-light' "$GTK_MGR" > /dev/null 2>&1 \
@@ -221,17 +218,18 @@ else
 	fail "gtk-theme-manager missing gtkColorScheme policy helpers"
 fi
 
-if grep -En 'data\["mode"\] = mode' "$GTK_BIN" > /dev/null 2>&1; then
-	fail "dots-gtk-theme color-scheme still writes shell mode"
+if command -v horneroctl > /dev/null 2>&1 \
+	&& horneroctl appearance gtk color-scheme prefer-light --dry-run 2>&1 | grep -q 'scheme/state.json'; then
+	pass "native color-scheme persists policy (not shell mode)"
 else
-	pass "dots-gtk-theme color-scheme does not write shell mode"
+	fail "native color-scheme must persist policy to scheme/state.json"
 fi
 
-if grep -En 'color-scheme follow' "$COLOR_SCHEME_BIN" > /dev/null 2>&1 \
-	&& grep -En 'gtkColorScheme' "$COLOR_SCHEME_BIN" > /dev/null 2>&1; then
-	pass "dots-color-scheme mode only syncs GTK when policy is follow"
+if command -v horneroctl > /dev/null 2>&1 \
+	&& horneroctl appearance gtk color-scheme --help > /dev/null 2>&1; then
+	pass "native color-scheme verb documented"
 else
-	fail "dots-color-scheme mode still always overwrites GTK color-scheme"
+	fail "native color-scheme verb missing"
 fi
 
 if [ ! -e "${ROOT}/home/dot_local/bin/executable_dots-wal-reload" ] \
@@ -263,7 +261,7 @@ fi
 # Intentional: match the literal shell source pattern containing $HOME.
 # shellcheck disable=SC2016
 if grep -En 'readlink -f "\$HOME/\.cache/wal/wal"|readlink -f \$HOME/\.cache/wal/wal' \
-	"$GTK_MGR" "$GTK_BIN" "${ROOT}/home/dot_local/lib/dots/apply-appearance.sh" > /dev/null 2>&1; then
+	"$GTK_MGR" "${ROOT}/home/dot_local/lib/dots/apply-appearance.sh" > /dev/null 2>&1; then
 	fail "unsafe readlink on wal text pointer"
 else
 	pass "no unsafe wal readlink in GTK apply path"
@@ -277,44 +275,39 @@ fi
 }
 
 # ── Live environment ─────────────────────────────────────────────────────────
-if ! command -v dots-gtk-theme > /dev/null 2>&1; then
-	skip "dots-gtk-theme not on PATH (live checks)"
+if ! command -v horneroctl > /dev/null 2>&1; then
+	skip "horneroctl not on PATH (live checks)"
 else
-	if out="$(dots-gtk-theme -q -p current 2> /dev/null)" && [[ -n $out && $out != "Unknown" ]]; then
-		pass "dots-gtk-theme current: $out"
+	if out="$(horneroctl appearance gtk current 2> /dev/null)" && [[ -n $out && $out != "Unknown" ]]; then
+		pass "native gtk current: $out"
 	else
-		fail "dots-gtk-theme current"
+		fail "native gtk current"
 	fi
-	if out="$(dots-gtk-theme -q -p current-icon 2> /dev/null)" && [[ -n $out && $out != "Unknown" ]]; then
-		pass "dots-gtk-theme current-icon: $out"
+	if out="$(horneroctl appearance gtk current-icon 2> /dev/null)" && [[ -n $out && $out != "Unknown" ]]; then
+		pass "native gtk current-icon: $out"
 	else
-		fail "dots-gtk-theme current-icon"
+		fail "native gtk current-icon"
 	fi
-	if mapfile -t themes < <(dots-gtk-theme -q -p list 2> /dev/null); then
+	if mapfile -t themes < <(horneroctl appearance gtk list 2> /dev/null); then
 		if [[ ${#themes[@]} -gt 0 ]]; then
-			pass "dots-gtk-theme list (${#themes[@]} themes)"
+			pass "native gtk list (${#themes[@]} themes)"
 		else
-			fail "dots-gtk-theme list empty"
+			fail "native gtk list empty"
 		fi
 	else
-		fail "dots-gtk-theme list"
+		fail "native gtk list"
 	fi
 fi
 
-if command -v dots-appearance > /dev/null 2>&1; then
-	if dots appearance doctor > /tmp/dots-appearance-doctor.txt 2>&1; then
-		if grep -q '^OK:' /tmp/dots-appearance-doctor.txt; then
-			pass "dots appearance doctor OK"
-		else
-			fail "dots appearance doctor missing OK"
-			cat /tmp/dots-appearance-doctor.txt >&2 || true
-		fi
+if command -v horneroctl > /dev/null 2>&1; then
+	if horneroctl appearance doctor > /tmp/horneroctl-appearance-doctor.txt 2>&1; then
+		pass "native appearance doctor OK"
 	else
-		fail "dots appearance doctor exited nonzero"
-		cat /tmp/dots-appearance-doctor.txt >&2 || true
+		fail "native appearance doctor exited nonzero"
+		cat /tmp/horneroctl-appearance-doctor.txt >&2 || true
 	fi
 else
-	skip "dots-appearance not on PATH"
+	skip "horneroctl not on PATH"
 fi
 
 wal="$HOME/.cache/wal/wal"

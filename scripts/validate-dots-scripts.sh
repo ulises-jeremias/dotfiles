@@ -10,12 +10,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 DOTS_BIN_DIR="${DOTFILES_ROOT}/home/dot_local/bin"
 ENTRYPOINT_SCRIPTS=(
-  "${DOTFILES_ROOT}/home/dot_local/bin/executable_dots"
+  "${DOTFILES_ROOT}/home/dot_local/bin/executable_dots-snappy-switcher"
 )
 
 # Scripts to exclude from validation (third-party or special cases)
 EXCLUDED_SCRIPTS=(
-  "executable_dots-git-notify"   # Third-party script with custom argument parsing
 )
 
 errors=0

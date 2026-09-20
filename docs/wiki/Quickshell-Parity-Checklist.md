@@ -7,7 +7,7 @@ Use this checklist after each substantial shell change.
 ```bash
 cd ~/.dotfiles
 chezmoi apply --source=. --force
-dots-quickshell restart
+horneroctl shell restart --yes
 ```
 
 ## Hyprland layout and exclusions
@@ -21,9 +21,9 @@ dots-quickshell restart
 
 ## Core interaction flow
 
-- [ ] `dots-quickshell ipc launcher toggle` opens/closes launcher.
-- [ ] `dots-quickshell ipc dashboard toggle` toggles top control center.
-- [ ] `dots-quickshell ipc session toggle` opens right quick actions rail.
+- [ ] `horneroctl shell ipc -- call launcher toggle` opens/closes launcher.
+- [ ] `horneroctl shell ipc -- call dashboard toggle` toggles top control center.
+- [ ] `horneroctl shell ipc -- call drawers toggle session` opens right quick actions rail.
 - [ ] Scroll over rail triggers configured volume/brightness action.
 - [ ] Escape closes temporary overlays/popouts where expected.
 
@@ -36,8 +36,8 @@ dots-quickshell restart
 
 ## Theming and wallpaper pipeline
 
-- [ ] `dots-smart-colors --m3` regenerates `~/.cache/dots/smart-colors/scheme.json`.
-- [ ] `dots-quickshell ipc colours reload` updates shell palette live.
+- [ ] `horneroctl appearance colors generate --m3 --yes` regenerates `~/.cache/dots/smart-colors/scheme.json`.
+- [ ] `horneroctl shell ipc -- call colours reload` updates shell palette live.
 - [ ] Wallpaper changes update `~/.local/state/dots/wallpaper/path`.
 - [ ] Light/dark mode follows generated scheme and keeps readable contrast.
 

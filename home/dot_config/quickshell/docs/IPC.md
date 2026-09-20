@@ -78,10 +78,9 @@ The shell also *spawns* processes; the stable outbound contracts are:
   `services/GtkSettings.qml`) and the native `ImageAnalyser` plugin
   (`dominantColour`/`luminance`, via `services/WallpaperAnalysis.qml` and
   `Colours.wallLuminance`/`wallDominantColour`).
-- Appearance compat fallbacks (thin, debt-marked, disposition A):
-  `dots-m3-colors …`, `dots-gtk-theme -q …`, `dots-color-scheme …`
+- Appearance verbs: `horneroctl appearance colors m3`, `gtk …`, `scheme …`
   (see `docs/COMPAT.md`).
 - Optional integrations: `horneroctl capture record start/stop/pause --yes`,
   `horneroctl wallpaper current`, `horneroctl wallpaper set …`,
-  `dots-quickshell preset list/apply`, `dots-night-mode toggle`,
+  `horneroctl shell preset list/apply`, `horneroctl appearance night-mode toggle`,
   `notify-send …`, `systemctl …`, `foot -e sh -c …`.

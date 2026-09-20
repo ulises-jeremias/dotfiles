@@ -1,10 +1,9 @@
-"""Appearance consistency (issue #2, track 3a): QML applies theming through
-native layers first — GtkSettings (gsettings) for GTK application and the
-ImageAnalyser plugin for wallpaper tone analysis. dots-gtk-theme /
-dots-m3-colors remain only as thin, debt-marked compat fallbacks; QML must
-never call gtk-theme-manager.sh directly, never run bare
+"""Appearance consistency: QML applies theming through native layers first
+— GtkSettings (gsettings) for GTK application and the ImageAnalyser plugin
+for wallpaper tone analysis — plus `horneroctl appearance …` verbs. QML
+must never call gtk-theme-manager.sh directly, never run bare
 `python3 generate-m3-colors`, and never spawn bare `python3` for theme
-listing (theme packs list via `dots-appearance theme list`)."""
+listing (theme packs list via `horneroctl appearance theme list --full`)."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -20,6 +19,14 @@ def _hits(needle):
     return [p for p in _qml_files() if needle in p.read_text()]
 
 
+def _read_all():
+    return "\n".join(p.read_text() for p in _qml_files())
+
+
+def _read_qml(rel):
+    return (ROOT / rel).read_text()
+
+
 def test_no_direct_gtk_theme_manager():
     hits = _hits("gtk-theme-manager.sh")
     assert not hits, f"direct gtk-theme-manager.sh calls in: {hits}"
@@ -31,10 +38,10 @@ def test_no_bare_generate_m3_colors():
 
 
 def test_canonical_cli_calls_present():
-    gtk = _hits("dots-gtk-theme")
-    m3 = _hits("dots-m3-colors")
-    assert gtk, "expected dots-gtk-theme compat-fallback calls in QML"
-    assert m3, "expected dots-m3-colors compat-fallback calls in QML"
+    text = _read_all()
+    assert "horneroctl" in text, "expected canonical horneroctl calls in QML"
+    for leaf in ("appearance", "gtk", "colors", "scheme"):
+        assert leaf in text, f"missing native leaf: {leaf}"
 
 
 def test_no_bare_python_theme_loader():
@@ -46,11 +53,9 @@ def test_no_bare_python_theme_loader():
 
 
 def test_theme_listing_uses_cli():
-    hits = _hits("dots-appearance")
-    assert hits, "expected dots-appearance theme-list calls in QML"
-    list_hits = [p for p in hits
-                 if '"theme"' in p.read_text() and '"list"' in p.read_text()]
-    assert list_hits, f"dots-appearance callers missing theme list args: {hits}"
+    text = _read_qml("modules/launcher/services/Themes.qml")
+    for token in ('"appearance"', '"theme"', '"list"', '"--full"'):
+        assert token in text, f"Themes.qml must invoke the native theme list: {token}"
 
 
 def test_native_gtk_layer_present():
