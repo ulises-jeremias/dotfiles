@@ -8,7 +8,7 @@ HorneroConfig ships a PipeWire-first audio stack driven by the Quickshell
 ## 🧱 The Stack
 
 | Layer           | Component                       | Role                                            |
-| --------------- | ------------------------------- | ----------------------------------------------- |
+|-----------------|---------------------------------|-------------------------------------------------|
 | Server          | PipeWire                        | Low-latency capture/playback, Bluetooth (bluez) |
 | Session manager | WirePlumber                     | Device routing and profiles                     |
 | Shell           | Quickshell `services/Audio`     | Volume, mute, devices, OSD popouts              |
@@ -22,7 +22,7 @@ HorneroConfig ships a PipeWire-first audio stack driven by the Quickshell
 ## ⌨️ Keybinds (Media Keys)
 
 | Keys                            | Action                |
-| ------------------------------- | --------------------- |
+|---------------------------------|-----------------------|
 | `XF86AudioRaiseVolume`          | Volume +5%            |
 | `XF86AudioLowerVolume`          | Volume -5%            |
 | `XF86AudioMute`                 | Mute output           |
@@ -63,7 +63,7 @@ Volume/mic/brightness changes raise the on-screen display
 
 - The **cava visualizer** (`background.visualiser`) feeds from the same
   PipeWire graph — enable it per preset or via
-  `dots-quickshell config set background.visualiser.enabled true`
+  `background.visualiser.enabled` in `~/.config/hornero/shell.json`
 - **Now Playing** widgets (dashboard Media tab, lockscreen) read MPRIS
   metadata through `playerctl`
 

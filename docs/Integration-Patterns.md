@@ -203,17 +203,20 @@ Note: For Quickshell components, use M3 tokens from scheme.json instead of smart
 Quickshell uses Material Design 3 (M3) color palettes generated from wallpaper analysis:
 
 **Pipeline:**
-1. Wallpaper change triggers `dots-smart-colors --m3`
+
+1. Wallpaper change triggers `horneroctl appearance colors generate --m3 --yes`
 2. `generate-m3-colors.py` extracts M3 palette using `materialyoucolor`
 3. Palette saved to `~/.cache/dots/smart-colors/scheme.json`
 4. Quickshell `Colours` service watches the file and reloads automatically
 
 **Color Reference Priority (Quickshell):**
+
 1. M3 scheme.json (primary, surface, onSurface, etc.)
 2. Smart colors (semantic fallback)
 3. Hardcoded defaults (last resort)
 
 **Key M3 Tokens:**
+
 - `primary`, `onPrimary`, `primaryContainer`, `onPrimaryContainer`
 - `secondary`, `tertiary`, `error`
 - `surface`, `onSurface`, `surfaceVariant`

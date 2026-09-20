@@ -6,7 +6,7 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 
 - Quickshell is the main consumer through `~/.cache/dots/smart-colors/scheme.json`.
 - `horneroctl wallpaper reload --yes` and `horneroctl wallpaper set` trigger palette refresh and Quickshell IPC reload.
-- M3 generation goes through `dots-m3-colors` (prefers `/usr/bin/python3` when it has `materialyoucolor`, so pyenv shims do not break the pipeline).
+- M3 generation goes through `horneroctl appearance colors m3 --yes` (prefers `/usr/bin/python3` when it has `materialyoucolor`, so pyenv shims do not break the pipeline).
 - Script consumers can source shell/env exports from the same cache directory.
 
 ## Wallpaper Pipeline Contract
@@ -20,9 +20,9 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
    - write `~/.local/state/dots/wallpaper/path` (canonical pointer)
    - rewrite `~/.cache/wal/wal` as a **text path file** (never an image symlink)
    - `generate-m3-colors.py` → `scheme.json`
-   - `dots-color-scheme sync-state` → `scheme/state.json` (preserves `gtkColorScheme`)
-   - `dots-gtk-theme sync-color-scheme` re-applies the persisted GTK policy (`follow` tracks Theme mode; sticky `prefer-light` / `prefer-dark` / `default` are left alone)
-4. `Colours.qml` reloads via file watch or `dots-quickshell ipc colours reload` (real IPC + touch fallback)
+   - `horneroctl appearance scheme sync-state --yes` → `scheme/state.json` (preserves `gtkColorScheme`)
+   - `horneroctl appearance gtk sync-color-scheme --yes` re-applies the persisted GTK policy (`follow` tracks Theme mode; sticky `prefer-light` / `prefer-dark` / `default` are left alone)
+4. `Colours.qml` reloads via file watch or `horneroctl shell ipc -- call colours reload` (real IPC + touch fallback)
 
 ### Wallpaper resolution priority
 
@@ -33,9 +33,9 @@ Smart Colors generates semantic colors and Material Design 3 palettes from the c
 ## Main Commands
 
 ```bash
-dots-smart-colors --generate --m3
-dots-smart-colors --analyze
-dots-smart-colors --concept=error
+horneroctl appearance colors generate --m3 --yes
+horneroctl appearance colors status
+horneroctl appearance colors concept --help
 horneroctl wallpaper reload --yes
 ```
 
@@ -72,16 +72,16 @@ flowchart LR
 
 ```bash
 # Rebuild smart-colors cache
-dots-smart-colors --generate --m3
+horneroctl appearance colors generate --m3 --yes
 
 # Confirm cache files exist
 ls -la ~/.cache/dots/smart-colors/
 
 # Force shell-side reload path
-dots-quickshell ipc colours reload
+horneroctl shell ipc -- call colours reload
 
 # Confirm appearance consistency
-dots appearance doctor
+horneroctl appearance doctor
 ```
 
 See also: [Appearance Themes](Rice-System-Theme-Management.md)

@@ -47,7 +47,7 @@ For more info, check the [Hyprland documentation](https://wiki.hyprland.org/).
 `~/.config/hypr/hyprland.conf.d/`:
 
 | Fragment            | Controls                                                |
-| ------------------- | ------------------------------------------------------- |
+|---------------------|---------------------------------------------------------|
 | `monitors.conf`     | Output resolution, position, scaling                    |
 | `autostart.conf`    | Startup services and apps                               |
 | `environment.conf`  | Environment variables (IME, cursors, XDG portals)       |
@@ -94,7 +94,7 @@ supports per-screen bar layouts via `bar.perScreen` — see
 
 - Add compositor-specific autostart scripts
 - Use Quickshell as the primary shell (bar/launcher/dashboard/control center)
-- Keep launcher and power keybinds routed through `dots-quickshell ipc ...`
+- Keep launcher and power keybinds routed through `horneroctl shell ipc ...`
 - Use `chezmoi diff` to preview config changes
 
 ---

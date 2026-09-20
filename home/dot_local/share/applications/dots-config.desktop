@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Dots Config Manager
 Comment=Manage configuration files and settings
-Exec=dots-config-manager
+Exec=horneroctl config gui
 Icon=preferences-other
 Terminal=false
 Type=Application

@@ -28,7 +28,7 @@ This command regenerates Smart Colors and requests Quickshell color reload.
 ## Verification Checklist
 
 ```bash
-dots-smart-colors --generate --m3
+horneroctl appearance colors generate --m3 --yes
 ls -la ~/.cache/dots/smart-colors/
-dots-quickshell ipc colours reload
+horneroctl shell ipc -- call colours reload
 ```

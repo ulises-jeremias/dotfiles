@@ -1,16 +1,16 @@
 # Dots Scripts Utility Guide
 
-`dots` is the unified entrypoint for Hornero scripts. Most former
-`dots-*` wrappers are retired — run `dots --list` (entries marked
-`RETIRED` point at the native `horneroctl` replacement) or see
-[docs/Horneroctl.md](../Horneroctl.md) for the full migration map.
+`horneroctl` is the unified entrypoint for Hornero scripts. The former
+`dots` dispatcher and all `dots-*` wrappers are retired except
+`dots-settings-gui` (the `config gui` backend) and `dots-snappy-switcher`
+(the switcher theme backend) — see [docs/Horneroctl.md](../Horneroctl.md)
+for the full migration map.
 
 ## Usage
 
 ```sh
-dots --help
-dots --list
-dots <script> [options]
+horneroctl --help
+horneroctl <command> --help
 ```
 
 ## Native-first workflows (horneroctl)
@@ -32,13 +32,10 @@ horneroctl capture clipboard --backend cliphist
 
 ### power-menu
 
-- Primary: `dots-quickshell ipc session toggle`
-- Fallback: minimal TUI selector
+- Primary: the session drawer via shell IPC (bound to `Super+X`)
 
 ```bash
-dots power-menu
-dots power-menu --mode=quickshell
-dots power-menu --mode=minimal
+horneroctl shell ipc -- call drawers toggle session
 ```
 
 ### settings-gui
@@ -103,4 +100,6 @@ dots appearance doctor
 
 - Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.
 - `dots appearance theme` remains available as a thin alias; `dots appearance` is the canonical contract.
-- Retained `dots-*` scripts remain modular and can be called directly.
+- Retained `dots-*` scripts (`dots-settings-gui`, `dots-snappy-switcher`)
+  remain modular and can be called directly; everything else runs through
+  `horneroctl`.
