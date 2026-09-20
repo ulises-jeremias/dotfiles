@@ -1,0 +1,33 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# horneroctl is a hard dependency of this dotfiles tree: keybindings,
+# launchers, and Quickshell call sites all invoke it natively.
+# Never clobber an existing install (dev builds live in ~/.local/bin).
+if command -v horneroctl >/dev/null 2>&1; then
+    exit 0
+fi
+
+# Canonical binary distribution (same pattern as agent-toolkit-bin).
+# The aur-helper script sorts earlier (install-000-aur-helper), so an
+# AUR helper is available here on a normal apply.
+if command -v yay >/dev/null 2>&1; then
+    yay -S --noconfirm --needed horneroctl-bin
+elif command -v paru >/dev/null 2>&1; then
+    paru -S --noconfirm --needed horneroctl-bin
+else
+    echo "No AUR helper found (yay/paru), skipping horneroctl install" >&2
+    exit 0
+fi
+
+if ! command -v horneroctl >/dev/null 2>&1; then
+    echo "horneroctl install failed: binary not on PATH after install" >&2
+    exit 1
+fi
+{{      end -}}
+
+{{ end -}}
