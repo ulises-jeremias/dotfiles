@@ -38,6 +38,15 @@ elif command -v python > /dev/null 2>&1; then
 	PYTHON_BIN="$(command -v python)"
 fi
 
+# horneroctl is a required runtime on managed hosts, but minimal CI images
+# (devcontainer smoke job) do not provision it — install.sh does not install
+# it either. Verb-existence checks below therefore SKIP (not FAIL) when the
+# binary is absent; verb contracts are enforced by horneroctl's own repo CI.
+HORNEROCTL_BIN=""
+if command -v horneroctl > /dev/null 2>&1; then
+	HORNEROCTL_BIN="$(command -v horneroctl)"
+fi
+
 validate_theme_json() {
 	local theme_json="$1"
 	local expected_id="$2"
@@ -161,8 +170,9 @@ else
 	pass "no CAELESTIA_ identifiers in Hornero runtime/packaging"
 fi
 
-if command -v horneroctl > /dev/null 2>&1 \
-	&& horneroctl shell restart --help > /dev/null 2>&1; then
+if [[ -z $HORNEROCTL_BIN ]]; then
+	skip "native shell restart verb (horneroctl not on PATH)"
+elif horneroctl shell restart --help > /dev/null 2>&1; then
 	pass "native shell restart verb present (plugin rebuild is manual cmake)"
 else
 	fail "native shell restart verb missing"
@@ -188,8 +198,9 @@ fi
 
 M3_LIB="${ROOT}/home/dot_local/lib/dots/python-m3.sh"
 
-if command -v horneroctl > /dev/null 2>&1 \
-	&& horneroctl appearance colors m3 --help > /dev/null 2>&1 \
+if [[ -z $HORNEROCTL_BIN ]]; then
+	skip "native M3 verb (horneroctl not on PATH)"
+elif horneroctl appearance colors m3 --help > /dev/null 2>&1 \
 	&& [[ -f $M3_LIB ]]; then
 	pass "native M3 verb + python-m3.sh present"
 else
@@ -204,8 +215,9 @@ else
 	fail "ThemePipeline still invokes generate-m3-colors via bare python3"
 fi
 
-if command -v horneroctl > /dev/null 2>&1 \
-	&& horneroctl appearance scheme regenerate --dry-run > /dev/null 2>&1; then
+if [[ -z $HORNEROCTL_BIN ]]; then
+	skip "native scheme regenerate (horneroctl not on PATH)"
+elif horneroctl appearance scheme regenerate --dry-run > /dev/null 2>&1; then
 	pass "native scheme regenerate resolves"
 else
 	fail "native scheme regenerate missing (must exist with --dry-run)"
@@ -218,15 +230,17 @@ else
 	fail "gtk-theme-manager missing gtkColorScheme policy helpers"
 fi
 
-if command -v horneroctl > /dev/null 2>&1 \
-	&& horneroctl appearance gtk color-scheme prefer-light --dry-run 2>&1 | grep -q 'scheme/state.json'; then
+if [[ -z $HORNEROCTL_BIN ]]; then
+	skip "native color-scheme policy (horneroctl not on PATH)"
+elif horneroctl appearance gtk color-scheme prefer-light --dry-run 2>&1 | grep -q 'scheme/state.json'; then
 	pass "native color-scheme persists policy (not shell mode)"
 else
 	fail "native color-scheme must persist policy to scheme/state.json"
 fi
 
-if command -v horneroctl > /dev/null 2>&1 \
-	&& horneroctl appearance gtk color-scheme --help > /dev/null 2>&1; then
+if [[ -z $HORNEROCTL_BIN ]]; then
+	skip "native color-scheme verb (horneroctl not on PATH)"
+elif horneroctl appearance gtk color-scheme --help > /dev/null 2>&1; then
 	pass "native color-scheme verb documented"
 else
 	fail "native color-scheme verb missing"
