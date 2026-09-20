@@ -16,20 +16,20 @@ deterministic `gsettings` desktop APIs before falling back to
 Policy mapping (`toGsettingsScheme`, input normalized by
 `ThemePipeline.normalizeGtkColorScheme`):
 
-| Policy | `org.gnome.desktop.interface color-scheme` |
-|---|---|
-| `prefer-light` | `prefer-light` |
-| `prefer-dark` | `prefer-dark` |
-| `default` | `default` |
+| Policy              | `org.gnome.desktop.interface color-scheme`        |
+|---------------------|---------------------------------------------------|
+| `prefer-light`      | `prefer-light`                                    |
+| `prefer-dark`       | `prefer-dark`                                     |
+| `default`           | `default`                                         |
 | `follow` (or empty) | `prefer-dark` when dark mode, else `prefer-light` |
 
 Native writes:
 
-| Request | `gsettings set` keys |
-|---|---|
-| GTK theme | `org.gnome.desktop.interface gtk-theme`, `org.gnome.desktop.wm.preferences theme` |
-| Icon theme | `org.gnome.desktop.interface icon-theme` |
-| Color scheme | `org.gnome.desktop.interface color-scheme` |
+| Request      | `gsettings set` keys                                                              |
+|--------------|-----------------------------------------------------------------------------------|
+| GTK theme    | `org.gnome.desktop.interface gtk-theme`, `org.gnome.desktop.wm.preferences theme` |
+| Icon theme   | `org.gnome.desktop.interface icon-theme`                                          |
+| Color scheme | `org.gnome.desktop.interface color-scheme`                                        |
 
 Live queries (`refreshLive`) read the same three keys back into
 `liveGtkTheme` / `liveIconTheme` / `liveColorScheme`. When `gsettings` is
@@ -56,15 +56,15 @@ is absent).
 
 ## Migrated call sites
 
-| Former call site | Native replacement |
-|---|---|
-| `ThemePipeline` finalize script (`horneroctl appearance gtk theme/apply/set-icons/color-scheme/sync-color-scheme`) | `GtkSettings.applyFull` |
-| `ThemePipeline` standalone gtk apply | `GtkSettings.applyGtkTheme` |
-| `ThemePipeline` standalone color-scheme | `GtkSettings.applyColorScheme` |
-| `ThemePipeline` standalone set-icons | `GtkSettings.applyIconTheme` |
-| `AppearancePane` live current GTK/icon/color-scheme queries | `GtkSettings.refreshLive` first |
-| Wallpaper tone for translucency | `Colours.wallLuminance` (already native) plus new `wallDominantColour` |
-| Wallpaper preview tone | `WallpaperAnalysis` (`Wallpapers`) and `previewAnalyser` (`AppearancePane`) |
+| Former call site                                                                                                   | Native replacement                                                          |
+|--------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| `ThemePipeline` finalize script (`horneroctl appearance gtk theme/apply/set-icons/color-scheme/sync-color-scheme`) | `GtkSettings.applyFull`                                                     |
+| `ThemePipeline` standalone gtk apply                                                                               | `GtkSettings.applyGtkTheme`                                                 |
+| `ThemePipeline` standalone color-scheme                                                                            | `GtkSettings.applyColorScheme`                                              |
+| `ThemePipeline` standalone set-icons                                                                               | `GtkSettings.applyIconTheme`                                                |
+| `AppearancePane` live current GTK/icon/color-scheme queries                                                        | `GtkSettings.refreshLive` first                                             |
+| Wallpaper tone for translucency                                                                                    | `Colours.wallLuminance` (already native) plus new `wallDominantColour`      |
+| Wallpaper preview tone                                                                                             | `WallpaperAnalysis` (`Wallpapers`) and `previewAnalyser` (`AppearancePane`) |
 
 ## First-class built-in themes (P2 appearance tokens)
 
@@ -99,16 +99,16 @@ outside the generated roles.
 
 ## Remaining compat adapters (with reasons)
 
-| Call site | CLI | Reason native is not yet deterministic |
-|---|---|---|
-| `ThemePipeline.m3Proc`, `Wallpapers` preview colours, `AppearancePane.previewPaletteProc` | `horneroctl appearance colors m3` | Full M3 palette generation needs materialyoucolor, which lives outside this repo |
-| `ThemePipeline` scheme regenerate/sync-state; `Colours.setMode`; `Schemes` list/current/set; `M3Variants`; `AppearancePane` scheme/mode commits | `horneroctl appearance scheme …` | Scheme persistence lives in the native store |
-| `GtkSettings` full-mode with theme-pack id | `horneroctl appearance gtk theme` | Theme-pack id resolution is native |
-| `GtkThemeSection` / `IconThemeSection` listings | `horneroctl appearance gtk list/icons` | Native directory scan with de-dup across system/user roots |
-| `AppearancePane` live queries (fallback branch) | `horneroctl appearance gtk current*` | Hosts without `gsettings` |
-| `ThemePipeline` side effects | `dots-snappy-switcher` | Dots-owned tooling with no native equivalent |
-| `Themes.qml` loader | `horneroctl appearance theme list --full` (empty-model fallback when absent) | Native registry (see `docs/GTK-PACK-OWNERSHIP.md`) |
-| `PresetGrid.qml` loader | `horneroctl shell preset list --full` (vendored fallback when absent) | Native catalogue |
+| Call site                                                                                                                                       | CLI                                                                          | Reason native is not yet deterministic                                           |
+|-------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| `ThemePipeline.m3Proc`, `Wallpapers` preview colours, `AppearancePane.previewPaletteProc`                                                       | `horneroctl appearance colors m3`                                            | Full M3 palette generation needs materialyoucolor, which lives outside this repo |
+| `ThemePipeline` scheme regenerate/sync-state; `Colours.setMode`; `Schemes` list/current/set; `M3Variants`; `AppearancePane` scheme/mode commits | `horneroctl appearance scheme …`                                             | Scheme persistence lives in the native store                                     |
+| `GtkSettings` full-mode with theme-pack id                                                                                                      | `horneroctl appearance gtk theme`                                            | Theme-pack id resolution is native                                               |
+| `GtkThemeSection` / `IconThemeSection` listings                                                                                                 | `horneroctl appearance gtk list/icons`                                       | Native directory scan with de-dup across system/user roots                       |
+| `AppearancePane` live queries (fallback branch)                                                                                                 | `horneroctl appearance gtk current*`                                         | Hosts without `gsettings`                                                        |
+| `ThemePipeline` side effects                                                                                                                    | `dots-snappy-switcher`                                                       | Dots-owned tooling with no native equivalent                                     |
+| `Themes.qml` loader                                                                                                                             | `horneroctl appearance theme list --full` (empty-model fallback when absent) | Native registry (see `docs/GTK-PACK-OWNERSHIP.md`)                               |
+| `PresetGrid.qml` loader                                                                                                                         | `horneroctl shell preset list --full` (vendored fallback when absent)        | Native catalogue                                                                 |
 
 Retired since issue #2: `dots-accent-override`, `dots-quickshell`,
 `dots-night-mode`, and launcher-only actions (`dots-theme-selector`,

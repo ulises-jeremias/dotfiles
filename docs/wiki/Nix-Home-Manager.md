@@ -36,13 +36,13 @@ practical paths if your system is NixOS or uses home-manager.
 
 ## ⚠️ What Does Not Map 1:1
 
-| Hornero concept                             | Nix equivalent                                                        | Notes                                                               |
-| ------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `pacman` package lists in `.chezmoiscripts` | `environment.systemPackages` / home-manager `home.packages`           | Translate the lists manually; AUR packages need overlays            |
-| `run_onchange_before_install-*.sh.tmpl`     | NixOS modules or `home.activation`                                    | These scripts assume pacman/yay                                     |
-| `dots-*` CLI registry                       | plain PATH scripts                                                    | Works as-is; copy or symlink `home/dot_local/bin`                   |
-| hyprland.conf.d fragments                   | home-manager `wayland.windowManager.hyprland` settings or plain files | Plain `xdg.configFile` keeps parity with upstream                   |
-| Wallpaper → M3 pipeline (`horneroctl appearance colors m3`) | runs on PATH                                         | Needs python + the materialyoucolor deps; consider a nix derivation |
+| Hornero concept                                             | Nix equivalent                                                        | Notes                                                               |
+|-------------------------------------------------------------|-----------------------------------------------------------------------|---------------------------------------------------------------------|
+| `pacman` package lists in `.chezmoiscripts`                 | `environment.systemPackages` / home-manager `home.packages`           | Translate the lists manually; AUR packages need overlays            |
+| `run_onchange_before_install-*.sh.tmpl`                     | NixOS modules or `home.activation`                                    | These scripts assume pacman/yay                                     |
+| `dots-*` CLI registry                                       | plain PATH scripts                                                    | Works as-is; copy or symlink `home/dot_local/bin`                   |
+| hyprland.conf.d fragments                                   | home-manager `wayland.windowManager.hyprland` settings or plain files | Plain `xdg.configFile` keeps parity with upstream                   |
+| Wallpaper → M3 pipeline (`horneroctl appearance colors m3`) | runs on PATH                                                          | Needs python + the materialyoucolor deps; consider a nix derivation |
 
 ---
 

@@ -47,7 +47,7 @@ For more info, check the [Hyprland documentation](https://wiki.hyprland.org/).
 `~/.config/hypr/hyprland.conf.d/`:
 
 | Fragment            | Controls                                                |
-| ------------------- | ------------------------------------------------------- |
+|---------------------|---------------------------------------------------------|
 | `monitors.conf`     | Output resolution, position, scaling                    |
 | `autostart.conf`    | Startup services and apps                               |
 | `environment.conf`  | Environment variables (IME, cursors, XDG portals)       |

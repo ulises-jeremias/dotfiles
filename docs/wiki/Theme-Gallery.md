@@ -14,7 +14,7 @@ or from the shell: **Appearance pane → Themes**, or the launcher.
 ## The Collection
 
 | Theme              | Vibe                        | Preview                                                                               |
-| ------------------ | --------------------------- | ------------------------------------------------------------------------------------- |
+|--------------------|-----------------------------|---------------------------------------------------------------------------------------|
 | `catppuccin-latte` | Light, pastel, low-contrast | ![Catppuccin Latte](../home/dot_local/share/dots/themes/catppuccin-latte/preview.jpg) |
 | `catppuccin-mocha` | Dark, warm pastels          | ![Catppuccin Mocha](../home/dot_local/share/dots/themes/catppuccin-mocha/preview.jpg) |
 | `everforest`       | Muted forest greens         | ![Everforest](../home/dot_local/share/dots/themes/everforest/preview.jpg)             |
@@ -53,7 +53,7 @@ horneroctl appearance theme apply my-theme --yes
 Pair themes with Hyprland animation profiles for a full rice:
 
 | Theme                        | Suggested profile                                     |
-| ---------------------------- | ----------------------------------------------------- |
+|------------------------------|-------------------------------------------------------|
 | `cozy` feel                  | `dots hypr-animations --set=cozy`                     |
 | `neon-city` / `vapor-dreams` | `dots hypr-animations --set=vaporwave` or `cyberpunk` |
 | `monochrome` / `nord-dreams` | `dots hypr-animations --set=minimal`                  |

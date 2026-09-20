@@ -206,7 +206,7 @@ theme-pack `tags` (there is no sticky “current theme” id).
 ### Available Layouts
 
 | Layout        | Matching tags / path hints     | Description                                     |
-| ------------- | ------------------------------ | ----------------------------------------------- |
+|---------------|--------------------------------|-------------------------------------------------|
 | **Default**   | Any unmatched                  | Clean, centered layout with standard typography |
 | **Cyberpunk** | cyberpunk, neon, futuristic    | Glowing neon elements, tech-inspired fonts      |
 | **Cozy**      | cozy, kawaii, cute, warm, soft | Soft, rounded elements with pastel accents      |
@@ -234,7 +234,7 @@ Matching is case-insensitive and supports partial keyword matches.
 ## Comparison with Betterlockscreen
 
 | Feature           | betterlockscreen          | horneroctl lock       |
-| ----------------- | ------------------------- | --------------------- |
+|-------------------|---------------------------|-----------------------|
 | Platform          | X11 (i3lock)              | Wayland (hyprlock)    |
 | Effects           | 6 effects                 | 4 core effects        |
 | Multi-monitor     | Native support            | Via hyprlock          |

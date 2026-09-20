@@ -11,17 +11,17 @@ Imported from `ulises-jeremias/dotfiles@b26db04`; see `MIGRATION.md`.
 
 ## Layers
 
-| Layer | Paths | Role |
-|---|---|---|
-| Shell root | `shell.qml` | Composition only |
-| Modules | `modules/` | Visible surfaces: bar, launcher, dashboard, controlcenter, lock, notifications, osd, session, sidebar, utilities, drawers, background, areapicker, layoutpicker, windowinfo |
-| Services | `services/` | Singletons: `ThemePipeline`, `Colours`, `Wallpapers`, `Audio`, `Brightness`, `Hypr`, `Network`/`Nmcli`, `Notifs`, `Players`, `Recorder`, `SystemUsage`, `Weather`, `Time`, `Visibilities`, `GameMode`, `IdleInhibitor`, `VPN`, `ThemePipeline` |
-| Config | `config/` | `Config.qml` + per-area `*Config.qml`; user-tunable knobs |
-| Shared UI | `components/` | Reusable controls/containers/effects (`qs.components*`) |
-| Helpers | `utils/` | `Paths`, `SysInfo`, `Icons`, `Images`, `Searcher`, `Strings`, `NetworkConnection`, JS (`fuzzysort.js`, `fzf.js`) |
-| Assets | `assets/` | Logo, gifs, shaders, `wrap_term_launch.sh`, `pam.d/` samples |
-| Native | `plugin/`, `extras/` | `Hornero` QML plugin (C++: image analysis, audio, calculator, models) + `version` helper |
-| Data | `presets/` | 11 vendored layout presets (fallback for `dots-quickshell preset list`) |
+| Layer      | Paths                | Role                                                                                                                                                                                                                                           |
+|------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Shell root | `shell.qml`          | Composition only                                                                                                                                                                                                                               |
+| Modules    | `modules/`           | Visible surfaces: bar, launcher, dashboard, controlcenter, lock, notifications, osd, session, sidebar, utilities, drawers, background, areapicker, layoutpicker, windowinfo                                                                    |
+| Services   | `services/`          | Singletons: `ThemePipeline`, `Colours`, `Wallpapers`, `Audio`, `Brightness`, `Hypr`, `Network`/`Nmcli`, `Notifs`, `Players`, `Recorder`, `SystemUsage`, `Weather`, `Time`, `Visibilities`, `GameMode`, `IdleInhibitor`, `VPN`, `ThemePipeline` |
+| Config     | `config/`            | `Config.qml` + per-area `*Config.qml`; user-tunable knobs                                                                                                                                                                                      |
+| Shared UI  | `components/`        | Reusable controls/containers/effects (`qs.components*`)                                                                                                                                                                                        |
+| Helpers    | `utils/`             | `Paths`, `SysInfo`, `Icons`, `Images`, `Searcher`, `Strings`, `NetworkConnection`, JS (`fuzzysort.js`, `fzf.js`)                                                                                                                               |
+| Assets     | `assets/`            | Logo, gifs, shaders, `wrap_term_launch.sh`, `pam.d/` samples                                                                                                                                                                                   |
+| Native     | `plugin/`, `extras/` | `Hornero` QML plugin (C++: image analysis, audio, calculator, models) + `version` helper                                                                                                                                                       |
+| Data       | `presets/`           | 11 vendored layout presets (fallback for `dots-quickshell preset list`)                                                                                                                                                                        |
 
 ## Runtime / config path model
 
@@ -37,17 +37,17 @@ No chezmoi, no hardcoded home layouts. Resolution order everywhere is
 `utils/Paths.qml` (singleton, `qs.utils`). The `DOTS_*_DIR` overrides pin
 the legacy `dots/*` roots only:
 
-| Path | Canonical (writes) | Legacy fallback (reads only) |
-|---|---|---|
-| Shell data: theme packs `themes/<id>/theme.json` (row 1), installed wallpapers `wallpapers/` (row 11) | `$XDG_DATA_HOME/hornero` (`Paths.data`) | `$XDG_DATA_HOME/dots` (`Paths.dataFallback`, `DOTS_DATA_DIR` override) |
-| Shell state: wallpaper pointer `wallpaper/path` (row 9), `notifs.json` (row 10) | `$XDG_STATE_HOME/hornero` (`Paths.state`, `Paths.wallpaperPointer`) | `$XDG_STATE_HOME/dots` (`Paths.stateFallback`, `Paths.wallpaperPointerFallback`, `DOTS_STATE_DIR` override) |
-| Shell cache: `smart-colors/scheme.json` (row 4), `imagecache[/notifs]` (row 10) | `$XDG_CACHE_HOME/hornero` (`Paths.cache`, `Paths.imagecache`) | `$XDG_CACHE_HOME/dots` (`Paths.cacheFallback`, `Paths.imagecacheFallback`, `DOTS_CACHE_DIR` override) |
-| Shell user config: `shell.json` (row 6, no fallback — already canonical) | `$XDG_CONFIG_HOME/hornero` (`Paths.config`, `DOTS_CONFIG_DIR` override) | none |
-| Pictures / videos | `XDG_PICTURES_DIR` / `XDG_VIDEOS_DIR` | `~/Pictures`, `~/Videos` |
-| Wallpapers dir | `HORNERO_WALLPAPERS_DIR` | `Config.paths.wallpaperDir` (absolute-resolved) |
-| Recordings dir | `HORNERO_RECORDINGS_DIR` | `~/Videos/Recordings` |
-| Native helper lib (row 12) | `/usr/lib/hornero` | `DOTS_LIB_DIR` / `HORNERO_LIB_DIR` lookup |
-| XKB rules (dev/nix) | `HORNERO_XKB_RULES_PATH` | system xkeyboard-config |
+| Path                                                                                                  | Canonical (writes)                                                      | Legacy fallback (reads only)                                                                                |
+|-------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Shell data: theme packs `themes/<id>/theme.json` (row 1), installed wallpapers `wallpapers/` (row 11) | `$XDG_DATA_HOME/hornero` (`Paths.data`)                                 | `$XDG_DATA_HOME/dots` (`Paths.dataFallback`, `DOTS_DATA_DIR` override)                                      |
+| Shell state: wallpaper pointer `wallpaper/path` (row 9), `notifs.json` (row 10)                       | `$XDG_STATE_HOME/hornero` (`Paths.state`, `Paths.wallpaperPointer`)     | `$XDG_STATE_HOME/dots` (`Paths.stateFallback`, `Paths.wallpaperPointerFallback`, `DOTS_STATE_DIR` override) |
+| Shell cache: `smart-colors/scheme.json` (row 4), `imagecache[/notifs]` (row 10)                       | `$XDG_CACHE_HOME/hornero` (`Paths.cache`, `Paths.imagecache`)           | `$XDG_CACHE_HOME/dots` (`Paths.cacheFallback`, `Paths.imagecacheFallback`, `DOTS_CACHE_DIR` override)       |
+| Shell user config: `shell.json` (row 6, no fallback — already canonical)                              | `$XDG_CONFIG_HOME/hornero` (`Paths.config`, `DOTS_CONFIG_DIR` override) | none                                                                                                        |
+| Pictures / videos                                                                                     | `XDG_PICTURES_DIR` / `XDG_VIDEOS_DIR`                                   | `~/Pictures`, `~/Videos`                                                                                    |
+| Wallpapers dir                                                                                        | `HORNERO_WALLPAPERS_DIR`                                                | `Config.paths.wallpaperDir` (absolute-resolved)                                                             |
+| Recordings dir                                                                                        | `HORNERO_RECORDINGS_DIR`                                                | `~/Videos/Recordings`                                                                                       |
+| Native helper lib (row 12)                                                                            | `/usr/lib/hornero`                                                      | `DOTS_LIB_DIR` / `HORNERO_LIB_DIR` lookup                                                                   |
+| XKB rules (dev/nix)                                                                                   | `HORNERO_XKB_RULES_PATH`                                                | system xkeyboard-config                                                                                     |
 
 System defaults vs user overrides:
 
