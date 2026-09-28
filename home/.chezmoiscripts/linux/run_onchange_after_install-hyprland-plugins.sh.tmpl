@@ -6,7 +6,7 @@
 set -euo pipefail
 
 if ! command -v horneroctl >/dev/null 2>&1; then
-    echo "horneroctl not found, skipping plugin bootstrap"
+    echo "horneroctl-binary not found, skipping plugin bootstrap"
     exit 0
 fi
 

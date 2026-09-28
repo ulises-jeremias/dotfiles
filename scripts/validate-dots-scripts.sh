@@ -127,6 +127,28 @@ else
 	errors=$((errors + 1))
 fi
 
+# horneroctl bind audit: every invocation in configs must resolve
+if [[ -x ${DOTFILES_ROOT}/scripts/audit-horneroctl-binds.sh ]]; then
+	if ! "${DOTFILES_ROOT}/scripts/audit-horneroctl-binds.sh"; then
+		echo "❌ horneroctl bind audit failed"
+		errors=$((errors + 1))
+	fi
+else
+	echo "⚠️  scripts/audit-horneroctl-binds.sh missing or not executable"
+	errors=$((errors + 1))
+fi
+
+# Delivery verification: every repo file must reach a managed machine
+if [[ -x ${DOTFILES_ROOT}/scripts/verify-delivery.sh ]]; then
+	if ! "${DOTFILES_ROOT}/scripts/verify-delivery.sh"; then
+		echo "❌ Delivery verification failed"
+		errors=$((errors + 1))
+	fi
+else
+	echo "⚠️  scripts/verify-delivery.sh missing or not executable"
+	errors=$((errors + 1))
+fi
+
 # Quickshell layout preset + geometry contract (source tree)
 if [[ -x ${DOTFILES_ROOT}/scripts/test-shell-layout-consistency.sh ]]; then
 	if ! "${DOTFILES_ROOT}/scripts/test-shell-layout-consistency.sh"; then
