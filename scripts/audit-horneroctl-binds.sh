@@ -52,7 +52,7 @@ walk() {
 				# ipc passthrough and option terminators end this branch.
 				return 0
 				;;
-			'<'*'>'|'\['*'\]')
+			'<'*'>' | '\['*'\]')
 				# Strip brackets, then split pipe alternations. A bare
 				# `set-*` becomes a glob; `[...]` without pipes and
 				# without placeholders carries flags only.
