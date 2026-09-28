@@ -25,21 +25,21 @@ wallpaper, then Apply), or:
 
 ```bash
 dots appearance theme list
-dots appearance theme apply vapor-dreams
-dots appearance theme apply neon-city --wallpaper ~/Pictures/Wallpapers/neon-city/neon-city-01.jpg
+horneroctl appearance theme apply vapor-dreams --yes
+horneroctl appearance theme apply neon-city --wallpaper ~/Pictures/Wallpapers/neon-city/neon-city-01.jpg --yes
 ```
 
 ## Everyday controls
 
 ```bash
-dots appearance set-wallpaper <path>
-dots appearance set-mode dark|light
-dots appearance set-variant expressive
-dots appearance set-gtk Orchis-Light-Compact
-dots appearance set-gtk-color-scheme follow|default|prefer-light|prefer-dark
-dots appearance set-icons Numix-Circle
-dots appearance status
-dots appearance doctor
+horneroctl appearance set-wallpaper <path> --yes
+horneroctl appearance scheme set-mode dark|light --yes
+horneroctl appearance scheme set-variant expressive --yes
+horneroctl appearance set-gtk Orchis-Light-Compact --yes
+horneroctl appearance set-gtk-color-scheme follow|default|prefer-light|prefer-dark --yes
+horneroctl appearance set-icons Numix-Circle --yes
+horneroctl appearance status
+horneroctl appearance doctor
 ```
 
 `gtkColorScheme` is independent of shell Theme mode:
@@ -68,7 +68,7 @@ horneroctl appearance gtk theme vapor-dreams --yes
 
 - Orchestrator: `ThemePipeline` singleton (IPC target `appearance`)
 - Control Center → Appearance groups look packs, shell palette, toolkit (GTK theme + GTK color scheme + icons), then shell chrome (fonts including clock, animations, scales, transparency, border, background)
-- GTK/icon/color-scheme apply always goes through `dots-gtk-theme` (never inline `gtk-theme-manager.sh` or raw `gsettings` from QML)
+- GTK/icon/color-scheme apply always goes through `horneroctl appearance gtk` / `horneroctl appearance colors` (never inline `gtk-theme-manager.sh` or raw `gsettings` from QML)
 - Launcher actions: `theme` / `appearance`
 
 P1 (not in this contract): cursor theme/size, GTK UI font (`gtk-font-name`), Qt6ct / Kvantum.
@@ -78,7 +78,7 @@ P1 (not in this contract): cursor theme/size, GTK UI font (`gtk-font-name`), Qt6
 ```bash
 ./scripts/test-appearance-consistency.sh --source   # CI / repo
 ./scripts/test-appearance-consistency.sh             # live doctor + GTK
-dots appearance doctor
+horneroctl appearance doctor
 ```
 
 ## Historical note

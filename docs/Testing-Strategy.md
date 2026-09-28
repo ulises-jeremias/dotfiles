@@ -61,8 +61,8 @@ Testing ensures reliability across diverse environments:
 2. Preview asset exists (`preview.jpg` / `.png` / `.webp`)
 3. Apply via CLI and Control Center without errors
 4. Wallpaper loads; `~/.cache/wal/wal` remains a text path file
-5. `dots appearance doctor` reports OK
-6. GTK/icons go through `dots-gtk-theme`
+5. `horneroctl appearance doctor` reports OK
+6. GTK/icons go through `horneroctl appearance gtk`
 7. Quickshell Control Center: stage → Apply shows busy/error feedback
 
 ## Testing Checklist
@@ -103,7 +103,7 @@ Testing ensures reliability across diverse environments:
 - [ ] Apply disabled while pipeline busy; footer shows Applying… / error
 - [ ] GTK/icon live seed does not overwrite staged selections
 - [ ] Preview shows “Generating palette…” while M3 preview runs
-- [ ] System pane GTK tile opens Appearance (`dots-theme-selector`)
+- [ ] System pane GTK tile opens Appearance (`horneroctl config gui --pane appearance`)
 
 ## Continuous Integration
 
