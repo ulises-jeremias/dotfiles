@@ -54,6 +54,26 @@ jobs:
               fail=1
             fi
           done < <(find home/.chezmoiscripts -name "*.tmpl" -print0)
+          # Static-config flow: hand-maintained configs (e.g. a host
+          # dotfiles.toml) may omit keys the managed init always sets
+          # (.e2e bit us). Render every template against data WITHOUT
+          # e2e so missing-key failures break CI, not a real apply.
+          cat > /tmp/static-config.toml <<'EOF'
+          [data]
+              docker = false
+              ephemeral = false
+              headless = false
+              hostname = "ci-static"
+              osid = "linux-arch"
+              personal = false
+          EOF
+          while IFS= read -r -d "" tmpl; do
+            if ! chezmoi execute-template --config=/tmp/static-config.toml \
+                --source=. < "$tmpl" > /dev/null; then
+              echo "::error::Template render failed without e2e: $tmpl"
+              fail=1
+            fi
+          done < <(find home/.chezmoiscripts -name "*.tmpl" -print0)
           exit $fail
 
       - name: Install Dotfiles
