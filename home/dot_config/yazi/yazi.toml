@@ -29,25 +29,25 @@ image_filter    = "lanczos3"
 
 [opener]
 edit = [
-  { run = '${EDITOR:-nvim} "$@"', block = true, for = "unix" },
+  { run = '${EDITOR:-nvim} %s', desc = "$EDITOR", block = true, for = "unix" },
 ]
 open = [
-  { run = 'xdg-open "$@"', orphan = true, for = "unix" },
+  { run = 'xdg-open %s', desc = "Open", orphan = true, for = "unix" },
 ]
 thunar = [
-  { run = 'thunar "$@"', orphan = true, for = "unix" },
+  { run = 'thunar %s', desc = "Open in Thunar", orphan = true, for = "unix" },
 ]
 play = [
-  { run = 'mpv --force-window "$@"', orphan = true, for = "unix" },
-  { run = 'xdg-open "$@"', orphan = true, for = "unix" },
+  { run = 'mpv --force-window %s', desc = "Play", orphan = true, for = "unix" },
+  { run = 'xdg-open %s', desc = "Open", orphan = true, for = "unix" },
 ]
 archive = [
-  { run = 'xdg-open "$@"', for = "unix" },
+  { run = 'xdg-open %s', desc = "Open archive", for = "unix" },
 ]
 
 [open]
 rules = [
-  { name = "*/", use = ["edit", "open", "thunar"] },
+  { mime = "folder/*", use = ["edit", "open", "thunar"] },
 
   { mime = "text/*", use = ["edit", "open"] },
   { mime = "application/json", use = ["edit", "open"] },
@@ -70,18 +70,15 @@ rules = [
 
   { mime = "application/pdf", use = ["open"] },
 
-  { name = "*", use = ["open", "edit"] },
+  { url = "*", use = ["open", "edit"] },
 ]
 
 [tasks]
-micro_workers    = 10
-macro_workers    = 25
+file_workers     = 3
+plugin_workers   = 5
+fetch_workers    = 5
+preload_workers  = 2
+process_workers  = 5
 bizarre_retry    = 5
 image_alloc      = 536870912  # 512 MB
 image_bound      = [0, 0]
-
-[plugin]
-prepend_fetchers = [
-  { id = "git", name = "*", run = "git" },
-  { id = "git", name = "*/", run = "git" },
-]
