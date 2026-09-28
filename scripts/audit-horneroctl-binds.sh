@@ -44,7 +44,7 @@ walk() {
 	HELP["${prefix[*]}"]="$out"
 	[[ $depth -ge 4 ]] && return 0
 	# Strip everything up to the current prefix, then inspect tokens.
-	usage_line="${usage_line#*horneroctl ${prefix[*]}}"
+	usage_line="${usage_line#*horneroctl "${prefix[*]}"}"
 	usage_line="${usage_line#"${usage_line%%[![:space:]]*}"}"
 	for token in $usage_line; do
 		case "$token" in
@@ -108,7 +108,8 @@ IPC_DOC="${ROOT}/home/dot_config/quickshell/docs/IPC.md"
 declare -A IPC_FNS=()
 if [[ -f $IPC_DOC ]]; then
 	while IFS= read -r row; do
-		target="$(printf '%s' "$row" | grep -oE '`[a-zA-Z]+`' | head -n 1 | tr -d '`' || true)"
+		bt_pat=$'`[a-zA-Z]+`'
+		target="$(printf '%s' "$row" | grep -oE "$bt_pat" | head -n 1 | tr -d '`' || true)"
 		fns="$(printf '%s' "$row" | cut -d'|' -f3- || true)"
 		if [[ -n $target && -n $fns ]]; then
 			IPC_FNS["$target"]="$fns"
@@ -226,12 +227,13 @@ node_resolves() {
 }
 
 scan_file() {
-	local file="$1" line inv
-	while IFS= read -r line || [[ -n $line ]]; do
+	local file="$1" line inv lines
+	mapfile -t lines < "$file"
+	for line in "${lines[@]}"; do
 		while IFS= read -r inv; do
 			[[ -n $inv ]] && check_invocation "$inv" "$file"
 		done < <(printf '%s\n' "$line" | grep -oE 'horneroctl( [a-zA-Z0-9_./$-]+)+' || true)
-	done < "$file"
+	done
 }
 
 while IFS= read -r -d '' file; do
