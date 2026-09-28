@@ -26,7 +26,8 @@ if grep -rn 'ulises-jeremias\|HorneroConfig' "${CODE[@]}" --include='*.qml' \
     report "personal provenance string in code"
 fi
 
-# Appearance must go through dots-gtk-theme / dots-m3-colors only.
+# Appearance must stay native: no direct gtk-theme-manager.sh or bare
+# generate-m3-colors calls from QML (native verbs live in horneroctl).
 if grep -rn 'gtk-theme-manager\.sh' --include='*.qml' "${CODE[@]}" 2>/dev/null; then
     report "direct gtk-theme-manager.sh call in QML"
 fi

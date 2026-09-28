@@ -34,11 +34,11 @@ dots appearance apply neon-city
 ## Core Commands
 
 ```bash
-dots-quickshell start
-dots-quickshell ipc launcher toggle
-dots-quickshell ipc session toggle
-dots-quickshell ipc utilities toggle
-dots settings-gui
+horneroctl shell start --yes
+horneroctl shell ipc -- call drawers toggle launcher
+horneroctl shell ipc -- call drawers toggle session
+horneroctl shell ipc -- call drawers toggle utilities
+horneroctl config gui
 horneroctl hypr layout current
 horneroctl hypr layout toggle --yes
 ```
@@ -73,10 +73,10 @@ flowchart LR
 
 ```bash
 # Check shell status
-dots-quickshell status
+horneroctl shell status
 
 # Restart shell
-dots-quickshell restart
+horneroctl shell restart --yes
 
 # Reload Hyprland config
 hyprctl reload

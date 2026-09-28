@@ -1,5 +1,9 @@
 # Color-scheme / M3 store decision — track 3a
 
+> **Status: SUPERSEDED.** The decision below kept ops on the `dots-*` CLIs;
+> the zero-wrapper migration has since moved everything native
+> (`horneroctl appearance scheme|colors|gtk`). Kept as design record.
+
 Question: keep scheme and M3 palette state behind the `dots-color-scheme` /
 `dots-m3-colors` CLIs, or add a native palette store in the shell?
 
