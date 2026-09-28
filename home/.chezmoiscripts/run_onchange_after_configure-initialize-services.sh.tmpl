@@ -59,7 +59,7 @@ if command -v horneroctl &>/dev/null; then
     print_status "error" "Failed to fetch weather data (non-critical, will retry on first use)"
   fi
 else
-  print_status "error" "horneroctl not found (will be available after next login)"
+  print_status "error" "horneroctl-binary not found (will be available after next login)"
 fi
 
 # Initialize appearance palette (no sticky theme id)
@@ -93,15 +93,15 @@ if command -v horneroctl &>/dev/null; then
     print_status "error" "Failed to generate smart colors (non-critical)"
   fi
 else
-  print_status "info" "horneroctl not available yet (appearance will initialize on first session)"
+  print_status "info" "horneroctl-binary not available yet (appearance will initialize on first session)"
 fi
 
-# horneroctl is the required runtime; chezmoi already deploys it executable.
+# The horneroctl-binary is the required runtime; chezmoi already deploys it executable.
 if ! command -v horneroctl &>/dev/null; then
-  print_status "error" "horneroctl not found on PATH; install it before login session"
+  print_status "error" "horneroctl-binary not found on PATH; install it before login session"
 fi
 
-# Night mode state is owned natively (horneroctl appearance night-mode);
+# Night mode state is owned natively (see `appearance night-mode`);
 # the state file self-initializes on first toggle — nothing to seed here.
 
 # Initialize font cache
