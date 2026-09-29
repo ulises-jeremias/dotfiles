@@ -72,6 +72,18 @@ QtObject {
             readonly property string component: "system/SystemPane.qml"
         },
         QtObject {
+            readonly property string id: "updates"
+            readonly property string label: "updates"
+            readonly property string icon: "system_update"
+            readonly property string component: "updates/UpdatesPane.qml"
+        },
+        QtObject {
+            readonly property string id: "power"
+            readonly property string label: "power"
+            readonly property string icon: "power_settings_new"
+            readonly property string component: "power/PowerPane.qml"
+        },
+        QtObject {
             readonly property string id: "notifications"
             readonly property string label: "notifications"
             readonly property string icon: "notifications"

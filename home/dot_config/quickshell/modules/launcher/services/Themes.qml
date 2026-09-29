@@ -33,8 +33,8 @@ Searcher {
     }
 
     // First-class built-in themes (P2 appearance tokens): always listed
-    // first, even when the horneroctl theme registry is absent. Full
-    // palettes live in Colours; ThemePipeline applies these ids natively.
+    // first, even when the registry is absent. Full palettes
+    // live in Colours; ThemePipeline applies these ids natively.
     function _withBuiltIns(items: var): var {
         const builtIns = [
             {
@@ -80,19 +80,19 @@ Searcher {
         Theme {}
     }
 
-    // Theme listing runs on the native horneroctl picker array
-    // (`appearance theme list --full`); empty-model fallback when absent.
+    // Native theme-pack listing (--full prints the JSON manifest array the
+    // launcher parses; pack source resolves CLI-side, empty-model fallback
+    // when absent). See docs/GTK-PACK-OWNERSHIP.md.
     Process {
         id: loadProc
 
         running: true
-        command: ["horneroctl", "appearance", "theme", "list", "--full", "--json"]
+        command: ["horneroctl", "appearance", "theme", "list", "--full"]
 
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    const env = JSON.parse(text);
-                    const parsed = JSON.parse(env.message);
+                    const parsed = JSON.parse(text);
                     themes.model = root._withBuiltIns(parsed);
                 } catch (e) {
                     console.warn("Themes.qml: failed to parse theme list:", e);

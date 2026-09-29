@@ -117,7 +117,7 @@ Item {
     property string previewGenSchemeType: "tonal-spot"
     // Native instant tone for the palette-generation input (issue #2, step
     // (b)): dominant colour + luminance straight from the ImageAnalyser
-    // plugin. The full generated palette below runs via `horneroctl appearance colors m3`.
+    // plugin. The full generated palette below runs through horneroctl.
     readonly property color previewNativeDominant: previewAnalyser.dominantColour
     readonly property real previewNativeLuminance: previewAnalyser.luminance
     readonly property bool previewNativeReady: previewAnalyser.luminance > 0
@@ -127,6 +127,7 @@ Item {
     property string previewRequestKey: ""
     property string previewRunningKey: ""
     property int previewQuality: 8
+    readonly property var m3Base: ["horneroctl", "appearance", "colors", "m3", "--yes", "--"]
 
     anchors.fill: parent
 
@@ -434,14 +435,16 @@ Item {
         } else {
             if (schemeDirty && pendingSchemeKey) {
                 const parts = pendingSchemeKey.split(" ");
-                const name = parts[0] || "dynamic";
                 const flavour = parts.slice(1).join(" ") || pendingVariant;
-                session.runAction(["horneroctl", "appearance", "scheme", "set-variant", flavour, "--yes"]);
+                // set-variant persists variant + derived flavour and
+                // regenerates (the legacy `set -n <name> -f` shape); the
+                // single "dynamic" scheme name is kept server-side.
+                session.runAction(["horneroctl", "scheme", "set-variant", root.normalizeVariantKey(flavour), "--yes"]);
             } else if (variantDirty && pendingVariant) {
-                session.runAction(["horneroctl", "appearance", "scheme", "set-variant", pendingVariant, "--yes"]);
+                session.runAction(["horneroctl", "scheme", "set-variant", pendingVariant, "--yes"]);
             }
             if (modeDirty && pendingMode)
-                session.runAction(["horneroctl", "appearance", "scheme", "set-mode", pendingMode, "--yes"]);
+                session.runAction(["horneroctl", "scheme", "set-mode", pendingMode, "--yes"]);
         }
 
         if (gtkDirty && pendingGtkTheme) {
@@ -498,7 +501,7 @@ Item {
             return;
         const mode = deferredMode;
         deferredMode = "";
-        session.runAction(["horneroctl", "appearance", "scheme", "set-mode", mode, "--yes"]);
+        session.runAction(["horneroctl", "scheme", "set-mode", mode, "--yes"]);
     }
 
     function _flushDeferredPipelineExtras(): void {
@@ -777,14 +780,13 @@ Item {
         source: root.previewGenWallpaper
     }
 
-    // Full M3 preview palettes run via `horneroctl appearance colors m3`;
-    // native dominant/luminance comes from
-    // previewAnalyser above. Thin compat adapter; see
-    // docs/NATIVE-APPEARANCE.md.
+    // Full M3 preview palettes run through horneroctl (materialyoucolor
+    // backend); native dominant/luminance comes from previewAnalyser above.
+    // See docs/NATIVE-APPEARANCE.md.
     Process {
         id: previewPaletteProc
         command: [
-            "horneroctl", "appearance", "colors", "m3", "--yes", "--",
+            ...root.m3Base,
             "--image",
             root.previewGenWallpaper,
             "--mode",
@@ -1002,8 +1004,8 @@ Item {
         rightContent: appearanceRightContentComponent
     }
 
-    // Live-query fallback. Yields to the native GtkSettings reads; kept for
-    // hosts without gsettings.
+    // horneroctl gtk live-query fallback. Yields to the native GtkSettings
+    // reads; kept for hosts without gsettings.
     Process {
         id: liveGtkProc
         command: ["horneroctl", "appearance", "gtk", "current"]
@@ -1022,7 +1024,7 @@ Item {
         }
     }
 
-    // Live-query fallback; see above.
+    // horneroctl gtk live-query fallback; see above.
     Process {
         id: liveIconProc
         command: ["horneroctl", "appearance", "gtk", "current-icon"]
@@ -1039,7 +1041,7 @@ Item {
         }
     }
 
-    // Live-query fallback; see above.
+    // horneroctl gtk live-query fallback; see above.
     Process {
         id: liveGtkColorSchemeProc
         command: ["horneroctl", "appearance", "gtk", "current-color-scheme"]

@@ -10,7 +10,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 DOTS_BIN_DIR="${DOTFILES_ROOT}/home/dot_local/bin"
 ENTRYPOINT_SCRIPTS=(
-	"${DOTFILES_ROOT}/home/dot_local/bin/executable_dots-snappy-switcher"
+	# No dots- entrypoints remain: every wrapper retired into horneroctl
+	# (see home/dot_local/lib/dots/dots-scripts.sh RETIRED pointers).
 )
 
 # Scripts to exclude from validation (third-party or special cases)
@@ -105,7 +106,9 @@ done
 # Entries marked RETIRED are intentional migration pointers to horneroctl
 # (script deleted on purpose); they are excluded from the sync check.
 scripts_in_dir=$(find "${DOTS_BIN_DIR}" -name "executable_dots-*" -printf "%f\n" | sed 's/executable_dots-//' | sort)
-scripts_in_list=$(grep -v 'RETIRED' "${DOTFILES_ROOT}/home/dot_local/lib/dots/dots-scripts.sh" | grep -o '[a-zA-Z0-9-]*:' | sed 's/://' | sort)
+# `|| true`: grep exits 1 on an empty (fully retired) registry — that is
+# the desired end state, not an error (pipefail would kill the gate).
+scripts_in_list=$(grep -v 'RETIRED' "${DOTFILES_ROOT}/home/dot_local/lib/dots/dots-scripts.sh" | grep -o '[a-zA-Z0-9-]*:' | sed 's/://' | sort || true)
 
 if ! diff -q <(echo "$scripts_in_dir") <(echo "$scripts_in_list") > /dev/null; then
 	echo "❌ dots-scripts.sh is out of sync with actual scripts"

@@ -10,7 +10,7 @@ FACTORY = ROOT / "modules" / "controlcenter" / "WindowFactory.qml"
 REGISTRY = ROOT / "modules" / "controlcenter" / "PaneRegistry.qml"
 
 WELCOME_PAGES = ["start", "navigate", "shell", "workspaces",
-                 "personalize", "tools", "system", "learn"]
+                 "personalize", "tools", "system", "learn", "shortcuts"]
 
 
 def _handler_block(text, target):
@@ -36,7 +36,7 @@ def test_welcome_controller_shape():
         assert fn in text, f"Welcome.qml missing {fn}"
     for page in WELCOME_PAGES:
         assert f'"{page}"' in text, f"Welcome.qml missing page {page}"
-    assert len(WELCOME_PAGES) == 8
+    assert len(WELCOME_PAGES) == 9
     # status() exposes open/page; unknown pages fall back, never throw.
     assert "open: " in text and "page: " in text
     assert "console.warn" in text

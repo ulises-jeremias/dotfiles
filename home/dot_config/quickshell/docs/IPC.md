@@ -7,30 +7,30 @@ other HorneroOS components script against; renames must update
 
 ## Services
 
-| Target          | Defined in                   | Functions                                                                         |
-|-----------------|------------------------------|-----------------------------------------------------------------------------------|
-| `wallpaper`     | `services/Wallpapers.qml`    | `get()`, `set(path)`, `list()`                                                    |
-| `appearance`    | `services/ThemePipeline.qml` | `applyTheme(id, wallpaper)`, `reload()`, `setWallpaper(path)`                     |
-| `mpris`         | `services/Players.qml`       | `getActive(prop)`, `list()`, `play()` (+ pause/next/previous per file)            |
-| `notifs`        | `services/Notifs.qml`        | `clear()`, `isDndEnabled()`, `toggleDnd()` (+ per-file extras)                    |
-| `idleInhibitor` | `services/IdleInhibitor.qml` | `isEnabled()`, `toggle()`, `enable()` (+ `disable()` per file)                    |
-| `hypr`          | `services/Hypr.qml`          | `refreshDevices()`, `cycleSpecialWorkspace(direction)`, `listSpecialWorkspaces()` |
-| `gameMode`      | `services/GameMode.qml`      | `isEnabled()`, `toggle()`, `enable()`, `disable()`                                |
-| `colours`       | `services/Colours.qml`       | `reload()`, `mode()`, `flavour()`                                                 |
-| `brightness`    | `services/Brightness.qml`    | `get()`, `getFor(query)`, `set(value)` (+ `setFor` per file)                      |
+| Target | Defined in | Functions |
+|---|---|---|
+| `wallpaper` | `services/Wallpapers.qml` | `get()`, `set(path)`, `list()` |
+| `appearance` | `services/ThemePipeline.qml` | `applyTheme(id, wallpaper)`, `reload()`, `setWallpaper(path)` |
+| `mpris` | `services/Players.qml` | `getActive(prop)`, `list()`, `play()` (+ pause/next/previous per file) |
+| `notifs` | `services/Notifs.qml` | `clear()`, `isDndEnabled()`, `toggleDnd()` (+ per-file extras) |
+| `idleInhibitor` | `services/IdleInhibitor.qml` | `isEnabled()`, `toggle()`, `enable()` (+ `disable()` per file) |
+| `hypr` | `services/Hypr.qml` | `refreshDevices()`, `cycleSpecialWorkspace(direction)`, `listSpecialWorkspaces()` |
+| `gameMode` | `services/GameMode.qml` | `isEnabled()`, `toggle()`, `enable()`, `disable()` |
+| `colours` | `services/Colours.qml` | `reload()`, `mode()`, `flavour()` |
+| `brightness` | `services/Brightness.qml` | `get()`, `getFor(query)`, `set(value)` (+ `setFor` per file) |
 
 ## Shell chrome
 
-| Target          | Defined in                                                         | Functions                                                                                                                                               |
-|-----------------|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `drawers`       | `modules/Shortcuts.qml`                                            | `toggle(drawer)`, `list()`, `state(drawer)`                                                                                                             |
-| `controlCenter` | `modules/Shortcuts.qml`                                            | `open([pane])`                                                                                                                                          |
-| `welcome`       | `modules/Shortcuts.qml` (controller `modules/welcome/Welcome.qml`) | `open([page])`, `close()`, `status()`                                                                                                                   |
-| `toaster`       | `modules/Shortcuts.qml`                                            | `info/success/warn/error(title, message, icon)`                                                                                                         |
-| `picker`        | `modules/areapicker/AreaPicker.qml`                                | `open()`, `openFreeze()` (+ close variants per file)                                                                                                    |
-| `lock`          | `modules/lock/Lock.qml`                                            | `lock()`, `unlock()`                                                                                                                                    |
-| `companion`     | `modules/companion/CompanionHost.qml`                              | `summon()`, `hide()`, `toggle()`, `say(text, timeoutMs)`, `tip()`, `play(animation)`, `setState(state)`, `setSkin(skin)`, `resetPosition()`, `status()` |
-| `debug`         | `modules/drawers/Drawers.qml`                                      | `borders()`, `dump()` (debug only)                                                                                                                      |
+| Target | Defined in | Functions |
+|---|---|---|
+| `drawers` | `modules/Shortcuts.qml` | `toggle(drawer)`, `list()`, `state(drawer)` |
+| `controlCenter` | `modules/Shortcuts.qml` | `open([pane])` |
+| `welcome` | `modules/Shortcuts.qml` (controller `modules/welcome/Welcome.qml`) | `open([page])`, `close()`, `status()` |
+| `toaster` | `modules/Shortcuts.qml` | `info/success/warn/error(title, message, icon)` |
+| `picker` | `modules/areapicker/AreaPicker.qml` | `open()`, `openFreeze()` (+ close variants per file) |
+| `lock` | `modules/lock/Lock.qml` | `lock()`, `unlock()` |
+| `companion` | `modules/companion/CompanionHost.qml` | `summon()`, `hide()`, `toggle()`, `say(text, timeoutMs)`, `tip()`, `play(animation)`, `setState(state)`, `setSkin(skin)`, `resetPosition()`, `status()` |
+| `debug` | `modules/drawers/Drawers.qml` | `borders()`, `dump()` (debug only) |
 
 Drawer names accepted by `drawers toggle` are the boolean keys of
 `Visibilities` for the active monitor (e.g. `launcher`, `dashboard`,
@@ -44,7 +44,7 @@ suppressed while a fullscreen window has focus.
 (validated against the pane registry: an unknown pane logs a warning
 and opens the default pane, never crashes). `welcome open [page]`
 opens the Welcome Center (`start`, `navigate`, `shell`, `workspaces`,
-`personalize`, `tools`, `system`, `learn`; unknown pages open `start`
+`personalize`, `tools`, `system`, `learn`, `shortcuts`; unknown pages open `start`
 with a warning); `welcome close()` closes it; `welcome status()`
 prints JSON (`{"open": bool, "page": string, "showOnLogin": bool}`).
 Every opening records the session sighting, so a shell reload in the
@@ -78,9 +78,11 @@ The shell also *spawns* processes; the stable outbound contracts are:
   `services/GtkSettings.qml`) and the native `ImageAnalyser` plugin
   (`dominantColour`/`luminance`, via `services/WallpaperAnalysis.qml` and
   `Colours.wallLuminance`/`wallDominantColour`).
-- Appearance verbs: `horneroctl appearance colors m3`, `gtk …`, `scheme …`
-  (see `docs/COMPAT.md`).
+- Appearance fallbacks (native horneroctl verbs, see `docs/COMPAT.md`):
+  `horneroctl appearance colors m3 -- …`,
+  `horneroctl appearance gtk …`, `horneroctl scheme …`.
 - Optional integrations: `horneroctl capture record start/stop/pause --yes`,
-  `horneroctl wallpaper current`, `horneroctl wallpaper set …`,
-  `horneroctl shell preset list/apply`, `horneroctl appearance night-mode toggle`,
+  `horneroctl wallpaper current`, `horneroctl wallpaper set --yes`,
+  `horneroctl shell preset apply --yes`,
+  `horneroctl appearance night-mode toggle --yes`,
   `notify-send …`, `systemctl …`, `foot -e sh -c …`.

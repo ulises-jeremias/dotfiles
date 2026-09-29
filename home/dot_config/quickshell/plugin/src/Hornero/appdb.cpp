@@ -205,8 +205,8 @@ void AppDb::incrementFrequency(const QString& id) {
     QSqlQuery query(db);
 
     query.prepare("INSERT INTO frequencies (id, frequency) "
-                  "VALUES (:id, 1) "
-                  "ON CONFLICT (id) DO UPDATE SET frequency = frequency + 1");
+        "VALUES (:id, 1) "
+        "ON CONFLICT (id) DO UPDATE SET frequency = frequency + 1");
     query.bindValue(":id", id);
     query.exec();
 

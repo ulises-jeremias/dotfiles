@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Dots Power Menu
+Name=Hornero Power Menu
 Comment=Shutdown, restart, logout, and more
 Exec=horneroctl shell ipc -- call drawers toggle session
 Icon=system-shutdown
 Terminal=false
 Type=Application
 Categories=System;
-Keywords=power;shutdown;restart;logout;lock;dots;
+Keywords=power;shutdown;restart;logout;lock;hornero;

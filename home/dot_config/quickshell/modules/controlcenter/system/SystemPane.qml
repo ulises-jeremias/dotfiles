@@ -1,6 +1,6 @@
 pragma ComponentBehavior: Bound
 
-import ".."
+import ".." as CC
 import "../components"
 import qs.components
 import qs.components.controls
@@ -19,7 +19,10 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    required property Session session
+    // Qualified: `import qs.modules.welcome` below also brings a `Session`
+    // name into scope (its singleton); unqualified, the loader's session
+    // value fails assignment and the pane stays blank.
+    required property CC.Session session
 
     anchors.fill: parent
 
@@ -326,7 +329,7 @@ Item {
                             icon: "screenshot_monitor"
                             label: qsTr("Screenshot")
                             description: qsTr("Capture the screen with selection")
-                            action: () => root.run(["horneroctl", "capture", "screenshot", "--yes"])
+                            action: () => root.run(["horneroctl", "capture", "screenshot", "--region", "--yes"])
                         }
 
                         ActionTile {
@@ -352,9 +355,9 @@ Item {
 
                         ActionTile {
                             icon: "system_update_alt"
-                            label: qsTr("Check updates")
-                            description: qsTr("Open terminal with system update")
-                            action: () => root.run(["foot", "-e", "sh", "-c", "horneroctl package upgrade --yes"])
+                            label: qsTr("System updates")
+                            description: qsTr("Pending updates and backups")
+                            action: () => Actions.openControlCenter("updates")
                         }
                     }
                 }
@@ -397,14 +400,14 @@ Item {
                             icon: "palette"
                             label: qsTr("GTK theme")
                             description: qsTr("Open Appearance to pick GTK theme and icons")
-                            action: () => root.run(["horneroctl", "config", "gui", "--pane", "appearance"])
+                            action: () => Actions.openControlCenter("appearance")
                         }
 
                         ActionTile {
                             icon: "keyboard"
                             label: qsTr("Keyboard shortcuts")
                             description: qsTr("Show current keybinding reference")
-                            action: () => root.run(["foot", "-e", "sh", "-c", "horneroctl hardware keyboard keys"])
+                            action: () => root.run(["horneroctl", "hardware", "keyboard", "keys"])
                         }
                     }
                 }

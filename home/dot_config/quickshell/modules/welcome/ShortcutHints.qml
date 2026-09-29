@@ -38,6 +38,10 @@ Singleton {
     ]
 
     property var badges: ({})
+    // Full entry list for the Shortcuts reference page: every valid
+    // global binding as { id, dispatcher, mods, key }. Badges stay the
+    // curated first-wins view; entries feed the filterable cheatsheet.
+    property var entries: []
     property bool ready: false
 
     readonly property string manifestPath: `${Paths.data}/shortcuts.json`
@@ -56,6 +60,7 @@ Singleton {
     // entries missing id/mods/key) yields an empty map without errors.
     function parse(text: string): void {
         const out = {};
+        const all = [];
         try {
             const o = JSON.parse(text);
             if (o !== null && typeof o === "object" && !Array.isArray(o) && o.schemaVersion === 1 && Array.isArray(o.entries)) {
@@ -64,21 +69,24 @@ Singleton {
                         continue;
                     if (typeof e.id !== "string" || e.id === "" || !Array.isArray(e.mods) || typeof e.key !== "string" || e.key === "")
                         continue;
-                    if (out[e.id] !== undefined)
-                        continue;
                     const parts = [];
                     for (const m of e.mods) {
                         if (typeof m === "string" && m !== "")
                             parts.push(m);
                     }
                     parts.push(e.key);
-                    out[e.id] = parts.join(" + ");
+                    if (out[e.id] === undefined)
+                        out[e.id] = parts.join(" + ");
+                    if (typeof e.submap === "string" && e.submap !== "")
+                        continue;
+                    all.push({ id: e.id, dispatcher: typeof e.dispatcher === "string" ? e.dispatcher : "", mods: parts.slice(0, -1), key: e.key });
                 }
             }
         } catch (e) {
             // Malformed manifest: badges stay empty, UI shows no badges.
         }
         root.badges = out;
+        root.entries = all;
         root.ready = true;
     }
 
@@ -89,6 +97,7 @@ Singleton {
         onLoaded: root.parse(text())
         onLoadFailed: {
             root.badges = {};
+            root.entries = [];
             root.ready = true;
         }
     }

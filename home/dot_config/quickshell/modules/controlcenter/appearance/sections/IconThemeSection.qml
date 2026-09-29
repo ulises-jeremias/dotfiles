@@ -29,6 +29,9 @@ CollapsibleSection {
 
     Component.onCompleted: reloadIcons()
 
+    // Icon listing via the native icon-theme catalogue (index.theme
+    // parsing plus de-dup across /usr/share/icons, ~/.local/share/icons,
+    // ~/.icons); see docs/NATIVE-APPEARANCE.md.
     Process {
         id: listProc
 

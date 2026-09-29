@@ -35,6 +35,9 @@ FloatingWindow {
 
     // Nav entries in StackLayout order. Labels stay translatable; page
     // content lives in pages/*.qml and actions in Actions.qml.
+    // Creation guard: ListView fires currentIndex changes while the
+    // window builds; the nav handler ignores them until first paint.
+    property bool _navReady: false
     readonly property var navPages: [
         {
             id: "start",
@@ -75,6 +78,11 @@ FloatingWindow {
             id: "learn",
             icon: "school",
             label: qsTr("Learn")
+        },
+        {
+            id: "shortcuts",
+            icon: "keyboard",
+            label: qsTr("Shortcuts")
         }
     ]
 
@@ -99,6 +107,7 @@ FloatingWindow {
             win.y = Math.max(0, Math.round((s.height - win.height) / 2));
         }
         navList.currentIndex = win.pageIndex(Welcome.currentPage);
+        win._navReady = true;
         navList.forceActiveFocus();
     }
 
@@ -175,7 +184,14 @@ FloatingWindow {
 
                 model: win.navPages
 
+                // Creation fires currentIndex changes (-1 to 0, then the
+                // onCompleted sync) before the requested page is settled;
+                // navigating on those would clobber every fresh open back
+                // to start. Only user/programmatic changes past first
+                // paint navigate.
                 onCurrentIndexChanged: {
+                    if (!win._navReady)
+                        return;
                     const entry = win.navPages[currentIndex];
                     if (entry && entry.id !== Welcome.currentPage)
                         Welcome.open(entry.id);
@@ -247,6 +263,7 @@ FloatingWindow {
                 ToolsPage {}
                 SystemPage {}
                 LearnPage {}
+                ShortcutsPage {}
             }
         }
 

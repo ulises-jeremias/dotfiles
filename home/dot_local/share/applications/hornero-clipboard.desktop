@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Dots Clipboard
+Name=Hornero Clipboard
 Comment=View and manage clipboard history
 Exec=horneroctl capture clipboard
 Icon=edit-paste
 Terminal=false
 Type=Application
 Categories=Utility;
-Keywords=clipboard;paste;copy;history;dots;
+Keywords=clipboard;paste;copy;history;hornero;

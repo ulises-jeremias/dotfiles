@@ -16,7 +16,7 @@ afterwards. Design decisions live in `docs/adr/001-welcome.md`.
 | IPC | `qs ipc call welcome open [page]` · `close` · `status` |
 
 Valid pages: `start`, `navigate`, `shell`, `workspaces`, `personalize`,
-`tools`, `system`, `learn`. Unknown pages open `start` with a warning.
+`tools`, `system`, `learn`, `shortcuts`. Unknown pages open `start` with a warning.
 
 ## Opting out
 

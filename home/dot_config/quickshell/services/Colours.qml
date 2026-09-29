@@ -270,9 +270,9 @@ Singleton {
         }
     }
 
-    // Mode commits run via `horneroctl appearance scheme set-mode`.
+    // Native light/dark switch: persist + M3 regenerate + GTK follow-push.
     function setMode(mode: string): void {
-        Quickshell.execDetached(["horneroctl", "appearance", "scheme", "set-mode", mode, "--yes"]);
+        Quickshell.execDetached(["horneroctl", "scheme", "set-mode", mode, "--yes"]);
     }
 
     function reloadFromDisk(): void {

@@ -241,7 +241,9 @@ def test_factory_values_match_code_defaults():
         ("launcher.sizes.itemHeight", 57),
         ("launcher.actions.7.name", "Random"),
         ("launcher.actions.12.command.2", ""),
-        ("launcher.actions.15.command.0", "dots-settings-gui"),
+        ("launcher.actions.15.command.0", "horneroctl"),
+        ("launcher.actions.15.command.1", "config"),
+        ("launcher.actions.15.command.2", "gui"),
         # notifs / osd
         ("notifs.defaultExpireTimeout", 5000),
         ("notifs.clearThreshold", 0.3),

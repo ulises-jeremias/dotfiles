@@ -3,10 +3,10 @@
 ## Copyright (C) 2019-2026 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
-## Snappy Switcher Theme Manager
+## Snappy Switcher Theme Manager (sourced by hornero-switcher-shim).
 ##
 ## Usage:
-##   source ~/.local/lib/dots/snappy-switcher-manager.sh
+##   source ~/.local/lib/hornero/switcher-theme.sh
 ##   apply_theme_snappy_switcher_theme [theme_id]
 ##   apply_snappy_switcher_theme <theme_file.ini>
 ##   apply_rice_snappy_switcher_theme [theme_id]  # deprecated alias

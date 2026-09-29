@@ -7,17 +7,35 @@ import qs.utils
 import Quickshell
 import QtQuick
 
+// Session menu: one armed action per button — first press arms (with a
+// confirm label), second press runs. Mirrors the control-center
+// PowerTile pattern so destructive actions never fire on a stray key.
 Column {
     id: root
 
     required property PersistentProperties visibilities
 
     padding: Appearance.padding.large
-    spacing: Appearance.spacing.large
+    spacing: Appearance.spacing.normal
+
+    // Two-step confirm for every action: first press arms, second press
+    // runs. Focus loss or Escape resets.
+    property string armedAction: ""
+
+    function runOrArm(action: string, command: var): void {
+        if (root.armedAction !== action) {
+            root.armedAction = action; // first press arms
+            return;
+        }
+        root.armedAction = "";
+        Quickshell.execDetached(command);
+    }
 
     SessionButton {
         id: logout
 
+        action: "logout"
+        label: qsTr("Log out")
         icon: Config.session.icons.logout
         command: Config.session.commands.logout
 
@@ -38,6 +56,8 @@ Column {
     SessionButton {
         id: shutdown
 
+        action: "shutdown"
+        label: qsTr("Shut down")
         icon: Config.session.icons.shutdown
         command: Config.session.commands.shutdown
 
@@ -60,6 +80,8 @@ Column {
     SessionButton {
         id: hibernate
 
+        action: "hibernate"
+        label: qsTr("Hibernate")
         icon: Config.session.icons.hibernate
         command: Config.session.commands.hibernate
 
@@ -70,27 +92,37 @@ Column {
     SessionButton {
         id: reboot
 
+        action: "reboot"
+        label: qsTr("Restart")
         icon: Config.session.icons.reboot
         command: Config.session.commands.reboot
 
         KeyNavigation.up: hibernate
     }
 
-    component SessionButton: StyledRect {
-        id: button
+    component SessionButton: Column {
+        id: entry
 
+        required property string action
+        required property string label
         required property string icon
         required property list<string> command
 
-        implicitWidth: Config.session.sizes.button
-        implicitHeight: Config.session.sizes.button
+        readonly property bool armed: root.armedAction === entry.action
 
-        radius: Appearance.rounding.large
-        color: button.activeFocus ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
+        spacing: 4
+        focus: true
 
-        Keys.onEnterPressed: Quickshell.execDetached(button.command)
-        Keys.onReturnPressed: Quickshell.execDetached(button.command)
-        Keys.onEscapePressed: root.visibilities.session = false
+        Keys.onEnterPressed: root.runOrArm(entry.action, entry.command)
+        Keys.onReturnPressed: root.runOrArm(entry.action, entry.command)
+        Keys.onEscapePressed: event => {
+            if (root.armedAction.length > 0) {
+                root.armedAction = ""; // first Escape disarms
+                event.accepted = true;
+            } else {
+                root.visibilities.session = false;
+            }
+        }
         Keys.onPressed: event => {
             if (!Config.session.vimKeybinds)
                 return;
@@ -114,22 +146,46 @@ Column {
             }
         }
 
-        StateLayer {
-            radius: parent.radius
-            color: button.activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
+        onActiveFocusChanged: {
+            if (!activeFocus && root.armedAction === entry.action)
+                root.armedAction = "";
+        }
 
-            function onClicked(): void {
-                Quickshell.execDetached(button.command);
+        StyledRect {
+            id: button
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            implicitWidth: Config.session.sizes.button
+            implicitHeight: Config.session.sizes.button
+
+            radius: Appearance.rounding.large
+            color: entry.armed ? Colours.palette.m3errorContainer : entry.activeFocus ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
+
+            StateLayer {
+                radius: parent.radius
+                color: entry.armed ? Colours.palette.m3onErrorContainer : entry.activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
+
+                function onClicked(): void {
+                    entry.forceActiveFocus();
+                    root.runOrArm(entry.action, entry.command);
+                }
+            }
+
+            MaterialIcon {
+                anchors.centerIn: parent
+
+                text: entry.icon
+                color: entry.armed ? Colours.palette.m3onErrorContainer : entry.activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
+                font.pointSize: Appearance.font.size.extraLarge
+                font.weight: 500
             }
         }
 
-        MaterialIcon {
-            anchors.centerIn: parent
-
-            text: button.icon
-            color: button.activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
-            font.pointSize: Appearance.font.size.extraLarge
-            font.weight: 500
+        StyledText {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: entry.armed ? qsTr("Confirm?") : entry.label
+            color: entry.armed ? Colours.palette.m3error : Colours.palette.m3onSurfaceVariant
+            font.pointSize: Appearance.font.size.smaller
         }
     }
 }

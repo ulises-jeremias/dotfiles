@@ -10,6 +10,11 @@ export GTK_IM_MODULE=ibus
 export QT_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 
+# horneroctl native backends (same pins as hyprland environment.conf, for
+# login shells and terminals outside the Hyprland session)
+export HORNERO_SETTINGS_GUI_BIN="${HORNERO_SETTINGS_GUI_BIN:-$HOME/.local/bin/hornero-settings-shim}"
+export HORNERO_SNAPPY_BIN="${HORNERO_SNAPPY_BIN:-$HOME/.local/bin/hornero-switcher-shim}"
+
 # Prioritize gnome-keyring over kwallet system-wide
 export PASSWORD_STORE=basic
 unset KDE_FULL_SESSION

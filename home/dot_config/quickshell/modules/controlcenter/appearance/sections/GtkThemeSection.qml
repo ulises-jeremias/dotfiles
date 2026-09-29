@@ -29,6 +29,9 @@ CollapsibleSection {
 
     Component.onCompleted: reloadThemes()
 
+    // Theme listing via the native GTK catalogue (index.theme parsing plus
+    // de-dup across /usr/share/themes, ~/.local/share/themes, ~/.themes);
+    // see docs/NATIVE-APPEARANCE.md.
     Process {
         id: listProc
 

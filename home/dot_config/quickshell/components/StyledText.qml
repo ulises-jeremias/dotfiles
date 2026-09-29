@@ -16,7 +16,11 @@ Text {
     renderType: Text.NativeRendering
     textFormat: Text.PlainText
     color: Colours.palette.m3onSurface
-    font.family: Appearance.font.family.sans
+    // Typeface switch kept here (not at call sites) so the welcome
+    // static scans keep their font-family discipline: keycap legends
+    // and other data read mono via `mono: true`.
+    property bool mono: false
+    font.family: root.mono ? Appearance.font.family.mono : Appearance.font.family.sans
     font.pointSize: Appearance.font.size.smaller
 
     Behavior on color {

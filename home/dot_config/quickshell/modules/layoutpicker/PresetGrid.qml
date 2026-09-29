@@ -10,9 +10,13 @@ import QtQuick.Layouts
 
 // Reusable grid of shell layout presets with mini previews.
 // Hosts: layoutpicker modal (drawers), controlcenter pane, dashboard tab.
-// Data comes from `horneroctl shell preset list --full` (native picker
-// array); applying a preset deep-merges into shell.json via
-// `horneroctl shell preset apply --yes` and live-reloads (no restart).
+// Data comes from `horneroctl shell preset list --full` (enriched JSON:
+// name, display, description, icon, iconMaterial, position, style,
+// active); applying a preset deep-merges into shell.json and live-reloads
+// (no shell restart needed). When horneroctl is missing or the list fails,
+// the grid falls back to the empty state with the store path hint below;
+// a `current` pointer naming an unknown preset resolves to no selection
+// rather than a wrong badge.
 Item {
     id: root
 
@@ -54,19 +58,33 @@ Item {
     Process {
         id: listProc
 
-        command: ["horneroctl", "shell", "preset", "list", "--full", "--json"]
+        command: ["horneroctl", "shell", "preset", "list", "--full"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    const env = JSON.parse(text);
-                    const list = JSON.parse(env.message);
+                    const list = JSON.parse(text);
+                    if (!Array.isArray(list))
+                        throw new Error("expected a JSON array");
                     root.presets = list;
                     const active = list.find(p => p.active);
-                    if (active)
-                        root.currentName = active.name;
+                    // Fallback chain: an unknown active pointer (stale
+                    // state file, uninstalled preset) selects nothing
+                    // instead of badgeing the wrong card.
+                    root.currentName = active ? active.name : "";
+                    if (!active)
+                        console.warn("[layoutpicker] No active preset in list; selection cleared");
                 } catch (e) {
                     console.warn("[layoutpicker] Failed to parse preset list:", e);
+                    root.presets = [];
+                    root.currentName = "";
                 }
+            }
+        }
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0 || exitStatus !== 0) {
+                console.warn("[layoutpicker] horneroctl preset list failed (exit", exitCode + "); empty state shown");
+                root.presets = [];
+                root.currentName = "";
             }
         }
     }

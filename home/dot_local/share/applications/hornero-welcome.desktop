@@ -1,0 +1,14 @@
+# Mirrors home/dot_config/quickshell/assets/hornero-welcome.desktop (canonical).
+# Keeps Hornero Welcome visible in host app menus/launcher on chezmoi-managed
+# machines, where only ~/.local/share/applications is scanned. Keep in sync.
+[Desktop Entry]
+Type=Application
+Name=Hornero Welcome
+Comment=First-login tour and quick start for HorneroOS
+Exec=horneroctl welcome open
+Icon=hornero-welcome
+Keywords=welcome;tour;quick start;hornero;
+NoDisplay=false
+Categories=Settings;
+Terminal=false
+StartupNotify=true

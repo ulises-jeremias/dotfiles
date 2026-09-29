@@ -102,7 +102,7 @@ void ImageAnalyser::requestUpdate() {
     }
 
     if (!m_sourceItem || (m_sourceItem->window() && m_sourceItem->window()->isVisible() && m_sourceItem->width() > 0 &&
-                             m_sourceItem->height() > 0)) {
+        m_sourceItem->height() > 0)) {
         update();
     } else if (m_sourceItem) {
         if (!m_sourceItem->window()) {

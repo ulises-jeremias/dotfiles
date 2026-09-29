@@ -18,9 +18,12 @@ Singleton {
     readonly property string wallpapersDirFallback: `${Paths.dataFallback}/wallpapers`
     readonly property string picturesWallpapers: `${Paths.pictures}/Wallpapers`
     readonly property string wallpaperPointer: Paths.wallpaperPointer
-    // Palette generation runs via `horneroctl appearance colors m3`;
-    // GTK application is native-first via GtkSettings (gsettings) with
-    // `horneroctl appearance gtk` fallback. See docs/NATIVE-APPEARANCE.md.
+    // M3 palette generation runs through horneroctl (its backend resolves
+    // the python synthesizer via HORNERO_M3_PYTHON_BIN / HORNERO_M3_SCRIPT,
+    // so pyenv shims cannot hide Arch python-materialyoucolor).
+    // GTK application is native-first via GtkSettings (gsettings) with the
+    // horneroctl gtk fallback there. See docs/NATIVE-APPEARANCE.md.
+    readonly property var m3Base: ["horneroctl", "appearance", "colors", "m3", "--yes", "--"]
     // Contract row 4: canonical scheme.json (written by m3Proc below).
     readonly property string schemeJson: `${Paths.cache}/smart-colors/scheme.json`
     readonly property string schemeJsonFallback: `${Paths.cacheFallback}/smart-colors/scheme.json`
@@ -221,9 +224,10 @@ Singleton {
 
     // First-class built-in themes (hornero-dark / hornero-light): the full
     // semantic palette lives in Colours, so apply needs no wallpaper, wal,
-    // or M3 round-trip — correct switching with no light/dark
-    // leakage. GTK follows natively; only the color-scheme policy applies.
-    // Switcher theme-pack extras are skipped for built-ins.
+    // or M3 round-trip — correct switching with no light/dark leakage. GTK
+    // follows natively (empty themeId keeps GtkSettings off the legacy
+    // registry path); only the color-scheme policy applies. Legacy theme
+    // extras (snappy switcher packs) are skipped for built-ins.
     function _applyBuiltInTheme(id: string, wallpaper: string): void {
         const darkMode = id !== "hornero-light";
         Colours.applyBuiltInTheme(id);
@@ -270,10 +274,10 @@ Singleton {
         });
     }
 
-    // Scheme persistence runs through the native horneroctl scheme verbs.
+    // Native scheme persistence: M3 regenerate from the wallpaper pointer.
     Process {
         id: ensureSchemeProc
-        command: ["horneroctl", "appearance", "scheme", "regenerate", "--yes"]
+        command: ["horneroctl", "scheme", "regenerate", "--yes"]
         onExited: (exitCode, exitStatus) => {
             if (exitCode !== 0)
                 console.warn("ThemePipeline: scheme regeneration failed (exit", exitCode, ")");
@@ -380,18 +384,18 @@ cfg_default="$DOTS_DEFAULT"
 theme_dir="$DOTS_WALLPAPER_DIR"
 // Contract row 11: canonical hornero/* wallpapers first, legacy dots/* fallback.
 for base in "$DOTS_PIC/$theme_dir" "$DOTS_DATA/$theme_dir" "$DOTS_DATA_FALLBACK/$theme_dir"; do
-    if [ -n "$cfg_default" ] && [ -f "$base/$cfg_default" ]; then
-        readlink -f "$base/$cfg_default"
-        exit 0
-    fi
+  if [ -n "$cfg_default" ] && [ -f "$base/$cfg_default" ]; then
+    readlink -f "$base/$cfg_default"
+    exit 0
+  fi
 done
 for base in "$DOTS_PIC/$theme_dir" "$DOTS_DATA/$theme_dir" "$DOTS_DATA_FALLBACK/$theme_dir"; do
-    [ -d "$base" ] || continue
-    find -L "$base" -maxdepth 1 \\( -type f -o -type l \\) \\( \
-        -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \
-        -o -iname "*.gif" -o -iname "*.bmp" \
-    \\) 2>/dev/null | sort | head -n 1
-    break
+  [ -d "$base" ] || continue
+  find -L "$base" -maxdepth 1 \\( -type f -o -type l \\) \\( \
+    -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \
+    -o -iname "*.gif" -o -iname "*.bmp" \
+  \\) 2>/dev/null | sort | head -n 1
+  break
 done
 `]
         environment: ({
@@ -475,8 +479,8 @@ done
         }
     }
 
-    // Full M3 palette generation runs via `horneroctl appearance colors m3`;
-    // the native ImageAnalyser layer (WallpaperAnalysis,
+    // Full M3 palette generation runs through horneroctl (materialyoucolor
+    // backend); the native ImageAnalyser layer (WallpaperAnalysis,
     // Colours.wallLuminance/wallDominantColour) covers instant tone analysis.
     Process {
         id: m3Proc
@@ -484,7 +488,7 @@ done
         readonly property string mode: root._pendingDarkMode ? "dark" : "light"
         readonly property string schemeType: root._pendingSchemeType || "tonal-spot"
         command: [
-            "horneroctl", "appearance", "colors", "m3", "--yes", "--",
+            ...root.m3Base,
             "--image", image,
             "--scheme-type", schemeType,
             "--mode", mode,
@@ -499,10 +503,10 @@ done
         }
     }
 
-    // Scheme persistence runs through the native horneroctl scheme verbs.
+    // Native scheme persistence: adopt the live scheme meta into state.
     Process {
         id: syncStateProc
-        command: ["horneroctl", "appearance", "scheme", "sync-state", "--yes"]
+        command: ["horneroctl", "scheme", "sync-state", "--yes"]
         onExited: (exitCode, exitStatus) => {
             if (exitCode !== 0) {
                 root._finishJob(false, `sync-state failed (exit ${exitCode})`);

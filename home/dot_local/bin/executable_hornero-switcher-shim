@@ -3,11 +3,12 @@
 ## Copyright (C) 2019-2026 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
-## Program: dots-snappy-switcher
-## Description: Snappy Switcher wrapper with appearance theme integration
+## Program: hornero-switcher-shim
+## Description: Snappy Switcher backend for horneroctl (HORNERO_SNAPPY_BIN),
+## with appearance theme integration. Successor of dots-snappy-switcher.
 ##
 ## Usage:
-##   dots-snappy-switcher [COMMAND] [ARG]
+##   hornero-switcher-shim [COMMAND] [ARG]
 ##
 ## Commands:
 ##   daemon                    Start daemon in background mode
@@ -32,7 +33,7 @@
 set -euo pipefail
 
 source ~/.local/lib/dots/easy-options/easyoptions.sh || exit
-source ~/.local/lib/dots/snappy-switcher-manager.sh || exit
+source ~/.local/lib/hornero/switcher-theme.sh || exit
 
 run_snappy() {
 	local cmd="$1"
@@ -86,7 +87,7 @@ next | prev | toggle | hide | select | quit)
 	;;
 apply-theme)
 	if [[ -z $arg ]]; then
-		echo "Usage: dots-snappy-switcher apply-theme <theme>"
+		echo "Usage: hornero-switcher-shim apply-theme <theme>"
 		exit 1
 	fi
 	apply_snappy_switcher_theme "$arg"

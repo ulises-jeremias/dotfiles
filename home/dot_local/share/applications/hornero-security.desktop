@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Hornero Security Audit
+Comment=Run security checks on your system
+Exec=sh -c "horneroctl apps audit; echo; read -r -p 'Press Enter to close...' _"
+Icon=security-high
+Terminal=true
+Type=Application
+Categories=System;Security;
+Keywords=security;audit;check;system;hornero;

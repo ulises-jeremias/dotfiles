@@ -8,7 +8,7 @@ scripts/lint_qml.sh and at runtime in the VM matrix, docs/VM_TESTING.md):
 - Every shortcutId used by a page is in ShortcutHints.curatedIds
   (single source of truth; unknown ids render no badge at runtime).
 - Actions.qml exposes exactly the allowlisted in-shell actions.
-- Window.qml hosts the eight real pages in nav order (no stubs).
+- Window.qml hosts the nine real pages in nav order (no stubs).
 - Every page ships translatable copy (qsTr).
 """
 
@@ -31,6 +31,7 @@ EXPECTED_PAGES = [
     "ToolsPage",
     "SystemPage",
     "LearnPage",
+    "ShortcutsPage",
 ]
 
 # Tokens that must never appear in page-level QML: pages describe and
@@ -144,5 +145,6 @@ def test_page_set_matches_nav():
     assert order == EXPECTED_PAGES, f"StackLayout order must follow nav, got {order}"
     nav_ids = re.findall(r'id:\s*"([a-z]+)"', window.split("navPages", 1)[1].split("]", 1)[0])
     assert nav_ids == ["start", "navigate", "shell", "workspaces",
-                       "personalize", "tools", "system", "learn"]
+                       "personalize", "tools", "system", "learn",
+                       "shortcuts"]
 

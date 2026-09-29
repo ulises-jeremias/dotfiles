@@ -28,7 +28,7 @@ HyprExtras::HyprExtras(QObject* parent)
 
         if (!QDir(hyprDir).exists()) {
             qWarning() << "HyprExtras::HyprExtras: Hyprland socket directory does not exist. Unable to connect to "
-                          "Hyprland socket.";
+                "Hyprland socket.";
             return;
         }
     }

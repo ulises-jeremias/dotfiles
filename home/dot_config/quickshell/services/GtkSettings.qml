@@ -7,9 +7,10 @@ import QtQuick
 // Native GTK application layer (issue #2, migration step (a)).
 //
 // Applies GTK themes, icon themes, and color-scheme policy through the
-// deterministic `gsettings` desktop APIs first, falling back to
-// `horneroctl appearance gtk` where `gsettings` is absent.
-// See docs/NATIVE-APPEARANCE.md.
+// deterministic `gsettings` desktop APIs first. `horneroctl appearance gtk`
+// is the fallback for cases the native layer cannot resolve
+// deterministically (missing `gsettings`, theme-pack ids from the shared
+// theme registry). See docs/NATIVE-APPEARANCE.md.
 Singleton {
     id: root
 
@@ -103,8 +104,9 @@ Singleton {
         _busy = true;
         _lastError = "";
         _compatCommand = _compatFor(kind);
-        // Theme-pack ids resolve through `horneroctl appearance gtk theme`
-        // (native pack lookup), falling back to the compat adapter below.
+        // Theme-pack ids resolve through the shared theme registry via
+        // horneroctl; no deterministic gsettings equivalent exists, so go
+        // straight to the fallback adapter. See docs/NATIVE-APPEARANCE.md.
         if (kind === "full" && _themeId && (!_gtkTheme || _gtkTheme === "auto")) {
             _compatKind = kind;
             compatProc.running = true;
@@ -121,43 +123,50 @@ Singleton {
         root.applyFinished(ok, ok ? "" : _lastError);
     }
 
-    // Fallback for hosts where `gsettings` is absent; see docs/COMPAT.md.
+    // horneroctl gtk fallback. Kept because the native layer cannot run
+    // where `gsettings` is absent and cannot resolve theme-pack ids.
     function _compatFor(kind: string): var {
         if (kind === "gtk")
-            return ["horneroctl", "appearance", "gtk", "apply", _gtkTheme, "--yes"];
+            return ["horneroctl", "appearance", "gtk", "apply", _gtkTheme || "auto", "--yes"];
         if (kind === "icons")
             return ["horneroctl", "appearance", "gtk", "set-icons", _iconTheme, "--yes"];
         if (kind === "color-scheme")
             return ["horneroctl", "appearance", "gtk", "color-scheme", _policy || "follow", "--yes"];
         return ["bash", "-c", `
 set -euo pipefail
-policy="\${DOTS_GTK_COLOR_SCHEME:-}"
-if [[ -n "\${DOTS_THEME_ID:-}" && ( -z "\${DOTS_GTK_THEME:-}" || "\${DOTS_GTK_THEME}" == "auto" ) ]]; then
-    horneroctl appearance gtk theme "\${DOTS_THEME_ID}" --yes || true
-    if [[ -n "\$policy" ]]; then
-        horneroctl appearance gtk color-scheme "\$policy" --yes || true
+if [[ -n "\${HORNERO_THEME_ID:-}" && ( -z "\${HORNERO_GTK_THEME:-}" || "\${HORNERO_GTK_THEME}" == "auto" ) ]]; then
+  horneroctl appearance gtk theme "\${HORNERO_THEME_ID}" --yes || true
+  if [[ -n "\${HORNERO_GTK_COLOR_SCHEME:-}" ]]; then
+    horneroctl appearance gtk color-scheme "\${HORNERO_GTK_COLOR_SCHEME}" --yes || true
+  else
+    horneroctl appearance gtk sync-color-scheme --yes || true
+  fi
+elif [[ -n "\${HORNERO_GTK_THEME:-}" && "\${HORNERO_GTK_THEME}" != "auto" ]]; then
+  if [[ -n "\${HORNERO_ICON_THEME:-}" ]]; then
+    if [[ -n "\${HORNERO_GTK_COLOR_SCHEME:-}" ]]; then
+      horneroctl appearance gtk apply "\${HORNERO_GTK_THEME}" "\${HORNERO_ICON_THEME}" "\${HORNERO_GTK_COLOR_SCHEME}" --yes || true
     else
-        horneroctl appearance gtk sync-color-scheme --yes || true
+      horneroctl appearance gtk apply "\${HORNERO_GTK_THEME}" "\${HORNERO_ICON_THEME}" --yes || true
     fi
-elif [[ -n "\${DOTS_GTK_THEME:-}" && "\${DOTS_GTK_THEME}" != "auto" ]]; then
-    if [[ -n "\$policy" ]]; then
-        horneroctl appearance gtk apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" "\$policy" --yes || true
-    else
-        horneroctl appearance gtk apply "\${DOTS_GTK_THEME}" "\${DOTS_ICON_THEME:-}" --yes || true
-    fi
-elif [[ -n "\${DOTS_ICON_THEME:-}" ]]; then
-    horneroctl appearance gtk set-icons "\${DOTS_ICON_THEME}" --yes || true
-    if [[ -n "\$policy" ]]; then
-        horneroctl appearance gtk color-scheme "\$policy" --yes || true
-    else
-        horneroctl appearance gtk sync-color-scheme --yes || true
-    fi
+  elif [[ -n "\${HORNERO_GTK_COLOR_SCHEME:-}" ]]; then
+    horneroctl appearance gtk apply "\${HORNERO_GTK_THEME}" --yes || true
+    horneroctl appearance gtk color-scheme "\${HORNERO_GTK_COLOR_SCHEME}" --yes || true
+  else
+    horneroctl appearance gtk apply "\${HORNERO_GTK_THEME}" --yes || true
+  fi
+elif [[ -n "\${HORNERO_ICON_THEME:-}" ]]; then
+  horneroctl appearance gtk set-icons "\${HORNERO_ICON_THEME}" --yes || true
+  if [[ -n "\${HORNERO_GTK_COLOR_SCHEME:-}" ]]; then
+    horneroctl appearance gtk color-scheme "\${HORNERO_GTK_COLOR_SCHEME}" --yes || true
+  else
+    horneroctl appearance gtk sync-color-scheme --yes || true
+  fi
 else
-    if [[ -n "\$policy" ]]; then
-        horneroctl appearance gtk color-scheme "\$policy" --yes || true
-    else
-        horneroctl appearance gtk sync-color-scheme --yes || true
-    fi
+  if [[ -n "\${HORNERO_GTK_COLOR_SCHEME:-}" ]]; then
+    horneroctl appearance gtk color-scheme "\${HORNERO_GTK_COLOR_SCHEME}" --yes || true
+  else
+    horneroctl appearance gtk sync-color-scheme --yes || true
+  fi
 fi
 `];
     }
@@ -171,14 +180,14 @@ fi
 set -euo pipefail
 command -v gsettings >/dev/null 2>&1 || exit 99
 if [[ -n "\${HORNERO_GTK_THEME:-}" && "\${HORNERO_GTK_THEME}" != "auto" ]]; then
-    gsettings set org.gnome.desktop.interface gtk-theme "\${HORNERO_GTK_THEME}"
-    gsettings set org.gnome.desktop.wm.preferences theme "\${HORNERO_GTK_THEME}"
+  gsettings set org.gnome.desktop.interface gtk-theme "\${HORNERO_GTK_THEME}"
+  gsettings set org.gnome.desktop.wm.preferences theme "\${HORNERO_GTK_THEME}"
 fi
 if [[ -n "\${HORNERO_ICON_THEME:-}" ]]; then
-    gsettings set org.gnome.desktop.interface icon-theme "\${HORNERO_ICON_THEME}"
+  gsettings set org.gnome.desktop.interface icon-theme "\${HORNERO_ICON_THEME}"
 fi
 if [[ -n "\${HORNERO_COLOR_SCHEME:-}" ]]; then
-    gsettings set org.gnome.desktop.interface color-scheme "\${HORNERO_COLOR_SCHEME}"
+  gsettings set org.gnome.desktop.interface color-scheme "\${HORNERO_COLOR_SCHEME}"
 fi
 `]
         environment: ({
@@ -203,10 +212,10 @@ fi
 
         command: root._compatCommand
         environment: ({
-            "DOTS_GTK_THEME": root._gtkTheme,
-            "DOTS_ICON_THEME": root._iconTheme,
-            "DOTS_THEME_ID": root._themeId,
-            "DOTS_GTK_COLOR_SCHEME": root._policy
+            "HORNERO_GTK_THEME": root._gtkTheme,
+            "HORNERO_ICON_THEME": root._iconTheme,
+            "HORNERO_THEME_ID": root._themeId,
+            "HORNERO_GTK_COLOR_SCHEME": root._policy
         })
         onExited: (exitCode, exitStatus) => {
             root._finishApply(true, "");
@@ -216,7 +225,7 @@ fi
     // Native live queries: current GTK/icon theme and color-scheme via
     // gsettings. Emits three lines (gtk-theme, icon-theme, color-scheme);
     // empty output means gsettings is unavailable and callers keep their
-    // `horneroctl appearance gtk` live queries as fallback.
+    // horneroctl gtk queries as fallback.
     Process {
         id: liveQueryProc
 

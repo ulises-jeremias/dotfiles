@@ -8,9 +8,9 @@ import Quickshell
 //
 // Thin wrapper around the native `ImageAnalyser` plugin
 // (`dominantColour`/`luminance`). Covers instant wallpaper tone analysis
-// without shelling out. Full Material-3 palette generation still needs the
-// M3 synthesis backend note (materialyoucolor lives outside this
-// repo); those call sites keep a TODO(hornero-compat) marker.
+// without shelling out. Full Material-3 palette generation runs through
+// `horneroctl appearance colors m3` (materialyoucolor lives outside this
+// repo as its backend).
 // See docs/NATIVE-APPEARANCE.md.
 Singleton {
     id: root

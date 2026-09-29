@@ -13,7 +13,7 @@ PageView {
         title: qsTr("Every shortcut")
         description: qsTr("A searchable cheatsheet of every key, one key away.")
         shortcutId: "exec-keyboard-help"
-        interactive: false
+        onActivated: Actions.openWelcome("shortcuts")
     }
 
     ActionCard {

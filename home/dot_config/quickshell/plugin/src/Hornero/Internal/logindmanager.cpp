@@ -21,7 +21,7 @@ LogindManager::LogindManager(QObject* parent)
 
     if (!ok) {
         qWarning() << "LogindManager::LogindManager: failed to connect to PrepareForSleep signal:"
-                   << bus.lastError().message();
+            << bus.lastError().message();
     }
 
     QDBusInterface login1("org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", bus);

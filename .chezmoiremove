@@ -34,3 +34,16 @@
 .local/share/applications/dots-backup.desktop
 .local/share/applications/dots-monitors.desktop
 .local/share/applications/dots-performance.desktop
+.local/share/applications/dots-clipboard.desktop
+.local/share/applications/dots-config.desktop
+.local/share/applications/dots-keyboard-help.desktop
+.local/share/applications/dots-night-mode.desktop
+.local/share/applications/dots-power-menu.desktop
+.local/share/applications/dots-screenshot.desktop
+.local/share/applications/dots-security.desktop
+.local/share/applications/dots-settings.desktop
+.local/share/applications/dots-theme.desktop
+.local/bin/dots-settings-gui
+.local/bin/dots-snappy-switcher
+.local/bin/eww
+.local/lib/dots/snappy-switcher-manager.sh

@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Dots Screenshot
+Name=Hornero Screenshot
 Comment=Capture screenshots with various modes
 Exec=horneroctl capture screenshot --yes
 Icon=accessories-screenshot
 Terminal=false
 Type=Application
-Categories=Utility;Graphics;
-Keywords=screenshot;capture;screen;dots;
+Categories=Graphics;
+Keywords=screenshot;capture;screen;hornero;

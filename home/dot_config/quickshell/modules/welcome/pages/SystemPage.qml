@@ -26,7 +26,21 @@ PageView {
     ActionCard {
         icon: "power_settings_new"
         title: qsTr("Power and session")
-        description: qsTr("Log out, suspend, reboot or shut down.")
+        description: qsTr("Quick power menu: log out, suspend, reboot or shut down.")
         onActivated: Actions.openSessionMenu()
+    }
+
+    ActionCard {
+        icon: "settings_power"
+        title: qsTr("Power controls")
+        description: qsTr("Steady power actions with a confirm step, plus backend state.")
+        onActivated: Actions.openControlCenter("power")
+    }
+
+    ActionCard {
+        icon: "system_update"
+        title: qsTr("Updates & backups")
+        description: qsTr("Pending system updates and config backups, in one place.")
+        onActivated: Actions.openControlCenter("updates")
     }
 }

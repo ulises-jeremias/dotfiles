@@ -264,7 +264,7 @@
       {"name": "Logout", "icon": "exit_to_app", "description": "Log out of the current session", "command": ["loginctl", "terminate-user", ""], "enabled": true, "dangerous": true},
       {"name": "Lock", "icon": "lock", "description": "Lock the current session", "command": ["loginctl", "lock-session"], "enabled": true, "dangerous": false},
       {"name": "Sleep", "icon": "bedtime", "description": "Suspend then hibernate", "command": ["systemctl", "suspend-then-hibernate"], "enabled": true, "dangerous": false},
-      {"name": "Settings", "icon": "settings", "description": "Configure the shell", "command": ["dots-settings-gui", "menu"], "enabled": true, "dangerous": false}
+      {"name": "Settings", "icon": "settings", "description": "Configure the shell", "command": ["horneroctl", "config", "gui"], "enabled": true, "dangerous": false}
     ]
   },
   "notifs": {

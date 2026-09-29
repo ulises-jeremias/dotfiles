@@ -3,7 +3,11 @@
 ## Copyright (C) 2019-2025 Ulises Jeremias Cornejo Fandos
 ## Licensed under MIT.
 ##
-## Settings GUI - Quickshell control center entrypoint
+## Settings shim - horneroctl `config gui` backend (HORNERO_SETTINGS_GUI_BIN).
+## Opens the quickshell utilities drawer, starting the shell first if needed.
+## Successor of dots-settings-gui (retired): identical behavior minus the
+## pane preselect, which died with dots-quickshell (horneroctl has no
+## config-set verb, so --pane is accepted and ignored).
 
 set -euo pipefail
 
@@ -13,16 +17,16 @@ PANE=""
 
 # horneroctl owns shell lifecycle + IPC (R1). Prefer it when the
 # installed copy knows those verbs; else use the legacy paths below.
-# config set has no horneroctl backend yet and stays on dots-quickshell.
 _use_hornero_shell() {
   command -v horneroctl >/dev/null 2>&1 || return 1
   horneroctl shell --help 2>/dev/null | grep -q "start \[--dry-run"
 }
 
 set_start_pane() {
-  local pane="$1"
-  [[ -z "$pane" ]] && return 0
-  ~/.local/bin/dots-quickshell config set controlCenter.startPane "$pane" >/dev/null 2>&1 || true
+  # No-op: pane preselect needs a config-set verb that neither horneroctl
+  # nor the retired dots-quickshell backend provides anymore. The drawer
+  # opens on its last/normal pane instead.
+  return 0
 }
 
 shell_start() {

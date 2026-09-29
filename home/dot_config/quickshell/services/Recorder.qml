@@ -31,6 +31,26 @@ Singleton {
         checkProc.running = true;
     }
 
+    // horneroctl capture record speaks --region/--sound/--sr; translate the
+    // legacy gpu-screen-recorder short flags callers still pass. Long flags
+    // go through untouched; anything else is dropped loudly, never silently.
+    function _recordArgs(extra: var): var {
+        const out = [];
+        for (const a of (extra ?? [])) {
+            if (a === "-r")
+                out.push("--region");
+            else if (a === "-s")
+                out.push("--sound");
+            else if (a === "-sr")
+                out.push("--sr");
+            else if (typeof a === "string" && a.startsWith("--"))
+                out.push(a);
+            else
+                console.warn("Recorder: dropping unsupported record flag:", a);
+        }
+        return out;
+    }
+
     PersistentProperties {
         id: props
 
@@ -59,7 +79,7 @@ Singleton {
                     props.paused = !props.paused;
                 }
             } else if (root.needsStart) {
-                Quickshell.execDetached(["horneroctl", "capture", "record", "start", ...root.startArgs, "--yes"]);
+                Quickshell.execDetached(["horneroctl", "capture", "record", "start", ...root._recordArgs(root.startArgs), "--yes"]);
                 props.running = true;
                 props.paused = false;
                 props.elapsed = 0;

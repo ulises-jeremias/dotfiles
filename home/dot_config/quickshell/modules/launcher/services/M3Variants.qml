@@ -79,8 +79,7 @@ Searcher {
 
         function onClicked(list: AppList): void {
             list.visibilities.launcher = false;
-            // Variant ops run via `horneroctl appearance scheme set-variant`.
-            Quickshell.execDetached(["horneroctl", "appearance", "scheme", "set-variant", variant, "--yes"]);
+            Quickshell.execDetached(["horneroctl", "scheme", "set-variant", variant, "--yes"]);
         }
     }
 }
