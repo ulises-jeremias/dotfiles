@@ -32,8 +32,13 @@
 .config/lxqt/lxqt-config-monitor.conf
 .config/lxqt/session.conf
 
-# Quickshell plugin build artifacts (built by chezmoi script)
-.config/quickshell/plugin/build/**
+# Hornero shell contract (HorneroOS/hornero#81, option C):
+# HorneroOS/shell is the authoritative product implementation and the
+# installed ~/.config/quickshell tree is the runtime. chezmoi must never
+# manage, overwrite, or delete anything under it — a normal apply cannot
+# silently downgrade the installed shell. Personal overrides: none today;
+# if any are ever needed, add explicit un-ignore lines below this block.
+.config/quickshell/**
 
 # Temporary and cache directories
 .cache/**

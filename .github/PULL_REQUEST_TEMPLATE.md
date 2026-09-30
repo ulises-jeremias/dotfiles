@@ -17,6 +17,7 @@ Closes #ISSUE
 - [ ] `bash scripts/validate-dots-scripts.sh`
 - [ ] `bash scripts/test-appearance-consistency.sh`
 - [ ] `bash scripts/test-shell-layout-consistency.sh`
+- [ ] `bash scripts/check-shell-contract.sh`
 - [ ] Relevant workflow(s) reviewed
 - [ ] Documentation updated when behavior changed
 

@@ -14,6 +14,12 @@ ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 SOURCE_ONLY=false
 [[ ${1:-} == "--source" ]] && SOURCE_ONLY=true
 
+# Contract C (hornero#81): the shell implementation lives in HorneroOS/shell
+# and runs from the installed tree; dotfiles keeps no mirror. Shell-source
+# checks below resolve against the installed shell (overridable for dev
+# checkouts) and skip cleanly where no shell is installed.
+SHELL_DIR="${HORNERO_SHELL_DIR:-$HOME/.config/quickshell}"
+
 PASS=0
 FAIL=0
 SKIP=0
@@ -94,7 +100,10 @@ echo "== appearance consistency =="
 THEMES_SRC="${ROOT}/home/dot_local/share/dots/themes"
 LIST_THEMES="${ROOT}/home/dot_local/lib/dots/list-themes.py"
 GTK_MGR="${ROOT}/home/dot_local/lib/dots/gtk-theme-manager.sh"
-QS_PIPE="${ROOT}/home/dot_config/quickshell/services/ThemePipeline.qml"
+QS_PIPE="${SHELL_DIR}/services/ThemePipeline.qml"
+QS_AVAILABLE=false
+[[ -f $QS_PIPE ]] && QS_AVAILABLE=true
+$QS_AVAILABLE || echo "(no installed Hornero shell at ${SHELL_DIR}: shell-source checks will skip)"
 
 [[ -d $THEMES_SRC ]] || {
 	echo "missing themes dir: $THEMES_SRC" >&2
@@ -152,18 +161,22 @@ else
 fi
 
 # No stale rice IPC / sticky current writers in QS appearance path
-if grep -REn 'target:[[:space:]]*"rice"|IpcHandler.*rice|dots-rice|nwg-look' "$QS_PIPE" \
-	"${ROOT}/home/dot_config/quickshell/modules/controlcenter/appearance" > /dev/null 2>&1; then
+if ! $QS_AVAILABLE; then
+	skip "no installed shell (stale rice IPC check)"
+elif grep -REn 'target:[[:space:]]*"rice"|IpcHandler.*rice|dots-rice|nwg-look' "$QS_PIPE" \
+	"${SHELL_DIR}/modules/controlcenter/appearance" > /dev/null 2>&1; then
 	fail "stale rice/nwg-look references in appearance QS"
 else
 	pass "no stale rice IPC in appearance QS"
 fi
 
-if grep -REn 'CAELESTIA_' \
-	"${ROOT}/home/dot_config/quickshell/utils" \
-	"${ROOT}/home/dot_config/quickshell/services" \
-	"${ROOT}/home/dot_config/quickshell/modules" \
-	"${ROOT}/home/dot_config/quickshell/nix" \
+if ! $QS_AVAILABLE; then
+	skip "no installed shell (CAELESTIA_ identifier check)"
+elif grep -REn 'CAELESTIA_' \
+	"${SHELL_DIR}/utils" \
+	"${SHELL_DIR}/services" \
+	"${SHELL_DIR}/modules" \
+	"${SHELL_DIR}/nix" \
 	"${ROOT}/home/dot_config/hypr/hyprland.conf.d/environment.conf" > /dev/null 2>&1; then
 	fail "CAELESTIA_ identifiers still present in Hornero runtime/packaging"
 else
@@ -183,14 +196,18 @@ fi
 # issue #2 step a) that writes gtk-theme/icon-theme via gsettings when the
 # dots-gtk-theme CLI compat path cannot run. Allowed ONLY in that file;
 # raw writes anywhere else in the shell still fail this check.
-if grep -REn 'gsettings set org\.gnome\.desktop\.interface (gtk-theme|icon-theme)' \
-	"${ROOT}/home/dot_config/quickshell" --exclude=GtkSettings.qml > /dev/null 2>&1; then
+if ! $QS_AVAILABLE; then
+	skip "no installed shell (gsettings write check)"
+elif grep -REn 'gsettings set org\.gnome\.desktop\.interface (gtk-theme|icon-theme)' \
+	"${SHELL_DIR}" --exclude=GtkSettings.qml > /dev/null 2>&1; then
 	fail "raw gsettings GTK/icon writes in Quickshell (outside GtkSettings.qml)"
 else
 	pass "Quickshell does not write GTK/icons via gsettings (except GtkSettings.qml native fallback)"
 fi
 
-if grep -En 'gtk-theme-manager\.sh' "${ROOT}/home/dot_config/quickshell/services/ThemePipeline.qml" > /dev/null 2>&1; then
+if ! $QS_AVAILABLE; then
+	skip "no installed shell (gtk-theme-manager sourcing check)"
+elif grep -En 'gtk-theme-manager\.sh' "${SHELL_DIR}/services/ThemePipeline.qml" > /dev/null 2>&1; then
 	fail "ThemePipeline still sources gtk-theme-manager.sh"
 else
 	pass "ThemePipeline uses native GTK verbs"
@@ -253,8 +270,10 @@ else
 	fail "wallpaper reload wrapper still present or GTK policy lost"
 fi
 
-if grep -En 'function setGtkColorScheme' "$QS_PIPE" > /dev/null 2>&1 \
-	&& [[ -f ${ROOT}/home/dot_config/quickshell/modules/controlcenter/appearance/sections/GtkColorSchemeSection.qml ]]; then
+if ! $QS_AVAILABLE; then
+	skip "no installed shell (GTK color scheme IPC check)"
+elif grep -En 'function setGtkColorScheme' "$QS_PIPE" > /dev/null 2>&1 \
+	&& [[ -f ${SHELL_DIR}/modules/controlcenter/appearance/sections/GtkColorSchemeSection.qml ]]; then
 	pass "ThemePipeline + Appearance pane expose GTK color scheme"
 else
 	fail "missing setGtkColorScheme IPC or GtkColorSchemeSection"
@@ -266,7 +285,9 @@ else
 	fail "list-themes.py missing gtkColorScheme"
 fi
 
-if grep -En 'fontFamilyClock' "${ROOT}/home/dot_config/quickshell/modules/controlcenter/appearance/sections/FontsSection.qml" > /dev/null 2>&1; then
+if ! $QS_AVAILABLE; then
+	skip "no installed shell (clock font check)"
+elif grep -En 'fontFamilyClock' "${SHELL_DIR}/modules/controlcenter/appearance/sections/FontsSection.qml" > /dev/null 2>&1; then
 	pass "FontsSection exposes clock font"
 else
 	fail "FontsSection missing clock font"
