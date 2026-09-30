@@ -2,13 +2,24 @@
 
 Use this checklist after each substantial shell change.
 
-## Apply and restart
+Contract C (HorneroOS/hornero#81): HorneroOS/shell is the authoritative
+shell implementation and the installed `~/.config/quickshell` tree is the
+runtime. Dotfiles keeps no shell mirror and chezmoi ignores the installed
+tree, so a normal apply can never downgrade it.
+
+## Update the installed shell and restart
+
+Update the installed tree from HorneroOS/shell main (out of band from
+chezmoi), verify the contract, then restart:
 
 ```bash
-cd ~/.dotfiles
-chezmoi apply --source=. --force
+./scripts/check-shell-contract.sh
 horneroctl shell restart --yes
 ```
+
+Never `chezmoi apply` a shell tree into place: there is no shell source
+left in this repo to apply, and the ignore guard exists to keep it
+that way.
 
 ## Hyprland layout and exclusions
 

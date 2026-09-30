@@ -1,6 +1,0 @@
-# Local-only VM harness state: never commit disk images, keys, or captures.
-artifacts/
-cache/
-ssh/
-shared/
-*.log

@@ -19,9 +19,10 @@ cd "$ROOT"
 # own machinery (.chezmoiignore and friends are consumed, never deployed).
 EXCLUDE_RE='^home/\.chezmoiscripts/|^home/\.chezmoi'
 # Mirror metadata: upstream repo scaffolding synced for reference that must
-# never deploy to a host (e.g. the shell repo's own CI inside quickshell/).
+# never deploy to a host. (Empty since contract C, hornero#81: the
+# quickshell mirror was removed from this repo; keep the array for the
+# next such consumer.)
 EXCLUDE_DIRS=(
-	'home/dot_config/quickshell/.github/'
 )
 
 # Intentional orphans: repo-hygiene files chezmoi never deploys —
@@ -29,8 +30,6 @@ EXCLUDE_DIRS=(
 # (renaming to dot_ form would break the linters discovering them here),
 # and .gitignore files, which are repo-only by nature.
 KNOWN_ORPHANS=(
-	'home/dot_config/quickshell/.editorconfig'
-	'home/dot_config/quickshell/.clang-format'
 )
 ORPHAN_SUFFIXES=(
 	'/.gitignore'

@@ -18,10 +18,18 @@ if [[ -z $PYTHON_BIN ]]; then
 	exit 0
 fi
 
+# Contract C (hornero#81): the shell implementation lives in HorneroOS/shell
+# and runs from the installed tree; dotfiles keeps no mirror.
+SHELL_DIR="${HORNERO_SHELL_DIR:-$HOME/.config/quickshell}"
+if [[ ! -f $SHELL_DIR/config/Config.qml ]]; then
+	echo "  SKIP  test-shell-layout-consistency.sh (no installed Hornero shell)"
+	exit 0
+fi
+
 PYTHONDONTWRITEBYTECODE=1 "$PYTHON_BIN" - \
 	"${ROOT}/home/dot_local/lib/dots/apply-shell-preset.py" \
 	"${ROOT}/home/dot_local/share/dots/shell-presets" \
-	"${ROOT}/home/dot_config/quickshell/config/Config.qml" << 'PY'
+	"$SHELL_DIR/config/Config.qml" << 'PY'
 import importlib.util
 import json
 import math

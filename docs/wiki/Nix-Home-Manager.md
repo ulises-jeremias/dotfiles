@@ -25,7 +25,9 @@ practical paths if your system is NixOS or uses home-manager.
 
      ```nix
      xdg.configFile."hypr".source = ~/.dotfiles/home/dot_config/hypr;
-     xdg.configFile."quickshell".source = ~/.dotfiles/home/dot_config/quickshell;
+     # No quickshell source in dotfiles (contract C, HorneroOS/hornero#81):
+     # point quickshell at a HorneroOS/shell checkout instead.
+     # xdg.configFile."quickshell".source = /path/to/HorneroOS-shell-checkout;
      ```
 
 - **Quickshell**: available in nixpkgs as `quickshell` (or built from
