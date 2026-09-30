@@ -224,7 +224,9 @@ else
 	fail "missing native M3 verb and/or python-m3.sh"
 fi
 
-if { grep -En 'dots-m3-colors|m3Bin' "$QS_PIPE" > /dev/null 2>&1 \
+if ! $QS_AVAILABLE; then
+	skip "no installed shell (M3 backend check)"
+elif { grep -En 'dots-m3-colors|m3Bin' "$QS_PIPE" > /dev/null 2>&1 \
 	|| grep -En 'horneroctl", "appearance", "colors", "m3"|horneroctl appearance colors m3' "$QS_PIPE" > /dev/null 2>&1; } \
 	&& ! grep -En '["'\'']python3["'\''].*generate-m3-colors|generate-m3-colors\.py' "$QS_PIPE" > /dev/null 2>&1; then
 	pass "ThemePipeline uses a pinned M3 backend (not bare python3)"
