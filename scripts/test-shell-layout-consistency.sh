@@ -33,6 +33,7 @@ PYTHONDONTWRITEBYTECODE=1 "$PYTHON_BIN" - \
 import importlib.util
 import json
 import math
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -115,10 +116,19 @@ assert "perScreen: bar.perScreen" in config_source_pos
 bar_wrapper = (config_qml.parent.parent / "modules/bar/BarWrapper.qml").read_text(encoding="utf-8")
 exclusions = (config_qml.parent.parent / "modules/drawers/Exclusions.qml").read_text(encoding="utf-8")
 # Reserve default lives in BarConfig.styleReserves() (shell #90): strips
-# (attached, inset) and dock reserve; floating/islands overlay.
-assert "function styleReserves(s: string): bool" in bar_config
+# (attached, inset) and dock reserve; floating/islands overlay. Assert the
+# mapping itself, not mere name presence (mirrors shell-side
+# test_reserve_default_rule).
+_rule = re.search(
+    r"function styleReserves\(s: string\): bool \{\s*return ([^;]+);", bar_config
+)
+assert _rule, "styleReserves() helper missing from installed BarConfig.qml"
+_rule_body = _rule.group(1)
 for _style in ("attached", "inset", "dock"):
-    assert f'"{_style}"' in bar_config
+    assert f'"{_style}"' in _rule_body, f"styleReserves must reserve {_style}"
+assert "floating" not in _rule_body and "islands" not in _rule_body, (
+    "styleReserves must not reserve floating/islands"
+)
 assert 'style !== "floating"' not in bar_config
 for field in ("reservedLeft", "reservedTop", "reservedRight", "reservedBottom"):
     assert field in bar_wrapper
