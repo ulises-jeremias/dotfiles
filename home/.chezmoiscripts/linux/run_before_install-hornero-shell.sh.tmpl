@@ -1,0 +1,62 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+# Provision the HorneroOS desktop shell checkout (contract C, hornero#81):
+# HorneroOS/shell is the sole authority for the shell implementation and
+# ~/.config/quickshell is its runtime checkout. Chezmoi never manages that
+# tree (see home/.chezmoiignore.tmpl); this script owns the git clone and
+# fast-forward updates instead. It runs on every apply (run_before_): all
+# failure modes below are soft so an offline or customized checkout never
+# aborts the apply. It never deletes, resets, or stashes: dirty, diverged,
+# off-branch, or foreign checkouts are left alone with a warning.
+
+set -euo pipefail
+
+SHELL_REPO="https://github.com/HorneroOS/shell.git"
+SHELL_BRANCH="main"
+SHELL_DIR="${HOME}/.config/quickshell"
+
+if ! command -v git >/dev/null 2>&1; then
+    echo "hornero-shell: git not found (install-git sorts earlier), aborting" >&2
+    exit 1
+fi
+
+if [[ ! -e "${SHELL_DIR}" ]]; then
+    git clone --branch "${SHELL_BRANCH}" "${SHELL_REPO}" "${SHELL_DIR}"
+    exit 0
+fi
+
+if [[ ! -d "${SHELL_DIR}/.git" ]]; then
+    echo "hornero-shell: ${SHELL_DIR} exists but is not a git checkout, leaving it alone" >&2
+    exit 0
+fi
+
+origin="$(git -C "${SHELL_DIR}" remote get-url origin 2>/dev/null || true)"
+if [[ "${origin}" != *"HorneroOS/shell"* ]]; then
+    echo "hornero-shell: ${SHELL_DIR} tracks foreign origin '${origin}', leaving it alone" >&2
+    exit 0
+fi
+
+if [[ -n "$(git -C "${SHELL_DIR}" status --porcelain)" ]]; then
+    echo "hornero-shell: ${SHELL_DIR} has local changes, skipping update" >&2
+    exit 0
+fi
+
+current="$(git -C "${SHELL_DIR}" symbolic-ref --quiet --short HEAD || true)"
+if [[ "${current}" != "${SHELL_BRANCH}" ]]; then
+    echo "hornero-shell: ${SHELL_DIR} is not on ${SHELL_BRANCH} ('${current:-detached}'), leaving it alone" >&2
+    exit 0
+fi
+
+if ! git -C "${SHELL_DIR}" fetch origin "${SHELL_BRANCH}"; then
+    echo "hornero-shell: fetch failed, skipping update" >&2
+    exit 0
+fi
+if ! git -C "${SHELL_DIR}" merge --ff-only "origin/${SHELL_BRANCH}"; then
+    echo "hornero-shell: ${SHELL_DIR} has diverged from origin/${SHELL_BRANCH}, leaving it alone" >&2
+    exit 0
+fi
+{{      end -}}
+
+{{ end -}}

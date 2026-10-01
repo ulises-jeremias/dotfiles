@@ -1,8 +1,9 @@
 {
   "_name": "Cozy Minimal",
-  "_description": "Soft floating top bar — rounded, gentle, distraction-free",
+  "_description": "Soft floating top ribbon — workspaces, centred time, a few tools",
   "_icon": "🌸",
   "_iconMaterial": "weekend",
+  "_lineage": "Waybar cozy-minimal profile",
   "bar": {
     "position": "top",
     "style": "floating",
@@ -10,6 +11,10 @@
     "persistent": true,
     "showOnHover": true,
     "entries": [
+      {
+        "id": "logo",
+        "enabled": true
+      },
       {
         "id": "workspaces",
         "enabled": true
@@ -27,12 +32,70 @@
         "enabled": true
       },
       {
+        "id": "quickActions",
+        "enabled": true
+      },
+      {
         "id": "statusIcons",
         "enabled": true
       },
       {
-        "id": "power",
+        "id": "battery",
         "enabled": true
+      },
+      {
+        "id": "tray",
+        "enabled": true
+      }
+    ],
+    "bars": [
+      {
+        "edge": "top",
+        "style": "floating",
+        "margin": 14,
+        "groups": {
+          "start": [
+            {
+              "id": "logo",
+              "enabled": true
+            },
+            {
+              "id": "workspaces",
+              "enabled": true
+            }
+          ],
+          "center": [
+            {
+              "id": "clock",
+              "enabled": true
+            }
+          ],
+          "end": [
+            {
+              "id": "quickActions",
+              "enabled": true,
+              "options": {
+                "actions": [
+                  "screenshot",
+                  "layoutPicker",
+                  "settings"
+                ]
+              }
+            },
+            {
+              "id": "statusIcons",
+              "enabled": true
+            },
+            {
+              "id": "battery",
+              "enabled": true
+            },
+            {
+              "id": "tray",
+              "enabled": true
+            }
+          ]
+        }
       }
     ],
     "sizes": {
@@ -40,12 +103,13 @@
     },
     "status": {
       "showNetwork": true,
-      "showBattery": true
+      "showBattery": false,
+      "showAudio": true
     },
     "scrollActions": {
       "workspaces": true,
       "volume": true,
-      "brightness": false
+      "brightness": true
     }
   },
   "border": {

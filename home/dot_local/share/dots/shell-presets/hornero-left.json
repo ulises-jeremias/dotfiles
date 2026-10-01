@@ -1,7 +1,7 @@
 {
   "_name": "Hornero Left",
-  "_description": "Left sidebar \u2014 full featured, reference shell style",
-  "_icon": "\ud83c\udfe0",
+  "_description": "Left sidebar — full featured, reference shell style",
+  "_icon": "🏠",
   "_iconMaterial": "dock_to_left",
   "bar": {
     "position": "left",
@@ -61,7 +61,8 @@
       "workspaces": true,
       "volume": true,
       "brightness": true
-    }
+    },
+    "bars": []
   },
   "border": {
     "frameEnabled": true
