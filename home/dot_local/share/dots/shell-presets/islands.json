@@ -1,13 +1,13 @@
 {
-  "_name": "Dock Bottom",
-  "_description": "Bottom dock — launcher, workspaces, pinned apps, tools and status",
-  "_icon": "🛟",
-  "_iconMaterial": "dock_to_bottom",
-  "_lineage": "Waybar dock-bottom profile",
+  "_name": "Islands",
+  "_description": "Three floating islands: controls, time, status",
+  "_icon": "🏝️",
+  "_iconMaterial": "view_column",
+  "_lineage": "Polybar i3 multipart profile",
   "bar": {
-    "position": "bottom",
-    "style": "dock",
-    "floatingMargin": 12,
+    "position": "top",
+    "style": "floating",
+    "floatingMargin": 10,
     "persistent": true,
     "showOnHover": true,
     "entries": [
@@ -16,19 +16,15 @@
         "enabled": true
       },
       {
-        "id": "workspaces",
-        "enabled": true
-      },
-      {
-        "id": "spacer",
-        "enabled": true
-      },
-      {
-        "id": "pinnedApps",
-        "enabled": true
-      },
-      {
         "id": "quickActions",
+        "enabled": true
+      },
+      {
+        "id": "audioSlider",
+        "enabled": true
+      },
+      {
+        "id": "brightnessSlider",
         "enabled": true
       },
       {
@@ -40,7 +36,11 @@
         "enabled": true
       },
       {
-        "id": "statusIcons",
+        "id": "weather",
+        "enabled": true
+      },
+      {
+        "id": "spacer",
         "enabled": true
       },
       {
@@ -48,16 +48,23 @@
         "enabled": true
       },
       {
+        "id": "statusIcons",
+        "enabled": true
+      },
+      {
         "id": "tray",
+        "enabled": true
+      },
+      {
+        "id": "power",
         "enabled": true
       }
     ],
     "bars": [
       {
-        "edge": "bottom",
-        "style": "dock",
-        "margin": 12,
-        "thickness": 48,
+        "edge": "top",
+        "style": "islands",
+        "margin": 10,
         "groups": {
           "start": [
             {
@@ -65,36 +72,38 @@
               "enabled": true
             },
             {
-              "id": "workspaces",
-              "enabled": true
-            }
-          ],
-          "center": [
-            {
-              "id": "pinnedApps",
-              "enabled": true,
-              "options": {
-                "apps": [
-                  "kitty",
-                  "thunar",
-                  "firefox"
-                ]
-              }
-            },
-            {
               "id": "quickActions",
               "enabled": true,
               "options": {
                 "actions": [
                   "screenshot",
-                  "layoutPicker"
+                  "layoutPicker",
+                  "settings"
                 ]
               }
+            },
+            {
+              "id": "audioSlider",
+              "enabled": true
+            },
+            {
+              "id": "brightnessSlider",
+              "enabled": true
+            }
+          ],
+          "center": [
+            {
+              "id": "clock",
+              "enabled": true
+            },
+            {
+              "id": "weather",
+              "enabled": true
             }
           ],
           "end": [
             {
-              "id": "clock",
+              "id": "battery",
               "enabled": true
             },
             {
@@ -102,11 +111,11 @@
               "enabled": true
             },
             {
-              "id": "battery",
+              "id": "tray",
               "enabled": true
             },
             {
-              "id": "tray",
+              "id": "power",
               "enabled": true
             }
           ]
@@ -114,7 +123,7 @@
       }
     ],
     "sizes": {
-      "innerWidth": 48
+      "innerWidth": 40
     },
     "status": {
       "showAudio": true,
@@ -131,21 +140,5 @@
   },
   "border": {
     "frameEnabled": false
-  },
-  "appearance": {
-    "rounding": {
-      "scale": 1.5
-    },
-    "padding": {
-      "scale": 1.2
-    },
-    "spacing": {
-      "scale": 1.2
-    },
-    "transparency": {
-      "enabled": true,
-      "base": 0.85,
-      "layers": 0.4
-    }
   }
 }

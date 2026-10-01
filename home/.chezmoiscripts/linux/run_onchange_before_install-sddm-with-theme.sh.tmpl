@@ -2,6 +2,11 @@
 
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
+# SDDM + the HorneroOS greeter (HorneroOS/greeter, AUR hornero-greeter).
+# Migrates hosts away from the legacy sddm-theme-aerial-git theme: the
+# greeter package ships /etc/sddm.conf.d/10-hornero.conf (Current=hornero);
+# this script additionally rewrites a stale Current= pin in /etc/sddm.conf
+# in place so hand-merged SDDM settings survive the migration.
 
 set -euo pipefail
 
@@ -16,18 +21,38 @@ sudo pacman -S --noconfirm --needed \
 sudo systemctl disable sddm 2> /dev/null || true
 {{ end }}
 
-yay -S --noconfirm --needed \
-  sddm-theme-aerial-git
+if command -v yay >/dev/null 2>&1; then
+    AUR_HELPER="yay"
+elif command -v paru >/dev/null 2>&1; then
+    AUR_HELPER="paru"
+else
+    echo "No AUR helper found (yay/paru), cannot install hornero-greeter" >&2
+    exit 1
+fi
 
-# Create a backup of the original sddm.conf file
-[ -f /etc/sddm.conf ] && sudo mv /etc/sddm.conf /etc/sddm.conf.bak
+"${AUR_HELPER}" -S --noconfirm --needed \
+  hornero-greeter \
+  hornero-greeter-media-base
 
-# Create the file /etc/sddm.conf with the following content
-cat <<EOF | sudo tee /etc/sddm.conf
-[Theme]
-Current=aerial
-EOF
+# The previous revision of this script installed the aerial theme; the
+# script owns it, so remove it now that hornero is selected.
+if pacman -Qq sddm-theme-aerial-git >/dev/null 2>&1; then
+    "${AUR_HELPER}" -R --noconfirm sddm-theme-aerial-git
+fi
 
+# One-time backup of the pre-dotfiles config, then migrate the theme pin
+# in place (never a wholesale rewrite: preserve the rest of the file).
+if [[ -f /etc/sddm.conf && ! -f /etc/sddm.conf.bak ]]; then
+    sudo cp /etc/sddm.conf /etc/sddm.conf.bak
+fi
+if [[ -f /etc/sddm.conf ]] && grep -q '^Current=' /etc/sddm.conf; then
+    sudo sed -i 's/^Current=.*/Current=hornero/' /etc/sddm.conf
+fi
+
+if [[ ! -d /usr/share/sddm/themes/hornero ]]; then
+    echo "hornero-greeter install failed: theme missing at /usr/share/sddm/themes/hornero" >&2
+    exit 1
+fi
 {{      end -}}
 
 {{ end -}}

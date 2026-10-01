@@ -1,7 +1,7 @@
 {
   "_name": "Minimal Left",
-  "_description": "Clean left sidebar \u2014 workspaces and power only",
-  "_icon": "\u2728",
+  "_description": "Clean left sidebar — workspaces and power only",
+  "_icon": "✨",
   "_iconMaterial": "view_sidebar",
   "bar": {
     "position": "left",
@@ -35,7 +35,8 @@
       "workspaces": true,
       "volume": true,
       "brightness": true
-    }
+    },
+    "bars": []
   },
   "border": {
     "frameEnabled": false

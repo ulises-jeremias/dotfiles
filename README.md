@@ -176,7 +176,8 @@ dots appearance theme apply vapor-dreams
 🐚 **[Quickshell](https://quickshell.org)** — Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)  
 🐾 **[Kitty](https://sw.kovidgoyal.net/kitty)** — GPU-accelerated terminal emulator  
 🐚 **[Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Feature-rich shell with beautiful prompt  
-🔒 **[Hyprlock](https://github.com/hyprwm/hyprlock)** — Secure lock screen  
+🔒 **[Hyprlock](https://github.com/hyprwm/hyprlock)** — Secure lock screen
+👋 **[Hornero greeter](https://github.com/HorneroOS/greeter)** — SDDM login theme with offline Argentina footage  
 🖼️ **Quickshell wallpaper flow** — Unified wallpaper management via `horneroctl wallpaper set`  
 🎨 **Appearance Themes** — Instant theme switching with Material Design 3 colors
 

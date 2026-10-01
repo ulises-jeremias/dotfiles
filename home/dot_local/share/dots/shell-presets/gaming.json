@@ -34,7 +34,8 @@
       "workspaces": true,
       "volume": true,
       "brightness": false
-    }
+    },
+    "bars": []
   },
   "border": {
     "frameEnabled": false

@@ -1,7 +1,7 @@
 {
   "_name": "Productivity",
-  "_description": "Top bar optimized for focused work \u2014 no distractions",
-  "_icon": "\ud83d\udcbc",
+  "_description": "Top bar optimized for focused work — no distractions",
+  "_icon": "💼",
   "_iconMaterial": "work",
   "bar": {
     "position": "top",
@@ -51,7 +51,8 @@
       "workspaces": true,
       "volume": true,
       "brightness": false
-    }
+    },
+    "bars": []
   },
   "border": {
     "frameEnabled": false

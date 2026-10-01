@@ -1,7 +1,7 @@
 {
   "_name": "Hornero Right",
-  "_description": "Right sidebar \u2014 full featured, mirrored reference shell style",
-  "_icon": "\ud83c\udfe0",
+  "_description": "Right sidebar — full featured, mirrored reference shell style",
+  "_icon": "🏠",
   "_iconMaterial": "dock_to_right",
   "bar": {
     "position": "right",
@@ -61,7 +61,8 @@
       "workspaces": true,
       "volume": true,
       "brightness": true
-    }
+    },
+    "bars": []
   },
   "border": {
     "frameEnabled": true

@@ -47,7 +47,9 @@ assert spec.loader is not None
 spec.loader.exec_module(module)
 
 files = sorted(presets_dir.glob("*.json"))
-assert len(files) == 11, f"expected 11 shell presets, found {len(files)}"
+# Vendored from HorneroOS/shell presets/*.json (the shell repo is the
+# source of truth; re-sync this directory when it gains/loses presets).
+assert len(files) == 13, f"expected 13 shell presets, found {len(files)}"
 presets = {path.stem: json.loads(path.read_text(encoding="utf-8")) for path in files}
 
 framed = {"hornero-left", "hornero-right"}
