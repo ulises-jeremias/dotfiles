@@ -114,7 +114,12 @@ config_source_pos = config_qml.read_text(encoding="utf-8")
 assert "perScreen: bar.perScreen" in config_source_pos
 bar_wrapper = (config_qml.parent.parent / "modules/bar/BarWrapper.qml").read_text(encoding="utf-8")
 exclusions = (config_qml.parent.parent / "modules/drawers/Exclusions.qml").read_text(encoding="utf-8")
-assert 'return style !== "floating"' in bar_config
+# Reserve default lives in BarConfig.styleReserves() (shell #90): strips
+# (attached, inset) and dock reserve; floating/islands overlay.
+assert "function styleReserves(s: string): bool" in bar_config
+for _style in ("attached", "inset", "dock"):
+    assert f'"{_style}"' in bar_config
+assert 'style !== "floating"' not in bar_config
 for field in ("reservedLeft", "reservedTop", "reservedRight", "reservedBottom"):
     assert field in bar_wrapper
     assert f"root.bar.{field}" in exclusions
