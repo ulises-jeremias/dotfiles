@@ -13,7 +13,9 @@
 #    Mask the user units of stand-alone daemons (dunst, mako, swaync) that
 #    otherwise win the name through D-Bus activation (same rule as
 #    HorneroOS/config scripts/materialize.sh). User-authored units are kept.
-#    Revert: rm ~/.config/systemd/user/<daemon>.service
+#    D-Bus-activated daemons are shadowed with user-level no-op service
+#    files too. Revert: rm ~/.config/systemd/user/<daemon>.service and
+#    ~/.local/share/dbus-1/services/<name>.service
 
 set -euo pipefail
 
@@ -41,6 +43,19 @@ for unit in dunst.service mako.service swaync.service; do
     fi
     mkdir -p "$(dirname "${path}")"
     ln -sfn /dev/null "${path}"
+done
+# Daemons that D-Bus-activate without systemd (Arch mako) bypass a masked
+# unit: shadow their D-Bus service files with user-level no-ops.
+DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+for svc in org.knopwob.dunst.service fr.emersion.mako.service org.erikreider.swaync.service; do
+    file="${DATA_HOME}/dbus-1/services/${svc}"
+    if [[ -e "${file}" ]] && ! grep -q '^# hornero: notification daemon shadow' "${file}"; then
+        echo "hornero-desktop-base: keeping user-authored ${file}" >&2
+        continue
+    fi
+    mkdir -p "$(dirname "${file}")"
+    printf '%s\n' '# hornero: notification daemon shadow (the shell owns org.freedesktop.Notifications)' \
+        '[D-BUS Service]' 'Name=org.freedesktop.Notifications' 'Exec=/bin/false' > "${file}"
 done
 systemctl --user daemon-reload 2>/dev/null || true
 # A daemon that already owns the name keeps it until it exits.
