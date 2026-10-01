@@ -60,7 +60,9 @@ done
 systemctl --user daemon-reload 2>/dev/null || true
 # A daemon that already owns the name keeps it until it exits.
 systemctl --user stop dunst.service mako.service swaync.service 2>/dev/null || true
-pkill -x dunst 2>/dev/null || true
+for daemon in dunst mako swaync; do
+    pkill -x "${daemon}" 2>/dev/null || true
+done
 {{      end -}}
 
 {{ end -}}
