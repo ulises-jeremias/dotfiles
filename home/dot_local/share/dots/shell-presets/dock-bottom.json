@@ -74,21 +74,14 @@
               "id": "pinnedApps",
               "enabled": true,
               "options": {
-                "apps": [
-                  "kitty",
-                  "thunar",
-                  "firefox"
-                ]
+                "apps": ["kitty", "thunar", "firefox"]
               }
             },
             {
               "id": "quickActions",
               "enabled": true,
               "options": {
-                "actions": [
-                  "screenshot",
-                  "layoutPicker"
-                ]
+                "actions": ["screenshot", "layoutPicker"]
               }
             }
           ],
