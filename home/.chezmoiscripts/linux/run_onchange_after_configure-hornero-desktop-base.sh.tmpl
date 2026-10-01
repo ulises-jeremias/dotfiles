@@ -1,0 +1,51 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+# HorneroOS desktop base on a dotfiles host (contract C: product files come
+# from HorneroOS repos, dotfiles only wires them in, never mirrors them).
+#
+# 1. Qt platform theme: seed ~/.config/qt6ct/qt6ct.conf from
+#    HorneroOS/config (Papirus-Dark icons, Rubik fonts) when absent, so the
+#    shell, tray and launcher resolve real icons. An existing file is the
+#    user's and is left alone. Offline: skip with a warning.
+# 2. Notifications: the Hornero shell owns org.freedesktop.Notifications.
+#    Mask the user units of stand-alone daemons (dunst, mako, swaync) that
+#    otherwise win the name through D-Bus activation (same rule as
+#    HorneroOS/config scripts/materialize.sh). User-authored units are kept.
+#    Revert: rm ~/.config/systemd/user/<daemon>.service
+
+set -euo pipefail
+
+CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+QT6CT_URL="https://raw.githubusercontent.com/HorneroOS/config/main/desktop/qt6ct/qt6ct.conf"
+
+qt6ct_conf="${CONFIG_HOME}/qt6ct/qt6ct.conf"
+if [[ ! -e "${qt6ct_conf}" ]]; then
+    tmp="$(mktemp)"
+    if curl -fsSL --max-time 20 "${QT6CT_URL}" -o "${tmp}" && grep -q '^icon_theme=' "${tmp}"; then
+        mkdir -p "$(dirname "${qt6ct_conf}")"
+        install -m 0644 "${tmp}" "${qt6ct_conf}"
+        echo "hornero-desktop-base: seeded ${qt6ct_conf} from HorneroOS/config"
+    else
+        echo "hornero-desktop-base: could not fetch qt6ct defaults, skipping" >&2
+    fi
+    rm -f "${tmp}"
+fi
+
+for unit in dunst.service mako.service swaync.service; do
+    path="${CONFIG_HOME}/systemd/user/${unit}"
+    if [[ -e "${path}" && ! -L "${path}" ]]; then
+        echo "hornero-desktop-base: keeping user-authored ${path}" >&2
+        continue
+    fi
+    mkdir -p "$(dirname "${path}")"
+    ln -sfn /dev/null "${path}"
+done
+systemctl --user daemon-reload 2>/dev/null || true
+# A daemon that already owns the name keeps it until it exits.
+systemctl --user stop dunst.service mako.service swaync.service 2>/dev/null || true
+pkill -x dunst 2>/dev/null || true
+{{      end -}}
+
+{{ end -}}

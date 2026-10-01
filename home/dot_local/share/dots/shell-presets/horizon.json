@@ -1,9 +1,8 @@
 {
-  "_name": "Cockpit",
-  "_description": "Two bars: act on top, glance below — the legacy dual bar, rebuilt",
-  "_icon": "🛫",
-  "_iconMaterial": "view_agenda",
-  "_lineage": "Polybar default + Waybar default profiles",
+  "_name": "Horizon",
+  "_description": "One slab carries every control and reading; workspaces rest on a clear line below",
+  "_iconMaterial": "horizontal_split",
+  "_lineage": "Polybar top-only profile with transparent workspace strip",
   "bar": {
     "position": "top",
     "style": "attached",
@@ -36,11 +35,15 @@
         "enabled": true
       },
       {
+        "id": "spacer",
+        "enabled": true
+      },
+      {
         "id": "weather",
         "enabled": true
       },
       {
-        "id": "spacer",
+        "id": "resources",
         "enabled": true
       },
       {
@@ -49,10 +52,6 @@
       },
       {
         "id": "statusIcons",
-        "enabled": true
-      },
-      {
-        "id": "tray",
         "enabled": true
       },
       {
@@ -104,23 +103,23 @@
               "options": {
                 "showDate": true
               }
-            },
-            {
-              "id": "weather",
-              "enabled": true
             }
           ],
           "end": [
+            {
+              "id": "weather",
+              "enabled": true
+            },
+            {
+              "id": "resources",
+              "enabled": true
+            },
             {
               "id": "battery",
               "enabled": true
             },
             {
               "id": "statusIcons",
-              "enabled": true
-            },
-            {
-              "id": "tray",
               "enabled": true
             },
             {
@@ -133,27 +132,22 @@
       {
         "edge": "bottom",
         "style": "attached",
-        "thickness": 32,
+        "backdrop": "clear",
+        "thickness": 26,
         "groups": {
           "start": [
             {
               "id": "workspaces",
-              "enabled": true
+              "enabled": true,
+              "options": {
+                "style": "labels"
+              }
             }
           ],
-          "center": [
-            {
-              "id": "media",
-              "enabled": true
-            }
-          ],
+          "center": [],
           "end": [
             {
               "id": "kbLayout",
-              "enabled": true
-            },
-            {
-              "id": "resources",
               "enabled": true
             }
           ]

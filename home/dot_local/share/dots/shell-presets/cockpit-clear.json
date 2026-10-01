@@ -1,9 +1,8 @@
 {
-  "_name": "Cockpit",
-  "_description": "Two bars: act on top, glance below — the legacy dual bar, rebuilt",
-  "_icon": "🛫",
-  "_iconMaterial": "view_agenda",
-  "_lineage": "Polybar default + Waybar default profiles",
+  "_name": "Cockpit Clear",
+  "_description": "The dual bar with no backdrop: controls and telemetry straight on the wallpaper",
+  "_iconMaterial": "blur_on",
+  "_lineage": "Polybar default (X11, transparent bars)",
   "bar": {
     "position": "top",
     "style": "attached",
@@ -44,10 +43,6 @@
         "enabled": true
       },
       {
-        "id": "battery",
-        "enabled": true
-      },
-      {
         "id": "statusIcons",
         "enabled": true
       },
@@ -63,8 +58,8 @@
     "bars": [
       {
         "edge": "top",
-        "style": "inset",
-        "margin": 8,
+        "style": "attached",
+        "backdrop": "clear",
         "groups": {
           "start": [
             {
@@ -112,10 +107,6 @@
           ],
           "end": [
             {
-              "id": "battery",
-              "enabled": true
-            },
-            {
               "id": "statusIcons",
               "enabled": true
             },
@@ -133,12 +124,16 @@
       {
         "edge": "bottom",
         "style": "attached",
-        "thickness": 32,
+        "backdrop": "clear",
+        "thickness": 28,
         "groups": {
           "start": [
             {
               "id": "workspaces",
-              "enabled": true
+              "enabled": true,
+              "options": {
+                "style": "labels"
+              }
             }
           ],
           "center": [
