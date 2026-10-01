@@ -45,8 +45,11 @@ fi
 if [[ -f /etc/sddm.conf && ! -f /etc/sddm.conf.bak ]]; then
     sudo cp /etc/sddm.conf /etc/sddm.conf.bak
 fi
-if [[ -f /etc/sddm.conf ]] && grep -q '^Current=' /etc/sddm.conf; then
-    sudo sed -i 's/^Current=.*/Current=hornero/' /etc/sddm.conf
+# /etc/sddm.conf wins over conf.d fragments, so this in-place migration
+# (not just the packaged 10-hornero.conf) is what retires the stale pin.
+# Match optional whitespace; restrict the rewrite to the [Theme] section.
+if [[ -f /etc/sddm.conf ]] && grep -qE '^[[:space:]]*Current[[:space:]]*=' /etc/sddm.conf; then
+    sudo sed -i -E '/^[[:space:]]*\[Theme\]/,/^[[:space:]]*\[/ s/^[[:space:]]*Current[[:space:]]*=.*/Current=hornero/' /etc/sddm.conf
 fi
 
 if [[ ! -d /usr/share/sddm/themes/hornero ]]; then

@@ -75,7 +75,11 @@
               "id": "quickActions",
               "enabled": true,
               "options": {
-                "actions": ["screenshot", "layoutPicker", "settings"]
+                "actions": [
+                  "screenshot",
+                  "layoutPicker",
+                  "settings"
+                ]
               }
             },
             {

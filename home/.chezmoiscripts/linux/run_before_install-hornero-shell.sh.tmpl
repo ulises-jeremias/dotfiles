@@ -6,8 +6,10 @@
 # HorneroOS/shell is the sole authority for the shell implementation and
 # ~/.config/quickshell is its runtime checkout. Chezmoi never manages that
 # tree (see home/.chezmoiignore.tmpl); this script owns the git clone and
-# fast-forward updates instead. It never deletes, resets, or stashes:
-# dirty, diverged, or foreign checkouts are left alone with a warning.
+# fast-forward updates instead. It runs on every apply (run_before_): all
+# failure modes below are soft so an offline or customized checkout never
+# aborts the apply. It never deletes, resets, or stashes: dirty, diverged,
+# off-branch, or foreign checkouts are left alone with a warning.
 
 set -euo pipefail
 
@@ -41,7 +43,16 @@ if [[ -n "$(git -C "${SHELL_DIR}" status --porcelain)" ]]; then
     exit 0
 fi
 
-git -C "${SHELL_DIR}" fetch origin "${SHELL_BRANCH}"
+current="$(git -C "${SHELL_DIR}" symbolic-ref --quiet --short HEAD || true)"
+if [[ "${current}" != "${SHELL_BRANCH}" ]]; then
+    echo "hornero-shell: ${SHELL_DIR} is not on ${SHELL_BRANCH} ('${current:-detached}'), leaving it alone" >&2
+    exit 0
+fi
+
+if ! git -C "${SHELL_DIR}" fetch origin "${SHELL_BRANCH}"; then
+    echo "hornero-shell: fetch failed, skipping update" >&2
+    exit 0
+fi
 if ! git -C "${SHELL_DIR}" merge --ff-only "origin/${SHELL_BRANCH}"; then
     echo "hornero-shell: ${SHELL_DIR} has diverged from origin/${SHELL_BRANCH}, leaving it alone" >&2
     exit 0
