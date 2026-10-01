@@ -72,6 +72,12 @@
 {{-   $gitUserEmail = promptStringOnce . "gitUserEmail" "What is the email you use for git" -}}
 {{- end -}}
 
+{{/* Persist the source this config was initialized from, so plain
+     `chezmoi apply`/`status` use the real tree instead of the default
+     (possibly empty) source dir. Self-referential by design: whatever
+     --source init read this template from is recorded back. */}}
+sourceDir = {{ .chezmoi.sourceDir | quote }}
+
 [data]
     docker = {{ $docker }}
     e2e = {{ $e2e }}
