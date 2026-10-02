@@ -14,8 +14,12 @@ new_home="${tmp}/home-new"
 new_dotfiles="${new_home}/.dotfiles"
 branch_home="${tmp}/home-branch"
 branch_dotfiles="${branch_home}/.dotfiles"
+diverged_home="${tmp}/home-diverged"
+diverged_dotfiles="${diverged_home}/.dotfiles"
+foreign_home="${tmp}/home-foreign"
+foreign_dotfiles="${foreign_home}/.dotfiles"
 
-mkdir -p "$seed" "$home" "$new_home" "$branch_home"
+mkdir -p "$seed" "$home" "$new_home" "$branch_home" "$diverged_home" "$foreign_home" "$foreign_dotfiles"
 git init --bare --initial-branch=main "$remote" > /dev/null
 git -C "$seed" init --initial-branch=main > /dev/null
 git -C "$seed" config user.name "Dotfiles sync test"
@@ -75,10 +79,40 @@ test "$(git -C "$branch_dotfiles" branch --show-current)" = "owner-work"
 test "$(git -C "$branch_dotfiles" rev-parse HEAD)" = "$before"
 test ! -e "${branch_home}/install-script-ran"
 
+# A clean checkout with divergent local history must remain untouched.
+git clone --branch main "$remote" "$diverged_dotfiles" > /dev/null 2>&1
+git -C "$diverged_dotfiles" config user.name "Dotfiles sync test"
+git -C "$diverged_dotfiles" config user.email "sync-test@example.invalid"
+printf 'local commit\n' > "${diverged_dotfiles}/local-commit.txt"
+git -C "$diverged_dotfiles" add local-commit.txt
+git -C "$diverged_dotfiles" commit -m "local work" > /dev/null
+before="$(git -C "$diverged_dotfiles" rev-parse HEAD)"
+printf 'third upstream update\n' > "${seed}/third-upstream.txt"
+git -C "$seed" add third-upstream.txt
+git -C "$seed" commit -m "third upstream update"
+git -C "$seed" push origin main > /dev/null
+if HOME="$diverged_home" DOTFILES_REPO="$remote" DOTFILES_DIR="$diverged_dotfiles" "$installer" > /dev/null 2>&1; then
+	echo "expected divergent dotfiles checkout to be preserved and rejected" >&2
+	exit 1
+fi
+test "$(git -C "$diverged_dotfiles" rev-parse HEAD)" = "$before"
+test -f "${diverged_dotfiles}/local-commit.txt"
+test ! -e "${diverged_dotfiles}/third-upstream.txt"
+test ! -e "${diverged_home}/install-script-ran"
+
+# A non-Git path must be refused without replacing its contents.
+printf 'owner data\n' > "${foreign_dotfiles}/keep.txt"
+if HOME="$foreign_home" DOTFILES_REPO="$remote" DOTFILES_DIR="$foreign_dotfiles" "$installer" > /dev/null 2>&1; then
+	echo "expected non-Git dotfiles path to be preserved and rejected" >&2
+	exit 1
+fi
+test "$(cat "${foreign_dotfiles}/keep.txt")" = "owner data"
+test ! -e "${foreign_home}/install-script-ran"
+
 # A new machine without ~/.dotfiles must clone the configured branch.
 HOME="$new_home" DOTFILES_REPO="$remote" DOTFILES_DIR="$new_dotfiles" "$installer" > /dev/null
 test "$(git -C "$new_dotfiles" rev-parse HEAD)" = "$(git -C "$seed" rev-parse HEAD)"
-test -f "${new_dotfiles}/second-upstream.txt"
+test -f "${new_dotfiles}/third-upstream.txt"
 test "$(cat "${new_home}/install-script-ran")" = "ran"
 
 echo "install_dotfiles sync tests passed"
