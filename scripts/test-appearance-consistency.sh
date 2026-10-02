@@ -153,7 +153,16 @@ PY
 		fi
 		wallpaper_dir=$("$PYTHON_BIN" -c 'import json,sys; print(json.load(open(sys.argv[1]))["wallpaperDir"])' "$theme_json")
 		wallpaper_name=$("$PYTHON_BIN" -c 'import json,sys; print(json.load(open(sys.argv[1]))["defaultWallpaper"])' "$theme_json")
-		if [[ -f ${ROOT}/home/dot_local/share/dots/wallpapers/$wallpaper_dir/$wallpaper_name ]]; then
+		wallpaper_source="${ROOT}/home/dot_local/share/dots/wallpapers/$wallpaper_dir/$wallpaper_name"
+		wallpaper_symlink="$(dirname "$wallpaper_source")/symlink_$(basename "$wallpaper_source")"
+		wallpaper_available=false
+		if [[ -f $wallpaper_source ]]; then
+			wallpaper_available=true
+		elif [[ -f $wallpaper_symlink ]]; then
+			wallpaper_target="$(dirname "$wallpaper_symlink")/$(<"$wallpaper_symlink")"
+			[[ -f $wallpaper_target ]] && wallpaper_available=true
+		fi
+		if $wallpaper_available; then
 			pass "flagship wallpaper available: $flagship"
 		else
 			fail "flagship wallpaper unavailable in dotfiles: $flagship"
