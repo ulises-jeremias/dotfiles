@@ -41,6 +41,9 @@ jobs:
       - name: Validate script standards
         run: ./scripts/validate-dots-scripts.sh
 
+      - name: Verify dotfiles updates preserve local work
+        run: ./tests/test_install_dotfiles_sync.sh
+
       - name: Smoke test chezmoi templates
         shell: bash
         run: |
