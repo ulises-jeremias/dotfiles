@@ -53,7 +53,42 @@
       "volume": true,
       "brightness": false
     },
-    "bars": []
+    "bars": [
+      {
+        "edge": "top",
+        "style": "floating",
+        "margin": 16,
+        "reserve": true,
+        "groups": {
+          "start": [
+            {
+              "id": "logo",
+              "enabled": true
+            },
+            {
+              "id": "workspaces",
+              "enabled": true
+            }
+          ],
+          "center": [
+            {
+              "id": "clock",
+              "enabled": true
+            }
+          ],
+          "end": [
+            {
+              "id": "statusIcons",
+              "enabled": true
+            },
+            {
+              "id": "power",
+              "enabled": true
+            }
+          ]
+        }
+      }
+    ]
   },
   "border": {
     "frameEnabled": false

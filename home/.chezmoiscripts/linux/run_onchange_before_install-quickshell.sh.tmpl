@@ -22,6 +22,14 @@ yay -S --noconfirm --needed \
   ttf-rubik-vf \
   ttf-cascadia-code-nerd
 
+# Icon base + Qt platform theme the shell renders app/tray icons with
+# (HorneroOS/config docs/ICON-BASE.md: Papirus family for every flagship;
+# QT_QPA_PLATFORMTHEME=qt6ct). Without them icons fall back to hicolor
+# and most tray/launcher icons render as "image-missing".
+yay -S --noconfirm --needed \
+  papirus-icon-theme \
+  qt6ct
+
 # Runtime dependencies (some may already exist)
 yay -S --noconfirm --needed \
   brightnessctl \
