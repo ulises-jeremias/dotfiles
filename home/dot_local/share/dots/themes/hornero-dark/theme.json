@@ -8,7 +8,15 @@
   "version": "1.0.0",
   "tokensVersion": "1.0.0",
   "description": "Flagship Hornero dark theme: ember terracotta, warm clay and sunset amber on a toasted-adobe night surface",
-  "tags": ["hornero", "flagship", "terracotta", "clay", "sunset", "warm", "dark"],
+  "tags": [
+    "hornero",
+    "flagship",
+    "terracotta",
+    "clay",
+    "sunset",
+    "warm",
+    "dark"
+  ],
   "darkMode": true,
   "schemeType": "vibrant",
   "gtkTheme": "Hornero-Dark",

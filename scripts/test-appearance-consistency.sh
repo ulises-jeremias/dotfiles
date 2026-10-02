@@ -159,7 +159,7 @@ PY
 		if [[ -f $wallpaper_source ]]; then
 			wallpaper_available=true
 		elif [[ -f $wallpaper_symlink ]]; then
-			wallpaper_target="$(dirname "$wallpaper_symlink")/$(<"$wallpaper_symlink")"
+			wallpaper_target="$(dirname "$wallpaper_symlink")/$(< "$wallpaper_symlink")"
 			[[ -f $wallpaper_target ]] && wallpaper_available=true
 		fi
 		if $wallpaper_available; then

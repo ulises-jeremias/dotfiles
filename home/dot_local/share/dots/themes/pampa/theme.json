@@ -8,7 +8,16 @@
   "version": "1.0.0",
   "tokensVersion": "1.0.0",
   "description": "Hornero Pampa theme: deep grassland greens, olive and earth with warm cream and muted gold — the humid pampa night, not a recolored flagship",
-  "tags": ["hornero", "pampa", "green", "olive", "earth", "cream", "gold", "dark"],
+  "tags": [
+    "hornero",
+    "pampa",
+    "green",
+    "olive",
+    "earth",
+    "cream",
+    "gold",
+    "dark"
+  ],
   "darkMode": true,
   "schemeType": "tonal-spot",
   "gtkTheme": "Hornero-Pampa",
