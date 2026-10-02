@@ -1,10 +1,10 @@
 # Dots Scripts Utility Guide
 
-`horneroctl` is the unified entrypoint for Hornero scripts. The former
-`dots` dispatcher and all `dots-*` wrappers are retired except
-`dots-settings-gui` (the `config gui` backend) and `dots-snappy-switcher`
-(the switcher theme backend) — see [docs/Horneroctl.md](../Horneroctl.md)
-for the full migration map.
+`horneroctl` is the unified entrypoint for Hornero system operations. The
+former `dots` dispatcher and most `dots-*` wrappers are retired; Settings
+uses Hornero Shell IPC, and the external `dots-snappy-switcher` adapter is
+still used for switcher theme changes. See [docs/Horneroctl.md](../Horneroctl.md)
+for the migration map.
 
 ## Usage
 
@@ -40,17 +40,19 @@ horneroctl shell ipc -- call drawers toggle session
 
 ### settings-gui
 
-- Quickshell control-center entrypoint
-- Starts Quickshell when needed, then toggles `utilities`
+- Opens a Control Center destination through the running Hornero Shell.
+- Use `--pane` for a direct destination; the Shell reports if the desktop
+  session is unavailable.
 
 ```bash
-dots settings-gui
+horneroctl config gui
+horneroctl config gui --pane appearance
 ```
 
 ### keyboard-help
 
 - Readout: `horneroctl hardware keyboard keys [--category=CAT] [--search=TERM]`
-- Under Quickshell (no bypass): settings-gui system menu
+- With Hornero Shell running: opens Hornero System Settings through IPC
 
 ```bash
 horneroctl hardware keyboard keys
@@ -100,6 +102,6 @@ dots appearance doctor
 
 - Legacy Waybar/EWW/Rofi/JGMenu integration was intentionally removed.
 - `dots appearance theme` remains available as a thin alias; `dots appearance` is the canonical contract.
-- Retained `dots-*` scripts (`dots-settings-gui`, `dots-snappy-switcher`)
-  remain modular and can be called directly; everything else runs through
-  `horneroctl`.
+- `hornero-settings-shim` is an opt-in compatibility adapter; it is no
+  longer selected by default. `dots-snappy-switcher` remains the external
+  switcher theme adapter. Other supported operations run through `horneroctl`.
