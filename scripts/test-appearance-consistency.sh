@@ -133,6 +133,34 @@ else
 	fail "no theme packs"
 fi
 
+if [[ -z $PYTHON_BIN ]]; then
+	skip "semantic flagship/wallpaper checks (python missing)"
+else
+	for flagship in hornero-dark hornero-light pampa; do
+		theme_json="$THEMES_SRC/$flagship/theme.json"
+		if [[ -f $theme_json ]] && "$PYTHON_BIN" - "$theme_json" << 'PY'; then
+import json, sys
+theme = json.load(open(sys.argv[1], encoding="utf-8"))
+assert theme.get("family") == "hornero"
+assert theme.get("mode") in ("dark", "light")
+assert theme.get("version")
+assert theme.get("tokensVersion")
+assert theme.get("palette") and theme.get("components")
+PY
+			pass "semantic flagship metadata: $flagship"
+		else
+			fail "missing semantic flagship metadata: $flagship"
+		fi
+		wallpaper_dir=$("$PYTHON_BIN" -c 'import json,sys; print(json.load(open(sys.argv[1]))["wallpaperDir"])' "$theme_json")
+		wallpaper_name=$("$PYTHON_BIN" -c 'import json,sys; print(json.load(open(sys.argv[1]))["defaultWallpaper"])' "$theme_json")
+		if [[ -f ${ROOT}/home/dot_local/share/dots/wallpapers/$wallpaper_dir/$wallpaper_name ]]; then
+			pass "flagship wallpaper available: $flagship"
+		else
+			fail "flagship wallpaper unavailable in dotfiles: $flagship"
+		fi
+	done
+fi
+
 if [[ -f $LIST_THEMES ]]; then
 	if [[ -z $PYTHON_BIN ]]; then
 		skip "list-themes.py check (python not available)"

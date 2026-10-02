@@ -1,0 +1,95 @@
+{
+  "$schema": "../tokens.schema.json",
+  "schemaVersion": 1,
+  "id": "pampa",
+  "name": "Pampa",
+  "family": "hornero",
+  "mode": "dark",
+  "version": "1.0.0",
+  "tokensVersion": "1.0.0",
+  "description": "Hornero Pampa theme: deep grassland greens, olive and earth with warm cream and muted gold — the humid pampa night, not a recolored flagship",
+  "tags": ["hornero", "pampa", "green", "olive", "earth", "cream", "gold", "dark"],
+  "darkMode": true,
+  "schemeType": "tonal-spot",
+  "gtkTheme": "Hornero-Pampa",
+  "iconTheme": "Papirus-Dark",
+  "gtkPreferDark": true,
+  "defaultWallpaper": "pampa-01.png",
+  "wallpaperDir": "pampa",
+  "palette": {
+    "background": "#141B13",
+    "surface": "#1D271C",
+    "surfaceVariant": "#2B3A28",
+    "onSurfaceVariant": "#D9CBA7",
+    "text": "#F4ECDA",
+    "textMuted": "#B5A87F",
+    "primary": "#93B25E",
+    "onPrimary": "#141B0D",
+    "secondary": "#B3A24A",
+    "onSecondary": "#1A1508",
+    "accent": "#D9A441",
+    "onAccent": "#1A1408",
+    "border": "#4C5C40",
+    "error": "#E08A7E",
+    "onError": "#1C100D",
+    "success": "#A4C47A",
+    "onSuccess": "#141B0D"
+  },
+  "components": {
+    "window": {
+      "description": "Application window body text",
+      "background": "#141B13",
+      "foreground": "#F4ECDA"
+    },
+    "panel": {
+      "description": "Panels, sidebars and header bars",
+      "background": "#1D271C",
+      "foreground": "#F4ECDA"
+    },
+    "card": {
+      "description": "Raised cards and popovers",
+      "background": "#2B3A28",
+      "foreground": "#D9CBA7"
+    },
+    "buttonPrimary": {
+      "description": "Primary action (leaf green)",
+      "background": "#93B25E",
+      "foreground": "#141B0D"
+    },
+    "buttonSecondary": {
+      "description": "Secondary action (olive)",
+      "background": "#B3A24A",
+      "foreground": "#1A1508"
+    },
+    "accentBadge": {
+      "description": "Highlights, badges and muted-gold accents",
+      "background": "#D9A441",
+      "foreground": "#1A1408"
+    },
+    "input": {
+      "description": "Text entries and search fields",
+      "background": "#141B13",
+      "foreground": "#F4ECDA"
+    },
+    "mutedText": {
+      "description": "Secondary text on surfaces",
+      "background": "#1D271C",
+      "foreground": "#B5A87F"
+    },
+    "tooltip": {
+      "description": "Tooltips and scrim overlays",
+      "background": "#0C110B",
+      "foreground": "#F4ECDA"
+    },
+    "errorBanner": {
+      "description": "Errors and destructive actions",
+      "background": "#E08A7E",
+      "foreground": "#1C100D"
+    },
+    "successBanner": {
+      "description": "Confirmations and success states",
+      "background": "#A4C47A",
+      "foreground": "#141B0D"
+    }
+  }
+}
