@@ -1,9 +1,9 @@
 # horneroctl Dependency
 
 > **Required dependency** for the Hornero scripts.
-> Migration complete (#294–#305): all wrappers were remapped to native
-> verbs and deleted; only `dots-settings-gui` and `dots-snappy-switcher`
-> stay as required native backends (see table below).
+> Migration complete (#294–#305): CLI operations use Hornero-native
+> capabilities. Settings opens through Hornero Shell IPC; only the external
+> switcher adapter remains as a required backend (see table below).
 
 ## What it is
 
@@ -65,5 +65,4 @@ Run `horneroctl --help` for the live registry.
 
 | Wrapper                | Why it stays                                                              |
 |------------------------|---------------------------------------------------------------------------|
-| `dots-settings-gui`    | Required backend: `horneroctl config gui` delegates to it                 |
 | `dots-snappy-switcher` | Required backend: `horneroctl apps switcher apply-theme*` delegates to it |

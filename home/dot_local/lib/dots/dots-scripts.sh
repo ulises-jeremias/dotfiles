@@ -38,7 +38,7 @@ scripts_list=(
 	"📁 yazi: RETIRED — use: horneroctl apps terminal-file [--last-dir]"
 	"📸 screenshooter: RETIRED — use: horneroctl capture screenshot [--fullscreen|--region --yes]"
 	"🔐 security-audit: RETIRED — use: horneroctl apps audit [--permissions|--secrets|--system] [--fix|--report|--json] [--yes]"
-	"settings-gui: RETIRED — use: horneroctl config gui (backend: hornero-settings-shim via HORNERO_SETTINGS_GUI_BIN)"
+	"settings-gui: RETIRED — use: horneroctl config gui (Hornero Shell IPC)"
 	"🎨 smart-colors: RETIRED — use: horneroctl appearance colors generate|status [--yes]"
 	"snappy-switcher: RETIRED — use: horneroctl apps switcher next|prev --yes"
 	"🎨 theme-selector: RETIRED — use: horneroctl config gui --pane appearance"
