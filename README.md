@@ -157,18 +157,23 @@ Our **game-changing smart colors technology** automatically analyzes your color 
 
 > 📖 [Learn more about Smart Colors →](https://github.com/ulises-jeremias/dotfiles/wiki/Smart-Colors-System)
 
-### 🎨 Appearance Themes & Themes
+### 🎨 Hornero themes
 
-Choose from **12 stunning themes** organized by aesthetic: Cyberpunk, Cozy,
-Vaporwave, Nature, and Cosmic. Run `dots appearance theme list` for the
-full, current list:
+The catalogue combines three semantic Hornero themes — **Hornero Dark**,
+**Hornero Light**, and **Pampa** — with twelve wallpaper-led appearance
+recipes spanning natural, minimal, retro, and futuristic looks. The semantic
+themes carry a complete accessible palette; recipes generate desktop colors
+from their wallpaper. Both use the same simple theme picker and apply flow.
+
+`hornero-config` provides the canonical system catalogue and GTK packs. The
+dotfiles copy remains a user-level fallback for wallpaper and legacy tools.
 
 ```bash
-dots appearance theme list              # See all available themes
-dots appearance theme apply vapor-dreams
+horneroctl appearance theme list
+horneroctl appearance theme apply pampa --yes
 ```
 
-> 📖 [Explore all themes →](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management)
+> 📖 [Explore the theme gallery →](docs/wiki/Theme-Gallery.md)
 
 ### 🔧 Core Stack
 

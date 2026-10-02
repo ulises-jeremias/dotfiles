@@ -279,9 +279,15 @@ Want to share your beautiful desktop theme? Here's how:
 
 ### Theme Pack Structure
 
-Create a theme pack under `home/dot_local/share/dots/themes/<id>/` with `theme.json`
-and place wallpapers in `home/dot_local/share/dots/wallpapers/<id>/`. Theme packs are
-apply-once recipes — they must not introduce a sticky current-theme state.
+Official Hornero themes are owned by
+[HorneroOS/config](https://github.com/HorneroOS/config/tree/main/profiles/themes).
+They use one of two pack models: semantic flagship themes define accessible
+palette and component tokens, while appearance recipes describe a wallpaper-led
+look. The dotfiles copies under `home/dot_local/share/dots/themes/` are a
+compatibility fallback synced from HorneroOS/config; do not edit them as a second
+source of truth. User-created packs belong under
+`~/.local/share/hornero/themes/<id>/theme.json`, with wallpapers under
+`~/.local/share/hornero/wallpapers/<wallpaperDir>/`.
 
 ## 🧪 Testing Your Changes
 

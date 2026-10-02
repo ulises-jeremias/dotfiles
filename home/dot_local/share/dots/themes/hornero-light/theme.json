@@ -1,19 +1,103 @@
 {
+  "$schema": "../tokens.schema.json",
   "schemaVersion": 1,
   "id": "hornero-light",
   "name": "Hornero Light",
-  "description": "Flagship HorneroOS light wallpaper with soft daytime desktop",
+  "family": "hornero",
+  "mode": "light",
+  "version": "1.0.0",
+  "tokensVersion": "1.0.0",
+  "description": "Flagship Hornero light theme: deep terracotta, fired clay and sunset amber on warm morning paper — a first-class light ramp, not an inverted dark",
   "tags": [
     "hornero",
     "flagship",
+    "terracotta",
+    "clay",
+    "sunset",
+    "warm",
     "light"
   ],
   "darkMode": false,
-  "schemeType": "tonal-spot",
-  "gtkTheme": "Orchis-Light-Compact",
+  "schemeType": "vibrant",
+  "gtkTheme": "Hornero-Light",
   "iconTheme": "Papirus",
-  "defaultWallpaper": "hornero-os-light.png",
-  "wallpaperDir": "hornero",
   "gtkPreferDark": false,
-  "colorOnly": true
+  "defaultWallpaper": "hornero-light-01.png",
+  "wallpaperDir": "hornero-light",
+  "palette": {
+    "background": "#FAF1E3",
+    "surface": "#FFFDF7",
+    "surfaceVariant": "#F1E3CE",
+    "onSurfaceVariant": "#4E3423",
+    "text": "#2B1A11",
+    "textMuted": "#6E5140",
+    "primary": "#B24827",
+    "onPrimary": "#FFFFFF",
+    "secondary": "#7C4A2C",
+    "onSecondary": "#FFFFFF",
+    "accent": "#96590A",
+    "onAccent": "#FFFFFF",
+    "border": "#D9C2A6",
+    "error": "#B3261E",
+    "onError": "#FFFFFF",
+    "success": "#3E6B2F",
+    "onSuccess": "#FFFFFF"
+  },
+  "components": {
+    "window": {
+      "description": "Application window body text",
+      "background": "#FAF1E3",
+      "foreground": "#2B1A11"
+    },
+    "panel": {
+      "description": "Panels, sidebars and header bars",
+      "background": "#FFFDF7",
+      "foreground": "#2B1A11"
+    },
+    "card": {
+      "description": "Raised cards and popovers",
+      "background": "#F1E3CE",
+      "foreground": "#4E3423"
+    },
+    "buttonPrimary": {
+      "description": "Primary action (deep terracotta)",
+      "background": "#B24827",
+      "foreground": "#FFFFFF"
+    },
+    "buttonSecondary": {
+      "description": "Secondary action (fired clay)",
+      "background": "#7C4A2C",
+      "foreground": "#FFFFFF"
+    },
+    "accentBadge": {
+      "description": "Highlights, badges and sunset accents",
+      "background": "#96590A",
+      "foreground": "#FFFFFF"
+    },
+    "input": {
+      "description": "Text entries and search fields",
+      "background": "#FFFDF7",
+      "foreground": "#2B1A11"
+    },
+    "mutedText": {
+      "description": "Secondary text on surfaces",
+      "background": "#FFFDF7",
+      "foreground": "#6E5140"
+    },
+    "tooltip": {
+      "description": "Tooltips and scrim overlays",
+      "background": "#2B1A11",
+      "foreground": "#FAF1E3"
+    },
+    "errorBanner": {
+      "description": "Errors and destructive actions",
+      "background": "#B3261E",
+      "foreground": "#FFFFFF"
+    },
+    "successBanner": {
+      "description": "Confirmations and success states",
+      "background": "#3E6B2F",
+      "foreground": "#FFFFFF"
+    }
+  }
 }
