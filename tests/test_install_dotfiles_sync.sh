@@ -18,8 +18,10 @@ diverged_home="${tmp}/home-diverged"
 diverged_dotfiles="${diverged_home}/.dotfiles"
 foreign_home="${tmp}/home-foreign"
 foreign_dotfiles="${foreign_home}/.dotfiles"
+nested_home="${tmp}/home-nested"
+nested_dotfiles="${nested_home}/.dotfiles"
 
-mkdir -p "$seed" "$home" "$new_home" "$branch_home" "$diverged_home" "$foreign_home" "$foreign_dotfiles"
+mkdir -p "$seed" "$home" "$new_home" "$branch_home" "$diverged_home" "$foreign_home" "$foreign_dotfiles" "$nested_home"
 git init --bare --initial-branch=main "$remote" > /dev/null
 git -C "$seed" init --initial-branch=main > /dev/null
 git -C "$seed" config user.name "Dotfiles sync test"
@@ -108,6 +110,23 @@ if HOME="$foreign_home" DOTFILES_REPO="$remote" DOTFILES_DIR="$foreign_dotfiles"
 fi
 test "$(cat "${foreign_dotfiles}/keep.txt")" = "owner data"
 test ! -e "${foreign_home}/install-script-ran"
+
+# A nested path inside another Git repository must not update the parent.
+git -C "$nested_home" init --initial-branch=main > /dev/null
+git -C "$nested_home" config user.name "Dotfiles sync test"
+git -C "$nested_home" config user.email "sync-test@example.invalid"
+mkdir -p "$nested_dotfiles"
+printf 'owner data\n' > "${nested_dotfiles}/keep.txt"
+git -C "$nested_home" add .dotfiles/keep.txt
+git -C "$nested_home" commit -m "owner repo" > /dev/null
+before="$(git -C "$nested_home" rev-parse HEAD)"
+if HOME="$nested_home" DOTFILES_REPO="$remote" DOTFILES_DIR="$nested_dotfiles" "$installer" > /dev/null 2>&1; then
+	echo "expected nested dotfiles path to be preserved and rejected" >&2
+	exit 1
+fi
+test "$(git -C "$nested_home" rev-parse HEAD)" = "$before"
+test "$(cat "${nested_dotfiles}/keep.txt")" = "owner data"
+test ! -e "${nested_home}/install-script-ran"
 
 # A new machine without ~/.dotfiles must clone the configured branch.
 HOME="$new_home" DOTFILES_REPO="$remote" DOTFILES_DIR="$new_dotfiles" "$installer" > /dev/null

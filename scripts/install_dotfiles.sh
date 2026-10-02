@@ -58,6 +58,11 @@ update_dotfiles_fast_forward() {
 		error "'${path}' exists but is not a Git repository; it was left untouched."
 	fi
 
+	git_root=$(git -C "$path" rev-parse --show-toplevel)
+	if [ "$git_root" != "$path" ]; then
+		error "'${path}' is inside another Git repository ('${git_root}'); it was left untouched."
+	fi
+
 	current_branch=$(git -C "$path" symbolic-ref --quiet --short HEAD || true)
 	if [ "$current_branch" != "$branch" ]; then
 		error "'${path}' is on '${current_branch:-detached HEAD}', not '${branch}'. No checkout or cleanup was performed."
@@ -74,7 +79,7 @@ update_dotfiles_fast_forward() {
 	if ! git -C "$path" merge --ff-only FETCH_HEAD; then
 		error "'${path}' has diverged from '${remote}/${branch}'. Reconcile it manually; no history was rewritten."
 	fi
-	unset path remote branch current_branch
+	unset path remote branch git_root current_branch
 }
 
 DOTFILES_REPO_HOST=${DOTFILES_REPO_HOST:-"https://github.com"}
