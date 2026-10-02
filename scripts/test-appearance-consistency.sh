@@ -150,6 +150,7 @@ PY
 			pass "semantic flagship metadata: $flagship"
 		else
 			fail "missing semantic flagship metadata: $flagship"
+			continue
 		fi
 		wallpaper_dir=$("$PYTHON_BIN" -c 'import json,sys; print(json.load(open(sys.argv[1]))["wallpaperDir"])' "$theme_json")
 		wallpaper_name=$("$PYTHON_BIN" -c 'import json,sys; print(json.load(open(sys.argv[1]))["defaultWallpaper"])' "$theme_json")
