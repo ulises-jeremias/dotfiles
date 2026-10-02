@@ -49,31 +49,39 @@ sudo() {
   fi
 }
 
-git_clean() {
+update_dotfiles_fast_forward() {
   path=$(realpath "$1")
   remote="$2"
   branch="$3"
 
-  log_task "Cleaning '${path}' with '${remote}' at branch '${branch}'"
-  git="git -C ${path}"
-  # Ensure that the remote is set to the correct URL
-  if ${git} remote | grep -q "^origin$"; then
-    ${git} remote set-url origin "${remote}"
-  else
-    ${git} remote add origin "${remote}"
+  if ! git -C "$path" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    error "'${path}' exists but is not a Git repository; it was left untouched."
   fi
-  ${git} checkout -B "${branch}"
-  ${git} fetch origin "${branch}"
-  ${git} reset --hard FETCH_HEAD
-  ${git} clean -fdx
-  unset path remote branch git
+
+  current_branch=$(git -C "$path" symbolic-ref --quiet --short HEAD || true)
+  if [ "$current_branch" != "$branch" ]; then
+    error "'${path}' is on '${current_branch:-detached HEAD}', not '${branch}'. No checkout or cleanup was performed."
+  fi
+
+  if [ -n "$(git -C "$path" status --porcelain)" ]; then
+    error "'${path}' has local changes. Commit or back them up before updating; no files were changed."
+  fi
+
+  log_task "Updating '${path}' from '${remote}' with a fast-forward to '${branch}'"
+  if ! git -C "$path" fetch "$remote" "$branch"; then
+    error "Could not fetch '${branch}' from '${remote}'; '${path}' was left unchanged."
+  fi
+  if ! git -C "$path" merge --ff-only FETCH_HEAD; then
+    error "'${path}' has diverged from '${remote}/${branch}'. Reconcile it manually; no history was rewritten."
+  fi
+  unset path remote branch current_branch
 }
 
 DOTFILES_REPO_HOST=${DOTFILES_REPO_HOST:-"https://github.com"}
 DOTFILES_USER=${DOTFILES_USER:-"ulises-jeremias"}
-DOTFILES_REPO="${DOTFILES_REPO_HOST}/${DOTFILES_USER}/dotfiles"
+DOTFILES_REPO=${DOTFILES_REPO:-"${DOTFILES_REPO_HOST}/${DOTFILES_USER}/dotfiles"}
 DOTFILES_BRANCH=${DOTFILES_BRANCH:-"main"}
-DOTFILES_DIR="${HOME}/.dotfiles"
+DOTFILES_DIR=${DOTFILES_DIR:-"${HOME}/.dotfiles"}
 
 if ! command -v git >/dev/null 2>&1; then
   error "Git is not installed"
@@ -84,7 +92,7 @@ if ! command -v horneroctl >/dev/null 2>&1; then
 fi
 
 if [ -d "${DOTFILES_DIR}" ]; then
-  git_clean "${DOTFILES_DIR}" "${DOTFILES_REPO}" "${DOTFILES_BRANCH}"
+  update_dotfiles_fast_forward "${DOTFILES_DIR}" "${DOTFILES_REPO}" "${DOTFILES_BRANCH}"
 else
   log_task "Cloning '${DOTFILES_REPO}' at branch '${DOTFILES_BRANCH}' to '${DOTFILES_DIR}'"
   git clone --branch "${DOTFILES_BRANCH}" "${DOTFILES_REPO}" "${DOTFILES_DIR}"
