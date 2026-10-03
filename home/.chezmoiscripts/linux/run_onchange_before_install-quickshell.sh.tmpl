@@ -13,6 +13,15 @@ yay -S --noconfirm --needed \
   quickshell-git \
   hornero-config
 
+# This source tree no longer vendors layout presets. The package must provide
+# the system catalogue before chezmoi removes the historical dotfiles copy.
+readonly min_hornero_config_version="0.2.3-1"
+installed_hornero_config_version="$(pacman -Q hornero-config | awk '{print $2}')"
+if (( $(vercmp "$installed_hornero_config_version" "$min_hornero_config_version") < 0 )); then
+  echo "hornero-config ${min_hornero_config_version} or newer is required for the system layout catalogue (found ${installed_hornero_config_version})" >&2
+  exit 1
+fi
+
 # Material Design 3 color generation
 yay -S --noconfirm --needed \
   python-materialyoucolor
