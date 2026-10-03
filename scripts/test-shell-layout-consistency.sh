@@ -1,161 +1,38 @@
 #!/usr/bin/env bash
-# Shell layout preset and geometry contract checks.
+# Smoke-test the installed Hornero layout catalogue through its public CLI.
+# Preset data and validation belong to HorneroOS/config, shell and horneroctl;
+# this personal dotfiles repository intentionally carries no second catalogue.
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-
-PYTHON_BIN=""
-if command -v python3 > /dev/null 2>&1; then
-	PYTHON_BIN="$(command -v python3)"
-elif command -v python > /dev/null 2>&1; then
-	PYTHON_BIN="$(command -v python)"
-fi
-
-if [[ -z $PYTHON_BIN ]]; then
-	echo "  SKIP  test-shell-layout-consistency.sh (python not available)"
+if ! command -v horneroctl > /dev/null 2>&1; then
+	echo "  SKIP  test-shell-layout-consistency.sh (horneroctl is not installed)"
 	exit 0
 fi
 
-# Contract C (hornero#81): the shell implementation lives in HorneroOS/shell
-# and runs from the installed tree; dotfiles keeps no mirror.
-SHELL_DIR="${HORNERO_SHELL_DIR:-$HOME/.config/quickshell}"
-if [[ ! -f $SHELL_DIR/config/Config.qml ]]; then
-	echo "  SKIP  test-shell-layout-consistency.sh (no installed Hornero shell)"
-	exit 0
-fi
-
-PYTHONDONTWRITEBYTECODE=1 "$PYTHON_BIN" - \
-	"${ROOT}/home/dot_local/lib/dots/apply-shell-preset.py" \
-	"${ROOT}/home/dot_local/share/dots/shell-presets" \
-	"$SHELL_DIR/config/Config.qml" << 'PY'
-import importlib.util
+output="$(horneroctl shell preset list --full --json)"
+python3 -c '
 import json
-import math
-import re
 import sys
-import tempfile
-from pathlib import Path
 
-merger_path = Path(sys.argv[1])
-presets_dir = Path(sys.argv[2])
-config_qml = Path(sys.argv[3])
+try:
+    response = json.loads(sys.stdin.read())
+    if not response.get("ok"):
+        raise ValueError(response.get("error") or "horneroctl returned an error")
+    presets = json.loads(response["message"])
+except (KeyError, TypeError, json.JSONDecodeError, ValueError) as error:
+    raise SystemExit(f"invalid horneroctl preset response: {error}")
 
-spec = importlib.util.spec_from_file_location("shell_preset_merger", merger_path)
-module = importlib.util.module_from_spec(spec)
-assert spec.loader is not None
-spec.loader.exec_module(module)
+if not isinstance(presets, list) or not presets:
+    raise SystemExit("Hornero returned an empty layout catalogue")
 
-files = sorted(presets_dir.glob("*.json"))
-# Vendored from HorneroOS/shell presets/*.json (the shell repo is the
-# source of truth; re-sync this directory when it gains/loses presets).
-assert len(files) == 15, f"expected 15 shell presets, found {len(files)}"
-presets = {path.stem: json.loads(path.read_text(encoding="utf-8")) for path in files}
+names = [preset.get("name") for preset in presets]
+if any(not isinstance(name, str) or not name for name in names):
+    raise SystemExit("Hornero returned a layout without a valid name")
+if len(names) != len(set(names)):
+    raise SystemExit("Hornero returned duplicate layout names")
+if any(not isinstance(preset.get("bars"), list) for preset in presets):
+    raise SystemExit("Hornero returned a layout without resolved bar topology")
 
-framed = {"hornero-left", "hornero-right"}
-for name, preset in presets.items():
-    module.validate_preset(preset, presets_dir / f"{name}.json")
-    expected_frame = name in framed
-    actual_frame = preset["border"]["frameEnabled"]
-    assert actual_frame is expected_frame, f"{name}: frameEnabled must be {expected_frame}"
-
-seed = {
-    "unrelated": {"keep": True},
-    "bar": {"sizes": {"innerWidth": 999}, "floatingMargin": 999},
-    "appearance": {"transparency": {"enabled": True, "base": 0.1}},
-}
-for first_name, first in presets.items():
-    first_result = module.apply_preset(seed, first, presets_dir / f"{first_name}.json")
-    for second_name, second in presets.items():
-        chained = module.apply_preset(first_result, second, presets_dir / f"{second_name}.json")
-        direct = module.apply_preset(seed, second, presets_dir / f"{second_name}.json")
-        assert chained == direct, f"preset leak: {first_name} -> {second_name}"
-
-legacy = {
-    "_name": "Legacy custom preset",
-    "bar": {"entries": [{"id": "clock", "enabled": True}]},
-}
-legacy_result = module.apply_preset(seed, legacy, Path("legacy.json"))
-assert legacy_result["bar"]["position"] == "left"
-assert legacy_result["bar"]["style"] == "attached"
-assert legacy_result["border"]["frameEnabled"] is True
-
-invalid = [
-    {"bar": {"floatingMargin": True}},
-    {"bar": {"sizes": {"innerWidth": -1}}},
-    {"appearance": {"rounding": {"scale": math.nan}}},
-    {"appearance": {"padding": {"scale": math.inf}}},
-]
-for override in invalid:
-    candidate = module.deep_merge(presets["hornero-left"], override)
-    try:
-        module.validate_preset(candidate, Path("invalid.json"))
-    except ValueError:
-        pass
-    else:
-        raise AssertionError(f"invalid preset accepted: {override}")
-
-with tempfile.TemporaryDirectory() as temporary:
-    directory = Path(temporary)
-    config_path = directory / "shell.json"
-    marker_path = directory / "current-preset"
-    preset_path = directory / "preset.json"
-    config_path.write_text(json.dumps(seed), encoding="utf-8")
-    preset_path.write_text(json.dumps(presets["dock-bottom"]), encoding="utf-8")
-    module.apply_preset_files(config_path, preset_path, marker_path, "dock-bottom")
-    written = json.loads(config_path.read_text(encoding="utf-8"))
-    assert written["bar"]["style"] == "dock"
-    assert marker_path.read_text(encoding="utf-8") == "dock-bottom\n"
-
-bar_config = (config_qml.parent / "BarConfig.qml").read_text(encoding="utf-8")
-assert module.OWNED_DEFAULTS["bar"]["perScreen"] == []
-assert "positionFor" in bar_config and "isFloatingFor" in bar_config
-config_source_pos = config_qml.read_text(encoding="utf-8")
-assert "perScreen: bar.perScreen" in config_source_pos
-bar_wrapper = (config_qml.parent.parent / "modules/bar/BarWrapper.qml").read_text(encoding="utf-8")
-exclusions = (config_qml.parent.parent / "modules/drawers/Exclusions.qml").read_text(encoding="utf-8")
-# Reserve default lives in BarConfig.styleReserves() (shell #90): strips
-# (attached, inset) and dock reserve; floating/islands overlay. Assert the
-# mapping itself, not mere name presence (mirrors shell-side
-# test_reserve_default_rule).
-_rule = re.search(
-    r"function styleReserves\(s: string\): bool \{\s*return ([^;]+);", bar_config
-)
-assert _rule, "styleReserves() helper missing from installed BarConfig.qml"
-_rule_body = _rule.group(1)
-for _style in ("attached", "inset", "dock"):
-    assert f'"{_style}"' in _rule_body, f"styleReserves must reserve {_style}"
-assert "floating" not in _rule_body and "islands" not in _rule_body, (
-    "styleReserves must not reserve floating/islands"
-)
-assert 'style !== "floating"' not in bar_config
-for field in ("reservedLeft", "reservedTop", "reservedRight", "reservedBottom"):
-    assert field in bar_wrapper
-    assert f"root.bar.{field}" in exclusions
-
-# Classic reference bars expose the inline sliders; gaming owns the cava visualizer
-classic_entries = presets["classic-top"]["bar"]["entries"]
-for entry_id in ("audioSlider", "brightnessSlider"):
-    assert any(e.get("id") == entry_id and e.get("enabled") for e in classic_entries), "classic-top missing inline sliders"
-assert presets["gaming"]["background"]["visualiser"]["enabled"] is True
-assert module.OWNED_DEFAULTS["background"]["visualiser"] == {"enabled": False, "autoHide": True}
-assert module.OWNED_DEFAULTS["background"]["desktopClock"] == {"enabled": False}
-assert presets["gaming"]["background"]["desktopClock"]["enabled"] is False
-
-# Inline slider widget must exist and register both entry ids
-bar_source = config_qml.parent.parent.joinpath("modules/bar/Bar.qml").read_text(encoding="utf-8")
-for entry_id in ("audioSlider", "brightnessSlider"):
-    assert f'roleValue: "{entry_id}"' in bar_source, f"Bar.qml missing DelegateChoice for {entry_id}"
-
-config_source = config_qml.read_text(encoding="utf-8")
-for field in (
-    "position: bar.position",
-    "style: bar.style",
-    "floatingMargin: bar.floatingMargin",
-    "frameEnabled: border.frameEnabled",
-):
-    assert field in config_source, f"Config serialization missing {field}"
-
-print(f"PASS: {len(files)} deterministic shell presets")
-PY
+print(f"  PASS  Hornero layout catalogue ({len(presets)} layouts, unique IDs, resolved topology)")
+' <<< "$output"

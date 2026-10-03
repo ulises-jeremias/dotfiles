@@ -1,65 +1,36 @@
-# Quickshell Hard-Cut Matrix
+# Hornero Shell Integration
 
-This document is the operational source of truth for the Quickshell-first simplification.
-It defines what stays, what is removed, and why.
+HorneroOS/shell owns the Quickshell implementation. This repository provisions
+the runtime checkout at `~/.config/quickshell` with a safe fast-forward update;
+chezmoi ignores that tree and does not carry a second implementation copy.
 
-## Keep (Core Contract)
+## Current interfaces
 
-- `home/dot_local/bin/executable_dots-quickshell`
-- `home/dot_local/bin/executable_dots-appearance`
-- `home/dot_local/bin/executable_dots-color-scheme`
-- `home/dot_local/bin/executable_dots-smart-colors`
-- `horneroctl wallpaper set` (was `home/dot_local/bin/executable_dots-wallpaper-set`; wrapper retired)
-- `horneroctl wallpaper reload` (was `home/dot_local/bin/executable_dots-wal-reload`; wrapper retired)
-- `home/dot_local/bin/executable_dots-settings-gui`
-- `horneroctl apps launch` (was `home/dot_local/bin/executable_dots-launcher`; wrapper retired in #295)
-- `home/dot_local/bin/executable_dots-power-menu` (Quickshell-first, minimal rescue)
-- `horneroctl capture clipboard` (was `home/dot_local/bin/executable_dots-clipboard`; wrapper retired)
+- `horneroctl shell start|stop|restart|status|logs` manages the running shell.
+- `horneroctl shell ipc -- …` invokes the supported Shell IPC surface.
+- `horneroctl shell preset list|current|apply …` reads and applies installed
+  layouts. Apply with `--yes` for explicit confirmation.
+- `horneroctl appearance …` and `horneroctl wallpaper …` own appearance and
+  wallpaper operations.
+- The in-shell Layout Picker and Control Center are user-facing interfaces to
+  the same installed product data and IPC destinations.
 
-## Keep (Unique Capability, Not Replaced by Quickshell)
+## Ownership and compatibility
 
-- `horneroctl capture record` (was `home/dot_local/bin/executable_dots-recorder`; wrapper retired)
-- `horneroctl capture screenshot` (was `home/dot_local/bin/executable_dots-screenshooter`; wrapper retired)
-- `home/dot_local/bin/executable_dots-lockscreen`
-- `horneroctl backup` (was `home/dot_local/bin/executable_dots-backup`; wrapper retired in #294)
-- `horneroctl apps audit` (was `home/dot_local/bin/executable_dots-security-audit`; wrapper retired)
-- `home/dot_local/bin/executable_dots-keyboard-help`
+HorneroOS/config packages own the installed themes, layouts and defaults.
+HorneroOS/shell owns the runtime presentation and its source fallback data.
+HorneroOS/hornero owns the stable CLI and system operations.
 
-## Remove (Hard Cut)
+The `dots` data directories and `dots-*` names that remain in migration code
+are compatibility paths for existing HorneroConfig installations. New
+Hornero-facing operations should use `horneroctl`; do not add another
+`dots-quickshell` adapter or copy the Shell layout catalogue into this repo.
 
-- `home/dot_local/bin/executable_dots-jgmenu`
-- `home/dot_local/bin/executable_dots-scripts`
-- `home/dot_config/jgmenu/append.csv`
-- `home/dot_config/jgmenu/prepend.csv`
-- `home/dot_config/jgmenu/jgmenurc-config`
-- `home/.chezmoiscripts/linux/run_onchange_before_install-jgmenu.sh.tmpl`
-- `home/.chezmoiscripts/linux/run_onchange_before_install-compositor.sh.tmpl` (picom legacy)
-- `home/.chezmoiscripts/linux/run_onchange_before_install-x.sh.tmpl` (X11 helper legacy default)
-- `home/.chezmoiscripts/linux/run_onchange_before_install-xfce4.sh.tmpl` (legacy desktop stack default)
-- `home/.chezmoiscripts/linux/run_onchange_before_install-networkmanager-dmenu.sh.tmpl`
-- `home/dot_config/autostart/eww-daemon.desktop`
+## Validation
 
-## Install Surface (Core vs Optional)
-
-Core install should represent Quickshell + Hyprland only:
-
-- Keep: `hyprland`, `quickshell`, `hyprlock`, `hypridle`, `cliphist`, `wl-clipboard`, `copyq`, core media/network/system packages.
-- Remove from core defaults: `mako`, `wofi`, `nwg-bar`, `nwg-drawer`, `wlogout`, and other legacy menu/widget stack assumptions.
-
-## Call-Site Cleanup Requirement
-
-After removals, no remaining references should exist in:
-
-- keybind docs and wiki pages
-- install scripts
-- validation scripts
-- helper registries (`dots-scripts.sh`)
-- startup/init scripts
-
-## Validation Checklist
-
-- `dots launcher` toggles Quickshell launcher.
-- `dots power-menu` toggles Quickshell session drawer.
-- `dots clipboard` works on Wayland without legacy menu chain.
-- `dots quickshell ipc ...` targets still work (`launcher`, `session`, `utilities`, `dashboard`, `sidebar`, `bar`, `colours`).
-- documentation commands match real binaries in `~/.local/bin`.
+- `scripts/test-shell-layout-consistency.sh` checks the installed catalogue
+  through `horneroctl` without maintaining a local preset list.
+- `scripts/audit-horneroctl-binds.sh` checks configured CLI calls against the
+  current command surface.
+- The full multi-layout schema, geometry and rendering tests live in
+  HorneroOS/shell and HorneroOS/qa.
