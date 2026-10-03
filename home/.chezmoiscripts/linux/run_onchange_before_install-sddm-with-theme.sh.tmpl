@@ -7,6 +7,7 @@
 # greeter package ships /etc/sddm.conf.d/10-hornero.conf (Current=hornero);
 # this script additionally rewrites a stale Current= pin in /etc/sddm.conf
 # in place so hand-merged SDDM settings survive the migration.
+# Greeter packages older than 1.0.2-5 ship a broken active theme.conf.user.
 
 set -euo pipefail
 
@@ -34,6 +35,12 @@ fi
   hornero-greeter \
   hornero-greeter-media-base
 
+greeter_version="$(pacman -Q hornero-greeter | awk '{ print $2 }')"
+if [[ "$(vercmp "$greeter_version" "1.0.2-5")" -lt 0 ]]; then
+    echo "hornero-greeter ${greeter_version} is too old; version 1.0.2-5 or newer is required" >&2
+    exit 1
+fi
+
 # The previous revision of this script installed the aerial theme; the
 # script owns it, so remove it now that hornero is selected.
 if pacman -Qq sddm-theme-aerial-git >/dev/null 2>&1; then
@@ -52,8 +59,13 @@ if [[ -f /etc/sddm.conf ]] && grep -qE '^[[:space:]]*Current[[:space:]]*=' /etc/
     sudo sed -i -E '/^[[:space:]]*\[Theme\]/,/^[[:space:]]*\[/ s/^[[:space:]]*Current[[:space:]]*=.*/Current=hornero/' /etc/sddm.conf
 fi
 
-if [[ ! -d /usr/share/sddm/themes/hornero ]]; then
+theme_dir='/usr/share/sddm/themes/hornero'
+if [[ ! -d "$theme_dir" ]]; then
     echo "hornero-greeter install failed: theme missing at /usr/share/sddm/themes/hornero" >&2
+    exit 1
+fi
+if pacman -Qo "$theme_dir/theme.conf.user" >/dev/null 2>&1; then
+    echo "hornero-greeter still owns theme.conf.user, which overrides the factory defaults; upgrade to 1.0.2-5 or newer" >&2
     exit 1
 fi
 {{      end -}}
