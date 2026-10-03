@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-if ! command -v horneroctl >/dev/null 2>&1; then
+if ! command -v horneroctl > /dev/null 2>&1; then
 	echo "  SKIP  test-shell-layout-consistency.sh (horneroctl is not installed)"
 	exit 0
 fi
@@ -35,4 +35,4 @@ if any(not isinstance(preset.get("bars"), list) for preset in presets):
     raise SystemExit("Hornero returned a layout without resolved bar topology")
 
 print(f"  PASS  Hornero layout catalogue ({len(presets)} layouts, unique IDs, resolved topology)")
-' <<<"$output"
+' <<< "$output"
