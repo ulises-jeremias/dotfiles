@@ -65,12 +65,6 @@ BASH_EXEC_FILTER_REGEX_EXCLUDE: >-
 EDITORCONFIG_EDITORCONFIG_CHECKER_FILTER_REGEX_EXCLUDE: >-
   (^|/)(home/dot_config/quickshell/plugin/.*|home/dot_config/quickshell/utils/scripts/fzf\.js)$
 
-# Shell presets byte-mirror HorneroOS/shell presets/*.json (the shell repo
-# owns their style; prettier reformats must never create drift). Re-sync
-# the directory from the shell truth instead of restyling it here.
-JSON_PRETTIER_FILTER_REGEX_EXCLUDE: >-
-  (^|/)home/dot_local/share/dots/shell-presets/.*\.json$
-
 # MegaLinter APPLY_FIXES creates temp backups of chezmoi source files it
 # reformats. The backup name is .<original_name><random_number>, where the
 # original file carries a chezmoi attribute prefix (executable_, private_,

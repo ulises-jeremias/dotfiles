@@ -57,8 +57,7 @@ fi
 
 echo "==> applying the E2E shell preset (hornero-left) like a real user"
 # shellcheck disable=SC2016  # remote script, no local expansion wanted
-e2e_ssh '$HOME/.local/bin/dots-quickshell preset apply hornero-left' > /dev/null \
-	|| echo "warning: preset apply failed (shell will use its default)"
+e2e_ssh 'horneroctl shell preset apply hornero-left --yes' > /dev/null
 
 echo "==> bootstrapping the ScrollOverview plugin (hyprpm add/enable)"
 # Without a session the reload step warns and is skipped; Hyprland loads
@@ -71,12 +70,12 @@ echo "==> verifying the install"
 for target in \
 	.config/quickshell/shell.qml \
 	.config/hypr/hyprland.conf \
-	.local/lib/quickshell/qml/Hornero/qmldir \
-	.local/bin/dots-quickshell; do
+	.local/lib/quickshell/qml/Hornero/qmldir; do
 	e2e_ssh "test -e ~/.dotfiles/${target} || test -e ~/${target}" \
 		|| {
 			echo "error: missing after install: ~/${target}" >&2
 			exit 1
 		}
 done
+e2e_ssh 'command -v horneroctl >/dev/null'
 echo "==> install complete"

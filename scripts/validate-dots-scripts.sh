@@ -152,7 +152,7 @@ else
 	errors=$((errors + 1))
 fi
 
-# Quickshell layout preset + geometry contract (source tree)
+# Installed Hornero layout catalogue smoke test (public CLI contract)
 if [[ -x ${DOTFILES_ROOT}/scripts/test-shell-layout-consistency.sh ]]; then
 	if ! "${DOTFILES_ROOT}/scripts/test-shell-layout-consistency.sh"; then
 		echo "❌ Shell layout consistency checks failed"

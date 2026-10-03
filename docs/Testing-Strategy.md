@@ -45,7 +45,7 @@ Testing ensures reliability across diverse environments:
 4. **Dependencies**: Verify behavior with missing deps
 5. **Integration**: Check interaction with other components
 6. **Appearance contract**: `./scripts/test-appearance-consistency.sh --source`
-7. **Shell layout contract**: `./scripts/test-shell-layout-consistency.sh`
+7. **Hornero layout catalogue smoke test**: `./scripts/test-shell-layout-consistency.sh` checks the installed `horneroctl` response; preset data and schema validation stay in HorneroOS/config, HorneroOS/shell and HorneroOS/hornero.
 
 ### For Visual Changes
 

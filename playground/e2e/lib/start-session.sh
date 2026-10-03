@@ -45,9 +45,10 @@ else
 	}
 
 	echo "==> starting Quickshell"
-	# Use the user's launcher (sets QML paths + QT platform theme itself).
+	# Use Hornero's lifecycle CLI; the retired dots-quickshell wrapper is not
+	# installed on a current Hornero system.
 	e2e_ssh_bg "$(e2e_hypr_env)
-nohup $HOME/.local/bin/dots-quickshell start > /tmp/dots-quickshell.log 2>&1 < /dev/null & disown"
+horneroctl shell start --yes > /tmp/hornero-shell-start.log 2>&1"
 	sleep 10
 fi
 
