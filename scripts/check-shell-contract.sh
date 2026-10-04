@@ -3,12 +3,12 @@
 # Copyright (C) 2019-2026 Ulises Jeremias Cornejo Fandos
 # Licensed under MIT.
 #
-# HorneroOS/shell is the authoritative product implementation; the installed
-# ~/.config/quickshell tree is the runtime; this repo keeps personal
-# overrides only (none today). This gate fails when:
+# HorneroOS/shell is the authoritative product implementation; the AUR
+# hornero-shell package installs the runtime. This repo keeps personal
+# overrides only. This gate fails when:
 #   1. a quickshell implementation mirror reappears under home/dot_config/,
 #   2. the .chezmoiignore guard that keeps chezmoi out of the installed
-#      tree is missing or narrowed.
+#      local Quickshell config from chezmoi.
 #
 # Usage:
 #   ./scripts/check-shell-contract.sh   # exit 1 on contract violation
@@ -35,7 +35,9 @@ else
 	echo "PASS: no home/dot_config/quickshell mirror in source"
 fi
 
-# 2. The ignore guard must cover the whole installed tree.
+# 2. The ignore guard prevents chezmoi from overwriting an existing local
+#    development checkout; runtime selection is still explicit via the
+#    packaged QS_CONFIG_PATH set by horneroctl.
 if grep -Eq '^[[:space:]]*\.config/quickshell/\*\*$' home/.chezmoiignore.tmpl; then
 	echo "PASS: .chezmoiignore covers .config/quickshell/**"
 else

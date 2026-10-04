@@ -7,9 +7,9 @@ The desktop product lives in the public [HorneroOS organization](https://github.
 - [Hornero Config](https://github.com/HorneroOS/config) owns system defaults, appearance packs, and packaged integration helpers.
 - [Hornero Shell](https://github.com/HorneroOS/shell) owns the Quickshell desktop surfaces and user-facing controls.
 - [Hornero CLI](https://github.com/HorneroOS/hornero) owns stable system and desktop operations.
-- [HorneroOS documentation](https://hornero-os.vercel.app/docs) describes current product behavior.
+- [HorneroOS documentation](https://horneroos.com/docs) describes current product behavior.
 
-This source may configure optional applications around the desktop, but Hornero's packages and catalogue are canonical for product behavior. Wallpapers in this repository are user media under `~/.local/share/hornero/wallpapers`; theme definitions are owned by Hornero Config and are not duplicated here.
+Hornero's AUR packages are the source of truth for product binaries, runtime files, system defaults, and catalogues. This source installs those packages on Arch and manages account-level preferences plus optional wallpaper media under `~/.local/share/hornero/wallpapers`; it does not clone or compile a second Shell or CLI.
 
 ## Apply on an Arch workstation
 

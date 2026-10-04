@@ -5,7 +5,7 @@ Shell owns live shell colors and wallpaper analysis. `horneroctl` coordinates
 installed theme operations. This personal source may include wallpaper media;
 it does not define a second theme registry or color cache.
 
-For current user behavior, see the [Appearance guide](https://hornero-os.vercel.app/docs/desktop/appearance/). For architecture and pack validation, see [HorneroOS/config](https://github.com/HorneroOS/config/tree/main/profiles/themes) and [HorneroOS/shell](https://github.com/HorneroOS/shell).
+For current user behavior, see the [Appearance guide](https://horneroos.com/docs/desktop/appearance/). For architecture and pack validation, see [HorneroOS/config](https://github.com/HorneroOS/config/tree/main/profiles/themes) and [HorneroOS/shell](https://github.com/HorneroOS/shell).
 
 ## Review checklist
 

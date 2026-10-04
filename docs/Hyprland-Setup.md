@@ -29,4 +29,4 @@ Use the Shell's Control Center for common settings. Use `horneroctl` for
 supported command-line operations and `hyprctl` only for compositor-level
 diagnostics or documented configuration reloads.
 
-For user-facing shortcuts, see the [HorneroOS shortcuts guide](https://hornero-os.vercel.app/docs/desktop/shortcuts/). For themes and wallpaper colors, see the [Appearance guide](https://hornero-os.vercel.app/docs/desktop/appearance/).
+For user-facing shortcuts, see the [HorneroOS shortcuts guide](https://horneroos.com/docs/desktop/shortcuts/). For themes and wallpaper colors, see the [Appearance guide](https://horneroos.com/docs/desktop/appearance/).
