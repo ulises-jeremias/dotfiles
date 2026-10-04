@@ -22,8 +22,8 @@ e2e_ssh_ready || {
 echo "==> copying working tree into the VM (~/hornero-source)"
 cd "${HORNERO_SOURCE_ROOT}"
 # Tracked + untracked-not-ignored files: exactly the working tree under test.
-git ls-files -co --exclude-standard | tar cf - -T - 2> /dev/null \
-	| e2e_ssh 'rm -rf ~/hornero-source && mkdir -p ~/hornero-source && tar xf - -C ~/hornero-source'
+git ls-files -co --exclude-standard | tar cf - -T - 2>/dev/null |
+	e2e_ssh 'rm -rf ~/hornero-source && mkdir -p ~/hornero-source && tar xf - -C ~/hornero-source'
 
 echo "==> launching end-user install (./install.sh with HORNERO_E2E=1)"
 # First-boot semantics: no prior chezmoi config/state, like a brand new user.
@@ -36,13 +36,13 @@ cd "$HOME/hornero-source"
 HORNERO_E2E=1 ./install.sh > /tmp/install.log 2>&1
 echo $? > /tmp/install.exit
 EOF
-chmod +x /tmp/run-e2e-install.sh && rm -f /tmp/install.exit' > /dev/null
+chmod +x /tmp/run-e2e-install.sh && rm -f /tmp/install.exit' >/dev/null
 e2e_ssh_bg '/tmp/run-e2e-install.sh'
 
 echo "==> waiting up to ${INSTALL_TIMEOUT}s for the install to finish"
 DEADLINE=$((SECONDS + INSTALL_TIMEOUT))
 while ((SECONDS < DEADLINE)); do
-	if e2e_ssh 'test -f /tmp/install.exit' > /dev/null 2>&1; then
+	if e2e_ssh 'test -f /tmp/install.exit' >/dev/null 2>&1; then
 		break
 	fi
 	sleep 10
@@ -57,22 +57,22 @@ fi
 
 echo "==> applying the E2E shell preset (hornero-left) like a real user"
 # shellcheck disable=SC2016  # remote script, no local expansion wanted
-e2e_ssh 'horneroctl shell preset apply hornero-left --yes' > /dev/null
+e2e_ssh 'horneroctl shell preset apply hornero-left --yes' >/dev/null
 
 echo "==> bootstrapping the ScrollOverview plugin (hyprpm add/enable)"
 # Without a session the reload step warns and is skipped; Hyprland loads
 # the enabled plugin from the hyprpm cache at startup.
 # shellcheck disable=SC2016  # remote script, no local expansion wanted
-e2e_ssh 'horneroctl hypr plugins install --yes --no-update' > /dev/null 2>&1 \
-	|| echo "warning: plugin bootstrap failed (config-error overlay may appear)"
+e2e_ssh 'horneroctl hypr plugins install --yes --no-update' >/dev/null 2>&1 ||
+	echo "warning: plugin bootstrap failed (config-error overlay may appear)"
 
 echo "==> verifying the install"
 for target in \
 	.config/quickshell/shell.qml \
 	.config/hypr/hyprland.conf \
 	.local/lib/quickshell/qml/Hornero/qmldir; do
-	e2e_ssh "test -e ~/hornero-source/${target} || test -e ~/${target}" \
-		|| {
+	e2e_ssh "test -e ~/hornero-source/${target} || test -e ~/${target}" ||
+		{
 			echo "error: missing after install: ~/${target}" >&2
 			exit 1
 		}

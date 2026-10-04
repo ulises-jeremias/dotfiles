@@ -17,7 +17,7 @@ fail() {
 	echo "FAIL: $1" >&2
 	jq -n --arg reason "$1" \
 		'{ scenario: "desktop-smoke", result: "FAIL", reason: $reason }' \
-		> "${E2E_ARTIFACTS_DIR}/assertions.json" 2> /dev/null || true
+		>"${E2E_ARTIFACTS_DIR}/assertions.json" 2>/dev/null || true
 	exit 1
 }
 
@@ -47,7 +47,7 @@ echo "==> recording desktop interaction"
 # wlr-screencopy hangs on virtio-vga when the ScrollOverview plugin hooks the
 # render pass; probe first and fall back to QEMU framebuffer dumps.
 if timeout 20 bash -c "source '${E2E_LIB_DIR}/env.sh' && e2e_ssh \"\$(e2e_hypr_env)
-timeout 10 grim /tmp/e2e-probe.png\"" > /dev/null 2>&1; then
+timeout 10 grim /tmp/e2e-probe.png\"" >/dev/null 2>&1; then
 	bash "${E2E_LIB_DIR}/record.sh" start || fail "record start"
 	sleep 5
 	# Some real interaction: workspace switch round-trip.
@@ -62,24 +62,24 @@ hyprctl dispatch workspace 1 > /dev/null" || true
 else
 	echo "==> screencopy unavailable (plugin on virtio), using QEMU framebuffer"
 	RECORDING=""
-	bash "${E2E_LIB_DIR}/qemu-screenshot.sh" "${SCENARIO_DIR}/desktop-final.png" \
-		|| fail "qemu screenshot"
+	bash "${E2E_LIB_DIR}/qemu-screenshot.sh" "${SCENARIO_DIR}/desktop-final.png" ||
+		fail "qemu screenshot"
 fi
 
 # 6. Screenshot ----------------------------------------------------------------
 if [[ -z ${RECORDING} ]] || [[ ! -s ${RECORDING} ]]; then
 	: # already captured via QEMU framebuffer in the recording fallback
 else
-	bash "${E2E_LIB_DIR}/screenshot.sh" "${SCENARIO_DIR}/desktop-final.png" \
-		|| fail "screenshot"
+	bash "${E2E_LIB_DIR}/screenshot.sh" "${SCENARIO_DIR}/desktop-final.png" ||
+		fail "screenshot"
 fi
 
 # 7. Logs ----------------------------------------------------------------------
-e2e_ssh 'tail -n 200 /tmp/hypr.log' > "${E2E_ARTIFACTS_DIR}/logs/hyprland.log" 2> /dev/null || true
-e2e_ssh 'cat /tmp/qs.log' > "${E2E_ARTIFACTS_DIR}/logs/quickshell.log" 2> /dev/null || true
+e2e_ssh 'tail -n 200 /tmp/hypr.log' >"${E2E_ARTIFACTS_DIR}/logs/hyprland.log" 2>/dev/null || true
+e2e_ssh 'cat /tmp/qs.log' >"${E2E_ARTIFACTS_DIR}/logs/quickshell.log" 2>/dev/null || true
 
 # 8. Report --------------------------------------------------------------------
-GIT_SHA="$(git -C "${HORNERO_SOURCE_ROOT}" rev-parse --short HEAD 2> /dev/null || echo unknown)"
+GIT_SHA="$(git -C "${HORNERO_SOURCE_ROOT}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
 TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 REC_OK=false
 [[ -n ${RECORDING} && -s ${RECORDING} ]] && REC_OK=true
@@ -107,7 +107,7 @@ jq -n \
 			screenshot_captured: true
 		},
 		result: "PASS"
-	}' > "${E2E_ARTIFACTS_DIR}/assertions.json"
+	}' >"${E2E_ARTIFACTS_DIR}/assertions.json"
 
 echo "==> desktop-smoke PASS"
 echo "    screenshot: ${SCENARIO_DIR}/desktop-final.png"

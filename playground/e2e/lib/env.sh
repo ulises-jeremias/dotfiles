@@ -45,7 +45,7 @@ e2e_ssh_bg() {
 		-o ConnectTimeout=5 \
 		-i "${E2E_SSH_KEY}" \
 		-p "${E2E_SSH_PORT}" \
-		"${E2E_SSH_USER}@127.0.0.1" "$@" > /dev/null 2>&1
+		"${E2E_SSH_USER}@127.0.0.1" "$@" >/dev/null 2>&1
 }
 
 # Copy files to/from the E2E VM.
@@ -66,12 +66,12 @@ e2e_vm_running() {
 
 # True when SSH is answering.
 e2e_ssh_ready() {
-	e2e_ssh 'echo ok' > /dev/null 2>&1
+	e2e_ssh 'echo ok' >/dev/null 2>&1
 }
 
 # True when the Hyprland session is up inside the VM.
 e2e_session_ready() {
-	e2e_ssh 'pgrep -x Hyprland > /dev/null' > /dev/null 2>&1
+	e2e_ssh 'pgrep -x Hyprland > /dev/null' >/dev/null 2>&1
 }
 
 # Resolve the Hyprland instance signature inside the VM.

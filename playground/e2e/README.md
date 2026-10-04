@@ -15,12 +15,12 @@ Host (Arch, Docker + /dev/kvm)
 
 ## Prerequisites
 
-| Requirement | Notes |
-|---|---|
-| Docker | running daemon |
-| `/dev/kvm` | optional but strongly recommended (TCG fallback is very slow) |
-| `jq`, `ssh` | used by the scenario scripts |
-| ~4 GB free RAM | VM uses 3 GB by default (`E2E_VM_MEM`) |
+| Requirement    | Notes                                                         |
+|----------------|---------------------------------------------------------------|
+| Docker         | running daemon                                                |
+| `/dev/kvm`     | optional but strongly recommended (TCG fallback is very slow) |
+| `jq`, `ssh`    | used by the scenario scripts                                  |
+| ~4 GB free RAM | VM uses 3 GB by default (`E2E_VM_MEM`)                        |
 
 ## Quickstart
 
@@ -86,14 +86,14 @@ artifacts/
 
 All knobs are environment variables (see `lib/env.sh`):
 
-| Variable | Default | Description |
-|---|---|---|
-| `E2E_CONTAINER_NAME` | `hornero-e2e-vm` | Docker container name |
-| `E2E_SSH_PORT` | `2222` | Host port forwarded to guest SSH |
-| `E2E_VM_MEM` | `3072` | VM RAM (MB) |
-| `E2E_VM_SMP` | `2` | VM vCPUs |
-| `E2E_FPS` | `10` | Recording frame rate |
-| `E2E_CLOUD_IMAGE_URL` | Arch geo mirror | Cloud image source |
+| Variable              | Default          | Description                      |
+|-----------------------|------------------|----------------------------------|
+| `E2E_CONTAINER_NAME`  | `hornero-e2e-vm` | Docker container name            |
+| `E2E_SSH_PORT`        | `2222`           | Host port forwarded to guest SSH |
+| `E2E_VM_MEM`          | `3072`           | VM RAM (MB)                      |
+| `E2E_VM_SMP`          | `2`              | VM vCPUs                         |
+| `E2E_FPS`             | `10`             | Recording frame rate             |
+| `E2E_CLOUD_IMAGE_URL` | Arch geo mirror  | Cloud image source               |
 
 The disk image (`cache/arch-cloudimg.qcow2`) and cloud-init seed are **cached**:
 subsequent runs boot in seconds and only re-run provisioning if the marker file
@@ -120,14 +120,14 @@ baked into a fresh seed ISO automatically.
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| `SSH did not come up` | check `artifacts/console.log`; first boot downloads nothing but cloud-init needs ~2 min |
-| Hyprland fails to start | seatd must be running and user in `seat` group (`provision.sh` does both); check VM `/tmp/hypr.log` |
-| Chaotic-AUR / mirror 503 | transient; re-run `provision.sh` |
-| Recording file is 0 bytes or truncated | recorder was killed without SIGINT — always use `record.sh stop` |
-| VM feels sluggish | host under memory pressure; lower `E2E_VM_MEM` or close host apps (VM can OOM at 4 GB) |
-| Push to CI fails on the image | never commit `cache/`, `ssh/`, or `artifacts/` (gitignored by design) |
+| Symptom                                | Fix                                                                                                 |
+|----------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `SSH did not come up`                  | check `artifacts/console.log`; first boot downloads nothing but cloud-init needs ~2 min             |
+| Hyprland fails to start                | seatd must be running and user in `seat` group (`provision.sh` does both); check VM `/tmp/hypr.log` |
+| Chaotic-AUR / mirror 503               | transient; re-run `provision.sh`                                                                    |
+| Recording file is 0 bytes or truncated | recorder was killed without SIGINT — always use `record.sh stop`                                    |
+| VM feels sluggish                      | host under memory pressure; lower `E2E_VM_MEM` or close host apps (VM can OOM at 4 GB)              |
+| Push to CI fails on the image          | never commit `cache/`, `ssh/`, or `artifacts/` (gitignored by design)                               |
 
 ## Known limitations
 
