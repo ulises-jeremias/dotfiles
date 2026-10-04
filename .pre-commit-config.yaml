@@ -22,9 +22,7 @@ repos:
         args: [--maxkb=1000]
         exclude: |
           (?x)^(
-            home/dot_local/share/dots/wallpapers/.*/.*|
-            home/dot_local/share/dots/themes/.*/preview\..*|
-            home/dot_local/share/dots/wallpapers/curated/.*|
+            home/dot_local/share/hornero/wallpapers/.*/.*|
             static/.*
           )$
       - id: check-merge-conflict
@@ -89,9 +87,9 @@ repos:
   # Custom local hooks
   - repo: local
     hooks:
-      - id: dots-script-validation
-        name: Validate dots scripts
-        entry: ./scripts/validate-dots-scripts.sh
+      - id: hornero-contract-validation
+        name: Validate Hornero shell ownership
+        entry: ./scripts/check-shell-contract.sh
         language: script
         pass_filenames: false
         always_run: true

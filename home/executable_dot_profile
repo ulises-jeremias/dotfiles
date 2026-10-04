@@ -3,16 +3,12 @@
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-export QT_QPA_PLATFORMTHEME="qt5ct" # Have QT use qt5ct theme
+export QT_QPA_PLATFORMTHEME="qt6ct"
 export QML_IMPORT_PATH="${HOME}/.local/lib/quickshell/qml"
 export PASSWORD_STORE_DIR="${XDG_DATA_HOME}/pass-store"
 export GTK_IM_MODULE=ibus
 export QT_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
-
-# External app backend retained for login shells and terminals outside
-# the Hyprland session. Hornero Settings is opened through Shell IPC.
-export HORNERO_SNAPPY_BIN="${HORNERO_SNAPPY_BIN:-$HOME/.local/bin/hornero-switcher-shim}"
 
 # Prioritize gnome-keyring over kwallet system-wide
 export PASSWORD_STORE=basic

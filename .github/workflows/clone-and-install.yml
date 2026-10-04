@@ -38,11 +38,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Validate script standards
-        run: ./scripts/validate-dots-scripts.sh
-
-      - name: Verify dotfiles updates preserve local work
-        run: ./tests/test_install_dotfiles_sync.sh
+      - name: Validate Hornero source contract
+        run: python3 -m pytest tests/test_hornero_source_contract.py -q
 
       - name: Smoke test chezmoi templates
         shell: bash

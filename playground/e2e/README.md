@@ -7,7 +7,7 @@ screen recordings** as artifacts.
 
 ```text
 Host (Arch, Docker + /dev/kvm)
-└── Docker container (dotfiles-e2e-qemu)          [non-root runner, kvm group]
+└── Docker container (hornero-e2e-qemu)           [non-root runner, kvm group]
     └── QEMU VM (Arch cloud image, virtio-vga)    [user: hornero]
         └── Hyprland (DRM backend) + Quickshell
             └── grim (screenshots) + wf-recorder (video)
@@ -27,14 +27,14 @@ Host (Arch, Docker + /dev/kvm)
 ```bash
 cd playground/e2e
 
-# Full pipeline: boot, provision, deploy, session, record, assert
+# Full pipeline: boot, provision, deploy Hornero config, session, record, assert
 ./scenarios/desktop-smoke.sh
 
 # Or run it step by step:
 ./lib/run.sh            # start VM container (builds image + seed on first run)
 ./lib/wait-ssh.sh       # wait for SSH (first boot: a few minutes)
 ./lib/provision.sh      # pacman install (hyprland, quickshell, wf-recorder, ...)
-./lib/deploy-dots.sh    # copy working-tree configs into the VM
+./lib/install-hornero.sh # install the working tree into the VM
 ./lib/start-session.sh  # Hyprland + Quickshell via DRM
 ./lib/screenshot.sh     # grim -> artifacts/screenshots/desktop.png
 ./lib/record.sh start   # wf-recorder -> artifacts/recordings/
@@ -88,7 +88,7 @@ All knobs are environment variables (see `lib/env.sh`):
 
 | Variable | Default | Description |
 |---|---|---|
-| `E2E_CONTAINER_NAME` | `dotfiles-e2e-vm` | Docker container name |
+| `E2E_CONTAINER_NAME` | `hornero-e2e-vm` | Docker container name |
 | `E2E_SSH_PORT` | `2222` | Host port forwarded to guest SSH |
 | `E2E_VM_MEM` | `3072` | VM RAM (MB) |
 | `E2E_VM_SMP` | `2` | VM vCPUs |
@@ -109,8 +109,8 @@ baked into a fresh seed ISO automatically.
 2. **`provision.sh`** installs the desktop stack via pacman over SSH and adds
    the user to `seat`/`video`/`render` groups (SSH sessions have no logind
    seat, so `seatd` handles DRM device access).
-3. **`deploy-dots.sh`** pipes the working tree (`hypr`, `quickshell` configs)
-   into the VM via tar-over-ssh — no shared filesystem needed.
+3. **`install-hornero.sh`** copies the working tree into the VM and applies it
+   through the repository bootstrap, then applies a named Hornero shell preset.
 4. **`start-session.sh`** starts Hyprland with `WLR_BACKENDS=drm`, then
    Quickshell, and verifies both processes.
 5. **`record.sh` / `screenshot.sh`** run `wf-recorder` / `grim` inside the VM

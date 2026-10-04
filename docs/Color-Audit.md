@@ -1,34 +1,19 @@
-# Color Audit - Quickshell Era
+# Appearance and color ownership
 
-## Scope
+Hornero Config owns the theme-pack catalogue and curated GTK assets. Hornero
+Shell owns live shell colors and wallpaper analysis. `horneroctl` coordinates
+installed theme operations. This personal source may include wallpaper media;
+it does not define a second theme registry or color cache.
 
-Audit status for Smart Colors in the maintained stack (Hyprland + Quickshell).
+For current user behavior, see the [Appearance guide](https://hornero-os.vercel.app/docs/desktop/appearance/). For architecture and pack validation, see [HorneroOS/config](https://github.com/HorneroOS/config/tree/main/profiles/themes) and [HorneroOS/shell](https://github.com/HorneroOS/shell).
 
-## Status
+## Review checklist
 
-- Quickshell: primary consumer via `~/.cache/dots/smart-colors/scheme.json`
-- Hyprland: color environment integration active
-- Hyprlock: `colors-hyprlock.env` generated and consumed
-- Kitty: `colors-kitty.conf` generated and consumable
-- Scripts: `colors.sh` and `colors.env` available for shell consumers
-
-## Runtime Flow
-
-```bash
-dots wal-reload
-```
-
-This command regenerates Smart Colors and requests Quickshell color reload.
-
-## Hard-Cut Notes
-
-- Legacy Waybar/EWW/Rofi-focused migration items were removed from active audit scope.
-- This audit tracks only maintained integration paths.
-
-## Verification Checklist
-
-```bash
-horneroctl appearance colors generate --m3 --yes
-ls -la ~/.cache/dots/smart-colors/
-horneroctl shell ipc -- call colours reload
-```
+- Keep semantic text pairs readable in both light and dark roles.
+- Check generated palettes against the actual wallpaper and translucent
+  surfaces, not only flat token pairs.
+- Confirm GTK, icons, Qt, and Shell colors report the applied state.
+- Keep wallpaper binaries separate from pack metadata and preserve source
+  provenance for generated art.
+- Test color changes using the installed Hornero CLI and Shell, not a copied
+  helper implementation.

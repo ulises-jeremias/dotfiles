@@ -1,85 +1,39 @@
-# Architecture Philosophy
+# Architecture principles
 
-## The Hornero Bird Principle
+This repository is a personal chezmoi source that complements HorneroOS. The
+HorneroOS repositories are the source of truth for the desktop product; this
+repository owns only personal workstation choices and optional user media.
 
-HorneroConfig is named after the hornero bird, which builds robust, functional nests adapted to their environment. This metaphor guides all development:
+## Principles
 
-1. **Robustness**: Systems must handle edge cases gracefully
-2. **Functionality**: Every component serves a clear purpose
-3. **Adaptability**: Configurations adjust to different environments
-4. **Beauty**: Aesthetic excellence without sacrificing utility
-5. **Modularity**: Components work independently yet integrate seamlessly
+1. **One owner per behavior.** Product settings and system defaults belong to
+   HorneroOS. Personal application preferences belong here.
+2. **Declarative first.** Prefer tracked configuration files and templates to
+   imperative setup scripts.
+3. **User data stays user-owned.** Updates do not delete, migrate, or rewrite
+   state outside explicitly managed targets.
+4. **Use stable interfaces.** Interact with Hornero through documented
+   `horneroctl` commands and Shell IPC contracts, not copied implementation
+   code.
+5. **Optional software degrades clearly.** A missing application may disable
+   its optional integration, but must not trigger downloads or pretend to
+   succeed.
+6. **Keep appearance coherent.** Theme metadata is canonical in
+   [HorneroOS/config](https://github.com/HorneroOS/config). This source may
+   provide wallpaper files; it does not maintain another theme catalogue.
+7. **Validate without the host.** Tests use temporary HOME and XDG paths and
+   never apply changes to a live user session.
 
-## Core Design Principles
+## Current ownership map
 
-### 1. Theme-Adaptive Intelligence
+- [HorneroOS/config](https://github.com/HorneroOS/config): packaged defaults,
+  theme packs, GTK integration, wallpaper contracts, and profile data.
+- [HorneroOS/shell](https://github.com/HorneroOS/shell): Quickshell surfaces,
+  layout presets, and presentation state.
+- [HorneroOS/hornero](https://github.com/HorneroOS/hornero): OS capabilities,
+  user-facing CLI, and stable system operations.
+- This repository: optional desktop applications, per-user preferences,
+  host-level composition, and wallpaper media.
 
-All visual components must adapt to different color palettes and brightness levels without manual configuration.
-
-**Key Concepts:**
-
-- Automatic light/dark theme detection
-- Semantic color mapping (error, success, warning, info)
-- Contrast optimization for readability
-- Fallback strategies for limited palettes
-
-### 2. Modular Architecture
-
-Components are self-contained units that can be:
-
-- Independently developed and tested
-- Easily enabled or disabled
-- Combined without conflicts
-- Versioned and distributed separately
-
-**Example Applications:**
-
-- Appearance theme packs (curated apply-once recipes)
-- Quickshell modules (bar, launcher, dashboard, session, control center)
-- Utility scripts (100+ independent tools)
-
-### 3. Single Source of Truth
-
-Configuration data flows from centralized sources:
-
-- Color palettes: `~/.cache/wal/colors` (pywal) → `~/.cache/dots/smart-colors/`
-- Theme packs: `~/.local/share/dots/themes/<id>/theme.json`
-- Environment: Detected dynamically, not hardcoded
-- State: Centralized in known locations (`~/.cache/dots/`, `~/.config/`)
-
-### 4. Graceful Degradation
-
-Systems must function even when:
-
-- Optional dependencies are missing
-- Network connectivity is unavailable
-- Hardware features are absent
-- Configuration files are incomplete
-
-**Implementation Strategy:**
-
-- Check for command availability before use
-- Provide sensible defaults
-- Implement fallback mechanisms
-- Log degraded functionality warnings
-
-### 5. Security by Default
-
-Security is not optional or afterthought:
-
-- Secrets never committed to version control
-- File permissions enforced automatically
-- User input validated before processing
-- External commands executed safely
-- Temporary files cleaned up reliably
-
-## System Architecture Overview
-
-### Major Subsystems
-
-1. **Appearance System** - Complete desktop theme management
-2. **Smart Colors System** - Intelligent color adaptation
-3. **Quickshell Shell** - Unified status bar, launcher, dashboard, notifications, and control center
-4. **Script Management (dots)** - Unified utility interface
-
-For detailed architecture of each subsystem, see [System Architecture](System-Architecture.md).
+Historical architecture and retired experiments remain in `docs/wiki/` and
+must not be used as current integration contracts.

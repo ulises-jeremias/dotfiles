@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Provision Hyprland + the HorneroConfig wayland stack inside the VM.
+# Provision Hyprland + the Hornero workstation stack inside the VM.
 set -euo pipefail
 
 echo "[hyprland] installing compositor and wayland stack"

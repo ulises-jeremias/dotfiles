@@ -45,8 +45,7 @@ else
 	}
 
 	echo "==> starting Quickshell"
-	# Use Hornero's lifecycle CLI; the retired dots-quickshell wrapper is not
-	# installed on a current Hornero system.
+	# Use Hornero's lifecycle CLI as the supported Shell entry point.
 	e2e_ssh_bg "$(e2e_hypr_env)
 horneroctl shell start --yes > /tmp/hornero-shell-start.log 2>&1"
 	sleep 10

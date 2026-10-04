@@ -1,504 +1,55 @@
-# Contributing to HorneroConfig
-
-> **Welcome!** 👋 We're thrilled you're interested in contributing to HorneroConfig. This guide will help you get started.
-
----
-
-## 🌟 Ways to Contribute
-
-There are many ways to contribute to HorneroConfig, and all of them are valuable:
-
-### 💬 Share Your Experience
-
-- **Star the repository** ⭐ - Show your support
-- **Share on social media** - Help others discover HorneroConfig
-- **Write blog posts** - Share your setup and customizations
-- **Answer questions** - Help others in discussions and issues
-
-### 🐛 Report Issues
-
-Found a bug or have an idea? We want to hear about it!
-
-- **Bug reports** - Help us improve stability and reliability
-- **Feature requests** - Suggest new capabilities and enhancements
-- **Documentation improvements** - Help us explain things better
-- **Theme packs** - Share your beautiful theme creations
-
-### 💻 Contribute Code
-
-- **Fix bugs** - Tackle open issues
-- **Add features** - Implement new capabilities
-- **Improve performance** - Optimize existing code
-- **Enhance documentation** - Write guides and tutorials
-
-### 🎨 Create Content
-
-- **Design theme packs** - Create beautiful desktop themes
-- **Make wallpapers** - Contribute artwork
-- **Create tutorials** - Help others learn
-- **Record demos** - Show off features in action
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-Before you start, make sure you have:
-
-- A GitHub account
-- Git installed on your system
-- Basic familiarity with shell scripting (for code contributions)
-- A Linux system for testing (preferably Arch Linux)
-
-### Setting Up Your Development Environment
-
-1. **Fork the repository** on GitHub
-
-2. **Clone your fork** locally:
-
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/dotfiles ~/.dotfiles
-   cd ~/.dotfiles
-   ```
-
-3. **Add upstream remote**:
-
-   ```bash
-   git remote add upstream https://github.com/ulises-jeremias/dotfiles
-   ```
-
-4. **Install dependencies**:
-
-   ```bash
-   ./install.sh
-   ```
-
-5. **Set up pre-commit hooks** (required for contributors):
-
-   We use [pre-commit](https://pre-commit.com/) to maintain code quality.
-
-   ```bash
-   # Install uv if not already installed
-   # Arch Linux:
-   sudo pacman -S uv
-
-   # Ubuntu/Debian:
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-
-   # macOS:
-   brew install uv
-
-   # Install pre-commit
-   uv tool install pre-commit
-   # One-shot alternative: uvx pre-commit run --all-files
-
-   # Set up git hooks in the repository
-   pre-commit install
-
-   # Test it works
-   pre-commit run --all-files
-   ```
-
-   **What pre-commit does:**
-   - ✅ Validates shell scripts with ShellCheck
-   - ✅ Formats shell scripts with shfmt
-   - ✅ Lints Markdown files
-   - ✅ Validates YAML syntax
-   - ✅ Checks for security issues (private keys, etc.)
-   - ✅ Validates custom dots scripts
-   - ✅ Prevents direct commits to main branch
-
-6. **Test in the playground** (recommended):
-
-   ```bash
-   ./bin/play
-   ```
-
----
-
-## 🐛 Reporting Bugs
-
-### Before Submitting
-
-- **Search existing issues** - Your bug might already be reported
-- **Try the latest version** - The issue might already be fixed
-- **Test in playground** - Verify it's reproducible in a clean environment
-
-### Creating a Good Bug Report
-
-Use our [bug report template](.github/ISSUE_TEMPLATE/bug-report.yml) and include:
-
-1. **Clear title** - Briefly describe the issue
-2. **Environment details** - OS, window manager, versions
-3. **Steps to reproduce** - What did you do?
-4. **Expected behavior** - What should happen?
-5. **Actual behavior** - What actually happened?
-6. **Screenshots** - Visual evidence helps immensely
-7. **Error messages** - Include relevant logs
-
-**Example:**
-
-> **Title:** Polybar weather module shows wrong temperature
->
-> **Environment:** Arch Linux, i3wm, Polybar 3.6.3
->
-> **Steps:**
->
-> 1. Apply gruvbox theme pack
-> 2. Check weather module on polybar
-> 3. Compare with actual weather
->
-> **Expected:** Should show current temperature (72°F)
-> **Actual:** Shows 32°F (last cached value)
->
-> **Logs:** `~/.cache/dots/weather.log` shows API timeout
-
----
-
-## 💡 Suggesting Features
-
-### Before Suggesting a Feature
-
-- **Check existing suggestions** - Someone might have had the same idea
-- **Consider the scope** - Does it fit HorneroConfig's philosophy?
-- **Think about impact** - How would this benefit users?
-
-### Creating a Feature Request
-
-Use our [feature request template](.github/ISSUE_TEMPLATE/feature-request.yml) and include:
-
-1. **Clear title** - What's the feature?
-2. **Problem statement** - What need does this address?
-3. **Proposed solution** - How should it work?
-4. **Alternatives** - What other approaches did you consider?
-5. **Additional context** - Screenshots, mockups, examples
-
-**Example:**
-
-> **Title:** Add support for Wayland compositors
->
-> **Problem:** HorneroConfig currently only supports X11 window managers
->
-> **Solution:** Add configuration profiles for Sway and Hyprland
->
-> **Alternatives:**
->
-> - Create a separate project for Wayland
-> - Provide documentation for manual Wayland setup
->
-> **Context:** Many users are moving to Wayland for better security and performance
-
----
-
-## 🔧 Contributing Code
-
-### The Contribution Process
-
-1. **Discuss first** for significant changes
-   - Open an issue to propose your idea
-   - Get feedback from maintainers
-   - Agree on implementation approach
-
-2. **Create a feature branch**:
-
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Make your changes**
-   - Follow existing code style and patterns
-   - Write clear commit messages
-   - Test thoroughly in the playground
-
-4. **Commit with meaningful messages**:
-
-   ```bash
-   git commit -m "feat: add spotify integration to music player module"
-   ```
-
-5. **Push to your fork**:
-
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-6. **Create a Pull Request**
-   - Use the PR template
-   - Describe what changed and why
-   - Link related issues
-   - Add screenshots for visual changes
-
-### Code Style Guidelines
-
-**For detailed technical guidelines:**
-
-- Quick reference: [AGENTS.md](AGENTS.md)
-- Comprehensive guides: [docs/](docs/)
-  - [Development Standards](docs/Development-Standards.md) - Script templates and standards
-  - [Architecture Philosophy](docs/Architecture-Philosophy.md) - Design principles
-  - [Integration Patterns](docs/Integration-Patterns.md) - Best practices
-  - [Security Guidelines](docs/Security-Guidelines.md) - Security requirements
-  - [Performance Guidelines](docs/Performance-Guidelines.md) - Optimization tips
-
-Here are the key principles:
-
-- **Follow existing patterns** - Look at similar code for examples
-- **Keep it simple** - Readable code is better than clever code
-- **Write comments** - Explain the "why", not just the "what"
-- **Test your changes** - Use the playground environment
-- **Check with shellcheck** - Lint your shell scripts
-- **Handle errors gracefully** - Don't leave users confused
-
-### Commit Message Format
-
-We follow conventional commits for clarity:
-
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation changes
-- `style:` - Code style changes (formatting, etc.)
-- `refactor:` - Code refactoring
-- `test:` - Adding or updating tests
-- `chore:` - Maintenance tasks
-
-**Examples:**
-
-```text
-feat: add weather forecast to polybar module
-fix: correct color contrast in light themes
-docs: update installation guide for Ubuntu
-refactor: simplify smart colors caching logic
+# Contributing to the Hornero workstation source
+
+This repository is a personal chezmoi source for an Arch workstation. It can
+configure optional user applications and provide wallpaper media. Product
+behavior, package defaults, theme definitions, and desktop operations belong
+to the canonical repositories in the [HorneroOS organization](https://github.com/HorneroOS).
+
+## Ownership boundaries
+
+- Keep theme manifests, generated catalogue data, GTK packs, and system
+  defaults in [HorneroOS/config](https://github.com/HorneroOS/config).
+- Keep bars, launcher, Dashboard, notifications, OSD, and Control Center in
+  [HorneroOS/shell](https://github.com/HorneroOS/shell).
+- Keep supported system and desktop operations in
+  [HorneroOS/hornero](https://github.com/HorneroOS/hornero).
+- This repository may supply optional wallpaper files under
+  `home/dot_local/share/hornero/wallpapers/` and personal application config.
+  Do not copy product registries or add another command framework here.
+
+## Source conventions
+
+- Prefer declarative, idempotent chezmoi files over scripts.
+- Use XDG directories and Hornero product paths for new configuration.
+- Keep host-specific values out of shared files; use documented chezmoi data
+  where a template genuinely needs a host choice.
+- Never introduce secret values, generated caches, or personal credentials.
+- Preserve user data. Tests must not run `chezmoi apply` against the developer
+  account or the live desktop.
+- `docs/wiki/` is a historical archive. Rewrite useful ideas for current
+  behavior before moving them into active documentation.
+
+## Validation
+
+Use a temporary HOME and isolated XDG directories for commands that render or
+apply chezmoi state. Before opening a pull request, run the checks relevant to
+the changed files:
+
+```sh
+python3 -m pytest tests/test_hornero_source_contract.py -q
+bash scripts/audit-horneroctl-binds.sh
+bash scripts/test-shell-layout-consistency.sh
+bash scripts/check-shell-contract.sh
+bash scripts/verify-delivery.sh
 ```
 
----
-
-## 🎨 Creating Theme Packs
-
-Want to share your beautiful desktop theme? Here's how:
-
-### Theme Pack Structure
-
-Official Hornero themes are owned by
-[HorneroOS/config](https://github.com/HorneroOS/config/tree/main/profiles/themes).
-They use one of two pack models: semantic flagship themes define accessible
-palette and component tokens, while appearance recipes describe a wallpaper-led
-look. The dotfiles copies under `home/dot_local/share/dots/themes/` are a
-compatibility fallback synced from HorneroOS/config; do not edit them as a second
-source of truth. User-created packs belong under
-`~/.local/share/hornero/themes/<id>/theme.json`, with wallpapers under
-`~/.local/share/hornero/wallpapers/<wallpaperDir>/`.
-
-## 🧪 Testing Your Changes
-
-### Using the Playground
-
-The playground provides a safe testing environment:
-
-```bash
-# Start default environment
-./bin/play
-
-# Test with specific window manager
-./bin/play --provision i3
-./bin/play --provision openbox
-
-# Clean up when done
-./bin/play --remove
-```
-
-### What to Test
-
-**For all changes:**
-
-- Does it work as intended?
-- Does it handle errors gracefully?
-- Does it work in both light and dark themes?
-- Does it work with different window managers?
-
-**For visual changes:**
-
-- Does it look good in all theme packs?
-- Are colors appropriate and readable?
-- Does it scale properly on different resolutions?
-- Does it work on multiple monitors?
-
-**For scripts:**
-
-- Does it handle missing dependencies?
-- Does it clean up after itself?
-- Does it log appropriately?
-- Does shellcheck pass?
-
----
-
-## 📝 Documentation Contributions
-
-Good documentation helps everyone! You can help by:
-
-### Types of Documentation
-
-- **Wiki pages** - Comprehensive guides and tutorials
-- **Code comments** - Explain complex logic
-- **README updates** - Keep main docs current
-- **ADRs** - Document architectural decisions
-- **Examples** - Show how to use features
-
-### Documentation Style
-
-- **Be clear and concise** - Get to the point
-- **Use examples** - Show, don't just tell
-- **Add screenshots** - Visuals help understanding
-- **Link related docs** - Help users find more info
-- **Test your instructions** - Make sure they actually work
-
----
-
-## 📁 Repository Structure
-
-Understanding the repository layout helps you navigate:
-
-```text
-.
-├── .github/               # GitHub workflows, templates, copilot instructions
-├── docs/                  # Documentation and wiki content
-│   ├── adrs/             # Architecture Decision Records
-│   ├── images/           # Documentation images
-│   └── wiki/             # Wiki pages
-├── home/                  # Chezmoi-managed dotfiles
-│   ├── dot_config/       # ~/.config/ files
-│   ├── dot_local/        # ~/.local/ files
-│   │   ├── bin/          # Executable scripts
-│   │   ├── lib/          # Shared libraries
-│   │   └── share/        # Theme packs, data files
-│   └── dot_zsh/          # Zsh configuration
-├── playground/            # Testing environment (Vagrant/Docker)
-├── scripts/              # Installation and validation scripts
-├── bin/                  # Utility scripts (play, etc.)
-└── AGENTS.md             # AI agent guidelines (technical details)
-```
-
-### Key Files
-
-- `CONTRIBUTING.md` (this file) - Human contribution guide
-- `AGENTS.md` - AI agent quick reference
-- `README.md` - Project overview and features
-- `install.sh` - Installation script
-- `docs/` - Technical documentation and architecture guides
-  - `Architecture-Philosophy.md` - Core design principles
-  - `System-Architecture.md` - Detailed system components
-  - `Development-Standards.md` - Coding standards and templates
-  - `Integration-Patterns.md` - Integration best practices
-  - `Testing-Strategy.md` - Testing approach and requirements
-  - `Security-Guidelines.md` - Security practices
-  - `Performance-Guidelines.md` - Optimization strategies
-
----
-
-## 🤝 Community Guidelines
-
-### Our Values
-
-- **Respect** - Treat everyone with kindness and professionalism
-- **Inclusivity** - Welcome contributors of all skill levels
-- **Collaboration** - Work together to solve problems
-- **Quality** - Strive for excellence in everything
-- **Fun** - Enjoy the creative process!
-
-### Code of Conduct
-
-We follow a [Code of Conduct](.github/CODE_OF_CONDUCT.md). By participating, you agree to uphold this code. Report unacceptable behavior to the maintainers.
-
-### Getting Help
-
-- **GitHub Discussions** - Ask questions, share ideas
-- **Issues** - Report bugs and request features
-- **Wiki** - Comprehensive documentation
-- **Examples** - Learn from existing code
-
----
-
-## 🎯 Finding Something to Work On
-
-Not sure where to start? Try these:
-
-### Good First Issues
-
-Look for issues labeled:
-
-- `good first issue` - Perfect for beginners
-- `help wanted` - Maintainers would appreciate help
-- `documentation` - Improve docs (no coding required)
-- `enhancement` - New feature requests
-
-### Popular Contribution Areas
-
-- **Polybar modules** - Add new system monitors or integrations
-- **Theme packs** - Create beautiful desktop themes
-- **Documentation** - Write guides and tutorials
-- **Bug fixes** - Tackle open bug reports
-- **Testing** - Improve test coverage
-- **Performance** - Optimize slow operations
-
----
-
-## ✅ Pull Request Checklist
-
-Before submitting your PR, verify:
-
-- [ ] Code follows existing patterns and style
-- [ ] All scripts pass shellcheck
-- [ ] Changes tested in playground environment
-- [ ] Works in both light and dark themes (if applicable)
-- [ ] Documentation updated (if needed)
-- [ ] Commit messages follow conventional format
-- [ ] PR description explains what and why
-- [ ] Screenshots included (for visual changes)
-- [ ] Related issues linked
-
----
-
-## 🎓 Learning Resources
-
-### For Contributors
-
-- **[AGENTS.md](AGENTS.md)** - AI agent quick reference
-- **[Technical Documentation](docs/)** - Comprehensive guides
-  - [Architecture Philosophy](docs/Architecture-Philosophy.md)
-  - [System Architecture](docs/System-Architecture.md)
-  - [Development Standards](docs/Development-Standards.md)
-  - [Integration Patterns](docs/Integration-Patterns.md)
-  - [Testing Strategy](docs/Testing-Strategy.md)
-  - [Security Guidelines](docs/Security-Guidelines.md)
-  - [Performance Guidelines](docs/Performance-Guidelines.md)
-- **[ADRs](docs/adrs/)** - Understand architectural decisions
-- **[Wiki](docs/wiki/)** - In-depth feature documentation
-- **Existing code** - Best examples are in the codebase
-
-### External Resources
-
-- [Google Shell Style Guide](https://google.github.io/styleguide/shellxml)
-- [Chezmoi Documentation](https://www.chezmoi.io/)
-- [i3 User's Guide](https://i3wm.org/docs/userguide.html)
-- [Polybar Wiki](https://github.com/polybar/polybar/wiki)
-
----
-
-## 💖 Thank You
-
-Every contribution, no matter how small, makes HorneroConfig better. We appreciate your time and effort!
-
-**Questions?** Feel free to ask in discussions or issues. We're here to help! 🚀
-
----
-
-## 📧 Contact
-
-- **GitHub Issues**: Bug reports and feature requests
-- **GitHub Discussions**: Questions and general chat
-- **Pull Requests**: Code contributions
-- **Email**: For private concerns (see repository owner profile)
-
----
-
-### Built with ❤️ by the HorneroConfig community
+For template changes, render each affected template with both managed-host and
+static chezmoi data. For image changes, inspect the actual files and keep
+wallpaper assets reasonably sized.
+
+## Pull requests
+
+Use a short, descriptive title and explain the user-visible effect, ownership
+boundary, validation, and any host-specific assumptions. Do not include
+secrets, private machine details, or claims about HorneroOS features that are
+not present in its current packages.

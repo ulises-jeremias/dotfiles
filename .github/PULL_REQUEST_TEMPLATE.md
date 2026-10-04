@@ -14,8 +14,8 @@ Closes #ISSUE
 
 ## Validation
 
-- [ ] `bash scripts/validate-dots-scripts.sh`
-- [ ] `bash scripts/test-appearance-consistency.sh`
+- [ ] `python3 -m pytest tests/test_hornero_source_contract.py -q`
+- [ ] `bash scripts/audit-horneroctl-binds.sh`
 - [ ] `bash scripts/test-shell-layout-consistency.sh`
 - [ ] `bash scripts/check-shell-contract.sh`
 - [ ] Relevant workflow(s) reviewed

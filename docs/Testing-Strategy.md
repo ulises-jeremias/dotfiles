@@ -1,118 +1,25 @@
-# Testing Strategy
+# Testing strategy
 
-## Testing Philosophy
+Test declarative source without changing the developer's account or graphical
+session. Use a temporary HOME and isolated XDG directories for tests that need
+filesystem state.
 
-Testing ensures reliability across diverse environments:
+## Source checks
 
-- Arch Linux (primary); Ubuntu/Pop!_OS for the Docker install fragment
-- Hyprland window manager (Wayland)
-- Appearance theme packs (apply-once recipes)
-- Multiple hardware configurations (laptop, desktop, VM)
-- Light and dark modes
-- Different monitor setups (single, dual, triple)
+- Validate tracked chezmoi templates with managed and static configuration
+  data.
+- Run `tests/test_hornero_source_contract.py` to assert ownership of theme
+  metadata, wallpaper paths, and removal of retired runtime helpers.
+- Run `scripts/verify-delivery.sh` to ensure managed files reach a target.
+- Run `scripts/audit-horneroctl-binds.sh` and the layout-contract test when
+  changing desktop bindings or layout interactions.
 
-## Playground Environment
+## Product acceptance
 
-**Purpose**: Safe testing without affecting production system.
+The authoritative Shell, CLI, package, and graphical acceptance suites live in
+[HorneroOS/qa](https://github.com/HorneroOS/qa). Use those scenarios when a
+change affects installed product behavior. A local source test is not proof
+that the full desktop works.
 
-**Available Environments:**
-
-1. **Docker** (`playground/compose.yml`): Fast, lightweight, CLI testing
-2. **Vagrant** (`bin/play`): Full GUI, complete desktop environment
-
-**Usage Principles:**
-
-- Test all visual changes in Vagrant (GUI required)
-- Test installation and CLI scripts in Docker (faster iteration)
-- Verify Hyprland integration in Wayland session
-- Check theme switching in both light and dark modes
-
-**Provision Commands:**
-
-```bash
-./bin/play                       # Start default environment
-./bin/play --provision hyprland  # Test with Hyprland
-./bin/play --remove              # Clean up environment
-```
-
-## What to Test
-
-### Before Committing
-
-1. **Script syntax**: `shellcheck script.sh`
-2. **Script execution**: Run with various arguments
-3. **Error handling**: Test with invalid inputs
-4. **Dependencies**: Verify behavior with missing deps
-5. **Integration**: Check interaction with other components
-6. **Appearance contract**: `./scripts/test-appearance-consistency.sh --source`
-7. **Hornero layout catalogue smoke test**: `./scripts/test-shell-layout-consistency.sh` checks the installed `horneroctl` response; preset data and schema validation stay in HorneroOS/config, HorneroOS/shell and HorneroOS/hornero.
-
-### For Visual Changes
-
-1. Light theme appearance
-2. Dark theme appearance
-3. Color contrast and readability
-4. Multi-monitor behavior
-5. Different screen resolutions
-
-### For Appearance Theme Packs
-
-1. `theme.json` schema is complete (`schemaVersion`, `id`, `schemeType`, GTK/icons, wallpaper)
-2. Preview asset exists (`preview.jpg` / `.png` / `.webp`)
-3. Apply via CLI and Control Center without errors
-4. Wallpaper loads; `~/.cache/wal/wal` remains a text path file
-5. `horneroctl appearance doctor` reports OK
-6. GTK/icons go through `horneroctl appearance gtk`
-7. Quickshell Control Center: stage → Apply shows busy/error feedback
-
-## Testing Checklist
-
-**For Scripts:**
-
-- [ ] Passes shellcheck
-- [ ] Handles missing dependencies gracefully
-- [ ] Includes error handling
-- [ ] Logs appropriately
-- [ ] Cleans up resources
-- [ ] Works with EasyOptions (when applicable)
-- [ ] Help text is clear
-
-**For Visual Components:**
-
-- [ ] Works in light mode
-- [ ] Works in dark mode
-- [ ] Colors are readable
-- [ ] Scales to different resolutions
-- [ ] Handles multiple monitors
-- [ ] Integrates with window manager
-- [ ] Layout reservations match `hyprctl monitors -j`
-- [ ] Rounded desktop frame follows the active preset
-
-**For Theme Packs:**
-
-- [ ] Apply is idempotent (no sticky current id written)
-- [ ] All assets load correctly
-- [ ] Colors applied consistently via smart-colors / M3
-- [ ] Wallpaper sets correctly
-- [ ] Preview screenshot included
-- [ ] `list-themes.py` exposes `wallpaperPaths` for every listed wallpaper
-
-## Quickshell Appearance UI checklist
-
-- [ ] Theme stage shows **Staged** chip; Apply commits via `ThemePipeline`
-- [ ] Apply disabled while pipeline busy; footer shows Applying… / error
-- [ ] GTK/icon live seed does not overwrite staged selections
-- [ ] Preview shows “Generating palette…” while M3 preview runs
-- [ ] System pane GTK tile opens Appearance (`horneroctl config gui --pane appearance`)
-
-## Continuous Integration
-
-The project uses GitHub Actions for automated testing:
-
-- Syntax validation (shellcheck)
-- Installation script testing
-- Docker environment verification
-- Documentation link checking
-- Appearance source consistency (`test-appearance-consistency.sh --source`)
-
-See `.github/workflows/` for CI configuration.
+Never run chezmoi apply against the host as part of automated validation.
+Never submit external bug reports or telemetry from a test run.

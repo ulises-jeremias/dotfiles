@@ -8,7 +8,7 @@
 ## Options:
 ##     -h, --help                            Help.
 ##         --wm=WINDOW_MANAGER               Window manager. Posible values: i3 | openbox
-##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/dots_playground_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
+##         --log-file=LOG_FILE_PATH          Logs file path, is /tmp/hornero_playground_log_$(date +'%m-%d-%y_%H:%M:%S').txt by default.
 ##
 ## Vagrant options:
 ##         --provision                       Provision the VM
@@ -37,7 +37,7 @@ echo "All required components are installed. You can proceed with your Vagrant s
 
 # Default argument values and preprocessing
 wm="${wm:-"i3"}"
-log_file="${log_file:-/tmp/dots_playground_log_$(date +'%m-%d-%y_%H:%M:%S').txt}"
+log_file="${log_file:-/tmp/hornero_playground_log_$(date +'%m-%d-%y_%H:%M:%S').txt}"
 
 cd "${PLAYGROUND_DIR}" || exit 1
 

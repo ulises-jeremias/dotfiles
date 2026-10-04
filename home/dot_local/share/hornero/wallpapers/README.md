@@ -1,6 +1,6 @@
 # Wallpapers
 
-Themed wallpaper packs ship here and are symlinked into `~/Pictures/Wallpapers/<theme-id>/` on `chezmoi apply`.
+Optional wallpaper media lives here and is linked into `~/Pictures/Wallpapers/<theme-id>/` by a chezmoi change script.
 
 ```text
 wallpapers/
@@ -14,9 +14,10 @@ wallpapers/
 └── …
 ```
 
-Theme recipes (mode, scheme, GTK, icons, default wallpaper) live separately in
-`home/dot_local/share/dots/themes/<id>/theme.json`. Themes are apply-once packs —
-they do not own a sticky “current theme” state.
+Theme definitions (mode, palette recipe, GTK, icons, and default wallpaper)
+are owned by [HorneroOS/config](https://github.com/HorneroOS/config). This
+repository supplies only optional wallpaper files; it does not duplicate the
+theme catalogue or store the current theme state.
 
 ## Linking
 

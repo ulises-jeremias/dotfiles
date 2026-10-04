@@ -1,88 +1,32 @@
-# Hyprland Setup Guide
+# Hyprland workstation notes
 
-## Overview
+This personal source configures Hyprland around Hornero Shell. Hornero Shell
+owns launcher, bars, Dashboard, session controls, notifications, and Control
+Center. `horneroctl` owns supported lifecycle and compositor operations.
 
-HorneroConfig uses a Hyprland + Quickshell stack.
-Quickshell is the primary shell surface for launcher, session menu, dashboard, notifications, and control center.
-The default tiling behavior is Hyprland `scrolling` layout (Niri-style column workflow).
+## Configuration ownership
 
-## Installation
+- User compositor files are managed under `~/.config/hypr/`.
+- Hornero Shell configuration and presets come from the installed
+  HorneroOS packages; chezmoi does not mirror the Shell tree.
+- Appearance packs are owned by Hornero Config. Wallpaper media may be
+  provided separately under `~/.local/share/hornero/wallpapers/`.
+- Optional compositor plugins require a compatible Hyprland release and
+  installed build tools; check `horneroctl hypr plugins --help` before
+  changing them.
 
-```bash
-chezmoi apply
-```
+## Useful entry points
 
-Primary install scripts:
-
-- `home/.chezmoiscripts/linux/run_onchange_before_install-hyprland.sh.tmpl`
-- `home/.chezmoiscripts/linux/run_onchange_before_install-packages.sh.tmpl`
-- `home/.chezmoiscripts/linux/run_onchange_before_install-quickshell.sh.tmpl`
-
-## First Run
-
-```bash
-dots wal-reload
-dots appearance apply neon-city
-```
-
-## Core Paths
-
-- Hyprland config: `~/.config/hypr/`
-- Quickshell config: `~/.config/quickshell/`
-- Smart colors cache: `~/.cache/dots/smart-colors/`
-
-## Core Commands
-
-```bash
-horneroctl shell start --yes
-horneroctl shell ipc -- call drawers toggle launcher
-horneroctl shell ipc -- call drawers toggle session
-horneroctl shell ipc -- call drawers toggle utilities
-horneroctl config gui
-horneroctl hypr layout current
-horneroctl hypr layout toggle --yes
-```
-
-## ScrollOverview (niri-style overview)
-
-The [hyprland-scroll-overview](https://github.com/yayuuu/hyprland-scroll-overview)
-plugin provides a bird's-eye view of all workspaces and windows. The Hyprland
-install script ensures the build dependencies and Hyprland headers are present,
-and the `run_onchange_after` script runs the idempotent
-`horneroctl hypr plugins install --yes` (retired `dots-hyprland-plugins`
-wrapper; also runs on every login via autostart) to
-add, enable and reload the plugin through `hyprpm`. The plugin is configured in
-`~/.config/hypr/hyprland.conf.d/plugins.conf`.
-
-- Toggle the overview: `Super+O` (or a 3-finger swipe up on a touchpad)
-- Keyboard navigation while the overview is open is handled by the
-  `scrolloverview` submap (arrows, Return to select, Escape to close).
-- See [Hyprland Keybindings](wiki/Hyprland-Keybindings.md) for the full map.
-
-## Theme and Color Workflow
-
-```mermaid
-flowchart LR
-  wallpaper[WallpaperChange] --> reload[horneroctl wallpaper reload --yes]
-  reload --> smart[dots-smart-colorsGenerate]
-  smart --> scheme[schemeJson]
-  scheme --> quickshell[QuickshellColoursReload]
-```
-
-## Troubleshooting
-
-```bash
-# Check shell status
+```sh
+horneroctl doctor
 horneroctl shell status
-
-# Restart shell
-horneroctl shell restart --yes
-
-# Reload Hyprland config
-hyprctl reload
+horneroctl shell --help
+horneroctl hypr --help
+horneroctl appearance --help
 ```
 
-## Notes
+Use the Shell's Control Center for common settings. Use `horneroctl` for
+supported command-line operations and `hyprctl` only for compositor-level
+diagnostics or documented configuration reloads.
 
-- Legacy Waybar/EWW/JGMenu flows are removed from the maintained setup.
-- Use Quickshell IPC and `dots appearance` as the primary interaction layer.
+For user-facing shortcuts, see the [HorneroOS shortcuts guide](https://hornero-os.vercel.app/docs/desktop/shortcuts/). For themes and wallpaper colors, see the [Appearance guide](https://hornero-os.vercel.app/docs/desktop/appearance/).

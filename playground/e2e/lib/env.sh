@@ -3,10 +3,10 @@
 # Source this file from other scripts: source "$(dirname "${BASH_SOURCE[0]}")/env.sh"
 
 E2E_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DOTFILES_ROOT="$(cd "${E2E_ROOT}/../.." && pwd)"
+HORNERO_SOURCE_ROOT="$(cd "${E2E_ROOT}/../.." && pwd)"
 
-E2E_CONTAINER_NAME="${E2E_CONTAINER_NAME:-dotfiles-e2e-vm}"
-E2E_IMAGE="${E2E_IMAGE:-dotfiles-e2e-qemu}"
+E2E_CONTAINER_NAME="${E2E_CONTAINER_NAME:-hornero-e2e-vm}"
+E2E_IMAGE="${E2E_IMAGE:-hornero-e2e-qemu}"
 E2E_SSH_PORT="${E2E_SSH_PORT:-2222}"
 E2E_SSH_USER="${E2E_SSH_USER:-hornero}"
 E2E_SSH_DIR="${E2E_SSH_DIR:-${E2E_ROOT}/ssh}"

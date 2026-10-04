@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# desktop-smoke scenario: boot -> provision -> deploy -> session -> record -> assert.
+# desktop-smoke scenario: boot -> provision -> install -> session -> record -> assert.
 # Produces screenshots, a desktop recording, and assertions.json in artifacts/.
 
 set -euo pipefail
@@ -27,7 +27,7 @@ bash "${E2E_LIB_DIR}/wait-ssh.sh" 300 || fail "ssh not reachable"
 
 # 2. Provision + real end-user install -----------------------------------------
 bash "${E2E_LIB_DIR}/provision.sh" || fail "provisioning"
-bash "${E2E_LIB_DIR}/install-dots.sh" || fail "dotfiles install"
+bash "${E2E_LIB_DIR}/install-hornero.sh" || fail "Hornero source install"
 
 # 3. Session -------------------------------------------------------------------
 bash "${E2E_LIB_DIR}/start-session.sh" || fail "session start"
@@ -79,7 +79,7 @@ e2e_ssh 'tail -n 200 /tmp/hypr.log' > "${E2E_ARTIFACTS_DIR}/logs/hyprland.log" 2
 e2e_ssh 'cat /tmp/qs.log' > "${E2E_ARTIFACTS_DIR}/logs/quickshell.log" 2> /dev/null || true
 
 # 8. Report --------------------------------------------------------------------
-GIT_SHA="$(git -C "${DOTFILES_ROOT}" rev-parse --short HEAD 2> /dev/null || echo unknown)"
+GIT_SHA="$(git -C "${HORNERO_SOURCE_ROOT}" rev-parse --short HEAD 2> /dev/null || echo unknown)"
 TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 REC_OK=false
 [[ -n ${RECORDING} && -s ${RECORDING} ]] && REC_OK=true

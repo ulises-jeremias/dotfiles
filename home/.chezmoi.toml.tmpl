@@ -6,7 +6,7 @@
 {{- $headless := false -}}{{/* true if this machine does not have a screen and keyboard */}}
 {{- $personal := false -}}{{/* true if this machine should have personal secrets */}}
 {{- $e2e := false -}}{{/* true if this is the E2E test VM (full desktop, no secrets, no prompts) */}}
-{{- if env "DOTS_E2E" -}}
+{{- if env "HORNERO_E2E" -}}
 {{-   $e2e = true -}}
 {{- end -}}
 {{- "" -}}

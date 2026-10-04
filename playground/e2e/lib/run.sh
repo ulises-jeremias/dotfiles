@@ -18,7 +18,7 @@ fi
 # --- ephemeral SSH key -------------------------------------------------------
 if [[ ! -f ${E2E_SSH_KEY} ]]; then
 	echo "==> generating ephemeral SSH key"
-	ssh-keygen -t ed25519 -N '' -C dotfiles-e2e -f "${E2E_SSH_KEY}" > /dev/null
+	ssh-keygen -t ed25519 -N '' -C hornero-e2e -f "${E2E_SSH_KEY}" > /dev/null
 fi
 E2E_SSH_PUBKEY="$(cat "${E2E_SSH_KEY}.pub")"
 

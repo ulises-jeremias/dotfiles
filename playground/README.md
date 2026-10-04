@@ -139,7 +139,7 @@ The default login manager is `sddm`. You can change it by setting the `PLAYGROUN
    - Connect using: `virt-viewer --connect qemu:///system <vm-name>`
 
 4. **Check Logs**:
-   - The play script automatically logs all output to `/tmp/dots_playground_log_*.txt`
+   - The play script automatically logs all output to `/tmp/hornero_playground_log_*.txt`
    - You can specify a custom log file: `./bin/play --log-file=/path/to/log.txt`
 
 ## Cleanup

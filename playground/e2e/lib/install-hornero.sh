@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Install the dotfiles inside the VM the same way an end user would:
+# Install the Hornero source inside the VM the same way an end user would:
 # copy the working tree over, then run ./install.sh (chezmoi init --apply).
 #
-# DOTS_E2E=1 selects the E2E install profile: full desktop (plugin builds,
+# HORNERO_E2E=1 selects the E2E install profile: full desktop (plugin builds,
 # wallpapers link, hyprland stack installs) but non-interactive and with
 # zero personal secrets (LastPass credentials and SSH keys stay out).
 
@@ -19,21 +19,21 @@ e2e_ssh_ready || {
 	exit 1
 }
 
-echo "==> copying working tree into the VM (~/.dotfiles)"
-cd "${DOTFILES_ROOT}"
+echo "==> copying working tree into the VM (~/hornero-source)"
+cd "${HORNERO_SOURCE_ROOT}"
 # Tracked + untracked-not-ignored files: exactly the working tree under test.
 git ls-files -co --exclude-standard | tar cf - -T - 2> /dev/null \
-	| e2e_ssh 'rm -rf ~/.dotfiles && mkdir -p ~/.dotfiles && tar xf - -C ~/.dotfiles'
+	| e2e_ssh 'rm -rf ~/hornero-source && mkdir -p ~/hornero-source && tar xf - -C ~/hornero-source'
 
-echo "==> launching end-user install (./install.sh with DOTS_E2E=1)"
+echo "==> launching end-user install (./install.sh with HORNERO_E2E=1)"
 # First-boot semantics: no prior chezmoi config/state, like a brand new user.
 # Otherwise chezmoi prompts about files changed since the last apply and
 # fails without a TTY.
 # shellcheck disable=SC2016  # remote script, no local expansion wanted
 e2e_ssh 'rm -rf ~/.config/chezmoi && cat > /tmp/run-e2e-install.sh << "EOF"
 #!/usr/bin/env bash
-cd "$HOME/.dotfiles"
-DOTS_E2E=1 ./install.sh > /tmp/install.log 2>&1
+cd "$HOME/hornero-source"
+HORNERO_E2E=1 ./install.sh > /tmp/install.log 2>&1
 echo $? > /tmp/install.exit
 EOF
 chmod +x /tmp/run-e2e-install.sh && rm -f /tmp/install.exit' > /dev/null
@@ -63,7 +63,7 @@ echo "==> bootstrapping the ScrollOverview plugin (hyprpm add/enable)"
 # Without a session the reload step warns and is skipped; Hyprland loads
 # the enabled plugin from the hyprpm cache at startup.
 # shellcheck disable=SC2016  # remote script, no local expansion wanted
-e2e_ssh '$HOME/.local/bin/dots-hyprland-plugins --no-update' > /dev/null 2>&1 \
+e2e_ssh 'horneroctl hypr plugins install --yes --no-update' > /dev/null 2>&1 \
 	|| echo "warning: plugin bootstrap failed (config-error overlay may appear)"
 
 echo "==> verifying the install"
@@ -71,7 +71,7 @@ for target in \
 	.config/quickshell/shell.qml \
 	.config/hypr/hyprland.conf \
 	.local/lib/quickshell/qml/Hornero/qmldir; do
-	e2e_ssh "test -e ~/.dotfiles/${target} || test -e ~/${target}" \
+	e2e_ssh "test -e ~/hornero-source/${target} || test -e ~/${target}" \
 		|| {
 			echo "error: missing after install: ~/${target}" >&2
 			exit 1

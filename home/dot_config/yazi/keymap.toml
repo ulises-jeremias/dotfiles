@@ -1,5 +1,5 @@
 # ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║                     HorneroConfig — Yazi Keybindings                       ║
+# ║                     HorneroOS — Yazi Keybindings                            ║
 # ║                                                                            ║
 # ║  Custom keybindings layered on top of yazi defaults.                       ║
 # ║  Only additions/overrides go here — defaults are inherited.                ║
@@ -66,7 +66,7 @@ desc = "Go to ~/.local"
 
 [[mgr.prepend_keymap]]
 on   = ["g", "r"]
-run  = "cd ~/.local/share/dots/themes"
+run  = "cd ~/.local/share/hornero/wallpapers"
 desc = "Go to appearance theme packs"
 
 [[mgr.prepend_keymap]]
