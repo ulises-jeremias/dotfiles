@@ -49,3 +49,15 @@ def test_theme_helpers_are_not_duplicated_in_personal_source():
     bin_dir = ROOT / "home/dot_local/bin"
     assert not list(bin_dir.glob("*settings*shim*"))
     assert not list(bin_dir.glob("*switcher*shim*"))
+
+
+if __name__ == "__main__":
+    tests = [
+        test_hornero_owns_theme_metadata_and_wallpapers_use_product_namespace,
+        test_managed_source_has_no_retired_runtime_names_or_overrides,
+        test_theme_helpers_are_not_duplicated_in_personal_source,
+    ]
+    for test in tests:
+        test()
+        print(f"PASS: {test.__name__}")
+    print(f"{len(tests)} Hornero source contract tests passed")
