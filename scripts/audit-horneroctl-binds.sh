@@ -17,7 +17,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if ! command -v horneroctl > /dev/null 2>&1; then
+if ! command -v horneroctl >/dev/null 2>&1; then
 	echo "SKIP: horneroctl not on PATH (bind audit)"
 	exit 0
 fi
@@ -37,7 +37,7 @@ walk() {
 	shift
 	local prefix=("$@")
 	local out usage_line token alt pending=""
-	out="$(horneroctl "${prefix[@]}" --help 2> /dev/null)" || return 0
+	out="$(horneroctl "${prefix[@]}" --help 2>/dev/null)" || return 0
 	usage_line="$(printf '%s\n' "$out" | grep -m1 '^Usage: horneroctl' || true)"
 	[[ -n $usage_line ]] || return 0
 	HANDLED["${prefix[*]}"]=1
@@ -48,55 +48,55 @@ walk() {
 	usage_line="${usage_line#"${usage_line%%[![:space:]]*}"}"
 	for token in $usage_line; do
 		case "$token" in
-			'--'*)
-				# ipc passthrough and option terminators end this branch.
-				return 0
-				;;
-			'<'*'>' | '\['*'\]')
-				# Strip brackets, then split pipe alternations. A bare
-				# `set-*` becomes a glob; `[...]` without pipes and
-				# without placeholders carries flags only.
-				inner="$token"
-				[[ $inner == '['*']' ]] && inner="${inner#\[}" && inner="${inner%\]}"
-				inner="${inner#<}"
-				inner="${inner%>}"
-				if [[ $inner != *'|'* ]]; then
-					if [[ $inner == *'*' ]]; then
-						GLOBS["${prefix[*]}"]+="${inner%\*} "
-					fi
-					pending=""
+		'--'*)
+			# ipc passthrough and option terminators end this branch.
+			return 0
+			;;
+		'<'*'>' | '\['*'\]')
+			# Strip brackets, then split pipe alternations. A bare
+			# `set-*` becomes a glob; `[...]` without pipes and
+			# without placeholders carries flags only.
+			inner="$token"
+			[[ $inner == '['*']' ]] && inner="${inner#\[}" && inner="${inner%\]}"
+			inner="${inner#<}"
+			inner="${inner%>}"
+			if [[ $inner != *'|'* ]]; then
+				if [[ $inner == *'*' ]]; then
+					GLOBS["${prefix[*]}"]+="${inner%\*} "
+				fi
+				pending=""
+				continue
+			fi
+			IFS='|' read -r -a parts <<<"$inner" || true
+			for alt in "${parts[@]}"; do
+				if [[ -z $alt ]]; then
 					continue
 				fi
-				IFS='|' read -r -a parts <<< "$inner" || true
-				for alt in "${parts[@]}"; do
-					if [[ -z $alt ]]; then
-						continue
-					fi
-					if [[ $alt == *'*' ]]; then
-						GLOBS["${prefix[*]}"]+="${alt%\*} "
-						continue
-					fi
-					HANDLED["${prefix[*]} $alt"]=1
-					# Leaves may own subcommands (theme>apply).
-					walk $((depth + 1)) "${prefix[@]}" "$alt"
-				done
-				pending=""
-				;;
-			*'...'* | *'=='* | *'|'*)
-				continue
-				;;
-			*)
-				if [[ $token =~ ^[a-z][a-z-]*$ || $token =~ ^[a-z][a-z-]*\*$ ]]; then
-					pending="${token%\*}"
-					walk $((depth + 1)) "${prefix[@]}" "$pending"
+				if [[ $alt == *'*' ]]; then
+					GLOBS["${prefix[*]}"]+="${alt%\*} "
+					continue
 				fi
-				;;
+				HANDLED["${prefix[*]} $alt"]=1
+				# Leaves may own subcommands (theme>apply).
+				walk $((depth + 1)) "${prefix[@]}" "$alt"
+			done
+			pending=""
+			;;
+		*'...'* | *'=='* | *'|'*)
+			continue
+			;;
+		*)
+			if [[ $token =~ ^[a-z][a-z-]*$ || $token =~ ^[a-z][a-z-]*\*$ ]]; then
+				pending="${token%\*}"
+				walk $((depth + 1)) "${prefix[@]}" "$pending"
+			fi
+			;;
 		esac
 	done
 }
 
 # Seed the walk from every top-level group in the root usage.
-root_groups="$(horneroctl --help 2> /dev/null | grep -oE '^\s+[a-z][a-z-]+' | tr -d ' ' | sort -u || true)"
+root_groups="$(horneroctl --help 2>/dev/null | grep -oE '^\s+[a-z][a-z-]+' | tr -d ' ' | sort -u || true)"
 for group in $root_groups; do
 	walk 1 "$group"
 done
@@ -127,7 +127,7 @@ fail=0
 check_invocation() {
 	local inv="$1" origin="$2"
 	local -a toks=()
-	read -r -a toks <<< "$inv"
+	read -r -a toks <<<"$inv"
 	local -a path=()
 	local i t
 	for ((i = 0; i < ${#toks[@]}; i++)); do
@@ -149,11 +149,11 @@ check_invocation() {
 			break
 		fi
 		case "$t" in
-			-* | *'/'* | *'$'* | *'<'* | *'>'* | *'='* | *'.'* | *'{'* | *'}'*)
-				break
-				;;
-			'') continue ;;
-			*) path+=("$t") ;;
+		-* | *'/'* | *'$'* | *'<'* | *'>'* | *'='* | *'.'* | *'{'* | *'}'*)
+			break
+			;;
+		'') continue ;;
+		*) path+=("$t") ;;
 		esac
 	done
 	if [[ ${#path[@]} -eq 0 ]]; then
@@ -198,24 +198,24 @@ value_accepted() {
 		[[ $line =~ (^|[^a-zA-Z_-])$verb([^a-zA-Z_-]|$) ]] || continue
 		for ph in $line; do
 			case "$ph" in
-				'<'*'>' | '\['*'<'*']')
-					inner="$ph"
-					[[ $inner == '['* ]] && inner="${inner#\[}" && inner="${inner%\]}"
-					inner="${inner#<}"
-					inner="${inner%>}"
-					if [[ $inner == *'|'* ]]; then
-						IFS='|' read -r -a members <<< "$inner" || true
-						local m
-						for m in "${members[@]}"; do
-							[[ $value == "$m" ]] && return 0
-						done
-					else
-						return 0
-					fi
-					;;
+			'<'*'>' | '\['*'<'*']')
+				inner="$ph"
+				[[ $inner == '['* ]] && inner="${inner#\[}" && inner="${inner%\]}"
+				inner="${inner#<}"
+				inner="${inner%>}"
+				if [[ $inner == *'|'* ]]; then
+					IFS='|' read -r -a members <<<"$inner" || true
+					local m
+					for m in "${members[@]}"; do
+						[[ $value == "$m" ]] && return 0
+					done
+				else
+					return 0
+				fi
+				;;
 			esac
 		done
-	done <<< "$help"
+	done <<<"$help"
 	return 1
 }
 
@@ -234,7 +234,7 @@ node_resolves() {
 
 scan_file() {
 	local file="$1" line inv lines
-	mapfile -t lines < "$file"
+	mapfile -t lines <"$file"
 	for line in "${lines[@]}"; do
 		while IFS= read -r inv; do
 			[[ -n $inv ]] && check_invocation "$inv" "$file"
@@ -245,7 +245,7 @@ scan_file() {
 while IFS= read -r -d '' file; do
 	scan_file "$file"
 done < <(find "${ROOT}/home/dot_config/hypr" "${ROOT}/home/dot_local/share/applications" "${ROOT}/home/.chezmoiscripts" \
-	-type f \( -name '*.conf' -o -name '*.desktop' -o -name '*.tmpl' -o -name '*.sh' \) -print0 2> /dev/null)
+	-type f \( -name '*.conf' -o -name '*.desktop' -o -name '*.tmpl' -o -name '*.sh' \) -print0 2>/dev/null)
 
 if [[ $fail -ne 0 ]]; then
 	echo "❌ horneroctl bind audit failed" >&2
