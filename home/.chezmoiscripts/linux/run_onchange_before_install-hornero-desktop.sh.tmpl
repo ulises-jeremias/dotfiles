@@ -5,6 +5,16 @@
 
 set -euo pipefail
 
+# Replace the retired VCS Quickshell package before installing the stable
+# repository package; pacman marks the two package names as conflicting.
+if pacman -Qq quickshell-git >/dev/null 2>&1; then
+  yay -R --noconfirm quickshell-git
+fi
+
+# Keep CMake/Make builds bounded on workstations with limited memory.
+export CMAKE_BUILD_PARALLEL_LEVEL="${CMAKE_BUILD_PARALLEL_LEVEL:-2}"
+export MAKEFLAGS=-j2
+
 # Hornero product code, its catalogue, and its CLI come from AUR packages.
 # The desktop source checkout is not cloned or built into the user's home.
 
