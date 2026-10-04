@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "fin-del-mundo",
+  "name": "Fin del Mundo",
+  "description": "A maritime twilight of Beagle water, wind-shaped southern forest and distant harbor light",
+  "tags": ["argentina", "tierra-del-fuego", "beagle", "forest", "sea-glass", "copper", "dark"],
+  "darkMode": true,
+  "schemeType": "expressive",
+  "gtkTheme": "Adwaita-dark",
+  "iconTheme": "Papirus-Dark",
+  "defaultWallpaper": "beagle-blue-hour-01.jpg",
+  "wallpaperDir": "fin-del-mundo",
+  "gtkPreferDark": true
+}
