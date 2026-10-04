@@ -5,12 +5,8 @@
 
 set -euo pipefail
 
-# This tree hard-depends on horneroctl; keybindings, launchers, and
-# Quickshell call sites all invoke it natively.
-# Never clobber an existing install (dev builds live in ~/.local/bin).
-if command -v horneroctl >/dev/null 2>&1; then
-    exit 0
-fi
+# The AUR package owns the CLI. A user-local binary must never satisfy this
+# dependency: it can shadow the packaged version and drift from the desktop.
 
 # Canonical binary distribution (same pattern as agent-toolkit-bin).
 # The aur-helper script sorts earlier (install-000-aur-helper), so an
@@ -20,12 +16,17 @@ if command -v yay >/dev/null 2>&1; then
 elif command -v paru >/dev/null 2>&1; then
     paru -S --noconfirm --needed horneroctl-bin
 else
-    echo "No AUR helper found (yay/paru), skipping horneroctl-install" >&2
-    exit 0
+    echo "horneroctl-install requires an AUR helper (yay or paru)" >&2
+    exit 1
 fi
 
-if ! command -v horneroctl >/dev/null 2>&1; then
-    echo "horneroctl-install failed: binary not on PATH after install" >&2
+if ! pacman -Qq horneroctl-bin >/dev/null 2>&1; then
+    echo "horneroctl-install failed: horneroctl-bin is not installed" >&2
+    exit 1
+fi
+
+if ! pacman -Qoq /usr/bin/horneroctl 2>/dev/null | grep -Fxq 'horneroctl-bin'; then
+    echo "horneroctl-install failed: /usr/bin/horneroctl is not owned by horneroctl-bin" >&2
     exit 1
 fi
 {{      end -}}

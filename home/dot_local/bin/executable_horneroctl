@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Keep ~/.local/bin first in PATH without allowing a stale local binary to
+# override the AUR package, which owns the actual Hornero CLI.
+if [[ ! -x /usr/bin/horneroctl ]]; then
+    printf '%s\n' 'horneroctl-bin is not installed; run chezmoi apply to install the AUR package.' >&2
+    exit 127
+fi
+
+exec /usr/bin/horneroctl "$@"
