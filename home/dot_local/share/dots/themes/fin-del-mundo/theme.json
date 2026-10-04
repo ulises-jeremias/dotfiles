@@ -3,7 +3,15 @@
   "id": "fin-del-mundo",
   "name": "Fin del Mundo",
   "description": "A maritime twilight of Beagle water, wind-shaped southern forest and distant harbor light",
-  "tags": ["argentina", "tierra-del-fuego", "beagle", "forest", "sea-glass", "copper", "dark"],
+  "tags": [
+    "argentina",
+    "tierra-del-fuego",
+    "beagle",
+    "forest",
+    "sea-glass",
+    "copper",
+    "dark"
+  ],
   "darkMode": true,
   "schemeType": "expressive",
   "gtkTheme": "Adwaita-dark",

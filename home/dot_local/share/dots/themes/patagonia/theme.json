@@ -3,7 +3,15 @@
   "id": "patagonia",
   "name": "Patagonia",
   "description": "Blue-hour ice, basalt and glacial water with a restrained copper horizon",
-  "tags": ["argentina", "patagonia", "glacier", "basalt", "cyan", "dark", "nature"],
+  "tags": [
+    "argentina",
+    "patagonia",
+    "glacier",
+    "basalt",
+    "cyan",
+    "dark",
+    "nature"
+  ],
   "darkMode": true,
   "schemeType": "fidelity",
   "gtkTheme": "Adwaita-dark",
