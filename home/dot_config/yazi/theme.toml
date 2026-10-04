@@ -2,7 +2,7 @@
 # ║                     HorneroOS — Yazi Theme                                 ║
 # ║                                                                            ║
 # ║  Yazi inherits terminal colors automatically via escape sequences.         ║
-# ║  Smart-colors / pywal set the terminal palette, and yazi picks it up.      ║
+# ║  Hornero palette output is inherited by the terminal and Yazi.             ║
 # ║  This file only needs flavor selection and minor overrides.                ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
