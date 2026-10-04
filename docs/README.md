@@ -2,7 +2,7 @@
 
 This folder contains contributor and workstation-source notes. It is not the
 canonical user manual for HorneroOS; current product behavior is published at
-[hornero-os.vercel.app/docs](https://horneroos.com/docs).
+[horneroos.com/docs](https://horneroos.com/docs).
 
 ## Active notes
 
