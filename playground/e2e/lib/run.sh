@@ -10,7 +10,7 @@ source "${E2E_LIB_DIR}/env.sh"
 
 mkdir -p "${E2E_SSH_DIR}" "${E2E_ARTIFACTS_DIR}" "${E2E_CACHE_DIR}" "${E2E_SHARED_DIR}"
 
-if ! command -v docker > /dev/null 2>&1; then
+if ! command -v docker >/dev/null 2>&1; then
 	echo "error: docker is required" >&2
 	exit 1
 fi
@@ -18,12 +18,12 @@ fi
 # --- ephemeral SSH key -------------------------------------------------------
 if [[ ! -f ${E2E_SSH_KEY} ]]; then
 	echo "==> generating ephemeral SSH key"
-	ssh-keygen -t ed25519 -N '' -C dotfiles-e2e -f "${E2E_SSH_KEY}" > /dev/null
+	ssh-keygen -t ed25519 -N '' -C hornero-e2e -f "${E2E_SSH_KEY}" >/dev/null
 fi
 E2E_SSH_PUBKEY="$(cat "${E2E_SSH_KEY}.pub")"
 
 # --- container image ---------------------------------------------------------
-if ! docker image inspect "${E2E_IMAGE}" > /dev/null 2>&1; then
+if ! docker image inspect "${E2E_IMAGE}" >/dev/null 2>&1; then
 	echo "==> building ${E2E_IMAGE}"
 	docker build \
 		--build-arg "KVM_GID=$(getent group kvm | cut -d: -f3)" \
@@ -41,7 +41,7 @@ SEED_ISO="${E2E_CACHE_DIR}/seed.iso"
 if [[ ! -f ${SEED_ISO} || ${SEED_ISO} -ot "${E2E_ROOT}/user-data.tmpl" ]]; then
 	echo "==> building cloud-init seed ISO"
 	sed "s|__E2E_SSH_PUBKEY__|${E2E_SSH_PUBKEY}|" \
-		"${E2E_ROOT}/user-data.tmpl" > "${E2E_CACHE_DIR}/user-data"
+		"${E2E_ROOT}/user-data.tmpl" >"${E2E_CACHE_DIR}/user-data"
 	cp "${E2E_ROOT}/meta-data" "${E2E_CACHE_DIR}/meta-data"
 	docker run --rm \
 		-v "${E2E_CACHE_DIR}:/vm" \
@@ -58,7 +58,7 @@ if e2e_vm_running; then
 	echo "==> VM container already running"
 	exit 0
 fi
-docker rm -f "${E2E_CONTAINER_NAME}" > /dev/null 2>&1 || true
+docker rm -f "${E2E_CONTAINER_NAME}" >/dev/null 2>&1 || true
 
 # KVM acceleration when available, TCG fallback otherwise.
 KVM_ARGS=(-enable-kvm -cpu host)
@@ -91,6 +91,6 @@ docker run -d \
 	-display vnc=:0 \
 	-serial "file:/artifacts/console.log" \
 	-monitor "unix:/artifacts/monitor.sock,server,nowait" \
-	-usb -device qemu-xhci -device usb-tablet > /dev/null
+	-usb -device qemu-xhci -device usb-tablet >/dev/null
 
 echo "==> VM started. VNC :0, SSH localhost:${E2E_SSH_PORT}, console: ${E2E_ARTIFACTS_DIR}/console.log"

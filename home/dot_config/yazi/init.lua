@@ -1,2 +1,2 @@
--- HorneroConfig — Yazi Lua initialization
+-- HorneroOS — Yazi Lua initialization
 -- Add plugin hooks and custom behavior here.

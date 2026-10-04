@@ -5,12 +5,14 @@
 
 set -euo pipefail
 
-source "${HOME}/.local/lib/dots/logging.sh"
+log_info() { printf '[hornero] %s\n' "$*"; }
+log_warn() { printf '[hornero] warning: %s\n' "$*" >&2; }
+log_debug() { [[ ${HORNERO_BUILD_VERBOSE:-0} == 1 ]] && printf '[hornero] %s\n' "$*" >&2 || true; }
 
 SHELL_DIR="${HOME}/.config/quickshell"
 PLUGIN_DIR="${SHELL_DIR}/plugin"
 BUILD_ROOT_DIR="${SHELL_DIR}"
-BUILD_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/dots/quickshell/build"
+BUILD_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/hornero/quickshell/build"
 INSTALL_PREFIX="${HOME}/.local/lib/quickshell"
 
 if [[ ! -d "$SHELL_DIR" ]]; then
@@ -50,9 +52,17 @@ cmake -S "$BUILD_ROOT_DIR" -B "$BUILD_DIR" -G Ninja \
     log_debug "$line"
 done
 
-cmake --build "$BUILD_DIR" 2>&1 | while IFS= read -r line; do
+if command -v systemd-run >/dev/null 2>&1 && systemctl --user show-environment >/dev/null 2>&1; then
+    systemd-run --user --scope --quiet \
+        --property=MemoryMax=3G --property=CPUQuota=200% \
+        -- cmake --build "$BUILD_DIR" --parallel "${HORNERO_BUILD_JOBS:-2}" 2>&1 | while IFS= read -r line; do
     log_debug "$line"
 done
+else
+    cmake --build "$BUILD_DIR" --parallel "${HORNERO_BUILD_JOBS:-2}" 2>&1 | while IFS= read -r line; do
+    log_debug "$line"
+done
+fi
 
 cmake --install "$BUILD_DIR" 2>&1 | while IFS= read -r line; do
     log_debug "$line"

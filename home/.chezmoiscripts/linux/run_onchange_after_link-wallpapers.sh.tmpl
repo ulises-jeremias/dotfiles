@@ -9,11 +9,11 @@
 
 set -euo pipefail
 
-SRC_ROOT="${HOME}/.local/share/dots/wallpapers"
+SRC_ROOT="${HOME}/.local/share/hornero/wallpapers"
 DEST_ROOT="${HOME}/Pictures/Wallpapers"
 
 # Trigger: re-run when any wallpaper filename set changes.
-# {{- range (glob (joinPath .chezmoi.sourceDir "dot_local/share/dots/wallpapers/**/*.{png,jpg,jpeg,webp,gif}")) }}
+# {{- range (glob (joinPath .chezmoi.sourceDir "dot_local/share/hornero/wallpapers/**/*.{png,jpg,jpeg,webp,gif}")) }}
 # {{ . }}
 # {{- end }}
 

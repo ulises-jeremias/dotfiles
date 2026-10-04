@@ -2,6 +2,4 @@
 reviews:
   path_filters:
     # Theme pack JSON is data, not logic (still visible in the GitHub PR diff).
-    - "!home/dot_local/share/dots/themes/**/theme.json"
-    - "!home/dot_local/share/dots/themes/**/preview.*"
-    - "!home/dot_local/share/dots/wallpapers/**"
+    - "!home/dot_local/share/hornero/wallpapers/**"

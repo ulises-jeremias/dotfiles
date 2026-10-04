@@ -14,7 +14,7 @@ e2e_ssh_ready || {
 
 echo "==> restarting session cleanly (deterministic state)"
 e2e_ssh 'pkill -x qs 2> /dev/null; pkill -x wf-recorder 2> /dev/null; \
-	pkill -x Hyprland 2> /dev/null; sleep 3' > /dev/null || true
+	pkill -x Hyprland 2> /dev/null; sleep 3' >/dev/null || true
 
 echo "==> starting Hyprland (DRM backend)"
 # shellcheck disable=SC2016  # remote script, no local expansion wanted
@@ -28,14 +28,14 @@ if ! e2e_session_ready; then
 	exit 1
 fi
 
-if e2e_ssh 'pgrep -x qs > /dev/null 2>&1 || pgrep -x quickshell > /dev/null' > /dev/null 2>&1; then
+if e2e_ssh 'pgrep -x qs > /dev/null 2>&1 || pgrep -x quickshell > /dev/null' >/dev/null 2>&1; then
 	echo "==> Quickshell already running"
 else
 	# shellcheck disable=SC2016  # remote script, no local expansion wanted
 	echo "==> waiting for the Wayland socket (Hyprland creates it after pgrep shows up)"
 	for _ in $(seq 1 30); do
 		# shellcheck disable=SC2016  # remote script, no local expansion wanted
-		e2e_ssh 'test -S $XDG_RUNTIME_DIR/wayland-1' > /dev/null 2>&1 && break
+		e2e_ssh 'test -S $XDG_RUNTIME_DIR/wayland-1' >/dev/null 2>&1 && break
 		sleep 1
 	done
 	# shellcheck disable=SC2016  # remote script, no local expansion wanted
@@ -45,14 +45,13 @@ else
 	}
 
 	echo "==> starting Quickshell"
-	# Use Hornero's lifecycle CLI; the retired dots-quickshell wrapper is not
-	# installed on a current Hornero system.
+	# Use Hornero's lifecycle CLI as the supported Shell entry point.
 	e2e_ssh_bg "$(e2e_hypr_env)
 horneroctl shell start --yes > /tmp/hornero-shell-start.log 2>&1"
 	sleep 10
 fi
 
-if e2e_ssh 'pgrep -x qs > /dev/null 2>&1 || pgrep -x quickshell > /dev/null' > /dev/null 2>&1; then
+if e2e_ssh 'pgrep -x qs > /dev/null 2>&1 || pgrep -x quickshell > /dev/null' >/dev/null 2>&1; then
 	echo "==> session is up (Hyprland + Quickshell)"
 else
 	echo "error: Quickshell did not start. Check /tmp/qs.log inside the VM." >&2

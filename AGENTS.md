@@ -1,73 +1,35 @@
-# AI Agent Guidelines for HorneroConfig
+# Contributor guide
 
-> **For AI coding assistants and automated tools**  
-> **Last Updated**: 2026-02-27
+This repository is a personal chezmoi source for an Arch workstation. It is
+not the source of HorneroOS system packages, Shell behavior, or theme-pack
+metadata; those belong to the `HorneroOS` organization.
 
-## Purpose
+## Core rules
 
-This is the authoritative guide for AI agents working on HorneroConfig. Follow the Hornero Bird philosophy: build **robust**, **functional**, **adaptable**, **beautiful**, and **modular** environments.
+- Prefer declarative chezmoi files for user configuration.
+- Use `horneroctl` for supported Hornero desktop operations. Do not add a
+  second script framework or compatibility layer in this source.
+- Keep Hornero appearance pack metadata in HorneroOS/config. This repository
+  may provide optional wallpaper media under
+  `home/dot_local/share/hornero/wallpapers/`.
+- Use XDG paths and the Hornero namespace for new product-specific state.
+- Never run `chezmoi apply` against the developer's account during tests.
+- Render chezmoi templates with both managed-host and static configurations.
+- Keep historical workstation notes in `docs/wiki/` clearly identified as
+  historical; they do not define current product contracts.
+- Never commit credentials, private keys, personal host facts, or generated
+  caches.
 
-## Quick Reference
+## Validation
 
-### Core Principles (The Hornero Way)
+Run the focused contract tests, `scripts/audit-horneroctl-binds.sh`,
+`scripts/verify-delivery.sh`, and the relevant chezmoi template checks. Use a
+temporary HOME and isolated XDG directories for runtime tests.
 
-1. **Theme-Adaptive** - All visuals adapt to any color palette automatically
-2. **Modular** - Components work independently yet integrate seamlessly
-3. **Single Source of Truth** - Configuration flows from centralized sources
-4. **Graceful Degradation** - Function even with missing dependencies
-5. **Security by Default** - Never commit secrets, validate all inputs
+## Product references
 
-See [Architecture Philosophy](docs/Architecture-Philosophy.md) for detailed principles.
-
-### Essential Standards
-
-**Scripts Must:**
-
-- Use EasyOptions for CLI parsing
-- Include `set -euo pipefail`
-- Follow naming: `dots-*` for user scripts, `snake_case` for functions/vars
-- Handle errors gracefully with logging
-- Work without optional dependencies (fallbacks required)
-
-See [Development Standards](docs/Development-Standards.md) for complete requirements.
-
-### Key Systems
-
-- **Appearance Themes** - Apply-once theme packs + live wallpaper/scheme/GTK controls
-- **Smart Colors** - Semantic color adaptation cached in `~/.cache/dots/smart-colors/`
-- **Hornero Shell** - Unified QML desktop shell (bars, launcher, dashboard, notifications, Control Center) with multi-layout support. Layout presets are package-owned under `~/.local/share/hornero/shell-presets/`; inspect/apply them with `horneroctl shell preset list` and `horneroctl shell preset apply <name> --yes`, or use the in-shell layout picker.
-- **Hornero C++ Plugin** - Performance-critical Quickshell extensions (image analysis, audio, calculator)
-- **Dots CLI** - Unified script interface
-- **Chaotic-AUR** - Precompiled AUR packages for faster installation
-
-See [System Architecture](docs/System-Architecture.md) for detailed architecture.
-
-### Installation & Package Management
-
-**Chezmoi Scripts Execution Order:**
-
-- `000-aaa-chaotic-aur.sh` - Configure Chaotic-AUR repository first
-- `000-aur-helper.sh` - Install yay AUR helper
-- Other scripts follow alphabetically
-
-**Chaotic-AUR Benefits:**
-
-- Precompiled binaries for popular AUR packages
-- 50-70% faster installation times
-- Automatically configured during `chezmoi apply`
-- No manual intervention required
-
-See [Chaotic-AUR docs](https://aur.chaotic.cx/docs) for repository details.
-
-## Documentation Index
-
-- **[Architecture Philosophy](docs/Architecture-Philosophy.md)** - Design principles and philosophy
-- **[System Architecture](docs/System-Architecture.md)** - Major subsystems explained
-- **[Development Standards](docs/Development-Standards.md)** - Script templates, naming, error handling
-- **[Integration Patterns](docs/Integration-Patterns.md)** - Chezmoi, WM detection, daemons, colors
-- **[Testing Strategy](docs/Testing-Strategy.md)** - Playground usage, test requirements
-- **[Security Guidelines](docs/Security-Guidelines.md)** - Secret management, validation, permissions
-- **[Performance Guidelines](docs/Performance-Guidelines.md)** - Caching, optimization, best practices
-
-For architectural decisions, see [ADRs](docs/adrs/).  
-For human contributors, see [CONTRIBUTING.md](CONTRIBUTING.md).
+- [HorneroOS](https://github.com/HorneroOS)
+- [Config](https://github.com/HorneroOS/config)
+- [Shell](https://github.com/HorneroOS/shell)
+- [CLI](https://github.com/HorneroOS/hornero)
+- [User documentation](https://hornero-os.vercel.app/docs)

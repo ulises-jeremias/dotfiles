@@ -17,7 +17,7 @@ indent_size = 2
 [*.md]
 trim_trailing_whitespace = false
 
-[{**.*sh,./dots}]
+[{**.*sh}]
 shell_variant      = bash
 binary_next_line   = true  # like -bn
 switch_case_indent = true  # like -ci

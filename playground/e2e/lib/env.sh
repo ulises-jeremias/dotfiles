@@ -3,10 +3,10 @@
 # Source this file from other scripts: source "$(dirname "${BASH_SOURCE[0]}")/env.sh"
 
 E2E_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DOTFILES_ROOT="$(cd "${E2E_ROOT}/../.." && pwd)"
+HORNERO_SOURCE_ROOT="$(cd "${E2E_ROOT}/../.." && pwd)"
 
-E2E_CONTAINER_NAME="${E2E_CONTAINER_NAME:-dotfiles-e2e-vm}"
-E2E_IMAGE="${E2E_IMAGE:-dotfiles-e2e-qemu}"
+E2E_CONTAINER_NAME="${E2E_CONTAINER_NAME:-hornero-e2e-vm}"
+E2E_IMAGE="${E2E_IMAGE:-hornero-e2e-qemu}"
 E2E_SSH_PORT="${E2E_SSH_PORT:-2222}"
 E2E_SSH_USER="${E2E_SSH_USER:-hornero}"
 E2E_SSH_DIR="${E2E_SSH_DIR:-${E2E_ROOT}/ssh}"
@@ -45,7 +45,7 @@ e2e_ssh_bg() {
 		-o ConnectTimeout=5 \
 		-i "${E2E_SSH_KEY}" \
 		-p "${E2E_SSH_PORT}" \
-		"${E2E_SSH_USER}@127.0.0.1" "$@" > /dev/null 2>&1
+		"${E2E_SSH_USER}@127.0.0.1" "$@" >/dev/null 2>&1
 }
 
 # Copy files to/from the E2E VM.
@@ -66,12 +66,12 @@ e2e_vm_running() {
 
 # True when SSH is answering.
 e2e_ssh_ready() {
-	e2e_ssh 'echo ok' > /dev/null 2>&1
+	e2e_ssh 'echo ok' >/dev/null 2>&1
 }
 
 # True when the Hyprland session is up inside the VM.
 e2e_session_ready() {
-	e2e_ssh 'pgrep -x Hyprland > /dev/null' > /dev/null 2>&1
+	e2e_ssh 'pgrep -x Hyprland > /dev/null' >/dev/null 2>&1
 }
 
 # Resolve the Hyprland instance signature inside the VM.
