@@ -51,11 +51,45 @@ def test_theme_helpers_are_not_duplicated_in_personal_source():
     assert not list(bin_dir.glob("*switcher*shim*"))
 
 
+def test_hornero_runtime_comes_from_aur_packages():
+    scripts = ROOT / "home/.chezmoiscripts/linux"
+    shell_install = (scripts / "run_onchange_before_install-hornero-desktop.sh.tmpl").read_text()
+    environment = (ROOT / "home/dot_config/hypr/hyprland.conf.d/environment.conf").read_text()
+
+    for package in ("hornero-shell", "hornero-config", "horneroctl-bin"):
+        assert package in shell_install
+    assert "quickshell-git" not in shell_install
+    assert "min_hornero_config_version" in shell_install
+    assert "min_hornero_shell_version" in shell_install
+    assert "min_horneroctl_version" in shell_install
+    assert not (ROOT / "home/dot_local/bin/executable_horneroctl").exists()
+    assert not (scripts / "run_onchange_before_install-horneroctl.sh.tmpl").exists()
+    assert not (scripts / "run_onchange_before_install-quickshell.sh.tmpl").exists()
+    assert not (scripts / "run_before_install-hornero-shell.sh.tmpl").exists()
+    assert not (scripts / "run_onchange_after_build-quickshell-plugin.sh.tmpl").exists()
+    assert "QS_PLUGIN_PATH" not in environment
+    assert "HORNERO_LIB_DIR" not in environment
+    assert "QML2_IMPORT_PATH" not in environment
+
+    for script in (
+        ROOT / "playground/e2e/lib/env.sh",
+        ROOT / "home/executable_dot_profile",
+    ):
+        content = script.read_text()
+        assert ".local/lib/quickshell" not in content
+        assert "QS_PLUGIN_PATH" not in content
+
+    assert "QS_CONFIG_PATH=/etc/xdg/quickshell/hornero/shell.qml" in (
+        ROOT / "playground/e2e/lib/env.sh"
+    ).read_text()
+
+
 if __name__ == "__main__":
     tests = [
         test_hornero_owns_theme_metadata_and_wallpapers_use_product_namespace,
         test_managed_source_has_no_retired_runtime_names_or_overrides,
         test_theme_helpers_are_not_duplicated_in_personal_source,
+        test_hornero_runtime_comes_from_aur_packages,
     ]
     for test in tests:
         test()

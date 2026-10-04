@@ -19,4 +19,4 @@ Use `--dry-run` to inspect supported changes and `--yes` only for an intentional
 
 This repository may call the CLI from declarative Hyprland bindings or narrowly scoped chezmoi scripts. Keep argument order and documented confirmation flags. Do not parse raw help output as a product registry, duplicate CLI command lists, or add a private command shim. If an operation is missing, add it to HorneroOS/hornero and keep the product documentation in HorneroOS/docs.
 
-See the current [Hornero CLI guide](https://hornero-os.vercel.app/docs/desktop/horneroctl/) and [shortcuts](https://hornero-os.vercel.app/docs/desktop/shortcuts/).
+See the current [Hornero CLI guide](https://horneroos.com/docs/desktop/horneroctl/) and [shortcuts](https://horneroos.com/docs/desktop/shortcuts/).

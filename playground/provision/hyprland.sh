@@ -14,10 +14,7 @@ pacman -Syu --noconfirm --needed --noprogressbar \
 	wl-clipboard \
 	foot
 
-echo "[hyprland] installing quickshell (AUR)"
-sudo -u vagrant yay -S --noconfirm --needed quickshell-git || {
-	echo "[hyprland] quickshell-git failed, trying quickshell"
-	sudo -u vagrant yay -S --noconfirm --needed quickshell
-}
+echo "[hyprland] installing the packaged Hornero runtime (AUR)"
+sudo -u vagrant yay -S --noconfirm --needed quickshell hornero-shell hornero-config horneroctl-bin
 
 echo "[hyprland] done"

@@ -17,16 +17,19 @@ personal workstation around those layers.
 - Keep personal app preferences and optional wallpaper binaries in this
   chezmoi source.
 
-Do not duplicate an installed theme catalogue, copy internal scripts, or add
-fallback implementations when a product package is missing. Explain the
-missing dependency and let the owner layer fix it.
+Do not duplicate an installed theme or layout catalogue, clone the Shell into
+the user config tree, compile a second copy of its plugin, or add fallback
+implementations when a product package is missing. The Arch bootstrap installs
+the required AUR packages and fails with a useful version error if their
+contract is not met.
 
 ## Chezmoi templates
 
 Templates should be deterministic, idempotent, and scoped to a managed target.
 Use explicit template data for host-specific choices. Never start a GUI,
-contact a location service, install packages, or delete user data merely
-because a template changed.
+contact a location service, install packages from arbitrary templates, or
+delete user data merely because a template changed. Required Hornero packages
+are handled only by the dedicated Arch bootstrap scripts.
 
 ## Optional applications
 

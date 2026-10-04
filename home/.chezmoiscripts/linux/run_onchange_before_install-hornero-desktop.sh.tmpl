@@ -1,0 +1,54 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Hornero product code, its catalogue, and its CLI come from AUR packages.
+# The desktop source checkout is not cloned or built into the user's home.
+
+yay -S --noconfirm --needed \
+  quickshell \
+  hornero-shell \
+  hornero-config \
+  horneroctl-bin
+
+# Require package versions whose layouts, theme catalogue, and CLI contract
+# agree with the current Shell main line.
+readonly min_hornero_config_version="0.3.0-1"
+readonly min_hornero_shell_version="1.2.0-1"
+readonly min_horneroctl_version="0.2.0_preview14.2-1"
+installed_hornero_config_version="$(pacman -Q hornero-config | awk '{print $2}')"
+if (( $(vercmp "$installed_hornero_config_version" "$min_hornero_config_version") < 0 )); then
+  echo "hornero-config ${min_hornero_config_version} or newer is required for the system layout catalogue (found ${installed_hornero_config_version})" >&2
+  exit 1
+fi
+installed_hornero_shell_version="$(pacman -Q hornero-shell | awk '{print $2}')"
+if (( $(vercmp "$installed_hornero_shell_version" "$min_hornero_shell_version") < 0 )); then
+  echo "hornero-shell ${min_hornero_shell_version} or newer is required for the packaged Quickshell runtime (found ${installed_hornero_shell_version})" >&2
+  exit 1
+fi
+installed_horneroctl_version="$(pacman -Q horneroctl-bin | awk '{print $2}')"
+if (( $(vercmp "$installed_horneroctl_version" "$min_horneroctl_version") < 0 )); then
+  echo "horneroctl-bin ${min_horneroctl_version} or newer is required for the packaged Quickshell runtime (found ${installed_horneroctl_version})" >&2
+  exit 1
+fi
+
+# Fonts required by the shell
+yay -S --noconfirm --needed \
+  ttf-material-symbols-variable-git \
+  ttf-rubik-vf \
+  ttf-cascadia-code-nerd
+
+# Icon base + Qt platform theme the shell renders app/tray icons with
+# (HorneroOS/config docs/ICON-BASE.md: Papirus family for every flagship;
+# QT_QPA_PLATFORMTHEME=qt6ct). Without them icons fall back to hicolor
+# and most tray/launcher icons render as "image-missing".
+yay -S --noconfirm --needed \
+  papirus-icon-theme \
+  qt6ct
+
+{{      end -}}
+
+{{ end -}}

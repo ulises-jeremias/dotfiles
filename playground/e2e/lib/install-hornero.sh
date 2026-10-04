@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Install the Hornero source inside the VM the same way an end user would:
+# Install the Dotfiles inside the VM the same way an end user would:
 # copy the working tree over, then run ./install.sh (chezmoi init --apply).
 #
-# HORNERO_E2E=1 selects the E2E install profile: full desktop (plugin builds,
-# wallpapers link, hyprland stack installs) but non-interactive and with
+# HORNERO_E2E=1 selects the E2E install profile: full desktop (AUR package
+# install, wallpapers link, hyprland stack install) but non-interactive and with
 # zero personal secrets (LastPass credentials and SSH keys stay out).
 
 set -euo pipefail
@@ -67,15 +67,8 @@ e2e_ssh 'horneroctl hypr plugins install --yes --no-update' >/dev/null 2>&1 ||
 	echo "warning: plugin bootstrap failed (config-error overlay may appear)"
 
 echo "==> verifying the install"
-for target in \
-	.config/quickshell/shell.qml \
-	.config/hypr/hyprland.conf \
-	.local/lib/quickshell/qml/Hornero/qmldir; do
-	e2e_ssh "test -e ~/hornero-source/${target} || test -e ~/${target}" ||
-		{
-			echo "error: missing after install: ~/${target}" >&2
-			exit 1
-		}
-done
-e2e_ssh 'command -v horneroctl >/dev/null'
+e2e_ssh 'test -f /etc/xdg/quickshell/hornero/shell.qml && pacman -Qq hornero-shell hornero-config horneroctl-bin >/dev/null'
+e2e_ssh 'pacman -Qoq /usr/bin/horneroctl | grep -Fxq horneroctl-bin'
+e2e_ssh 'test -f /usr/lib/qt6/qml/Hornero/qmldir'
+e2e_ssh 'test -e ~/.config/hypr/hyprland.conf'
 echo "==> install complete"

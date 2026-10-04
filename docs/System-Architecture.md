@@ -18,9 +18,10 @@ HorneroOS/config ── package defaults, theme catalogue, GTK and wallpaper con
 
 `hornero-config` owns packaged system defaults and appearance pack metadata.
 `horneroctl` reads the installed catalogue and applies supported operations.
-The Shell presents the controls and reports live state. User overrides belong
-in the XDG Hornero paths documented by the
-[HorneroOS appearance guide](https://hornero-os.vercel.app/docs/desktop/appearance/).
+`hornero-shell` installs the named Quickshell runtime and native QML modules;
+`horneroctl shell start` selects that package-owned config. User overrides
+belong in the XDG Hornero paths documented by the
+[HorneroOS appearance guide](https://horneroos.com/docs/desktop/appearance/).
 
 This repository may provide optional wallpaper media under
 `home/dot_local/share/hornero/wallpapers/`. It does not own theme definitions,
@@ -31,8 +32,9 @@ Shell state, generated palettes, or a competing theme manager.
 Chezmoi templates materialize account-level settings and optional application
 choices. Files should be idempotent and scoped to their declared targets.
 A missing optional application should leave the remaining desktop usable.
-Package installation and HorneroOS system operations are not performed by
-personal shell wrappers in this source.
+Dedicated Arch bootstrap scripts install required Hornero AUR packages and
+verify the versions needed by the runtime. They do not copy product files
+into the account or provide a second implementation.
 
 ## Data flow
 

@@ -82,9 +82,7 @@ export WAYLAND_DISPLAY=wayland-1
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export XDG_SESSION_TYPE=wayland
 export XDG_CURRENT_DESKTOP=Hyprland
-export QML_IMPORT_PATH=$HOME/.local/lib/quickshell/qml
-export QML2_IMPORT_PATH=$HOME/.local/lib/quickshell/qml
-export QS_PLUGIN_PATH=$HOME/.local/lib/quickshell
+export QS_CONFIG_PATH=/etc/xdg/quickshell/hornero/shell.qml
 export XDG_CONFIG_HOME=$HOME/.config
 export QT_QPA_PLATFORMTHEME=gtk3'
 }

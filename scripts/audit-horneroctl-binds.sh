@@ -104,11 +104,13 @@ done
 # IPC targets and functions come from the shell's IPC contract table
 # (docs/IPC.md rows: | `target` | source | `fn()`, ... |). Drawer names
 # themselves are dynamic runtime state, so only target+function resolve.
-# Contract C (hornero#81): the shell implementation lives in HorneroOS/shell
-# and runs from the installed tree; dotfiles keeps no mirror. Resolve the
-# IPC contract from the installed shell, overridable for dev checkouts.
-SHELL_DIR="${HORNERO_SHELL_DIR:-$HOME/.config/quickshell}"
-IPC_DOC="${SHELL_DIR}/docs/IPC.md"
+# Hornero's AUR package installs the IPC contract for offline tooling checks.
+# A source checkout may be selected explicitly for development.
+if [[ -n ${HORNERO_SHELL_DIR:-} ]]; then
+	IPC_DOC="${HORNERO_SHELL_DIR}/docs/IPC.md"
+else
+	IPC_DOC="/usr/share/doc/hornero-shell/IPC.md"
+fi
 declare -A IPC_FNS=()
 if [[ -f $IPC_DOC ]]; then
 	while IFS= read -r row; do
