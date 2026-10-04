@@ -11,6 +11,12 @@ if pacman -Qq quickshell-git >/dev/null 2>&1; then
   yay -R --noconfirm quickshell-git
 fi
 
+# Replace the old AUR Cava shared library with the Arch `libcava` dependency
+# required by the packaged Shell. Both packages own the same /usr files.
+if pacman -Qq lib-cava >/dev/null 2>&1; then
+  yay -R --noconfirm lib-cava
+fi
+
 # Keep CMake/Make builds bounded on workstations with limited memory.
 export CMAKE_BUILD_PARALLEL_LEVEL="${CMAKE_BUILD_PARALLEL_LEVEL:-2}"
 export MAKEFLAGS=-j2
