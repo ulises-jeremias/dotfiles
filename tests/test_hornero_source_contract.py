@@ -67,6 +67,7 @@ def test_hornero_runtime_comes_from_aur_packages():
     assert not (scripts / "run_onchange_before_install-quickshell.sh.tmpl").exists()
     assert not (scripts / "run_before_install-hornero-shell.sh.tmpl").exists()
     assert not (scripts / "run_onchange_after_build-quickshell-plugin.sh.tmpl").exists()
+    assert (ROOT / "home/dot_local/bin/remove_horneroctl").is_file()
     assert "QS_PLUGIN_PATH" not in environment
     assert "HORNERO_LIB_DIR" not in environment
     assert "QML2_IMPORT_PATH" not in environment
