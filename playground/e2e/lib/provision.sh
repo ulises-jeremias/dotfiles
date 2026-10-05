@@ -18,7 +18,7 @@ if e2e_ssh 'test -f ~/.cache/e2e-provisioned' >/dev/null 2>&1; then
 fi
 
 echo "==> installing desktop stack (this takes a while on first boot)"
-# Replace the retired Chaotic-AUR Cava library before installing the Arch
+# Replace the retired third-party Cava library before installing the Arch
 # package set. Remove its consumer too so pacman can install the replacement
 # provider and Cava in one normal dependency transaction.
 # shellcheck disable=SC2016  # remote script, no local expansion wanted
