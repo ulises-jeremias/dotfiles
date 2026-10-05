@@ -88,12 +88,23 @@ def test_hornero_runtime_comes_from_aur_packages():
     ).read_text()
 
 
+def test_desktop_installs_external_styles_used_by_appearance_catalogue():
+    script = (
+        ROOT
+        / "home/.chezmoiscripts/linux/run_onchange_before_install-hornero-desktop.sh.tmpl"
+    ).read_text()
+
+    assert "orchis-theme" in script
+    assert "numix-circle-icon-theme-git" in script
+
+
 if __name__ == "__main__":
     tests = [
         test_hornero_owns_theme_metadata_and_wallpapers_use_product_namespace,
         test_managed_source_has_no_retired_runtime_names_or_overrides,
         test_theme_helpers_are_not_duplicated_in_personal_source,
         test_hornero_runtime_comes_from_aur_packages,
+        test_desktop_installs_external_styles_used_by_appearance_catalogue,
     ]
     for test in tests:
         test()
