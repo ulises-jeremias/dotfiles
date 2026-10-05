@@ -33,7 +33,7 @@ yay -S --noconfirm --needed \
 # Require package versions whose layouts, theme catalogue, and CLI contract
 # agree with the current Shell main line.
 readonly min_hornero_config_version="0.3.0-1"
-readonly min_hornero_shell_version="1.2.1-1"
+readonly min_hornero_shell_version="1.2.2-1"
 readonly min_horneroctl_version="0.2.0_preview14.2-1"
 installed_hornero_config_version="$(pacman -Q hornero-config | awk '{print $2}')"
 if (( $(vercmp "$installed_hornero_config_version" "$min_hornero_config_version") < 0 )); then

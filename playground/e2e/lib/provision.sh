@@ -17,24 +17,17 @@ if e2e_ssh 'test -f ~/.cache/e2e-provisioned' > /dev/null 2>&1; then
 	exit 0
 fi
 
-echo "==> setting up Chaotic-AUR (for lib-cava)"
+echo "==> installing desktop stack (this takes a while on first boot)"
+# Replace the retired Chaotic-AUR Cava library before installing the Arch
+# package set. Remove its consumer too so pacman can install the replacement
+# provider and Cava in one normal dependency transaction.
 # shellcheck disable=SC2016  # remote script, no local expansion wanted
-e2e_ssh 'if ! test -f /etc/pacman.d/chaotic-mirrorlist; then
-	sudo pacman-key --recv-keys 3056513887B78AEB --keyserver keyserver.ubuntu.com
-	sudo pacman-key --lsign-key 3056513887B78AEB
-	for i in 1 2 3; do
-		sudo pacman -U --noconfirm \
-			https://cdn.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst \
-			https://cdn.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst && break
-		echo "retry $i/3"
-		sleep 5
-	done
-fi
-if test -f /etc/pacman.d/chaotic-mirrorlist && ! grep -q "^\[chaotic-aur\]" /etc/pacman.conf; then
-	printf "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n" | sudo tee -a /etc/pacman.conf
+e2e_ssh 'if pacman -Qq lib-cava >/dev/null 2>&1; then
+	packages="lib-cava"
+	pacman -Qq cava >/dev/null 2>&1 && packages="cava ${packages}"
+	sudo pacman -R --noconfirm ${packages}
 fi' > /dev/null
 
-echo "==> installing desktop stack (this takes a while on first boot)"
 PACMAN_PKGS='hyprland xdg-desktop-portal-hyprland \
 	pipewire wireplumber pipewire-pulse \
 	seatd polkit-gnome \
@@ -43,8 +36,8 @@ PACMAN_PKGS='hyprland xdg-desktop-portal-hyprland \
 	cmake ninja git \
 	networkmanager adwaita-icon-theme \
 	noto-fonts noto-fonts-emoji ttf-jetbrains-mono-nerd \
-	libqalculate aubio cava libcava'
-e2e_ssh "sudo pacman -Sy --noconfirm --needed --overwrite '/usr/lib/*' ${PACMAN_PKGS}"
+	libqalculate aubio cava'
+e2e_ssh "sudo pacman -Syu --noconfirm --needed ${PACMAN_PKGS}"
 
 echo "==> granting DRM/seat access"
 e2e_ssh 'sudo systemctl enable --now seatd && \
