@@ -124,7 +124,7 @@ baked into a fresh seed ISO automatically.
 |----------------------------------------|-----------------------------------------------------------------------------------------------------|
 | `SSH did not come up`                  | check `artifacts/console.log`; first boot downloads nothing but cloud-init needs ~2 min             |
 | Hyprland fails to start                | seatd must be running and user in `seat` group (`provision.sh` does both); check VM `/tmp/hypr.log` |
-| Chaotic-AUR / mirror 503               | transient; re-run `provision.sh`                                                                    |
+| Cava package file conflict             | rerun `provision.sh`; it removes the retired `lib-cava` package before a normal Arch sync/install   |
 | Recording file is 0 bytes or truncated | recorder was killed without SIGINT — always use `record.sh stop`                                    |
 | VM feels sluggish                      | host under memory pressure; lower `E2E_VM_MEM` or close host apps (VM can OOM at 4 GB)              |
 | Push to CI fails on the image          | never commit `cache/`, `ssh/`, or `artifacts/` (gitignored by design)                               |
