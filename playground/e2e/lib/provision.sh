@@ -12,7 +12,7 @@ e2e_ssh_ready || {
 	exit 1
 }
 
-if e2e_ssh 'test -f ~/.cache/e2e-provisioned' > /dev/null 2>&1; then
+if e2e_ssh 'test -f ~/.cache/e2e-provisioned' >/dev/null 2>&1; then
 	echo "==> VM already provisioned"
 	exit 0
 fi
@@ -26,7 +26,7 @@ e2e_ssh 'if pacman -Qq lib-cava >/dev/null 2>&1; then
 	packages="lib-cava"
 	pacman -Qq cava >/dev/null 2>&1 && packages="cava ${packages}"
 	sudo pacman -R --noconfirm ${packages}
-fi' > /dev/null
+fi' >/dev/null
 
 PACMAN_PKGS='hyprland xdg-desktop-portal-hyprland \
 	pipewire wireplumber pipewire-pulse \
