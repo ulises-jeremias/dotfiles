@@ -57,7 +57,6 @@ For more info, check the [Hyprland documentation](https://wiki.hyprland.org/).
 | `window-rules.conf` | Per-window rules (floating, opacity, workspace pinning) |
 | `animations.conf`   | Active animation profile                                |
 | `colors.conf`       | Compositor colors and shadows                           |
-| `plugins.conf`      | Plugin loading (e.g. ScrollOverview)                    |
 
 ### Animation Profiles
 
