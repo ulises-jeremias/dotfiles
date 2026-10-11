@@ -47,10 +47,14 @@ def test_wallpaper_migration_removes_only_known_old_asset_and_exact_stale_links(
         unrelated_target.write_bytes(b"unrelated")
         unrelated.symlink_to(unrelated_target)
 
+        config = base / "chezmoi.toml"
+        config.write_text("[data]\nephemeral = false\n", encoding="utf-8")
         rendered = subprocess.run(
             [
                 shutil.which("chezmoi") or str(Path.home() / ".local/bin/chezmoi"),
                 "execute-template",
+                "--config",
+                str(config),
                 "--file",
                 str(TEMPLATE),
                 "--source",
@@ -69,7 +73,7 @@ def test_wallpaper_migration_removes_only_known_old_asset_and_exact_stale_links(
         environment["HOME"] = str(home)
         subprocess.run(["bash", str(script)], check=True, capture_output=True, text=True, env=environment)
 
-        assert not old_ba.exists()
+        assert not old_ba.exists(), "the fixed-data template render must retire the matching legacy photo"
         assert not stale_link.is_symlink()
         assert not already_stale.is_symlink()
         assert changed_pampa.read_bytes() == b"user-modified file must survive"
