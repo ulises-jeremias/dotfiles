@@ -11,9 +11,8 @@ Center. `horneroctl` owns supported lifecycle and compositor operations.
   HorneroOS packages; chezmoi does not mirror the Shell tree.
 - Appearance packs are owned by Hornero Config. Wallpaper media may be
   provided separately under `~/.local/share/hornero/wallpapers/`.
-- Optional compositor plugins require a compatible Hyprland release and
-  installed build tools; check `horneroctl hypr plugins --help` before
-  changing them.
+- The workstation configuration uses Hornero Shell's Dashboard for its
+  system overview; no third-party compositor plugin is required at startup.
 
 ## Useful entry points
 

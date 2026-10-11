@@ -171,33 +171,12 @@ and removing gaps without memorizing separate keys.
 | `Super+Left Click`  | Move window   |
 | `Super+Right Click` | Resize window |
 
-## Touchpad Gestures
+## Hornero Dashboard
 
-Three-finger horizontal swipes switch workspaces (see `gestures` block in
-`hyprland.conf`). There is currently no gesture bound to the ScrollOverview;
-toggle it with `Super+O`.
-
-## ScrollOverview (niri-style overview)
-
-Toggle a bird's-eye view of all workspaces and windows, powered by the
-[hyprland-scroll-overview](https://github.com/yayuuu/hyprland-scroll-overview)
-plugin.
-
-| Keybinding | Function                                  |
-|------------|-------------------------------------------|
-| `Super+O`  | Toggle the overview on the active monitor |
-
-### ScrollOverview submap
-
-While the overview is open, the `scrolloverview` submap provides keyboard
-navigation. Normal Hyprland binds outside this submap are not handled unless
-they use the `submap_universal` flag.
-
-| Keybinding                       | Function                                                                  |
-|----------------------------------|---------------------------------------------------------------------------|
-| `Left` / `Right` / `Up` / `Down` | Move selection between windows (and across workspaces at the layout edge) |
-| `Return`                         | Select the workspace under the cursor                                     |
-| `Escape`                         | Close the overview                                                        |
+`Super+O` opens Hornero Shell's Dashboard, which brings system status,
+workspace context, media, and quick controls together without relying on an
+optional Hyprland plugin. Workspace navigation remains available from the
+Shell bar and the bindings above.
 
 ## Special Modes
 
