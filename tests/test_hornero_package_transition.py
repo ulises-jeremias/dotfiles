@@ -39,13 +39,15 @@ def test_horneroctl_floor_includes_orderly_quickshell_shutdown():
 
 def test_dotfiles_do_not_override_hornero_gtk_appearance():
     gtk3 = (ROOT / "home/dot_config/gtk-3.0/settings.ini").read_text()
-    gtk2 = (ROOT / "home/dot_gtkrc-2.0").read_text()
+    gtk2 = (ROOT / "home/dot_gtkrc-2.0.tmpl").read_text()
 
     for contents in (gtk3, gtk2):
         assert "gtk-theme-name" not in contents
         assert "gtk-icon-theme-name" not in contents
     assert "gtk-application-prefer-dark-theme" not in gtk3
     assert "Orchis" not in gtk3 + gtk2
+    assert '{{ .chezmoi.homeDir }}/.gtkrc-2.0.mine' in gtk2
+    assert '/home/user/' not in gtk2
 
 
 def test_e2e_provisioner_uses_arch_cava_without_broad_overwrite():
