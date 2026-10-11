@@ -37,6 +37,17 @@ def test_horneroctl_floor_includes_orderly_quickshell_shutdown():
     assert 'readonly min_horneroctl_version="0.2.0_preview15-1"' in script
 
 
+def test_dotfiles_do_not_override_hornero_gtk_appearance():
+    gtk3 = (ROOT / "home/dot_config/gtk-3.0/settings.ini").read_text()
+    gtk2 = (ROOT / "home/dot_gtkrc-2.0").read_text()
+
+    for contents in (gtk3, gtk2):
+        assert "gtk-theme-name" not in contents
+        assert "gtk-icon-theme-name" not in contents
+    assert "gtk-application-prefer-dark-theme" not in gtk3
+    assert "Orchis" not in gtk3 + gtk2
+
+
 def test_e2e_provisioner_uses_arch_cava_without_broad_overwrite():
     script = (ROOT / "playground/e2e/lib/provision.sh").read_text()
     readme = (ROOT / "playground/e2e/README.md").read_text()
