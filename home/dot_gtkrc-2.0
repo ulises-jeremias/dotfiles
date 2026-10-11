@@ -2,8 +2,8 @@
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
 include "/home/user/.gtkrc-2.0.mine"
-gtk-theme-name="Orchis-Light"
-gtk-icon-theme-name="Numix-Circle"
+# HorneroOS does not ship a GTK 2 theme; leave GTK 2 theme selection to the
+# toolkit instead of pinning an unrelated third-party style.
 gtk-font-name="sans 11"
 gtk-cursor-theme-name="elementary"
 gtk-cursor-theme-size=24
