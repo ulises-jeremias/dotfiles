@@ -32,4 +32,4 @@ temporary HOME and isolated XDG directories for runtime tests.
 - [Config](https://github.com/HorneroOS/config)
 - [Shell](https://github.com/HorneroOS/shell)
 - [CLI](https://github.com/HorneroOS/hornero)
-- [User documentation](https://hornero-os.vercel.app/docs)
+- [User documentation](https://horneroos.com/docs)
