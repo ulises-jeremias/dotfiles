@@ -13,8 +13,16 @@ def test_hornero_owns_theme_metadata_and_wallpapers_use_product_namespace():
     assert not (ROOT / ("home/dot_local/lib/" + "dots")).exists()
     assert not (ROOT / "home/dot_local/lib/hornero/switcher-theme.sh").exists()
     assert not list(data.glob("themes/*/theme.json"))
-    assert (wallpapers / "patagonia/patagonia-glacier-01.jpg").is_file()
-    assert (wallpapers / "fin-del-mundo/beagle-blue-hour-01.jpg").is_file()
+    regional_product_defaults = (
+        "buenos-aires-nocturno/buenos-aires-nocturno-01.jpg",
+        "fin-del-mundo/beagle-blue-hour-01.jpg",
+        "ibera/ibera-mist-01.jpg",
+        "pampa/pampa-01.png",
+        "patagonia/patagonia-glacier-01.jpg",
+        "quebrada/quebrada-mineral-01.jpg",
+    )
+    assert all(not (wallpapers / item).exists() for item in regional_product_defaults)
+    assert "hornero-config" in (wallpapers / "README.md").read_text()
 
 
 def test_managed_source_has_no_retired_runtime_names_or_overrides():
