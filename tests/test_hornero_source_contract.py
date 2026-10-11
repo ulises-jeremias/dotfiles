@@ -77,7 +77,12 @@ def test_yazi_launchers_use_the_configured_terminal():
     )
     assert "kitty --class yazi-popup" not in keybindings
     assert "kitty --class yazi-popup" not in thunar_actions
-    assert r"match:class = ^(yazi-popup|com\.horneroos\.yazi-popup)$" in window_rules
+    assert (
+        r"""windowrule {
+    name = yazi-popup
+    match:class = ^(yazi-popup|com\.horneroos\.yazi-popup)$
+""" in window_rules
+    )
 
 
 def test_hornero_runtime_comes_from_aur_packages():
