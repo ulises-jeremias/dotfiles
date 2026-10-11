@@ -51,6 +51,15 @@ def test_theme_helpers_are_not_duplicated_in_personal_source():
     assert not list(bin_dir.glob("*switcher*shim*"))
 
 
+def test_kitty_defaults_are_owned_by_the_hornero_config_package():
+    # Kitty merges /etc/xdg/kitty/kitty.conf before user files, so a full
+    # chezmoi copy would pin package defaults at the account level and make
+    # future AUR updates ineffective. Personal overrides can be added later
+    # when the workstation has a setting that actually differs from product
+    # defaults.
+    assert not (ROOT / "home/dot_config/kitty").exists()
+
+
 def test_hornero_runtime_comes_from_aur_packages():
     scripts = ROOT / "home/.chezmoiscripts/linux"
     shell_install = (scripts / "run_onchange_before_install-hornero-desktop.sh.tmpl").read_text()
@@ -104,6 +113,7 @@ if __name__ == "__main__":
         test_hornero_owns_theme_metadata_and_wallpapers_use_product_namespace,
         test_managed_source_has_no_retired_runtime_names_or_overrides,
         test_theme_helpers_are_not_duplicated_in_personal_source,
+        test_kitty_defaults_are_owned_by_the_hornero_config_package,
         test_hornero_runtime_comes_from_aur_packages,
         test_desktop_installs_external_styles_used_by_appearance_catalogue,
     ]
