@@ -49,7 +49,7 @@ is_known_orphan() {
 	return 1
 }
 
-if ! command -v chezmoi > /dev/null 2>&1; then
+if ! command -v chezmoi >/dev/null 2>&1; then
 	echo "SKIP: chezmoi not on PATH (delivery check)"
 	exit 0
 fi
@@ -64,7 +64,7 @@ else
 	# The synthetic config has no extension, so pass its TOML format explicitly
 	# to chezmoi below instead of relying on filename-based detection.
 	CHEZMOI_CFG="$(mktemp)"
-	printf '[data]\n  personal = true\n  ephemeral = false\n  headless = false\n  hostname = "generic"\n  osid = "linux-arch"\n' > "$CHEZMOI_CFG"
+	printf '[data]\n  personal = true\n  ephemeral = false\n  headless = false\n  hostname = "generic"\n  osid = "linux-arch"\n' >"$CHEZMOI_CFG"
 	trap 'rm -f "$CHEZMOI_CFG"' EXIT
 fi
 
@@ -84,13 +84,13 @@ while IFS= read -r src; do
 	fi
 	# Round-trip proof: source -> target -> source must land back here,
 	# otherwise chezmoi never deploys this file to any host.
-	target="$(chezmoi --source "$ROOT" --config "$CHEZMOI_CFG" --config-format toml target-path "${ROOT}/${src}" 2> /dev/null || true)"
+	target="$(chezmoi --source "$ROOT" --config "$CHEZMOI_CFG" --config-format toml target-path "${ROOT}/${src}" 2>/dev/null || true)"
 	if [[ -z $target ]]; then
 		echo "FAIL: undelivered file (no chezmoi target): $src" >&2
 		fail=1
 		continue
 	fi
-	back="$(chezmoi --source "$ROOT" --config "$CHEZMOI_CFG" --config-format toml source-path "$target" 2> /dev/null || true)"
+	back="$(chezmoi --source "$ROOT" --config "$CHEZMOI_CFG" --config-format toml source-path "$target" 2>/dev/null || true)"
 	if [[ $back != "${ROOT}/${src}" ]]; then
 		echo "FAIL: unmanaged target: $src -> $target" >&2
 		fail=1
