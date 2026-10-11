@@ -1,9 +1,9 @@
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║                     HorneroOS — Yazi Theme                                 ║
 # ║                                                                            ║
-# ║  Yazi inherits terminal colors automatically via escape sequences.         ║
-# ║  Hornero palette output is inherited by the terminal and Yazi.             ║
-# ║  This file only needs flavor selection and minor overrides.                ║
+# ║  Yazi uses its selected flavor for UI and syntax colors.                   ║
+# ║  This setup chooses Catppuccin independently of Hornero's palette.         ║
+# ║  Change the flavor below to customize Yazi's appearance.                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 [flavor]

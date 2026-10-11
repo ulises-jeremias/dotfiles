@@ -1,194 +1,118 @@
 # Yazi File Manager
 
-Yazi is a blazing-fast terminal file manager written in Rust, with async I/O and native Kitty image previews. It replaces ranger in HorneroConfig with better performance, simpler theming, and built-in archive/media support.
+Yazi is an optional, keyboard-driven terminal file manager. This page describes
+the personal workstation configuration in this repository; it is not a
+HorneroOS package or product contract. HorneroOS owns the supported desktop
+workflow through `horneroctl` and the configured terminal association.
 
----
+> [!NOTE]
+> Older copies of this page used the retired `dots yazi` command and described
+> Kitty-only image previews and pywal color generation. Those instructions no
+> longer describe the current setup.
 
-## Quick Start
+## Launch Yazi
 
-```bash
-# Open yazi in current directory
-dots yazi
+From a terminal, run:
 
-# Open yazi and cd to last directory on exit
-dots yazi --last-dir
+```sh
+horneroctl apps terminal-file
+horneroctl apps terminal-file --last-dir
+horneroctl apps terminal-file --path ~/Projects
+horneroctl apps terminal-file --cheatsheet
+horneroctl apps terminal-file --fix-previews
+```
 
-# Or use the shell alias
+The `ycd` Zsh helper runs the last-directory workflow and changes the current
+shell directory to the directory where Yazi exits:
+
+```sh
 ycd
-
-# Show keybinding cheatsheet
-dots yazi --cheatsheet
-
-# Check preview dependencies
-dots yazi --fix-previews
+ycd ~/Projects
 ```
 
----
+In the Hornero desktop, **Super + E** opens Yazi in a separate window using the
+configured terminal. Kitty is the factory terminal; Alacritty and Ghostty are
+supported alternatives. Set the terminal with
+`horneroctl config default-apps set terminal <kitty|alacritty|ghostty> --yes`.
 
-## Configuration
+Thunar's **Open in Yazi** context action also uses the configured terminal and
+opens the selected directory. Yazi remains an optional application; install it
+before using these workflows. See the [Hornero files guide](https://horneroos.com/docs/applications/files/)
+and [terminal guide](https://horneroos.com/docs/applications/terminal/).
 
-All config lives in `~/.config/yazi/`:
+## Personal configuration
 
-| File          | Purpose                                   |
-|---------------|-------------------------------------------|
-| `yazi.toml`   | General settings, openers, preview config |
-| `keymap.toml` | Custom keybindings (layered on defaults)  |
-| `theme.toml`  | Color scheme / flavor selection           |
-| `init.lua`    | Lua plugin hooks                          |
+The configuration lives in `~/.config/yazi/` and is managed by this chezmoi
+source:
 
-### Key Settings (yazi.toml)
+| File | Purpose |
+| --- | --- |
+| `yazi.toml` | Columns, sorting, preview bounds, openers, and MIME rules |
+| `keymap.toml` | Custom keybindings layered on Yazi defaults |
+| `theme.toml` | Dark/light Catppuccin flavors |
+| `init.lua` | Personal Lua initialization hooks |
 
-- **Miller columns**: `ratio = [2, 4, 4]` (parent, current, preview)
-- **Hidden files**: `show_hidden = true`
-- **Sort**: `sort_by = "natural"`, directories first
-- **Previews**: Kitty protocol auto-detected, quality 75
+The current setup shows hidden files, sorts directories first, uses Miller
+columns, and opens text in `$EDITOR`, media in `mpv`, and other files through
+`xdg-open`. `Alt + T` opens the current selection in Thunar. The `g` chords
+provide quick navigation to common personal directories; see
+[`keymap.toml`](../../home/dot_config/yazi/keymap.toml) for the maintained list.
 
-### Openers
+Hornero Config owns Kitty, Alacritty, and Ghostty factory palettes. The current
+Yazi config separately selects Catppuccin Mocha/Latte flavors, so Yazi's UI and
+syntax colors do not automatically become a Hornero appearance palette when
+the wallpaper changes. Change the Yazi flavor in `theme.toml` if you want a
+different Yazi-specific look.
 
-Files open with `xdg-open` by default. Directories can also open in Thunar. Text files open in `$EDITOR`.
+## Image previews
 
----
+Yazi detects the available image adapter from the running terminal and
+environment. Preview support therefore depends on which terminal you selected:
 
-## Keybindings
+| Terminal / environment | Yazi preview path |
+| --- | --- |
+| Kitty | Built-in Kitty graphics protocol support |
+| Ghostty | Built-in Kitty graphics protocol support |
+| Alacritty on Hyprland or Niri | Wayland adapter through Überzug++ (`ueberzugpp`) |
+| Other environments | Chafa can provide an ASCII-art fallback when installed |
 
-### Navigation
+Yazi does not require all previews to use Kitty's protocol. Diagnose the
+current environment with:
 
-| Key       | Action                   |
-|-----------|--------------------------|
-| `h` / `l` | Parent / Enter directory |
-| `j` / `k` | Move down / up           |
-| `~`       | Go home                  |
-| `.`       | Toggle hidden files      |
-
-### Quick Directories (g + key)
-
-| Key  | Directory              |
-|------|------------------------|
-| `gh` | Home                   |
-| `gp` | ~/Projects             |
-| `gd` | ~/Downloads            |
-| `gD` | ~/Documents            |
-| `gP` | ~/Pictures             |
-| `gm` | ~/Music                |
-| `gv` | ~/Videos               |
-| `gc` | ~/.config              |
-| `gl` | ~/.local               |
-| `gr` | Themes directory       |
-| `gw` | Wallpapers library     |
-| `gb` | ~/.local/bin (scripts) |
-| `gt` | /tmp                   |
-
-### File Operations
-
-| Key     | Action                      |
-|---------|-----------------------------|
-| `Space` | Toggle select               |
-| `y`     | Copy (yank)                 |
-| `x`     | Cut                         |
-| `p`     | Paste                       |
-| `a`     | Create file/dir             |
-| `r`     | Rename                      |
-| `d`     | Trash                       |
-| `DD`    | Safe trash (confirm)        |
-| `yp`    | Yank path to clipboard      |
-| `yd`    | Yank directory to clipboard |
-| `yn`    | Yank filename to clipboard  |
-
-### Power Features
-
-| Key     | Action             |
-|---------|--------------------|
-| `f`     | Filter files       |
-| `/`     | Search             |
-| `z`     | Jump with zoxide   |
-| `Z`     | Jump with fzf      |
-| `C`     | Compress selection |
-| `X`     | Extract archive    |
-| `Alt-t` | Open in Thunar     |
-| `s`     | Shell command      |
-
-### Sorting (o + key)
-
-| Key  | Sort by   |
-|------|-----------|
-| `on` | Name      |
-| `os` | Size      |
-| `om` | Modified  |
-| `ot` | Type      |
-| `oe` | Extension |
-| `or` | Reverse   |
-
----
-
-## Smart Colors Integration
-
-Yazi inherits terminal colors via escape sequences. When you switch appearance themes:
-
-1. `horneroctl wallpaper reload --yes` regenerates pywal colors
-2. Terminal (Kitty) receives new color palette
-3. Yazi automatically picks up the new colors
-
-No custom colorscheme file is needed (unlike ranger). The `theme.toml` uses Catppuccin flavors as a base, with terminal colors taking priority.
-
----
-
-## Image Previews
-
-Yazi uses native Kitty image protocol for previews. Requirements:
-
-- **Kitty terminal** (v0.28.0+) -- automatic, no configuration needed
-- **ffmpegthumbnailer** -- video thumbnails
-- **poppler** (pdftoppm) -- PDF previews
-- **imagemagick** -- image conversion
-
-Run `dots yazi --fix-previews` to check all dependencies.
-
----
-
-## Shell Integration
-
-The `ycd` alias (defined in `.zsh_aliases`) launches yazi and changes your shell directory to wherever you navigated when you quit:
-
-```bash
-ycd              # launch yazi, cd on exit
-ycd ~/Projects   # start in specific directory
+```sh
+ya env
+horneroctl apps terminal-file --fix-previews
 ```
 
-The `Super+E` keybinding in Hyprland opens yazi in a floating popup window.
-
----
-
-## Dots Integration
-
-- **Launcher**: `horneroctl apps terminal-file --last-dir`
-- **Hyprland keybinding**: `Super+E` opens yazi popup
-- **Thunar context menu**: "Open in Yazi" right-click option
-- **Quickshell**: yazi popup windows get the file manager icon in the dock/status area
-- **Smart colors**: automatic terminal color inheritance
-
----
+`ya env` reports the detected terminal and image adapter. For PDF, video, and
+other specialized previews, install the helper tools reported by the
+diagnostic. The exact set depends on the file type and installed preview
+backend.
 
 ## Troubleshooting
 
-### Images not previewing
+### Images do not preview
 
-```bash
-dots yazi --fix-previews
-```
+Run `ya env` in the same terminal where you launch Yazi and check the selected
+adapter. Kitty and Ghostty support Yazi's Kitty graphics path; Alacritty needs
+Überzug++ for graphical Wayland previews. `horneroctl apps terminal-file
+--fix-previews` reports available and missing helper tools.
 
-Check that you are running inside Kitty terminal. Other terminals may need ueberzugpp.
+### Yazi fails to open from the desktop
 
-### Colors look wrong
+Check that Yazi and the selected terminal are installed, then inspect the
+selected terminal with `horneroctl config default-apps list`. The desktop
+shortcut and Thunar action both depend on the packaged `horneroctl` command.
 
-Ensure pywal/smart-colors are generating terminal colors:
+### Colors do not match the Hornero appearance
 
-```bash
-horneroctl wallpaper reload --yes
-```
+The terminal palette follows Hornero's appearance integration; Yazi uses the
+Catppuccin flavor selected in `theme.toml`. These are separate color layers.
+Select or configure a Yazi flavor that complements the active Hornero palette.
 
-### Plugins not loading
+## Upstream references
 
-```bash
-ya pkg install    # Install all locked plugins
-ya pkg upgrade    # Upgrade plugins
-```
+- [Yazi documentation](https://yazi-rs.github.io/docs/)
+- [Yazi image preview support](https://yazi-rs.github.io/docs/image-preview/)
+- [Yazi theme configuration](https://yazi-rs.github.io/docs/configuration/theme/)
+- [Yazi flavors](https://yazi-rs.github.io/docs/flavors/overview/)

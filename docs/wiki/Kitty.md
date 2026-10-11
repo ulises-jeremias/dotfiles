@@ -1,114 +1,79 @@
-# 🐱 Kitty Terminal Emulator Guide
+# Kitty Terminal
 
-[Kitty](https://sw.kovidgoyal.net/kitty/) is a modern, GPU-accelerated terminal emulator built for speed, flexibility, and customization. It’s ideal for developers, power users, and anyone who wants a fast, scriptable terminal experience.
+[Kitty](https://sw.kovidgoyal.net/kitty/) is a GPU-accelerated terminal
+emulator with tabs, layouts, scripting, and the Kitty graphics protocol. In
+HorneroOS, Kitty is the factory terminal choice when installed; Alacritty and
+Ghostty are supported alternatives.
 
-> [!TIP]
-> Like everything in this setup, Kitty is **fully customizable**. You can tweak appearance, behavior, keybindings, and even integrate with your theme manager.
+> [!NOTE]
+> This repository no longer owns Kitty's Hornero defaults. The `hornero-config`
+> package supplies the factory configuration and appearance palettes. This
+> page documents how Kitty fits into the personal workstation workflow.
 
----
+## Open Kitty
 
-## 🚀 Why Use Kitty?
+- **Super + Return** opens the terminal associated with `TerminalEmulator`.
+- **Super + E** opens Yazi in a separate window using that same configured
+  terminal.
+- From the Launcher, search for Kitty when it is installed.
 
-- ⚡ GPU acceleration for smooth rendering
-- 🧩 Layouts and tab support
-- 🎨 Rich styling with font ligatures and emoji
-- 📜 Scriptable with shell commands
-- 📺 Inline graphics and image display support
-
----
-
-## ⚙️ Configuration Basics
-
-Kitty's configuration file is located at:
+Choose a terminal with:
 
 ```sh
-~/.config/kitty/kitty.conf
+horneroctl config default-apps set terminal kitty --yes
+horneroctl config default-apps list
 ```
 
-To edit it with chezmoi:
+The supported choices are Kitty, Alacritty, and Ghostty. The Yazi workflow is
+documented in [Yazi File Manager](Yazi.md) and the
+[HorneroOS terminal guide](https://horneroos.com/docs/applications/terminal/).
 
-```sh
-chezmoi edit ~/.config/kitty/kitty.conf
-chezmoi apply
-```
+## Configuration and appearance
 
-This file controls appearance, behavior, fonts, shortcuts, and more.
+Hornero Config provides factory defaults under `/etc/xdg/kitty/`; Kitty also
+reads user configuration from `~/.config/kitty/kitty.conf`. Use
+`kitty --debug-config` to inspect which configuration Kitty loads. A personal
+user config can override factory settings, so keep any overrides focused and
+review them after changing the Hornero appearance.
 
----
+The factory configuration uses Hornero's terminal palette integration. When
+Hornero applies an appearance, its generated Kitty palette is refreshed along
+with the other supported terminal formats. The source of truth is HorneroOS
+Config, not `kitty-themes`, pywal, or a cloned theme repository.
 
-## 🎨 Installing and Applying Themes
+Do not use the retired instructions from older versions of this page that
+clone `kitty-themes`, run `wal`, or edit a dotfiles-owned Kitty config. They
+describe a previous workstation setup.
 
-Kitty supports full theme customization using its config system.
+## Useful Kitty features
 
-### Using `kitty-themes`
+- **Tabs and layouts** organize local work without adding a multiplexer.
+- **`kitten icat image.png`** displays an image using Kitty's graphics
+  protocol.
+- **`kitty --debug-config`** prints the effective configuration and
+  diagnostics.
+- **`kitty +list-fonts`** lists fonts available to Kitty.
 
-We recommend using [kitty-themes](https://github.com/dexpota/kitty-themes) for easier management of community-curated themes.
+For remote or resumable terminal sessions, use a multiplexer such as tmux;
+Kitty tabs do not persist across SSH connections.
 
-#### Installation
+## Troubleshooting
 
-```sh
-git clone https://github.com/dexpota/kitty-themes ~/.config/kitty/themes
-```
+### Hornero colors do not appear
 
-To list and apply a theme:
+Confirm the selected appearance is applied, then run `kitty --debug-config`
+and check for user overrides that replace factory settings. Kitty is optional;
+if it is not installed, set the configured terminal to another supported
+emulator.
 
-```sh
-cd ~/.config/kitty/themes
-./theme_launcher.sh  # Follow the prompts
-```
+### Yazi image previews are missing
 
-This tool automatically updates your Kitty config with the selected theme.
+Kitty supports the graphics protocol used by Yazi. Run `ya env` inside the
+terminal to check which adapter Yazi detected, then use
+`horneroctl apps terminal-file --fix-previews` to inspect preview helpers.
 
----
+## Upstream references
 
-## 🎨 Color Integration
-
-### Smart Colors & Pywal Integration
-
-Your Kitty terminal automatically integrates with the **smart colors system**:
-
-- **Automatic Updates**: Colors refresh when you change wallpapers via `wpg`
-- **Smart Adaptation**: Colors are optimized for readability and theme consistency
-- **Pywal Compatibility**: Works seamlessly with existing [`pywal`](https://github.com/dylanaraps/pywal) workflows
-
-The terminal colors are automatically updated through the `wal-reload` script, ensuring perfect theme coordination across your entire desktop environment.
-
----
-
-## 🧠 Tips for Customizing Kitty
-
-- Use Nerd Fonts or JetBrainsMono for ligatures and icon support
-- Bind shortcuts to control tabs or launch commands
-- Use `background_opacity` for transparency
-- Customize scrollback, padding, and cursor style
-
-**Example snippet:**
-
-```ini
-font_family      Hack Nerd Font Mono
-font_size        11
-background_opacity 0.95
-enable_audio_bell no
-```
-
----
-
-## 📦 Bonus: Integrate with Pywal
-
-Use [`pywal`](https://github.com/dylanaraps/pywal) to generate a dynamic color scheme based on your wallpaper, and source the `kitty.conf` colors dynamically.
-
-```sh
-wal -i path/to/wallpaper.jpg
-```
-
-> Kitty will use the updated colors from your `~/.cache/wal/colors-kitty.conf` file.
-
----
-
-## 🆘 Need Help?
-
-- [Kitty Docs](https://sw.kovidgoyal.net/kitty/)
-- [kitty-themes](https://github.com/dexpota/kitty-themes)
-- [Dotfiles Discussions](https://github.com/ulises-jeremias/dotfiles/discussions)
-
-Kitty gives you the performance of a modern terminal with the aesthetic and control of a true power tool. Make it yours! 🐱💻
+- [Kitty documentation](https://sw.kovidgoyal.net/kitty/)
+- [Kitty configuration reference](https://sw.kovidgoyal.net/kitty/conf/)
+- [Kitty graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/)

@@ -14,7 +14,7 @@
 	<icon>folder</icon>
 	<name>Open in Yazi</name>
 	<unique-id>1661052768169841-2</unique-id>
-	<command>kitty --class yazi-popup -e yazi %f</command>
+	<command>horneroctl apps terminal-file --new-window --path "%f"</command>
 	<description>Browse this directory in Yazi file manager</description>
 	<patterns>*</patterns>
 	<startup-notify/>

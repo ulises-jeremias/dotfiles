@@ -60,6 +60,22 @@ def test_kitty_defaults_are_owned_by_the_hornero_config_package():
     assert not (ROOT / "home/dot_config/kitty").exists()
 
 
+def test_yazi_launchers_use_the_configured_terminal():
+    keybindings = (ROOT / "home/dot_config/hypr/hyprland.conf.d/keybindings.conf").read_text()
+    thunar_actions = (ROOT / "home/dot_config/Thunar/uca.xml").read_text()
+
+    assert (
+        "bind = $mainMod, E, exec, horneroctl apps terminal-file --new-window --last-dir"
+        in keybindings
+    )
+    assert (
+        'horneroctl apps terminal-file --new-window --path "%f"'
+        in thunar_actions
+    )
+    assert "kitty --class yazi-popup" not in keybindings
+    assert "kitty --class yazi-popup" not in thunar_actions
+
+
 def test_hornero_runtime_comes_from_aur_packages():
     scripts = ROOT / "home/.chezmoiscripts/linux"
     shell_install = (scripts / "run_onchange_before_install-hornero-desktop.sh.tmpl").read_text()
@@ -114,6 +130,7 @@ if __name__ == "__main__":
         test_managed_source_has_no_retired_runtime_names_or_overrides,
         test_theme_helpers_are_not_duplicated_in_personal_source,
         test_kitty_defaults_are_owned_by_the_hornero_config_package,
+        test_yazi_launchers_use_the_configured_terminal,
         test_hornero_runtime_comes_from_aur_packages,
         test_desktop_installs_external_styles_used_by_appearance_catalogue,
     ]

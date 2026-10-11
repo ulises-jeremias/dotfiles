@@ -1,11 +1,11 @@
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║                     HorneroOS — Yazi Configuration                          ║
 # ║                                                                            ║
-# ║  A curated, theme-adaptive terminal file manager configuration.            ║
+# ║  A curated, keyboard-driven terminal file manager configuration.           ║
 # ║  Managed by chezmoi — edit the source, not the generated file.             ║
 # ║                                                                            ║
-# ║  Colors auto-adapt to your appearance palette via terminal escape sequences. ║
-# ║  Image previews use Kitty protocol (native Wayland support).               ║
+# ║  Image previews use the adapter supported by the selected terminal.        ║
+# ║  Kitty/Ghostty use graphics support; Alacritty needs ueberzugpp on Wayland. ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 [mgr]

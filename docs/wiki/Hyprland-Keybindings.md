@@ -1,6 +1,11 @@
 # Hyprland Keybindings
 
-Complete reference for all keybindings in HorneroConfig's Hyprland setup.
+Historical snapshot of keybindings in the personal Hyprland profile.
+
+> [!NOTE]
+> This page is a historical reference for the personal Hyprland profile. For
+> current HorneroOS shortcuts, see the
+> [HorneroOS shortcut guide](https://horneroos.com/docs/desktop/shortcuts/).
 
 ## Applications and Utilities
 
@@ -14,11 +19,11 @@ Complete reference for all keybindings in HorneroConfig's Hyprland setup.
 | `Super+D`              | Dashboard (Quickshell IPC)                                            |
 | `Alt+Shift+Tab`        | Task switcher (`horneroctl apps switcher prev`)                       |
 | `Alt+Tab`              | Task switcher (`horneroctl apps switcher next`)                       |
-| `Super+E`              | Terminal file manager (`yazi` in a kitty popup)                       |
+| `Super+E`              | Yazi in a new window from the configured terminal                     |
 | `Super+F`              | GUI file manager (`exo-open --launch FileManager`)                    |
 | `Super+W`              | Web browser (`exo-open --launch WebBrowser`)                          |
-| `Print`                | Screenshot of the current screen (`dots screenshooter`)               |
-| `Shift+Print`          | Screenshot with region selection (`dots screenshooter -r`)            |
+| `Print`                | Screenshot of the current screen (`horneroctl capture screenshot`)    |
+| `Shift+Print`          | Screenshot with region selection (`horneroctl capture screenshot --region`) |
 
 ## Window Management
 
