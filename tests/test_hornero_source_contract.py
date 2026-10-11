@@ -63,7 +63,7 @@ def test_hornero_runtime_comes_from_aur_packages():
     assert "CMAKE_BUILD_PARALLEL_LEVEL=\"${CMAKE_BUILD_PARALLEL_LEVEL:-2}\"" in shell_install
     assert shell_install.count("quickshell-git") == 2  # detect and remove the VCS package
     assert "min_hornero_config_version" in shell_install
-    assert 'min_hornero_config_version="0.3.3-1"' in shell_install
+    assert 'min_hornero_config_version="0.3.4-1"' in shell_install
     assert "min_hornero_shell_version" in shell_install
     assert "min_horneroctl_version" in shell_install
     assert not (ROOT / "home/dot_local/bin/executable_horneroctl").exists()
