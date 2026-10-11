@@ -1,7 +1,7 @@
 # DO NOT EDIT! This file will be overwritten by LXAppearance.
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
-include "/home/user/.gtkrc-2.0.mine"
+include "{{ .chezmoi.homeDir }}/.gtkrc-2.0.mine"
 # HorneroOS does not ship a GTK 2 theme; leave GTK 2 theme selection to the
 # toolkit instead of pinning an unrelated third-party style.
 gtk-font-name="sans 11"
