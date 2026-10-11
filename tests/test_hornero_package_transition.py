@@ -25,7 +25,16 @@ def test_shell_package_floor_includes_single_owner_preset_fix():
         / "home/.chezmoiscripts/linux/run_onchange_before_install-hornero-desktop.sh.tmpl"
     ).read_text()
 
-    assert 'readonly min_hornero_shell_version="1.2.2-1"' in script
+    assert 'readonly min_hornero_shell_version="1.2.5-1"' in script
+
+
+def test_horneroctl_floor_includes_orderly_quickshell_shutdown():
+    script = (
+        ROOT
+        / "home/.chezmoiscripts/linux/run_onchange_before_install-hornero-desktop.sh.tmpl"
+    ).read_text()
+
+    assert 'readonly min_horneroctl_version="0.2.0_preview15-1"' in script
 
 
 def test_e2e_provisioner_uses_arch_cava_without_broad_overwrite():
