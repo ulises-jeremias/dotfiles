@@ -40,6 +40,11 @@ if not cache or cache == "" then
 end
 
 -- The generated file is optional on fresh installs and may be absent until
--- `horneroctl appearance colors generate --yes` has run. A malformed or
--- missing cache file leaves the safe factory palette above in effect.
-pcall(require, cache .. "/colors-hyprland")
+-- `horneroctl appearance colors generate --yes` has run. Load the chunk on
+-- every config evaluation instead of using require's module cache, so a
+-- regenerated palette is visible on reload. A malformed or missing cache
+-- file leaves the safe factory palette above in effect.
+local generated = loadfile(cache .. "/colors-hyprland.lua")
+if generated then
+	pcall(generated)
+end

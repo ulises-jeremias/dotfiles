@@ -34,13 +34,14 @@ The shadow offset is also omitted because the legacy value is the zero default;
 it is not serialized as an unverified Lua vector.
 Generated border and shadow colors and the opt-in light variant remain
 separate. The staged `smart-colors.lua` module sets the Hornero Dark factory
-palette first, then optionally requires
+palette first, then optionally loads
 `$HORNERO_SMART_COLORS_DIR/colors-hyprland.lua` or the default
 `${XDG_CACHE_HOME:-~/.cache}/hornero/smart-colors/colors-hyprland.lua` output
 from `horneroctl appearance colors generate --yes`. The generated module is
-optional and protected with `pcall`, so a missing or malformed cache file
-leaves the factory colors in place. This module is inert until the final Lua
-entrypoint loads it; the active legacy configuration is unchanged.
+optional and loaded as a chunk each time the config evaluates; execution is
+protected with `pcall`, so a missing or malformed cache file leaves the
+factory colors in place. This module is inert until the final Lua entrypoint
+loads it; the active legacy configuration is unchanged.
 Window-rule names, match expressions, effects, values, and order are
 statically compared with the legacy source; named-rule precedence and runtime
 matching still require isolated-session review. Keybindings, animations, Smart

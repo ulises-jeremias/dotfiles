@@ -36,7 +36,8 @@ def test_generated_module_is_optional_and_uses_hornero_cache_contract():
     assert 'os.getenv("HORNERO_SMART_COLORS_DIR")' in text
     assert 'os.getenv("XDG_CACHE_HOME")' in text
     assert '"/hornero/smart-colors"' in text
-    assert 'pcall(require, cache .. "/colors-hyprland")' in text
+    assert 'loadfile(cache .. "/colors-hyprland.lua")' in text
+    assert "pcall(generated)" in text
 
 
 def test_smart_colors_module_remains_staged_until_full_lua_entrypoint():
