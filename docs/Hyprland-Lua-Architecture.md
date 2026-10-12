@@ -68,7 +68,7 @@ and speed values are statically checked against all six legacy profiles.
 | `hyprland.conf.d/animations-minimal.conf`                              | `hyprland.lua.d/animations-minimal.lua`   | Minimal animation profile                               |
 | `hyprland.conf.d/animations-nature.conf`                               | `hyprland.lua.d/animations-nature.lua`    | Nature animation profile                                |
 | `hyprland.conf.d/animations-vaporwave.conf`                            | `hyprland.lua.d/animations-vaporwave.lua` | Vaporwave animation profile                             |
-| `hyprland.conf.d/colors.conf`                                          | `hyprland.lua.d/smart-colors.lua`          | Factory palette plus optional generated theme colors    |
+| `hyprland.conf.d/colors.conf`                                          | `hyprland.lua.d/smart-colors.lua`         | Factory palette plus optional generated theme colors    |
 | `hyprland.conf.d/hornero-light.conf`                                   | Generated Lua color module                | Optional Hornero Light colors; preserve opt-in behavior |
 | `hyprland.conf.d/debug.conf`                                           | `hyprland.lua.d/static.lua`               | Error-display configuration                             |
 | Inline `general`, `decoration`, `misc`, `xwayland`, and `debug` blocks | `hyprland.lua.d/static.lua`               | Static compositor options and defaults                  |
