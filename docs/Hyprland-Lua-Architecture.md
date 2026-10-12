@@ -18,7 +18,8 @@ The `hyprland.lua.d/` source currently contains staged equivalents for monitor
 rules, session environment, startup commands, keyboard/pointer/touchpad/cursor
 settings, layout profiles, and non-generated compositor options. A gesture
 module expresses the three-finger horizontal workspace action through the
-current API. These modules are inert:
+current API, and a window-rule module mirrors all 43 legacy rules in order.
+These modules are inert:
 there is deliberately no root `hyprland.lua` and no `require(...)` call in the
 active `hyprland.conf`. Hyprland therefore continues to load the existing
 hyprlang configuration. The staged modules have Lua syntax validation, but
@@ -32,8 +33,10 @@ form remains unported until the typed vector representation has been validated.
 The shadow offset is also omitted because the legacy value is the zero default;
 it is not serialized as an unverified Lua vector.
 Generated border and shadow colors and the opt-in light variant remain
-separate. Keybindings, window rules, animations, Smart Colors consumers, and
-final activation remain separate acceptance steps below.
+separate. Window-rule names, match expressions, effects, values, and order are
+statically compared with the legacy source; named-rule precedence and runtime
+matching still require isolated-session review. Keybindings, animations, Smart
+Colors consumers, and final activation remain separate acceptance steps below.
 
 ## Target module map
 
@@ -76,6 +79,10 @@ formats.
   exists. Keep dispatcher fallbacks explicit and covered by the keybinding
   inventory. Preserve locked and repeating semantics for `bindl`, `binde`,
   and `bindle`; preserve mouse semantics for `bindm`.
+- Translate `windowrule` blocks to `hl.window_rule` with their original names,
+  match properties, effect values, and declaration order. Validate Lua field
+  support against the target version's installed descriptors; class and title
+  regexes must remain byte-for-byte equivalent after Lua string decoding.
 - Move `exec-once` behavior to `hl.on("hyprland.start", ...)`. Commands that
   rely on shell operators must preserve their ordering intentionally; pass
   fixed command strings only and do not interpolate untrusted values into a
@@ -99,7 +106,8 @@ formats.
 1. Port static settings, input, monitor, environment, autostart, and layout
    modules in #181 without installing a root `hyprland.lua` entrypoint.
 2. Port keybindings and keyboard-help discovery in #182.
-3. Port window rules in #183.
+3. Stage window rules in #183 and validate rule order and matching statically;
+   confirm runtime named-rule precedence in the isolated target session.
 4. Port animation profiles and Quickshell rice switching in #184.
 5. Port Smart Colors generation and its safe fallback in #185.
 6. Audit runtime consumers and generated file paths in #186.
