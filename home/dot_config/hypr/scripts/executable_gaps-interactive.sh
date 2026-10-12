@@ -8,13 +8,15 @@
 
 set -euo pipefail
 
+hyprctl_helper="$HOME/.local/bin/hyprland-runtime"
+
 # Get current gaps
 get_inner_gaps() {
-  hyprctl getoption general:gaps_in -j | jq -r '.custom' | awk '{print $1}'
+  "$hyprctl_helper" get-gap inner | jq -r '.custom' | awk '{print $1}'
 }
 
 get_outer_gaps() {
-  hyprctl getoption general:gaps_out -j | jq -r '.custom' | awk '{print $1}'
+  "$hyprctl_helper" get-gap outer | jq -r '.custom' | awk '{print $1}'
 }
 
 # Show menu for gap selection
@@ -60,22 +62,22 @@ case "$main_choice" in
 
     case "$choice" in
       "Increase (+5)")
-        hyprctl keyword general:gaps_in $((current + 5))
+        "$hyprctl_helper" adjust-gap inner 5
         ;;
       "Decrease (-5)")
-        hyprctl keyword general:gaps_in $((current - 5))
+        "$hyprctl_helper" adjust-gap inner -5
         ;;
       "Increase All (Shift +5)")
-        hyprctl keyword general:gaps_in $((current + 5))
+        "$hyprctl_helper" adjust-gap inner 5
         ;;
       "Decrease All (Shift -5)")
-        hyprctl keyword general:gaps_in $((current - 5))
+        "$hyprctl_helper" adjust-gap inner -5
         ;;
       "Set to zero")
-        hyprctl keyword general:gaps_in 0
+        "$hyprctl_helper" set-gap inner 0
         ;;
       "Restore defaults")
-        hyprctl keyword general:gaps_in 6
+        "$hyprctl_helper" set-gap inner 6
         ;;
     esac
     ;;
@@ -86,22 +88,22 @@ case "$main_choice" in
 
     case "$choice" in
       "Increase (+5)")
-        hyprctl keyword general:gaps_out $((current + 5))
+        "$hyprctl_helper" adjust-gap outer 5
         ;;
       "Decrease (-5)")
-        hyprctl keyword general:gaps_out $((current - 5))
+        "$hyprctl_helper" adjust-gap outer -5
         ;;
       "Increase All (Shift +5)")
-        hyprctl keyword general:gaps_out $((current + 5))
+        "$hyprctl_helper" adjust-gap outer 5
         ;;
       "Decrease All (Shift -5)")
-        hyprctl keyword general:gaps_out $((current - 5))
+        "$hyprctl_helper" adjust-gap outer -5
         ;;
       "Set to zero")
-        hyprctl keyword general:gaps_out 0
+        "$hyprctl_helper" set-gap outer 0
         ;;
       "Restore defaults")
-        hyprctl keyword general:gaps_out 18
+        "$hyprctl_helper" set-gap outer 18
         ;;
     esac
     ;;

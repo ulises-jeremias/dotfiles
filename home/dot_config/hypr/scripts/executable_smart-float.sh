@@ -8,6 +8,8 @@
 
 set -euo pipefail
 
+hyprctl_helper="$HOME/.local/bin/hyprland-runtime"
+
 # Configuration
 MAX_WIDTH=1400 # Maximum window width (pixels)
 MAX_HEIGHT=900 # Maximum window height (pixels)
@@ -32,9 +34,9 @@ final_height=$((optimal_height < MAX_HEIGHT ? optimal_height : MAX_HEIGHT))
 
 if [ "$is_floating" = "false" ]; then
   # Make floating, center, and resize
-  hyprctl dispatch togglefloating
-  hyprctl dispatch resizeactive exact ${final_width} ${final_height}
-  hyprctl dispatch centerwindow
+  "$hyprctl_helper" toggle-float
+  "$hyprctl_helper" resize-active "$final_width" "$final_height"
+  "$hyprctl_helper" center
 
   # Show notification
   if command -v notify-send >/dev/null 2>&1; then
@@ -42,7 +44,7 @@ if [ "$is_floating" = "false" ]; then
   fi
 else
   # Already floating, just tile it
-  hyprctl dispatch togglefloating
+  "$hyprctl_helper" toggle-float
 
   # Show notification
   if command -v notify-send >/dev/null 2>&1; then
