@@ -26,6 +26,40 @@ mkdir -p "$DEST_ROOT"
 
 linked=0
 skipped=0
+legacy_removed=0
+legacy_links_removed=0
+
+# Remove only the six former regional defaults, and only while their content
+# hash still matches the audited generated/uncertain source. A user's modified
+# file or replacement photo is left untouched. These defaults are now owned
+# and installed by HorneroOS/config's hornero-config package.
+retire_legacy_default() {
+  local rel="$1" expected="$2" source target current actual
+  source="$SRC_ROOT/$rel"
+  target="$DEST_ROOT/${rel%/*}/${rel##*/}"
+  if [[ -f $source && ! -L $source ]]; then
+    actual="$(sha256sum -- "$source")"
+    actual="${actual%% *}"
+    if [[ $actual == "$expected" ]]; then
+      rm -- "$source"
+      legacy_removed=$((legacy_removed + 1))
+    fi
+  fi
+  if [[ -L $target && ! -e $source ]]; then
+    current="$(readlink -- "$target" || true)"
+    if [[ $current == "$source" ]]; then
+      rm -- "$target"
+      legacy_links_removed=$((legacy_links_removed + 1))
+    fi
+  fi
+}
+
+retire_legacy_default "buenos-aires-nocturno/buenos-aires-nocturno-01.jpg" "f8614f3a103bd45c7f3609c7ec46300fb141d6b71bb0cc25f0338dfec36ce222"
+retire_legacy_default "fin-del-mundo/beagle-blue-hour-01.jpg" "54badd4376fcff1401b6388288f4968445610dfb68e7ca8939fa61fa07f86330"
+retire_legacy_default "ibera/ibera-mist-01.jpg" "df0c08efc4c6ced75af44fbd1045014e80c474d7e9a44b6cb5292d84c4ee6a16"
+retire_legacy_default "pampa/pampa-01.png" "1a5579612833ff7410e50e1d49603e6f2c31b4eed51853055c8db89d791f60a7"
+retire_legacy_default "patagonia/patagonia-glacier-01.jpg" "0a9da4efca0b0d5129872de2eeed44a9fc4bc48913731d0b62f97ac15155f706"
+retire_legacy_default "quebrada/quebrada-mineral-01.jpg" "5f2e400084a9283c4c196a0a93bc6aa0850c5859d7cbfbff9dbf718b16cf87fc"
 
 link_file() {
   local src="$1"
@@ -63,5 +97,5 @@ for theme_dir in "$SRC_ROOT"/*/; do
 done
 shopt -u nullglob
 
-echo "[wallpapers] linked=$linked skipped=$skipped (source: $SRC_ROOT → $DEST_ROOT/<theme>/)"
+echo "[wallpapers] linked=$linked skipped=$skipped legacy_removed=$legacy_removed stale_links_removed=$legacy_links_removed (source: $SRC_ROOT → $DEST_ROOT/<theme>/)"
 {{- end -}}

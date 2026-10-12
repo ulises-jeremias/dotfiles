@@ -81,6 +81,9 @@ jobs:
           done < <(find home/.chezmoiscripts -name "*.tmpl" -print0)
           exit $fail
 
+      - name: Validate safe wallpaper migration
+        run: python3 tests/test_wallpaper_migration.py
+
       - name: Verify source delivery mappings
         run: 'PATH="$HOME/.local/bin:$PATH" ./scripts/verify-delivery.sh'
 
