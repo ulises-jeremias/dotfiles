@@ -1,5 +1,10 @@
 ## 📚 **HorneroConfig Wiki**
 
+> **Historical archive:** these pages describe workstation configurations
+> from different stages. They are not the source of truth for current
+> HorneroOS behavior. See the [current repository scope and setup](https://github.com/ulises-jeremias/dotfiles#hornero-workstation-configuration)
+> and [HorneroOS documentation](https://horneroos.com/docs) first.
+
 ### 🏠 **Getting Started**
 
 - [🏠 Home](Home)
@@ -25,7 +30,7 @@
 
 #### **Terminal & Shell**
 
-- [💻 Kitty Terminal](Kitty)
+- [💻 Terminal Emulators](Kitty) — Kitty, Alacritty, and Ghostty
 - [🐚 Zsh Shell](Zsh)
 
 ### 🔧 **Scripts & Utilities**

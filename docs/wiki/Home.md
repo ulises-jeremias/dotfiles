@@ -11,6 +11,13 @@
 
 </div> <!-- center -->
 
+> [!WARNING]
+> **Historical reference:** this page preserves an earlier workstation setup.
+> Package, installation, and feature details below may no longer describe the
+> current repository or HorneroOS. For current ownership boundaries and setup
+> instructions, start with the [repository README](https://github.com/ulises-jeremias/dotfiles#hornero-workstation-configuration)
+> and the [HorneroOS documentation](https://horneroos.com/docs).
+
 <div align="center">
 
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/PandaFoss/Awesome-Arch)
