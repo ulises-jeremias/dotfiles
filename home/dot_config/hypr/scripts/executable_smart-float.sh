@@ -33,21 +33,21 @@ final_width=$((optimal_width < MAX_WIDTH ? optimal_width : MAX_WIDTH))
 final_height=$((optimal_height < MAX_HEIGHT ? optimal_height : MAX_HEIGHT))
 
 if [ "$is_floating" = "false" ]; then
-  # Make floating, center, and resize
-  "$hyprctl_helper" toggle-float
-  "$hyprctl_helper" resize-active "$final_width" "$final_height"
-  "$hyprctl_helper" center
+	# Make floating, center, and resize
+	"$hyprctl_helper" toggle-float
+	"$hyprctl_helper" resize-active "$final_width" "$final_height"
+	"$hyprctl_helper" center
 
-  # Show notification
-  if command -v notify-send >/dev/null 2>&1; then
-    notify-send "Smart Float" "Window: ${final_width}x${final_height}" -t 1500 -u low
-  fi
+	# Show notification
+	if command -v notify-send >/dev/null 2>&1; then
+		notify-send "Smart Float" "Window: ${final_width}x${final_height}" -t 1500 -u low
+	fi
 else
-  # Already floating, just tile it
-  "$hyprctl_helper" toggle-float
+	# Already floating, just tile it
+	"$hyprctl_helper" toggle-float
 
-  # Show notification
-  if command -v notify-send >/dev/null 2>&1; then
-    notify-send "Smart Float" "Window tiled" -t 1500 -u low
-  fi
+	# Show notification
+	if command -v notify-send >/dev/null 2>&1; then
+		notify-send "Smart Float" "Window tiled" -t 1500 -u low
+	fi
 fi

@@ -158,12 +158,12 @@ legacy calls so the currently active hyprlang config behaves as before.
 Creating the root Lua entrypoint switches these helper calls to the Lua API
 without requiring callers to construct Lua expressions.
 
-| Consumer | Adapter operation | Lua behavior |
-|---|---|---|
-| Interactive gap menu | `get-gap`, `set-gap` | dotted `getoption` path; `hl.config` for integer gaps |
-| Smart Float | `toggle-float`, `resize-active`, `center` | typed float, resize, and center dispatchers |
-| Notification click | `focus-class` | Lua focus selector; only simple application class names are accepted |
-| Hypridle display power | `dpms on/off` | typed DPMS enable/disable dispatcher |
+| Consumer               | Adapter operation                         | Lua behavior                                                         |
+|------------------------|-------------------------------------------|----------------------------------------------------------------------|
+| Interactive gap menu   | `get-gap`, `set-gap`                      | dotted `getoption` path; `hl.config` for integer gaps                |
+| Smart Float            | `toggle-float`, `resize-active`, `center` | typed float, resize, and center dispatchers                          |
+| Notification click     | `focus-class`                             | Lua focus selector; only simple application class names are accepted |
+| Hypridle display power | `dpms on/off`                             | typed DPMS enable/disable dispatcher                                 |
 
 Arguments are constrained before entering generated Lua: gaps are integers
 from 0 through 1000 (adjustments clamp at both boundaries), dimensions are
