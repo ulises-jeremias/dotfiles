@@ -56,7 +56,8 @@ final activation remain separate acceptance steps below.
 | `hyprland.conf.d/colors.conf`                                                      | Generated Lua color module                | Theme-derived border and group colors                   |
 | `hyprland.conf.d/hornero-light.conf`                                               | Generated Lua color module                | Optional Hornero Light colors; preserve opt-in behavior |
 | `hyprland.conf.d/debug.conf`                                                       | `hyprland.lua.d/static.lua`               | Error-display configuration                             |
-| Inline `general`, `decoration`, `misc`, `gestures`, `xwayland`, and `debug` blocks | `hyprland.lua.d/static.lua`               | Static compositor options and defaults                  |
+| Inline `general`, `decoration`, `misc`, `xwayland`, and `debug` blocks       | `hyprland.lua.d/static.lua`                | Static compositor options and defaults                  |
+| Inline `gestures` block                                                       | `hyprland.lua.d/gestures.lua`              | Workspace swipe action; legacy tuning needs review     |
 
 The generated color module must have a checked-in or packaged fallback so a
 fresh install works before Smart Colors runs. `hyprlock.conf` and
