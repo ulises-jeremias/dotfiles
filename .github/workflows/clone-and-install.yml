@@ -43,8 +43,16 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Lua for staged config contract tests
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends lua5.4
+
       - name: Validate Hornero source contract
         run: python3 tests/test_hornero_source_contract.py
+
+      - name: Exercise staged Smart Colors Lua loader
+        run: python3 tests/test_hyprland_lua_smart_colors_runtime.py
 
       - name: Smoke test chezmoi templates
         shell: bash
