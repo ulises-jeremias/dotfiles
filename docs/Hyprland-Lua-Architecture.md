@@ -16,7 +16,7 @@ delete the legacy source as part of an early migration slice.
 
 | Current source                                                                     | Target module                             | Responsibility                                          |
 |------------------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|
-| `hyprland.conf`                                                                    | `hyprland.lua`                            | Ordered entrypoint and module selection                 |
+| `hyprland.conf`                                                                    | `hyprland.lua`                            | Final ordered entrypoint; add only after full parity    |
 | `hyprland.conf.d/monitors.conf`                                                    | `hyprland.lua.d/monitors.lua`             | Monitor rules and fallback output                       |
 | `hyprland.conf.d/autostart.conf`                                                   | `hyprland.lua.d/autostart.lua`            | Session-start commands and ordering                     |
 | `hyprland.conf.d/environment.conf`                                                 | `hyprland.lua.d/environment.lua`          | Environment inherited by launched applications          |
@@ -42,10 +42,12 @@ formats.
 
 ## Conversion rules
 
-- Translate configuration with `hl.config`, `hl.input`, `hl.monitor`,
-  `hl.env`, `hl.window_rule`, `hl.curve`, and `hl.animation` using the current
-  Hyprland stubs and official 0.55+ reference. Do not infer Lua field names
-  from the legacy parser's names alone.
+- Translate global categories with `hl.config`, device rules with
+  `hl.device`, outputs with `hl.monitor`, environment values with `hl.env`,
+  and startup work with `hl.on`. Global keyboard and touchpad options belong
+  under `hl.config({ input = { ... } })`; there is no `hl.input` API. Confirm
+  all other typed APIs against the installed target-version stubs and official
+  reference. Do not infer Lua field names from the legacy parser's names.
 - Translate bindings to `hl.bind` and a matching `hl.dsp` helper when one
   exists. Keep dispatcher fallbacks explicit and covered by the keybinding
   inventory. Preserve locked and repeating semantics for `bindl`, `binde`,
@@ -70,16 +72,24 @@ formats.
 
 ## Implementation sequence
 
-1. Port the entrypoint and static settings, input, monitor, environment,
-   autostart, and layout configuration in #181.
+1. Port static settings, input, monitor, environment, autostart, and layout
+   modules in #181 without installing a root `hyprland.lua` entrypoint.
 2. Port keybindings and keyboard-help discovery in #182.
 3. Port window rules in #183.
 4. Port animation profiles and Quickshell rice switching in #184.
 5. Port Smart Colors generation and its safe fallback in #185.
 6. Audit runtime consumers and generated file paths in #186.
 7. Update user documentation in #187.
-8. Run the full rollout and validation matrix in #188 before removing legacy
-   configuration.
+8. In #188, add the root `hyprland.lua` that loads every migrated module,
+   validate full behavior in the target-version test session, then remove
+   legacy configuration only after the acceptance matrix passes.
+
+Hyprland 0.55+ selects `hyprland.lua` when it exists; it does not merge that
+file with `hyprland.conf`. Adding a partial root Lua file would silently stop
+loading any legacy bindings, window rules, animation profiles, and generated
+colors that had not yet been migrated. Staged modules therefore remain inert
+until #188 activates the complete Lua tree. This keeps intermediate changes
+from changing the desktop's active configuration.
 
 Each implementation pull request must identify the source files it replaces,
 show the relevant before/after behavior, run the static checks below, and state
@@ -96,6 +106,15 @@ shellcheck path/to/changed-script.sh
 python3 -m pytest tests -q
 ./scripts/verify-delivery.sh
 ```
+
+Use the [Lua configuration guide](https://wiki.hypr.land/0.56.0/Configuring/Start/),
+[config options](https://wiki.hypr.land/0.56.0/Configuring/Basics/Variables/),
+[devices](https://wiki.hypr.land/0.56.0/Configuring/Advanced-and-Cool/Devices/),
+[monitors](https://wiki.hypr.land/0.56.0/Configuring/Basics/Monitors/), and
+[autostart](https://wiki.hypr.land/0.56.0/Configuring/Basics/Autostart/) as
+the API reference for the initial target. Where local installed stubs disagree
+with a newer wiki, pin implementation to the installed Hyprland version and
+record the version-specific decision.
 
 Before a host applies the migration, render chezmoi templates against both
 managed-host and static configurations and inspect `chezmoi diff` without
