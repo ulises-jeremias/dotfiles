@@ -16,18 +16,24 @@ delete the legacy source as part of an early migration slice.
 
 The `hyprland.lua.d/` source currently contains staged equivalents for monitor
 rules, session environment, startup commands, keyboard/pointer/touchpad/cursor
-settings, and layout profiles. These modules are inert:
+settings, layout profiles, and non-generated compositor options. A gesture
+module expresses the three-finger horizontal workspace action through the
+current API. These modules are inert:
 there is deliberately no root `hyprland.lua` and no `require(...)` call in the
 active `hyprland.conf`. Hyprland therefore continues to load the existing
 hyprlang configuration. The staged modules have Lua syntax validation, but
 they have not been loaded by Hyprland or accepted in a separate session.
 
-The next static migration work still includes tablet-specific input settings,
-the inline compositor options, and preserving generated colors and their
-opt-in light variant. The current tablet fragment only sets defaults; its Lua
+The staged gesture action does not reproduce the old swipe distance, invert,
+speed, cancel-ratio, or continue-forever tuning; Hyprland 0.55+ replaced those
+settings with the gesture API, so equivalence requires isolated-session review.
+Tablet-specific settings in the current fragment only set defaults; their Lua
 form remains unported until the typed vector representation has been validated.
-Keybindings, window rules, animations, Smart Colors consumers, and final
-activation remain separate acceptance steps below.
+The shadow offset is also omitted because the legacy value is the zero default;
+it is not serialized as an unverified Lua vector.
+Generated border and shadow colors and the opt-in light variant remain
+separate. Keybindings, window rules, animations, Smart Colors consumers, and
+final activation remain separate acceptance steps below.
 
 ## Target module map
 
