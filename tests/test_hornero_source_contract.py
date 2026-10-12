@@ -71,6 +71,9 @@ def test_kitty_defaults_are_owned_by_the_hornero_config_package():
 def test_yazi_launchers_use_the_configured_terminal():
     keybindings = (ROOT / "home/dot_config/hypr/hyprland.conf.d/keybindings.conf").read_text()
     thunar_actions = (ROOT / "home/dot_config/Thunar/uca.xml").read_text()
+    window_rules = (
+        ROOT / "home/dot_config/hypr/hyprland.conf.d/window-rules.conf"
+    ).read_text()
 
     assert (
         "bind = $mainMod, E, exec, horneroctl apps terminal-file --new-window --last-dir"
@@ -82,6 +85,12 @@ def test_yazi_launchers_use_the_configured_terminal():
     )
     assert "kitty --class yazi-popup" not in keybindings
     assert "kitty --class yazi-popup" not in thunar_actions
+    assert (
+        r"""windowrule {
+    name = yazi-popup
+    match:class = ^(yazi-popup|com\.horneroos\.yazi-popup)$
+""" in window_rules
+    )
 
 
 def test_hornero_runtime_comes_from_aur_packages():

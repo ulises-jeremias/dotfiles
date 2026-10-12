@@ -30,12 +30,12 @@ yay -S --noconfirm --needed \
   hornero-config \
   horneroctl-bin
 
-# Require package versions whose layouts, theme catalogue, and CLI lifecycle
-# contract agree with the current Shell main line. Changing these floors also
-# reruns this `run_onchange` installer so the host can reconcile against AUR.
+# Require package versions whose layout, theme catalogue, Shell runtime, and
+# terminal-default CLI contract agree with the current Hornero release line.
+# Changing these floors reruns this installer so the host can reconcile with AUR.
 readonly min_hornero_config_version="0.3.4-1"
 readonly min_hornero_shell_version="1.2.5-1"
-readonly min_horneroctl_version="0.2.0_preview15-1"
+readonly min_horneroctl_version="0.2.0_preview16-1"
 installed_hornero_config_version="$(pacman -Q hornero-config | awk '{print $2}')"
 if (( $(vercmp "$installed_hornero_config_version" "$min_hornero_config_version") < 0 )); then
   echo "hornero-config ${min_hornero_config_version} or newer is required for the system layout catalogue (found ${installed_hornero_config_version})" >&2
@@ -48,7 +48,7 @@ if (( $(vercmp "$installed_hornero_shell_version" "$min_hornero_shell_version") 
 fi
 installed_horneroctl_version="$(pacman -Q horneroctl-bin | awk '{print $2}')"
 if (( $(vercmp "$installed_horneroctl_version" "$min_horneroctl_version") < 0 )); then
-  echo "horneroctl-bin ${min_horneroctl_version} or newer is required for the packaged Quickshell runtime (found ${installed_horneroctl_version})" >&2
+  echo "horneroctl-bin ${min_horneroctl_version} or newer is required for terminal default management (found ${installed_horneroctl_version})" >&2
   exit 1
 fi
 
