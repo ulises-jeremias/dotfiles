@@ -12,6 +12,23 @@ remain available as rollback material until the converted configuration has
 passed the complete acceptance matrix. Do not add `.chezmoiremove` entries or
 delete the legacy source as part of an early migration slice.
 
+## Staged implementation status
+
+The `hyprland.lua.d/` source currently contains staged equivalents for monitor
+rules, session environment, startup commands, keyboard/pointer/touchpad/cursor
+settings, and layout profiles. These modules are inert:
+there is deliberately no root `hyprland.lua` and no `require(...)` call in the
+active `hyprland.conf`. Hyprland therefore continues to load the existing
+hyprlang configuration. The staged modules have Lua syntax validation, but
+they have not been loaded by Hyprland or accepted in a separate session.
+
+The next static migration work still includes tablet-specific input settings,
+the inline compositor options, and preserving generated colors and their
+opt-in light variant. The current tablet fragment only sets defaults; its Lua
+form remains unported until the typed vector representation has been validated.
+Keybindings, window rules, animations, Smart Colors consumers, and final
+activation remain separate acceptance steps below.
+
 ## Target module map
 
 | Current source                                                                     | Target module                             | Responsibility                                          |
