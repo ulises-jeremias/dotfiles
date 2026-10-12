@@ -33,7 +33,15 @@ form remains unported until the typed vector representation has been validated.
 The shadow offset is also omitted because the legacy value is the zero default;
 it is not serialized as an unverified Lua vector.
 Generated border and shadow colors and the opt-in light variant remain
-separate. Window-rule names, match expressions, effects, values, and order are
+separate. The staged `smart-colors.lua` module sets the Hornero Dark factory
+palette first, then optionally requires
+`$HORNERO_SMART_COLORS_DIR/colors-hyprland.lua` or the default
+`${XDG_CACHE_HOME:-~/.cache}/hornero/smart-colors/colors-hyprland.lua` output
+from `horneroctl appearance colors generate --yes`. The generated module is
+optional and protected with `pcall`, so a missing or malformed cache file
+leaves the factory colors in place. This module is inert until the final Lua
+entrypoint loads it; the active legacy configuration is unchanged.
+Window-rule names, match expressions, effects, values, and order are
 statically compared with the legacy source; named-rule precedence and runtime
 matching still require isolated-session review. Keybindings, animations, Smart
 Colors consumers, and final activation remain separate acceptance steps below.
@@ -59,7 +67,7 @@ and speed values are statically checked against all six legacy profiles.
 | `hyprland.conf.d/animations-minimal.conf`                              | `hyprland.lua.d/animations-minimal.lua`   | Minimal animation profile                               |
 | `hyprland.conf.d/animations-nature.conf`                               | `hyprland.lua.d/animations-nature.lua`    | Nature animation profile                                |
 | `hyprland.conf.d/animations-vaporwave.conf`                            | `hyprland.lua.d/animations-vaporwave.lua` | Vaporwave animation profile                             |
-| `hyprland.conf.d/colors.conf`                                          | Generated Lua color module                | Theme-derived border and group colors                   |
+| `hyprland.conf.d/colors.conf`                                          | `hyprland.lua.d/smart-colors.lua`          | Factory palette plus optional generated theme colors    |
 | `hyprland.conf.d/hornero-light.conf`                                   | Generated Lua color module                | Optional Hornero Light colors; preserve opt-in behavior |
 | `hyprland.conf.d/debug.conf`                                           | `hyprland.lua.d/static.lua`               | Error-display configuration                             |
 | Inline `general`, `decoration`, `misc`, `xwayland`, and `debug` blocks | `hyprland.lua.d/static.lua`               | Static compositor options and defaults                  |
