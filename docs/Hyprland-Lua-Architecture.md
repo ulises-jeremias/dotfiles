@@ -16,10 +16,10 @@ delete the legacy source as part of an early migration slice.
 
 The `hyprland.lua.d/` source currently contains staged equivalents for monitor
 rules, session environment, startup commands, keyboard/pointer/touchpad/cursor
-settings, layout profiles, and non-generated compositor options. A gesture
-module expresses the three-finger horizontal workspace action through the
-current API, and a window-rule module mirrors all 43 legacy rules in order.
-These modules are inert:
+settings, layout profiles, non-generated compositor options, all six animation
+profiles, and window rules. A gesture module expresses the three-finger
+horizontal workspace action through the current API. The window-rule module
+mirrors all 43 legacy rules in order. These modules are inert:
 there is deliberately no root `hyprland.lua` and no `require(...)` call in the
 active `hyprland.conf`. Hyprland therefore continues to load the existing
 hyprlang configuration. The staged modules have Lua syntax validation, but
@@ -37,6 +37,9 @@ separate. Window-rule names, match expressions, effects, values, and order are
 statically compared with the legacy source; named-rule precedence and runtime
 matching still require isolated-session review. Keybindings, animations, Smart
 Colors consumers, and final activation remain separate acceptance steps below.
+Each animation profile has its own module because profiles reuse curve names;
+the final entrypoint must load exactly one. Animation leaves, curves, styles,
+and speed values are statically checked against all six legacy profiles.
 
 ## Target module map
 
@@ -83,6 +86,11 @@ formats.
   match properties, effect values, and declaration order. Validate Lua field
   support against the target version's installed descriptors; class and title
   regexes must remain byte-for-byte equivalent after Lua string decoding.
+- Translate `bezier` entries to `hl.curve` and animation leaves to
+  `hl.animation`. Hyprland's legacy `speed` and Lua `speed` both use
+  deciseconds (100 ms units), so copy numeric values unchanged; comments in the
+  current legacy files that describe them as frames are inaccurate. Keep
+  same-named curves isolated by loading only the selected profile.
 - Move `exec-once` behavior to `hl.on("hyprland.start", ...)`. Commands that
   rely on shell operators must preserve their ordering intentionally; pass
   fixed command strings only and do not interpolate untrusted values into a
@@ -108,7 +116,11 @@ formats.
 2. Port keybindings and keyboard-help discovery in #182.
 3. Stage window rules in #183 and validate rule order and matching statically;
    confirm runtime named-rule precedence in the isolated target session.
-4. Port animation profiles and Quickshell rice switching in #184.
+4. Port animation profiles in #184. The current runtime selector is
+   `horneroctl hypr animations`, which reads the legacy profile files; retain
+   that path while Lua modules remain staged and audit its Lua-era behavior in
+   #186. The previously listed Quickshell `Rice.qml` path is not present in
+   this repository.
 5. Port Smart Colors generation and its safe fallback in #185.
 6. Audit runtime consumers and generated file paths in #186.
 7. Update user documentation in #187.
@@ -144,9 +156,13 @@ Use the [Lua configuration guide](https://wiki.hypr.land/0.56.0/Configuring/Star
 [devices](https://wiki.hypr.land/0.56.0/Configuring/Advanced-and-Cool/Devices/),
 [monitors](https://wiki.hypr.land/0.56.0/Configuring/Basics/Monitors/), and
 [autostart](https://wiki.hypr.land/0.56.0/Configuring/Basics/Autostart/) as
-the API reference for the initial target. Where local installed stubs disagree
-with a newer wiki, pin implementation to the installed Hyprland version and
-record the version-specific decision.
+the API reference for the initial target. Use the [0.54 animation
+syntax](https://wiki.hypr.land/0.54.0/Configuring/Animations/) to interpret
+the legacy source and the [0.56 Lua animation
+API](https://wiki.hypr.land/0.56.0/Configuring/Advanced-and-Cool/Animations/)
+for its staged modules. Where local installed stubs disagree with a newer
+wiki, pin implementation to the installed Hyprland version and record the
+version-specific decision.
 
 Before a host applies the migration, render chezmoi templates against both
 managed-host and static configurations and inspect `chezmoi diff` without
