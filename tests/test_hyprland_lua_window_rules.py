@@ -46,7 +46,9 @@ def _legacy_rules() -> list[dict[str, object]]:
             if key not in {"name"}
         }
         assert name is not None, f"legacy rule is missing a name: {block}"
-        rules.append({"name": name.group(1).strip(), "match": matches, "effects": effects})
+        rules.append(
+            {"name": name.group(1).strip(), "match": matches, "effects": effects}
+        )
     return rules
 
 
@@ -57,7 +59,9 @@ def _lua_rules() -> list[dict[str, object]]:
     )
     rules: list[dict[str, object]] = []
     for block in blocks:
-        name = re.search(r'^\tname\s*=\s*("(?:\\.|[^"\\])*")\s*,?$', block, re.MULTILINE)
+        name = re.search(
+            r'^\tname\s*=\s*("(?:\\.|[^"\\])*")\s*,?$', block, re.MULTILINE
+        )
         matches_block = re.search(
             r"^\tmatch\s*=\s*\{(.*?)\}\s*,?$", block, re.MULTILINE | re.DOTALL
         )
@@ -73,12 +77,18 @@ def _lua_rules() -> list[dict[str, object]]:
             }
         effects = {
             key: _value(value, lua=True)
-            for key, value in re.findall(r"^\t([a-z_]+)\s*=\s*(.+)$", block, re.MULTILINE)
+            for key, value in re.findall(
+                r"^\t([a-z_]+)\s*=\s*(.+)$", block, re.MULTILINE
+            )
             if key not in {"name", "match"}
         }
         assert name is not None, f"Lua rule is missing a name: {block}"
         rules.append(
-            {"name": ast.literal_eval(name.group(1)), "match": matches, "effects": effects}
+            {
+                "name": ast.literal_eval(name.group(1)),
+                "match": matches,
+                "effects": effects,
+            }
         )
     return rules
 
