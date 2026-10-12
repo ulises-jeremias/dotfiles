@@ -13,7 +13,14 @@ ROOT = Path(__file__).resolve().parents[1]
 def main() -> None:
     chezmoi = shutil.which("chezmoi")
     if chezmoi is None:
-        raise SystemExit("chezmoi is required for this integration test")
+        local_install = Path.home() / ".local/bin/chezmoi"
+        if local_install.is_file() and local_install.stat().st_mode & 0o111:
+            chezmoi = str(local_install)
+    if chezmoi is None:
+        raise SystemExit(
+            "chezmoi is required for this integration test "
+            "(add it to PATH or install it in ~/.local/bin)"
+        )
 
     for terminal in ("ghostty", "alacritty"):
         with TemporaryDirectory(prefix="dotfiles-terminal-selection-") as temp:
