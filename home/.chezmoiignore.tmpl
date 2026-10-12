@@ -20,7 +20,10 @@
 .config/picom.conf
 {{-   end -}}
 
-# XFCE configs - Only manage helpers.rc for exo-open, ignore xfconf
+# Hornero Config/horneroctl own the mutable Exo terminal preference.
+# Preserve the existing target without resetting user selections on apply.
+.config/xfce4/helpers.rc
+# Ignore xfconf's machine-specific window-manager state.
 .config/xfce4/xfconf/**
 
 # LXQt - Only manage minimal required configs

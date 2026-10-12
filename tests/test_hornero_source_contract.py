@@ -68,6 +68,15 @@ def test_kitty_defaults_are_owned_by_the_hornero_config_package():
     assert not (ROOT / "home/dot_config/kitty").exists()
 
 
+def test_selected_terminal_association_is_not_overwritten_by_dotfiles():
+    # horneroctl owns this mutable user preference. Keeping a static
+    # TerminalEmulator entry here would reset a user's Ghostty/Alacritty
+    # selection whenever chezmoi applies the workstation source.
+    assert not (ROOT / "home/dot_config/xfce4/helpers.rc").exists()
+    ignore = (ROOT / "home/.chezmoiignore.tmpl").read_text()
+    assert ".config/xfce4/helpers.rc" in ignore
+
+
 def test_yazi_launchers_use_the_configured_terminal():
     keybindings = (ROOT / "home/dot_config/hypr/hyprland.conf.d/keybindings.conf").read_text()
     thunar_actions = (ROOT / "home/dot_config/Thunar/uca.xml").read_text()
@@ -147,6 +156,7 @@ if __name__ == "__main__":
         test_managed_source_has_no_retired_runtime_names_or_overrides,
         test_theme_helpers_are_not_duplicated_in_personal_source,
         test_kitty_defaults_are_owned_by_the_hornero_config_package,
+        test_selected_terminal_association_is_not_overwritten_by_dotfiles,
         test_yazi_launchers_use_the_configured_terminal,
         test_hornero_runtime_comes_from_aur_packages,
         test_desktop_installs_external_styles_used_by_appearance_catalogue,

@@ -81,6 +81,9 @@ jobs:
           done < <(find home/.chezmoiscripts -name "*.tmpl" -print0)
           exit $fail
 
+      - name: Preserve Hornero terminal selection
+        run: python3 tests/test_terminal_selection_ownership.py
+
       - name: Validate safe wallpaper migration
         run: python3 tests/test_wallpaper_migration.py
 
