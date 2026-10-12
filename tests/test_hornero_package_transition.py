@@ -19,23 +19,23 @@ def test_aur_transition_removes_only_conflicting_legacy_packages():
     )
 
 
-def test_shell_package_floor_includes_single_owner_preset_fix():
+def test_shell_package_floor_includes_terminal_settings_pane():
     script = (
         ROOT
         / "home/.chezmoiscripts/linux/run_onchange_before_install-hornero-desktop.sh.tmpl"
     ).read_text()
 
-    assert 'readonly min_hornero_shell_version="1.2.5-1"' in script
+    assert 'readonly min_hornero_shell_version="1.2.6-1"' in script
 
 
-def test_horneroctl_floor_includes_terminal_default_management():
+def test_horneroctl_floor_includes_terminal_inventory_for_settings():
     script = (
         ROOT
         / "home/.chezmoiscripts/linux/run_onchange_before_install-hornero-desktop.sh.tmpl"
     ).read_text()
 
-    assert 'readonly min_horneroctl_version="0.2.0_preview16-1"' in script
-    assert "required for terminal default management" in script
+    assert 'readonly min_horneroctl_version="0.2.0_preview17-1"' in script
+    assert "required for Settings terminal inventory" in script
 
 
 def test_dotfiles_do_not_override_hornero_gtk_appearance():
