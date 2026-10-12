@@ -81,6 +81,9 @@ jobs:
           done < <(find home/.chezmoiscripts -name "*.tmpl" -print0)
           exit $fail
 
+      - name: Verify source delivery mappings
+        run: 'PATH="$HOME/.local/bin:$PATH" ./scripts/verify-delivery.sh'
+
       - name: Install Dotfiles
         run: ./install.sh
 

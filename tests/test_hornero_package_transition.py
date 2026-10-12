@@ -28,13 +28,14 @@ def test_shell_package_floor_includes_single_owner_preset_fix():
     assert 'readonly min_hornero_shell_version="1.2.5-1"' in script
 
 
-def test_horneroctl_floor_includes_orderly_quickshell_shutdown():
+def test_horneroctl_floor_includes_terminal_default_management():
     script = (
         ROOT
         / "home/.chezmoiscripts/linux/run_onchange_before_install-hornero-desktop.sh.tmpl"
     ).read_text()
 
-    assert 'readonly min_horneroctl_version="0.2.0_preview15-1"' in script
+    assert 'readonly min_horneroctl_version="0.2.0_preview16-1"' in script
+    assert "required for terminal default management" in script
 
 
 def test_dotfiles_do_not_override_hornero_gtk_appearance():
