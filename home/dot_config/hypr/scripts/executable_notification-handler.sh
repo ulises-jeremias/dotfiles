@@ -32,10 +32,10 @@ log() {
 	shift
 	local message="$*"
 	case "$level" in
-		ERROR) echo "[ERROR] $message" >&2 ;;
-		WARN) echo "[WARN] $message" >&2 ;;
-		INFO) echo "[INFO] $message" ;;
-		*) echo "$message" ;;
+	ERROR) echo "[ERROR] $message" >&2 ;;
+	WARN) echo "[WARN] $message" >&2 ;;
+	INFO) echo "[INFO] $message" ;;
+	*) echo "$message" ;;
 	esac
 }
 
@@ -45,28 +45,28 @@ handle_media_notification() {
 	local action="$2"
 
 	case "$app_name" in
-		Spotify | spotify | mpv | vlc | rhythmbox)
-			case "$action" in
-				middle)
-					if command -v playerctl > /dev/null 2>&1; then
-						playerctl play-pause
-						log "INFO" "Media play/pause toggled"
-					fi
-					;;
-				left)
-					if command -v playerctl > /dev/null 2>&1; then
-						playerctl previous
-						log "INFO" "Previous track"
-					fi
-					;;
-				right)
-					if command -v playerctl > /dev/null 2>&1; then
-						playerctl next
-						log "INFO" "Next track"
-					fi
-					;;
-			esac
+	Spotify | spotify | mpv | vlc | rhythmbox)
+		case "$action" in
+		middle)
+			if command -v playerctl >/dev/null 2>&1; then
+				playerctl play-pause
+				log "INFO" "Media play/pause toggled"
+			fi
 			;;
+		left)
+			if command -v playerctl >/dev/null 2>&1; then
+				playerctl previous
+				log "INFO" "Previous track"
+			fi
+			;;
+		right)
+			if command -v playerctl >/dev/null 2>&1; then
+				playerctl next
+				log "INFO" "Next track"
+			fi
+			;;
+		esac
+		;;
 	esac
 }
 
@@ -78,25 +78,25 @@ handle_app_notification() {
 	local body="$4"
 
 	case "$app_name" in
-		zen-browser | Zen | app.zen_browser.Zen | brave-browser | firefox | chromium)
-			case "$action" in
-				left)
-					# Open browser if notification is about something actionable
-					if [[ $summary =~ (http|https) ]]; then
-						xdg-open "$summary" 2> /dev/null || true
-					fi
-					;;
-			esac
+	zen-browser | Zen | app.zen_browser.Zen | brave-browser | firefox | chromium)
+		case "$action" in
+		left)
+			# Open browser if notification is about something actionable
+			if [[ $summary =~ (http|https) ]]; then
+				xdg-open "$summary" 2>/dev/null || true
+			fi
 			;;
-		discord | Slack | telegram-desktop)
-			case "$action" in
-				left)
-					# Focus or launch communication app
-					hyprctl dispatch focuswindow "class:$app_name" 2> /dev/null \
-						|| exo-open --launch "$app_name" 2> /dev/null || true
-					;;
-			esac
+		esac
+		;;
+	discord | Slack | telegram-desktop)
+		case "$action" in
+		left)
+			# Focus or launch communication app
+			"$HOME/.local/bin/hyprland-runtime" focus-class "$app_name" 2>/dev/null ||
+				exo-open --launch "$app_name" 2>/dev/null || true
 			;;
+		esac
+		;;
 	esac
 }
 

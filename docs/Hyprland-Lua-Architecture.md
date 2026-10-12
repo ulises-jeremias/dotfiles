@@ -108,8 +108,12 @@ formats.
   with `os.getenv`. Do not introduce a hard-coded numeric UID or machine-
   specific monitor name beyond the existing explicit rules.
 - Keep runtime `hyprctl keyword` and `hyprctl dispatch` consumers separate
-  from the config serialization format. Audit every consumer before changing
-  file paths or generated artifacts.
+  from the config serialization format, but do not assume their legacy syntax
+  survives the provider change. On the Lua provider, current Hyprland rejects
+  `hyprctl keyword`; `dispatch` takes a Lua dispatcher expression; and
+  `getoption` uses dotted option paths. Route maintained runtime operations
+  through `hyprland-runtime`, which chooses syntax from the standard active config
+  path. Audit every consumer before changing generated artifacts.
 - Do not drop dynamic Smart Colors output, the optional Hornero Light variant,
   animation profiles, or Quickshell's rice switching. Each needs an explicit
   writer, loader, fallback, and reload path before its legacy counterpart is
@@ -143,6 +147,41 @@ loading any legacy bindings, window rules, animation profiles, and generated
 colors that had not yet been migrated. Staged modules therefore remain inert
 until #188 activates the complete Lua tree. This keeps intermediate changes
 from changing the desktop's active configuration.
+
+## Runtime consumer compatibility
+
+The compatibility boundary is implemented by
+`home/dot_local/bin/executable_hyprland-runtime`. It checks for the active
+`${XDG_CONFIG_HOME:-~/.config}/hypr/hyprland.lua` entrypoint and uses only a
+small allowlist of typed operations. With no Lua entrypoint, it retains the
+legacy calls so the currently active hyprlang config behaves as before.
+Creating the root Lua entrypoint switches these helper calls to the Lua API
+without requiring callers to construct Lua expressions.
+
+| Consumer               | Adapter operation                         | Lua behavior                                                         |
+|------------------------|-------------------------------------------|----------------------------------------------------------------------|
+| Interactive gap menu   | `get-gap`, `set-gap`                      | dotted `getoption` path; `hl.config` for integer gaps                |
+| Smart Float            | `toggle-float`, `resize-active`, `center` | typed float, resize, and center dispatchers                          |
+| Notification click     | `focus-class`                             | Lua focus selector; only simple application class names are accepted |
+| Hypridle display power | `dpms on/off`                             | typed DPMS enable/disable dispatcher                                 |
+
+Arguments are constrained before entering generated Lua: gaps are integers
+from 0 through 1000 (adjustments clamp at both boundaries), dimensions are
+positive integers up to 100000, and
+application classes are limited to ASCII letters, digits, dot, underscore,
+and hyphen. The helper does not evaluate arbitrary caller-provided Lua and
+does not reload Hyprland. Other integrations (including external plugins and
+Quickshell) remain subject to the audit below; source search cannot prove
+runtime behavior.
+
+This adapter follows the current Hyprland Lua-provider contract:
+[Using hyprctl](https://wiki.hypr.land/configuring/core/advanced-configuration/using-hyprctl/)
+documents Lua expressions for `dispatch` and `eval`, while its
+[dispatcher reference](https://wiki.hypr.land/configuring/core/dispatchers/)
+documents the float, resize, center, focus, and DPMS operations. This host
+host has a running Hyprland process, but the selected `hyprctl` instance
+socket returned a connection error, so the adapter is covered by an isolated
+fake-`hyprctl` test, not a live compositor acceptance run.
 
 Each implementation pull request must identify the source files it replaces,
 show the relevant before/after behavior, run the static checks below, and state

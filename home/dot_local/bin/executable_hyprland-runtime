@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: hyprland-runtime <operation> [arguments]
+
+Operations:
+  get-gap <inner|outer>
+  set-gap <inner|outer> <integer>
+  adjust-gap <inner|outer> <5|-5>
+  toggle-float
+  resize-active <width> <height>
+  center
+  focus-class <class>
+  dpms <on|off>
+
+The helper selects legacy hyprlang or Lua-provider syntax from the active
+standard Hyprland config path. It does not reload the compositor.
+EOF
+}
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/hypr"
+lua_provider=false
+if [[ -f "$config_dir/hyprland.lua" ]]; then
+  lua_provider=true
+fi
+
+nonnegative_integer() {
+  [[ ${1-} =~ ^(0|[1-9][0-9]{0,3})$ ]] && ((10#$1 <= 1000))
+}
+
+positive_dimension() {
+  [[ ${1-} =~ ^[1-9][0-9]{0,5}$ ]] && ((10#$1 <= 100000))
+}
+
+get_gap_option() {
+  local option="$1"
+  local legacy="$2"
+  if "$lua_provider"; then
+    hyprctl -j getoption "$option"
+  else
+    hyprctl -j getoption "$legacy"
+  fi
+}
+
+set_gap_option() {
+  local option="$1"
+  local legacy="$2"
+  local value="$3"
+  if "$lua_provider"; then
+    hyprctl eval "hl.config({ general = { $option = $value } })"
+  else
+    hyprctl keyword "$legacy" "$value"
+  fi
+}
+
+dispatch() {
+  if "$lua_provider"; then
+    hyprctl dispatch "$1"
+  else
+    shift
+    hyprctl dispatch "$@"
+  fi
+}
+
+case ${1-} in
+  get-gap)
+    [[ $# -eq 2 ]] || { usage >&2; exit 2; }
+    case $2 in
+      inner) option=general.gaps_in; legacy=general:gaps_in ;;
+      outer) option=general.gaps_out; legacy=general:gaps_out ;;
+      *) usage >&2; exit 2 ;;
+    esac
+    get_gap_option "$option" "$legacy"
+    ;;
+  set-gap)
+    if [[ $# -ne 3 ]] || ! nonnegative_integer "$3"; then
+      usage >&2
+      exit 2
+    fi
+    case $2 in
+      inner) option=gaps_in; legacy=general:gaps_in ;;
+      outer) option=gaps_out; legacy=general:gaps_out ;;
+      *) usage >&2; exit 2 ;;
+    esac
+    set_gap_option "$option" "$legacy" "$3"
+    ;;
+  adjust-gap)
+    [[ $# -eq 3 && ( $3 == 5 || $3 == -5 ) ]] || { usage >&2; exit 2; }
+    case $2 in
+      inner) option=gaps_in; legacy=general:gaps_in; query=general.gaps_in; legacy_query=general:gaps_in ;;
+      outer) option=gaps_out; legacy=general:gaps_out; query=general.gaps_out; legacy_query=general:gaps_out ;;
+      *) usage >&2; exit 2 ;;
+    esac
+    current=$(get_gap_option "$query" "$legacy_query" | jq -r '.custom' | awk '{print $1}')
+    if ! nonnegative_integer "$current"; then
+      printf 'hyprland-runtime: could not read a valid current gap value\n' >&2
+      exit 1
+    fi
+    value=$((10#$current + $3))
+    ((value < 0)) && value=0
+    ((value > 1000)) && value=1000
+    set_gap_option "$option" "$legacy" "$value"
+    ;;
+  toggle-float)
+    [[ $# -eq 1 ]] || { usage >&2; exit 2; }
+    if "$lua_provider"; then
+      dispatch 'hl.dsp.window.float({ action = "toggle" })'
+    else
+      dispatch legacy togglefloating
+    fi
+    ;;
+  resize-active)
+    if [[ $# -ne 3 ]] || ! positive_dimension "$2" || ! positive_dimension "$3"; then
+      usage >&2
+      exit 2
+    fi
+    if "$lua_provider"; then
+      dispatch "hl.dsp.window.resize({ x = $2, y = $3, relative = false })"
+    else
+      dispatch legacy resizeactive exact "$2" "$3"
+    fi
+    ;;
+  center)
+    [[ $# -eq 1 ]] || { usage >&2; exit 2; }
+    if "$lua_provider"; then
+      dispatch 'hl.dsp.window.center()'
+    else
+      dispatch legacy centerwindow
+    fi
+    ;;
+  focus-class)
+    [[ $# -eq 2 && $2 =~ ^[A-Za-z0-9_.-]+$ ]] || { usage >&2; exit 2; }
+    if "$lua_provider"; then
+      dispatch "hl.dsp.focus({ window = \"class:$2\" })"
+    else
+      dispatch legacy focuswindow "class:$2"
+    fi
+    ;;
+  dpms)
+    [[ $# -eq 2 ]] || { usage >&2; exit 2; }
+    case $2 in
+      on) action=enable; legacy=on ;;
+      off) action=disable; legacy=off ;;
+      *) usage >&2; exit 2 ;;
+    esac
+    if "$lua_provider"; then
+      dispatch "hl.dsp.dpms({ action = \"$action\" })"
+    else
+      dispatch legacy dpms "$legacy"
+    fi
+    ;;
+  -h|--help|help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
