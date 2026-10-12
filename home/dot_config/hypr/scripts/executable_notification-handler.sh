@@ -92,7 +92,7 @@ handle_app_notification() {
 		case "$action" in
 		left)
 			# Focus or launch communication app
-			hyprland-runtime focus-class "$app_name" 2>/dev/null ||
+			"$HOME/.local/bin/hyprland-runtime" focus-class "$app_name" 2>/dev/null ||
 				exo-open --launch "$app_name" 2>/dev/null || true
 			;;
 		esac
