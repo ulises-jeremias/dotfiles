@@ -28,10 +28,10 @@ Before you begin, ensure you have the following installed:
 The easiest way to manage the playground is using the `play` script located in the `bin` directory:
 
 ```bash
-# Start the playground with default settings (i3 window manager)
+# Start the playground with the default Hyprland desktop
 ./bin/play
 
-# Start with a specific window manager
+# Start with a specific desktop session
 ./bin/play --wm=plasma
 
 # Provision the VM (re-run provisioning scripts)
@@ -74,11 +74,12 @@ If you prefer to run commands manually:
 
 ## Configuration Options
 
-### Window Manager
+### Desktop Session
 
-You can choose between different window managers by setting the `WINDOW_MANAGER` environment variable or using the `--wm` option with the play script:
+Choose a desktop session with the `WINDOW_MANAGER` environment variable or the `--wm` option. The play script validates the value and passes it into the Vagrant container:
 
-- `plasma` (default)
+- `hyprland` (default)
+- `plasma`
 - `i3`
 - `openbox`
 
@@ -86,10 +87,10 @@ Example:
 
 ```bash
 # Using the play script
-./bin/play --wm=i3
+./bin/play --wm=hyprland
 
 # Using environment variable
-WINDOW_MANAGER=i3 docker compose up -d
+WINDOW_MANAGER=hyprland docker compose up -d
 ```
 
 ### Login Manager
