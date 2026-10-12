@@ -16,41 +16,48 @@ delete the legacy source as part of an early migration slice.
 
 The `hyprland.lua.d/` source currently contains staged equivalents for monitor
 rules, session environment, startup commands, keyboard/pointer/touchpad/cursor
-settings, and layout profiles. These modules are inert:
+settings, layout profiles, and non-generated compositor options. A gesture
+module expresses the three-finger horizontal workspace action through the
+current API. These modules are inert:
 there is deliberately no root `hyprland.lua` and no `require(...)` call in the
 active `hyprland.conf`. Hyprland therefore continues to load the existing
 hyprlang configuration. The staged modules have Lua syntax validation, but
 they have not been loaded by Hyprland or accepted in a separate session.
 
-The next static migration work still includes tablet-specific input settings,
-the inline compositor options, and preserving generated colors and their
-opt-in light variant. The current tablet fragment only sets defaults; its Lua
+The staged gesture action does not reproduce the old swipe distance, invert,
+speed, cancel-ratio, or continue-forever tuning; Hyprland 0.55+ replaced those
+settings with the gesture API, so equivalence requires isolated-session review.
+Tablet-specific settings in the current fragment only set defaults; their Lua
 form remains unported until the typed vector representation has been validated.
-Keybindings, window rules, animations, Smart Colors consumers, and final
-activation remain separate acceptance steps below.
+The shadow offset is also omitted because the legacy value is the zero default;
+it is not serialized as an unverified Lua vector.
+Generated border and shadow colors and the opt-in light variant remain
+separate. Keybindings, window rules, animations, Smart Colors consumers, and
+final activation remain separate acceptance steps below.
 
 ## Target module map
 
-| Current source                                                                     | Target module                             | Responsibility                                          |
-|------------------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|
-| `hyprland.conf`                                                                    | `hyprland.lua`                            | Final ordered entrypoint; add only after full parity    |
-| `hyprland.conf.d/monitors.conf`                                                    | `hyprland.lua.d/monitors.lua`             | Monitor rules and fallback output                       |
-| `hyprland.conf.d/autostart.conf`                                                   | `hyprland.lua.d/autostart.lua`            | Session-start commands and ordering                     |
-| `hyprland.conf.d/environment.conf`                                                 | `hyprland.lua.d/environment.lua`          | Environment inherited by launched applications          |
-| `hyprland.conf.d/input.conf`                                                       | `hyprland.lua.d/input.lua`                | Keyboard, pointer, touchpad, tablet, and cursor         |
-| `hyprland.conf.d/layout.conf`                                                      | `hyprland.lua.d/layout.lua`               | Scrolling, dwindle, master, and shared layout settings  |
-| `hyprland.conf.d/keybindings.conf`                                                 | `hyprland.lua.d/keybindings.lua`          | Key, mouse, switch, and media bindings                  |
-| `hyprland.conf.d/window-rules.conf`                                                | `hyprland.lua.d/window-rules.lua`         | Window matching rules and effects                       |
-| `hyprland.conf.d/animations.conf`                                                  | `hyprland.lua.d/animations.lua`           | Default animation curves and tree                       |
-| `hyprland.conf.d/animations-cozy.conf`                                             | `hyprland.lua.d/animations-cozy.lua`      | Cozy animation profile                                  |
-| `hyprland.conf.d/animations-cyberpunk.conf`                                        | `hyprland.lua.d/animations-cyberpunk.lua` | Cyberpunk animation profile                             |
-| `hyprland.conf.d/animations-minimal.conf`                                          | `hyprland.lua.d/animations-minimal.lua`   | Minimal animation profile                               |
-| `hyprland.conf.d/animations-nature.conf`                                           | `hyprland.lua.d/animations-nature.lua`    | Nature animation profile                                |
-| `hyprland.conf.d/animations-vaporwave.conf`                                        | `hyprland.lua.d/animations-vaporwave.lua` | Vaporwave animation profile                             |
-| `hyprland.conf.d/colors.conf`                                                      | Generated Lua color module                | Theme-derived border and group colors                   |
-| `hyprland.conf.d/hornero-light.conf`                                               | Generated Lua color module                | Optional Hornero Light colors; preserve opt-in behavior |
-| `hyprland.conf.d/debug.conf`                                                       | `hyprland.lua.d/static.lua`               | Error-display configuration                             |
-| Inline `general`, `decoration`, `misc`, `gestures`, `xwayland`, and `debug` blocks | `hyprland.lua.d/static.lua`               | Static compositor options and defaults                  |
+| Current source                                                         | Target module                             | Responsibility                                          |
+|------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|
+| `hyprland.conf`                                                        | `hyprland.lua`                            | Final ordered entrypoint; add only after full parity    |
+| `hyprland.conf.d/monitors.conf`                                        | `hyprland.lua.d/monitors.lua`             | Monitor rules and fallback output                       |
+| `hyprland.conf.d/autostart.conf`                                       | `hyprland.lua.d/autostart.lua`            | Session-start commands and ordering                     |
+| `hyprland.conf.d/environment.conf`                                     | `hyprland.lua.d/environment.lua`          | Environment inherited by launched applications          |
+| `hyprland.conf.d/input.conf`                                           | `hyprland.lua.d/input.lua`                | Keyboard, pointer, touchpad, tablet, and cursor         |
+| `hyprland.conf.d/layout.conf`                                          | `hyprland.lua.d/layout.lua`               | Scrolling, dwindle, master, and shared layout settings  |
+| `hyprland.conf.d/keybindings.conf`                                     | `hyprland.lua.d/keybindings.lua`          | Key, mouse, switch, and media bindings                  |
+| `hyprland.conf.d/window-rules.conf`                                    | `hyprland.lua.d/window-rules.lua`         | Window matching rules and effects                       |
+| `hyprland.conf.d/animations.conf`                                      | `hyprland.lua.d/animations.lua`           | Default animation curves and tree                       |
+| `hyprland.conf.d/animations-cozy.conf`                                 | `hyprland.lua.d/animations-cozy.lua`      | Cozy animation profile                                  |
+| `hyprland.conf.d/animations-cyberpunk.conf`                            | `hyprland.lua.d/animations-cyberpunk.lua` | Cyberpunk animation profile                             |
+| `hyprland.conf.d/animations-minimal.conf`                              | `hyprland.lua.d/animations-minimal.lua`   | Minimal animation profile                               |
+| `hyprland.conf.d/animations-nature.conf`                               | `hyprland.lua.d/animations-nature.lua`    | Nature animation profile                                |
+| `hyprland.conf.d/animations-vaporwave.conf`                            | `hyprland.lua.d/animations-vaporwave.lua` | Vaporwave animation profile                             |
+| `hyprland.conf.d/colors.conf`                                          | Generated Lua color module                | Theme-derived border and group colors                   |
+| `hyprland.conf.d/hornero-light.conf`                                   | Generated Lua color module                | Optional Hornero Light colors; preserve opt-in behavior |
+| `hyprland.conf.d/debug.conf`                                           | `hyprland.lua.d/static.lua`               | Error-display configuration                             |
+| Inline `general`, `decoration`, `misc`, `xwayland`, and `debug` blocks | `hyprland.lua.d/static.lua`               | Static compositor options and defaults                  |
+| Inline `gestures` block                                                | `hyprland.lua.d/gestures.lua`             | Workspace swipe action; legacy tuning needs review      |
 
 The generated color module must have a checked-in or packaged fallback so a
 fresh install works before Smart Colors runs. `hyprlock.conf` and
