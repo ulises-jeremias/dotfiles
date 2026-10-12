@@ -19,9 +19,8 @@ def test_smart_colors_lua_factory_fallback_and_generated_overlay():
 
     with tempfile.TemporaryDirectory(prefix="hornero-smart-colors-") as temporary:
         isolated_home = Path(temporary)
-        cache = isolated_home / ".cache/hornero/smart-colors"
-        cache.mkdir(parents=True)
-        generated_file = cache / "colors-hyprland.lua"
+        default_cache = isolated_home / ".cache/hornero/smart-colors"
+        default_cache.mkdir(parents=True)
         harness = r'''
 local module = assert(os.getenv("SMART_COLORS_MODULE"))
 local calls = {}
@@ -50,14 +49,41 @@ else
 end
 '''
 
-        def run_case(content: str | None, *, expect_generated: bool = False) -> None:
+        def run_case(
+            content: str | None,
+            *,
+            expect_generated: bool = False,
+            smart_colors_dir: Path | None = None,
+            xdg_cache_home: Path | None = None,
+            shadow_content: str | None = None,
+        ) -> None:
+            active_cache = smart_colors_dir or (
+                (xdg_cache_home or (isolated_home / ".cache"))
+                / "hornero/smart-colors"
+            )
+            active_cache.mkdir(parents=True, exist_ok=True)
+            generated_file = active_cache / "colors-hyprland.lua"
             if content is None:
                 generated_file.unlink(missing_ok=True)
             else:
                 generated_file.write_text(content, encoding="utf-8")
+            if shadow_content is not None:
+                shadow_cache = (
+                    xdg_cache_home / "hornero/smart-colors"
+                    if smart_colors_dir is not None
+                    else default_cache
+                )
+                shadow_cache.mkdir(parents=True, exist_ok=True)
+                (shadow_cache / "colors-hyprland.lua").write_text(
+                    shadow_content, encoding="utf-8"
+                )
             environment = os.environ.copy()
             environment.pop("HORNERO_SMART_COLORS_DIR", None)
             environment.pop("XDG_CACHE_HOME", None)
+            if smart_colors_dir is not None:
+                environment["HORNERO_SMART_COLORS_DIR"] = str(smart_colors_dir)
+            if xdg_cache_home is not None:
+                environment["XDG_CACHE_HOME"] = str(xdg_cache_home)
             environment["HOME"] = str(isolated_home)
             environment["SMART_COLORS_MODULE"] = str(MODULE)
             environment["EXPECT_GENERATED"] = "1" if expect_generated else "0"
@@ -67,9 +93,28 @@ end
             )
 
         run_case(None)
-        run_case('hl.config({ group = { col = { border_active = "rgba(123456ee)" } } })\n', expect_generated=True)
+        valid = (
+            'hl.config({ group = { col = { border_active = "rgba(123456ee)" } } })\n'
+        )
+        run_case(valid, expect_generated=True)
         run_case("this is not valid Lua !!!\n")
         run_case('error("broken generated palette")\n')
+        decoy = (
+            'hl.config({ group = { col = { border_active = "rgba(654321ee)" } } })\n'
+        )
+        run_case(
+            valid,
+            expect_generated=True,
+            xdg_cache_home=isolated_home / "xdg-cache",
+            shadow_content=decoy,
+        )
+        run_case(
+            valid,
+            expect_generated=True,
+            smart_colors_dir=isolated_home / "custom-cache",
+            xdg_cache_home=isolated_home / "xdg-cache",
+            shadow_content=decoy,
+        )
 
 
 if __name__ == "__main__":
