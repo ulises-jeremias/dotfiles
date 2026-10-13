@@ -87,9 +87,11 @@ horneroctl apps terminal-file --fix-previews
 `ya env` reports the detected terminal and image adapter. For PDF, video, and
 other specialized previews, install the helper tools reported by the
 diagnostic. The exact set depends on the file type and installed preview
-backend. The Arch chezmoi setup installs `ueberzugpp` when Alacritty is
-installed; on a manually configured system, install the Arch package
-`ueberzugpp` to enable Alacritty's Wayland image previews.
+backend. The Arch chezmoi setup checks for `ueberzugpp` after each apply and
+installs it only when Alacritty is present and the helper is missing. This
+also handles installing Alacritty after Yazi was first configured. On a
+manually configured system, install the Arch package `ueberzugpp` to enable
+Alacritty's Wayland image previews.
 
 ## Troubleshooting
 
