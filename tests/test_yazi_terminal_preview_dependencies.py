@@ -90,4 +90,3 @@ def test_alacritty_gets_ueberzugpp_but_native_terminals_do_not():
             )
             calls = log.read_text(encoding="utf-8")
             assert ("ueberzugpp" in calls) is alacritty_installed
-
