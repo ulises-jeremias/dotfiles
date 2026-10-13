@@ -28,6 +28,38 @@ The supported choices are Kitty, Alacritty, and Ghostty. The Yazi workflow is
 documented in [Yazi File Manager](Yazi.md) and the
 [HorneroOS terminal guide](https://horneroos.com/docs/applications/terminal/).
 
+## Choose another terminal
+
+Kitty is installed by this workstation profile. Alacritty and Ghostty are
+optional: install either from the enabled Arch package source, then open
+**Control Center → Settings → Terminal**. The selector lists only supported
+emulators found on the machine. You can make the same change from a terminal:
+
+```sh
+sudo pacman -S --needed alacritty
+horneroctl config default-apps list
+horneroctl config default-apps set terminal alacritty --yes
+```
+
+For Ghostty, install and select it instead:
+
+```sh
+sudo pacman -S --needed ghostty
+horneroctl config default-apps set terminal ghostty --yes
+```
+
+Use `kitty`, `alacritty`, or `ghostty` as the final command argument to select
+the corresponding installed emulator. The selection applies to the desktop's
+terminal association and Yazi launch workflow. It does not install or remove
+terminal packages.
+
+For consistent colors, keep Hornero's factory terminal configuration supplied
+by `hornero-config`; this dotfiles repository intentionally does not shadow
+those files. Applying an appearance writes a native palette for each supported
+terminal. Custom user configs remain yours to maintain and may need to import
+the Hornero palette explicitly. See the linked HorneroOS guide for each
+emulator's config path and Yazi preview differences.
+
 ## Configuration and appearance
 
 Hornero Config provides factory defaults under `/etc/xdg/kitty/`; Kitty also
