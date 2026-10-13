@@ -157,6 +157,12 @@ hl.window_rule({
 })
 
 hl.window_rule({
+	name = "ghostty-opacity",
+	match = { class = "^com[.]mitchellh[.]ghostty$" },
+	opacity = "0.95 0.85",
+})
+
+hl.window_rule({
 	name = "thunar-opacity",
 	match = { class = "^thunar$" },
 	opacity = "0.95 0.90",

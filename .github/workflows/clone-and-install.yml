@@ -51,6 +51,9 @@ jobs:
       - name: Validate Hornero source contract
         run: python3 tests/test_hornero_source_contract.py
 
+      - name: Validate staged Hyprland Lua window-rule parity
+        run: python3 tests/test_hyprland_lua_window_rules.py
+
       - name: Exercise staged Smart Colors Lua loader
         run: python3 tests/test_hyprland_lua_smart_colors_runtime.py
 

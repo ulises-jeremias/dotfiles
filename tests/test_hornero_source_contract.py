@@ -168,6 +168,7 @@ if __name__ == "__main__":
         test_kitty_defaults_are_owned_by_the_hornero_config_package,
         test_selected_terminal_association_is_not_overwritten_by_dotfiles,
         test_yazi_launchers_use_the_configured_terminal,
+        test_ghostty_receives_the_same_hyprland_terminal_opacity_as_other_terminals,
         test_hornero_runtime_comes_from_aur_packages,
         test_desktop_installs_external_styles_used_by_appearance_catalogue,
     ]
