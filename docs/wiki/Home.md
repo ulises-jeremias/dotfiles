@@ -60,7 +60,7 @@ Most were written from scratch. Core stack:
 - **Desktop Shell** 🐚 [Quickshell](https://quickshell.org) - Unified QML shell (bar, launcher, notifications, dashboard)
 - **Launcher Fallback** 🚀 terminal prompt - lightweight rescue launcher
 - **Notifications** 🔔 Built into Quickshell (replaces Mako)
-- **Terminal Emulator** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/) - GPU-accelerated terminal
+- **Terminal Emulators** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/), [Alacritty](https://alacritty.org/), and [Ghostty](https://ghostty.org/) - choose an installed terminal in Hornero Settings; Hornero Config supplies matching native palettes
 - **Shell** 🐚 [Zsh](https://zsh.org) with Powerlevel10k prompt
 - **Lockscreen** 🔒 [Hyprlock](https://github.com/hyprwm/hyprlock) - Secure lock screen
 - **Wallpaper** 🖼️ Quickshell Background + pywal/M3 via `horneroctl wallpaper set`
