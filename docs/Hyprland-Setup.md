@@ -14,6 +14,16 @@ Center. `horneroctl` owns supported lifecycle and compositor operations.
 - The workstation configuration uses Hornero Shell's Dashboard for its
   system overview; no third-party compositor plugin is required at startup.
 
+## Configuration format status
+
+The active profile still uses `hyprland.conf` and the files in
+`hyprland.conf.d/`. Lua modules under `hyprland.lua.d/` are staged migration
+work for Hyprland 0.55 and later; they are not loaded by the current entrypoint.
+Do not add a root `hyprland.lua` or remove the legacy files until the full
+behavior and runtime-consumer acceptance matrix passes. See the
+[Lua migration architecture](Hyprland-Lua-Architecture.md) for module status,
+compatibility notes, validation, and rollout gates.
+
 ## Useful entry points
 
 ```sh

@@ -178,10 +178,10 @@ This adapter follows the current Hyprland Lua-provider contract:
 [Using hyprctl](https://wiki.hypr.land/configuring/core/advanced-configuration/using-hyprctl/)
 documents Lua expressions for `dispatch` and `eval`, while its
 [dispatcher reference](https://wiki.hypr.land/configuring/core/dispatchers/)
-documents the float, resize, center, focus, and DPMS operations. This host
-host has a running Hyprland process, but the selected `hyprctl` instance
-socket returned a connection error, so the adapter is covered by an isolated
-fake-`hyprctl` test, not a live compositor acceptance run.
+documents the float, resize, center, focus, and DPMS operations. The adapter
+is covered by isolated fake-`hyprctl` tests. Live compositor
+acceptance remains outstanding and is part of the final rollout gates in
+issue #188.
 
 Each implementation pull request must identify the source files it replaces,
 show the relevant before/after behavior, run the static checks below, and state
