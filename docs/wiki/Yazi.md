@@ -45,12 +45,12 @@ and [terminal guide](https://horneroos.com/docs/applications/terminal/).
 The configuration lives in `~/.config/yazi/` and is managed by this chezmoi
 source:
 
-| File | Purpose |
-| --- | --- |
-| `yazi.toml` | Columns, sorting, preview bounds, openers, and MIME rules |
-| `keymap.toml` | Custom keybindings layered on Yazi defaults |
-| `theme.toml` | Dark/light Catppuccin flavors |
-| `init.lua` | Personal Lua initialization hooks |
+| File          | Purpose                                                   |
+|---------------|-----------------------------------------------------------|
+| `yazi.toml`   | Columns, sorting, preview bounds, openers, and MIME rules |
+| `keymap.toml` | Custom keybindings layered on Yazi defaults               |
+| `theme.toml`  | Dark/light Catppuccin flavors                             |
+| `init.lua`    | Personal Lua initialization hooks                         |
 
 The current setup shows hidden files, sorts directories first, uses Miller
 columns, and opens text in `$EDITOR`, media in `mpv`, and other files through
@@ -69,12 +69,12 @@ different Yazi-specific look.
 Yazi detects the available image adapter from the running terminal and
 environment. Preview support therefore depends on which terminal you selected:
 
-| Terminal / environment | Yazi preview path |
-| --- | --- |
-| Kitty | Built-in Kitty graphics protocol support |
-| Ghostty | Built-in Kitty graphics protocol support |
-| Alacritty on Hyprland or Niri | Wayland adapter through Überzug++ (`ueberzugpp`) |
-| Other environments | Chafa can provide an ASCII-art fallback when installed |
+| Terminal / environment        | Yazi preview path                                      |
+|-------------------------------|--------------------------------------------------------|
+| Kitty                         | Built-in Kitty graphics protocol support               |
+| Ghostty                       | Built-in Kitty graphics protocol support               |
+| Alacritty on Hyprland or Niri | Wayland adapter through Überzug++ (`ueberzugpp`)       |
+| Other environments            | Chafa can provide an ASCII-art fallback when installed |
 
 Yazi does not require all previews to use Kitty's protocol. Diagnose the
 current environment with:
