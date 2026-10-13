@@ -102,6 +102,16 @@ def test_yazi_launchers_use_the_configured_terminal():
     )
 
 
+def test_ghostty_receives_the_same_hyprland_terminal_opacity_as_other_terminals():
+    window_rules = (
+        ROOT / "home/dot_config/hypr/hyprland.conf.d/window-rules.conf"
+    ).read_text()
+    ghostty_rule = window_rules.split("name = ghostty-opacity", 1)[1].split("}", 1)[0]
+
+    assert "match:class = ^com[.]mitchellh[.]ghostty$" in ghostty_rule
+    assert "opacity = 0.95 0.85" in ghostty_rule
+
+
 def test_hornero_runtime_comes_from_aur_packages():
     scripts = ROOT / "home/.chezmoiscripts/linux"
     shell_install = (scripts / "run_onchange_before_install-hornero-desktop.sh.tmpl").read_text()
