@@ -1,0 +1,6 @@
+{{ if and (eq .osid "linux-arch") (not .ephemeral) (not .headless) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+
+"{{ .chezmoi.sourceDir }}/../scripts/seed-ghostty-config.sh"
+{{ end -}}
