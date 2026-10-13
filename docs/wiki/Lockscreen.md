@@ -5,6 +5,7 @@
 > second `hypridle` listener that launches `hyprlock` or `horneroctl lock`;
 > the competing session-lock clients can leave the compositor locked or the
 > shell unusable. See the current [Hornero Shell locking policy](https://github.com/HorneroOS/shell/blob/main/docs/LOCKING.md).
+>
 > **Wayland-native lockscreen management with hyprlock**  
 > Alternative to betterlockscreen for Wayland/Hyprland environments
 
