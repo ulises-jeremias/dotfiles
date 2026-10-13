@@ -97,7 +97,7 @@ def test_staged_lua_preserves_every_legacy_window_rule_in_order():
     legacy = _legacy_rules()
     staged = _lua_rules()
 
-    assert len(legacy) == 43
+    assert len(legacy) == 44
     assert [rule["name"] for rule in staged] == [rule["name"] for rule in legacy]
     assert [rule["match"] for rule in staged] == [rule["match"] for rule in legacy]
     assert [rule["effects"] for rule in staged] == [rule["effects"] for rule in legacy]
@@ -105,3 +105,9 @@ def test_staged_lua_preserves_every_legacy_window_rule_in_order():
 
 def test_staged_window_rules_do_not_activate_partial_lua_configuration():
     assert not (ROOT / "home/dot_config/hypr/hyprland.lua").exists()
+
+
+if __name__ == "__main__":
+    test_staged_lua_preserves_every_legacy_window_rule_in_order()
+    test_staged_window_rules_do_not_activate_partial_lua_configuration()
+    print("PASS: staged Lua window rules match the legacy config and stay inactive")
