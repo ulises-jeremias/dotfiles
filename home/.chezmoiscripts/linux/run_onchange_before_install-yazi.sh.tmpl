@@ -24,6 +24,13 @@ sudo pacman -S --noconfirm --needed \
   trash-cli \
   zoxide
 
+# Alacritty does not implement the graphics protocol Yazi uses for image
+# previews. On Wayland, ueberzugpp supplies the system-window adapter. Keep it
+# out of Kitty/Ghostty-only installs, where the terminal protocol is native.
+if pacman -Qq alacritty >/dev/null 2>&1; then
+  sudo pacman -S --noconfirm --needed ueberzugpp
+fi
+
 # ── Optional enhanced preview tools (graceful if missing) ────────────────────
 yay -S --noconfirm --needed glow 2>/dev/null || true
 
