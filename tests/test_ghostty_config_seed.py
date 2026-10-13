@@ -55,3 +55,26 @@ def test_does_not_replace_an_existing_symlink():
 
         assert destination.is_symlink()
         assert target.read_text(encoding="utf-8") == "theme = Custom\n"
+
+
+def test_missing_packaged_default_is_a_safe_noop():
+    with TemporaryDirectory(prefix="dotfiles-ghostty-missing-package-") as temporary:
+        root = Path(temporary)
+        home = root / "home"
+        missing_source = root / "missing-package-default.ghostty"
+
+        run_seed(missing_source, home)
+
+        assert not (home / ".config/ghostty/config.ghostty").exists()
+
+
+def test_chezmoi_hook_resolves_helper_from_the_configured_source_root():
+    source_root_name = (ROOT / ".chezmoiroot").read_text(encoding="utf-8").strip()
+    source_root = ROOT / source_root_name
+    hook = source_root / ".chezmoiscripts/linux/run_after_seed-ghostty-config.sh.tmpl"
+    helper = (source_root / "../scripts/seed-ghostty-config.sh").resolve()
+
+    assert helper == SEED_SCRIPT.resolve()
+    assert helper.is_file()
+    hook_text = hook.read_text(encoding="utf-8")
+    assert "{{ .chezmoi.sourceDir }}/../scripts/seed-ghostty-config.sh" in hook_text
