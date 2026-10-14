@@ -61,6 +61,7 @@ Most were written from scratch. Core stack:
 - **Launcher Fallback** 🚀 terminal prompt - lightweight rescue launcher
 - **Notifications** 🔔 Built into Quickshell (replaces Mako)
 - **Terminal Emulators** 🐾 [Kitty](https://sw.kovidgoyal.net/kitty/), [Alacritty](https://alacritty.org/), and [Ghostty](https://ghostty.org/) - choose an installed terminal in Hornero Settings; Hornero Config supplies matching native palettes
+- **System monitors and visualizers** 📊 [btop](https://github.com/aristocratos/btop) and [Cava](https://github.com/karlstav/cava) follow the wallpaper-derived Hornero palette; btop samples at a measured 2-second cadence
 - **Shell** 🐚 [Zsh](https://zsh.org) with Powerlevel10k prompt
 - **Lockscreen** 🔒 [Hyprlock](https://github.com/hyprwm/hyprlock) - Secure lock screen
 - **Wallpaper** 🖼️ Quickshell Background + pywal/M3 via `horneroctl wallpaper set`
