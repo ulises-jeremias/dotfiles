@@ -35,7 +35,7 @@ yay -S --noconfirm --needed \
 # with the current release.
 # Changing these floors reruns this installer so the host can reconcile with AUR.
 readonly min_hornero_config_version="0.3.4-1"
-readonly min_hornero_shell_version="1.2.13-1"
+readonly min_hornero_shell_version="1.2.14-1"
 readonly min_horneroctl_version="0.2.0_preview17-1"
 installed_hornero_config_version="$(pacman -Q hornero-config | awk '{print $2}')"
 if (( $(vercmp "$installed_hornero_config_version" "$min_hornero_config_version") < 0 )); then
