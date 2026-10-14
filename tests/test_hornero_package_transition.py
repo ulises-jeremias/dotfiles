@@ -25,7 +25,7 @@ def test_shell_package_floor_includes_terminal_settings_pane():
         / "home/.chezmoiscripts/linux/run_onchange_before_install-hornero-desktop.sh.tmpl"
     ).read_text()
 
-    assert 'readonly min_hornero_shell_version="1.2.13-1"' in script
+    assert 'readonly min_hornero_shell_version="1.2.14-1"' in script
     assert "required for Settings focus and terminal selection" in script
 
 
