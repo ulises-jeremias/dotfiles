@@ -38,4 +38,10 @@ Use the Shell's Control Center for common settings. Use `horneroctl` for
 supported command-line operations and `hyprctl` only for compositor-level
 diagnostics or documented configuration reloads.
 
+Window swallowing is enabled for the Hornero-supported Kitty, Alacritty, and
+Ghostty terminals. Selecting one of these in Control Center therefore keeps
+the same terminal-to-application workflow; the active matcher lives in
+`home/dot_config/hypr/hyprland.conf`, with a matching staged value in the Lua
+migration module.
+
 For user-facing shortcuts, see the [HorneroOS shortcuts guide](https://horneroos.com/docs/desktop/shortcuts/). For themes and wallpaper colors, see the [Appearance guide](https://horneroos.com/docs/desktop/appearance/).
