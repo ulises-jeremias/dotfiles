@@ -54,6 +54,14 @@ Core files:
 
 Compatibility files may exist for external tooling, but they are not part of the primary UX contract.
 
+## Native application themes
+
+Hornero Config owns the desktop's native color adapters. Its wallpaper palette
+pipeline generates the `Hornero Dynamic` themes selected by the personal btop
+and Cava configs in this repository. Keep only the theme selection here; do not
+duplicate the generated color values. btop's 2-second sampling interval also
+avoids the old 100 ms refresh cost while retaining responsive monitoring.
+
 ## Data Flow
 
 ```mermaid
