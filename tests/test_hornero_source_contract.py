@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -110,6 +111,27 @@ def test_ghostty_receives_the_same_hyprland_terminal_opacity_as_other_terminals(
 
     assert "match:class = ^com[.]mitchellh[.]ghostty$" in ghostty_rule
     assert "opacity = 0.95 0.85" in ghostty_rule
+
+
+def test_hyprland_swallowing_covers_every_supported_terminal():
+    expected = "^(kitty|Alacritty|com[.]mitchellh[.]ghostty)$"
+    static_config = (ROOT / "home/dot_config/hypr/hyprland.conf").read_text()
+    lua_config = (ROOT / "home/dot_config/hypr/hyprland.lua.d/static.lua").read_text()
+
+    assert f"swallow_regex = {expected}" in static_config
+    assert f'swallow_regex = "{expected}"' in lua_config
+
+    # Window class strings match HorneroOS/config and Hyprland's actual class
+    # contract; keep this in step with the system defaults if a backend adds
+    # or changes an app ID.
+    for window_class in ("kitty", "Alacritty", "com.mitchellh.ghostty"):
+        assert re.fullmatch(expected, window_class), window_class
+    assert not re.fullmatch(expected, "wev")
+
+    guide = (ROOT / "docs/Hyprland-Setup.md").read_text()
+    for terminal in ("Kitty", "Alacritty", "Ghostty"):
+        assert terminal in guide
+    assert "Window swallowing is enabled" in guide
 
 
 def test_hornero_runtime_comes_from_aur_packages():

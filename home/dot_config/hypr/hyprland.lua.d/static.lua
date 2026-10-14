@@ -47,7 +47,7 @@ hl.config({
 		disable_splash_rendering = true,
 		force_default_wallpaper = 0,
 		enable_swallow = true,
-		swallow_regex = "^(kitty)$",
+		swallow_regex = "^(kitty|Alacritty|com[.]mitchellh[.]ghostty)$",
 		focus_on_activate = true,
 		mouse_move_enables_dpms = true,
 		key_press_enables_dpms = true,
