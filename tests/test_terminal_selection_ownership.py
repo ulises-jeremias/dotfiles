@@ -22,7 +22,7 @@ def main() -> None:
             "(add it to PATH or install it in ~/.local/bin)"
         )
 
-    for terminal in ("ghostty", "alacritty"):
+    for terminal in ("kitty", "alacritty", "ghostty"):
         with TemporaryDirectory(prefix="dotfiles-terminal-selection-") as temp:
             base = Path(temp)
             destination = base / "home"
