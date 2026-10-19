@@ -1,0 +1,39 @@
+{{ if and (eq .osid "linux-arch") (not .ephemeral) (not .headless) -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Brand the host as HorneroOS in /etc/os-release: this machine runs the
+# HorneroOS desktop on an Arch base, so the OS line should say so.
+# ID stays "arch" on purpose: pacman, yay and distro detection keep
+# working exactly as before; only the human-facing identity changes.
+# Idempotent: exits without sudo when the branding is already applied.
+os_release=/etc/os-release
+if grep -q '^NAME="HorneroOS"$' "$os_release" 2>/dev/null; then
+  exit 0
+fi
+
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+cp "$os_release" "$tmp"
+
+set_key() {
+  local key="$1" value="$2"
+  if grep -q "^${key}=" "$tmp"; then
+    sed -i "s|^${key}=.*|${key}=\"${value}\"|" "$tmp"
+  else
+    printf '%s="%s"\n' "$key" "$value" >>"$tmp"
+  fi
+}
+
+set_key NAME "HorneroOS"
+set_key PRETTY_NAME "HorneroOS"
+set_key HOME_URL "https://horneroos.com"
+set_key DOCUMENTATION_URL "https://horneroos.com/docs"
+set_key SUPPORT_URL "https://github.com/HorneroOS"
+set_key BUG_REPORT_URL "https://github.com/HorneroOS"
+set_key ANSI_COLOR "38;2;240;139;67"
+
+sudo install -m 644 "$tmp" "$os_release"
+echo "os-release: host identity set to HorneroOS (ID=arch preserved)"
+{{ end -}}
