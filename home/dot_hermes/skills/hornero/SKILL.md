@@ -37,17 +37,17 @@ faster, safer, and returns structured output with `--json`.
 
 These mirror `horneroctl assistant tools` (class: safe-read-only):
 
-| Question | Command |
-| --- | --- |
-| System, kernel, hardware summary | `horneroctl system info --json` |
-| Current appearance state | `horneroctl appearance status --json` |
-| Available themes | `horneroctl appearance theme list --json` |
-| One theme's details | `horneroctl appearance theme show <name> --json` |
-| GTK themes installed | `horneroctl appearance gtk list --json` |
-| Current GTK theme | `horneroctl appearance gtk current --json` |
-| Pending package updates | `horneroctl package updates --json` |
-| Installed plugins + state | `horneroctl plugin list --json` |
-| Assistant status | `horneroctl assistant status --json` |
+| Question                         | Command                                          |
+|----------------------------------|--------------------------------------------------|
+| System, kernel, hardware summary | `horneroctl system info --json`                  |
+| Current appearance state         | `horneroctl appearance status --json`            |
+| Available themes                 | `horneroctl appearance theme list --json`        |
+| One theme's details              | `horneroctl appearance theme show <name> --json` |
+| GTK themes installed             | `horneroctl appearance gtk list --json`          |
+| Current GTK theme                | `horneroctl appearance gtk current --json`       |
+| Pending package updates          | `horneroctl package updates --json`              |
+| Installed plugins + state        | `horneroctl plugin list --json`                  |
+| Assistant status                 | `horneroctl assistant status --json`             |
 
 Every `horneroctl` command accepts `--json`; failures return
 `ok: false` with a human message — surface that message, do not
