@@ -1,0 +1,12 @@
+[Unit]
+Description=Hornero Companion — Hermes gateway (user-level, loopback only)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/hermes gateway run
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
