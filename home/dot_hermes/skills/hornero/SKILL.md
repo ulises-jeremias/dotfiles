@@ -35,7 +35,10 @@ faster, safer, and returns structured output with `--json`.
 
 ## Read-only tool catalogue
 
-These mirror `horneroctl assistant tools` (class: safe-read-only):
+Discover the installed interface first with
+`horneroctl assistant tools --json`; releases differ, so do not
+assume a command exists. This mirrors that output
+(class: safe-read-only):
 
 | Question                         | Command                                          |
 |----------------------------------|--------------------------------------------------|
