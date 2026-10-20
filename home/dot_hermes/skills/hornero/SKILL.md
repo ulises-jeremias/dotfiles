@@ -37,8 +37,12 @@ faster, safer, and returns structured output with `--json`.
 
 Discover the installed interface first with
 `horneroctl assistant tools --json`; releases differ, so do not
-assume a command exists. This mirrors that output
-(class: safe-read-only):
+assume a command exists. When you cannot execute commands at all,
+ask the user (or a shell-capable step) for a fresh
+`horneroctl assistant knowledge --json` snapshot — it is generated
+from the same live allowlist with a date and provenance, so prefer
+it over any copied table, including this one. This mirrors that
+output (class: safe-read-only):
 
 | Question                         | Command                                          |
 |----------------------------------|--------------------------------------------------|
