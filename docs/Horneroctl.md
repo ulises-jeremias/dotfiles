@@ -15,6 +15,11 @@ horneroctl apps --help
 
 Use `--dry-run` to inspect supported changes and `--yes` only for an intentional mutation. Desktop Settings opens through the Hornero Shell's Control Center IPC contract.
 
+`horneroctl assistant setup` owns the base Hermes service and the canonical
+Hornero skill. This dotfiles source intentionally does not track those paths.
+Existing installations should follow the [safe Hermes ownership migration](Hermes-Ownership.md)
+before running setup.
+
 ## Workstation configuration
 
 This repository may call the CLI from declarative Hyprland bindings or narrowly scoped chezmoi scripts. Keep argument order and documented confirmation flags. Do not parse raw help output as a product registry, duplicate CLI command lists, or add a private command shim. If an operation is missing, add it to HorneroOS/hornero and keep the product documentation in HorneroOS/docs.

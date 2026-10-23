@@ -16,6 +16,10 @@ personal workstation around those layers.
 - Keep package defaults, theme metadata, and GTK integration in Hornero Config.
 - Keep personal app preferences and optional wallpaper binaries in this
   chezmoi source.
+- Let `horneroctl assistant setup` own the base Hermes user unit and the
+  canonical `hornero` Hermes skill. Put workstation-specific unit overrides
+  in a systemd drop-in and personal Hermes guidance in a separately named
+  skill; do not manage either canonical path here.
 
 Do not duplicate an installed theme or layout catalogue, clone the Shell into
 the user config tree, compile a second copy of its plugin, or add fallback
@@ -36,3 +40,6 @@ are handled only by the dedicated Arch bootstrap scripts.
 Use the application when installed and otherwise leave the desktop usable.
 Do not download missing tools, assume a particular browser or editor, or
 silently claim an unavailable integration succeeded.
+
+See [Hermes ownership and migration](Hermes-Ownership.md) before migrating an
+existing installation.
