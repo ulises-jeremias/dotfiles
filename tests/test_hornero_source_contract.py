@@ -78,6 +78,33 @@ def test_selected_terminal_association_is_not_overwritten_by_dotfiles():
     assert ".config/xfce4/helpers.rc" in ignore
 
 
+def test_horneroctl_is_canonical_owner_of_hermes_base_files():
+    assert not (ROOT / "home/dot_config/systemd/user/hornero-hermes.service").exists()
+    assert not (ROOT / "home/dot_hermes/skills/hornero/SKILL.md").exists()
+    ownership = (ROOT / "docs/Hermes-Ownership.md").read_text()
+    for command in (
+        "horneroctl assistant setup --adopt-dotfiles --dry-run",
+        "horneroctl assistant setup --adopt-dotfiles --yes",
+        "horneroctl assistant setup --remove",
+    ):
+        assert command in ownership
+    assert "chezmoi forget" in ownership
+    assert "chezmoi destroy" in ownership
+    assert "service.d/10-dotfiles.conf" in ownership
+    assert "skills/hornero-local/SKILL.md" in ownership
+    managed_patterns = re.findall(r"chezmoi managed \| rg -q '([^']+)'", ownership)
+    assert len(managed_patterns) == 3
+    assert re.search(managed_patterns[0], "~/.config/systemd/user/hornero-hermes.service")
+    assert not re.search(
+        managed_patterns[0],
+        "~/.config/systemd/user/hornero-hermes.service.d/10-dotfiles.conf",
+    )
+    assert re.search(managed_patterns[1], "~/.hermes/skills/hornero/SKILL.md")
+    assert not re.search(
+        managed_patterns[1], "~/.hermes/skills/hornero-local/SKILL.md"
+    )
+
+
 def test_yazi_launchers_use_the_configured_terminal():
     keybindings = (ROOT / "home/dot_config/hypr/hyprland.conf.d/keybindings.conf").read_text()
     thunar_actions = (ROOT / "home/dot_config/Thunar/uca.xml").read_text()
@@ -189,6 +216,7 @@ if __name__ == "__main__":
         test_theme_helpers_are_not_duplicated_in_personal_source,
         test_kitty_defaults_are_owned_by_the_hornero_config_package,
         test_selected_terminal_association_is_not_overwritten_by_dotfiles,
+        test_horneroctl_is_canonical_owner_of_hermes_base_files,
         test_yazi_launchers_use_the_configured_terminal,
         test_ghostty_receives_the_same_hyprland_terminal_opacity_as_other_terminals,
         test_hornero_runtime_comes_from_aur_packages,
