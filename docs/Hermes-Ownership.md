@@ -79,4 +79,5 @@ assistant but keeps both adopted base files in place.
 After the dotfiles source cutover, `chezmoi apply` does not create or update the
 canonical Hermes files. Install and configure the optional assistant through
 the documented Hornero CLI flow. Personal drop-ins and separately named skills
-remain managed by chezmoi.
+are user-supplied extension points. This source does not create them; add source
+entries if they should be managed by chezmoi.
