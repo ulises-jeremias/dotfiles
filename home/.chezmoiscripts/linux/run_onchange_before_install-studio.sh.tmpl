@@ -5,26 +5,52 @@
 
 set -euo pipefail
 
+# HorneroOS Studio (canonical catalogue selection, HorneroOS/hornero#283):
+# audio & music production, video editing and streaming. This installs
+# open-source repository packages only. REAPER is proprietary
+# (LicenseRef-EULA) and yabridge needs user-supplied Windows VSTs: both
+# are explicit manual opt-ins and are never installed by this script,
+# and no AUR helper is invoked. The same selection is recorded with:
+#   horneroctl studio selection set \
+#     --specialization audio-music-production \
+#     --specialization video-editing-post-production \
+#     --specialization streaming-content-creation
+
+# Professional audio stack (PipeWire + WirePlumber session manager).
 sudo pacman -S --noconfirm --needed --ask 4 \
   pipewire \
   pipewire-alsa \
   pipewire-pulse \
   pipewire-jack \
   wireplumber \
-  pavucontrol
+  pavucontrol \
+  qpwgraph
 
+# Audio & music production.
 sudo pacman -S --noconfirm --needed \
+  ardour \
   guitarix \
   gxplugins.lv2 \
-  reaper \
+  carla \
+  audacity \
   calf \
   lsp-plugins \
-  lsp-plugins-docs \
   x42-plugins
 
-yay -S --noconfirm --needed \
-  yabridge \
-  yabridgectl
+# Video editing, streaming and visual work.
+sudo pacman -S --noconfirm --needed \
+  obs-studio \
+  kdenlive \
+  blender \
+  krita \
+  gimp \
+  inkscape \
+  darktable \
+  rawtherapee \
+  scribus \
+  freecad \
+  godot \
+  ffmpeg
 
 {{      end -}}
 
