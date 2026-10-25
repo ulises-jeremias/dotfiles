@@ -8,7 +8,7 @@
 -- ============================================================================
 -- Keybindings Configuration
 -- ============================================================================
--- 
+--
 -- Mod key: SUPER (Windows key)
 -- Use hyprctl to execute commands
 -- ============================================================================
@@ -214,10 +214,26 @@ hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 hl.bind("XF86AudioStop", hl.dsp.exec_cmd("playerctl stop"), { locked = true })
 -- Brightness control
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("horneroctl hardware brightness up --step 0.1 --yes"), { repeating = true, locked = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("horneroctl hardware brightness down --step 0.1 --yes"), { repeating = true, locked = true })
-hl.bind("SHIFT + XF86MonBrightnessUp", hl.dsp.exec_cmd("horneroctl hardware brightness up --step 0.01 --yes"), { repeating = true, locked = true })
-hl.bind("SHIFT + XF86MonBrightnessDown", hl.dsp.exec_cmd("horneroctl hardware brightness down --step 0.01 --yes"), { repeating = true, locked = true })
+hl.bind(
+	"XF86MonBrightnessUp",
+	hl.dsp.exec_cmd("horneroctl hardware brightness up --step 0.1 --yes"),
+	{ repeating = true, locked = true }
+)
+hl.bind(
+	"XF86MonBrightnessDown",
+	hl.dsp.exec_cmd("horneroctl hardware brightness down --step 0.1 --yes"),
+	{ repeating = true, locked = true }
+)
+hl.bind(
+	"SHIFT + XF86MonBrightnessUp",
+	hl.dsp.exec_cmd("horneroctl hardware brightness up --step 0.01 --yes"),
+	{ repeating = true, locked = true }
+)
+hl.bind(
+	"SHIFT + XF86MonBrightnessDown",
+	hl.dsp.exec_cmd("horneroctl hardware brightness down --step 0.01 --yes"),
+	{ repeating = true, locked = true }
+)
 -- ============================================================================
 -- Screenshots
 -- ============================================================================
