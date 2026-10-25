@@ -33,7 +33,7 @@ The Hyprland configuration controls:
 To edit:
 
 ```sh
-chezmoi edit ~/.config/hypr/hyprland.conf
+chezmoi edit ~/.config/hypr/hyprland.lua
 chezmoi apply
 ```
 
@@ -43,8 +43,8 @@ For more info, check the [Hyprland documentation](https://wiki.hyprland.org/).
 
 ## 🧩 Modular Config Layout
 
-`hyprland.conf` is a thin entrypoint that sources focused fragments from
-`~/.config/hypr/hyprland.conf.d/`:
+`hyprland.lua` is the only entrypoint; it loads focused Lua modules from
+`~/.config/hypr/hyprland.lua.d/`:
 
 | Fragment            | Controls                                                |
 |---------------------|---------------------------------------------------------|

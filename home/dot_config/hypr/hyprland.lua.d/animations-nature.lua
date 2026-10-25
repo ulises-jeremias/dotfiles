@@ -1,8 +1,8 @@
--- Staged Lua port of the corresponding legacy animation profile.
+-- Lua port of the corresponding legacy animation profile.
 -- Keep one profile module selected at startup; loading multiple profiles
 -- would overwrite curves and animation leaves with colliding names.
 -- Legacy speed values are already deciseconds (1 ds = 100 ms), so they are
--- preserved numerically. This module is inert until full acceptance.
+-- preserved numerically.
 -- luacheck: globals hl
 
 hl.curve("leaf", {

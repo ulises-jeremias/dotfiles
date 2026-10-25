@@ -30,8 +30,8 @@ HorneroConfig ships a PipeWire-first audio stack driven by the Quickshell
 | `XF86AudioPlay/Pause/Next/Prev` | MPRIS via `playerctl` |
 
 These map to `pamixer` / `playerctl` calls in
-`hyprland.conf.d/keybindings.conf` — edit them with
-`chezmoi edit ~/.config/hypr/hyprland.conf.d/keybindings.conf`.
+`hyprland.lua.d/keybindings.lua` — edit them with
+`chezmoi edit ~/.config/hypr/hyprland.lua.d/keybindings.lua`.
 
 ---
 

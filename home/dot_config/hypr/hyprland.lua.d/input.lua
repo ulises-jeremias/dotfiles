@@ -1,6 +1,5 @@
--- Staged Lua equivalent of the active keyboard, pointer, touchpad, and cursor
--- settings in hyprland.conf.d/input.conf. This file remains inert until the
--- full migration is accepted.
+-- Lua equivalent of the retired keyboard, pointer, touchpad, and cursor
+-- settings from hyprland.conf.d/input.conf (loaded by hyprland.lua).
 -- luacheck: globals hl
 
 hl.config({

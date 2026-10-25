@@ -16,13 +16,13 @@ Center. `horneroctl` owns supported lifecycle and compositor operations.
 
 ## Configuration format status
 
-The active profile still uses `hyprland.conf` and the files in
-`hyprland.conf.d/`. Lua modules under `hyprland.lua.d/` are staged migration
-work for Hyprland 0.55 and later; they are not loaded by the current entrypoint.
-Do not add a root `hyprland.lua` or remove the legacy files until the full
-behavior and runtime-consumer acceptance matrix passes. See the
-[Lua migration architecture](Hyprland-Lua-Architecture.md) for module status,
-compatibility notes, validation, and rollout gates.
+The only Hyprland configuration is the Lua entrypoint `hyprland.lua`, which
+loads the modules in `hyprland.lua.d/` (monitors, autostart, environment,
+input, gestures, layout, keybindings, window-rules, animations, smart-colors,
+static). The legacy hyprlang `hyprland.conf` + `hyprland.conf.d/` tree was
+retired; do not recreate it. See the
+[Lua migration architecture](Hyprland-Lua-Architecture.md) for the module map
+and validation notes.
 
 ## Useful entry points
 
@@ -40,8 +40,7 @@ diagnostics or documented configuration reloads.
 
 Window swallowing is enabled for the Hornero-supported Kitty, Alacritty, and
 Ghostty terminals. Selecting one of these in Control Center therefore keeps
-the same terminal-to-application workflow; the active matcher lives in
-`home/dot_config/hypr/hyprland.conf`, with a matching staged value in the Lua
-migration module.
+the same terminal-to-application workflow; the matcher lives in
+`home/dot_config/hypr/hyprland.lua.d/static.lua`.
 
 For user-facing shortcuts, see the [HorneroOS shortcuts guide](https://horneroos.com/docs/desktop/shortcuts/). For themes and wallpaper colors, see the [Appearance guide](https://horneroos.com/docs/desktop/appearance/).

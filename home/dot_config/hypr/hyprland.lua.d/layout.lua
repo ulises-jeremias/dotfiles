@@ -1,5 +1,4 @@
--- Staged Lua equivalent of hyprland.conf.d/layout.conf. This file remains
--- inert until the full migration is accepted.
+-- Lua equivalent of the retired hyprland.conf.d/layout.conf (loaded by hyprland.lua).
 -- luacheck: globals hl
 
 hl.config({

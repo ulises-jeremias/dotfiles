@@ -70,5 +70,5 @@ echo "==> verifying the install"
 e2e_ssh 'test -f /etc/xdg/quickshell/hornero/shell.qml && pacman -Qq hornero-shell hornero-config horneroctl-bin >/dev/null'
 e2e_ssh 'pacman -Qoq /usr/bin/horneroctl | grep -Fxq horneroctl-bin'
 e2e_ssh 'test -f /usr/lib/qt6/qml/Hornero/qmldir'
-e2e_ssh 'test -e ~/.config/hypr/hyprland.conf'
+e2e_ssh 'test -e ~/.config/hypr/hyprland.lua && test ! -e ~/.config/hypr/hyprland.conf'
 echo "==> install complete"

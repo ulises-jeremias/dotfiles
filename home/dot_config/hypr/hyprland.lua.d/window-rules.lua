@@ -1,7 +1,7 @@
--- Staged Lua equivalent of hyprland.conf.d/window-rules.conf.
--- Keep rules in source order until an isolated Hyprland session confirms
+-- Lua equivalent of the retired hyprland.conf.d/window-rules.conf
+-- (loaded by hyprland.lua). Keep rules in source order: it preserves
 -- the 0.56 named-rule matching and precedence behavior.
--- This module is inert until the complete Lua migration is accepted.
+
 -- luacheck: globals hl
 
 hl.window_rule({

@@ -1,56 +1,36 @@
 # Hyprland Lua migration architecture
 
 This document defines the migration map for [#179](https://github.com/ulises-jeremias/dotfiles/issues/179).
-It covers the current `home/dot_config/hypr/hyprland.conf` entrypoint and every
-file under `home/dot_config/hypr/hyprland.conf.d/`. The migration follows
-Hyprland 0.55+'s Lua configuration API; Hyprland 0.54 and earlier continue to
-use the existing hyprlang configuration.
 
-The work is split into small changes so static settings, runtime integrations,
-and behavior-heavy features can be reviewed independently. The legacy files
-remain available as rollback material until the converted configuration has
-passed the complete acceptance matrix. Do not add `.chezmoiremove` entries or
-delete the legacy source as part of an early migration slice.
+## Status: migration complete (Lua-only)
 
-## Staged implementation status
+`home/dot_config/hypr/hyprland.lua` is the only Hyprland entrypoint. It loads,
+in order: monitors, autostart, environment, input, gestures, layout,
+keybindings, window-rules, animations, smart-colors, and static. The legacy
+hyprlang `hyprland.conf` + `hyprland.conf.d/` tree has been removed from the
+source, and `.chezmoiremove` deletes it on existing hosts at apply time.
+Keybindings were converted 1:1 (139 binds, verified against
+`horneroctl hardware keyboard keys`). Window rules (44), animation profiles
+(six), and factory Smart Colors values are regression-tested against frozen
+legacy expectations in `tests/`. Animation profiles stay selectable at
+runtime through horneroctl; `animations.lua` is the startup default.
 
-The `hyprland.lua.d/` source currently contains staged equivalents for monitor
-rules, session environment, startup commands, keyboard/pointer/touchpad/cursor
-settings, layout profiles, non-generated compositor options, all six animation
-profiles, and window rules. A gesture module expresses the three-finger
-horizontal workspace action through the current API. The window-rule module
-mirrors all 43 legacy rules in order. These modules are inert:
-there is deliberately no root `hyprland.lua` and no `require(...)` call in the
-active `hyprland.conf`. Hyprland therefore continues to load the existing
-hyprlang configuration. The staged modules have Lua syntax validation, but
-they have not been loaded by Hyprland or accepted in a separate session.
+Notes carried over from the migration:
 
-The staged gesture action does not reproduce the old swipe distance, invert,
-speed, cancel-ratio, or continue-forever tuning; Hyprland 0.55+ replaced those
-settings with the gesture API, so equivalence requires isolated-session review.
-Tablet-specific settings in the current fragment only set defaults; their Lua
-form remains unported until the typed vector representation has been validated.
-The shadow offset is also omitted because the legacy value is the zero default;
-it is not serialized as an unverified Lua vector.
-Generated border and shadow colors and the opt-in light variant remain
-separate. The staged `smart-colors.lua` module sets the Hornero Dark factory
-palette first, then optionally loads
-`$HORNERO_SMART_COLORS_DIR/colors-hyprland.lua` or the default
-`${XDG_CACHE_HOME:-~/.cache}/hornero/smart-colors/colors-hyprland.lua` output
-from `horneroctl appearance colors generate --yes`. The generated module is
-optional and loaded as a chunk each time the config evaluates; execution is
-protected with `pcall`, so a missing or malformed cache file leaves the
-factory colors in place. This module is inert until the final Lua entrypoint
-loads it; the active legacy configuration is unchanged.
-Window-rule names, match expressions, effects, values, and order are
-statically compared with the legacy source; named-rule precedence and runtime
-matching still require isolated-session review. Keybindings, animations, Smart
-Colors consumers, and final activation remain separate acceptance steps below.
-Each animation profile has its own module because profiles reuse curve names;
-the final entrypoint must load exactly one. Animation leaves, curves, styles,
-and speed values are statically checked against all six legacy profiles.
+- The gesture module expresses the three-finger horizontal workspace action
+  through the current API; Hyprland 0.55+ replaced the old swipe tuning
+  (distance, invert, speed, cancel-ratio), so the Lua form uses API defaults.
+- Tablet-specific settings only set defaults; their typed vector
+  representation remains unported.
+- The shadow offset is omitted because the legacy value is the zero default.
+- `smart-colors.lua` sets the Hornero Dark factory palette first, then
+  optionally `pcall`-loads the generated
+  `$HORNERO_SMART_COLORS_DIR/colors-hyprland.lua` (or the default
+  `${XDG_CACHE_HOME:-~/.cache}/hornero/smart-colors/colors-hyprland.lua`)
+  from `horneroctl appearance colors generate --yes`; a missing or malformed
+  cache file leaves the factory colors in place.
 
-## Target module map
+## Module map (retired source → Lua module)
 
 | Current source                                                         | Target module                             | Responsibility                                          |
 |------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|
@@ -124,29 +104,16 @@ formats.
 
 ## Implementation sequence
 
-1. Port static settings, input, monitor, environment, autostart, and layout
-   modules in #181 without installing a root `hyprland.lua` entrypoint.
-2. Port keybindings and keyboard-help discovery in #182.
-3. Stage window rules in #183 and validate rule order and matching statically;
-   confirm runtime named-rule precedence in the isolated target session.
-4. Port animation profiles in #184. The current runtime selector is
-   `horneroctl hypr animations`, which reads the legacy profile files; retain
-   that path while Lua modules remain staged and audit its Lua-era behavior in
-   #186. The previously listed Quickshell `Rice.qml` path is not present in
-   this repository.
-5. Port Smart Colors generation and its safe fallback in #185.
-6. Audit runtime consumers and generated file paths in #186.
-7. Update user documentation in #187.
-8. In #188, add the root `hyprland.lua` that loads every migrated module,
-   validate full behavior in the target-version test session, then remove
-   legacy configuration only after the acceptance matrix passes.
-
-Hyprland 0.55+ selects `hyprland.lua` when it exists; it does not merge that
-file with `hyprland.conf`. Adding a partial root Lua file would silently stop
-loading any legacy bindings, window rules, animation profiles, and generated
-colors that had not yet been migrated. Staged modules therefore remain inert
-until #188 activates the complete Lua tree. This keeps intermediate changes
-from changing the desktop's active configuration.
+All steps are complete: static/input/monitor/environment/autostart/layout
+modules (#181), keybindings (#182), window rules (#183), animation profiles
+(#184, switched at runtime by `horneroctl hypr animations`), Smart Colors
+(#185), runtime-consumer audit (#186), documentation (#187), and final
+activation with legacy removal (#188). `horneroctl hypr animations` reads the
+Lua profile modules. Hyprland 0.55+ selects `hyprland.lua` when it exists and
+never merges it with `hyprland.conf`, which is why activation waited until
+every module had full parity. Live-session acceptance on the target host
+(config errors, bindings, animation switching) remains the final rollout
+check after `chezmoi apply`.
 
 ## Runtime consumer compatibility
 

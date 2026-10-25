@@ -1,0 +1,4 @@
+# Retired with the Lua-only Hyprland migration: hyprland.lua +
+# hyprland.lua.d/ are the only Hyprland configuration.
+.config/hypr/hyprland.conf
+.config/hypr/hyprland.conf.d

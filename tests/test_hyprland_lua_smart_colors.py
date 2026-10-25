@@ -1,4 +1,4 @@
-"""Keep the staged Lua Smart Colors module safe and aligned with Hornero."""
+"""Keep the Lua Smart Colors module safe and aligned with Hornero."""
 from __future__ import annotations
 
 import re
@@ -7,11 +7,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LUA = ROOT / "home/dot_config/hypr/hyprland.lua.d/smart-colors.lua"
-LEGACY = ROOT / "home/dot_config/hypr/hyprland.conf.d/colors.conf"
 
 
 def test_factory_colors_match_hornero_dark_legacy_defaults():
-    legacy = LEGACY.read_text(encoding="utf-8")
     lua = LUA.read_text(encoding="utf-8")
     expected = {
         "active_border": ("e07856ee", "f2b749ee"),
@@ -27,7 +25,6 @@ def test_factory_colors_match_hornero_dark_legacy_defaults():
     }
     for key, colors in expected.items():
         for color in colors:
-            assert f"rgba({color})" in legacy, key
             assert f"rgba({color})" in lua, key
 
 
@@ -40,8 +37,11 @@ def test_generated_module_is_optional_and_uses_hornero_cache_contract():
     assert "pcall(generated)" in text
 
 
-def test_smart_colors_module_remains_staged_until_full_lua_entrypoint():
-    assert not (ROOT / "home/dot_config/hypr/hyprland.lua").exists()
+def test_lua_entrypoint_loads_smart_colors_and_no_legacy_config_remains():
+    entrypoint = (ROOT / "home/dot_config/hypr/hyprland.lua").read_text(encoding="utf-8")
+    assert 'dofile(here .. "smart-colors.lua")' in entrypoint
+    assert not (ROOT / "home/dot_config/hypr/hyprland.conf").exists()
+    assert not (ROOT / "home/dot_config/hypr/hyprland.conf.d").exists()
 
 
 def test_factory_palette_keeps_all_expected_rgba_values():

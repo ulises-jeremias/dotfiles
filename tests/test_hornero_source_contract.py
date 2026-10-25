@@ -106,14 +106,14 @@ def test_horneroctl_is_canonical_owner_of_hermes_base_files():
 
 
 def test_yazi_launchers_use_the_configured_terminal():
-    keybindings = (ROOT / "home/dot_config/hypr/hyprland.conf.d/keybindings.conf").read_text()
+    keybindings = (ROOT / "home/dot_config/hypr/hyprland.lua.d/keybindings.lua").read_text()
     thunar_actions = (ROOT / "home/dot_config/Thunar/uca.xml").read_text()
     window_rules = (
-        ROOT / "home/dot_config/hypr/hyprland.conf.d/window-rules.conf"
+        ROOT / "home/dot_config/hypr/hyprland.lua.d/window-rules.lua"
     ).read_text()
 
     assert (
-        "bind = $mainMod, E, exec, horneroctl apps terminal-file --new-window --last-dir"
+        'hl.bind("SUPER + E", hl.dsp.exec_cmd("horneroctl apps terminal-file --new-window --last-dir"))'
         in keybindings
     )
     assert (
@@ -122,30 +122,25 @@ def test_yazi_launchers_use_the_configured_terminal():
     )
     assert "kitty --class yazi-popup" not in keybindings
     assert "kitty --class yazi-popup" not in thunar_actions
-    assert (
-        r"""windowrule {
-    name = yazi-popup
-    match:class = ^(yazi-popup|com\.horneroos\.yazi-popup)$
-""" in window_rules
-    )
+    assert 'name = "yazi-popup"' in window_rules
+    assert 'match = { class = "^(yazi-popup|com\\\\.horneroos\\\\.yazi-popup)$" }' in window_rules
 
 
 def test_ghostty_receives_the_same_hyprland_terminal_opacity_as_other_terminals():
     window_rules = (
-        ROOT / "home/dot_config/hypr/hyprland.conf.d/window-rules.conf"
+        ROOT / "home/dot_config/hypr/hyprland.lua.d/window-rules.lua"
     ).read_text()
-    ghostty_rule = window_rules.split("name = ghostty-opacity", 1)[1].split("}", 1)[0]
+    ghostty_rule = window_rules.split('name = "ghostty-opacity"', 1)[1].split("})", 1)[0]
 
-    assert "match:class = ^com[.]mitchellh[.]ghostty$" in ghostty_rule
-    assert "opacity = 0.95 0.85" in ghostty_rule
+    assert 'match = { class = "^com[.]mitchellh[.]ghostty$" }' in ghostty_rule
+    assert 'opacity = "0.95 0.85"' in ghostty_rule
 
 
 def test_hyprland_swallowing_covers_every_supported_terminal():
     expected = "^(kitty|Alacritty|com[.]mitchellh[.]ghostty)$"
-    static_config = (ROOT / "home/dot_config/hypr/hyprland.conf").read_text()
+    assert not (ROOT / "home/dot_config/hypr/hyprland.conf").exists()
     lua_config = (ROOT / "home/dot_config/hypr/hyprland.lua.d/static.lua").read_text()
 
-    assert f"swallow_regex = {expected}" in static_config
     assert f'swallow_regex = "{expected}"' in lua_config
 
     # Window class strings match HorneroOS/config and Hyprland's actual class
@@ -164,7 +159,7 @@ def test_hyprland_swallowing_covers_every_supported_terminal():
 def test_hornero_runtime_comes_from_aur_packages():
     scripts = ROOT / "home/.chezmoiscripts/linux"
     shell_install = (scripts / "run_onchange_before_install-hornero-desktop.sh.tmpl").read_text()
-    environment = (ROOT / "home/dot_config/hypr/hyprland.conf.d/environment.conf").read_text()
+    environment = (ROOT / "home/dot_config/hypr/hyprland.lua.d/environment.lua").read_text()
 
     for package in ("hornero-shell", "hornero-config", "horneroctl-bin"):
         assert package in shell_install

@@ -1,6 +1,4 @@
--- Staged Lua equivalent of hyprland.conf.d/autostart.conf.
--- This file is intentionally not loaded until the complete configuration
--- migration has passed its acceptance checks.
+-- Lua equivalent of the retired hyprland.conf.d/autostart.conf. (loaded by hyprland.lua).
 -- luacheck: globals hl
 
 hl.on("hyprland.start", function()

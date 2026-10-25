@@ -1,6 +1,5 @@
--- Staged Smart Colors integration for the future Lua entrypoint.
--- The active hyprland.conf continues to use colors.conf until the full
--- Hyprland Lua migration passes its isolated-session acceptance gates.
+-- Smart Colors integration for the Lua entrypoint.
+-- Factory defaults match the retired colors.conf values.
 -- luacheck: globals hl
 
 local factory = {

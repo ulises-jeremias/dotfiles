@@ -1,6 +1,6 @@
--- Staged Lua equivalent of the non-generated inline Hyprland settings and
+-- Lua equivalent of the non-generated inline Hyprland settings and
 -- debug.conf. Theme-generated border and shadow colors remain separate.
--- This file is inert until the full migration is accepted.
+
 -- luacheck: globals hl
 
 hl.config({

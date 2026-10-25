@@ -200,23 +200,23 @@ Once in resize mode:
 Keybindings live in:
 
 ```bash
-$XDG_CONFIG_HOME/hypr/hyprland.conf.d/keybindings.conf
+$XDG_CONFIG_HOME/hypr/hyprland.lua.d/keybindings.lua
 ```
 
 `XDG_CONFIG_HOME` defaults to `~/.config` when unset, so the path above
-resolves to `~/.config/hypr/hyprland.conf.d/keybindings.conf` on a standard
+resolves to `~/.config/hypr/hyprland.lua.d/keybindings.lua` on a standard
 setup.
 
 Hyprland does not hot-reload custom files that do not exist, so add your own
 bindings directly at the end of this file or create a new file and source it
-from `hyprland.conf`.
+from `hyprland.lua`.
 
 ## Customization
 
 To add custom keybindings, edit:
 
 ```bash
-$XDG_CONFIG_HOME/hypr/hyprland.conf.d/keybindings.conf
+$XDG_CONFIG_HOME/hypr/hyprland.lua.d/keybindings.lua
 ```
 
 Example:
