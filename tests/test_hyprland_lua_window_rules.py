@@ -206,6 +206,6 @@ def test_lua_entrypoint_loads_window_rules_and_no_legacy_config_remains():
 
 
 if __name__ == "__main__":
-    test_staged_lua_preserves_every_legacy_window_rule_in_order()
-    test_staged_window_rules_do_not_activate_partial_lua_configuration()
-    print("PASS: staged Lua window rules match the legacy config and stay inactive")
+    test_lua_preserves_every_legacy_window_rule_in_order()
+    test_lua_entrypoint_loads_window_rules_and_no_legacy_config_remains()
+    print("PASS: Lua window rules match the frozen legacy values")

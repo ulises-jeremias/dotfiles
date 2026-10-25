@@ -43,7 +43,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Lua for staged config contract tests
+      - name: Install Lua for config contract tests
         run: |
           apt-get update
           apt-get install --yes --no-install-recommends lua5.4
@@ -51,7 +51,7 @@ jobs:
       - name: Validate Hornero source contract
         run: python3 tests/test_hornero_source_contract.py
 
-      - name: Validate staged Hyprland Lua window-rule parity
+      - name: Validate Hyprland Lua window-rule parity
         run: python3 tests/test_hyprland_lua_window_rules.py
 
       - name: Exercise staged Smart Colors Lua loader
