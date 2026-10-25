@@ -22,11 +22,11 @@
   <a href="https://github.com/PandaFoss/Awesome-Arch">
     <img src="https://img.shields.io/badge/Awesome--Arch-mentioned-ffb0ca?style=for-the-badge&amp;labelColor=191114" alt="Mentioned in Awesome Arch"/>
   </a>
-  <a href="https://aur.archlinux.org/packages/dots-stable">
-    <img src="https://img.shields.io/aur/version/dots-stable?label=AUR%20Stable&amp;style=for-the-badge&amp;labelColor=191114&amp;color=e2bdc7" alt="AUR Stable version"/>
+  <a href="https://aur.archlinux.org/packages/hornero-config">
+    <img src="https://img.shields.io/aur/version/hornero-config?label=AUR%20Config&amp;style=for-the-badge&amp;labelColor=191114&amp;color=e2bdc7" alt="AUR hornero-config version"/>
   </a>
-  <a href="https://aur.archlinux.org/packages/dots-git">
-    <img src="https://img.shields.io/aur/version/dots-git?label=AUR%20Development&amp;style=for-the-badge&amp;labelColor=191114&amp;color=f0bc95" alt="AUR Development version"/>
+  <a href="https://aur.archlinux.org/packages/hornero-shell">
+    <img src="https://img.shields.io/aur/version/hornero-shell?label=AUR%20Shell&amp;style=for-the-badge&amp;labelColor=191114&amp;color=f0bc95" alt="AUR hornero-shell version"/>
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-d5c2c6?style=for-the-badge&amp;labelColor=191114" alt="MIT License"/>
@@ -111,8 +111,7 @@ sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/main/scrip
 ### 📦 Arch Linux (AUR)
 
 ```bash
-yay -S dots-stable      # Stable release
-yay -S dots-git         # Latest features
+yay -S hornero-shell hornero-config hornero-greeter   # HorneroOS product packages
 ```
 
 > 💡 **Performance Tip**: HorneroConfig automatically configures [Chaotic-AUR](https://aur.chaotic.cx/) during installation, providing precompiled binaries for popular AUR packages in the Hyprland + Quickshell ecosystem to significantly reduce installation time.
@@ -136,8 +135,8 @@ git clone https://github.com/ulises-jeremias/dotfiles ~/.dotfiles
 #### Manual AUR Build
 
 ```bash
-git clone https://aur.archlinux.org/dots-stable.git /tmp/dots-stable
-cd /tmp/dots-stable && makepkg -si
+git clone https://aur.archlinux.org/hornero-shell.git /tmp/hornero-shell
+cd /tmp/hornero-shell && makepkg -si
 ```
 
 </details>
@@ -187,15 +186,14 @@ dots appearance theme apply vapor-dreams
 Access **100+ built-in scripts** via the `dots` command:
 
 ```bash
-dots --list             # List available scripts (RETIRED entries point at horneroctl)
 horneroctl package upgrade --yes  # Comprehensive system updates
-dots smart-colors       # Intelligent color analysis
-horneroctl apps audit   # Security analysis and hardening
-dots appearance apply neon-city
+horneroctl appearance colors      # Intelligent color analysis
+horneroctl apps audit             # Security analysis and hardening
+horneroctl appearance theme       # Appearance themes
 ```
 
-📂 `dots-eject` — Export configs for manual use  
-🔄 `dots-update` — Sync with upstream changes
+📂 `horneroctl config` — Inspect and snapshot configuration  
+🔄 `horneroctl package upgrade` — Sync with upstream changes
 
 > 📖 [Scripts documentation →](https://github.com/ulises-jeremias/dotfiles/wiki/Dots-Scripts)
 
