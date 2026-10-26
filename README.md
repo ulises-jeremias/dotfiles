@@ -102,11 +102,26 @@
 
 ## 🚀 Quick Installation
 
-### ⚡ One-Line Install (Recommended)
+### ⚡ Quick Install (Recommended)
 
 ```bash
-sh -c "$(curl -fsSL "https://github.com/ulises-jeremias/dotfiles/blob/main/scripts/install_dotfiles.sh?raw=true")"
+git clone https://github.com/ulises-jeremias/dotfiles ~/.dotfiles
+~/.dotfiles/install.sh
 ```
+
+`install.sh` installs chezmoi if needed and runs
+`chezmoi init --apply --source ~/.dotfiles`.
+
+#### 🔄 Updating an existing install
+
+```bash
+cd ~/.dotfiles && git pull
+~/.dotfiles/install.sh
+```
+
+This fast-forwards the checkout to the latest `main` and re-applies it.
+Your local files outside the chezmoi source are not touched by the pull;
+chezmoi shows and applies only the managed differences.
 
 ### 📦 Arch Linux (AUR)
 
