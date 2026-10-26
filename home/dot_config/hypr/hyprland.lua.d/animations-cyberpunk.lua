@@ -34,7 +34,7 @@ hl.animation({
 	leaf = "windows",
 	enabled = true,
 	speed = 4,
-	curve = "cyber",
+	bezier = "cyber",
 	style = "popin 85%",
 })
 
@@ -42,7 +42,7 @@ hl.animation({
 	leaf = "windowsIn",
 	enabled = true,
 	speed = 3,
-	curve = "neon",
+	bezier = "neon",
 	style = "popin 90%",
 })
 
@@ -50,7 +50,7 @@ hl.animation({
 	leaf = "windowsOut",
 	enabled = true,
 	speed = 3,
-	curve = "flash",
+	bezier = "flash",
 	style = "popin 85%",
 })
 
@@ -58,7 +58,7 @@ hl.animation({
 	leaf = "windowsMove",
 	enabled = true,
 	speed = 4,
-	curve = "glitch",
+	bezier = "glitch",
 	style = "slide",
 })
 
@@ -66,14 +66,14 @@ hl.animation({
 	leaf = "border",
 	enabled = true,
 	speed = 4,
-	curve = "cyber",
+	bezier = "cyber",
 })
 
 hl.animation({
 	leaf = "borderangle",
 	enabled = true,
 	speed = 50,
-	curve = "liner",
+	bezier = "liner",
 	style = "loop",
 })
 
@@ -81,49 +81,49 @@ hl.animation({
 	leaf = "fade",
 	enabled = true,
 	speed = 3,
-	curve = "flash",
+	bezier = "flash",
 })
 
 hl.animation({
 	leaf = "fadeIn",
 	enabled = true,
 	speed = 2,
-	curve = "flash",
+	bezier = "flash",
 })
 
 hl.animation({
 	leaf = "fadeOut",
 	enabled = true,
 	speed = 2,
-	curve = "flash",
+	bezier = "flash",
 })
 
 hl.animation({
 	leaf = "fadeSwitch",
 	enabled = true,
 	speed = 3,
-	curve = "cyber",
+	bezier = "cyber",
 })
 
 hl.animation({
 	leaf = "fadeShadow",
 	enabled = true,
 	speed = 4,
-	curve = "cyber",
+	bezier = "cyber",
 })
 
 hl.animation({
 	leaf = "fadeDim",
 	enabled = true,
 	speed = 3,
-	curve = "cyber",
+	bezier = "cyber",
 })
 
 hl.animation({
 	leaf = "workspaces",
 	enabled = true,
 	speed = 4,
-	curve = "glitch",
+	bezier = "glitch",
 	style = "slide",
 })
 
@@ -131,7 +131,7 @@ hl.animation({
 	leaf = "specialWorkspace",
 	enabled = true,
 	speed = 4,
-	curve = "neon",
+	bezier = "neon",
 	style = "slidevert",
 })
 
@@ -139,7 +139,7 @@ hl.animation({
 	leaf = "layers",
 	enabled = true,
 	speed = 2,
-	curve = "flash",
+	bezier = "flash",
 	style = "fade",
 })
 
@@ -147,7 +147,7 @@ hl.animation({
 	leaf = "layersIn",
 	enabled = true,
 	speed = 2,
-	curve = "flash",
+	bezier = "flash",
 	style = "fade",
 })
 
@@ -155,6 +155,6 @@ hl.animation({
 	leaf = "layersOut",
 	enabled = true,
 	speed = 2,
-	curve = "flash",
+	bezier = "flash",
 	style = "fade",
 })

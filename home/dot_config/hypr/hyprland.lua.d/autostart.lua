@@ -1,10 +1,13 @@
 -- Lua equivalent of the retired hyprland.conf.d/autostart.conf. (loaded by hyprland.lua).
 -- luacheck: globals hl
 
+local here = debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$") .. "/"
+local actions = dofile(here .. "actions.lua")
+
 hl.on("hyprland.start", function()
 	hl.exec_cmd("dex --autostart --environment Hyprland")
 	hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
-	hl.exec_cmd("lua $HOME/.local/bin/start-gnome-keyring.lua")
+	actions.start_gnome_keyring()
 	hl.exec_cmd("pkill -9 kwalletd5 kwalletd6 2>/dev/null || true")
 	hl.exec_cmd("hypridle")
 	hl.exec_cmd("horneroctl hypr layout restore --yes")

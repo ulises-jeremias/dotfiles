@@ -169,7 +169,7 @@ def _lua_profile(path: Path) -> tuple[list[tuple[str, tuple[float, ...]]], list[
     for block in blocks:
         values = dict(
             re.findall(
-                r'^\s*(leaf|enabled|speed|curve|style)\s*=\s*(.+?),?$',
+                r'^\s*(leaf|enabled|speed|bezier|style)\s*=\s*(.+?),?$',
                 block,
                 re.MULTILINE,
             )
@@ -179,7 +179,7 @@ def _lua_profile(path: Path) -> tuple[list[tuple[str, tuple[float, ...]]], list[
                 values["leaf"].strip('"'),
                 values["enabled"] == "true",
                 float(values["speed"]),
-                values["curve"].strip('"'),
+                values["bezier"].strip('"'),
                 values.get("style", "").strip('"') or None,
             )
         )
