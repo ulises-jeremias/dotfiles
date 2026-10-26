@@ -1,14 +1,16 @@
-"""Verify Hyprland runtime calls select safe syntax for each config provider."""
+"""Verify the Lua Hyprland runtime helper selects safe syntax per provider."""
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-HELPER = ROOT / "home/dot_local/bin/executable_hyprland-runtime"
+HELPER = ROOT / "home/dot_local/bin/executable_hyprland-runtime.lua"
+LUA = shutil.which("lua") or shutil.which("lua5.4")
 
 
 def make_environment(root: Path, *, lua: bool) -> tuple[dict[str, str], Path]:
@@ -41,7 +43,7 @@ def make_environment(root: Path, *, lua: bool) -> tuple[dict[str, str], Path]:
 
 
 def run(helper_args: list[str], environment: dict[str, str]) -> None:
-    subprocess.run([str(HELPER), *helper_args], check=True, env=environment)
+    subprocess.run([LUA, str(HELPER), *helper_args], check=True, env=environment)
 
 
 def test_runtime_adapter_uses_legacy_hyprlang_commands_without_lua_config():
@@ -99,7 +101,7 @@ def test_runtime_adapter_rejects_values_that_could_escape_lua_expressions():
             ["resize-active", "18446744073709551617", "900"],
         ):
             result = subprocess.run(
-                [str(HELPER), *command], env=environment, capture_output=True, text=True
+                [LUA, str(HELPER), *command], env=environment, capture_output=True, text=True
             )
             assert result.returncode == 2
         assert not log.exists() or log.read_text(encoding="utf-8") == ""

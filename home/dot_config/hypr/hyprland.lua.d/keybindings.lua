@@ -40,7 +40,7 @@ hl.bind("SUPER + L", hl.dsp.exec_cmd("horneroctl shell ipc -- call lock lock"))
 hl.bind("SUPER + question", hl.dsp.exec_cmd("horneroctl hardware keyboard keys"))
 hl.bind("SUPER + slash", hl.dsp.exec_cmd("horneroctl hardware keyboard keys"))
 -- Interactive gaps management (like i3-gaps)
-hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd("~/.config/hypr/scripts/gaps-interactive.sh"))
+hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd("lua ~/.config/hypr/scripts/gaps-interactive.lua"))
 -- Toggle keyboard layout through the current Hornero action.
 -- bind = ALT SHIFT, Space, exec, horneroctl hardware keyboard layout --yes
 -- ============================================================================
@@ -72,7 +72,7 @@ hl.bind("SUPER + SHIFT + Space", hl.dsp.focus({ last = true }))
 hl.bind("ALT + Tab", hl.dsp.exec_cmd("horneroctl apps switcher next --yes"))
 hl.bind("ALT + SHIFT + Tab", hl.dsp.exec_cmd("horneroctl apps switcher prev --yes"))
 -- Smart floating (float + center + resize with optimal size)
-hl.bind("SUPER + SHIFT + F", hl.dsp.exec_cmd("~/.config/hypr/scripts/smart-float.sh"))
+hl.bind("SUPER + SHIFT + F", hl.dsp.exec_cmd("lua ~/.config/hypr/scripts/smart-float.lua"))
 -- Move window to center
 hl.bind("SUPER + CTRL + C", hl.dsp.window.center())
 -- Focus parent (using changegroupactive as alternative)
