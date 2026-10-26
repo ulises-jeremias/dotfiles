@@ -34,7 +34,7 @@ hl.animation({
 	leaf = "windows",
 	enabled = true,
 	speed = 8,
-	curve = "dream",
+	bezier = "dream",
 	style = "popin 80%",
 })
 
@@ -42,7 +42,7 @@ hl.animation({
 	leaf = "windowsIn",
 	enabled = true,
 	speed = 8,
-	curve = "retro",
+	bezier = "retro",
 	style = "popin 85%",
 })
 
@@ -50,7 +50,7 @@ hl.animation({
 	leaf = "windowsOut",
 	enabled = true,
 	speed = 6,
-	curve = "sunset",
+	bezier = "sunset",
 	style = "popin 75%",
 })
 
@@ -58,7 +58,7 @@ hl.animation({
 	leaf = "windowsMove",
 	enabled = true,
 	speed = 8,
-	curve = "retro",
+	bezier = "retro",
 	style = "slide",
 })
 
@@ -66,14 +66,14 @@ hl.animation({
 	leaf = "border",
 	enabled = true,
 	speed = 10,
-	curve = "retro",
+	bezier = "retro",
 })
 
 hl.animation({
 	leaf = "borderangle",
 	enabled = true,
 	speed = 80,
-	curve = "liner",
+	bezier = "liner",
 	style = "loop",
 })
 
@@ -81,49 +81,49 @@ hl.animation({
 	leaf = "fade",
 	enabled = true,
 	speed = 8,
-	curve = "vhs",
+	bezier = "vhs",
 })
 
 hl.animation({
 	leaf = "fadeIn",
 	enabled = true,
 	speed = 10,
-	curve = "retro",
+	bezier = "retro",
 })
 
 hl.animation({
 	leaf = "fadeOut",
 	enabled = true,
 	speed = 8,
-	curve = "sunset",
+	bezier = "sunset",
 })
 
 hl.animation({
 	leaf = "fadeSwitch",
 	enabled = true,
 	speed = 8,
-	curve = "retro",
+	bezier = "retro",
 })
 
 hl.animation({
 	leaf = "fadeShadow",
 	enabled = true,
 	speed = 10,
-	curve = "retro",
+	bezier = "retro",
 })
 
 hl.animation({
 	leaf = "fadeDim",
 	enabled = true,
 	speed = 8,
-	curve = "sunset",
+	bezier = "sunset",
 })
 
 hl.animation({
 	leaf = "workspaces",
 	enabled = true,
 	speed = 10,
-	curve = "retro",
+	bezier = "retro",
 	style = "slide",
 })
 
@@ -131,7 +131,7 @@ hl.animation({
 	leaf = "specialWorkspace",
 	enabled = true,
 	speed = 8,
-	curve = "dream",
+	bezier = "dream",
 	style = "slidevert",
 })
 
@@ -139,7 +139,7 @@ hl.animation({
 	leaf = "layers",
 	enabled = true,
 	speed = 6,
-	curve = "retro",
+	bezier = "retro",
 	style = "slide",
 })
 
@@ -147,7 +147,7 @@ hl.animation({
 	leaf = "layersIn",
 	enabled = true,
 	speed = 8,
-	curve = "dream",
+	bezier = "dream",
 	style = "slide",
 })
 
@@ -155,6 +155,6 @@ hl.animation({
 	leaf = "layersOut",
 	enabled = true,
 	speed = 6,
-	curve = "sunset",
+	bezier = "sunset",
 	style = "fade",
 })

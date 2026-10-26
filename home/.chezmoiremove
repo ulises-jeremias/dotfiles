@@ -2,3 +2,13 @@
 # hyprland.lua.d/ are the only Hyprland configuration.
 .config/hypr/hyprland.conf
 .config/hypr/hyprland.conf.d
+.config/hypr/scripts/gaps-interactive.sh
+.config/hypr/scripts/notification-handler.sh
+.config/hypr/scripts/smart-float.sh
+.local/bin/hyprland-runtime
+.local/bin/start-gnome-keyring.sh
+.config/hypr/scripts/gaps-interactive.lua
+.config/hypr/scripts/notification-handler.lua
+.config/hypr/scripts/smart-float.lua
+.local/bin/hyprland-runtime.lua
+.local/bin/start-gnome-keyring.lua

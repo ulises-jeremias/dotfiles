@@ -24,7 +24,7 @@ hl.animation({
 	leaf = "windows",
 	enabled = true,
 	speed = 2,
-	curve = "snap",
+	bezier = "snap",
 	style = "slide",
 })
 
@@ -32,7 +32,7 @@ hl.animation({
 	leaf = "windowsIn",
 	enabled = true,
 	speed = 2,
-	curve = "linear",
+	bezier = "linear",
 	style = "slide",
 })
 
@@ -40,7 +40,7 @@ hl.animation({
 	leaf = "windowsOut",
 	enabled = true,
 	speed = 1,
-	curve = "linear",
+	bezier = "linear",
 	style = "slide",
 })
 
@@ -48,7 +48,7 @@ hl.animation({
 	leaf = "windowsMove",
 	enabled = true,
 	speed = 2,
-	curve = "direct",
+	bezier = "direct",
 	style = "slide",
 })
 
@@ -56,63 +56,63 @@ hl.animation({
 	leaf = "border",
 	enabled = true,
 	speed = 2,
-	curve = "linear",
+	bezier = "linear",
 })
 
 hl.animation({
 	leaf = "borderangle",
 	enabled = false,
 	speed = 1,
-	curve = "linear",
+	bezier = "linear",
 })
 
 hl.animation({
 	leaf = "fade",
 	enabled = true,
 	speed = 2,
-	curve = "linear",
+	bezier = "linear",
 })
 
 hl.animation({
 	leaf = "fadeIn",
 	enabled = true,
 	speed = 1,
-	curve = "linear",
+	bezier = "linear",
 })
 
 hl.animation({
 	leaf = "fadeOut",
 	enabled = true,
 	speed = 1,
-	curve = "linear",
+	bezier = "linear",
 })
 
 hl.animation({
 	leaf = "fadeSwitch",
 	enabled = true,
 	speed = 2,
-	curve = "linear",
+	bezier = "linear",
 })
 
 hl.animation({
 	leaf = "fadeShadow",
 	enabled = true,
 	speed = 2,
-	curve = "linear",
+	bezier = "linear",
 })
 
 hl.animation({
 	leaf = "fadeDim",
 	enabled = true,
 	speed = 2,
-	curve = "linear",
+	bezier = "linear",
 })
 
 hl.animation({
 	leaf = "workspaces",
 	enabled = true,
 	speed = 2,
-	curve = "snap",
+	bezier = "snap",
 	style = "slide",
 })
 
@@ -120,7 +120,7 @@ hl.animation({
 	leaf = "specialWorkspace",
 	enabled = true,
 	speed = 2,
-	curve = "snap",
+	bezier = "snap",
 	style = "slidevert",
 })
 
@@ -128,7 +128,7 @@ hl.animation({
 	leaf = "layers",
 	enabled = true,
 	speed = 1,
-	curve = "linear",
+	bezier = "linear",
 	style = "fade",
 })
 
@@ -136,7 +136,7 @@ hl.animation({
 	leaf = "layersIn",
 	enabled = true,
 	speed = 1,
-	curve = "linear",
+	bezier = "linear",
 	style = "fade",
 })
 
@@ -144,6 +144,6 @@ hl.animation({
 	leaf = "layersOut",
 	enabled = true,
 	speed = 1,
-	curve = "linear",
+	bezier = "linear",
 	style = "fade",
 })

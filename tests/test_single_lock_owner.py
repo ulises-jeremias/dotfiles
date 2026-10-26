@@ -26,7 +26,7 @@ def test_hypridle_does_not_launch_a_second_session_locker():
 
     assert "Hornero Shell owns idle locking" in config
     assert re.search(r"^\s*listener\s*\{", active_config, re.MULTILINE)
-    assert any("dpms off" in action for action in actions)
+    assert any("dpms off" in action or 'hl.dsp.dpms({ action = "disable" })' in action for action in actions)
     assert any("systemctl suspend" in action for action in actions)
     for action in actions:
         assert "hyprlock" not in action
