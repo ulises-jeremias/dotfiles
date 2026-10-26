@@ -4,7 +4,7 @@
 hl.on("hyprland.start", function()
 	hl.exec_cmd("dex --autostart --environment Hyprland")
 	hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
-	hl.exec_cmd("lua $HOME/.local/bin/start-gnome-keyring.lua")
+	hl.exec_cmd("$HOME/.local/bin/start-gnome-keyring.sh")
 	hl.exec_cmd("pkill -9 kwalletd5 kwalletd6 2>/dev/null || true")
 	hl.exec_cmd("hypridle")
 	hl.exec_cmd("horneroctl hypr layout restore --yes")
