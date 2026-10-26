@@ -231,7 +231,11 @@ function actions.gaps_interactive()
 				"notify-send %s %s -t 2000",
 				shell_quote("Gaps Updated"),
 				shell_quote(
-					string.format("Inner: %s | Outer: %s", actions.get_gap("inner") or "", actions.get_gap("outer") or "")
+					string.format(
+						"Inner: %s | Outer: %s",
+						actions.get_gap("inner") or "",
+						actions.get_gap("outer") or ""
+					)
 				)
 			)
 		)
