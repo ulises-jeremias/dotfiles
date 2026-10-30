@@ -16,4 +16,4 @@ home/.chezmoiscripts/linux/run_onchange_before_install-mdns.sh.tmpl,mDNS avahi,B
 home/private_dot_ssh,SSH personal machines,G,none,dotfiles,-,pelicano added,static-test
 home/.chezmoiscripts/linux/run_onchange_before_install-000-aaa-chaotic-aur.sh.tmpl,Chaotic-AUR repo,G,never in ISO,dotfiles,-,stays-personal-reviewed,not-tested
 home/dot_config/kitty + seed-ghostty,Terminal config,G/B,Kitty in desktop set + horneroctl default-apps,HorneroOS/hornero+dotfiles,all,personal-layer,contract-tests
-home/.chezmoiremove + run_once_after_remove-retired-kitty.sh.tmpl,Retire obsolete Hyprland conf + native Kitty leftovers,H,chezmoi remove list + one-time version-gated script,dotfiles,-,active,tests/test_kitty_native_migration.py (temp-HOME apply; ledger docs/Chezmoi-Migration-Ledger.md)
+home/.chezmoiremove + run_after_remove-retired-kitty.sh.tmpl,Retire obsolete Hyprland conf + native Kitty leftovers,H,chezmoi remove list + one-time version-gated script,dotfiles,-,active,tests/test_kitty_native_migration.py (temp-HOME apply; ledger docs/Chezmoi-Migration-Ledger.md)

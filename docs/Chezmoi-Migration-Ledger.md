@@ -5,26 +5,34 @@ owns natively. A target is only removed through chezmoi after the
 native replacement is implemented, packaged, installed, and validated;
 removal rules live in `home/.chezmoiremove` plus the one-time,
 version-gated migration script
-`home/.chezmoiscripts/linux/run_once_after_remove-retired-kitty.sh.tmpl`.
+`home/.chezmoiscripts/linux/run_after_remove-retired-kitty.sh.tmpl`.
 Entries guarded by `horneroNative` apply only where the OS identity
 is HorneroOS (or the
 maintainer opts in with `HORNERO_NATIVE=1`, required on preview24
 installations migrated in place, whose os-release keeps `ID=arch`).
 
 Backup for every row: copy the target aside (or snapshot `~/.config`)
-before `chezmoi apply`. Rollback for every row: restore the backup
-copy; chezmoi no longer manages these paths, so nothing recreates
-them. A second apply must be a no-op.
+before `chezmoi apply`. Rollback differs by mechanism:
 
-| Old dotfiles source                                                                                                                            | Target                                                                                      | New owner                                               | Required version           | Verification                                                               | Removal mechanism                                                                                        | Status             |
-|------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------|----------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|--------------------|
-| `home/dot_config/hypr/hyprland.conf` + `hyprland.conf.d/`                                                                                      | `.config/hypr/hyprland.conf`, `.config/hypr/hyprland.conf.d`                                | dotfiles Lua config (`hyprland.lua.d`)                  | Lua-only migration         | host + repo tests                                                          | `.chezmoiremove` (all hosts)                                                                             | active             |
-| `home/dot_config/hypr/scripts/executable_*.sh` / `*.lua`, `home/dot_local/bin/executable_hyprland-runtime*`, `executable_start-gnome-keyring*` | `.config/hypr/scripts/*`, `.local/bin/hyprland-runtime*`, `.local/bin/start-gnome-keyring*` | Lua modules inside `hyprland.lua.d`                     | Lua-only migration         | `tests/test_hyprland_lua_scripts.py`                                       | `.chezmoiremove` (all hosts)                                                                             | active             |
-| `home/dot_config/kitty/{kitty,hornero-dark,hornero-light,pampa}.conf` (deleted in #347)                                                        | `.config/kitty/{kitty,hornero-dark,hornero-light,pampa}.conf`                               | HorneroOS/config (`desktop/kitty`)                      | hornero-config 0.3.14      | preview28 Desktop VM install: packaged Kitty + Super+Enter terminal PASS   | one-time `run_once_after_remove-retired-kitty.sh.tmpl` (`horneroNative` + hornero-config >= 0.3.14 gate) | active             |
-| `home/dot_config/xfce4/helpers.rc` (deleted)                                                                                                   | `.config/xfce4/helpers.rc`                                                                  | HorneroOS/config + horneroctl terminal selection        | hornero-config 0.3.14      | preview28 Desktop VM: terminal helper resolves Kitty                       | `.chezmoiignore.tmpl` (preserve user choice; ignored targets are never removed by chezmoi)               | active, no removal |
-| `home/dot_local/share/hornero/wallpapers/*` rasters (deleted)                                                                                  | `.local/share/hornero/wallpapers/*`, `~/Pictures/Wallpapers/*` links                        | HorneroOS/config brand assets                           | config wallpaper migration | `tests/test_wallpaper_migration.py` (hash-checked, exact stale links only) | dedicated guarded script, not `.chezmoiremove`                                                           | active             |
-| `home/dot_config/systemd/user/hornero-hermes.service` (deleted)                                                                                | `.config/systemd/user/hornero-hermes.service`                                               | `horneroctl assistant` (see `docs/Hermes-Ownership.md`) | —                          | ownership contract tests                                                   | explicitly **not** `.chezmoiremove` (`chezmoi forget` + assistant receipts)                              | transferred        |
-| `/etc/os-release` branding script                                                                                                              | `/etc/os-release` (system file)                                                             | HorneroOS/installer identity step                       | preview28 ISO              | preview28 VM install: `ID=horneroos`                                       | none: system files are never removed by chezmoi; script is skipped on native                             | native             |
+- One-shot script rows (Kitty): restoring the backup is enough. The
+  migration records `~/.local/state/hornero/kitty-migration-done` and
+  never deletes the file again.
+- Persistent `.chezmoiremove` rows (Hyprland): chezmoi removes the
+  target on **every** apply, so a restored file is deleted again by
+  the next apply. To truly roll one back, first remove its entry from
+  `home/.chezmoiremove` in the source, then restore the backup.
+
+A second apply must be a no-op for managed content.
+
+| Old dotfiles source | Target | New owner | Required version | Verification | Removal mechanism | Status |
+|---|---|---|---|---|---|---|
+| `home/dot_config/hypr/hyprland.conf` + `hyprland.conf.d/` | `.config/hypr/hyprland.conf`, `.config/hypr/hyprland.conf.d` | dotfiles Lua config (`hyprland.lua.d`) | Lua-only migration | host + repo tests | `.chezmoiremove` (all hosts) | active |
+| `home/dot_config/hypr/scripts/executable_*.sh` / `*.lua`, `home/dot_local/bin/executable_hyprland-runtime*`, `executable_start-gnome-keyring*` | `.config/hypr/scripts/*`, `.local/bin/hyprland-runtime*`, `.local/bin/start-gnome-keyring*` | Lua modules inside `hyprland.lua.d` | Lua-only migration | `tests/test_hyprland_lua_scripts.py` | `.chezmoiremove` (all hosts) | active |
+| `home/dot_config/kitty/{kitty,hornero-dark,hornero-light,pampa}.conf` (deleted in #347) | `.config/kitty/{kitty,hornero-dark,hornero-light,pampa}.conf` | HorneroOS/config (`desktop/kitty`) | hornero-config 0.3.14 | preview28 Desktop VM install: packaged Kitty + Super+Enter terminal PASS | one-shot `run_after_remove-retired-kitty.sh.tmpl` (`horneroNative` + hornero-config >= 0.3.14 gate + done marker) | active |
+| `home/dot_config/xfce4/helpers.rc` (deleted) | `.config/xfce4/helpers.rc` | HorneroOS/config + horneroctl terminal selection | hornero-config 0.3.14 | preview28 Desktop VM: terminal helper resolves Kitty | `.chezmoiignore.tmpl` (preserve user choice; ignored targets are never removed by chezmoi) | active, no removal |
+| `home/dot_local/share/hornero/wallpapers/*` rasters (deleted) | `.local/share/hornero/wallpapers/*`, `~/Pictures/Wallpapers/*` links | HorneroOS/config brand assets | config wallpaper migration | `tests/test_wallpaper_migration.py` (hash-checked, exact stale links only) | dedicated guarded script, not `.chezmoiremove` | active |
+| `home/dot_config/systemd/user/hornero-hermes.service` (deleted) | `.config/systemd/user/hornero-hermes.service` | `horneroctl assistant` (see `docs/Hermes-Ownership.md`) | — | ownership contract tests | explicitly **not** `.chezmoiremove` (`chezmoi forget` + assistant receipts) | transferred |
+| `/etc/os-release` branding script | `/etc/os-release` (system file) | HorneroOS/installer identity step | preview28 ISO | preview28 VM install: `ID=horneroos` | none: system files are never removed by chezmoi; script is skipped on native | native |
 
 ## Adding a new row
 

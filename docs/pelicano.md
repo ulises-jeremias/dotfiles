@@ -35,7 +35,7 @@ una máquina de producción sin backup de `~/.config` y `~/.local/share`.
 ## Limpieza de overrides obsoletos
 
 Las reglas viven en `home/.chezmoiremove` y en el script de migración
-`run_once_after_remove-retired-kitty.sh.tmpl`; solo retiran archivos
+`run_after_remove-retired-kitty.sh.tmpl`; solo retiran archivos
 que HorneroOS ya reemplazó de forma verificada (detalle por archivo en
 `docs/Chezmoi-Migration-Ledger.md`):
 

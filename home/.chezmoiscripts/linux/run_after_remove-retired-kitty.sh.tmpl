@@ -1,0 +1,57 @@
+{{- if and (or (eq .osid "linux-arch") (eq .osid "linux-horneroos")) (get . "horneroNative") -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# One-shot migration for the Kitty configs retired in #347, whose
+# sources no longer exist in this repo. A leftover target would
+# silently override the packaged hornero-config Kitty defaults.
+#
+# This runs on every apply until it succeeds, then records a marker
+# and never acts again:
+# - If the native replacement (hornero-config >= 0.3.14, which
+#   materializes desktop/kitty) is not installed yet, nothing is
+#   removed and the migration stays pending for a later apply.
+# - Once the files are removed, a kitty.conf the user creates
+#   afterwards is personal configuration and is never deleted.
+# Paths resolve against chezmoi's destination directory, not $HOME,
+# so staged applies (--destination) stay hermetic.
+# See docs/Chezmoi-Migration-Ledger.md.
+dest_dir="{{ .chezmoi.destDir }}"
+config_home="$dest_dir/.config"
+kitty_dir="$config_home/kitty"
+state_dir="$dest_dir/.local/state/hornero"
+marker="$state_dir/kitty-migration-done"
+
+if [ -e "$marker" ]; then
+  exit 0
+fi
+
+pkg_version="$(pacman -Q hornero-config 2>/dev/null | awk '{print $2}' || true)"
+if [ -z "$pkg_version" ]; then
+  exit 0
+fi
+if command -v vercmp >/dev/null 2>&1; then
+  if [ "$(vercmp "$pkg_version" "0.3.14")" -lt 0 ]; then
+    exit 0
+  fi
+fi
+
+# Never delete through a symlinked parent directory.
+if [ -L "$kitty_dir" ]; then
+  echo "kitty migration skipped: $kitty_dir is a symlink" >&2
+  exit 0
+fi
+
+for name in kitty.conf hornero-dark.conf hornero-light.conf pampa.conf; do
+  target="$kitty_dir/$name"
+  # Regular files only: never delete through a symlink.
+  if [ -f "$target" ] && [ ! -L "$target" ]; then
+    rm -f "$target"
+    echo "removed retired Kitty config: $target"
+  fi
+done
+
+mkdir -p "$state_dir"
+printf '%s\n' "hornero-config $pkg_version" > "$marker"
+{{ end -}}

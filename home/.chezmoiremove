@@ -13,6 +13,6 @@
 .local/bin/hyprland-runtime.lua
 .local/bin/start-gnome-keyring.lua
 # Retired Kitty configs (#347) are removed by the one-time, version-gated
-# migration .chezmoiscripts/linux/run_once_after_remove-retired-kitty.sh.tmpl
+# migration .chezmoiscripts/linux/run_after_remove-retired-kitty.sh.tmpl
 # instead: a persistent entry here would keep deleting a kitty.conf the
 # user legitimately recreates afterwards. See docs/Chezmoi-Migration-Ledger.md.

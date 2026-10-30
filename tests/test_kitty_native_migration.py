@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""One-time Kitty migration for native HorneroOS.
+"""One-shot Kitty migration for native HorneroOS.
 
 The Kitty configs retired in #347 are removed exactly once, only on
 native HorneroOS, and only when the packaged replacement
-(hornero-config >= 0.3.14) is actually installed. Exercises the real
-script through `chezmoi apply` against a miniature source in a
-temporary HOME with a stubbed `pacman`.
+(hornero-config >= 0.3.14) is actually installed. The migration stays
+pending while the replacement is missing, records a marker when done,
+and never touches files the user creates afterwards. Exercises the
+real script through `chezmoi apply` against a miniature source in a
+temporary destination with a stubbed `pacman`.
 """
 from __future__ import annotations
 
@@ -16,7 +18,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "home/.chezmoiscripts/linux/run_once_after_remove-retired-kitty.sh.tmpl"
+SCRIPT = ROOT / "home/.chezmoiscripts/linux/run_after_remove-retired-kitty.sh.tmpl"
 REMOVE = ROOT / "home/.chezmoiremove"
 TOML_TMPL = ROOT / "home/.chezmoi.toml.tmpl"
 
@@ -29,14 +31,19 @@ def chezmoi() -> str:
 
 def test_static_contracts() -> None:
     assert SCRIPT.exists(), "migration script missing"
-    assert SCRIPT.name.startswith("run_once_after_"), \
-        "migration must be one-time (run_once), not a persistent removal"
+    assert SCRIPT.name.startswith("run_after_"), \
+        "migration must re-run until it succeeds (run_once would be consumed early)"
     text = SCRIPT.read_text(encoding="utf-8")
     assert 'get . "horneroNative"' in text
-    assert '"linux-arch"' in text
+    assert '"linux-arch"' in text and '"linux-horneroos"' in text, \
+        "detected native hosts report osid linux-horneroos, not linux-arch"
     assert "hornero-config" in text and "0.3.14" in text, \
         "removal must be gated on the packaged replacement version"
     assert "vercmp" in text
+    assert ".chezmoi.destDir" in text, \
+        "paths must resolve against chezmoi's destination, not $HOME"
+    assert 'kitty-migration-done' in text, "completion marker missing"
+    assert '[ -L "$kitty_dir" ]' in text, "must reject a symlinked parent directory"
     assert "[ ! -L " in text, "must never delete through a symlink"
     for name in KITTY_FILES:
         assert name in text, name
@@ -54,11 +61,11 @@ def test_static_contracts() -> None:
         "native opt-in must require the exact value 1 (not any non-empty value)"
 
 
-def write_config(path: Path, native: bool) -> Path:
+def write_config(path: Path, native: bool, osid: str = "linux-horneroos") -> Path:
     path.write_text(
         "[data]\n"
         f"    horneroNative = {str(native).lower()}\n"
-        '    osid = "linux-arch"\n',
+        f'    osid = "{osid}"\n',
         encoding="utf-8",
     )
     return path
@@ -99,6 +106,10 @@ def seed_kitty(dest: Path) -> Path:
     return personal
 
 
+def marker(dest: Path) -> Path:
+    return dest / ".local/state/hornero/kitty-migration-done"
+
+
 def test_apply_behaviour() -> None:
     with tempfile.TemporaryDirectory(prefix="kitty-migration-") as temp:
         base = Path(temp)
@@ -106,39 +117,64 @@ def test_apply_behaviour() -> None:
         script_dest = source / ".chezmoiscripts/linux"
         script_dest.mkdir(parents=True)
         shutil.copy(SCRIPT, script_dest / SCRIPT.name)
-
-        # Native + replacement installed: removed once, then never again.
-        dest = base / "home-native"
-        personal = seed_kitty(dest)
-        stub = base / "stub-new"
-        make_pacman_stub(stub, "0.3.14-1")
         config = write_config(base / "native.toml", True)
-        apply(source, dest, config, stub)
+        stub_new = base / "stub-new"
+        make_pacman_stub(stub_new, "0.3.14-1")
+        stub_none = base / "stub-none"
+        make_pacman_stub(stub_none, None)
+
+        # Replacement missing: pending, nothing removed, no marker.
+        dest = base / "home-pending"
+        personal = seed_kitty(dest)
+        apply(source, dest, config, stub_none)
+        for name in KITTY_FILES:
+            assert (dest / ".config/kitty" / name).exists(), name
+        assert not marker(dest).exists()
+
+        # Replacement installed later: migration now runs, once.
+        apply(source, dest, config, stub_new)
         for name in KITTY_FILES:
             assert not (dest / ".config/kitty" / name).exists(), name
         assert personal.read_text(encoding="utf-8") == "mine\n"
+        assert marker(dest).exists()
+
+        # A kitty.conf created afterwards is personal: it survives.
         recreated = dest / ".config/kitty/kitty.conf"
         recreated.write_text("my own config now\n", encoding="utf-8")
-        apply(source, dest, config, stub)
-        assert recreated.read_text(encoding="utf-8") == "my own config now\n", \
-            "one-time migration must not delete a later personal kitty.conf"
-
-        # Native but replacement missing: nothing removed.
-        dest = base / "home-native-nopkg"
-        seed_kitty(dest)
-        stub = base / "stub-none"
-        make_pacman_stub(stub, None)
-        apply(source, dest, config, stub)
-        for name in KITTY_FILES:
-            assert (dest / ".config/kitty" / name).exists(), name
+        apply(source, dest, config, stub_new)
+        assert recreated.read_text(encoding="utf-8") == "my own config now\n"
 
         # Legacy host with the package present: guard keeps the files.
         dest = base / "home-legacy"
         seed_kitty(dest)
-        legacy_config = write_config(base / "legacy.toml", False)
-        apply(source, dest, legacy_config, base / "stub-new")
+        legacy_config = write_config(base / "legacy.toml", False, osid="linux-arch")
+        apply(source, dest, legacy_config, stub_new)
         for name in KITTY_FILES:
             assert (dest / ".config/kitty" / name).exists(), name
+        assert not marker(dest).exists()
+
+        # Symlinked kitty directory: nothing behind it is deleted.
+        dest = base / "home-symlink"
+        dest.mkdir()
+        elsewhere = base / "elsewhere"
+        elsewhere.mkdir()
+        (elsewhere / "kitty.conf").write_text("behind symlink\n", encoding="utf-8")
+        (dest / ".config").mkdir()
+        (dest / ".config/kitty").symlink_to(elsewhere, target_is_directory=True)
+        apply(source, dest, config, stub_new)
+        assert (elsewhere / "kitty.conf").read_text(encoding="utf-8") == "behind symlink\n"
+        assert not marker(dest).exists()
+
+        # Outdated replacement: gated only where vercmp exists.
+        if shutil.which("vercmp"):
+            dest = base / "home-oldpkg"
+            seed_kitty(dest)
+            stub_old = base / "stub-old"
+            make_pacman_stub(stub_old, "0.3.11-1")
+            apply(source, dest, config, stub_old)
+            for name in KITTY_FILES:
+                assert (dest / ".config/kitty" / name).exists(), name
+            assert not marker(dest).exists()
 
 
 def main() -> None:
