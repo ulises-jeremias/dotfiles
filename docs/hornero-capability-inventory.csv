@@ -1,14 +1,14 @@
 source,capability,class,hornero_equivalent,proposed_owner,edition,migration_status,validation
-home/.chezmoiscripts/linux/run_onchange_before_install-zsh.sh.tmpl,Install Zsh,A,zsh in desktop set (hornero#336),HorneroOS/hornero,Desktop/Studio/Gaming,native-implemented,VM pending preview26
-home/.chezmoiscripts/linux/run_onchange_after_chsh.sh.tmpl,Select Zsh login shell,A,Calamares user.shell=/usr/bin/zsh (installer#50),HorneroOS/installer,all,native-implemented,VM pending preview26
+home/.chezmoiscripts/linux/run_onchange_before_install-zsh.sh.tmpl,Install Zsh,A,zsh in desktop set (hornero#336),HorneroOS/hornero,Desktop/Studio/Gaming,native-implemented,VM-proven preview28 (Studio/Desktop installs; /usr/bin/zsh login shell)
+home/.chezmoiscripts/linux/run_onchange_after_chsh.sh.tmpl,Select Zsh login shell,A,Calamares user.shell=/usr/bin/zsh (installer#50),HorneroOS/installer,all,native-implemented,VM-proven preview28 (factory shell; existing users opt-in chsh)
 home/dot_zshrc + dot_p10k.zsh,Personal prompt and aliases,G,none (factory baseline separate),dotfiles,-,stays-personal,render-tested
 home/.chezmoiscripts/linux/run_onchange_before_install-packages.sh.tmpl,Curated CLI utilities,C,partial (catalogue sets),HorneroOS/hornero,Developer profile,candidate,not-started
 home/.chezmoiscripts/linux/run_onchange_before_install-hornero-desktop.sh.tmpl,Hornero Shell/Config/CLI packages,H,native ISO installs them,HorneroOS/installer,all,guarded-by-horneroNative,static-test
 home/.chezmoiscripts/linux/run_onchange_after_hornero-os-identity.sh.tmpl,Brand /etc/os-release HorneroOS,H,native identity (installer),HorneroOS/installer,all,guarded-by-horneroNative,static-test
 home/.chezmoiscripts/linux/run_onchange_before_install-sddm-with-theme.sh.tmpl,SDDM + greeter,H,hornero-greeter in ISO,HorneroOS/greeter,all,guarded-by-horneroNative,static-test
 home/.chezmoiscripts/linux/run_onchange_before_install-hyprland.sh.tmpl,Hyprland compositor,B,compositor set in catalogue,HorneroOS/hornero,all,partial,VM-proven
-home/dot_config/hypr,Personal Hyprland Lua config,G/H,hornero-config packaged Lua,dotfiles+HorneroOS/config,-,personal-layer,native-parity pending hornero-config 0.3.13
-home/.chezmoiscripts/linux/run_onchange_before_install-studio.sh.tmpl,Studio applications,D,Studio edition + specializations,HorneroOS/hornero,Studio,native,VM-proven preview25
+home/dot_config/hypr,Personal Hyprland Lua config,G/H,hornero-config packaged Lua,dotfiles+HorneroOS/config,-,personal-layer,hornero-config 0.3.14 packaged; factory session VM-proven preview28; personal layer stays by design
+home/.chezmoiscripts/linux/run_onchange_before_install-studio.sh.tmpl,Studio applications,D,Studio edition + specializations,HorneroOS/hornero,Studio,native,VM-proven preview28 (install + doctor 5/5 + OBS recording)
 home/dot_config/REAPER,REAPER personal config,G/D,REAPER reference-only opt-in,dotfiles,Studio,stays-personal,not-tested
 home/.chezmoiscripts/linux/run_onchange_before_install-lutris.sh.tmpl,Gaming launcher,E,Gaming profiles,HorneroOS/hornero,Gaming,native-partial,VM doctor only
 home/.chezmoiscripts/linux/run_onchange_before_install-docker.sh.tmpl,Docker,C,none,dotfiles (opt-in),Developer,opt-in pelicano=false,config-render
@@ -16,4 +16,4 @@ home/.chezmoiscripts/linux/run_onchange_before_install-mdns.sh.tmpl,mDNS avahi,B
 home/private_dot_ssh,SSH personal machines,G,none,dotfiles,-,pelicano added,static-test
 home/.chezmoiscripts/linux/run_onchange_before_install-000-aaa-chaotic-aur.sh.tmpl,Chaotic-AUR repo,G,never in ISO,dotfiles,-,stays-personal-reviewed,not-tested
 home/dot_config/kitty + seed-ghostty,Terminal config,G/B,Kitty in desktop set + horneroctl default-apps,HorneroOS/hornero+dotfiles,all,personal-layer,contract-tests
-home/.chezmoiremove,Retire obsolete Hyprland conf,H,chezmoi remove list,dotfiles,-,active,existing behaviour
+home/.chezmoiremove + run_after_remove-retired-kitty.sh.tmpl,Retire obsolete Hyprland conf + native Kitty leftovers,H,chezmoi remove list + one-time version-gated script,dotfiles,-,active,tests/test_kitty_native_migration.py (temp-HOME apply; ledger docs/Chezmoi-Migration-Ledger.md)

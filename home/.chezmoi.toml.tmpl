@@ -86,7 +86,7 @@
 {{- if and (hasKey .chezmoi.osRelease "id") (eq .chezmoi.osRelease.id "horneroos") -}}
 {{-   $horneroNative = true -}}
 {{- end -}}
-{{- if env "HORNERO_NATIVE" -}}
+{{- if eq (env "HORNERO_NATIVE") "1" -}}
 {{-   $horneroNative = true -}}
 {{- end -}}
 
