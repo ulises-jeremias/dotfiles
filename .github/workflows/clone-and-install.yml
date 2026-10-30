@@ -98,6 +98,9 @@ jobs:
       - name: Validate safe wallpaper migration
         run: python3 tests/test_wallpaper_migration.py
 
+      - name: Validate guarded chezmoiremove cleanup
+        run: python3 tests/test_chezmoiremove_native_cleanup.py
+
       - name: Verify source delivery mappings
         run: 'PATH="$HOME/.local/bin:$PATH" ./scripts/verify-delivery.sh'
 

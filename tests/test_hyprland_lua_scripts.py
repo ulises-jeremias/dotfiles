@@ -95,7 +95,7 @@ def test_callers_use_module_or_hyprctl_not_standalone_scripts():
     assert 'hyprctl dispatch \'hl.dsp.dpms({ action = "disable" })\'' in hypridle
     assert 'hyprctl dispatch \'hl.dsp.dpms({ action = "enable" })\'' in hypridle
     assert "hyprland-runtime" not in hypridle
-    remove = (ROOT / "home/.chezmoiremove").read_text(encoding="utf-8")
+    remove = (ROOT / "home/.chezmoiremove.tmpl").read_text(encoding="utf-8")
     for entry in (
         ".config/hypr/scripts/gaps-interactive.sh",
         ".config/hypr/scripts/smart-float.sh",

@@ -1,0 +1,27 @@
+# Retired with the Lua-only Hyprland migration: hyprland.lua +
+# hyprland.lua.d/ are the only Hyprland configuration.
+.config/hypr/hyprland.conf
+.config/hypr/hyprland.conf.d
+.config/hypr/scripts/gaps-interactive.sh
+.config/hypr/scripts/notification-handler.sh
+.config/hypr/scripts/smart-float.sh
+.local/bin/hyprland-runtime
+.local/bin/start-gnome-keyring.sh
+.config/hypr/scripts/gaps-interactive.lua
+.config/hypr/scripts/notification-handler.lua
+.config/hypr/scripts/smart-float.lua
+.local/bin/hyprland-runtime.lua
+.local/bin/start-gnome-keyring.lua
+{{ if get . "horneroNative" }}
+# Native HorneroOS only: retired in #347 ("let Hornero Config own Kitty
+# defaults"). The dotfiles sources are gone, so a leftover target would
+# silently override the packaged hornero-config Kitty defaults forever.
+# hornero-config >= 0.3.14 materializes desktop/kitty and the factory
+# terminal path was validated on the preview28 Desktop VM install.
+# Legacy Arch hosts keep these files until the maintainer opts in with
+# HORNERO_NATIVE=1; see docs/Chezmoi-Migration-Ledger.md.
+.config/kitty/kitty.conf
+.config/kitty/hornero-dark.conf
+.config/kitty/hornero-light.conf
+.config/kitty/pampa.conf
+{{ end }}
