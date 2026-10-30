@@ -1,4 +1,4 @@
-{{ if and (eq .osid "linux-arch") (not .ephemeral) (not .headless) -}}
+{{ if and (eq .osid "linux-arch") (not .ephemeral) (not .headless) (not .horneroNative) -}}
 #!/usr/bin/env bash
 
 set -euo pipefail
