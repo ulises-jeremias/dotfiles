@@ -46,6 +46,12 @@
 {{-   if or (eq $hostname "hornero") (eq $hostname "colibri") -}}
 {{-     $personal = true -}}
 {{-     $docker = true -}}
+{{-   else if eq $hostname "pelicano" -}}
+{{/* pelicano is the HorneroOS Studio production/streaming laptop:
+     personal, but Docker and background services stay opt-in so the
+     event machine runs nothing it does not need. */}}
+{{-     $personal = true -}}
+{{-     $docker = false -}}
 {{-   else if $interactive -}}
 {{-     $headless = promptBoolOnce . "headless" "headless" -}}
 {{-     $ephemeral = promptBoolOnce . "ephemeral" "ephemeral" -}}
@@ -72,8 +78,21 @@
 {{-   $gitUserEmail = promptStringOnce . "gitUserEmail" "What is the email you use for git" -}}
 {{- end -}}
 
+{{/* Native HorneroOS detection: the distribution owns Shell, Config,
+     Greeter, drivers, PipeWire and Studio there. True when the OS
+     identity says so, or when the maintainer opts in explicitly with
+     HORNERO_NATIVE=1 for an install the identity cannot yet prove. */}}
+{{- $horneroNative := false -}}
+{{- if and (hasKey .chezmoi.osRelease "id") (eq .chezmoi.osRelease.id "horneroos") -}}
+{{-   $horneroNative = true -}}
+{{- end -}}
+{{- if env "HORNERO_NATIVE" -}}
+{{-   $horneroNative = true -}}
+{{- end -}}
+
 [data]
     docker = {{ $docker }}
+    horneroNative = {{ $horneroNative }}
     e2e = {{ $e2e }}
     ephemeral = {{ $ephemeral }}
     headless = {{ $headless }}
