@@ -1,0 +1,18 @@
+# Retired with the Lua-only Hyprland migration: hyprland.lua +
+# hyprland.lua.d/ are the only Hyprland configuration.
+.config/hypr/hyprland.conf
+.config/hypr/hyprland.conf.d
+.config/hypr/scripts/gaps-interactive.sh
+.config/hypr/scripts/notification-handler.sh
+.config/hypr/scripts/smart-float.sh
+.local/bin/hyprland-runtime
+.local/bin/start-gnome-keyring.sh
+.config/hypr/scripts/gaps-interactive.lua
+.config/hypr/scripts/notification-handler.lua
+.config/hypr/scripts/smart-float.lua
+.local/bin/hyprland-runtime.lua
+.local/bin/start-gnome-keyring.lua
+# Retired Kitty configs (#347) are removed by the one-time, version-gated
+# migration .chezmoiscripts/linux/run_once_after_remove-retired-kitty.sh.tmpl
+# instead: a persistent entry here would keep deleting a kitty.conf the
+# user legitimately recreates afterwards. See docs/Chezmoi-Migration-Ledger.md.

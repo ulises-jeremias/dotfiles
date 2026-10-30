@@ -34,15 +34,19 @@ una máquina de producción sin backup de `~/.config` y `~/.local/share`.
 
 ## Limpieza de overrides obsoletos
 
-Las reglas viven en `home/.chezmoiremove.tmpl` y solo retiran archivos
+Las reglas viven en `home/.chezmoiremove` y en el script de migración
+`run_once_after_remove-retired-kitty.sh.tmpl`; solo retiran archivos
 que HorneroOS ya reemplazó de forma verificada (detalle por archivo en
 `docs/Chezmoi-Migration-Ledger.md`):
 
 - En todos los hosts: la config Hyprland pre-Lua y los helpers `.sh` /
   `.lua` retirados por la migración Lua.
-- Solo en HorneroOS nativo (`horneroNative`): los temas Kitty
-  retirados en #347, hoy propiedad de `hornero-config`. En Arch
-  clásico no se tocan salvo que exportes `HORNERO_NATIVE=1`.
+- Solo en HorneroOS nativo (`horneroNative`) y una única vez: los
+  temas Kitty retirados en #347, hoy propiedad de `hornero-config`.
+  La baja solo ocurre si `hornero-config >= 0.3.14` está instalado;
+  un `kitty.conf` que crees después es configuración personal y no
+  se vuelve a borrar. En Arch clásico no se tocan salvo que exportes
+  `HORNERO_NATIVE=1` (exactamente `1`; otro valor no activa nada).
 
 Antes de aplicar, revisá exactamente qué se borraría:
 
