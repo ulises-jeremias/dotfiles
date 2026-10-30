@@ -1,4 +1,4 @@
-{{ if and (not .ephemeral) (not .headless) (not .horneroNative) -}}
+{{ if and (not .ephemeral) (not .headless) (not (get . "horneroNative")) -}}
 
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash

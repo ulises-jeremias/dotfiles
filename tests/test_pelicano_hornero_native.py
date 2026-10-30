@@ -34,7 +34,7 @@ def main() -> None:
     scripts = HOME / ".chezmoiscripts/linux"
     for name in guarded:
         text = (scripts / name).read_text(encoding="utf-8")
-        assert ".horneroNative" in text, name
+        assert "horneroNative" in text, name
     print("pelicano/native contracts OK")
 
 

@@ -1,4 +1,4 @@
-{{- if and (not .ephemeral) (not .horneroNative) -}}
+{{- if and (not .ephemeral) (not (get . "horneroNative")) -}}
 #!/usr/bin/env bash
 
 set -eufo pipefail
