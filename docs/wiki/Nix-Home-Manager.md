@@ -24,6 +24,8 @@ practical paths if your system is NixOS or uses home-manager.
   2. Or bypass chezmoi and symlink fragments directly:
 
      ```nix
+     # Only the personal *-user.lua overrides live in dotfiles; the Hyprland
+     # factory itself comes from the hornero-config package.
      xdg.configFile."hypr".source = ~/.dotfiles/home/dot_config/hypr;
      # No quickshell source in dotfiles (contract C, HorneroOS/hornero#81):
      # point quickshell at a HorneroOS/shell checkout instead.

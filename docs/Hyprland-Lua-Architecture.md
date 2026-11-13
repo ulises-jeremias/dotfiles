@@ -2,7 +2,14 @@
 
 This document defines the migration map for [#179](https://github.com/ulises-jeremias/dotfiles/issues/179).
 
-## Status: migration complete (Lua-only)
+## Status: migration complete (Lua-only); factory ownership moved upstream
+
+> Since 2026-11-13 the factory tree described below is owned by the
+> `hornero-config` package (HorneroOS/config, where this migration landed);
+> this document is kept as the migration record. This source now manages
+> only the packaged `*-user.lua` extension points under
+> `home/dot_config/hypr/hyprland.lua.d/` (machine monitors, personal
+> keybinding overrides) — never factory copies.
 
 `home/dot_config/hypr/hyprland.lua` is the only Hyprland entrypoint. It loads,
 in order: monitors, autostart, environment, input, gestures, layout,
