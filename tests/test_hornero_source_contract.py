@@ -106,60 +106,36 @@ def test_horneroctl_is_canonical_owner_of_hermes_base_files():
 
 
 def test_yazi_launchers_use_the_configured_terminal():
-    keybindings = (ROOT / "home/dot_config/hypr/hyprland.lua.d/keybindings.lua").read_text()
     thunar_actions = (ROOT / "home/dot_config/Thunar/uca.xml").read_text()
-    window_rules = (
-        ROOT / "home/dot_config/hypr/hyprland.lua.d/window-rules.lua"
-    ).read_text()
 
-    assert (
-        'hl.bind("SUPER + E", hl.dsp.exec_cmd("horneroctl apps terminal-file --new-window --last-dir"))'
-        in keybindings
-    )
     assert (
         'horneroctl apps terminal-file --new-window --path "%f"'
         in thunar_actions
     )
-    assert "kitty --class yazi-popup" not in keybindings
     assert "kitty --class yazi-popup" not in thunar_actions
-    assert 'name = "yazi-popup"' in window_rules
-    assert 'match = { class = "^(yazi-popup|com\\\\.horneroos\\\\.yazi-popup)$" }' in window_rules
 
 
-def test_ghostty_receives_the_same_hyprland_terminal_opacity_as_other_terminals():
-    window_rules = (
-        ROOT / "home/dot_config/hypr/hyprland.lua.d/window-rules.lua"
+def test_hyprland_factory_is_owned_by_hornero_config_not_dotfiles():
+    # The packaged factory (hyprland.lua, its modules, hypridle/hyprlock)
+    # comes from hornero-config; dotfiles keeps only the packaged
+    # *-user.lua extension points with personal overrides. Ghostty
+    # opacity and terminal swallowing moved upstream in hornero-config
+    # 0.3.20, so shadowing them here would freeze stale copies again.
+    hypr = ROOT / "home/dot_config/hypr"
+    assert not (hypr / "hyprland.lua").exists()
+    assert not (hypr / "hypridle.conf").exists()
+    assert not (hypr / "hyprlock.conf").exists()
+    modules = {path.name for path in (hypr / "hyprland.lua.d").glob("*.lua")}
+    assert modules == {"monitors-user.lua", "keybindings-user.lua"}
+    assert 'output = "eDP-1"' in (hypr / "hyprland.lua.d/monitors-user.lua").read_text()
+    assert 'hl.unbind("SUPER + O")' in (
+        hypr / "hyprland.lua.d/keybindings-user.lua"
     ).read_text()
-    ghostty_rule = window_rules.split('name = "ghostty-opacity"', 1)[1].split("})", 1)[0]
-
-    assert 'match = { class = "^com[.]mitchellh[.]ghostty$" }' in ghostty_rule
-    assert 'opacity = "0.95 0.85"' in ghostty_rule
-
-
-def test_hyprland_swallowing_covers_every_supported_terminal():
-    expected = "^(kitty|Alacritty|com[.]mitchellh[.]ghostty)$"
-    assert not (ROOT / "home/dot_config/hypr/hyprland.conf").exists()
-    lua_config = (ROOT / "home/dot_config/hypr/hyprland.lua.d/static.lua").read_text()
-
-    assert f'swallow_regex = "{expected}"' in lua_config
-
-    # Window class strings match HorneroOS/config and Hyprland's actual class
-    # contract; keep this in step with the system defaults if a backend adds
-    # or changes an app ID.
-    for window_class in ("kitty", "Alacritty", "com.mitchellh.ghostty"):
-        assert re.fullmatch(expected, window_class), window_class
-    assert not re.fullmatch(expected, "wev")
-
-    guide = (ROOT / "docs/Hyprland-Setup.md").read_text()
-    for terminal in ("Kitty", "Alacritty", "Ghostty"):
-        assert terminal in guide
-    assert "Window swallowing is enabled" in guide
 
 
 def test_hornero_runtime_comes_from_aur_packages():
     scripts = ROOT / "home/.chezmoiscripts/linux"
     shell_install = (scripts / "run_onchange_before_install-hornero-desktop.sh.tmpl").read_text()
-    environment = (ROOT / "home/dot_config/hypr/hyprland.lua.d/environment.lua").read_text()
 
     for package in ("hornero-shell", "hornero-config", "horneroctl-bin"):
         assert package in shell_install
@@ -168,7 +144,9 @@ def test_hornero_runtime_comes_from_aur_packages():
     assert "CMAKE_BUILD_PARALLEL_LEVEL=\"${CMAKE_BUILD_PARALLEL_LEVEL:-2}\"" in shell_install
     assert shell_install.count("quickshell-git") == 2  # detect and remove the VCS package
     assert "min_hornero_config_version" in shell_install
-    assert 'min_hornero_config_version="0.3.9-1"' in shell_install
+    assert 'min_hornero_config_version="0.3.20-1"' in shell_install
+    assert 'min_hornero_shell_version="1.2.64-1"' in shell_install
+    assert 'min_horneroctl_version="0.2.0_preview43-1"' in shell_install
     assert "min_hornero_shell_version" in shell_install
     assert "min_horneroctl_version" in shell_install
     assert not (ROOT / "home/dot_local/bin/executable_horneroctl").exists()
@@ -177,9 +155,6 @@ def test_hornero_runtime_comes_from_aur_packages():
     assert not (scripts / "run_before_install-hornero-shell.sh.tmpl").exists()
     assert not (scripts / "run_onchange_after_build-quickshell-plugin.sh.tmpl").exists()
     assert (ROOT / "home/dot_local/bin/remove_horneroctl").is_file()
-    assert "QS_PLUGIN_PATH" not in environment
-    assert "HORNERO_LIB_DIR" not in environment
-    assert "QML2_IMPORT_PATH" not in environment
 
     for script in (
         ROOT / "playground/e2e/lib/env.sh",
@@ -213,7 +188,7 @@ if __name__ == "__main__":
         test_selected_terminal_association_is_not_overwritten_by_dotfiles,
         test_horneroctl_is_canonical_owner_of_hermes_base_files,
         test_yazi_launchers_use_the_configured_terminal,
-        test_ghostty_receives_the_same_hyprland_terminal_opacity_as_other_terminals,
+        test_hyprland_factory_is_owned_by_hornero_config_not_dotfiles,
         test_hornero_runtime_comes_from_aur_packages,
         test_desktop_installs_external_styles_used_by_appearance_catalogue,
     ]

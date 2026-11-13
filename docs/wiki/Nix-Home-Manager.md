@@ -24,6 +24,8 @@ practical paths if your system is NixOS or uses home-manager.
   2. Or bypass chezmoi and symlink fragments directly:
 
      ```nix
+     # Only the personal *-user.lua overrides live in dotfiles; the Hyprland
+     # factory itself comes from the hornero-config package.
      xdg.configFile."hypr".source = ~/.dotfiles/home/dot_config/hypr;
      # No quickshell source in dotfiles (contract C, HorneroOS/hornero#81):
      # point quickshell at a HorneroOS/shell checkout instead.
@@ -43,7 +45,7 @@ practical paths if your system is NixOS or uses home-manager.
 | `pacman` package lists in `.chezmoiscripts`                 | `environment.systemPackages` / home-manager `home.packages`           | Translate the lists manually; AUR packages need overlays            |
 | `run_onchange_before_install-*.sh.tmpl`                     | NixOS modules or `home.activation`                                    | These scripts assume pacman/yay                                     |
 | `dots-*` CLI registry                                       | plain PATH scripts                                                    | Works as-is; copy or symlink `home/dot_local/bin`                   |
-| hyprland.lua.d modules                                     | home-manager `wayland.windowManager.hyprland` settings or plain files | Plain `xdg.configFile` keeps parity with upstream                   |
+| hyprland.lua.d modules                                      | home-manager `wayland.windowManager.hyprland` settings or plain files | Plain `xdg.configFile` keeps parity with upstream                   |
 | Wallpaper → M3 pipeline (`horneroctl appearance colors m3`) | runs on PATH                                                          | Needs python + the materialyoucolor deps; consider a nix derivation |
 
 ---
