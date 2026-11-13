@@ -43,19 +43,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Lua for config contract tests
-        run: |
-          apt-get update
-          apt-get install --yes --no-install-recommends lua5.4
-
       - name: Validate Hornero source contract
+        # Factory Hyprland Lua tests (window-rule parity, Smart Colors
+        # loader) live with the factory in HorneroOS/config.
         run: python3 tests/test_hornero_source_contract.py
-
-      - name: Validate Hyprland Lua window-rule parity
-        run: python3 tests/test_hyprland_lua_window_rules.py
-
-      - name: Exercise staged Smart Colors Lua loader
-        run: python3 tests/test_hyprland_lua_smart_colors_runtime.py
 
       - name: Smoke test chezmoi templates
         shell: bash
