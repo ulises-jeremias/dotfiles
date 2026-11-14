@@ -13,6 +13,10 @@
 -- The band names describe the target sound (amps from each band's documented
 -- rig). You can type just the band name, e.g. "lamb of god" or "slipknot".
 --
+-- Do not switch tones by clicking mute: an inactive tone's plugins are offline,
+-- so unmuting it by hand plays the dry guitar. Use this action or the
+-- "Music Studio" toolbar.
+--
 -- The chosen tone is unmuted with its FX online; the others are muted and
 -- their FX taken offline (state kept, plugin unloaded), so only one amp capture
 -- is loaded. The chosen amp model needs about a second to load after switching.
@@ -27,9 +31,15 @@ local TONES = {
 local IS_TONE = {}
 for _, name in ipairs(TONES) do IS_TONE[name] = true end
 
-local ok, answer = reaper.GetUserInputs("Guitar: choose tone", 1,
-  "Tone (" .. table.concat(TONES, " / ") .. "):", "Crystal Clean")
-if not ok then return end
+-- The one-click actions ("Guitar tone - <name>.lua", toolbar "Music Studio")
+-- set GUITAR_TONE and run this file; otherwise ask for a name.
+local answer = GUITAR_TONE -- luacheck: ignore (global set by the one-click wrappers)
+if not answer then
+  local ok
+  ok, answer = reaper.GetUserInputs("Guitar: choose tone", 1,
+    "Tone (" .. table.concat(TONES, " / ") .. "):", "Machine Head")
+  if not ok then return end
+end
 answer = answer:match("^%s*(.-)%s*$")
 if not IS_TONE[answer] then
   -- accept a unique prefix, case-insensitive ("slipknot", "machine head", "acdc")

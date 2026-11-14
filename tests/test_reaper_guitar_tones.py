@@ -160,3 +160,31 @@ def test_tone_switcher_lists_every_tone_and_bypasses_inactive_ones() -> None:
     assert "Hard Stuff" not in script and "Legacy" not in script
     assert "I_FXEN" in script and "B_MUTE" in script
     assert "I_RECARM" not in script and "1013" not in script, "switching tones must never record"
+
+
+SCRIPTS_DIR = REAPER / "Scripts" / "Vocal Studio"
+
+
+def test_every_tone_has_a_one_click_action_and_toolbar_button() -> None:
+    # Unmuting a tone track by hand plays the dry DI (its FX are offline), so
+    # every tone gets an action that brings its amp online.
+    register = (SCRIPTS_DIR / "Music Studio - Register actions.lua").read_text()
+    for _, name in _tones():
+        wrappers = [p for p in SCRIPTS_DIR.glob("Guitar tone - *.lua") if f'GUITAR_TONE = "{name}"' in p.read_text()]
+        assert len(wrappers) == 1, name
+        assert f'"{wrappers[0].stem}"' in register, f"{name} missing from the Music Studio toolbar"
+    startup = (REAPER / "Scripts" / "__startup.lua").read_text()
+    assert "Music Studio - Register actions.lua" in startup
+    assert "AddRemoveReaScript" in register and "Floating toolbar" in register
+    assert "if not text:find(section, 1, true)" in register, "never overwrite a customized toolbar"
+
+
+def test_vocal_styles_have_one_click_actions() -> None:
+    choose = (SCRIPTS_DIR / "Vocal Studio - Choose take.lua").read_text()
+    assert '"I_RECINPUT", 0' in choose, "vocal takes always record mono Input 1"
+    assert "Electric Guitar DI" not in choose.split("luacheck")[1], "never touches the guitar DI"
+    for style, track in [("Natural Clean", "Lead Clean"), ("Powerful Clean", "Lead Clean FX"), ("Grit", "Grit Vocal"),
+                         ("Harsh", "Harsh Vocal"), ("Double L", "Double L"), ("Double R", "Double R"),
+                         ("Harmonies", "Harmonies")]:
+        text = (SCRIPTS_DIR / f"Vocal style - {style}.lua").read_text()
+        assert f'VOCAL_STYLE = "{track}"' in text
