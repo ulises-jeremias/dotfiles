@@ -48,7 +48,12 @@ local EXPECT_ORDER = {
   "ELECTRIC GUITAR", "Electric Guitar DI", "Crystal Clean", "Warm Clean - Ambient",
   "AC-DC - Classic Crunch", "Avenged Sevenfold - Lead", "Machine Head - Groove Thrash",
   "Lamb of God - Groove Metal", "Slipknot - Nu Metal", "Asking Alexandria - Metalcore",
+  "Discord Lesson Bus",
 }
+-- VS_ARMED: comma-separated tracks the template ships armed with input
+-- monitoring ("Music Studio": the guitar DI and Lead Clean); all others disarmed.
+local ARMED = {}
+for name in (os.getenv("VS_ARMED") or ""):gmatch("[^,]+") do ARMED[name] = true end
 local n = reaper.CountTracks(0)
 check(n == #EXPECT_ORDER, "track count " .. n .. " == " .. #EXPECT_ORDER)
 
@@ -69,7 +74,11 @@ for i = 0, n - 1 do
   out(string.format("[%2d] %-16s rec=%d input=%d monitor=%d mute=%d vol=%.1fdB pan=%.2f sends=%d folder=%d",
     i, name, rec, inp, mon, mute, voldb, pan, sends, fd))
   check(name == EXPECT_ORDER[i + 1], "order: " .. name)
-  check(rec == 0, "disarmed: " .. name)
+  if ARMED[name] then
+    check(rec == 1 and mon == 1, "armed with input monitoring: " .. name)
+  else
+    check(rec == 0, "disarmed: " .. name)
+  end
   fx_summary(tr, "      ")
 end
 
@@ -91,8 +100,41 @@ for i = 0, n - 1 do
   end
   if name == "Backing Track" then
     check(reaper.GetMediaTrackInfo_Value(tr, "I_RECINPUT") == -1, "backing track has no input")
+    check(reaper.GetTrackNumSends(tr, 0) == 0, "backing track never reaches the Discord lesson bus")
   end
 end
+
+-- Output buses: lesson bus -> out 3-4 only; master -> out 1-2 and 5-6.
+local function hw_channels(tr)
+  local chans = {}
+  for k = 0, reaper.GetTrackNumSends(tr, 1) - 1 do
+    chans[#chans + 1] = math.floor(reaper.GetTrackSendInfo_Value(tr, 1, k, "I_DSTCHAN"))
+  end
+  table.sort(chans)
+  return table.concat(chans, ",")
+end
+local lesson
+for i = 0, n - 1 do
+  local tr = reaper.GetTrack(0, i)
+  if track_name(tr) == "Discord Lesson Bus" then lesson = tr end
+end
+check(lesson ~= nil, "Discord Lesson Bus exists")
+if lesson then
+  check(reaper.GetMediaTrackInfo_Value(lesson, "B_MAINSEND") == 0, "lesson bus is not in the master (headphones/OBS) mix")
+  check(hw_channels(lesson) == "2", "lesson bus -> REAPER out 3-4 only (got " .. hw_channels(lesson) .. ")")
+  local feeds = {}
+  for k = 0, reaper.GetTrackNumSends(lesson, -1) - 1 do
+    local src = reaper.GetTrackSendInfo_Value(lesson, -1, k, "P_SRCTRACK")
+    feeds[track_name(src)] = true
+  end
+  check(feeds["Vocal Bus"], "lesson bus receives the vocal bus")
+  for _, t in ipairs({ "Crystal Clean", "Machine Head - Groove Thrash", "Asking Alexandria - Metalcore" }) do
+    check(feeds[t], "lesson bus receives " .. t)
+  end
+  check(not feeds["Backing Track"] and not feeds["Electric Guitar DI"], "lesson bus: no backing track, no raw DI")
+end
+check(hw_channels(reaper.GetMasterTrack(0)) == "0,4", "master -> out 1-2 (headphones) and 5-6 (OBS) (got "
+  .. hw_channels(reaper.GetMasterTrack(0)) .. ")")
 
 -- Track templates and FX chains must load into a fresh track with their FX.
 local function read_file(p)

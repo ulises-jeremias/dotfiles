@@ -108,8 +108,8 @@ cabinet IRs); see [`docs/REAPER-Vocal-Studio.md`](../REAPER-Vocal-Studio.md).
 | `reaper-guitar-assets install` | NAM LV2 plugin, amp captures and cabinet IRs (user level) |
 
 ```sh
-reaper-studio start     # recording / practice
-reaper-lesson start     # Discord lesson (virtual mic)
+# daily: open REAPER, Discord (input "REAPER Lesson Mic") and OBS ("Music Studio")
+reaper-studio doctor    # diagnostics only
 ```
 
 Use `qpwgraph` or `helvum` to visualize and patch audio connections in the PipeWire graph.

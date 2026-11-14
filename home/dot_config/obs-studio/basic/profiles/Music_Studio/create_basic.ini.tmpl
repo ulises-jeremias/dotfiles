@@ -1,0 +1,33 @@
+[General]
+Name=Music Studio
+
+[Video]
+BaseCX=1920
+BaseCY=1080
+OutputCX=1920
+OutputCY=1080
+FPSType=0
+FPSCommon=30
+
+[Audio]
+SampleRate=48000
+ChannelSetup=Stereo
+
+[Output]
+Mode=Simple
+FilenameFormatting=Music Studio %CCYY-%MM-%DD %hh-%mm-%ss
+
+[SimpleOutput]
+FilePath={{ .chezmoi.homeDir }}/Videos
+RecFormat2=hybrid_mp4
+RecQuality=Small
+RecEncoder=nvenc
+StreamEncoder=nvenc
+ABitrate=320
+RecTracks=7
+
+[AdvOut]
+RecTracks=7
+Track1Name=Full mix
+Track2Name=REAPER
+Track3Name=Discord

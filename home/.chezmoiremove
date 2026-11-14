@@ -16,3 +16,7 @@
 # migration .chezmoiscripts/linux/run_after_remove-retired-kitty.sh.tmpl
 # instead: a persistent entry here would keep deleting a kitty.conf the
 # user legitimately recreates afterwards. See docs/Chezmoi-Migration-Ledger.md.
+
+# Retired with the native music studio (PipeWire config + qpwgraph patchbay):
+# the lesson virtual mic is permanent, so the runtime lesson command is gone.
+.local/bin/reaper-lesson

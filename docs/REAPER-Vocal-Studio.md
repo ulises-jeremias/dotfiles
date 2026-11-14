@@ -1,11 +1,56 @@
-# REAPER Vocal & Guitar Studio
+# REAPER Music Studio (vocals, guitar, Discord lessons, OBS)
 
-One REAPER template for vocals and electric guitar, plus a lesson mode that
-sends the processed guitar and your microphone to Discord. REAPER is the only
-audio-processing application. Guitarix is not launched, configured or required
-by anything here.
+A music workstation built from application-native configuration. Daily use
+needs **no terminal commands**:
+
+1. **Open REAPER** from the app menu. It starts on the *Music Studio* template
+   with the guitar DI and Lead Clean armed for monitoring: play and you hear the
+   active tone (Machine Head) in your headphones.
+2. **Open Discord** and pick the input device **REAPER Lesson Mic** (once).
+3. **Open OBS**, pick the scene collection **Music Studio** and profile
+   **Music Studio** (once), then record (or start the virtual camera, see below).
+
+REAPER is the only audio-processing application. Guitarix is not launched,
+configured or required (its package stays installed for the Gx LV2 pedals).
 
 Current state and what is still unverified are listed at the end. Read them.
+
+## How it fits together
+
+| Layer | Owner | Configuration (all in this repo) |
+|-------|-------|----------------------------------|
+| Guitar and vocal processing, recording, buses | REAPER | `ProjectTemplates/Music Studio.RPP` (default), `Modern Rock & Metal - Vocal Studio.RPP` (recording) |
+| Low latency for REAPER only | PipeWire JACK | `~/.config/pipewire/jack.conf.d/60-reaper-low-latency.conf` (256/48000 for the `reaper` process) |
+| Permanent virtual endpoints | PipeWire | `~/.config/pipewire/pipewire.conf.d/60-reaper-music-studio.conf` |
+| Saved links between REAPER and the endpoints | qpwgraph patchbay (autostarts minimized) | `~/.config/qpwgraph/music-studio.qpwgraph`, `~/.config/autostart/qpwgraph-music-studio.desktop` |
+| Scenes, recording profile, virtual camera | OBS Studio | scene collection and profile *Music Studio* |
+| Call | Discord | input device *REAPER Lesson Mic*, output device *Discord Call* |
+
+REAPER's six JACK outputs (set once by
+`.chezmoiscripts/linux/run_after_configure-reaper-music-studio.sh.tmpl`, the same
+values as *Preferences > Audio > Device*; it also disables JACK auto-connect and
+makes *Music Studio* the default template):
+
+```text
+Input 1 (mic)  -> vocal tracks -> Vocal Bus --+--> master -> out 1-2 -> headphones
+Input 2 (DI)   -> Electric Guitar DI -> sends -> active tone --+   (+ metronome, hardware 1-2 only)
+                                              |            master -> out 5-6 -> "REAPER Program" (OBS)
+                    Vocal Bus + every tone ---+--> Discord Lesson Bus -> out 3-4 -> "REAPER Lesson Mic" (Discord)
+Discord output -> "Discord Call" sink -> headphones   (+ OBS track 3)
+```
+
+What reaches Discord: processed guitar and your voice only. Not the backing
+track, not the metronome, not desktop audio, not Discord itself (measured: a
+test tone on the Backing Track is 57 dB above the noise in *REAPER Program* and
+indistinguishable from silence in *REAPER Lesson Mic*).
+
+Feedback cannot happen: the lesson mic input never auto-connects (only the
+patchbay links REAPER out 3-4 to it), the raw DI has no route to any output, and
+Discord's output goes to *Discord Call*, which plays only to your headphones.
+
+To change the headphone output (for example a USB headset instead of the
+Scarlett), open **qpwgraph**, drag REAPER out1/out2 to the new device and
+*Patchbay > Save*. chezmoi never overwrites that file once it exists.
 
 ## Hardware (Focusrite Scarlett 2i2 4th Gen, USB `1235:8219`)
 
@@ -21,63 +66,65 @@ loopback as an input: it carries the interface's own outputs back to you.
 Set the Scarlett **Direct Monitor to OFF**. REAPER monitors the signal, so
 hardware direct monitoring would double every sound.
 
-## Studio mode
+## Recording in REAPER
 
-```sh
-reaper-studio start     # opens REAPER on the template and wires it to the headphones
-reaper-studio doctor    # checks inputs, outputs and the loopback exclusion
-```
+- **Record a vocal:** `Actions` > `Show action list` > run *Vocal Studio -
+  Choose take* and type the style (`Lead Clean`, `Lead Clean FX`, `Grit Vocal`,
+  `Harsh Vocal`, `Double L`, `Double R`, `Harmonies`). It arms exactly that
+  track. Then press **Record** in the transport.
+- **Record guitar:** the Electric Guitar DI is armed on open. It records the raw
+  DI; the tone is only monitored, so you can re-amp later (play the DI item with
+  the track disarmed).
+- **Change tone:** run *Guitar - Choose tone* and type a band (`machine head`,
+  `slipknot`, `lamb of god`, ...).
+- **Backing track:** import an MP3/WAV onto **Backing Track**. It is never armed
+  and never reaches Discord.
+- **Recording template:** *File > New project from template > Modern Rock &
+  Metal - Vocal Studio* opens the same project with every track disarmed.
 
-Inside REAPER (the template is ready to use):
+## Guitar lesson (Discord)
 
-- **Record a vocal:** `Actions` > `Show action list` > run the script
-  *Vocal Studio - Choose take* and type `Lead Clean` (or `Lead Clean FX`,
-  `Grit Vocal`, `Harsh Vocal`, `Double L`, `Double R`, `Harmonies`). It arms
-  exactly that track. Then press the red **Record** button in the transport.
-- **Record guitar:** arm **Electric Guitar DI** (record button on its track
-  header). You hear the active guitar tone. The DI track records the raw, dry
-  signal; the processed tone is only monitored.
-- **Record both at once:** arm a vocal track and the DI track, then Record.
-  Each lands on its own track.
-- **Re-amp:** the recorded DI item sits on the Electric Guitar DI track. Press
-  Play with that track not armed and the item plays through the active tone,
-  so you can change the tone later without re-recording.
-- **Backing track:** import an MP3/WAV onto **Backing Track**. It can never be
-  armed.
-- **Styles:** every vocal style is a separate track with its own chain
-  (ReaGate is bypassed by default; enable it only after measuring the room).
+Nothing to start: with REAPER open, Discord's input **REAPER Lesson Mic** carries
+your voice and the processed guitar. Discord, once (Settings > Voice & Video):
 
-## Guitar lesson mode (Discord)
-
-```sh
-reaper-lesson start     # REAPER + virtual mic + lesson monitoring (idempotent)
-reaper-lesson doctor    # verifies the whole lesson graph
-reaper-lesson stop      # removes the virtual mic and disarms the tracks
-```
-
-Signal path:
-
-```text
-Input 1 (mic)  -> Lead Clean (monitored) -> REAPER out 1-2 --+--> headphones
-Input 2 (DI)   -> Electric Guitar DI     -> send -> active guitar tone -> out 1-2 --+--> reaper.lesson.mix -> "REAPER_Lesson_Mic" (virtual mic)
-```
-
-Discord, one time (Settings > Voice & Video):
-
-1. **Input Device:** `REAPER_Lesson_Mic`.
-2. **Output Device:** the Scarlett headphones (so you hear participants).
+1. **Input Device:** `REAPER Lesson Mic`.
+2. **Output Device:** `Discord Call` (it plays in your headphones, and OBS can
+   record it separately).
 3. **Input Mode:** Voice Activity, automatic sensitivity **off**, slider at minimum.
-4. Turn **off** Noise Suppression, Echo Cancellation and Automatic Gain Control.
+4. Turn **off** Noise Suppression, Echo Cancellation and Automatic Gain Control
+   (they would treat the guitar as noise).
 
-Why it cannot loop back: the virtual mic is fed only by REAPER's output. Discord's
-output goes to your headphones only, and nothing captures the headphones. `doctor`
-fails if anything else feeds the virtual mic (monitors, Discord, the loopback or a
-raw input).
+OBS is optional for audio-only lessons. For video, start the OBS virtual camera
+and pick it as Discord's camera; it carries **video only**, the audio is always
+the REAPER Lesson Mic.
 
-Why raw DI never reaches Discord: the DI track has **no direct master route**. Its
-only output is the sends into the guitar tones.
+## OBS: Music Studio
 
-Levels: REAPER faders. Vocal and guitar gains are independent.
+Scene collection *Music Studio*: **Guitar Lesson** (camera + REAPER window),
+**Guitar Performance** (camera full screen), **Music Tutorial** (screen +
+camera picture-in-picture). Global audio: *REAPER Program* (the REAPER mix) and
+*Discord Call* (the other people on the call). Audio monitoring is off on every
+source, so OBS never plays anything back.
+
+Profile *Music Studio*: 1080p30, 48 kHz, hybrid MP4 in `~/Videos`, NVENC, three
+audio tracks: **1** full mix, **2** REAPER only, **3** Discord only, so a lesson
+recording can be remixed later.
+
+The first time a scene with *Screen* or *REAPER Window* is shown, OBS asks
+(desktop portal) which screen or window to capture and remembers it. *Camera*
+needs your webcam selected once in its properties.
+
+## Diagnostics and recovery (not needed daily)
+
+```sh
+reaper-studio doctor   # inputs, headphones, Discord/OBS buses, feedback safety
+reaper-studio repair   # recreate REAPER's links if qpwgraph is not running
+```
+
+Rollback: remove the files listed in *How it fits together*, restore
+`~/.local/state/reaper-backups/reaper.ini.pre-music-studio` to
+`~/.config/REAPER/reaper.ini` (REAPER closed), and run
+`systemctl --user restart pipewire pipewire-pulse wireplumber`.
 
 ## Guitar tones (Squier Stratocaster, Scarlett Input 2)
 
@@ -217,20 +264,25 @@ number of dB** (otherwise the gate opens on hum, but never cuts notes).
 
 ## Files
 
-- Template: `~/.config/REAPER/ProjectTemplates/Modern Rock & Metal - Vocal Studio.RPP`
-  (a chezmoi template in the repo: asset paths use `{{ .chezmoi.homeDir }}`)
+- Templates: `~/.config/REAPER/ProjectTemplates/Music Studio.RPP` (default) and
+  `Modern Rock & Metal - Vocal Studio.RPP` (chezmoi templates in the repo: asset
+  paths use `{{ .chezmoi.homeDir }}`)
 - Track templates and FX chains: `TrackTemplates/` and `FXChains/` under
   `~/.config/REAPER/`, folders `Vocal Studio` and `Guitar Tones/<Category>`
 - ReaScripts: `~/.config/REAPER/Scripts/Vocal Studio/`
-- Routing: `~/.local/bin/reaper-studio`, `~/.local/bin/reaper-lesson`, shared helpers
-  `~/.local/share/reaper-studio/common.sh`
+- Native routing: `~/.config/pipewire/{pipewire,jack}.conf.d/60-*.conf`,
+  `~/.config/qpwgraph/music-studio.qpwgraph`, `~/.config/autostart/qpwgraph-music-studio.desktop`
+- REAPER preferences (install time): `.chezmoiscripts/linux/run_after_configure-reaper-music-studio.sh.tmpl`
+- OBS: `~/.config/obs-studio/basic/scenes/Music_Studio.json`,
+  `basic/profiles/Music_Studio/basic.ini` (generated by `scripts/obs/build-music-studio-collection.py`)
+- Diagnostics/recovery: `~/.local/bin/reaper-studio`, helpers `~/.local/share/reaper-studio/common.sh`
 - Guitar assets: `~/.local/bin/reaper-guitar-assets`,
   `~/.local/share/reaper-studio/guitar/` (with `SOURCES.txt`)
 - Developer tools (run inside REAPER): `scripts/reaper/build-vocal-studio.lua`
   (builder), `verify-vocal-studio.lua` (reload verifier), `render-tones.lua` (A/B
   renderer), `analyze-tones.py` (metrics), `templatize-assets.py` (post-build)
 - Tests: `tests/test_reaper_vocal_studio.py`, `tests/test_reaper_guitar_tones.py`,
-  `tests/test_reaper_routing.py`
+  `tests/test_reaper_routing.py`, `tests/test_music_studio_native.py`
 
 ## Status
 

@@ -4,13 +4,18 @@
 -- every plugin parameter is written and read back through the ReaScript API
 -- (never by editing opaque VST state blobs).
 --
--- Run (REAPER must be able to open a GUI session, e.g. Hyprland/Wayland):
---   VS_OUT=~/.dotfiles/home/dot_config/REAPER \
---   VS_REPORT=/path/report.txt \
---   reaper -nosplash -ignoreerrors scripts/reaper/build-vocal-studio.lua
+-- Run (REAPER must be able to open a GUI session, e.g. Hyprland/Wayland). Use
+-- a reaper.ini without newprojtmpl, or REAPER loads its default template
+-- ("Music Studio") into the project while the builder works:
+--   grep -v '^newprojtmpl=' ~/.config/REAPER/reaper.ini > /tmp/build.ini
+--   VS_OUT=/tmp/out VS_REPORT=/tmp/report.txt \
+--   reaper -newinst -nosplash -ignoreerrors -cfgfile /tmp/build.ini scripts/reaper/build-vocal-studio.lua
+-- then scripts/reaper/templatize-assets.py /tmp/out "$HOME" and copy into
+-- home/dot_config/REAPER.
 --
 -- Output layout (relative to VS_OUT, the chezmoi source of the REAPER dir):
---   ProjectTemplates/Modern Rock & Metal - Vocal Studio.RPP
+--   ProjectTemplates/Modern Rock & Metal - Vocal Studio.RPP (recording, all disarmed)
+--   ProjectTemplates/Music Studio.RPP (REAPER's default: DI + Lead Clean armed)
 --   TrackTemplates/Vocal Studio/*.RTrackTemplate
 --   FXChains/Vocal Studio/*.RfxChain
 --
@@ -20,6 +25,8 @@
 local OUT = os.getenv("VS_OUT") or reaper.GetResourcePath()
 local REPORT_PATH = os.getenv("VS_REPORT") or (OUT .. "/vocal-studio-build-report.txt")
 local TEMPLATE_NAME = "Modern Rock & Metal - Vocal Studio"
+local LIVE_TEMPLATE_NAME = "Music Studio"
+local LIVE_DEFAULT_TONE = "Machine Head - Groove Thrash"
 
 local report, failures = {}, 0
 local TRACE = os.getenv("VS_TRACE")
@@ -585,6 +592,9 @@ local LAYOUT = {
   { name = "Lamb of God - Groove Metal", depth = 0, color = C.red, kind = "tone", fn = "lambofgod", cat = "Metal", mute = true },
   { name = "Slipknot - Nu Metal", depth = 0, color = C.red, kind = "tone", fn = "slipknot", cat = "Metal", mute = true },
   { name = "Asking Alexandria - Metalcore", depth = -1, color = C.red, kind = "tone", fn = "askingalexandria", cat = "Metal", mute = true },
+  -- Output bus for Discord lessons: processed guitar + voice only (no backing
+  -- track, no metronome), to REAPER out 3-4 -> PipeWire "REAPER Lesson Mic".
+  { name = "Discord Lesson Bus", depth = 0, color = C.teal, kind = "lesson_bus" },
 }
 
 -- Per-tone fader trims in dB (name|dB per line), written after loudness calibration.
@@ -669,6 +679,9 @@ for i, spec in ipairs(LAYOUT) do
     reaper.SetMediaTrackInfo_Value(tr, "I_RECINPUT", -1) -- processed track: never recordable
     reaper.SetMediaTrackInfo_Value(tr, "B_MAINSEND", 1)
     reaper.SetMediaTrackInfo_Value(tr, "B_MUTE", spec.mute and 1 or 0)
+  elseif spec.kind == "lesson_bus" then
+    reaper.SetMediaTrackInfo_Value(tr, "I_RECINPUT", -1) -- output bus: never recordable
+    reaper.SetMediaTrackInfo_Value(tr, "B_MAINSEND", 0)  -- not in the headphone/program mix
   elseif spec.style then
     reaper.SetMediaTrackInfo_Value(tr, "I_RECINPUT", 0)  -- Scarlett Input 1, mono
   end
@@ -719,6 +732,31 @@ end
 for _, spec in ipairs(LAYOUT) do
   if spec.kind == "tone" then send(T["Electric Guitar DI"], T[spec.name], 0) end
 end
+
+-- Output buses (REAPER's JACK outputs; the PipeWire side is in
+-- home/dot_config/pipewire/pipewire.conf.d/60-reaper-music-studio.conf and the
+-- links in the qpwgraph patchbay):
+--   out 1-2  master                 -> headphones (REAPER's default master output)
+--   out 3-4  Discord Lesson Bus     -> "REAPER Lesson Mic"  (Discord input)
+--   out 5-6  master (second output) -> "REAPER Program"     (OBS capture)
+-- The metronome plays on hardware outputs 1-2 directly (REAPER default), so it
+-- reaches the headphones only: never Discord, never OBS.
+local function hw_out(tr, first_channel)
+  local idx = reaper.CreateTrackSend(tr, nil)
+  reaper.SetTrackSendInfo_Value(tr, 1, idx, "I_DSTCHAN", first_channel)
+  local got = reaper.GetTrackSendInfo_Value(tr, 1, idx, "I_DSTCHAN")
+  check(idx >= 0 and got == first_channel, string.format("%s hardware output -> out %d-%d",
+    select(2, reaper.GetTrackName(tr)), first_channel + 1, first_channel + 2))
+end
+local LESSON = T["Discord Lesson Bus"]
+hw_out(LESSON, 2)
+send(T["Vocal Bus"], LESSON, 0)
+for _, spec in ipairs(LAYOUT) do
+  if spec.kind == "tone" then send(T[spec.name], LESSON, 0) end
+end
+local MASTER = reaper.GetMasterTrack(0)
+hw_out(MASTER, 4)
+check(reaper.GetTrackNumSends(T["Backing Track"], 0) == 0, "backing track has no send to the lesson bus")
 
 -- Amp captures and cabinet IRs: one state write per track (see apply_states).
 for tr, q in pairs(PENDING) do
@@ -795,13 +833,60 @@ local function export_all()
   end
   local items = reaper.CountMediaItems(0)
   check(items == 0, "project has zero media items (" .. items .. ")")
+  -- REAPER may load its default template ("Music Studio") into this project
+  -- after the script started; never save a merged project.
+  local count_now = reaper.CountTracks(0)
+  if count_now ~= #LAYOUT then
+    check(false, string.format("project still has exactly %d tracks before saving (got %d): run the builder "
+      .. "with a reaper.ini without newprojtmpl (see header)", #LAYOUT, count_now))
+    write_file(REPORT_PATH, table.concat(report, "\n") .. string.format("\n\nSUMMARY failures=%d\n", failures))
+    reaper.Main_OnCommand(40004, 0)
+    return
+  end
   local pt = PT_DIR .. "/" .. TEMPLATE_NAME .. ".RPP"
   reaper.Main_SaveProjectEx(0, pt, 0)
   log("wrote   " .. pt)
 
-  write_file(REPORT_PATH, table.concat(report, "\n") .. string.format(
-    "\n\nSUMMARY failures=%d\n", failures))
-  reaper.Main_OnCommand(40004, 0) -- File: Quit REAPER
+  -- "Music Studio": the same project, ready to play the moment REAPER opens
+  -- (it is REAPER's default template, see reaper-music-studio-setup). The guitar
+  -- DI and Lead Clean are armed with input monitoring, so Input 2 is heard
+  -- through the active tone and Input 1 reaches the lesson bus. Arming only
+  -- monitors: nothing records until Record is pressed.
+  for _, name in ipairs({ "Electric Guitar DI", "Lead Clean" }) do
+    reaper.SetMediaTrackInfo_Value(T[name], "I_RECARM", 1)
+    reaper.SetMediaTrackInfo_Value(T[name], "I_RECMON", 1)
+  end
+  -- It opens on a distorted tone (the clean default sounded like "no effect"
+  -- when picking up the guitar). Only that tone is online, as in the other template.
+  for _, spec in ipairs(LAYOUT) do
+    if spec.kind == "tone" then
+      local active = (spec.name == LIVE_DEFAULT_TONE)
+      local tr = T[spec.name]
+      reaper.SetMediaTrackInfo_Value(tr, "B_MUTE", active and 0 or 1)
+      reaper.SetMediaTrackInfo_Value(tr, "I_FXEN", active and 1 or 0)
+      for fx = 0, reaper.TrackFX_GetCount(tr) - 1 do reaper.TrackFX_SetOffline(tr, fx, not active) end
+    end
+  end
+  -- Bringing an FX online reloads the plugin and NAM restores its model
+  -- asynchronously: saving at once wrote the tone without its amp capture or
+  -- IR (silent guitar). Wait until both are back in the state, then save.
+  local live_tr = T[LIVE_DEFAULT_TONE]
+  local t_live = reaper.time_precise()
+  local function save_live()
+    local _, c = reaper.GetTrackStateChunk(live_tr, "", false)
+    local ready = c:find(NAM_PROP, 1, true) and c:find(IR_PROP, 1, true)
+    if not ready and reaper.time_precise() - t_live < 20 then reaper.defer(save_live); return end
+    check(ready, LIVE_DEFAULT_TONE .. ": amp capture and IR present before saving Music Studio")
+    if ready then
+      local live = PT_DIR .. "/" .. LIVE_TEMPLATE_NAME .. ".RPP"
+      reaper.Main_SaveProjectEx(0, live, 0)
+      log("wrote   " .. live)
+    end
+    write_file(REPORT_PATH, table.concat(report, "\n") .. string.format(
+      "\n\nSUMMARY failures=%d\n", failures))
+    reaper.Main_OnCommand(40004, 0) -- File: Quit REAPER
+  end
+  save_live()
 end
 
 local function wait_and_export()

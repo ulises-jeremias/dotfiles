@@ -1,9 +1,10 @@
 # shellcheck shell=bash
-# Shared routing helpers for reaper-studio and reaper-lesson.
+# Shared routing helpers for reaper-studio (diagnostics and recovery only).
 #
-# Everything here is REAPER-scoped: it links and unlinks only the JACK ports of
-# the REAPER client plus the lesson bus it creates. It never changes the system
-# default sink/source, never restarts PipeWire, and never touches Guitarix.
+# Daily use needs none of this: the qpwgraph patchbay keeps the links. These
+# helpers only check the graph and, for recovery, recreate REAPER's own links.
+# They never change the default sink/source, never restart PipeWire and never
+# touch Guitarix.
 #
 # Port names are stable device identifiers (ALSA card "Gen", Scarlett USB serial
 # in the node name), never transient PipeWire node IDs.
@@ -18,7 +19,6 @@
 
 set -euo pipefail
 
-REAPER_TEMPLATE="${REAPER_TEMPLATE:-$HOME/.config/REAPER/ProjectTemplates/Modern Rock & Metal - Vocal Studio.RPP}"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/reaper-studio"
 mkdir -p "$STATE_DIR"
 
@@ -31,9 +31,10 @@ MONITOR_ENV="${XDG_CONFIG_HOME:-$HOME/.config}/reaper-studio/monitor.env"
 # shellcheck source=/dev/null
 [ -f "$MONITOR_ENV" ] && . "$MONITOR_ENV"
 HEADPHONE_SINK_RE="${REAPER_OUT_SINK_RE:-alsa_output\.usb-Focusrite_Scarlett_2i2_4th_Gen.*HiFi__Line1__sink}"
-LESSON_SINK="reaper.lesson.mix"
-LESSON_MIC="reaper.lesson.mic"
-export LESSON_SINK LESSON_MIC
+# Permanent PipeWire endpoints (~/.config/pipewire, 60-reaper-music-studio.conf)
+LESSON_IN="reaper_lesson.input"   # <- REAPER out3/out4 only
+PROGRAM_IN="reaper_program.input" # <- REAPER out5/out6 only
+DISCORD_CALL_OUT="discord_call.output"
 
 log() { printf '%s\n' "$*"; }
 die() {
@@ -55,24 +56,10 @@ wait_reaper_ports() {
 	return 1
 }
 
-# Launch REAPER on the template (never opens the template file for editing).
-launch_reaper() {
-	if have_reaper; then return 0; fi
-	[ -f "$REAPER_TEMPLATE" ] || die "template missing: $REAPER_TEMPLATE (run chezmoi apply)"
-	# Low-latency monitoring for REAPER only: PIPEWIRE_QUANTUM is a per-client
-	# request (no global PipeWire config, nothing persistent). Measured on this
-	# host: REAPER output latency 32 ms at the default quantum 1024 vs 8 ms at
-	# 256, with 0 xruns and ~30% of one core while playing a guitar tone.
-	# Override per machine in ~/.config/reaper-studio/monitor.env (REAPER_QUANTUM=512).
-	PIPEWIRE_QUANTUM="${REAPER_QUANTUM:-256}/48000" \
-		nohup reaper -nosplash -template "$REAPER_TEMPLATE" >"$STATE_DIR/reaper.log" 2>&1 &
-	wait_reaper_ports || die "REAPER JACK ports did not appear (see $STATE_DIR/reaper.log)"
-}
-
-# Idempotent link: create only if absent.
+# Idempotent link: create only if absent (a port can have several peers).
 ensure_link() {
 	local out="$1" in="$2"
-	if pw-link -l 2>/dev/null | grep -F -A1 -- "$out" | grep -qF -- "|-> $in"; then return 0; fi
+	if peers_of "$out" '->' | grep -qxF -- "$in"; then return 0; fi
 	pw-link "$out" "$in" 2>/dev/null || die "cannot link $out -> $in (is the port present?)"
 }
 
@@ -155,4 +142,52 @@ doctor_outputs() {
 	} | grep -Ev "(${HEADPHONE_SINK_RE}):playback_F[LR]\$" | grep -Ev "${EXTRA_OUT_RE:-^\$}" || true)"
 	if [ -z "$stray" ]; then check ok "REAPER outputs go only to the monitor output"; else check FAIL "REAPER output also feeds: $stray"; fi
 	return "$fails"
+}
+
+# Output buses: out3/4 -> Discord lesson mic input, out5/6 -> OBS program input,
+# nothing else may feed the lesson input, and Discord's output never reaches REAPER.
+doctor_buses() {
+	local fails=0 peers pair src dst
+	check() { if [ "$1" = ok ]; then log "ok    $2"; else
+		log "FAIL  $2"
+		fails=$((fails + 1))
+	fi; }
+	for pair in "out3 ${LESSON_IN}:input_FL" "out4 ${LESSON_IN}:input_FR" \
+		"out5 ${PROGRAM_IN}:input_FL" "out6 ${PROGRAM_IN}:input_FR"; do
+		src="REAPER:${pair%% *}" dst="${pair#* }"
+		peers="$(peers_of "$src" '->')"
+		if [ "$peers" = "$dst" ]; then check ok "$src -> $dst"; else check FAIL "$src -> ${peers:-nothing} (want $dst)"; fi
+	done
+	peers="$({
+		peers_of "${LESSON_IN}:input_FL" '<-'
+		peers_of "${LESSON_IN}:input_FR" '<-'
+	} | grep -Ev '^REAPER:out[34]$' || true)"
+	if [ -z "$peers" ]; then check ok "REAPER Lesson Mic is fed only by REAPER out3/out4"; else check FAIL "REAPER Lesson Mic also fed by: $peers"; fi
+	peers="$({
+		peers_of "${DISCORD_CALL_OUT}:output_FL" '->'
+		peers_of "${DISCORD_CALL_OUT}:output_FR" '->'
+	} | grep -E 'REAPER|reaper_' || true)"
+	if [ -z "$peers" ]; then check ok "Discord Call output never reaches REAPER (no feedback)"; else check FAIL "Discord Call feeds: $peers"; fi
+	if pactl list short sources 2>/dev/null | grep -q 'reaper_lesson_mic'; then check ok "PipeWire source 'REAPER Lesson Mic' present"; else check FAIL "REAPER Lesson Mic missing (PipeWire config not loaded: log out and back in)"; fi
+	return "$fails"
+}
+
+# Recovery: recreate REAPER's links (what the qpwgraph patchbay normally does).
+repair_links() {
+	have_reaper || die "REAPER is not running: open it from the app menu first"
+	wait_reaper_ports || die "REAPER JACK ports not present"
+	local hp_fl hp_fr
+	hp_fl="$(headphone_ports | grep ':playback_FL$' | head -1 || true)"
+	hp_fr="$(headphone_ports | grep ':playback_FR$' | head -1 || true)"
+	[ -n "$hp_fl" ] && [ -n "$hp_fr" ] || die "headphone output not found; is the interface plugged in?"
+	prune_reaper_outputs "^(${hp_fl}|${hp_fr}|${LESSON_IN}:input_F[LR]|${PROGRAM_IN}:input_F[LR])\$"
+	ensure_link "$MIC_IN" "REAPER:in1"
+	ensure_link "$GUITAR_IN" "REAPER:in2"
+	ensure_link "REAPER:out1" "$hp_fl"
+	ensure_link "REAPER:out2" "$hp_fr"
+	ensure_link "REAPER:out3" "${LESSON_IN}:input_FL"
+	ensure_link "REAPER:out4" "${LESSON_IN}:input_FR"
+	ensure_link "REAPER:out5" "${PROGRAM_IN}:input_FL"
+	ensure_link "REAPER:out6" "${PROGRAM_IN}:input_FR"
+	log "repaired: Scarlett -> REAPER in1/in2, out1-2 -> ${hp_fl%%:*}, out3-4 -> lesson mic, out5-6 -> program"
 }
