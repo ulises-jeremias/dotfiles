@@ -45,7 +45,9 @@ local EXPECT_ORDER = {
   "BACKING", "Backing Track", "VOCAL ROUTING", "Vocal Bus", "LEAD VOCALS",
   "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "VOCAL LAYERS",
   "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Delay",
-  "ELECTRIC GUITAR", "Electric Guitar DI", "Electric Guitar - Machine Head", "Electric Guitar - Hard Stuff",
+  "ELECTRIC GUITAR", "Electric Guitar DI", "Crystal Clean", "Warm Clean - Ambient",
+  "Classic Rock - Crunch", "Hard Rock - Heavy Lead", "Modern Metal Rhythm",
+  "Metalcore - Modern Lead", "Hard Stuff (Legacy)",
 }
 local n = reaper.CountTracks(0)
 check(n == #EXPECT_ORDER, "track count " .. n .. " == " .. #EXPECT_ORDER)
@@ -82,10 +84,10 @@ for i = 0, n - 1 do
   if name == "Electric Guitar DI" then
     check(reaper.GetMediaTrackInfo_Value(tr, "I_RECINPUT") == 1, "guitar DI on Input 2 (mono index 1)")
     check(reaper.GetMediaTrackInfo_Value(tr, "B_MAINSEND") == 0, "guitar DI has no direct master route")
-    check(reaper.GetTrackNumSends(tr, 0) == 2, "guitar DI sends only to Machine Head and Hard Stuff")
+    check(reaper.GetTrackNumSends(tr, 0) == 7, "guitar DI sends to all seven tones")
   end
-  if name == "Electric Guitar - Hard Stuff" then
-    check(reaper.GetMediaTrackInfo_Value(tr, "I_RECINPUT") == -1, "Hard Stuff track has no record input")
+  if name == "Hard Stuff (Legacy)" or name == "Crystal Clean" then
+    check(reaper.GetMediaTrackInfo_Value(tr, "I_RECINPUT") == -1, "tone track has no record input: " .. name)
   end
   if name == "Backing Track" then
     check(reaper.GetMediaTrackInfo_Value(tr, "I_RECINPUT") == -1, "backing track has no input")
@@ -111,21 +113,40 @@ local function load_into_new_track(label, chunk, expect_fx)
   reaper.DeleteTrack(tr)
 end
 if TT_DIR then
-  for _, f in ipairs({ "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "Double L", "Double R", "Harmonies", "Electric Guitar DI", "Electric Guitar - Machine Head", "Electric Guitar - Hard Stuff" }) do
+  for _, f in ipairs({ "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "Double L", "Double R", "Harmonies", "Electric Guitar DI" }) do
     local c = read_file(TT_DIR .. "/" .. f .. ".RTrackTemplate")
     check(c ~= nil, "track template present: " .. f)
-    if c then load_into_new_track("TT " .. f, c, ({ ["Lead Clean"]=3, ["Lead Clean FX"]=3, ["Grit Vocal"]=4, ["Harsh Vocal"]=4, ["Double L"]=2, ["Double R"]=2, ["Harmonies"]=2, ["Electric Guitar DI"]=0, ["Electric Guitar - Machine Head"]=3, ["Electric Guitar - Hard Stuff"]=4 })[f]) end
+    if c then load_into_new_track("TT " .. f, c, ({ ["Lead Clean"]=3, ["Lead Clean FX"]=3, ["Grit Vocal"]=4, ["Harsh Vocal"]=4, ["Double L"]=2, ["Double R"]=2, ["Harmonies"]=2, ["Electric Guitar DI"]=0 })[f]) end
   end
 end
 if FX_DIR then
-  for _, f in ipairs({ "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "Double L", "Double R", "Harmonies", "Vocal Reverb", "Vocal Delay", "Hard Stuff", "Machine Head" }) do
+  for _, f in ipairs({ "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "Double L", "Double R", "Harmonies", "Vocal Reverb", "Vocal Delay" }) do
     local c = read_file(FX_DIR .. "/" .. f .. ".RfxChain")
     check(c ~= nil, "fx chain present: " .. f)
     if c then
       -- An RfxChain is a bare <FXCHAIN> block; wrap it in a TRACK chunk to load it.
       local wrapped = "<TRACK\n" .. c .. ">\n"
-      load_into_new_track("FX " .. f, wrapped, ({ ["Lead Clean"]=3, ["Lead Clean FX"]=3, ["Grit Vocal"]=4, ["Harsh Vocal"]=4, ["Double L"]=2, ["Double R"]=2, ["Harmonies"]=2, ["Vocal Reverb"]=1, ["Vocal Delay"]=1, ["Hard Stuff"]=4, ["Machine Head"]=3 })[f])
+      load_into_new_track("FX " .. f, wrapped, ({ ["Lead Clean"]=3, ["Lead Clean FX"]=3, ["Grit Vocal"]=4, ["Harsh Vocal"]=4, ["Double L"]=2, ["Double R"]=2, ["Harmonies"]=2, ["Vocal Reverb"]=1, ["Vocal Delay"]=1, })[f])
     end
+  end
+end
+
+local TONE_LIST = {
+  { "Clean", "Crystal Clean", 4 }, { "Clean", "Warm Clean - Ambient", 5 },
+  { "Rock", "Classic Rock - Crunch", 5 }, { "Rock", "Hard Rock - Heavy Lead", 6 },
+  { "Metal", "Modern Metal Rhythm", 4 }, { "Metal", "Metalcore - Modern Lead", 7 },
+  { "Legacy", "Hard Stuff (Legacy)", 4 },
+}
+local TONE_ROOT = os.getenv("VS_TONE_ROOT")
+if TONE_ROOT then
+  for _, t in ipairs(TONE_LIST) do
+    local cat, name, count = t[1], t[2], t[3]
+    local tt = read_file(TONE_ROOT .. "/TrackTemplates/Guitar Tones/" .. cat .. "/" .. name .. ".RTrackTemplate")
+    check(tt ~= nil, "tone track template present: " .. name)
+    if tt then load_into_new_track("TONE TT " .. name, tt, count) end
+    local fxc = read_file(TONE_ROOT .. "/FXChains/Guitar Tones/" .. cat .. "/" .. name .. ".RfxChain")
+    check(fxc ~= nil, "tone fx chain present: " .. name)
+    if fxc then load_into_new_track("TONE FX " .. name, "<TRACK\n" .. fxc .. ">\n", count) end
   end
 end
 

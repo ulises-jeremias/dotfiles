@@ -1,0 +1,11 @@
+# Guitar tone fader trims (dB), from the calibration run in
+# docs/REAPER-Vocal-Studio.md. DI reference: scratch synthetic DI, measured
+# at REAPER out over 2-7 s. Target -25 dBFS RMS. Re-run after pickup check.
+# Format: name|dB
+Crystal Clean|-0.8
+Warm Clean - Ambient|-0.6
+Classic Rock - Crunch|-0.4
+Hard Rock - Heavy Lead|-0.3
+Modern Metal Rhythm|2.4
+Metalcore - Modern Lead|8.5
+Hard Stuff (Legacy)|1.4

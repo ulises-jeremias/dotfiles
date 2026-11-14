@@ -79,6 +79,58 @@ only output is the send into Hard Stuff.
 
 Levels: REAPER faders. Vocal and guitar gains are independent.
 
+
+## Guitar tones (Squier Stratocaster, Scarlett Input 2)
+
+Seven tones, in REAPER categories (track templates and FX chains live in
+`TrackTemplates/Guitar Tones/<Category>/` and `FXChains/Guitar Tones/<Category>/`):
+
+| Tone | Category | Chain (plugins) | Notes |
+|------|----------|-----------------|-------|
+| Crystal Clean | Clean | GxCompressor, ReaEQ, GxAmplifier-X (Fender tone stack, 2x12), ReaVerbate | bright, dynamic |
+| Warm Clean - Ambient | Clean | GxChorus-Stereo, ReaEQ, GxAmplifier-X (Twin Reverb stack, 2x12), GxEcho-Stereo, GxReverb-Stereo | chorus, echo, hall |
+| Classic Rock - Crunch | Rock | GxTubeScreamer, GxExpander, GxAmplifier-X (JCM-800, Marshall cab), ReaEQ, ReaVerbate | Blues and Heroes-style parts |
+| Hard Rock - Heavy Lead | Rock | GxBoss DS1, GxExpander, GxAmplifier-X (JCM-2000, Marshall cab), GxCompressor, ReaEQ, ReaVerbate | sustain for solos |
+| Modern Metal Rhythm | Metal | GxExpander (gate), GxMetalAmp, GxCabinet 4x12, ReaEQ | tight palm mutes, scooped mids |
+| Metalcore - Modern Lead | Metal | GxExpander, GxSD1, GxMetalHead, GxCabinet 4x12, ReaEQ, ReaDelay, ReaVerbate | controlled 1/8 delay |
+| Hard Stuff (Legacy) | Legacy | GxFuzz, ReaEQ, GxSaturator, GxCabinet | your `silentz0r.gx` preset, unchanged in intent |
+
+**Switching:** run the ReaScript *Guitar - Choose tone* (Actions) and type the
+tone name. Works in Studio and in lesson mode. It only changes mute states.
+
+**Loudness:** each tone has a fader trim (`scripts/reaper/guitar-tones-trim.txt`)
+measured on one DI reference, so the tones land near −25 dBFS RMS. The trims
+were measured with a synthetic guitar-like DI, not your Squier. Re-check them
+after the physical checklist below.
+
+**Gain and noise:** the high-gain tones put a Guitarix expander in front of the
+drive to cut single-coil hum between notes. On the Metalcore tone the gate can
+also shorten long sustains. That's the trade-off to listen for.
+
+**Amps and cabinets:** the amp and its built-in cabinet are used together. The
+crash seen earlier happens only when GxAmplifier-X and the separate GxCabinet
+are in the same project, so no tone combines them. `GxMetalAmp` and
+`GxMetalHead` have no cabinet of their own, so they use GxCabinet.
+
+**Not included:** no Neural Amp Modeler (not installed, and it would need a
+third-party build), and no downloaded cabinet IRs yet. Both need a license and
+provenance check first. The Guitarix cabinets are the simulations used.
+
+### Physical checklist (only you can do these)
+
+1. **Pickups.** Look at the Squier: SSS has 3 single coils; HSS has a humbucker at
+   the bridge. The 5-way switch does not tell them apart. Tell me which one, and
+   the model if you know it. The presets work with both; the trims may need a small
+   change.
+2. **Input level.** Scarlett Input 2: press **INST**. Set the gain so the loudest
+   strum peaks around −12 dBFS on the ring (never red).
+3. **Direct Monitor: OFF.** REAPER monitors the guitar.
+4. **Tuning and strings.** No EQ or distortion fixes detuned strings or a poor
+   setup. Check tuning and intonation before judging tones.
+5. **Listen and decide.** Switch through the seven tones on your own playing.
+   Note any tone that's too loud, too thin, or cuts sustain. The trims and the
+   gate thresholds are the first things to adjust.
+
 ## Hard Stuff tone (migrated from `silentz0r.gx`, preset "Hard Stuff")
 
 The main amp is **off** in the bank (`amp.on_off = 0`), so no amp head is used.

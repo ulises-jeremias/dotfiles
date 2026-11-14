@@ -1,0 +1,54 @@
+-- Guitar - Choose tone
+--
+-- Switch the guitar tone for Studio recording and Discord lessons. Type a tone
+-- name and this unmutes it and mutes the other six. The DI track and the vocal
+-- tracks are never changed, so it is safe to switch tones mid-lesson.
+--
+-- Tones (genre folders in the Guitar Tones template browser):
+--   Crystal Clean, Warm Clean - Ambient           (Clean)
+--   Classic Rock - Crunch, Hard Rock - Heavy Lead (Rock)
+--   Modern Metal Rhythm, Metalcore - Modern Lead  (Metal)
+--   Hard Stuff (Legacy)                           (the migrated Guitarix preset)
+--
+-- Nothing here records. It only changes mute state.
+
+local TONES = {
+  "Crystal Clean", "Warm Clean - Ambient", "Classic Rock - Crunch",
+  "Hard Rock - Heavy Lead", "Modern Metal Rhythm", "Metalcore - Modern Lead",
+  "Hard Stuff (Legacy)",
+}
+local IS_TONE = {}
+for _, name in ipairs(TONES) do IS_TONE[name] = true end
+
+local ok, answer = reaper.GetUserInputs("Guitar: choose tone", 1,
+  "Tone (" .. table.concat(TONES, " / ") .. "):", "Crystal Clean")
+if not ok then return end
+answer = answer:match("^%s*(.-)%s*$")
+if not IS_TONE[answer] then
+  reaper.ShowMessageBox("Unknown tone: \"" .. answer .. "\".\nChoose one of:\n" .. table.concat(TONES, "\n"),
+    "Guitar: choose tone", 0)
+  return
+end
+
+local function name_of(tr)
+  local _, n = reaper.GetSetMediaTrackInfo_String(tr, "P_NAME", "", false)
+  return n
+end
+
+reaper.Undo_BeginBlock()
+local found = false
+for i = 0, reaper.CountTracks(0) - 1 do
+  local tr = reaper.GetTrack(0, i)
+  local n = name_of(tr)
+  if IS_TONE[n] then
+    local active = (n == answer)
+    if active then found = true end
+    reaper.SetMediaTrackInfo_Value(tr, "B_MUTE", active and 0 or 1)
+  end
+end
+reaper.Undo_EndBlock("Guitar: choose tone", -1)
+if not found then
+  reaper.ShowMessageBox("Open the Modern Rock & Metal - Vocal Studio template first.", "Guitar: choose tone", 0)
+end
+reaper.TrackList_AdjustWindows(false)
+reaper.UpdateArrange()

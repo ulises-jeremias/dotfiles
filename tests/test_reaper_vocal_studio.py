@@ -19,7 +19,9 @@ EXPECTED_TRACKS = [
     "BACKING", "Backing Track", "VOCAL ROUTING", "Vocal Bus", "LEAD VOCALS",
     "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "VOCAL LAYERS",
     "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Delay",
-    "ELECTRIC GUITAR", "Electric Guitar DI", "Electric Guitar - Machine Head", "Electric Guitar - Hard Stuff",
+    "ELECTRIC GUITAR", "Electric Guitar DI", "Crystal Clean", "Warm Clean - Ambient",
+    "Classic Rock - Crunch", "Hard Rock - Heavy Lead", "Modern Metal Rhythm",
+    "Metalcore - Modern Lead", "Hard Stuff (Legacy)",
 ]
 
 
@@ -65,12 +67,12 @@ def test_guitar_di_has_no_direct_master_route_and_hard_stuff_is_not_recordable()
         name = re.search(r'^    NAME "?([^"\n]+)"?$', block, flags=re.M).group(1)
         if name == "Electric Guitar DI":
             assert re.search(r"^    MAINSEND 0", block, flags=re.M), "DI must not send to master"
-        if name == "Electric Guitar - Hard Stuff":
+        if name == "Hard Stuff (Legacy)":
             assert re.search(r"^    REC 0 -1", block, flags=re.M), "Hard Stuff must have no input"
 
 
 def test_exported_fx_chain_for_hard_stuff_has_four_guitarix_or_native_plugins() -> None:
-    chain = (FX_DIR / "Hard Stuff.RfxChain").read_text()
+    chain = (REAPER / "FXChains" / "Guitar Tones" / "Legacy" / "Hard Stuff (Legacy).RfxChain").read_text()
     assert chain.startswith("<FXCHAIN"), "RfxChain must start with <FXCHAIN"
     assert "GxFuzz" in chain and "GxSaturator" in chain and "GxCabinet" in chain
     assert "ReaEQ" in chain
