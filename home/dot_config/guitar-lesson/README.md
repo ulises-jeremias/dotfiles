@@ -14,7 +14,7 @@ dots-guitar-lesson wire      # re-create links only (after replug / stray autoco
 dots-guitar-lesson levels 0.85 0.75   # voice / guitar levels into the Discord mix
 dots-guitar-lesson status
 dots-guitar-lesson doctor
-Live-hardware regression check (run on the workstation, not CI):
+# Live-hardware regression check (run on the workstation, not CI):
 #   dots-guitar-lesson doctor && dots-guitar-lesson status
 ```
 
@@ -54,10 +54,12 @@ quantum; fine for lessons, not a studio-tracking rig.
 1. Settings → Voice & Video → Input Device: **Guitar Lesson Mix
    (Voice+Guitar for Discord)** (`lesson.mix`). Output Device:
    **Built-in Audio Analog Stereo**.
-2. Input Mode: **Push to Talk** off; use Voice Activity with the
-   sensitivity slider low, or Push-to-Talk — VAD can clip sustained notes.
-   For music, disable: Noise Suppression (Krisp/Standard → None),
-   Echo Cancellation, Automatic Gain Control, and noise reduction.
+2. Input Mode: **Voice Activity**, with *Automatically determine input
+   sensitivity* **off** and the sensitivity slider at the minimum
+   (-100 dB). Discord's Krisp-based voice detection treats guitar as
+   noise and gates it unless you speak, so the gate must stay open.
+   Also disable: Noise Suppression (Krisp/Standard → None), Echo
+   Cancellation, Automatic Gain Control, and noise reduction.
 3. `dots-guitar-lesson start` already makes `lesson.mix` the system default
    source and the Built-in output the default sink, so "Default" in
    Discord also works.

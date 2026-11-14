@@ -29,8 +29,8 @@ PHONES="${GUITAR_LESSON_PHONES:-alsa_output.pci-0000_00_1f.3.analog-stereo}"
 GX_IN="gx_head_amp:in_0"; GX_L="gx_head_fx:out_0"; GX_R="gx_head_fx:out_1"
 mkdir -p "$STATE_DIR"
 
-log() { printf 'guitar-lesson: %s\n' "$*"; }
-die() { printf 'guitar-lesson: ERROR: %s\n' "$*" >&2; exit 1; }
+log() { printf 'dots-guitar-lesson: %s\n' "$*"; }
+die() { printf 'dots-guitar-lesson: ERROR: %s\n' "$*" >&2; exit 1; }
 
 node_id() {
     pw-dump 2>/dev/null | python3 -c "
@@ -252,8 +252,9 @@ cmd_doctor() {
     pacman -Q pipewire wireplumber pipewire-jack guitarix discord qpwgraph 2>/dev/null | sed 's/^/  pkg: /' || true
     read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
     if [ -n "${MIC1:-}" ]; then echo "  OK   Scarlett 2i2 4th Gen (USB 1235:8219) present"; else echo "  FAIL Scarlett not found: plug USB, check 'lsusb | grep 1235:8219'"; fail=1; fi
-    pw-dump 2>/dev/null | grep -q 'HiFi__Line2__source' && \
+    if grep -q 'HiFi__Line2__source' <<<"$(pw-dump 2>/dev/null)"; then
         echo "  NOTE 'Monitor Input 3+4' (HiFi__Line2) = Scarlett hardware loopback; never used here."
+    fi
     local n
     for n in "$MIX_SRC" "$VOICE_IN" "$GUIT_IN"; do
         if node_exists "$n"; then echo "  OK   node $n"; else echo "  FAIL node $n missing — run: dots-guitar-lesson start"; fail=1; fi
