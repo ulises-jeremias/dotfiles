@@ -2,6 +2,7 @@
 --
 -- Disarms every track and turns off input monitoring. Does not touch recordings,
 -- items, mutes or FX.
+-- luacheck: globals reaper  (REAPER host API, provided by ReaScript)
 
 reaper.Undo_BeginBlock()
 for i = 0, reaper.CountTracks(0) - 1 do

@@ -15,6 +15,7 @@
 --   FXChains/Vocal Studio/*.RfxChain
 --
 -- The script exits REAPER when finished (action 40004 = File: Quit REAPER).
+-- luacheck: globals reaper  (REAPER host API, provided by ReaScript)
 
 local OUT = os.getenv("VS_OUT") or reaper.GetResourcePath()
 local REPORT_PATH = os.getenv("VS_REPORT") or (OUT .. "/vocal-studio-build-report.txt")
@@ -68,7 +69,6 @@ local function set_value(tr, fx, fxname, name, target)
   local best
   if target == -math.huge then
     reaper.TrackFX_SetParamNormalized(tr, fx, p, 0.0)
-    best = 0.0
   else
     reaper.TrackFX_SetParamNormalized(tr, fx, p, 0.0)
     local v_lo = to_num(fmt_of(tr, fx, p))

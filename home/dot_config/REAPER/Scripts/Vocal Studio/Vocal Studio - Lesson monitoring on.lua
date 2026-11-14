@@ -7,6 +7,7 @@
 --
 -- This does NOT record: arming only routes audio. Pressing Record in REAPER
 -- starts a take. Run "Vocal Studio - Lesson monitoring off" to disarm everything.
+-- luacheck: globals reaper  (REAPER host API, provided by ReaScript)
 
 local VOCAL = "Lead Clean"
 local TARGET = { [VOCAL] = true, ["Electric Guitar DI"] = true }

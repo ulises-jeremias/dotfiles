@@ -9,6 +9,7 @@
 -- Type "none" to disarm every vocal track.
 --
 -- Nothing is recorded by this script; it only changes arm/mute state.
+-- luacheck: globals reaper  (REAPER host API, provided by ReaScript)
 
 local LEAD = { ["Lead Clean"] = true, ["Lead Clean FX"] = true,
                ["Grit Vocal"] = true, ["Harsh Vocal"] = true }

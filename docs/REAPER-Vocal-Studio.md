@@ -57,7 +57,7 @@ reaper-lesson stop      # removes the virtual mic and disarms the tracks
 
 Signal path:
 
-```
+```text
 Input 1 (mic)  -> Lead Clean (monitored) -> REAPER out 1-2 --+--> headphones
 Input 2 (DI)   -> Electric Guitar DI     -> send -> active guitar tone -> out 1-2 --+--> reaper.lesson.mix -> "REAPER_Lesson_Mic" (virtual mic)
 ```
@@ -78,7 +78,6 @@ Why raw DI never reaches Discord: the DI track has **no direct master route**. I
 only output is the sends into the guitar tones.
 
 Levels: REAPER faders. Vocal and guitar gains are independent.
-
 
 ## Guitar tones (Squier Stratocaster, Scarlett Input 2)
 

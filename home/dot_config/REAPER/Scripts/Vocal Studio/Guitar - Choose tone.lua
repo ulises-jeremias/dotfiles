@@ -17,6 +17,7 @@
 -- their FX taken offline (state kept, plugin unloaded), so only one amp capture
 -- is loaded. The chosen amp model needs about a second to load after switching.
 -- Nothing here records.
+-- luacheck: globals reaper  (REAPER host API, provided by ReaScript)
 
 local TONES = {
   "Crystal Clean", "Warm Clean - Ambient", "AC-DC - Classic Crunch",

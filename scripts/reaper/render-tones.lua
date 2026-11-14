@@ -10,6 +10,7 @@
 --
 -- NAM models and IRs load asynchronously, so each chain gets a settle delay
 -- before rendering. REAPER quits when done.
+-- luacheck: globals reaper  (REAPER host API, provided by ReaScript)
 
 local function lines_of(path)
   local out = {}

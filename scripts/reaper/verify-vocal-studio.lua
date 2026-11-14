@@ -1,15 +1,15 @@
 -- Modern Rock & Metal - Vocal Studio: reload verification (developer tool).
 --
 -- Run against the SAVED project (not the builder's in-memory state):
---   VS_PROJECT=<path to .RPP> VS_TT_DIR=<TrackTemplates/Vocal Studio>
+--   VS_TT_DIR=<TrackTemplates/Vocal Studio> VS_TONE_ROOT=<REAPER resource dir>
 --   VS_FX_DIR=<FXChains/Vocal Studio> VS_REPORT=<report.txt>
 --   reaper -nosplash -ignoreerrors <path to .RPP> scripts/reaper/verify-vocal-studio.lua
 --
 -- Reports: track structure, arm/input/monitor/mute state, FX chain with
 -- bypass state, formatted parameter values, sends, and whether every exported
 -- track template and FX chain loads with its FX intact.
+-- luacheck: globals reaper  (REAPER host API, provided by ReaScript)
 
-local PROJECT = os.getenv("VS_PROJECT")
 local TT_DIR = os.getenv("VS_TT_DIR")
 local FX_DIR = os.getenv("VS_FX_DIR")
 local REPORT = os.getenv("VS_REPORT") or "/tmp/vocal-studio-verify.txt"
@@ -181,8 +181,8 @@ local function step()
   reaper.InsertTrackAtIndex(idx, false)
   local tr = reaper.GetTrack(0, idx)
   check(reaper.SetTrackStateChunk(tr, wrap and ("<TRACK\n" .. text .. ">\n") or text, false), label .. " parses")
-  local n = reaper.TrackFX_GetCount(tr)
-  check(n == count, string.format("%s FX count %d == %d", label, n, count))
+  local fx_count = reaper.TrackFX_GetCount(tr)
+  check(fx_count == count, string.format("%s FX count %d == %d", label, fx_count, count))
   current, t_start = { tr = tr, label = label }, reaper.time_precise()
   reaper.defer(step)
 end
