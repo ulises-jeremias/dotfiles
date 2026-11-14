@@ -1,0 +1,11 @@
+# Guitar tone gain staging (v2: NAM + IR chains).
+# 'nam:<tone>|dB' sets the NAM Output Lvl inside each chain, calibrated so every
+# tone lands at -22 dBFS RMS (cleans lower, peak <= -6 dBFS) on the same DI.
+# Plain '<tone>|dB' lines would be extra fader trims; none are needed.
+nam:Classic Rock - Crunch|-3.6
+nam:Crystal Clean|15.7
+nam:Extreme Metal Rhythm|3.1
+nam:Hard Rock - Heavy Lead|-9.6
+nam:Metalcore - Melodic Lead|-12.9
+nam:Modern Metal Rhythm|-0.7
+nam:Warm Clean - Ambient|5.4

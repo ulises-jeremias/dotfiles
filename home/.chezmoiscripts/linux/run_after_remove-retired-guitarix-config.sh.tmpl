@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# One-shot migration: REAPER replaced Guitarix as the guitar processor
+# (docs/REAPER-Vocal-Studio.md), so the Guitarix bank and the legacy
+# "Hard Stuff" / "Machine Head" REAPER chains that copied it are no
+# longer in this repo. Leftover copies would keep showing stale tones.
+#
+# This runs on every apply until it succeeds, then records a marker
+# and never acts again:
+# - Nothing is removed until the replacement (the Vocal Studio project
+#   template, deployed by this same apply) exists.
+# - Only the files this repo used to manage are removed. Guitarix itself
+#   stays installed, and its own state (gx_head_rc, ui_rc, other banks)
+#   is never touched.
+# - A file with one of these names that the user creates afterwards is
+#   personal configuration and is never deleted.
+# Paths resolve against chezmoi's destination directory, not $HOME,
+# so staged applies (--destination) stay hermetic.
+# See docs/Chezmoi-Migration-Ledger.md.
+dest_dir="{{ .chezmoi.destDir }}"
+config_home="$dest_dir/.config"
+reaper_dir="$config_home/REAPER"
+state_dir="$dest_dir/.local/state/reaper-studio"
+marker="$state_dir/guitarix-config-migration-done"
+
+if [ -e "$marker" ]; then
+  exit 0
+fi
+
+if [ ! -f "$reaper_dir/ProjectTemplates/Modern Rock & Metal - Vocal Studio.RPP" ]; then
+  exit 0
+fi
+
+retired=(
+  "guitarix/banks/silentz0r.gx"
+  "REAPER/FXChains/Vocal Studio/Hard Stuff.RfxChain"
+  "REAPER/FXChains/Vocal Studio/Machine Head.RfxChain"
+  "REAPER/TrackTemplates/Vocal Studio/Electric Guitar - Hard Stuff.RTrackTemplate"
+  "REAPER/TrackTemplates/Vocal Studio/Electric Guitar - Machine Head.RTrackTemplate"
+)
+
+skipped=0
+for rel in "${retired[@]}"; do
+  target="$config_home/$rel"
+  parent="$(dirname "$target")"
+  # Never delete through a symlinked parent directory or a symlink.
+  if [ -L "$parent" ] || [ -L "$(dirname "$parent")" ]; then
+    echo "guitarix migration skipped $target: symlinked parent" >&2
+    skipped=1
+    continue
+  fi
+  if [ -f "$target" ] && [ ! -L "$target" ]; then
+    rm -f "$target"
+    echo "removed retired guitar config: $target"
+  fi
+done
+
+# A skipped path keeps the migration pending instead of marking it done.
+if [ "$skipped" -ne 0 ]; then
+  exit 0
+fi
+
+mkdir -p "$state_dir"
+date -u +%Y-%m-%dT%H:%M:%SZ > "$marker"

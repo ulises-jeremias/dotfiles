@@ -1,3 +1,8 @@
+> **Historical archive.** The current REAPER and guitar workflow is in
+> [`docs/REAPER-Vocal-Studio.md`](../REAPER-Vocal-Studio.md). REAPER replaced
+> the standalone Guitarix app; the `guitarix` package stays installed only for
+> the LV2 pedals the REAPER tones use, and its configuration is no longer managed.
+
 # 🎵 Studio — Audio Production Setup
 
 This section covers the **audio production** stack installed by HorneroConfig, including DAW, guitar amp simulation, plugins, and Windows VST bridge support.
@@ -91,14 +96,25 @@ sudo pacman -S reaper
 
 ---
 
-## 🎸 Guitar Amp Simulation — Guitarix
+## 🎸 Guitar Amp Simulation — REAPER
 
-[Guitarix](https://guitarix.org/) is a virtual guitar amplifier running through the JACK audio system.
+Guitar amps and cabinets run inside REAPER (Neural Amp Modeler captures plus
+cabinet IRs); see [`docs/REAPER-Vocal-Studio.md`](../REAPER-Vocal-Studio.md).
 
-### Installed packages
+| Package / asset   | Role                                                         |
+| ----------------- | ------------------------------------------------------------ |
+| `guitarix`        | Provides the Gx LV2 pedals (Tube Screamer, chorus, echo, reverb) |
+| `gxplugins.lv2`   | Extra Guitarix LV2 pedals                                    |
+| `reaper-guitar-assets install` | NAM LV2 plugin, amp captures and cabinet IRs (user level) |
 
-| Package         | Role                    |
-| --------------- | ----------------------- |
+```sh
+reaper-studio start     # recording / practice
+reaper-lesson start     # Discord lesson (virtual mic)
+```
+
+Use `qpwgraph` or `helvum` to visualize and patch audio connections in the PipeWire graph.
+
+--------------- | ----------------------- |
 | `guitarix`      | Virtual guitar amp      |
 | `gxplugins.lv2` | Guitarix LV2 plugin set |
 
@@ -197,7 +213,7 @@ All packages installed by the studio chezmoi script:
 # Audio server
 sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
 
-# DAW + Guitar amp + LV2 plugins
+# DAW + LV2 plugins (guitarix provides the Gx pedals used in REAPER)
 sudo pacman -S guitarix gxplugins.lv2 reaper calf lsp-plugins lsp-plugins-docs x42-plugins
 
 # Windows VST bridge (AUR)
@@ -209,7 +225,6 @@ yay -S yabridge yabridgectl
 ## 🆘 Resources
 
 - [REAPER Linux Guide](https://www.reaper.fm/purchase.php)
-- [Guitarix Docs](https://guitarix.org/manual/)
 - [Arch Wiki — PipeWire](https://wiki.archlinux.org/title/PipeWire)
 - [Arch Wiki — JACK](https://wiki.archlinux.org/title/JACK_Audio_Connection_Kit)
 - [Linux Studio Plugins](https://lsp-plug.in/)

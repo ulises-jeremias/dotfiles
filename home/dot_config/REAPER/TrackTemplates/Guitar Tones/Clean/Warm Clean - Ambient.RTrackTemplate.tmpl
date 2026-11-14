@@ -1,0 +1,114 @@
+<TRACK
+NAME "Warm Clean - Ambient"
+PEAKCOL 31238766
+BEAT -1
+AUTOMODE 0
+PANLAWFLAGS 3
+VOLPAN 1 0 -1 -1 1
+MUTESOLO 1 0 0
+IPHASE 0
+PLAYOFFS 0 1
+ISBUS 0 0
+BUSCOMP 0 0 0 0 0
+SHOWINMIX 1 0.6667 0.5 1 0.5 0 0 0 0
+FIXEDLANES 9 0 0 0 0
+LANEREC -1 -1 -1 0
+REC 0 -1 0 0 0 0 0 0
+VU 64
+TRACKHEIGHT 0 0 0 0 0 0 0
+INQ 0 0 0 0.5 100 0 0 100
+NCHAN 2
+FX 1
+TRACKID {09C543E9-188E-93DE-9634-7AE1DD0A329F}
+PERF 0
+MIDIOUT -1 -1
+MAINSEND 1 0
+<FXCHAIN
+SHOW 0
+LASTSEL 0
+DOCKED 0
+BYPASS 0 0 0
+<LV2 "LV2: GxChorus-Stereo (Guitarix team)" http://guitarix.sourceforge.net/plugins/gx_chorus_stereo#_chorus_stereo ""
+CFG 0 0 0 ""
+P level 0.495000004768371582 delay 0.019999999552965164 depth 0.345000028610229492 freq 1.195000052452087402
+P BYPASS 0
+>
+MULTIFXLINK 0
+FLOATPOS 0 0 0 0
+FXID {6CE8A952-83FE-BCB6-18B7-731FC056A5FE}
+WAK 0 0
+BYPASS 0 0 0
+<LV2 "LV2: Neural Amp Modeler (Mike Oliphant) (Mono)" http://github.com/mikeoliphant/neural-amp-modeler-lv2 ""
+CFG 0 0 0 ""
+<IN_PINS
+>
+<OUT_PINS
+PIN 0 0 1
+>
+P input_level -6.004999637603759766 output_level 5.395000457763671875 quality_scale 1
+<STATE
+P http://github.com/mikeoliphant/neural-amp-modeler-lv2#model {{ .chezmoi.homeDir }}/.local/share/reaper-studio/guitar/nam/vox-ac15-jonar1.nam 3
+>
+>
+MULTIFXLINK 0
+FLOATPOS 0 0 0 0
+FXID {C46BB8E4-6A1F-0890-1BFA-9ED9C72CB0C3}
+WAK 0 0
+BYPASS 0 0 0
+<LV2 "LV2: LSP Impulse Responses Mono (LSP LV2)" http://lsp-plug.in/plugins/lv2/impulse_responses_mono ""
+CFG 0 0 0 ""
+<IN_PINS
+>
+<OUT_PINS
+PIN 0 0 1
+>
+P enabled 1 fft 6 dry 0 wet 1 drywet 99.99500274658203125 g_out 0.245000004768371582 psh 0 ihc 0 itc 0
+P ifi 0 ifo 0 ils 0 ilc 0 irv 0 cs 1 mk 1 pd 0 wpp 0 eqv 0 lcm 0 lcf 50 eq_0 1 eq_1 1 eq_2 1 eq_3 1 eq_4 1
+P eq_5 1 eq_6 1 eq_7 1 hcm 0 hcf 10000
+<STATE
+P http://lsp-plug.in/plugins/lv2/impulse_responses_mono/ports#ifn {{ .chezmoi.homeDir }}/.local/share/reaper-studio/guitar/ir/emerald/6_Kill_Dill_48.wav 3
+<L http://lsp-plug.in/plugins/lv2/impulse_responses_mono/preset_state "" http://lsp-plug.in/types/lv2/PresetState 3
+S http://lsp-plug.in/types/lv2/PresetState#name "" 3
+I http://lsp-plug.in/types/lv2/PresetState#flags 0 3
+I http://lsp-plug.in/types/lv2/PresetState#tab 0 3
+>
+<T http://lsp-plug.in/plugins/lv2/impulse_responses_mono/KVT 3
+>
+>
+>
+MULTIFXLINK 0
+FLOATPOS 0 0 0 0
+FXID {B12BBC5A-3B7E-AB1D-2C96-57C6E779DA7A}
+WAK 0 0
+BYPASS 0 0 0
+<VST "VST: ReaEQ (Cockos)" reaeq.vst.so 0 "" 1919247729<56535472656571726561657100000000> ""
+cWVlcu5e7f4CAAAAAQAAAAAAAAACAAAAAAAAAAIAAAABAAAAAAAAAAIAAAAAAAAAzQAAAAEAAAAAABAA
+IQAAAAUAAAAAAAAAAQAAAAAAAAAAAFlAAAAAAAAA8D+amZmZmZnpPwEIAAAAAQAAABzvzHZmPm9AAAAAQCXF6j8AAABACtfvPwEIAAAAAQAAAAAAAAAAQI9AAAAAAAAA8D8AAAAAAAAAQAEBAAAAAQAAAMrh6pbze7VAAAAAIDSG5j+amZmZmZnpPwEEAAAAAAAAAHJUTNHM/FNAAAAAAAAA8D8AAAAAAAAAQAEBAAAAAQAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAgABAA==
+AFByb2dyYW0gMQAQAAAA
+>
+MULTIFXLINK 0
+FLOATPOS 0 0 0 0
+FXID {769B52EB-A3F5-A724-CF47-4DF22B0B193C}
+WAK 0 0
+BYPASS 0 0 0
+<LV2 "LV2: GxEcho-Stereo (Guitarix team)" http://guitarix.sourceforge.net/plugins/gx_echo_stereo#_echo_stereo ""
+CFG 0 0 0 ""
+P mode 0 level_r 24.995000839233398438 timt_r 409.995025634765625 level_l 24.995000839233398438 timt_l 374.995025634765625
+P lfo 0.200000002980232239 link 0 BYPASS 0
+>
+MULTIFXLINK 0
+FLOATPOS 0 0 0 0
+FXID {FBA1C098-ECC8-A2DF-D5F9-B56459234FC0}
+WAK 0 0
+BYPASS 0 0 0
+<LV2 "LV2: GxReverb-Stereo (Guitarix team)" http://guitarix.sourceforge.net/plugins/gx_reverb_stereo#_reverb_stereo ""
+CFG 0 0 0 ""
+P dry_wet 34.99500274658203125 lfo 0.200000002980232239 roomsize 0.695000052452087402 damp 0.495000004768371582
+P mode 0
+>
+MULTIFXLINK 0
+FLOATPOS 0 0 0 0
+FXID {CE258614-C159-166C-F71C-FE336180CAD8}
+WAK 0 0
+>
+>

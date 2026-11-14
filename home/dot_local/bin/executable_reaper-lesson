@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+# REAPER Guitar Lesson mode: REAPER processes the guitar (the active tone) and
+# mixes it with the microphone; PipeWire exposes that mix as a virtual mic
+# ("REAPER Lesson Mic") for Discord. No standalone Guitarix is involved.
+#
+# Signal path:
+#   Input 1 (mic)   -> REAPER vocal track (monitor on while armed) -> REAPER out 1-2
+#   Input 2 (DI)    -> REAPER DI track -> send -> active tone    -> REAPER out 1-2
+#   REAPER out 1-2  -> Scarlett headphones (you hear the mix)
+#                   -> reaper.lesson.mix -> reaper.lesson.mic (Discord input)
+#
+# Safety, enforced by "doctor":
+#   * the virtual mic is fed ONLY by REAPER's output (never Discord, never a sink
+#     monitor, never the hardware loopback, never the raw DI)
+#   * Discord's output must not be linked to the virtual mic
+#   * REAPER's inputs come only from Input 1 and Input 2
+#
+# Usage:
+#   reaper-lesson start    open REAPER, build the bus and virtual mic (idempotent)
+#   reaper-lesson stop     remove the lesson links and virtual mic (restores studio wiring)
+#   reaper-lesson doctor   verify the whole lesson graph
+#
+# Discord (manual, once): Input Device "REAPER Lesson Mic", Output Device the
+# Scarlett headphones, Input Mode Voice Activity with sensitivity at minimum,
+# Noise Suppression / Echo Cancellation / AGC off. Scarlett Direct Monitor OFF.
+
+set -euo pipefail
+
+COMMON="$HOME/.local/share/reaper-studio/common.sh"
+[ -f "$COMMON" ] || { echo "reaper-lesson: missing $COMMON (run chezmoi apply)" >&2; exit 1; }
+# shellcheck source=/dev/null
+. "$COMMON"
+STUDIO="$HOME/.local/bin/reaper-studio"
+SCRIPTS="$HOME/.config/REAPER/Scripts/Vocal Studio"
+
+# Run a ReaScript inside the already-running REAPER (no new instance, no save).
+run_live_script() {
+  local script="$1"
+  [ -f "$script" ] || die "missing ReaScript: $script (run chezmoi apply)"
+  have_reaper || die "REAPER is not running"
+  reaper -nonewinst "$script" >/dev/null 2>&1 || true
+}
+
+module_loaded() { pactl list short modules 2>/dev/null | grep -q -- "$1"; }
+
+ensure_bus() {
+  if ! pactl list short sinks | awk '{print $2}' | grep -qx "$LESSON_SINK"; then
+    pactl load-module module-null-sink sink_name="$LESSON_SINK" \
+      sink_properties="device.description=REAPER_Lesson_Mix" >/dev/null
+  fi
+  if ! pactl list short sources | awk '{print $2}' | grep -qx "$LESSON_MIC"; then
+    pactl load-module module-remap-source master="$LESSON_SINK.monitor" \
+      source_name="$LESSON_MIC" source_properties="device.description=REAPER_Lesson_Mic" >/dev/null
+  fi
+}
+
+lesson_sink_ports() {
+  pw-link -i 2>/dev/null | grep -E "^${LESSON_SINK}:playback_(FL|FR)$" || true
+}
+
+wire_lesson() {
+  have_reaper || die "REAPER is not running"
+  ensure_bus
+  local sink_fl sink_fr
+  sink_fl="$(lesson_sink_ports | grep ':playback_FL$' | head -1 || true)"
+  sink_fr="$(lesson_sink_ports | grep ':playback_FR$' | head -1 || true)"
+  [ -n "$sink_fl" ] && [ -n "$sink_fr" ] || die "lesson sink ports not found"
+  local hp_fl hp_fr
+  hp_fl="$(headphone_ports | grep ':playback_FL$' | head -1 || true)"
+  hp_fr="$(headphone_ports | grep ':playback_FR$' | head -1 || true)"
+  [ -n "$hp_fl" ] && [ -n "$hp_fr" ] || die "Scarlett headphones not found"
+  prune_reaper_outputs "${hp_fl}|${hp_fr}|${sink_fl}|${sink_fr}"
+  ensure_link "REAPER:out1" "$hp_fl"
+  ensure_link "REAPER:out2" "$hp_fr"
+  ensure_link "REAPER:out1" "$sink_fl"
+  ensure_link "REAPER:out2" "$sink_fr"
+  log "wired: REAPER out1/out2 -> headphones and -> $LESSON_SINK (virtual mic $LESSON_MIC)"
+}
+
+doctor_lesson() {
+  local fails=0
+  check() { if [ "$1" = ok ]; then log "ok    $2"; else log "FAIL  $2"; fails=$((fails+1)); fi; }
+  if pactl list short sources | awk '{print $2}' | grep -qx "$LESSON_MIC"; then check ok "virtual mic $LESSON_MIC exists"; else check FAIL "virtual mic missing (run start)"; fi
+  # Only REAPER may feed the lesson mix.
+  local feeders bad
+  feeders="$({ peers_of "$LESSON_SINK:playback_FL" '<-'; peers_of "$LESSON_SINK:playback_FR" '<-'; } | sort -u)"
+  if [ -z "$feeders" ]; then check FAIL "lesson mix has no feeder (run wire)"
+  else
+    bad="$(printf '%s\n' "$feeders" | grep -Ev '^REAPER:out[12]$' || true)"
+    if [ -z "$bad" ]; then check ok "lesson mix fed only by REAPER out1/out2"
+    else check FAIL "lesson mix fed by something other than REAPER: $bad"; fi
+  fi
+  bad="$(printf '%s\n' "$feeders" | grep -E 'monitor|Discord|discord|Line4|capture_AUX|alsa_input|Line2' || true)"
+  if [ -z "$bad" ]; then check ok "no monitor, Discord, loopback or raw input feeds the lesson mix"
+  else check FAIL "unsafe feeder into lesson mix (feedback risk): $bad"; fi
+  return "$fails"
+}
+
+stop_lesson() {
+  local src dst
+  pw-link -l 2>/dev/null | python3 -c '
+import sys
+cur=None
+for raw in sys.stdin:
+    if not raw.startswith(" "): cur=raw.strip(); continue
+    if "|->" in raw and cur and cur.startswith("REAPER:out"):
+        print(cur, raw.split("|->",1)[1].strip())
+' | while read -r src dst; do
+    case "$dst" in "$LESSON_SINK":*) pw-link -d "$src" "$dst" 2>/dev/null && log "  unlinked $src -> $dst" ;; esac
+  done
+  # Unload the virtual mic and bus (by their names, not module ids).
+  pactl list short modules | awk -v s="$LESSON_MIC" -v k="$LESSON_SINK" '($2 ~ /remap-source|null-sink/) && ($0 ~ s || $0 ~ k) {print $1}' | while read -r id; do
+    pactl unload-module "$id" 2>/dev/null || true
+  done
+  log "lesson bus removed; REAPER remains on the studio (headphone) wiring"
+}
+
+cmd="${1:-start}"
+case "$cmd" in
+  start)
+    "$STUDIO" start >/dev/null
+    wire_lesson
+    run_live_script "$SCRIPTS/Vocal Studio - Lesson monitoring on.lua"
+    "$0" doctor || true
+    ;;
+  stop)
+    run_live_script "$SCRIPTS/Vocal Studio - Lesson monitoring off.lua"
+    stop_lesson
+    ;;
+  doctor)
+    fails=0
+    EXTRA_OUT_RE="^${LESSON_SINK}:playback_F[LR]\$"
+    doctor_inputs || fails=$((fails + $?))
+    doctor_outputs || fails=$((fails + $?))
+    doctor_lesson || fails=$((fails + $?))
+    if [ "$fails" -eq 0 ]; then log "doctor: lesson graph OK"; else log "doctor: $fails check(s) failed"; exit 1; fi
+    ;;
+  *) echo "usage: reaper-lesson {start|stop|doctor}" >&2; exit 2 ;;
+esac

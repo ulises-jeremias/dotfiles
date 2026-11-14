@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+# Install the guitar amp captures, cabinet IRs and the NAM LV2 plugin used by
+# the REAPER guitar tones. Nothing here is committed to Git: every file is
+# fetched from its upstream source, pinned to a version and SHA-256, and
+# rejected if the checksum does not match.
+#
+#   reaper-guitar-assets install   download, verify and install (idempotent)
+#   reaper-guitar-assets verify    check that every installed file matches its pin
+#
+# Installs (user level only, no root, no system packages):
+#   ~/.lv2/neural_amp_modeler.lv2               Neural Amp Modeler LV2 v0.2.3 (GPL-3.0)
+#   ~/.local/share/reaper-studio/guitar/nam/    NAM amp captures (GPL-3.0)
+#   ~/.local/share/reaper-studio/guitar/ir/     cabinet IRs (CC0)
+#
+# Sources and licenses are recorded in ~/.local/share/reaper-studio/guitar/SOURCES.txt.
+
+set -euo pipefail
+
+ASSETS="${XDG_DATA_HOME:-$HOME/.local/share}/reaper-studio/guitar"
+LV2_DIR="$HOME/.lv2"
+
+NAM_LV2_URL="https://github.com/mikeoliphant/neural-amp-modeler-lv2/releases/download/v0.2.3/neural_amp_modeler_lv2_linux_x64v3.tgz"
+NAM_LV2_SHA="a9c5fbbd79624ef28d543c7aec5c511c32c6abc974524c0efb0e84c3811162ee"
+
+# NAM captures: pelennor2170/NAM_models, pinned commit (GPL-3.0, NAM community).
+NAM_COMMIT="944ca6718581c60cc5365586d2f378d740e181f3"
+NAM_BASE="https://raw.githubusercontent.com/pelennor2170/NAM_models/$NAM_COMMIT"
+# local-name | upstream file name | sha256
+NAM_MODELS=(
+  "6505plus-red-noboost.nam|Helga B 6505+ Red ch - NoBoost.nam|f389f5fcd4675cb7d8ec5134bea4d080fe12cac57839545a8f226f8f8797379b"
+  "engl-e530-840-ds1.nam|Tom C Engl e530 preamp & 840 power amp with Boss DS1 Overdrive.nam|4c0f0c0576e55c2e362dba70616f7e6cc745fdbf3cc489e53d98a38956c97239"
+  "mesa-markiv.nam|Roman A LT_MESA_MARKIV_1.nam|f4c06c5f01f1af7a6243c4fc2a1480bbed9036295735b99e9d20842b7dd23431"
+  "jcm2000-lead2-g8.nam|Tim R JCM2000 L2 G8.nam|8ee6307f5a651124cf6e13f69bba4df725f7174ea3323b1ae0602243e169b1b2"
+  "jcm2000-crunch.nam|Tim R JCM2000 Crunch.nam|d687c5829ae246a36d573d705bd296e8c26be48385f2948edf2db67f2ba67e87"
+  "vox-ac15-jonar1.nam|Phillipe P VOXAC15-JonAr1.nam|44d064eb75bdeda2a81538f87b9a44b866d34c5021be01363bcb7802aab1e302"
+  "twin-reverb-normal-bright.nam|Tim R Fender TwinVerb Norm Bright.nam|6146d1758ddab94c529dba77f1feda8b804051f0e19117086a58db6b73b2e46b"
+)
+
+# Cabinet IRs by Jester Dyne Productions, CC0 (stated in each pack's handbook).
+BRUTAL_URL="https://www.jester-dyne-productions.com/content/files/2023/04/JestersBrutalPack_1.0.zip"
+BRUTAL_SHA="299dc053f01ebd1e980459adc48f9c6b8a8c7af91917b4f946512eefdbb311ea"
+EMERALD_URL="https://darwinscat.com/sound-utils/cabinet-ir-utility/samples/jesters-emerald-pack.zip"
+EMERALD_SHA="a5b3eeea4816bf94d85182341877b42876dfa0cd6c2c570cf6761933b0c79d70"
+# IR files the presets reference (all 48 kHz files of both packs are installed).
+REQUIRED_IRS=(
+  "brutal/1_Cookie_Monster.wav" "brutal/5_Iceburn_Suicide.wav" "brutal/12_World_Collider.wav"
+  "emerald/3_Wasabi_Warrior_48.wav" "emerald/5_Don_Spinacio_48.wav" "emerald/6_Kill_Dill_48.wav"
+)
+
+log() { printf '%s\n' "$*"; }
+die() { printf 'reaper-guitar-assets: %s\n' "$*" >&2; exit 1; }
+
+need() { command -v "$1" >/dev/null 2>&1 || die "missing required tool: $1"; }
+
+sha_ok() { # $1 file, $2 expected sha256
+  [ -f "$1" ] && [ "$(sha256sum "$1" | cut -d' ' -f1)" = "$2" ]
+}
+
+fetch() { # $1 url, $2 dest, $3 sha256 (download to a temp file, verify, then move)
+  local tmp
+  tmp="$(mktemp "$WORK/dl.XXXXXX")"
+  curl -fsSL --proto '=https' --tlsv1.2 "$1" -o "$tmp" || die "download failed: $1"
+  sha_ok "$tmp" "$3" || die "checksum mismatch for $1 (refusing to install)"
+  mv "$tmp" "$2"
+}
+
+urlencode() { python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$1"; }
+
+install_all() {
+  need curl; need sha256sum; need unzip; need tar; need python3
+  WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
+  mkdir -p "$ASSETS/nam" "$ASSETS/ir/brutal" "$ASSETS/ir/emerald" "$LV2_DIR"
+
+  if sha_ok "$ASSETS/.nam-lv2.tgz" "$NAM_LV2_SHA" && [ -f "$LV2_DIR/neural_amp_modeler.lv2/manifest.ttl" ]; then
+    log "ok      NAM LV2 v0.2.3 already installed"
+  else
+    fetch "$NAM_LV2_URL" "$ASSETS/.nam-lv2.tgz" "$NAM_LV2_SHA"
+    tar xzf "$ASSETS/.nam-lv2.tgz" -C "$LV2_DIR" neural_amp_modeler.lv2
+    log "install NAM LV2 v0.2.3 -> $LV2_DIR/neural_amp_modeler.lv2"
+  fi
+
+  local entry name src sha
+  for entry in "${NAM_MODELS[@]}"; do
+    IFS='|' read -r name src sha <<<"$entry"
+    if sha_ok "$ASSETS/nam/$name" "$sha"; then log "ok      nam/$name"; continue; fi
+    fetch "$NAM_BASE/$(urlencode "$src")" "$ASSETS/nam/$name" "$sha"
+    log "install nam/$name"
+  done
+
+  local pack url psha sub
+  for pack in brutal emerald; do
+    if [ "$pack" = brutal ]; then url="$BRUTAL_URL"; psha="$BRUTAL_SHA"; else url="$EMERALD_URL"; psha="$EMERALD_SHA"; fi
+    if sha_ok "$ASSETS/.$pack.zip" "$psha" && [ -n "$(ls -A "$ASSETS/ir/$pack" 2>/dev/null)" ]; then
+      log "ok      ir/$pack"; continue
+    fi
+    fetch "$url" "$ASSETS/.$pack.zip" "$psha"
+    rm -rf "$WORK/x"; mkdir -p "$WORK/x"
+    unzip -q -o "$ASSETS/.$pack.zip" -d "$WORK/x"
+    sub="$(find "$WORK/x" -type d -name 48kHz ! -path '*__MACOSX*' | head -1)"
+    [ -n "$sub" ] || die "no 48kHz folder in $pack pack"
+    find "$sub" -maxdepth 1 -name '*.wav' -exec cp {} "$ASSETS/ir/$pack/" \;
+    log "install ir/$pack ($(find "$ASSETS/ir/$pack" -name '*.wav' | wc -l) IRs)"
+  done
+
+  write_sources
+  verify_all
+}
+
+write_sources() {
+  cat >"$ASSETS/SOURCES.txt" <<EOF
+Guitar assets for the REAPER tones (installed by reaper-guitar-assets; not in Git).
+
+Neural Amp Modeler LV2 v0.2.3 (Mike Oliphant), GPL-3.0
+  $NAM_LV2_URL
+  sha256 $NAM_LV2_SHA
+
+NAM amp captures: pelennor2170/NAM_models @ $NAM_COMMIT, GPL-3.0
+  (models made by the Neural Amp Modeler community)
+$(for e in "${NAM_MODELS[@]}"; do IFS='|' read -r n s h <<<"$e"; printf '  %s  <- "%s"  sha256 %s\n' "$n" "$s" "$h"; done)
+
+Cabinet IRs by Jester Dyne Productions (jester-dyne-productions.com), CC0 1.0
+  Brutal pack (BG412S: Celestion Vintage 30 / Rockdriver Jr / Eminence DV-77)
+    $BRUTAL_URL  sha256 $BRUTAL_SHA
+  Emerald pack (Marshall 1960AX, Celestion Greenback G12M 25W)
+    $EMERALD_URL  sha256 $EMERALD_SHA
+EOF
+}
+
+verify_all() {
+  local fails=0 entry name src sha ir
+  if [ -f "$LV2_DIR/neural_amp_modeler.lv2/neural_amp_modeler.so" ]; then log "ok      NAM LV2 plugin"; else log "FAIL    NAM LV2 plugin missing"; fails=$((fails+1)); fi
+  for entry in "${NAM_MODELS[@]}"; do
+    IFS='|' read -r name src sha <<<"$entry"
+    if sha_ok "$ASSETS/nam/$name" "$sha"; then log "ok      nam/$name"; else log "FAIL    nam/$name"; fails=$((fails+1)); fi
+  done
+  for ir in "${REQUIRED_IRS[@]}"; do
+    if [ -f "$ASSETS/ir/$ir" ]; then log "ok      ir/$ir"; else log "FAIL    ir/$ir"; fails=$((fails+1)); fi
+  done
+  if [ "$fails" -eq 0 ]; then log "verify: all guitar assets present"; else log "verify: $fails missing or modified (run: reaper-guitar-assets install)"; exit 1; fi
+}
+
+case "${1:-install}" in
+  install) install_all ;;
+  verify) verify_all ;;
+  *) echo "usage: reaper-guitar-assets {install|verify}" >&2; exit 2 ;;
+esac
