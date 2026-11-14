@@ -44,7 +44,7 @@ check(reaper.GetProjectName(0, "") ~= "", "project loaded: " .. reaper.GetProjec
 local EXPECT_ORDER = {
   "BACKING", "Backing Track", "VOCAL ROUTING", "Vocal Bus", "LEAD VOCALS",
   "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "VOCAL LAYERS",
-  "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Delay",
+  "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Room", "Vocal Delay",
   "ELECTRIC GUITAR", "Electric Guitar DI", "Crystal Clean", "Warm Clean - Ambient",
   "AC-DC - Classic Crunch", "Avenged Sevenfold - Lead", "Machine Head - Groove Thrash",
   "Lamb of God - Groove Metal", "Slipknot - Nu Metal", "Asking Alexandria - Metalcore",
@@ -136,6 +136,72 @@ end
 check(hw_channels(reaper.GetMasterTrack(0)) == "0,4", "master -> out 1-2 (headphones) and 5-6 (OBS) (got "
   .. hw_channels(reaper.GetMasterTrack(0)) .. ")")
 
+-- Vocal presets: key parameters read back from the saved project (units as
+-- REAPER displays them: Hz, dB, ms; Calf threshold is linear).
+local VOCAL_EXPECT = {
+  ["Lead Clean"] = { eq = { 80, 250, -2, 3000, 3, 10000, 2 }, comp = { -27, 3 }, deess = 0.04, sends = { ["Vocal Reverb"] = -18, ["Vocal Room"] = -28, ["Vocal Delay"] = -30 } },
+  ["Lead Clean FX"] = { eq = { 80, 250, -2.5, 3000, 3.5, 10000, 2.5 }, comp = { -27, 4 }, deess = 0.04, sends = { ["Vocal Reverb"] = -22, ["Vocal Room"] = -22, ["Vocal Delay"] = -26 } },
+  ["Grit Vocal"] = { eq = { 100, 250, -3, 3000, 3.5, 10000, 1.5 }, comp = { -27, 4 }, deess = 0.04, sends = { ["Vocal Reverb"] = -32, ["Vocal Room"] = -20, ["Vocal Delay"] = -32 } },
+  ["Harsh Vocal"] = { eq = { 120, 250, -4, 4000, 3, 8000, 1 }, comp = { -28, 5 }, deess = 0.05, sends = { ["Vocal Room"] = -24, ["Vocal Delay"] = -34 } },
+  ["Double L"] = { eq = { 120, 250, -2, 3000, 2, 10000, 1 }, comp = { -26, 3 }, deess = 0.03, sends = { ["Vocal Reverb"] = -20, ["Vocal Room"] = -24 } },
+  ["Double R"] = { eq = { 120, 250, -2, 3000, 2, 10000, 1 }, comp = { -26, 3 }, deess = 0.03, sends = { ["Vocal Reverb"] = -20, ["Vocal Room"] = -24 } },
+  ["Harmonies"] = { eq = { 110, nil, nil, 3000, 0, 10000, 0 }, comp = { -26, 2 }, deess = 0.04, sends = { ["Vocal Reverb"] = -20, ["Vocal Delay"] = -26 } },
+}
+local function num(tr, fx, pname)
+  for p = 0, reaper.TrackFX_GetNumParams(tr, fx) - 1 do
+    local _, n = reaper.TrackFX_GetParamName(tr, fx, p, "")
+    if n == pname then
+      local _, v = reaper.TrackFX_GetFormattedParamValue(tr, fx, p, "")
+      return tonumber(v:match("[-+]?[%d%.]+"))
+    end
+  end
+end
+local function near(a, b, tol) return a ~= nil and b ~= nil and math.abs(a - b) <= (tol or 0.06) end
+local function find_fx(tr, needle)
+  for k = 0, reaper.TrackFX_GetCount(tr) - 1 do
+    local _, n = reaper.TrackFX_GetFXName(tr, k, "")
+    if n:find(needle, 1, true) then return k end
+  end
+  return -1
+end
+for i = 0, n - 1 do
+  local tr = reaper.GetTrack(0, i)
+  local name = track_name(tr)
+  local e = VOCAL_EXPECT[name]
+  if e then
+    check(reaper.GetMediaTrackInfo_Value(tr, "I_RECINPUT") == 0, name .. ": records mono Scarlett Input 1")
+    local eqi, ci, di = find_fx(tr, "ReaEQ"), find_fx(tr, "ReaComp"), find_fx(tr, "Calf Deesser")
+    check(eqi >= 0 and ci > eqi and di > ci, name .. ": EQ -> compressor -> de-esser")
+    check(not reaper.TrackFX_GetEnabled(tr, find_fx(tr, "ReaGate")), name .. ": gate bypassed")
+    if eqi >= 0 then
+      check(near(num(tr, eqi, "Freq-High Pass 5"), e.eq[1], 0.6), string.format("%s: high-pass %d Hz", name, e.eq[1]))
+      if e.eq[2] then
+        check(near(num(tr, eqi, "Freq-Band 2"), e.eq[2], 0.6) and near(num(tr, eqi, "Gain-Band 2"), e.eq[3]),
+          string.format("%s: band 2 %d Hz %+.1f dB", name, e.eq[2], e.eq[3]))
+      end
+      check(near(num(tr, eqi, "Freq-Band 3"), e.eq[4], 0.6) and near(num(tr, eqi, "Gain-Band 3"), e.eq[5]),
+        string.format("%s: band 3 %d Hz %+.1f dB", name, e.eq[4], e.eq[5]))
+      check(near(num(tr, eqi, "Freq-High Shelf 4"), e.eq[6], 0.6) and near(num(tr, eqi, "Gain-High Shelf 4"), e.eq[7]),
+        string.format("%s: high shelf %d Hz %+.1f dB", name, e.eq[6], e.eq[7]))
+    end
+    if ci >= 0 then
+      check(near(num(tr, ci, "Threshold"), e.comp[1]) and near(num(tr, ci, "Ratio"), e.comp[2]),
+        string.format("%s: compressor %d dB %.0f:1", name, e.comp[1], e.comp[2]))
+    end
+    if di >= 0 then check(near(num(tr, di, "Threshold"), e.deess, 0.006), string.format("%s: de-esser threshold %.2f", name, e.deess)) end
+    local got = {}
+    for k = 0, reaper.GetTrackNumSends(tr, 0) - 1 do
+      local dst = reaper.GetTrackSendInfo_Value(tr, 0, k, "P_DESTTRACK")
+      local v = reaper.GetTrackSendInfo_Value(tr, 0, k, "D_VOL")
+      got[track_name(dst)] = v > 0 and 20 * math.log(v, 10) or -math.huge
+    end
+    for dst, db in pairs(e.sends) do
+      check(near(got[dst], db, 0.1), string.format("%s: send to %s %d dB", name, dst, db))
+    end
+    for dst in pairs(got) do check(e.sends[dst] ~= nil, string.format("%s: no unexpected send (%s)", name, dst)) end
+  end
+end
+
 -- Track templates and FX chains must load into a fresh track with their FX.
 local function read_file(p)
   local f = io.open(p, "r")
@@ -154,21 +220,30 @@ local function load_into_new_track(label, chunk, expect_fx)
   fx_summary(tr, "        ")
   reaper.DeleteTrack(tr)
 end
+-- gate, EQ, compressor(s), de-esser, optional parallel saturation
+local VOCAL_FX_COUNT = {
+  ["Lead Clean"] = 4, ["Lead Clean FX"] = 6, ["Grit Vocal"] = 5, ["Harsh Vocal"] = 5,
+  ["Double L"] = 4, ["Double R"] = 4, ["Harmonies"] = 4, ["Electric Guitar DI"] = 0,
+  ["Optional/High Harsh"] = 5, ["Optional/Low Harsh - Growl"] = 5,
+  ["Vocal Reverb"] = 1, ["Vocal Room"] = 1, ["Vocal Delay"] = 1,
+}
 if TT_DIR then
-  for _, f in ipairs({ "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "Double L", "Double R", "Harmonies", "Electric Guitar DI" }) do
+  for _, f in ipairs({ "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "Double L", "Double R", "Harmonies",
+                       "Electric Guitar DI", "Optional/High Harsh", "Optional/Low Harsh - Growl" }) do
     local c = read_file(TT_DIR .. "/" .. f .. ".RTrackTemplate")
     check(c ~= nil, "track template present: " .. f)
-    if c then load_into_new_track("TT " .. f, c, ({ ["Lead Clean"]=3, ["Lead Clean FX"]=3, ["Grit Vocal"]=4, ["Harsh Vocal"]=4, ["Double L"]=2, ["Double R"]=2, ["Harmonies"]=2, ["Electric Guitar DI"]=0 })[f]) end
+    if c then load_into_new_track("TT " .. f, c, VOCAL_FX_COUNT[f]) end
   end
 end
 if FX_DIR then
-  for _, f in ipairs({ "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "Double L", "Double R", "Harmonies", "Vocal Reverb", "Vocal Delay" }) do
+  for _, f in ipairs({ "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "Double L", "Double R", "Harmonies",
+                       "Vocal Reverb", "Vocal Room", "Vocal Delay", "Optional/High Harsh", "Optional/Low Harsh - Growl" }) do
     local c = read_file(FX_DIR .. "/" .. f .. ".RfxChain")
     check(c ~= nil, "fx chain present: " .. f)
     if c then
       -- An RfxChain is a bare <FXCHAIN> block; wrap it in a TRACK chunk to load it.
       local wrapped = "<TRACK\n" .. c .. ">\n"
-      load_into_new_track("FX " .. f, wrapped, ({ ["Lead Clean"]=3, ["Lead Clean FX"]=3, ["Grit Vocal"]=4, ["Harsh Vocal"]=4, ["Double L"]=2, ["Double R"]=2, ["Harmonies"]=2, ["Vocal Reverb"]=1, ["Vocal Delay"]=1, })[f])
+      load_into_new_track("FX " .. f, wrapped, VOCAL_FX_COUNT[f])
     end
   end
 end

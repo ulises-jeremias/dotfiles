@@ -128,3 +128,21 @@ def test_reaper_preferences_setup_is_install_time_only() -> None:
     assert "pgrep -x reaper" in text, "never edit reaper.ini under a running REAPER"
     assert "reaper.ini.pre-music-studio" in text, "rollback copy"
     assert "sudo" not in text and "systemctl" not in text
+
+
+def test_patchbay_can_start_minimized() -> None:
+    # measured: without its tray icon, `qpwgraph --minimized` exits at once
+    text = REAPER_SETUP.read_text()
+    for key in ("SystemTray", "StartMinimized", "SystemTrayQueryClose"):
+        assert f'"{key}"' in text
+    assert "pgrep -x qpwgraph" in text, "qpwgraph rewrites its config on exit: edit only while it is not running"
+
+
+def test_templates_record_48k_24bit_wav() -> None:
+    import base64
+    for name in ("Music Studio.RPP.tmpl", "Modern Rock & Metal - Vocal Studio.RPP.tmpl"):
+        text = (HOME / "dot_config/REAPER/ProjectTemplates" / name).read_text()
+        cfg = re.search(r"<RECORD_CFG\n\s+(\S+)", text).group(1)
+        raw = base64.b64decode(cfg)
+        assert raw[:4] == b"evaw" and raw[4] == 24, f"{name}: recording must be 24-bit WAV"
+        assert re.search(r"^  SAMPLERATE 48000 1 ", text, flags=re.M), f"{name}: 48 kHz"

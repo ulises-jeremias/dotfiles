@@ -262,6 +262,79 @@ number of dB** (otherwise the gate opens on hum, but never cuts notes).
    with a song by that band playing on the Backing Track. Tell me what is off (too much or
    too little gain, mud, fizz, thin) and I adjust.
 
+## Vocal presets (Scarlett Input 1)
+
+Seven vocal tracks, organized by singing style and purpose (not by band). Pick
+one with the **Music Studio** toolbar (*Voice: Natural*, *Voice: Powerful*,
+*Voice: Grit*, *Voice: Harsh*, *Double L*, *Double R*, *Harmony*): it arms
+exactly that track on mono Input 1 with input monitoring, mutes the other lead
+styles, and never touches the guitar. Every track records the **dry** mic; the
+chain is applied live and stays editable.
+
+| Toolbar / track | Purpose (references are direction, not imitation) | Chain |
+|-----------------|---------------------------------------------------|-------|
+| Natural Clean / **Lead Clean** | Héroes del Silencio, "So Far Away", "Snuff": intimate, full baritone, audible dynamics | ReaGate (off) → ReaEQ HP 80 Hz, 250 Hz -2 dB, 3 kHz +3 dB, shelf 10 kHz +2 dB → ReaComp 3:1, -27 dB, 10/100 ms, soft knee 6 dB → Calf Deesser → sends: hall -18, room -28, delay -30 |
+| Powerful Clean / **Lead Clean FX** | BMTH "Drown", AA "Moving On": forward, dense, polished | EQ HP 80, 250 -2.5, 3 kHz +3.5, 10 kHz +2.5 → ReaComp 4:1 -27 dB → second ReaComp 2:1 -22 dB, 30/150 ms (density) → de-esser → loser/Saturation 8 % at **35 % wet** → hall -22, room -22, delay -26 |
+| Grit / **Grit Vocal** | "Locust", "Duality", "Nightmare": rasp, midrange projection | EQ HP 100, 250 -3, 3 kHz +3.5, 10 kHz +1.5 → ReaComp 4:1 -27 dB → de-esser → Saturation 20 % at 40 % wet → room -20, hall -32, delay -32 |
+| Harsh / **Harsh Vocal** | "Shadow Moses", "Psychosocial", "Davidian": aggressive, intelligible | EQ HP 120, 250 -4, 4 kHz +3, 8 kHz +1 → ReaComp 5:1 -28 dB, 5/120 ms → de-esser at 4.5 kHz (harsh-band control) → Saturation 10 % at 25 % wet → room -24, delay -34, no hall |
+| **Double L / Double R** | wide layered choruses | EQ HP 120, 250 -2, 3 kHz +2, 10 kHz +1 → ReaComp 3:1 -26 dB → de-esser (stronger: doubles stack sibilance) → pan 50 % L/R, -10 dB, hall -20, room -24 |
+| **Harmonies** | supporting melodic layers | EQ HP 110, flat → ReaComp 2:1 -26 dB → de-esser → -12 dB, hall -20, delay -26 |
+
+Optional track templates (*Track > Insert track from template > Vocal Studio >
+Optional*): **High Harsh** (HP 140, less body, de-ess at 5 kHz) and **Low Harsh -
+Growl** (HP 80, keeps the chest, bite at 1.2 kHz, top end -1 dB). They are not in
+the default project, to keep it uncluttered.
+
+Returns (shared, 100 % wet, dry muted): **Vocal Reverb** (hall: room 35, damping
+70, pre-delay 20 ms, 200 Hz-8 kHz), **Vocal Room** (short: room 30 = ReaVerbate's
+smallest, damping 80, 5 ms, 250 Hz-7 kHz), **Vocal Delay** (0.25 s = 1/8 at
+120 BPM, feedback -10 dB, 200 Hz-6 kHz; change it with the song tempo). All vocal
+tracks feed the **Vocal Bus** folder (no bus compression: styles keep their own
+dynamics); the returns and the bus go to the master; the bus (dry) also feeds the
+Discord Lesson Bus.
+
+### What the audit changed (measured)
+
+Measured with a **synthetic** test signal (baritone-range harmonic vowels with
+formants and vibrato, a soft and a loud phrase, "s" bursts), rendered through
+each chain in REAPER. It checks the processing, not the musical result.
+
+| Finding in the previous chains | Fix | Measured after |
+|---|---|---|
+| Compressor thresholds (-20 dB) barely touched phrases peaking -12 dBFS (1-2 dB) | thresholds -26 to -28 dB | strong phrases: Lead Clean -4 dB, Lead Clean FX -5, Grit -4.5, Harsh -5.5, Harmonies -2.5; soft phrases untouched |
+| No de-esser | Calf Deesser, Wide mode, after the compressor | "s" -8 to -12 dB relative to the vowel on cleans/doubles, -4 to -5 on harsh (where bite is wanted); sustained vowels keep their top end |
+| (rejected) JS Liteon de-esser | | only 1.5-2 dB on a loud "s"; its threshold scale is slider/2 dBFS |
+| (rejected) Calf Deesser Split mode | | cut 6-12 kHz by ~6 dB permanently, even without triggering |
+| waveShapingDstr 12 % on Harsh (hard waveshaper on the whole voice) | removed; light saturation in parallel | no fizz added (3-6 kHz +2.5 dB is the EQ) |
+| Saturation 100 % wet on Grit | 40 % wet (REAPER per-FX mix) | rasp kept, density added |
+| Harsh +6 dB at 4 kHz / +3 dB at 8 kHz; Grit +5 dB at 3 kHz | +3/+1 and +3.5 | less pain/nasality on already bright performances |
+| 250 Hz -3 to -5 dB everywhere | -2 to -4 | baritone body kept (80-400 Hz only -1 to -2 dB on the cleans) |
+| ReaDelay "Length (musical)" left at its default 2.00, added to the 0.25 s | set to 0 | delay is the intended 0.25 s |
+| One long reverb for every style | added the short Vocal Room | grit/harsh/doubles get depth without a tail |
+
+Every output peaks at -13 to -15.5 dBFS for a -12 dBFS input: no clipping, no
+makeup gain.
+
+### Recording and gain staging
+
+1. Scarlett **Input 1**, INST off, **Direct Monitor OFF** (REAPER monitors you
+   through the chain; both at once would double your voice).
+2. Sing the loudest passage and set the Scarlett gain so REAPER's meter on the
+   armed vocal track peaks about **-18 to -10 dBFS**. Read REAPER's meter, not
+   the gain ring. Never clip.
+3. 48 kHz, 24-bit WAV (REAPER's default recording format), mono input.
+4. Press Record. Recording again over a take adds a new take (press **T** to
+   switch takes and compare).
+
+Monitoring effects and mixing are the same chain (they stay live and editable);
+nothing is printed into the recording. Master/export processing is not part of
+these presets.
+
+**Harsh vocals are a technique, not an effect.** The presets only shape a
+scream that is already performed safely; they never need you to push harder.
+Learn fry/false-cord technique from a qualified teacher. Pain, a burning
+throat or hoarseness that lasts are reasons to stop.
+
 ## Files
 
 - Templates: `~/.config/REAPER/ProjectTemplates/Music Studio.RPP` (default) and
@@ -286,36 +359,40 @@ number of dB** (otherwise the gate opens on hum, but never cuts notes).
 
 ## Status
 
-Verified on the host:
+Verified on the host (2026-11-14):
 
-- Builder: 460 checks, 0 failures; every tone keeps all its plugins, and its amp
-  capture and cabinet IR are loaded and saved.
-- Deployed files: 183 reload checks, 0 failures; each tone's track template and FX
-  chain loads with its amp capture and IR (loaded one at a time).
-- Routing: REAPER `in1` = Input 1, `in2` = Input 2, loopback excluded; studio and
-  lesson doctors pass; lesson start/stop is idempotent.
-- Re-amp, gain staging, gate and noise measurements described above.
+- Builder: 0 failures; every tone keeps its plugins, amp capture and IR; the
+  active Music Studio tone is saved only after its amp capture reloads.
+- Reload verifier on both templates: 320 checks, 0 failures (structure, buses,
+  every vocal EQ band/compressor/de-esser/send value, every track template and
+  FX chain including the optional harsh variants).
+- Native routing: PipeWire restart leaves the default devices unchanged; REAPER
+  opened from the menu starts on Music Studio at quantum 256; the qpwgraph
+  patchbay (tray, minimized) restores all links after REAPER restarts;
+  `reaper-studio doctor` passes; `repair` recovers a removed link.
+- Isolation: a test tone on the Backing Track is 57 dB above the noise in
+  *REAPER Program* and absent from *REAPER Lesson Mic*; no link reaches REAPER or
+  the lesson mic from Discord.
+- OBS: the Music Studio collection loads its three scenes and captures
+  `reaper_program` and `discord_call.monitor`.
+- Guitar: the one-click tone actions bring each tone online with its amp
+  capture (tone output measured while playing).
+- Vocals: compression, de-essing, tone and headroom measured on a synthetic
+  test signal (see *Vocal presets*).
 
 Pending (needs you):
 
-- **Your listening approval of every tone.** Nothing here proves they sound right
-  to you.
-- Pickup type and the Input 2 gain from the checklist (then the gate thresholds).
-- Discord end to end, and vocal calibration with a real take.
+- **Listening approval** of every guitar tone and vocal preset on real
+  performances. Nothing here proves they sound right to you.
+- **A real vocal take** per style to confirm the compressor and de-esser
+  thresholds (the numbers assume strong phrases peaking about -12 dBFS).
+- **Metronome isolation** from Discord/OBS: by REAPER's design it plays on
+  hardware outputs 1-2 only, but the measurement was masked by live input.
+- **A Discord call** end to end (input *REAPER Lesson Mic*, output *Discord Call*).
+- **OBS:** pick the screen/window once (desktop portal) and your webcam once; no
+  webcam is connected now.
+- **OBS virtual camera:** needs the `v4l2loopback` kernel module (root install,
+  not done: ask before installing).
+- Pickup type and the Input 2 gain (the DI now peaks near -10 dBFS: the guitar
+  gate thresholds should be re-measured at this gain).
 - Installed REAPER is an evaluation copy.
-
-The Guitarix configuration is no longer in this repo: the `silentz0r` bank and
-the REAPER "Hard Stuff" / "Machine Head" chains that copied it were removed when
-the NAM tones replaced them. On existing hosts the one-shot script
-`home/.chezmoiscripts/linux/run_after_remove-retired-guitarix-config.sh.tmpl`
-deletes those leftover files once (it never touches Guitarix's own state or a
-bank you save again later). The bank is still in Git history:
-
-```sh
-git log --diff-filter=D --format=%h -1 -- home/dot_config/guitarix/banks/silentz0r.gx
-git show <that-commit>^:home/dot_config/guitarix/banks/silentz0r.gx > silentz0r.gx
-```
-
-The `guitarix` package stays installed: it provides the LV2 pedals the tones use
-(GxTubeScreamer, GxChorus, GxEcho, GxReverb). The standalone Guitarix app is not
-launched or configured by anything here.

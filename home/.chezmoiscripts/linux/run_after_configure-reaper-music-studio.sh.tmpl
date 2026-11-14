@@ -20,6 +20,41 @@ ini="$dest_dir/.config/REAPER/reaper.ini"
 template="$dest_dir/.config/REAPER/ProjectTemplates/Music Studio.RPP"
 backup_dir="$dest_dir/.local/state/reaper-backups"
 
+# qpwgraph (the patchbay that keeps the links) autostarts minimized: that needs
+# its tray icon, otherwise "minimized" means no window and it exits at once
+# (measured). Same keys as qpwgraph's Setup > System tray options. qpwgraph
+# rewrites this file when it quits, so it is only edited while not running.
+qpw_conf="$dest_dir/.config/rncbc.org/qpwgraph.conf"
+if ! pgrep -x qpwgraph >/dev/null 2>&1; then
+  mkdir -p "$(dirname "$qpw_conf")"
+  touch "$qpw_conf"
+  python3 - "$qpw_conf" <<'PY'
+import re
+import sys
+
+path = sys.argv[1]
+text = open(path, encoding="utf-8").read()
+want = {"SystemTray": "true", "SystemTrayQueryClose": "false", "StartMinimized": "true"}
+m = re.search(r"(?m)^\[Options\]\n", text)
+if not m:
+    text = text.rstrip("\n") + ("\n\n" if text.strip() else "") + "[Options]\n"
+    m = re.search(r"(?m)^\[Options\]\n", text)
+start = m.end()
+nxt = re.search(r"(?m)^\[", text[start:])
+end = start + nxt.start() if nxt else len(text)
+section = text[start:end]
+for key, value in want.items():
+    if re.search(rf"(?m)^{key}=", section):
+        section = re.sub(rf"(?m)^{key}=.*$", f"{key}={value}", section)
+    else:
+        section = f"{key}={value}\n" + section
+new = text[:start] + section + text[end:]
+if new != text:
+    open(path, "w", encoding="utf-8").write(new)
+    print("REAPER music studio: enabled the qpwgraph tray icon (patchbay starts minimized)")
+PY
+fi
+
 [ -f "$ini" ] || exit 0           # REAPER never started yet: nothing to configure
 [ -f "$template" ] || exit 0      # template not deployed yet
 

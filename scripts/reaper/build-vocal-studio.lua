@@ -178,20 +178,50 @@ local function comp(tr, cfg)
   set_value(tr, fx, "ReaComp", "Ratio", cfg.ratio)
   set_value(tr, fx, "ReaComp", "Attack", cfg.att)
   set_value(tr, fx, "ReaComp", "Release", cfg.rel)
+  -- soft knee (dB) for cleans: gain reduction eases in instead of clamping
+  if cfg.knee then set_value(tr, fx, "ReaComp", "Knee", cfg.knee) end
+end
+
+-- REAPER's own per-plugin dry/wet (the "Wet" parameter just before "Delta",
+-- present on every FX): parallel processing without extra tracks.
+local function fx_mix(tr, fx, pct)
+  local p = reaper.TrackFX_GetNumParams(tr, fx) - 2
+  local _, pname = reaper.TrackFX_GetParamName(tr, fx, p, "")
+  check(pname == "Wet", "per-FX mix parameter found (" .. pname .. ")")
+  reaper.TrackFX_SetParamNormalized(tr, fx, p, pct / 100)
+  local _, shown = reaper.TrackFX_GetFormattedParamValue(tr, fx, p, "")
+  check(math.abs((tonumber(shown) or -1) - pct) < 1, string.format("per-FX mix %d%% (got %s)", pct, shown))
+end
+
+-- Dynamic de-esser: Calf Deesser (LV2, calf package) in Wide mode: detection
+-- is centred on `peak` Hz and the voice is turned down only while sibilance
+-- crosses the threshold. Measured on a synthetic test signal: an "s" drops
+-- ~11 dB relative to the vowel and sustained vowels keep their top end.
+-- Split mode was rejected: it cut 6-12 kHz by ~6 dB permanently, even with a
+-- threshold that never triggered. The bundled JS Liteon de-esser was rejected
+-- too: only 1.5-2 dB on a loud "s" (its threshold scale is slider/2 dBFS).
+-- Threshold is linear (0.04 = -28 dB); meters: "Detected", "Gain Reduction".
+local function deesser(tr, cfg)
+  -- add_fx, not lv2(): defined further down; Calf ships with its own Bypass off
+  local fx = add_fx(tr, "LV2: Calf Deesser (Calf Studio Gear)")
+  if fx < 0 then return end
+  set_norm(tr, fx, "Calf Deesser", "Mode", 0.0, "Wide")
+  set_value(tr, fx, "Calf Deesser", "Threshold", cfg.thr_lin)
+  set_value(tr, fx, "Calf Deesser", "Ratio", cfg.ratio)
+  set_value(tr, fx, "Calf Deesser", "Split", cfg.split)
+  set_value(tr, fx, "Calf Deesser", "Peak", cfg.peak)
 end
 
 -- Distortion / saturation: only single-control JSFX exist here (verified by
 -- enumerating parameters). Drive/Tone/Mix from the brief do not exist.
-local function saturation(tr, amount)
+-- loser/Saturation is a static sine waveshaper (no drive/mix controls of its
+-- own), so it is blended in parallel with REAPER's per-FX mix: density and
+-- harmonics without fuzz on the consonants.
+local function saturation(tr, amount, mix)
   local fx = add_fx(tr, "JS: loser/Saturation")
   if fx < 0 then return end
   set_value(tr, fx, "Saturation", "Amount (%)", amount)
-end
-
-local function waveshaper(tr, pct)
-  local fx = add_fx(tr, "JS: waveShapingDstr")
-  if fx < 0 then return end
-  set_value(tr, fx, "waveShapingDstr", "Distortion (%)", pct)
+  if mix then fx_mix(tr, fx, mix) end
 end
 
 -- Genuine Guitarix LV2 plugins (gxplugins/guitarix 0.47). Their internal BYPASS
@@ -498,6 +528,20 @@ local function reverb_return(tr)
   set_value(tr, fx, "ReaVerbate", "Hipass", 200)
 end
 
+-- Short room for grit/harsh/doubles: presence and depth without a long tail.
+local function room_return(tr)
+  local fx = add_fx(tr, "VST: ReaVerbate (Cockos)")
+  if fx < 0 then return end
+  set_value(tr, fx, "ReaVerbate", "Wet", 0)
+  set_value(tr, fx, "ReaVerbate", "Dry", -math.huge)
+  -- ReaVerbate's smallest room is 30; more damping shortens the tail further
+  set_value(tr, fx, "ReaVerbate", "Room size", 30)
+  set_value(tr, fx, "ReaVerbate", "Dampening", 80)
+  set_value(tr, fx, "ReaVerbate", "Delay", 5)
+  set_value(tr, fx, "ReaVerbate", "Lowpass", 7000)
+  set_value(tr, fx, "ReaVerbate", "Hipass", 250)
+end
+
 local function delay_return(tr)
   local fx = add_fx(tr, "VST: ReaDelay (Cockos)")
   if fx < 0 then return end
@@ -505,52 +549,101 @@ local function delay_return(tr)
   set_value(tr, fx, "ReaDelay", "Dry", -math.huge)
   -- 0.25 s = 1/8 note at 120 BPM (the template tempo). REAPER shows one decimal.
   set_value(tr, fx, "ReaDelay", "1: Length (time)", 0.25)
+  -- ReaDelay adds "Length (musical)" (default 2.00) to the time length; the
+  -- old chain left it at the default, so the echo was not the intended 1/8.
+  set_value(tr, fx, "ReaDelay", "1: Length (musical)", 0)
   set_value(tr, fx, "ReaDelay", "1: Feedback", -10)
   set_value(tr, fx, "ReaDelay", "1: Lowpass", 6000)
   set_value(tr, fx, "ReaDelay", "1: Hipass", 200)
 end
 
--- Starting recipes (brief sections 4-5). Threshold values are placeholders:
--- they must be calibrated against a real take.
+-- Vocal styles (docs/REAPER-Vocal-Studio.md, "Vocal presets"). Starting
+-- values from the brief, corrected where the audit found them too aggressive
+-- for a baritone (marked "revised"). Compressor thresholds assume strong
+-- phrases peaking -18 to -10 dBFS on Input 1 and must be confirmed on a real
+-- take (pending). Sends: reverb = long hall, room = short ambience, delay.
 local STYLES = {
+  -- A. Natural / Expressive Clean (Lead Clean)
   lead_clean = {
     gate = { thr = -40, att = 3, hold = 50, rel = 150, hys = 4 },
-    eq = { hp = 80, hp_bw = 0.7, b2 = { 250, -3, 1.0 }, b3 = { 3000, 3, 1.0 }, hs = { 10000, 2 } },
-    comp = { thr = -20, ratio = 3, att = 10, rel = 100 },
-    fader = 0, reverb_send = -18, delay_send = nil, pan = 0, rec_color = "lead",
+    -- revised: 250 Hz -2 dB (brief -3): keep the baritone's low-mid body
+    eq = { hp = 80, hp_bw = 0.7, b2 = { 250, -2, 1.0 }, b3 = { 3000, 3, 1.0 }, hs = { 10000, 2 } },
+    comp = { thr = -27, ratio = 3, att = 10, rel = 100, knee = 6 },
+    deess = { split = 5000, peak = 6500, thr_lin = 0.04, ratio = 4 },
+    fader = 0, reverb_send = -18, room_send = -28, delay_send = -30, pan = 0,
   },
+  -- B. Powerful Modern Clean (Lead Clean FX): denser, not just brighter
   lead_clean_fx = {
     gate = { thr = -40, att = 3, hold = 50, rel = 150, hys = 4 },
-    eq = { hp = 80, hp_bw = 0.7, b2 = { 250, -3, 1.0 }, b3 = { 3000, 4, 1.0 }, hs = { 10000, 3 } },
-    comp = { thr = -20, ratio = 4, att = 10, rel = 100 },
-    fader = -2, reverb_send = -20, delay_send = nil, pan = 0, rec_color = "lead",
+    -- revised: +3.5 dB at 3 kHz (brief +4) and +2.5 dB air (brief +3); density
+    -- comes from the second compressor and parallel saturation instead
+    eq = { hp = 80, hp_bw = 0.7, b2 = { 250, -2.5, 1.0 }, b3 = { 3000, 3.5, 1.0 }, hs = { 10000, 2.5 } },
+    comp = { thr = -27, ratio = 4, att = 10, rel = 100, knee = 3 },
+    comp2 = { thr = -22, ratio = 2, att = 30, rel = 150, knee = 6 },
+    sat = 8, sat_mix = 35,
+    deess = { split = 5000, peak = 6500, thr_lin = 0.04, ratio = 5 },
+    fader = -2, reverb_send = -22, room_send = -22, delay_send = -26, pan = 0,
   },
+  -- C. Grit / Raspy Rock
   grit = {
     gate = { thr = -45, att = 3, hold = 50, rel = 150, hys = 4 },
-    eq = { hp = 100, b2 = { 250, -4, 1.0 }, b3 = { 3000, 5, 1.0 }, hs = { 10000, 2 } },
-    comp = { thr = -20, ratio = 4, att = 10, rel = 100 },
-    sat = 15, fader = -5, reverb_send = -22, delay_send = nil, pan = 0, rec_color = "lead",
+    -- revised: 250 Hz -3 (brief -4), 3 kHz +3.5 (brief +5, nasal/painful), air +1.5
+    eq = { hp = 100, hp_bw = 0.7, b2 = { 250, -3, 1.0 }, b3 = { 3000, 3.5, 1.0 }, hs = { 10000, 1.5 } },
+    comp = { thr = -27, ratio = 4, att = 10, rel = 100 },
+    sat = 20, sat_mix = 40, -- parallel: keeps the real rasp, no fuzz
+    deess = { split = 4500, peak = 6000, thr_lin = 0.04, ratio = 4 },
+    fader = -5, reverb_send = -32, room_send = -20, delay_send = -32, pan = 0,
   },
+  -- D. Harsh / Screamed (mid-to-high screams; see the optional variants)
   harsh = {
     gate = { thr = -50, att = 3, hold = 60, rel = 200, hys = 4 },
-    eq = { hp = 120, b2 = { 250, -5, 1.0 }, b3 = { 4000, 6, 1.0 }, hs = { 8000, 3 } },
-    comp = { thr = -20, ratio = 5, att = 5, rel = 120 },
-    dist = 12, fader = -8, reverb_send = -25, delay_send = nil, pan = 0, rec_color = "lead",
+    -- revised: 4 kHz +3 (brief +6) and 8 kHz +1 (brief +3): screams are already
+    -- bright; a fixed +6/+3 turns them into fizz
+    eq = { hp = 120, hp_bw = 0.7, b2 = { 250, -4, 1.0 }, b3 = { 4000, 3, 1.0 }, hs = { 8000, 1 } },
+    comp = { thr = -28, ratio = 5, att = 5, rel = 120 },
+    -- dynamic harsh-band control instead of a static cut
+    deess = { split = 4000, peak = 4500, thr_lin = 0.05, ratio = 3 },
+    -- replaces waveShapingDstr 12% (a hard-knee waveshaper on the whole signal)
+    sat = 10, sat_mix = 25,
+    fader = -8, reverb_send = nil, room_send = -24, delay_send = -34, pan = 0,
   },
   double_l = {
-    eq = { hp = 120, b3 = { 3000, 2, 1.0 }, hs = { 10000, 1 } },
-    comp = { thr = -20, ratio = 3, att = 10, rel = 100 },
-    fader = -10, reverb_send = -20, delay_send = nil, pan = -0.5, rec_color = "layer",
+    gate = { thr = -40, att = 3, hold = 50, rel = 150, hys = 4 },
+    eq = { hp = 120, hp_bw = 0.7, b2 = { 250, -2, 1.0 }, b3 = { 3000, 2, 1.0 }, hs = { 10000, 1 } },
+    comp = { thr = -26, ratio = 3, att = 10, rel = 100 },
+    deess = { split = 5000, peak = 6500, thr_lin = 0.03, ratio = 5 }, -- stacked doubles stack sibilance
+    fader = -10, reverb_send = -20, room_send = -24, delay_send = nil, pan = -0.5,
   },
   double_r = {
-    eq = { hp = 120, b3 = { 3000, 2, 1.0 }, hs = { 10000, 1 } },
-    comp = { thr = -20, ratio = 3, att = 10, rel = 100 },
-    fader = -10, reverb_send = -20, delay_send = nil, pan = 0.5, rec_color = "layer",
+    gate = { thr = -40, att = 3, hold = 50, rel = 150, hys = 4 },
+    eq = { hp = 120, hp_bw = 0.7, b2 = { 250, -2, 1.0 }, b3 = { 3000, 2, 1.0 }, hs = { 10000, 1 } },
+    comp = { thr = -26, ratio = 3, att = 10, rel = 100 },
+    deess = { split = 5000, peak = 6500, thr_lin = 0.03, ratio = 5 },
+    fader = -10, reverb_send = -20, room_send = -24, delay_send = nil, pan = 0.5,
   },
   harmony = {
-    eq = { hp = 110, b3 = { 3000, 0, 1.0 }, hs = { 10000, 0 } },
-    comp = { thr = -20, ratio = 2, att = 10, rel = 120 },
-    fader = -12, reverb_send = -20, delay_send = -26, pan = 0, rec_color = "layer",
+    gate = { thr = -40, att = 3, hold = 50, rel = 150, hys = 4 },
+    eq = { hp = 110, hp_bw = 0.7, b3 = { 3000, 0, 1.0 }, hs = { 10000, 0 } },
+    comp = { thr = -26, ratio = 2, att = 10, rel = 120 },
+    deess = { split = 5000, peak = 6500, thr_lin = 0.04, ratio = 4 },
+    fader = -12, reverb_send = -20, room_send = nil, delay_send = -26, pan = 0,
+  },
+  -- Optional variants (track templates only, not in the project)
+  harsh_high = {
+    gate = { thr = -50, att = 3, hold = 60, rel = 200, hys = 4 },
+    eq = { hp = 140, hp_bw = 0.7, b2 = { 300, -4, 1.0 }, b3 = { 3500, 2, 1.0 }, hs = { 8000, 0 } },
+    comp = { thr = -28, ratio = 5, att = 5, rel = 120 },
+    deess = { split = 4500, peak = 5000, thr_lin = 0.05, ratio = 4 },
+    sat = 8, sat_mix = 20,
+    fader = -8, reverb_send = nil, room_send = -24, delay_send = -34, pan = 0,
+  },
+  harsh_low = { -- growls: keep the chest body, lift the bite, tame fizz
+    gate = { thr = -50, att = 3, hold = 60, rel = 200, hys = 4 },
+    eq = { hp = 80, hp_bw = 0.7, b2 = { 400, -3, 1.0 }, b3 = { 1200, 2, 1.0 }, hs = { 8000, -1 } },
+    comp = { thr = -28, ratio = 4, att = 8, rel = 120 },
+    deess = { split = 3500, peak = 4000, thr_lin = 0.05, ratio = 3 },
+    sat = 12, sat_mix = 30,
+    fader = -8, reverb_send = nil, room_send = -26, delay_send = nil, pan = 0,
   },
 }
 
@@ -578,6 +671,7 @@ local LAYOUT = {
   { name = "Harmonies", depth = -3, color = C.blue, style = "harmony" },
   { name = "FX RETURNS", depth = 1, color = C.teal },
   { name = "Vocal Reverb", depth = 0, color = C.teal, kind = "reverb" },
+  { name = "Vocal Room", depth = 0, color = C.teal, kind = "room" },
   { name = "Vocal Delay", depth = -1, color = C.teal, kind = "delay" },
   -- Guitar: the DI track records Scarlett Input 2 raw, monitors through a send
   -- into every guitar tone track, and has no direct master route, so only the
@@ -687,19 +781,29 @@ for i, spec in ipairs(LAYOUT) do
   end
 end
 
+-- Vocal chain order: gate (bypassed) -> EQ (tone before dynamics) -> compressor
+-- -> optional slower "density" compressor -> de-esser (after compression,
+-- which raises sibilance) -> optional parallel saturation (last, so the
+-- de-esser does not react to added harmonics).
+local function apply_style(tr, s)
+  reaper.SetMediaTrackInfo_Value(tr, "D_VOL", db2lin(s.fader))
+  reaper.SetMediaTrackInfo_Value(tr, "D_PAN", s.pan)
+  if s.gate then gate(tr, s.gate) end
+  if s.eq then eq(tr, s.eq) end
+  if s.comp then comp(tr, s.comp) end
+  if s.comp2 then comp(tr, s.comp2) end
+  if s.deess then deesser(tr, s.deess) end
+  if s.sat then saturation(tr, s.sat, s.sat_mix) end
+end
+
 -- Insert chains and faders.
 for _, spec in ipairs(LAYOUT) do
   local tr = T[spec.name]
   trace("chain " .. spec.name)
   if spec.style then
-    local s = STYLES[spec.style]
-    reaper.SetMediaTrackInfo_Value(tr, "D_VOL", db2lin(s.fader))
-    reaper.SetMediaTrackInfo_Value(tr, "D_PAN", s.pan)
-    if s.gate then gate(tr, s.gate) end
-    if s.eq then eq(tr, s.eq) end
-    if s.comp then comp(tr, s.comp) end
-    if s.sat then saturation(tr, s.sat) end
-    if s.dist then waveshaper(tr, s.dist) end
+    apply_style(tr, STYLES[spec.style])
+  elseif spec.kind == "room" then
+    room_return(tr)
   elseif spec.kind == "reverb" then
     reverb_return(tr)
   elseif spec.kind == "delay" then
@@ -723,7 +827,8 @@ end
 for _, spec in ipairs(LAYOUT) do
   if spec.style then
     local s = STYLES[spec.style]
-    send(T[spec.name], T["Vocal Reverb"], s.reverb_send)
+    if s.reverb_send then send(T[spec.name], T["Vocal Reverb"], s.reverb_send) end
+    if s.room_send then send(T[spec.name], T["Vocal Room"], s.room_send) end
     if s.delay_send then send(T[spec.name], T["Vocal Delay"], s.delay_send) end
   end
 end
@@ -815,6 +920,24 @@ local function export_all()
   end
   write_file(TT_DIR .. "/Electric Guitar DI.RTrackTemplate", track_template_chunk(T["Electric Guitar DI"]))
   write_file(FX_DIR .. "/Vocal Delay.RfxChain", fxchain_chunk(T["Vocal Delay"]))
+  write_file(FX_DIR .. "/Vocal Room.RfxChain", fxchain_chunk(T["Vocal Room"]))
+
+  -- Optional harsh variants: track templates only (the default project stays
+  -- at seven vocal tracks). Built on a temporary track, then removed.
+  local OPTIONAL = { { "High Harsh", "harsh_high" }, { "Low Harsh - Growl", "harsh_low" } }
+  mkdir(TT_DIR .. "/Optional"); mkdir(FX_DIR .. "/Optional")
+  for _, o in ipairs(OPTIONAL) do
+    local idx = reaper.CountTracks(0)
+    reaper.InsertTrackAtIndex(idx, true)
+    local tr = reaper.GetTrack(0, idx)
+    reaper.GetSetMediaTrackInfo_String(tr, "P_NAME", o[1], true)
+    reaper.SetMediaTrackInfo_Value(tr, "I_RECINPUT", 0) -- mono Scarlett Input 1
+    reaper.SetMediaTrackInfo_Value(tr, "I_RECARM", 0)
+    apply_style(tr, STYLES[o[2]])
+    write_file(TT_DIR .. "/Optional/" .. o[1] .. ".RTrackTemplate", track_template_chunk(tr))
+    write_file(FX_DIR .. "/Optional/" .. o[1] .. ".RfxChain", fxchain_chunk(tr))
+    reaper.DeleteTrack(tr)
+  end
 
   -- Project template: no media items anywhere, every audio track disarmed.
   -- Inactive tones: muted, FX bypassed AND FX offline. Offline FX keep their

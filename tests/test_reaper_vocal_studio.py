@@ -21,7 +21,7 @@ FX_DIR = REAPER / "FXChains" / "Vocal Studio"
 EXPECTED_TRACKS = [
     "BACKING", "Backing Track", "VOCAL ROUTING", "Vocal Bus", "LEAD VOCALS",
     "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "VOCAL LAYERS",
-    "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Delay",
+    "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Room", "Vocal Delay",
     "ELECTRIC GUITAR", "Electric Guitar DI", "Crystal Clean", "Warm Clean - Ambient",
     "AC-DC - Classic Crunch", "Avenged Sevenfold - Lead", "Machine Head - Groove Thrash",
     "Lamb of God - Groove Metal", "Slipknot - Nu Metal", "Asking Alexandria - Metalcore",
