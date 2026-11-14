@@ -1,3 +1,7 @@
+> **Historical archive.** The current REAPER and guitar workflow is in
+> [`docs/REAPER-Vocal-Studio.md`](../REAPER-Vocal-Studio.md). Guitarix is
+> still installed on the workstation but is no longer part of that workflow.
+
 # 🎵 Studio — Audio Production Setup
 
 This section covers the **audio production** stack installed by HorneroConfig, including DAW, guitar amp simulation, plugins, and Windows VST bridge support.
