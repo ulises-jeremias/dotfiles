@@ -21,10 +21,22 @@ ASSET_PREFIX = "{{ .chezmoi.homeDir }}/.local/share/reaper-studio/guitar/"
 
 TONES = {
     "Clean": ["Crystal Clean", "Warm Clean - Ambient"],
-    "Rock": ["Classic Rock - Crunch", "Hard Rock - Heavy Lead"],
-    "Metal": ["Modern Metal Rhythm", "Extreme Metal Rhythm", "Metalcore - Melodic Lead"],
+    "Rock": ["AC-DC - Classic Crunch", "Avenged Sevenfold - Lead"],
+    "Metal": ["Machine Head - Groove Thrash", "Lamb of God - Groove Metal",
+              "Slipknot - Nu Metal", "Asking Alexandria - Metalcore"],
 }
-GATED = {"Hard Rock - Heavy Lead", "Modern Metal Rhythm", "Extreme Metal Rhythm", "Metalcore - Melodic Lead"}
+GATED = {"Avenged Sevenfold - Lead", "Machine Head - Groove Thrash", "Lamb of God - Groove Metal",
+         "Slipknot - Nu Metal", "Asking Alexandria - Metalcore"}
+# Band tones use the amp family documented for that band's guitarists
+# (sources in docs/REAPER-Vocal-Studio.md).
+BAND_AMP = {
+    "AC-DC - Classic Crunch": "jcm2000-crunch.nam",
+    "Avenged Sevenfold - Lead": "marshall-jvm-od2-red.nam",
+    "Machine Head - Groove Thrash": "5150-blockletter-noboost.nam",
+    "Lamb of God - Groove Metal": "mesa-markiv.nam",
+    "Slipknot - Nu Metal": "orange-rockerverb-axefx.nam",
+    "Asking Alexandria - Metalcore": "6534plus-od808.nam",
+}
 NOISE_PEAK_DBFS = -59.4  # measured on the real Squier DI at the current Scarlett gain
 NAM_MODEL = re.compile(r"neural-amp-modeler-lv2#model (.+?) 3$", re.M)
 IR_FILE = re.compile(r"impulse_responses_mono/ports#ifn (.+?) 3$", re.M)
@@ -84,6 +96,13 @@ def test_each_tone_has_one_amp_capture_and_one_cabinet_ir_with_files() -> None:
             # REAPER's LV2 state text is space-separated
             assert " " not in path.removeprefix(ASSET_PREFIX), f"{name}: spaces in asset path {path}"
         assert text.index("Neural Amp Modeler") < text.index("LSP Impulse Responses"), name
+
+
+def test_band_tones_use_the_documented_amp() -> None:
+    for cat, name in _tones():
+        if name in BAND_AMP:
+            model = NAM_MODEL.search(_file("fx", cat, name).read_text()).group(1)
+            assert model.endswith("/nam/" + BAND_AMP[name]), f"{name}: {model}"
 
 
 def test_no_personal_home_directory_in_reaper_files() -> None:

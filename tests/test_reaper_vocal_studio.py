@@ -21,8 +21,8 @@ EXPECTED_TRACKS = [
     "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "VOCAL LAYERS",
     "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Delay",
     "ELECTRIC GUITAR", "Electric Guitar DI", "Crystal Clean", "Warm Clean - Ambient",
-    "Classic Rock - Crunch", "Hard Rock - Heavy Lead", "Modern Metal Rhythm",
-    "Extreme Metal Rhythm", "Metalcore - Melodic Lead",
+    "AC-DC - Classic Crunch", "Avenged Sevenfold - Lead", "Machine Head - Groove Thrash",
+    "Lamb of God - Groove Metal", "Slipknot - Nu Metal", "Asking Alexandria - Metalcore",
 ]
 
 

@@ -390,61 +390,90 @@ TONE_FN.warm = function(tr)
   end
 end
 
--- Classic Rock / Crunch: JCM2000 crunch with less input (-6 dB) for a lighter,
--- touch-sensitive crunch; balanced Greenback IR.
-TONE_FN.classic = function(tr)
+-- Boss SD-1 as a boost (Robb Flynn and Synyster Gates both run one in front
+-- of the amp): no drive, level up, so it tightens the low end and pushes the amp.
+local function sd1_boost(tr, level, tone)
+  local fx = lv2(tr, "LV2: GxSD1 (Guitarix team) (Mono)")
+  if fx < 0 then return end
+  set_value(tr, fx, "GxSD1", "DRIVE", 0.0)
+  set_value(tr, fx, "GxSD1", "LEVEL", level)
+  set_value(tr, fx, "GxSD1", "TONE", tone)
+end
+
+-- Band-inspired tones. Amps follow each band's documented rigs (sources in
+-- docs/REAPER-Vocal-Studio.md); captures are real amps from the NAM community.
+-- They approximate the band's guitar sound on a Strat: the players use
+-- high-output humbuckers and drop tunings, which no preset can add.
+
+-- AC/DC - Classic Crunch: Marshall crunch at low input (JCM2000 crunch, -6 dB)
+-- into Greenbacks; the AC/DC sound is low gain, loud and dry.
+TONE_FN.acdc = function(tr)
   nam(tr, "jcm2000-crunch.nam", -6, 0)
   cab_ir(tr, "emerald/3_Wasabi_Warrior_48.wav", 0.25)
   eq(tr, { hp = 90, b2 = { 350, -1.5, 1.0 }, b3 = { 2500, 1, 1.0 }, hs = { 7500, -1.5 } })
-  insert_reverb(tr, -24)
+  insert_reverb(tr, -26)
 end
 
--- Hard Rock / Heavy Lead: compressed, TS-boosted JCM2000 lead channel, quarter-note delay.
-TONE_FN.hardrock = function(tr)
+-- Avenged Sevenfold - Lead (Synyster Gates): SD-1 boost into a high-gain
+-- Marshall (JVM OD2 red, +6 dB input so a single coil saturates like a
+-- humbucker), V30 cab, light compression, quarter-note delay, reverb.
+TONE_FN.a7x = function(tr)
   hum_notch(tr)
   guitar_gate(tr, -50, 250)
   comp(tr, { thr = -24, ratio = 3, att = 15, rel = 150 })
-  ts_boost(tr, 0.2, 2, 750)
-  nam(tr, "jcm2000-lead2-g8.nam", 0, 0)
-  cab_ir(tr, "emerald/5_Don_Spinacio_48.wav", 0.25)
-  eq(tr, { hp = 100, b2 = { 400, -1.5, 1.0 }, b3 = { 1800, 1.5, 1.0 }, hs = { 7500, -2 } })
-  insert_delay(tr, 0.5, -18, -14)
+  sd1_boost(tr, 4, 800)
+  nam(tr, "marshall-jvm-od2-red.nam", 6, 0)
+  cab_ir(tr, "brutal/12_World_Collider.wav", 0.25)
+  eq(tr, { hp = 100, b2 = { 400, -1.5, 1.0 }, b3 = { 1800, 2, 1.0 }, hs = { 7500, -2 } })
+  insert_delay(tr, 0.5, -16, -14)
   insert_reverb(tr, -22)
 end
 
--- Modern Metal Rhythm: tight Tube Screamer boost into a 6505+ red channel
--- (crest ~9 dB on a Strat DI), V30 + SM57. Thick, mid-forward, tight low end.
-TONE_FN.metal = function(tr)
+-- Machine Head - Groove Thrash (Robb Flynn): SD-1 boost into a Peavey 5150
+-- (block letter), Marshall 4x12. Tight, mid-forward, fast gate for the stops.
+TONE_FN.machinehead = function(tr)
   hum_notch(tr)
   guitar_gate(tr, -50, 90)
-  ts_boost(tr, 0.05, 4, 800)
-  nam(tr, "6505plus-red-noboost.nam", 0, 0)
+  sd1_boost(tr, 4, 800)
+  nam(tr, "5150-blockletter-noboost.nam", 0, 0)
   cab_ir(tr, "brutal/1_Cookie_Monster.wav", 0.25)
-  eq(tr, { hp = 85, b2 = { 300, -2.5, 1.2 }, b3 = { 1200, 1.5, 1.0 }, hs = { 6500, -3 } })
+  -- the 5150 capture pushes far more low end than the others (measured -16 vs -28 dB
+  -- below 80 Hz on the Squier DI, palm-mute fundamentals): a -5 dB low shelf tightens it
+  eq(tr, { hp = 100, ls = { 130, -5 }, b2 = { 280, -2.5, 1.2 }, b3 = { 1400, 1.5, 1.0 }, hs = { 6500, -3 } })
 end
 
--- Extreme Metal Rhythm: a different amp family (Engl E530 preamp + 840 power
--- amp, DS-1 in front, captured together), pushed +6 dB, plus a zero-drive TS
--- for low-end tightness (measured: without it the low end decays far slower),
--- tighter high-pass, more 2.5 kHz bite, brighter V30/Rockdriver blend, faster gate.
-TONE_FN.extreme = function(tr)
+-- Lamb of God - Groove Metal (Mark Morton / Willie Adler): Mesa Mark IV with a
+-- zero-drive Tube Screamer for tightness, Mesa-style V30 cab, the Mark's mid
+-- push around 800 Hz.
+TONE_FN.lambofgod = function(tr)
   hum_notch(tr)
-  guitar_gate(tr, -48, 60)
+  guitar_gate(tr, -50, 90)
   ts_boost(tr, 0.0, 4, 900)
-  nam(tr, "engl-e530-840-ds1.nam", 6, 0)
-  cab_ir(tr, "brutal/5_Iceburn_Suicide.wav", 0.25)
-  eq(tr, { hp = 110, b2 = { 400, -3, 1.0 }, b3 = { 2500, 2.5, 1.0 }, hs = { 6000, -3.5 } })
-end
-
--- Metalcore / Melodic Lead: Mesa Mark IV lead (already very saturated, crest
--- ~7 dB, so no extra boost), V30, dotted-eighth delay, reverb.
-TONE_FN.metalcore = function(tr)
-  hum_notch(tr)
-  guitar_gate(tr, -50, 250)
   nam(tr, "mesa-markiv.nam", 0, 0)
   cab_ir(tr, "brutal/12_World_Collider.wav", 0.25)
-  eq(tr, { hp = 100, b2 = { 350, -1.5, 1.0 }, b3 = { 1000, 1.5, 1.0 }, hs = { 6500, -2.5 } })
-  insert_delay(tr, 0.375, -16, -12)
+  eq(tr, { hp = 95, b2 = { 300, -2, 1.2 }, b3 = { 800, 2, 1.0 }, hs = { 6000, -3 } })
+end
+
+-- Slipknot - Nu Metal (Jim Root): Orange Rockerverb, zero-drive Tube Screamer
+-- for tightness, scooped low mids, bright V30/Rockdriver blend, fastest gate.
+TONE_FN.slipknot = function(tr)
+  hum_notch(tr)
+  guitar_gate(tr, -48, 60)
+  ts_boost(tr, 0.0, 4, 850)
+  nam(tr, "orange-rockerverb-axefx.nam", 3, 0)
+  cab_ir(tr, "brutal/5_Iceburn_Suicide.wav", 0.25)
+  eq(tr, { hp = 105, b2 = { 500, -3, 0.9 }, b3 = { 2500, 2, 1.0 }, hs = { 6500, -3 } })
+end
+
+-- Asking Alexandria - Metalcore (Ben Bruce): Peavey 6534+ with an OD808 in
+-- front (captured together), V30, dotted-eighth delay and reverb for leads.
+TONE_FN.askingalexandria = function(tr)
+  hum_notch(tr)
+  guitar_gate(tr, -50, 120)
+  nam(tr, "6534plus-od808.nam", 0, 0)
+  cab_ir(tr, "brutal/1_Cookie_Monster.wav", 0.25)
+  eq(tr, { hp = 100, b2 = { 350, -2, 1.0 }, b3 = { 2200, 1.5, 1.0 }, hs = { 7000, -2.5 } })
+  insert_delay(tr, 0.375, -18, -12)
   insert_reverb(tr, -24)
 end
 
@@ -550,11 +579,12 @@ local LAYOUT = {
   { name = "Electric Guitar DI", depth = 0, color = C.green, kind = "di" },
   { name = "Crystal Clean", depth = 0, color = C.clean, kind = "tone", fn = "crystal", cat = "Clean", mute = false },
   { name = "Warm Clean - Ambient", depth = 0, color = C.clean, kind = "tone", fn = "warm", cat = "Clean", mute = true },
-  { name = "Classic Rock - Crunch", depth = 0, color = C.orange, kind = "tone", fn = "classic", cat = "Rock", mute = true },
-  { name = "Hard Rock - Heavy Lead", depth = 0, color = C.orange, kind = "tone", fn = "hardrock", cat = "Rock", mute = true },
-  { name = "Modern Metal Rhythm", depth = 0, color = C.red, kind = "tone", fn = "metal", cat = "Metal", mute = true },
-  { name = "Extreme Metal Rhythm", depth = 0, color = C.red, kind = "tone", fn = "extreme", cat = "Metal", mute = true },
-  { name = "Metalcore - Melodic Lead", depth = -1, color = C.red, kind = "tone", fn = "metalcore", cat = "Metal", mute = true },
+  { name = "AC-DC - Classic Crunch", depth = 0, color = C.orange, kind = "tone", fn = "acdc", cat = "Rock", mute = true },
+  { name = "Avenged Sevenfold - Lead", depth = 0, color = C.orange, kind = "tone", fn = "a7x", cat = "Rock", mute = true },
+  { name = "Machine Head - Groove Thrash", depth = 0, color = C.red, kind = "tone", fn = "machinehead", cat = "Metal", mute = true },
+  { name = "Lamb of God - Groove Metal", depth = 0, color = C.red, kind = "tone", fn = "lambofgod", cat = "Metal", mute = true },
+  { name = "Slipknot - Nu Metal", depth = 0, color = C.red, kind = "tone", fn = "slipknot", cat = "Metal", mute = true },
+  { name = "Asking Alexandria - Metalcore", depth = -1, color = C.red, kind = "tone", fn = "askingalexandria", cat = "Metal", mute = true },
 }
 
 -- Per-tone fader trims in dB (name|dB per line), written after loudness calibration.

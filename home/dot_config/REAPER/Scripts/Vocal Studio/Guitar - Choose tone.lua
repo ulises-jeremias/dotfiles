@@ -1,13 +1,17 @@
 -- Guitar - Choose tone
 --
 -- Switch the guitar tone for Studio recording and Discord lessons. Type a tone
--- name and this unmutes it and mutes the other six. The DI track and the vocal
+-- name and this unmutes it and mutes the other seven. The DI track and the vocal
 -- tracks are never changed, so it is safe to switch tones mid-lesson.
 --
 -- Tones (genre folders in the Guitar Tones template browser):
 --   Crystal Clean, Warm Clean - Ambient                              (Clean)
---   Classic Rock - Crunch, Hard Rock - Heavy Lead                    (Rock)
---   Modern Metal Rhythm, Extreme Metal Rhythm, Metalcore - Melodic Lead (Metal)
+--   AC-DC - Classic Crunch, Avenged Sevenfold - Lead                 (Rock)
+--   Machine Head - Groove Thrash, Lamb of God - Groove Metal,
+--   Slipknot - Nu Metal, Asking Alexandria - Metalcore               (Metal)
+--
+-- The band names describe the target sound (amps from each band's documented
+-- rig). You can type just the band name, e.g. "lamb of god" or "slipknot".
 --
 -- The chosen tone is unmuted with its FX online; the others are muted and
 -- their FX taken offline (state kept, plugin unloaded), so only one amp capture
@@ -15,9 +19,9 @@
 -- Nothing here records.
 
 local TONES = {
-  "Crystal Clean", "Warm Clean - Ambient", "Classic Rock - Crunch",
-  "Hard Rock - Heavy Lead", "Modern Metal Rhythm", "Extreme Metal Rhythm",
-  "Metalcore - Melodic Lead",
+  "Crystal Clean", "Warm Clean - Ambient", "AC-DC - Classic Crunch",
+  "Avenged Sevenfold - Lead", "Machine Head - Groove Thrash", "Lamb of God - Groove Metal",
+  "Slipknot - Nu Metal", "Asking Alexandria - Metalcore",
 }
 local IS_TONE = {}
 for _, name in ipairs(TONES) do IS_TONE[name] = true end
@@ -26,6 +30,18 @@ local ok, answer = reaper.GetUserInputs("Guitar: choose tone", 1,
   "Tone (" .. table.concat(TONES, " / ") .. "):", "Crystal Clean")
 if not ok then return end
 answer = answer:match("^%s*(.-)%s*$")
+if not IS_TONE[answer] then
+  -- accept a unique prefix, case-insensitive ("slipknot", "machine head", "acdc")
+  local key = answer:lower():gsub("[^%w]", "")
+  local match
+  for _, name in ipairs(TONES) do
+    if key ~= "" and name:lower():gsub("[^%w]", ""):sub(1, #key) == key then
+      if match then match = nil; break end
+      match = name
+    end
+  end
+  if match then answer = match end
+end
 if not IS_TONE[answer] then
   reaper.ShowMessageBox("Unknown tone: \"" .. answer .. "\".\nChoose one of:\n" .. table.concat(TONES, "\n"),
     "Guitar: choose tone", 0)

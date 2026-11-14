@@ -27,10 +27,14 @@ NAM_COMMIT="944ca6718581c60cc5365586d2f378d740e181f3"
 NAM_BASE="https://raw.githubusercontent.com/pelennor2170/NAM_models/$NAM_COMMIT"
 # local-name | upstream file name | sha256
 NAM_MODELS=(
-  "6505plus-red-noboost.nam|Helga B 6505+ Red ch - NoBoost.nam|f389f5fcd4675cb7d8ec5134bea4d080fe12cac57839545a8f226f8f8797379b"
-  "engl-e530-840-ds1.nam|Tom C Engl e530 preamp & 840 power amp with Boss DS1 Overdrive.nam|4c0f0c0576e55c2e362dba70616f7e6cc745fdbf3cc489e53d98a38956c97239"
+  # Machine Head (Peavey 5150), Lamb of God (Mesa Mark IV), Slipknot (Orange
+  # Rockerverb), Asking Alexandria (Peavey 6534+), Avenged Sevenfold (Marshall JVM)
+  "5150-blockletter-noboost.nam|Helga B 5150 BlockLetter - NoBoost.nam|eb5074a3288d214bc446d526c1e636271aec587b0c64009538be037b62e7ab9e"
   "mesa-markiv.nam|Roman A LT_MESA_MARKIV_1.nam|f4c06c5f01f1af7a6243c4fc2a1480bbed9036295735b99e9d20842b7dd23431"
-  "jcm2000-lead2-g8.nam|Tim R JCM2000 L2 G8.nam|8ee6307f5a651124cf6e13f69bba4df725f7174ea3323b1ae0602243e169b1b2"
+  "orange-rockerverb-axefx.nam|Tom C Axe FX 2 Orange Rockerverb.nam|6334cc2f49cda2bf6d1d1255bbfce30128956bdd2681e0952681e028ea206094"
+  "6534plus-od808.nam|Helga B 6534+ OD808.nam|39c17d6441ce17ca9605497c0fabcb4728e39203dd2d576239fa64a5381c89a9"
+  "marshall-jvm-od2-red.nam|Phillipe P JVM-OD2-RD-NoDrive-ESR0,003.nam|47afafd463206cda2b0c13417ed2f7efcd9d18c2f827b577090d6f71730963ce"
+  # AC/DC crunch and the cleans
   "jcm2000-crunch.nam|Tim R JCM2000 Crunch.nam|d687c5829ae246a36d573d705bd296e8c26be48385f2948edf2db67f2ba67e87"
   "vox-ac15-jonar1.nam|Phillipe P VOXAC15-JonAr1.nam|44d064eb75bdeda2a81538f87b9a44b866d34c5021be01363bcb7802aab1e302"
   "twin-reverb-normal-bright.nam|Tim R Fender TwinVerb Norm Bright.nam|6146d1758ddab94c529dba77f1feda8b804051f0e19117086a58db6b73b2e46b"

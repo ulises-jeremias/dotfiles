@@ -82,19 +82,35 @@ Levels: REAPER faders. Vocal and guitar gains are independent.
 
 ## Guitar tones (Squier Stratocaster, Scarlett Input 2)
 
-Seven tones in REAPER categories (`TrackTemplates/Guitar Tones/<Category>/` and
+Eight tones in REAPER categories (`TrackTemplates/Guitar Tones/<Category>/` and
 `FXChains/Guitar Tones/<Category>/`). Every tone is a real amp capture
-(Neural Amp Modeler) into a real 4x12 cabinet impulse response:
+(Neural Amp Modeler) into a real 4x12 cabinet impulse response. The rock and
+metal tones are named after the band whose sound they aim at, and use the amp
+family that band's guitarists are documented playing:
 
-| Tone | Chain | Purpose |
-|------|-------|---------|
-| Crystal Clean | ReaComp → **NAM Fender Twin Reverb (Normal, Bright)** → IR Greenback 4x12 (*Don Spinacio*, SM57) → ReaEQ (low shelf +3 dB, top tamed) → ReaVerbate | bright, dynamic Fender clean |
-| Warm Clean - Ambient | GxChorus → **NAM Vox AC15** (input -6 dB, stays clean) → IR Greenback (*Kill Dill*, fattest) → ReaEQ (dark top) → GxEcho → GxReverb | intros, atmosphere |
-| Classic Rock - Crunch | **NAM Marshall JCM2000 crunch** (input -6 dB, lighter) → IR Greenback (*Wasabi Warrior*) → ReaEQ → ReaVerbate | rock, blues, Héroes-style parts |
-| Hard Rock - Heavy Lead | hum notch → gate → ReaComp → Tube Screamer boost → **NAM JCM2000 lead (L2, gain 8)** → IR Greenback (*Don Spinacio*) → ReaEQ → 1/4 delay → reverb | singing hard-rock leads |
-| Modern Metal Rhythm | hum notch → gate → Tube Screamer (drive 0.05, level +4 dB) → **NAM Peavey 6505+ red channel** → IR **V30** (*Cookie Monster*, SM57) → ReaEQ (-2.5 dB mud at 300 Hz, +1.5 dB at 1.2 kHz, fizz cut) | thick, tight, punchy palm mutes |
-| Extreme Metal Rhythm | hum notch → faster gate → Tube Screamer (drive 0) → **NAM Engl E530 + 840 with DS-1** (+6 dB in) → IR **V30/Rockdriver** (*Iceburn Suicide*) → ReaEQ (HP 110 Hz, +2.5 dB at 2.5 kHz) | more aggressive, different amp family |
-| Metalcore - Melodic Lead | hum notch → gate → **NAM Mesa/Boogie Mark IV** → IR **V30** (*World Collider*) → ReaEQ → dotted-1/8 delay → reverb | sustaining melodic leads |
+| Tone | Band rig it follows | Chain |
+|------|---------------------|-------|
+| Crystal Clean | (generic Fender clean) | ReaComp → **NAM Fender Twin Reverb (Normal, Bright)** → IR Greenback 4x12 (*Don Spinacio*, SM57) → ReaEQ (low shelf +3 dB, top tamed) → ReaVerbate |
+| Warm Clean - Ambient | (generic ambient clean) | GxChorus → **NAM Vox AC15** (input -6 dB, stays clean) → IR Greenback (*Kill Dill*) → ReaEQ (dark top) → GxEcho → GxReverb |
+| AC-DC - Classic Crunch | Marshall crunch into Greenbacks, low gain | **NAM Marshall JCM2000 crunch** (input -6 dB) → IR Greenback (*Wasabi Warrior*) → ReaEQ → ReaVerbate |
+| Avenged Sevenfold - Lead | Synyster Gates: SD-1 into a high-gain head, V30 4x12 [1] | hum notch → gate → ReaComp → **SD-1 boost** → **NAM Marshall JVM OD2 red** (+6 dB in) → IR **V30** (*World Collider*) → ReaEQ → 1/4 delay → reverb |
+| Machine Head - Groove Thrash | Robb Flynn: Peavey 5150/6505 with an SD-1, Marshall cabs [2] | hum notch → fast gate → **SD-1 boost** → **NAM Peavey 5150 (block letter)** → IR **V30** (*Cookie Monster*) → ReaEQ (low shelf -5 dB at 130 Hz, -2.5 dB at 280 Hz, +1.5 dB at 1.4 kHz) |
+| Lamb of God - Groove Metal | Mark Morton / Willie Adler: Mesa/Boogie Mark IV [3] | hum notch → fast gate → Tube Screamer (drive 0) → **NAM Mesa/Boogie Mark IV** → IR **V30** (*World Collider*) → ReaEQ (+2 dB at 800 Hz) |
+| Slipknot - Nu Metal | Jim Root: Orange Rockerverb [4] | hum notch → fastest gate → Tube Screamer (drive 0) → **NAM Orange Rockerverb** (+3 dB in) → IR **V30/Rockdriver** (*Iceburn Suicide*) → ReaEQ (-3 dB at 500 Hz, +2 dB at 2.5 kHz) |
+| Asking Alexandria - Metalcore | Ben Bruce: Peavey 6534+ [5] | hum notch → gate → **NAM Peavey 6534+ with OD808** (boost captured with the amp) → IR **V30** (*Cookie Monster*) → ReaEQ → dotted-1/8 delay → reverb |
+
+Gear sources: [1] Line 6 "Beast and the Harlot" rig template and Seymour Duncan,
+"The Sound of Synyster Gates"; [2] Peavey via Equipboard, Robb Flynn on
+*Unto the Locust* ("a 5150 amp that I've used forever"); [3] Mesa/Boogie
+Amplitudes blog and Premier Guitar *Rig Rundown: Lamb of God*; [4] Mix Online
+(tech: two Orange Rockerverb 100s) and MusicRadar Slipknot rig tour; [5] Guitar
+World and Reverb interviews (Peavey 6534 heads). These are the players' amps,
+not their exact settings, which are not published.
+
+**What a preset cannot copy:** these players use high-output humbuckers (often
+active) and drop tunings. A Strat with single coils has less output and a
+thinner low end. The chains add gain before the amp to compensate, but tune
+down (drop D / drop C) to get closer to those records.
 
 Switching: run *Guitar - Choose tone* (Actions). The chosen tone is unmuted and
 its FX brought online; the others are muted and **offline** (their settings are
@@ -102,7 +118,9 @@ kept, the plugins are unloaded). The new amp needs about a second to load.
 
 ### What changed in the sound, and why (measured)
 
-The previous metal presets were audited stage by stage on the same DI
+This audit compared the original Guitarix chains with the first NAM chains
+(then named Modern Metal Rhythm and Metalcore - Melodic Lead; the band tones
+above replaced them). The previous metal presets were audited stage by stage on the same DI
 (`scripts/reaper/render-tones.lua` + `scripts/reaper/analyze-tones.py`):
 
 | Finding (old Guitarix chains) | Evidence |
@@ -126,14 +144,15 @@ Noise between notes with the real Squier, after the gate fix: 93–118 dB below
 the playing level on the four gated tones (it was 11–37 dB before the fix).
 
 Gain staging: each chain's level is set **inside the chain** (NAM Output Lvl,
-`scripts/reaper/guitar-tones-trim.txt`) so every distorted tone lands at
--22 dBFS RMS on the same DI, cleans slightly lower, peaks ≤ -6 dBFS. No fader
+`scripts/reaper/guitar-tones-trim.txt`) so every high-gain tone lands at
+-24 dBFS RMS on the same real Squier recording, cleans lower, peaks ≤ -6.7 dBFS. No fader
 compensation. With a hotter (humbucker-level) DI the distorted tones stay at the
 same level, as a saturated amp should.
 
-**Not proven:** that these sound like Machine Head, Slipknot or Avenged Sevenfold.
-The numbers show more saturation, tighter lows, intact sustain and controlled
-fizz. Whether it is the tone you want needs your ears.
+**Not proven:** that these sound like Machine Head, Lamb of God, Slipknot,
+Asking Alexandria, Avenged Sevenfold or AC/DC. They use those bands' amp families;
+the numbers show matched levels, no clipping and no doubled cabinet. Whether each
+one sounds like the band needs your ears.
 
 ### Amp captures and cabinet IRs (assets, not in Git)
 
@@ -143,7 +162,7 @@ level only, no root); `reaper-guitar-assets verify` checks them.
 | What | Source | License |
 |------|--------|---------|
 | Neural Amp Modeler LV2 v0.2.3 (`~/.lv2/`) | github.com/mikeoliphant/neural-amp-modeler-lv2 (release binary, x86-64-v3) | GPL-3.0 |
-| 7 NAM amp captures | github.com/pelennor2170/NAM_models @ `944ca671` (NAM community captures) | GPL-3.0 |
+| 8 NAM amp captures | github.com/pelennor2170/NAM_models @ `944ca671` (NAM community captures) | GPL-3.0 |
 | Brutal IR pack (BG412S: Vintage 30 / Rockdriver Jr / DV-77) | jester-dyne-productions.com | CC0 (stated in the pack handbook) |
 | Emerald IR pack (Marshall 1960AX, Greenback G12M) | jester-dyne-productions.com (via darwinscat.com) | CC0 (stated in the pack handbook) |
 
@@ -177,7 +196,7 @@ so each gets exactly one cabinet IR. There is no double cabinet.
 ### Gate calibration
 
 The gate sits before the amp (best signal-to-noise). It opens at -50 dBFS and
-closes at -56 dBFS (Extreme: -48/-54), measured on your Squier at the current
+closes at -56 dBFS (Slipknot: -48/-54), measured on your Squier at the current
 Input 2 gain: noise peaks reach -59.4 dBFS, playing peaks are near -28 dBFS. A held
 note keeps ringing until it falls near the noise floor.
 
@@ -193,8 +212,8 @@ number of dB** (otherwise the gate opens on hum, but never cuts notes).
    then raise the gate thresholds by the same amount (see above).
 3. **Direct Monitor OFF.**
 4. **Tuning and setup** first: no amp or EQ fixes detuned strings or bad intonation.
-5. **Listen** to Modern Metal Rhythm, Extreme Metal Rhythm and Metalcore - Melodic
-   Lead with palm mutes, open chords and a solo. Tell me what is off (too much or
+5. **Listen** to each band tone with palm mutes, open chords and a solo, ideally
+   with a song by that band playing on the Backing Track. Tell me what is off (too much or
    too little gain, mud, fizz, thin) and I adjust.
 
 ## Files

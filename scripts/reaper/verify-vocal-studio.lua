@@ -46,8 +46,8 @@ local EXPECT_ORDER = {
   "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "VOCAL LAYERS",
   "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Delay",
   "ELECTRIC GUITAR", "Electric Guitar DI", "Crystal Clean", "Warm Clean - Ambient",
-  "Classic Rock - Crunch", "Hard Rock - Heavy Lead", "Modern Metal Rhythm",
-  "Extreme Metal Rhythm", "Metalcore - Melodic Lead",
+  "AC-DC - Classic Crunch", "Avenged Sevenfold - Lead", "Machine Head - Groove Thrash",
+  "Lamb of God - Groove Metal", "Slipknot - Nu Metal", "Asking Alexandria - Metalcore",
 }
 local n = reaper.CountTracks(0)
 check(n == #EXPECT_ORDER, "track count " .. n .. " == " .. #EXPECT_ORDER)
@@ -84,9 +84,9 @@ for i = 0, n - 1 do
   if name == "Electric Guitar DI" then
     check(reaper.GetMediaTrackInfo_Value(tr, "I_RECINPUT") == 1, "guitar DI on Input 2 (mono index 1)")
     check(reaper.GetMediaTrackInfo_Value(tr, "B_MAINSEND") == 0, "guitar DI has no direct master route")
-    check(reaper.GetTrackNumSends(tr, 0) == 7, "guitar DI sends to all seven tones")
+    check(reaper.GetTrackNumSends(tr, 0) == 8, "guitar DI sends to all eight tones")
   end
-  if name == "Crystal Clean" or name == "Modern Metal Rhythm" then
+  if name == "Crystal Clean" or name == "Machine Head - Groove Thrash" then
     check(reaper.GetMediaTrackInfo_Value(tr, "I_RECINPUT") == -1, "tone track has no record input: " .. name)
   end
   if name == "Backing Track" then
@@ -133,9 +133,9 @@ end
 
 local TONE_LIST = {
   { "Clean", "Crystal Clean", 5 }, { "Clean", "Warm Clean - Ambient", 6 },
-  { "Rock", "Classic Rock - Crunch", 4 }, { "Rock", "Hard Rock - Heavy Lead", 9 },
-  { "Metal", "Modern Metal Rhythm", 6 }, { "Metal", "Extreme Metal Rhythm", 6 },
-  { "Metal", "Metalcore - Melodic Lead", 7 },
+  { "Rock", "AC-DC - Classic Crunch", 4 }, { "Rock", "Avenged Sevenfold - Lead", 9 },
+  { "Metal", "Machine Head - Groove Thrash", 6 }, { "Metal", "Lamb of God - Groove Metal", 6 },
+  { "Metal", "Slipknot - Nu Metal", 6 }, { "Metal", "Asking Alexandria - Metalcore", 7 },
 }
 local TONE_ROOT = os.getenv("VS_TONE_ROOT")
 
