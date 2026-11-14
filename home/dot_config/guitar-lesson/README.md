@@ -11,7 +11,7 @@ dots-guitar-lesson start     # build graph, launch Guitarix, set defaults (idemp
 dots-guitar-lesson stop      # tear down, restore previous default sink/source
 dots-guitar-lesson restart
 dots-guitar-lesson wire      # re-create links only (after replug / stray autoconnect)
-dots-guitar-lesson levels 0.85 0.75   # voice / guitar levels into the Discord mix
+dots-guitar-lesson levels --voice=0.85 --guitar=0.75   # levels into the Discord mix
 dots-guitar-lesson status
 dots-guitar-lesson doctor
 # Live-hardware regression check (run on the workstation, not CI):

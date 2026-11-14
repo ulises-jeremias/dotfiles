@@ -18,6 +18,7 @@ def test_script_source_exists_with_executable_chezmoi_name() -> None:
     assert SCRIPT.is_file()
     # chezmoi `executable_` prefix installs it as ~/.local/bin/dots-guitar-lesson
     assert SCRIPT.name == "executable_dots-guitar-lesson"
+    assert SCRIPT.stat().st_mode & 0o111, "chezmoi source must keep the exec bit"
 
 
 def test_script_is_valid_bash() -> None:
@@ -40,6 +41,27 @@ def test_script_declares_graph_contract() -> None:
         assert token in text, token
     for subcommand in ("start", "stop", "restart", "wire", "levels", "status", "doctor"):
         assert subcommand in text, subcommand
+
+
+def test_script_uses_easy_options_house_style() -> None:
+    """Historical dots-* convention: ## docs are the help, flags are easy."""
+    text = SCRIPT.read_text(encoding="utf-8")
+    assert "## Usage:" in text
+    assert "## Options:" in text
+    assert "@script.name" in text
+    for flag in ("--help", "--start", "--stop", "--voice=", "--guitar=", "--quantum="):
+        assert flag in text, flag
+
+
+def test_help_runs_without_touching_audio(tmp_path: Path) -> None:
+    env = {"HOME": str(tmp_path), "PATH": "/usr/bin:/bin"}
+    result = subprocess.run(
+        ["bash", str(SCRIPT), "--help"],
+        capture_output=True, text=True, check=False, env=env,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "Usage:" in result.stdout
+    assert "--start" in result.stdout
 
 
 def test_pipewire_conf_prefers_48k_low_latency() -> None:
