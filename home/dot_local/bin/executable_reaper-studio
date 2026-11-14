@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# REAPER Studio mode: open the Vocal Studio template with the Scarlett wired
+# (Input 1 -> mic, Input 2 -> guitar DI, REAPER out 1-2 -> headphones).
+#
+# Usage:
+#   reaper-studio start    launch REAPER on the template if needed, wire it
+#   reaper-studio wire     (re)create the REAPER links only (idempotent)
+#   reaper-studio doctor   verify inputs, outputs and the loopback exclusion
+#
+# Shared helpers: ~/.local/share/reaper-studio/common.sh
+
+set -euo pipefail
+
+COMMON="$HOME/.local/share/reaper-studio/common.sh"
+[ -f "$COMMON" ] || { echo "reaper-studio: missing $COMMON (run chezmoi apply)" >&2; exit 1; }
+# shellcheck source=/dev/null
+. "$COMMON"
+
+wire_studio() {
+  have_reaper || die "REAPER is not running; run 'reaper-studio start'"
+  wait_reaper_ports || die "REAPER JACK ports not present"
+  local hp_fl hp_fr
+  hp_fl="$(headphone_ports | grep ':playback_FL$' | head -1 || true)"
+  hp_fr="$(headphone_ports | grep ':playback_FR$' | head -1 || true)"
+  [ -n "$hp_fl" ] && [ -n "$hp_fr" ] || die "Scarlett headphone sink (Line1) not found; is the interface plugged in?"
+  # Only REAPER's own outputs are touched; system defaults stay as they are.
+  prune_reaper_outputs "${hp_fl}|${hp_fr}"
+  ensure_link "REAPER:out1" "$hp_fl"
+  ensure_link "REAPER:out2" "$hp_fr"
+  log "wired: REAPER out1/out2 -> Scarlett headphones (Line 1-2)"
+}
+
+cmd="${1:-start}"
+case "$cmd" in
+  start)
+    launch_reaper
+    wire_studio
+    "$0" doctor || true
+    ;;
+  wire) wire_studio ;;
+  doctor)
+    fails=0
+    doctor_inputs || fails=$((fails + $?))
+    doctor_outputs || fails=$((fails + $?))
+    if [ "$fails" -eq 0 ]; then log "doctor: all checks passed"; else log "doctor: $fails check(s) failed"; exit 1; fi
+    ;;
+  *) echo "usage: reaper-studio {start|wire|doctor}" >&2; exit 2 ;;
+esac
