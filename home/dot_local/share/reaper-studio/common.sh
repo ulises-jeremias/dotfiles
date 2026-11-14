@@ -56,7 +56,13 @@ wait_reaper_ports() {
 launch_reaper() {
   if have_reaper; then return 0; fi
   [ -f "$REAPER_TEMPLATE" ] || die "template missing: $REAPER_TEMPLATE (run chezmoi apply)"
-  nohup reaper -nosplash -template "$REAPER_TEMPLATE" >"$STATE_DIR/reaper.log" 2>&1 &
+  # Low-latency monitoring for REAPER only: PIPEWIRE_QUANTUM is a per-client
+  # request (no global PipeWire config, nothing persistent). Measured on this
+  # host: REAPER output latency 32 ms at the default quantum 1024 vs 8 ms at
+  # 256, with 0 xruns and ~30% of one core while playing a guitar tone.
+  # Override per machine in ~/.config/reaper-studio/monitor.env (REAPER_QUANTUM=512).
+  PIPEWIRE_QUANTUM="${REAPER_QUANTUM:-256}/48000" \
+    nohup reaper -nosplash -template "$REAPER_TEMPLATE" >"$STATE_DIR/reaper.log" 2>&1 &
   wait_reaper_ports || die "REAPER JACK ports did not appear (see $STATE_DIR/reaper.log)"
 }
 
@@ -130,7 +136,8 @@ doctor_outputs() {
   peers="$(peers_of REAPER:out2 '->')"
   if printf '%s\n' "$peers" | grep -Eq "(${HEADPHONE_SINK_RE}):playback_FR\$"; then check ok "REAPER out2 -> monitor output FR"; else check FAIL "REAPER out2 not on the monitor output FR (peers: ${peers:-none})"; fi
   local stray
-  stray="$({ peers_of REAPER:out1 '->'; peers_of REAPER:out2 '->'; } | grep -Ev "(${HEADPHONE_SINK_RE}):playback_F[LR]\$" || true)"
+  # Lesson mode legitimately adds the virtual-mic bus (EXTRA_OUT_RE); studio has none.
+  stray="$({ peers_of REAPER:out1 '->'; peers_of REAPER:out2 '->'; } | grep -Ev "(${HEADPHONE_SINK_RE}):playback_F[LR]\$" | grep -Ev "${EXTRA_OUT_RE:-^\$}" || true)"
   if [ -z "$stray" ]; then check ok "REAPER outputs go only to the monitor output"; else check FAIL "REAPER output also feeds: $stray"; fi
   return "$fails"
 }

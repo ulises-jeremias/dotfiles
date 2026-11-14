@@ -95,3 +95,9 @@ def test_reaper_scripts_refuse_to_touch_the_template_file() -> None:
     text = LESSON.read_text() + STUDIO.read_text() + COMMON.read_text()
     assert "reaper -nosplash -template" in COMMON.read_text(), "REAPER must open the template, not the file"
     assert re.search(r"Main_SaveProject", text) is None, "routing scripts must never save a project"
+
+
+def test_reaper_is_launched_with_a_per_process_low_latency_quantum() -> None:
+    text = COMMON.read_text()
+    assert 'PIPEWIRE_QUANTUM="${REAPER_QUANTUM:-256}/48000"' in text
+    assert "pipewire.conf.d" not in text, "no persistent PipeWire configuration"

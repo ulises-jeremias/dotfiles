@@ -129,6 +129,7 @@ case "$cmd" in
     ;;
   doctor)
     fails=0
+    EXTRA_OUT_RE="^${LESSON_SINK}:playback_F[LR]\$"
     doctor_inputs || fails=$((fails + $?))
     doctor_outputs || fails=$((fails + $?))
     doctor_lesson || fails=$((fails + $?))

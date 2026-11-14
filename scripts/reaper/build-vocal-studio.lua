@@ -129,6 +129,10 @@ local function eq(tr, cfg)
   local fx = add_fx(tr, "VST: ReaEQ (Cockos)")
   if fx < 0 then return end
   set_value(tr, fx, "ReaEQ", "Freq-High Pass 5", cfg.hp)
+  if cfg.ls then
+    set_value(tr, fx, "ReaEQ", "Freq-Low Shelf", cfg.ls[1])
+    set_value(tr, fx, "ReaEQ", "Gain-Low Shelf", cfg.ls[2])
+  end
   if cfg.hp_bw then set_value(tr, fx, "ReaEQ", "BW-High Pass 5", cfg.hp_bw) end
   if cfg.b2 then
     set_value(tr, fx, "ReaEQ", "Freq-Band 2", cfg.b2[1])
@@ -202,99 +206,126 @@ local function lv2(tr, ident)
   return fx
 end
 
--- Hard Stuff: the bank's enabled blocks, in signal order. The main amp is OFF
--- in the bank (amp.on_off = 0), so no amp head is used. Order: AstroFuzz
--- (pre), tone stack (post), shaper, cabinet.
-local function hard_stuff(tr)
-  trace("hard_stuff start")
-  local fz = lv2(tr, "LV2: GxFuzz (Guitarix team) (Mono)")
-  if fz >= 0 then                                   -- AstroFuzz stand-in (no LV2 build)
-    set_value(tr, fz, "GxFuzz", "TONE", 0.51)
-    set_value(tr, fz, "GxFuzz", "OUTPUT", 85.5)
-    set_value(tr, fz, "GxFuzz", "DRIVE", 1.0)
-  end
-  -- Tone stack: GxAmplifier-X crashes REAPER when saved with GxCabinet in the
-  -- same project (reproduced on reopen, with or without its own cab), so the
-  -- M-Lead tone stack is approximated with native ReaEQ. Values are a first pass,
-  -- to refine with an A/B against the real Guitarix render.
-  local ts = add_fx(tr, "VST: ReaEQ (Cockos)")
-  if ts >= 0 then
-    set_value(tr, ts, "ReaEQ tone stack", "Freq-Low Shelf", 100)
-    set_value(tr, ts, "ReaEQ tone stack", "Gain-Low Shelf", 0)
-    set_value(tr, ts, "ReaEQ tone stack", "Freq-Band 2", 700)
-    set_value(tr, ts, "ReaEQ tone stack", "Gain-Band 2", 2)
-    set_value(tr, ts, "ReaEQ tone stack", "BW-Band 2", 1.0)
-    set_value(tr, ts, "ReaEQ tone stack", "Freq-Band 3", 3000)
-    set_value(tr, ts, "ReaEQ tone stack", "Gain-Band 3", 0)
-    set_value(tr, ts, "ReaEQ tone stack", "Freq-High Shelf 4", 6000)
-    set_value(tr, ts, "ReaEQ tone stack", "Gain-High Shelf 4", 0)
-    set_value(tr, ts, "ReaEQ tone stack", "Freq-High Pass 5", 30)
-    set_value(tr, ts, "ReaEQ tone stack", "Gain-High Pass 5", 0)
-  end
-  local sh = lv2(tr, "LV2: GxSaturator (Guitarix team) (Mono)")
-  if sh >= 0 then                                   -- Shaper stand-in (no LV2 build)
-    set_value(tr, sh, "GxSaturator", "INTENSITY", 10)
-    set_value(tr, sh, "GxSaturator", "SATURATE", 60)
-  end
-  local cb = lv2(tr, "LV2: GxCabinet (Guitarix team) (Mono)")
-  if cb >= 0 then                                   -- bank: cab Level 3.4925, bass 6.7, treble 3.4, 4x12
-    set_value(tr, cb, "GxCabinet", "Cabinet", 3.4925)
-    set_value(tr, cb, "GxCabinet", "Bass", 6.7)
-    set_value(tr, cb, "GxCabinet", "Treble", 3.4)
-    set_norm(tr, cb, "GxCabinet", "Cab Model", 0.0, "4x12")
-  end
-end
-
 -- ---------------------------------------------------------------------------
--- Guitar tones (Squier Stratocaster, Scarlett Input 2, DI track sends to all).
--- Single-coil noise: every high-gain tone has a Guitarix expander in front of
--- the drive, and the EQ cuts the sub-lows that mud high gain. Gain staging:
--- the tone faders are calibrated against one DI reference (see
--- guitar-tones-trim.txt) so the tones match in loudness when switched.
--- Amp/cab pairs never share a project with GxCabinet when the amp has its own
--- cab (the GxAmplifier-X + GxCabinet crash); GxMetalAmp has no cab, so it gets
--- GxCabinet.
+-- Guitar amp and cabinet stage (v2): Neural Amp Modeler captures + LSP IRs.
+--
+-- Why not the Guitarix amps/cabs any more (measured, see docs):
+--   * GxCabinet had no measurable effect on the signal in the previous build.
+--   * Several Guitarix convolvers (GxCabinet, GxAmplifier-X's own cab) in one
+--     REAPER process crash in libfftw3f (planner is not thread-safe).
+--   * The Guitarix metal amp barely saturated a Strat DI (crest factor ~17 dB,
+--     same as the dry DI); NAM captures reach ~9 dB on the same DI.
+-- NAM models and IRs are user assets, not in Git: reaper-guitar-assets installs
+-- them under ~/.local/share/reaper-studio/guitar from pinned upstream sources.
+-- File paths are written as REAPER's plain-text LV2 state ("P <uri> <path> 3"),
+-- which is what REAPER itself saves; both plugins restore from it.
 
-local function amp_clean_fender(tr, cfg)
-  local am = lv2(tr, "LV2: GxAmplifier-X (Guitarix team) (Mono)")
-  if am < 0 then return end
-  set_value(tr, am, "GxAmp", "PreGain", cfg.pre)
-  set_value(tr, am, "GxAmp", "Distortion", cfg.dist)
-  set_value(tr, am, "GxAmp", "Drive", cfg.drive)
-  set_value(tr, am, "GxAmp", "MasterGain", 0)
-  set_value(tr, am, "GxAmp", "Bass", cfg.bass)
-  set_value(tr, am, "GxAmp", "Middle", cfg.mid)
-  set_value(tr, am, "GxAmp", "Treble", cfg.treble)
-  set_value(tr, am, "GxAmp", "Presence", cfg.pres)
-  set_norm(tr, am, "GxAmp", "Tonestack Model", cfg.ts[1] / 26, cfg.ts[2])
-  set_norm(tr, am, "GxAmp", "Cab Model", cfg.cab[1] / 18, cfg.cab[2])
+local NAM_ID = "LV2: Neural Amp Modeler (Mike Oliphant) (Mono)"
+local IR_ID = "LV2: LSP Impulse Responses Mono (LSP LV2)"
+local NAM_PROP = "http://github.com/mikeoliphant/neural-amp-modeler-lv2#model"
+local IR_PROP = "http://lsp-plug.in/plugins/lv2/impulse_responses_mono/ports#ifn"
+local ASSETS = os.getenv("VS_ASSETS") or (os.getenv("HOME") .. "/.local/share/reaper-studio/guitar")
+local PENDING = {}   -- track -> { nam = {state...}, ir = {state...} }, applied in one chunk edit
+
+local function file_exists(path)
+  local f = io.open(path, "r"); if f then f:close(); return true end; return false
 end
 
-local function gx_cabinet(tr, level, bass, treble, cab)
-  local cb = lv2(tr, "LV2: GxCabinet (Guitarix team) (Mono)")
-  if cb < 0 then return end
-  set_value(tr, cb, "GxCabinet", "Cabinet", level)
-  set_value(tr, cb, "GxCabinet", "Bass", bass)
-  set_value(tr, cb, "GxCabinet", "Treble", treble)
-  set_norm(tr, cb, "GxCabinet", "Cab Model", cab[1] / 18, cab[2])
+local function queue_state(tr, kind, text)
+  PENDING[tr] = PENDING[tr] or { nam = {}, ir = {} }
+  table.insert(PENDING[tr][kind], text)
 end
 
-local function gx_expander(tr, thr, release)
-  local ex = lv2(tr, "LV2: GxExpander (Guitarix team) (Mono)")
-  if ex < 0 then return end
-  set_value(tr, ex, "GxExpander", "THRESHOLD", thr)
-  set_value(tr, ex, "GxExpander", "RATIO", 4)
-  set_value(tr, ex, "GxExpander", "ATTACK", 1)
-  set_value(tr, ex, "GxExpander", "RELEASE", release)
+-- Write every queued NAM/IR file state of a track in ONE chunk edit, in plugin
+-- order. Models load asynchronously: a second chunk edit before they finish
+-- loading would write their (still empty) state back and lose the model.
+local function apply_states(tr, queue)
+  local _, c = reaper.GetTrackStateChunk(tr, "", false)
+  -- skip_depth > 0 while replacing a STATE block; LSP's STATE contains a nested
+  -- <L ...> block, so the block ends only when nesting returns to zero.
+  local out, cur, nq, skip_depth = {}, nil, { nam = 1, ir = 1 }, 0
+  for line in (c .. "\n"):gmatch("(.-)\n") do
+    if skip_depth > 0 then
+      if line:match("^%s*<") then skip_depth = skip_depth + 1
+      elseif line:match("^%s*>%s*$") then
+        skip_depth = skip_depth - 1
+        if skip_depth == 0 then out[#out + 1] = ">" end
+      end
+    else
+      if line:find('^<LV2 "' .. NAM_ID:gsub("%p", "%%%0")) then cur = "nam"
+      elseif line:find('^<LV2 "' .. IR_ID:gsub("%p", "%%%0")) then cur = "ir"
+      elseif line:match("^<LV2") or line:match("^<VST") or line:match("^<JS") then cur = nil end
+      if line == "<STATE" and cur and queue[cur][nq[cur]] then
+        out[#out + 1] = line
+        out[#out + 1] = queue[cur][nq[cur]]
+        nq[cur] = nq[cur] + 1
+        skip_depth = 1
+      else
+        out[#out + 1] = line
+      end
+    end
+  end
+  return reaper.SetTrackStateChunk(tr, table.concat(out, "\n"), false)
 end
 
-local function gx_compressor(tr, thr, ratio)
-  local cp = lv2(tr, "LV2: GxCompressor (Guitarix team) (Mono)")
-  if cp < 0 then return end
-  set_value(tr, cp, "GxCompressor", "THRESHOLD", thr)
-  set_value(tr, cp, "GxCompressor", "RATIO", ratio)
-  set_value(tr, cp, "GxCompressor", "ATTACK", 0.01)
-  set_value(tr, cp, "GxCompressor", "RELEASE", 0.2)
+-- Amp capture. input_db feeds the capture (gain staging before the amp);
+-- output_db sets the level after it.
+local NAM_OUT = {}  -- tone name -> NAM Output Lvl (dB), from guitar-tones-trim.txt 'nam:' lines
+local CURRENT_TONE = nil
+local function nam(tr, model, input_db, output_db)
+  output_db = NAM_OUT[CURRENT_TONE] or output_db
+  local fx = add_fx(tr, NAM_ID)
+  if fx < 0 then return end
+  set_value(tr, fx, "NAM", "Input Lvl", input_db)
+  set_value(tr, fx, "NAM", "Output Lvl", output_db)
+  local path = ASSETS .. "/nam/" .. model
+  check(file_exists(path) and not path:find(" "), "NAM capture present (no spaces): " .. model)
+  queue_state(tr, "nam", "P " .. NAM_PROP .. " " .. path .. " 3")
+end
+
+-- Cabinet IR, 100% wet. gain is linear (IRs here add ~+12 dB, so ~0.25).
+local function cab_ir(tr, ir, gain)
+  local fx = add_fx(tr, IR_ID)
+  if fx < 0 then return end
+  set_value(tr, fx, "LSP IR", "Dry amount", 0)
+  set_value(tr, fx, "LSP IR", "Dry/Wet balance", 100)
+  set_value(tr, fx, "LSP IR", "Output gain", gain)
+  local path = ASSETS .. "/ir/" .. ir
+  check(file_exists(path) and not path:find(" "), "cabinet IR present (no spaces): " .. ir)
+  queue_state(tr, "ir", "P " .. IR_PROP .. " " .. path .. " 3")
+end
+
+-- Single-coil 50 Hz mains hum (measured on the Squier DI: 50/150/250 Hz peaks).
+-- Narrow cuts before the amp, so high gain does not amplify the hum.
+local function hum_notch(tr)
+  eq(tr, { hp = 35, b2 = { 50, -12, 0.1 }, b3 = { 150, -9, 0.06 } })
+end
+
+-- Transparent gate in front of the amp, at DI level where the signal/noise
+-- ratio is best. Fast attack keeps pick transients; -6 dB hysteresis closes
+-- below the open threshold so sustained notes are not chopped.
+-- Calibrated on the real Squier DI at the current Scarlett gain: noise peaks
+-- reach -59.4 dBFS, playing peaks sit near -28 dBFS. Open -50 / close -56 dBFS
+-- clears the noise by ~3 dB and leaves >20 dB for sustained notes. If Input 2
+-- gain is raised, raise these thresholds by the same amount (see docs).
+-- (The previous GxExpander had a 1 s attack: its ATTACK port is in seconds.)
+local function guitar_gate(tr, thr, release)
+  local fx = add_fx(tr, "VST: ReaGate (Cockos)")
+  if fx < 0 then return end
+  set_value(tr, fx, "ReaGate", "Threshold", thr)
+  set_value(tr, fx, "ReaGate", "Attack", 1)
+  set_value(tr, fx, "ReaGate", "Hold", 40)
+  set_value(tr, fx, "ReaGate", "Release", release)
+  set_value(tr, fx, "ReaGate", "Hysteresis", -6)
+end
+
+-- Tube Screamer as a tightening boost: little drive, high level, mid-focused tone.
+local function ts_boost(tr, drive, level, tone)
+  local fx = lv2(tr, "LV2: GxTubeScreamer (Guitarix team) (Mono)")
+  if fx < 0 then return end
+  set_value(tr, fx, "GxTubeScreamer", "Drive", drive)
+  set_value(tr, fx, "GxTubeScreamer", "Level", level)
+  set_value(tr, fx, "GxTubeScreamer", "Tone", tone)
 end
 
 local function insert_reverb(tr, wet_db)
@@ -308,29 +339,32 @@ local function insert_reverb(tr, wet_db)
   set_value(tr, fx, "ReaVerbate", "Hipass", 150)
 end
 
-local function insert_delay(tr, wet_db, feedback_db)
+local function insert_delay(tr, seconds, wet_db, feedback_db)
   local fx = add_fx(tr, "VST: ReaDelay (Cockos)")
   if fx < 0 then return end
   set_value(tr, fx, "ReaDelay", "Wet", wet_db)
   set_value(tr, fx, "ReaDelay", "Dry", 0)
-  set_value(tr, fx, "ReaDelay", "1: Length (time)", 0.25)
+  set_value(tr, fx, "ReaDelay", "1: Length (time)", seconds)
   set_value(tr, fx, "ReaDelay", "1: Feedback", feedback_db)
   set_value(tr, fx, "ReaDelay", "1: Lowpass", 5000)
-  set_value(tr, fx, "ReaDelay", "1: Hipass", 180)
+  set_value(tr, fx, "ReaDelay", "1: Hipass", 200)
 end
 
 local TONE_FN = {}
 
--- 1. Crystal Clean: bright Fender-style clean for ballads and arpeggios.
+-- Crystal Clean: Fender Twin Reverb capture (genuinely clean, crest ~22 dB on a
+-- Strat DI). The capture's Bright switch is very bright at low volume (measured
+-- -26 dB lows), so the fullest IR (Don Spinacio) and a low shelf rebalance it.
 TONE_FN.crystal = function(tr)
-  gx_compressor(tr, -24, 2)
-  eq(tr, { hp = 85, b2 = { 320, -1, 1.0 }, b3 = { 3200, 2, 1.0 }, hs = { 9000, 2 } })
-  amp_clean_fender(tr, { pre = 0, dist = 1, drive = 0.1, bass = 0.45, mid = 0.5,
-    treble = 0.62, pres = 5, ts = { 23, "Fender Style" }, cab = { 1, "2x12" } })
-  insert_reverb(tr, -26)
+  comp(tr, { thr = -26, ratio = 2.5, att = 8, rel = 120 })
+  nam(tr, "twin-reverb-normal-bright.nam", 0, 0)
+  cab_ir(tr, "emerald/5_Don_Spinacio_48.wav", 0.25)
+  eq(tr, { hp = 70, ls = { 180, 3 }, b2 = { 320, -1, 1.0 }, b3 = { 3200, -1, 1.0 }, hs = { 9000, -1.5 } })
+  insert_reverb(tr, -24)
 end
 
--- 2. Warm Clean / Ambient: chorus, long soft echo and hall for intros.
+-- Warm Clean / Ambient: chorus into a Vox AC15 (input -6 dB keeps it clean),
+-- the fattest IR (Kill Dill), dark top, long echo and hall.
 TONE_FN.warm = function(tr)
   local ch = lv2(tr, "LV2: GxChorus-Stereo (Guitarix team)")
   if ch >= 0 then
@@ -338,9 +372,9 @@ TONE_FN.warm = function(tr)
     set_value(tr, ch, "GxChorus", "Depth", 0.35)
     set_value(tr, ch, "GxChorus", "Freq", 1.2)
   end
-  eq(tr, { hp = 80, hs = { 6000, -2 } })
-  amp_clean_fender(tr, { pre = 0, dist = 1, drive = 0.08, bass = 0.5, mid = 0.42,
-    treble = 0.42, pres = 3, ts = { 2, "Twin Reverb" }, cab = { 1, "2x12" } })
+  nam(tr, "vox-ac15-jonar1.nam", -6, 0)
+  cab_ir(tr, "emerald/6_Kill_Dill_48.wav", 0.25)
+  eq(tr, { hp = 80, b2 = { 250, -1.5, 1.0 }, hs = { 5500, -3 } })
   local ec = lv2(tr, "LV2: GxEcho-Stereo (Guitarix team)")
   if ec >= 0 then
     set_value(tr, ec, "GxEcho", "L Time", 375)
@@ -356,76 +390,64 @@ TONE_FN.warm = function(tr)
   end
 end
 
--- 3. Classic Rock / Crunch: Tube Screamer into a JCM-800 style amp.
+-- Classic Rock / Crunch: JCM2000 crunch with less input (-6 dB) for a lighter,
+-- touch-sensitive crunch; balanced Greenback IR.
 TONE_FN.classic = function(tr)
-  local ts = lv2(tr, "LV2: GxTubeScreamer (Guitarix team) (Mono)")
-  if ts >= 0 then
-    set_value(tr, ts, "GxTubeScreamer", "Drive", 0.35)
-    set_value(tr, ts, "GxTubeScreamer", "Level", -6)
-    set_value(tr, ts, "GxTubeScreamer", "Tone", 1000)
-  end
-  gx_expander(tr, -42, 0.1)
-  amp_clean_fender(tr, { pre = 4, dist = 45, drive = 0.35, bass = 0.5, mid = 0.7,
-    treble = 0.6, pres = 5, ts = { 4, "JCM-800" }, cab = { 8, "Marshall" } })
-  eq(tr, { hp = 100, b2 = { 300, -2, 1.0 }, b3 = { 2500, 2, 1.0 }, hs = { 8000, 0 } })
-  insert_reverb(tr, -22)
-end
-
--- 4. Hard Rock / Heavy Lead: DS-1 into a JCM-2000 style amp, lead sustain.
-TONE_FN.hardrock = function(tr)
-  local ds = lv2(tr, "LV2: GxBoss DS1 (Guitarix team) (Mono)")
-  if ds >= 0 then
-    set_value(tr, ds, "GxBoss DS1", "DRIVE", 0.6)
-    set_value(tr, ds, "GxBoss DS1", "TONE", 0.5)
-    set_value(tr, ds, "GxBoss DS1", "LEVEL", -3)
-  end
-  gx_expander(tr, -42, 0.1)
-  amp_clean_fender(tr, { pre = 6, dist = 65, drive = 0.5, bass = 0.5, mid = 0.6,
-    treble = 0.6, pres = 6, ts = { 5, "JCM-2000" }, cab = { 8, "Marshall" } })
-  gx_compressor(tr, -22, 3)
-  eq(tr, { hp = 90, b2 = { 250, -2, 1.0 }, b3 = { 3000, 3, 1.0 }, hs = { 8000, 1 } })
+  nam(tr, "jcm2000-crunch.nam", -6, 0)
+  cab_ir(tr, "emerald/3_Wasabi_Warrior_48.wav", 0.25)
+  eq(tr, { hp = 90, b2 = { 350, -1.5, 1.0 }, b3 = { 2500, 1, 1.0 }, hs = { 7500, -1.5 } })
   insert_reverb(tr, -24)
 end
 
--- 5. Modern Metal Rhythm: tight gate, scooped mids, GxMetalAmp into 4x12.
+-- Hard Rock / Heavy Lead: compressed, TS-boosted JCM2000 lead channel, quarter-note delay.
+TONE_FN.hardrock = function(tr)
+  hum_notch(tr)
+  guitar_gate(tr, -50, 250)
+  comp(tr, { thr = -24, ratio = 3, att = 15, rel = 150 })
+  ts_boost(tr, 0.2, 2, 750)
+  nam(tr, "jcm2000-lead2-g8.nam", 0, 0)
+  cab_ir(tr, "emerald/5_Don_Spinacio_48.wav", 0.25)
+  eq(tr, { hp = 100, b2 = { 400, -1.5, 1.0 }, b3 = { 1800, 1.5, 1.0 }, hs = { 7500, -2 } })
+  insert_delay(tr, 0.5, -18, -14)
+  insert_reverb(tr, -22)
+end
+
+-- Modern Metal Rhythm: tight Tube Screamer boost into a 6505+ red channel
+-- (crest ~9 dB on a Strat DI), V30 + SM57. Thick, mid-forward, tight low end.
 TONE_FN.metal = function(tr)
-  gx_expander(tr, -40, 0.08)
-  local ma = lv2(tr, "LV2: GxMetalAmp (Guitarix team) (Mono)")
-  if ma >= 0 then
-    set_value(tr, ma, "GxMetalAmp", "TONE", 0.55)
-    set_value(tr, ma, "GxMetalAmp", "DRIVE", 12)
-    set_value(tr, ma, "GxMetalAmp", "PREGAIN", 3)
-    set_value(tr, ma, "GxMetalAmp", "GAIN1", 0)
-    set_norm(tr, ma, "GxMetalAmp", "HIGHGAIN", 1.0, "On")
-  end
-  gx_cabinet(tr, 3.5, -2, 2, { 0, "4x12" })
-  eq(tr, { hp = 95, b2 = { 500, -3, 1.0 }, b3 = { 3000, 3, 1.0 }, hs = { 6000, -2 } })
+  hum_notch(tr)
+  guitar_gate(tr, -50, 90)
+  ts_boost(tr, 0.05, 4, 800)
+  nam(tr, "6505plus-red-noboost.nam", 0, 0)
+  cab_ir(tr, "brutal/1_Cookie_Monster.wav", 0.25)
+  eq(tr, { hp = 85, b2 = { 300, -2.5, 1.2 }, b3 = { 1200, 1.5, 1.0 }, hs = { 6500, -3 } })
 end
 
--- 6. Metalcore / Modern Lead: TS-style boost, MetalHead lead, controlled delay.
+-- Extreme Metal Rhythm: a different amp family (Engl E530 preamp + 840 power
+-- amp, DS-1 in front, captured together), pushed +6 dB, plus a zero-drive TS
+-- for low-end tightness (measured: without it the low end decays far slower),
+-- tighter high-pass, more 2.5 kHz bite, brighter V30/Rockdriver blend, faster gate.
+TONE_FN.extreme = function(tr)
+  hum_notch(tr)
+  guitar_gate(tr, -48, 60)
+  ts_boost(tr, 0.0, 4, 900)
+  nam(tr, "engl-e530-840-ds1.nam", 6, 0)
+  cab_ir(tr, "brutal/5_Iceburn_Suicide.wav", 0.25)
+  eq(tr, { hp = 110, b2 = { 400, -3, 1.0 }, b3 = { 2500, 2.5, 1.0 }, hs = { 6000, -3.5 } })
+end
+
+-- Metalcore / Melodic Lead: Mesa Mark IV lead (already very saturated, crest
+-- ~7 dB, so no extra boost), V30, dotted-eighth delay, reverb.
 TONE_FN.metalcore = function(tr)
-  gx_expander(tr, -40, 0.08)
-  local sd = lv2(tr, "LV2: GxSD1 (Guitarix team) (Mono)")
-  if sd >= 0 then
-    set_value(tr, sd, "GxSD1", "DRIVE", 0.3)
-    set_value(tr, sd, "GxSD1", "LEVEL", -6)
-    set_value(tr, sd, "GxSD1", "TONE", 1000)
-  end
-  local mh = lv2(tr, "LV2: GxMetalHead (Guitarix team) (Mono)")
-  if mh >= 0 then
-    set_value(tr, mh, "GxMetalHead", "DRIVE", 0.5)
-    set_value(tr, mh, "GxMetalHead", "PREGAIN", 4)
-    set_value(tr, mh, "GxMetalHead", "TONE", 0.6)
-    set_norm(tr, mh, "GxMetalHead", "HIGHGAIN", 1.0, "On")
-  end
-  gx_cabinet(tr, 3.5, -1, 2, { 0, "4x12" })
-  eq(tr, { hp = 100, b2 = { 400, -2, 1.0 }, b3 = { 3500, 2, 1.0 }, hs = { 7000, -1 } })
-  insert_delay(tr, -12, -18)
-  insert_reverb(tr, -28)
+  hum_notch(tr)
+  guitar_gate(tr, -50, 250)
+  nam(tr, "mesa-markiv.nam", 0, 0)
+  cab_ir(tr, "brutal/12_World_Collider.wav", 0.25)
+  eq(tr, { hp = 100, b2 = { 350, -1.5, 1.0 }, b3 = { 1000, 1.5, 1.0 }, hs = { 6500, -2.5 } })
+  insert_delay(tr, 0.375, -16, -12)
+  insert_reverb(tr, -24)
 end
 
--- 7. Hard Stuff (Legacy): the migrated Guitarix bank preset, faithful and unchanged.
-TONE_FN.legacy = function(tr) hard_stuff(tr) end
 
 -- Shared return: 100% wet, reverb level is controlled by the sends.
 local function reverb_return(tr)
@@ -522,7 +544,7 @@ local LAYOUT = {
   { name = "Vocal Reverb", depth = 0, color = C.teal, kind = "reverb" },
   { name = "Vocal Delay", depth = -1, color = C.teal, kind = "delay" },
   -- Guitar: the DI track records Scarlett Input 2 raw, monitors through a send
-  -- into the Hard Stuff track, and has no direct master route, so only the
+  -- into every guitar tone track, and has no direct master route, so only the
   -- processed tone is heard. Playing a recorded DI item re-amps it through the chain.
   { name = "ELECTRIC GUITAR", depth = 1, color = C.green },
   { name = "Electric Guitar DI", depth = 0, color = C.green, kind = "di" },
@@ -531,8 +553,8 @@ local LAYOUT = {
   { name = "Classic Rock - Crunch", depth = 0, color = C.orange, kind = "tone", fn = "classic", cat = "Rock", mute = true },
   { name = "Hard Rock - Heavy Lead", depth = 0, color = C.orange, kind = "tone", fn = "hardrock", cat = "Rock", mute = true },
   { name = "Modern Metal Rhythm", depth = 0, color = C.red, kind = "tone", fn = "metal", cat = "Metal", mute = true },
-  { name = "Metalcore - Modern Lead", depth = 0, color = C.red, kind = "tone", fn = "metalcore", cat = "Metal", mute = true },
-  { name = "Hard Stuff (Legacy)", depth = -1, color = C.grey, kind = "tone", fn = "legacy", cat = "Legacy", mute = true },
+  { name = "Extreme Metal Rhythm", depth = 0, color = C.red, kind = "tone", fn = "extreme", cat = "Metal", mute = true },
+  { name = "Metalcore - Melodic Lead", depth = -1, color = C.red, kind = "tone", fn = "metalcore", cat = "Metal", mute = true },
 }
 
 -- Per-tone fader trims in dB (name|dB per line), written after loudness calibration.
@@ -541,8 +563,10 @@ do
   local f = io.open(os.getenv("VS_TRIM") or (OUT .. "/../../../scripts/reaper/guitar-tones-trim.txt"), "r")
   if f then
     for line in f:lines() do
+      local nam_name, nam_db = line:match("^nam:(.-)|(%-?[%d%.]+)$")
       local name, db = line:match("^(.-)|(%-?[%d%.]+)$")
-      if name then TRIM[name] = tonumber(db) end
+      if nam_name then NAM_OUT[nam_name] = tonumber(nam_db)
+      elseif name then TRIM[name] = tonumber(db) end
     end
     f:close()
   end
@@ -638,7 +662,9 @@ for _, spec in ipairs(LAYOUT) do
   elseif spec.kind == "delay" then
     delay_return(tr)
   elseif spec.kind == "tone" then
+    CURRENT_TONE = spec.name
     TONE_FN[spec.fn](tr)
+    spec.fx_count = reaper.TrackFX_GetCount(tr)
     reaper.SetMediaTrackInfo_Value(tr, "D_VOL", db2lin(TRIM[spec.name] or 0))
   end
 end
@@ -659,57 +685,109 @@ for _, spec in ipairs(LAYOUT) do
   end
 end
 
--- Guitar monitor path: DI (Input 2) -> send (post-fader) -> Hard Stuff.
+-- Guitar monitor path: DI (Input 2) -> send (post-fader) -> each tone track.
 for _, spec in ipairs(LAYOUT) do
   if spec.kind == "tone" then send(T["Electric Guitar DI"], T[spec.name], 0) end
+end
+
+-- Amp captures and cabinet IRs: one state write per track (see apply_states).
+for tr, q in pairs(PENDING) do
+  check(apply_states(tr, q), "file states applied: " .. select(2, reaper.GetTrackName(tr)))
+end
+-- A malformed state edit silently drops every plugin after it; prove none were lost.
+for _, spec in ipairs(LAYOUT) do
+  if spec.kind == "tone" then
+    local n = reaper.TrackFX_GetCount(T[spec.name])
+    check(n == spec.fx_count, string.format("%s keeps all %d plugins after state edit (got %d)", spec.name, spec.fx_count, n))
+  end
 end
 
 -- Expected structure, verified on the built project.
 local nTracks = reaper.CountTracks(0)
 check(nTracks == #LAYOUT, string.format("track count %d == %d", nTracks, #LAYOUT))
 
--- Export track templates and FX chains (per vocal style and returns).
-local TT_DIR = OUT .. "/TrackTemplates/Vocal Studio"
-local TT_GUITAR = OUT .. "/TrackTemplates/Guitar Tones"
-local FX_GUITAR = OUT .. "/FXChains/Guitar Tones"
-local FX_DIR = OUT .. "/FXChains/Vocal Studio"
-local PT_DIR = OUT .. "/ProjectTemplates"
-mkdir(TT_DIR); mkdir(FX_DIR); mkdir(PT_DIR)
+-- NAM loads its model asynchronously and only saves a model path once loaded,
+-- so exporting must wait; otherwise chains would be saved without an amp.
+local SETTLE = tonumber(os.getenv("VS_SETTLE") or "6")
+local t_settle = reaper.time_precise()
 
-local EXPORT = {
-  { file = "Lead Clean", tr = "Lead Clean" },
-  { file = "Lead Clean FX", tr = "Lead Clean FX" },
-  { file = "Grit Vocal", tr = "Grit Vocal" },
-  { file = "Harsh Vocal", tr = "Harsh Vocal" },
-  { file = "Double L", tr = "Double L" },
-  { file = "Double R", tr = "Double R" },
-  { file = "Harmonies", tr = "Harmonies" },
-}
-for _, e in ipairs(EXPORT) do
-  write_file(TT_DIR .. "/" .. e.file .. ".RTrackTemplate", track_template_chunk(T[e.tr]))
-  write_file(FX_DIR .. "/" .. e.file .. ".RfxChain", fxchain_chunk(T[e.tr]))
-end
-write_file(FX_DIR .. "/Vocal Reverb.RfxChain", fxchain_chunk(T["Vocal Reverb"]))
--- Guitar tones: one track template and one FX chain per tone, in REAPER categories.
-for _, spec in ipairs(LAYOUT) do
-  if spec.kind == "tone" then
-    local cat_tt = TT_GUITAR .. "/" .. spec.cat
-    local cat_fx = FX_GUITAR .. "/" .. spec.cat
-    mkdir(cat_tt); mkdir(cat_fx)
-    write_file(cat_tt .. "/" .. spec.name .. ".RTrackTemplate", track_template_chunk(T[spec.name]))
-    write_file(cat_fx .. "/" .. spec.name .. ".RfxChain", fxchain_chunk(T[spec.name]))
+local function export_all()
+
+  -- Export track templates and FX chains (per vocal style and returns).
+  local TT_DIR = OUT .. "/TrackTemplates/Vocal Studio"
+  local TT_GUITAR = OUT .. "/TrackTemplates/Guitar Tones"
+  local FX_GUITAR = OUT .. "/FXChains/Guitar Tones"
+  local FX_DIR = OUT .. "/FXChains/Vocal Studio"
+  local PT_DIR = OUT .. "/ProjectTemplates"
+  mkdir(TT_DIR); mkdir(FX_DIR); mkdir(PT_DIR)
+
+  local EXPORT = {
+    { file = "Lead Clean", tr = "Lead Clean" },
+    { file = "Lead Clean FX", tr = "Lead Clean FX" },
+    { file = "Grit Vocal", tr = "Grit Vocal" },
+    { file = "Harsh Vocal", tr = "Harsh Vocal" },
+    { file = "Double L", tr = "Double L" },
+    { file = "Double R", tr = "Double R" },
+    { file = "Harmonies", tr = "Harmonies" },
+  }
+  for _, e in ipairs(EXPORT) do
+    write_file(TT_DIR .. "/" .. e.file .. ".RTrackTemplate", track_template_chunk(T[e.tr]))
+    write_file(FX_DIR .. "/" .. e.file .. ".RfxChain", fxchain_chunk(T[e.tr]))
   end
+  write_file(FX_DIR .. "/Vocal Reverb.RfxChain", fxchain_chunk(T["Vocal Reverb"]))
+  -- Guitar tones: one track template and one FX chain per tone, in REAPER categories.
+  for _, spec in ipairs(LAYOUT) do
+    if spec.kind == "tone" then
+      local cat_tt = TT_GUITAR .. "/" .. spec.cat
+      local cat_fx = FX_GUITAR .. "/" .. spec.cat
+      mkdir(cat_tt); mkdir(cat_fx)
+      write_file(cat_tt .. "/" .. spec.name .. ".RTrackTemplate", track_template_chunk(T[spec.name]))
+      write_file(cat_fx .. "/" .. spec.name .. ".RfxChain", fxchain_chunk(T[spec.name]))
+    end
+  end
+  write_file(TT_DIR .. "/Electric Guitar DI.RTrackTemplate", track_template_chunk(T["Electric Guitar DI"]))
+  write_file(FX_DIR .. "/Vocal Delay.RfxChain", fxchain_chunk(T["Vocal Delay"]))
+
+  -- Project template: no media items anywhere, every audio track disarmed.
+  -- Inactive tones: muted, FX bypassed AND FX offline. Offline FX keep their
+  -- state (amp capture, IR) but are not loaded, so opening the project loads a
+  -- single NAM model: less RAM/CPU, and it avoids a crash seen in the NAM LV2
+  -- model loader when many models load concurrently. The tone switcher brings
+  -- the chosen tone online. (Exported templates/chains above stay online.)
+  for _, spec in ipairs(LAYOUT) do
+    if spec.kind == "tone" then
+      local tr = T[spec.name]
+      reaper.SetMediaTrackInfo_Value(tr, "I_FXEN", spec.mute and 0 or 1)
+      for fx = 0, reaper.TrackFX_GetCount(tr) - 1 do
+        reaper.TrackFX_SetOffline(tr, fx, spec.mute and true or false)
+      end
+    end
+  end
+  local items = reaper.CountMediaItems(0)
+  check(items == 0, "project has zero media items (" .. items .. ")")
+  local pt = PT_DIR .. "/" .. TEMPLATE_NAME .. ".RPP"
+  reaper.Main_SaveProjectEx(0, pt, 0)
+  log("wrote   " .. pt)
+
+  write_file(REPORT_PATH, table.concat(report, "\n") .. string.format(
+    "\n\nSUMMARY failures=%d\n", failures))
+  reaper.Main_OnCommand(40004, 0) -- File: Quit REAPER
 end
-write_file(TT_DIR .. "/Electric Guitar DI.RTrackTemplate", track_template_chunk(T["Electric Guitar DI"]))
-write_file(FX_DIR .. "/Vocal Delay.RfxChain", fxchain_chunk(T["Vocal Delay"]))
 
--- Project template: no media items anywhere, every audio track disarmed.
-local items = reaper.CountMediaItems(0)
-check(items == 0, "project has zero media items (" .. items .. ")")
-local pt = PT_DIR .. "/" .. TEMPLATE_NAME .. ".RPP"
-reaper.Main_SaveProjectEx(0, pt, 0)
-log("wrote   " .. pt)
-
-write_file(REPORT_PATH, table.concat(report, "\n") .. string.format(
-  "\n\nSUMMARY failures=%d\n", failures))
-reaper.Main_OnCommand(40004, 0) -- File: Quit REAPER
+local function wait_and_export()
+  if reaper.time_precise() - t_settle < SETTLE then reaper.defer(wait_and_export); return end
+  -- every queued capture/IR must have survived into the saved state
+  for _, spec in ipairs(LAYOUT) do
+    if spec.kind == "tone" and PENDING[T[spec.name]] then
+      local _, c = reaper.GetTrackStateChunk(T[spec.name], "", false)
+      local q = PENDING[T[spec.name]]
+      local nam_n, ir_n = 0, 0
+      for _ in c:gmatch(NAM_PROP:gsub("%p", "%%%0") .. " /") do nam_n = nam_n + 1 end
+      for _ in c:gmatch(IR_PROP:gsub("%p", "%%%0") .. " /") do ir_n = ir_n + 1 end
+      check(nam_n == #q.nam, string.format("%s: amp capture loaded and saved (%d/%d)", spec.name, nam_n, #q.nam))
+      check(ir_n == #q.ir, string.format("%s: cabinet IR loaded and saved (%d/%d)", spec.name, ir_n, #q.ir))
+    end
+  end
+  export_all()
+end
+wait_and_export()

@@ -35,12 +35,12 @@ Inside REAPER (the template is ready to use):
   `Grit Vocal`, `Harsh Vocal`, `Double L`, `Double R`, `Harmonies`). It arms
   exactly that track. Then press the red **Record** button in the transport.
 - **Record guitar:** arm **Electric Guitar DI** (record button on its track
-  header). You hear the Hard Stuff tone. The DI track records the raw, dry
+  header). You hear the active guitar tone. The DI track records the raw, dry
   signal; the processed tone is only monitored.
 - **Record both at once:** arm a vocal track and the DI track, then Record.
   Each lands on its own track.
 - **Re-amp:** the recorded DI item sits on the Electric Guitar DI track. Press
-  Play with that track not armed and the item plays through the Hard Stuff chain,
+  Play with that track not armed and the item plays through the active tone,
   so you can change the tone later without re-recording.
 - **Backing track:** import an MP3/WAV onto **Backing Track**. It can never be
   armed.
@@ -59,7 +59,7 @@ Signal path:
 
 ```
 Input 1 (mic)  -> Lead Clean (monitored) -> REAPER out 1-2 --+--> headphones
-Input 2 (DI)   -> Electric Guitar DI     -> send -> Hard Stuff -> out 1-2 --+--> reaper.lesson.mix -> "REAPER_Lesson_Mic" (virtual mic)
+Input 2 (DI)   -> Electric Guitar DI     -> send -> active guitar tone -> out 1-2 --+--> reaper.lesson.mix -> "REAPER_Lesson_Mic" (virtual mic)
 ```
 
 Discord, one time (Settings > Voice & Video):
@@ -75,123 +75,164 @@ fails if anything else feeds the virtual mic (monitors, Discord, the loopback or
 raw input).
 
 Why raw DI never reaches Discord: the DI track has **no direct master route**. Its
-only output is the send into Hard Stuff.
+only output is the sends into the guitar tones.
 
 Levels: REAPER faders. Vocal and guitar gains are independent.
 
 
 ## Guitar tones (Squier Stratocaster, Scarlett Input 2)
 
-Seven tones, in REAPER categories (track templates and FX chains live in
-`TrackTemplates/Guitar Tones/<Category>/` and `FXChains/Guitar Tones/<Category>/`):
+Seven tones in REAPER categories (`TrackTemplates/Guitar Tones/<Category>/` and
+`FXChains/Guitar Tones/<Category>/`). Every tone is a real amp capture
+(Neural Amp Modeler) into a real 4x12 cabinet impulse response:
 
-| Tone | Category | Chain (plugins) | Notes |
-|------|----------|-----------------|-------|
-| Crystal Clean | Clean | GxCompressor, ReaEQ, GxAmplifier-X (Fender tone stack, 2x12), ReaVerbate | bright, dynamic |
-| Warm Clean - Ambient | Clean | GxChorus-Stereo, ReaEQ, GxAmplifier-X (Twin Reverb stack, 2x12), GxEcho-Stereo, GxReverb-Stereo | chorus, echo, hall |
-| Classic Rock - Crunch | Rock | GxTubeScreamer, GxExpander, GxAmplifier-X (JCM-800, Marshall cab), ReaEQ, ReaVerbate | Blues and Heroes-style parts |
-| Hard Rock - Heavy Lead | Rock | GxBoss DS1, GxExpander, GxAmplifier-X (JCM-2000, Marshall cab), GxCompressor, ReaEQ, ReaVerbate | sustain for solos |
-| Modern Metal Rhythm | Metal | GxExpander (gate), GxMetalAmp, GxCabinet 4x12, ReaEQ | tight palm mutes, scooped mids |
-| Metalcore - Modern Lead | Metal | GxExpander, GxSD1, GxMetalHead, GxCabinet 4x12, ReaEQ, ReaDelay, ReaVerbate | controlled 1/8 delay |
-| Hard Stuff (Legacy) | Legacy | GxFuzz, ReaEQ, GxSaturator, GxCabinet | your `silentz0r.gx` preset, unchanged in intent |
+| Tone | Chain | Purpose |
+|------|-------|---------|
+| Crystal Clean | ReaComp → **NAM Fender Twin Reverb (Normal, Bright)** → IR Greenback 4x12 (*Don Spinacio*, SM57) → ReaEQ (low shelf +3 dB, top tamed) → ReaVerbate | bright, dynamic Fender clean |
+| Warm Clean - Ambient | GxChorus → **NAM Vox AC15** (input -6 dB, stays clean) → IR Greenback (*Kill Dill*, fattest) → ReaEQ (dark top) → GxEcho → GxReverb | intros, atmosphere |
+| Classic Rock - Crunch | **NAM Marshall JCM2000 crunch** (input -6 dB, lighter) → IR Greenback (*Wasabi Warrior*) → ReaEQ → ReaVerbate | rock, blues, Héroes-style parts |
+| Hard Rock - Heavy Lead | hum notch → gate → ReaComp → Tube Screamer boost → **NAM JCM2000 lead (L2, gain 8)** → IR Greenback (*Don Spinacio*) → ReaEQ → 1/4 delay → reverb | singing hard-rock leads |
+| Modern Metal Rhythm | hum notch → gate → Tube Screamer (drive 0.05, level +4 dB) → **NAM Peavey 6505+ red channel** → IR **V30** (*Cookie Monster*, SM57) → ReaEQ (-2.5 dB mud at 300 Hz, +1.5 dB at 1.2 kHz, fizz cut) | thick, tight, punchy palm mutes |
+| Extreme Metal Rhythm | hum notch → faster gate → Tube Screamer (drive 0) → **NAM Engl E530 + 840 with DS-1** (+6 dB in) → IR **V30/Rockdriver** (*Iceburn Suicide*) → ReaEQ (HP 110 Hz, +2.5 dB at 2.5 kHz) | more aggressive, different amp family |
+| Metalcore - Melodic Lead | hum notch → gate → **NAM Mesa/Boogie Mark IV** → IR **V30** (*World Collider*) → ReaEQ → dotted-1/8 delay → reverb | sustaining melodic leads |
 
-**Switching:** run the ReaScript *Guitar - Choose tone* (Actions) and type the
-tone name. Works in Studio and in lesson mode. It only changes mute states.
+Switching: run *Guitar - Choose tone* (Actions). The chosen tone is unmuted and
+its FX brought online; the others are muted and **offline** (their settings are
+kept, the plugins are unloaded). The new amp needs about a second to load.
 
-**Loudness:** each tone has a fader trim (`scripts/reaper/guitar-tones-trim.txt`)
-measured on one DI reference, so the tones land near −25 dBFS RMS. The trims
-were measured with a synthetic guitar-like DI, not your Squier. Re-check them
-after the physical checklist below.
+### What changed in the sound, and why (measured)
 
-**Gain and noise:** the high-gain tones put a Guitarix expander in front of the
-drive to cut single-coil hum between notes. On the Metalcore tone the gate can
-also shorten long sustains. That's the trade-off to listen for.
+The previous metal presets were audited stage by stage on the same DI
+(`scripts/reaper/render-tones.lua` + `scripts/reaper/analyze-tones.py`):
 
-**Amps and cabinets:** the amp and its built-in cabinet are used together. The
-crash seen earlier happens only when GxAmplifier-X and the separate GxCabinet
-are in the same project, so no tone combines them. `GxMetalAmp` and
-`GxMetalHead` have no cabinet of their own, so they use GxCabinet.
+| Finding (old Guitarix chains) | Evidence |
+|---|---|
+| The amp barely distorted a Strat DI | crest factor during chords 15.9–18.7 dB, the dry DI is 18.0 |
+| **GxCabinet did nothing** | bypassing it gave identical results |
+| The gate destroyed sustain | GxExpander ATTACK is in **seconds**; it was set to 0.995 s. A held note fell -20 dB |
+| The gate threshold was below the real noise | real Squier noise peaks reach -59.4 dBFS; the gate sat at -62/-66 |
+| Several Guitarix convolvers crash REAPER | segfaults in `libfftw3f` (planner not thread-safe) whenever two cab convolvers load in one process |
 
-**Not included:** no Neural Amp Modeler (not installed, and it would need a
-third-party build), and no downloaded cabinet IRs yet. Both need a license and
-provenance check first. The Guitarix cabinets are the simulations used.
+Same DI, new chains, matched loudness:
+
+| | chord crest (lower = more saturation) | sustain of a held note | low-end decay per chug |
+|---|---|---|---|
+| old Modern Metal | 15.9 dB | -20.4 dB | -6.0 dB |
+| **new Modern Metal Rhythm** | **11.0 dB** | **-2.9 dB** | **-8.9 dB** (tighter) |
+| old Metalcore | 16.3 dB | -21.2 dB | -5.4 dB |
+| **new Metalcore - Melodic Lead** | **10.3 dB** | **-4.0 dB** | -2.5 dB (lead: it rings) |
+
+Noise between notes with the real Squier, after the gate fix: 93–118 dB below
+the playing level on the four gated tones (it was 11–37 dB before the fix).
+
+Gain staging: each chain's level is set **inside the chain** (NAM Output Lvl,
+`scripts/reaper/guitar-tones-trim.txt`) so every distorted tone lands at
+-22 dBFS RMS on the same DI, cleans slightly lower, peaks ≤ -6 dBFS. No fader
+compensation. With a hotter (humbucker-level) DI the distorted tones stay at the
+same level, as a saturated amp should.
+
+**Not proven:** that these sound like Machine Head, Slipknot or Avenged Sevenfold.
+The numbers show more saturation, tighter lows, intact sustain and controlled
+fizz. Whether it is the tone you want needs your ears.
+
+### Amp captures and cabinet IRs (assets, not in Git)
+
+Installed by `reaper-guitar-assets install` (pinned versions and SHA-256, user
+level only, no root); `reaper-guitar-assets verify` checks them.
+
+| What | Source | License |
+|------|--------|---------|
+| Neural Amp Modeler LV2 v0.2.3 (`~/.lv2/`) | github.com/mikeoliphant/neural-amp-modeler-lv2 (release binary, x86-64-v3) | GPL-3.0 |
+| 7 NAM amp captures | github.com/pelennor2170/NAM_models @ `944ca671` (NAM community captures) | GPL-3.0 |
+| Brutal IR pack (BG412S: Vintage 30 / Rockdriver Jr / DV-77) | jester-dyne-productions.com | CC0 (stated in the pack handbook) |
+| Emerald IR pack (Marshall 1960AX, Greenback G12M) | jester-dyne-productions.com (via darwinscat.com) | CC0 (stated in the pack handbook) |
+
+Not used, and why:
+
+- **TONE3000:** downloads need your account (email code) and the T3K license
+  forbids redistributing the files. You can add captures from it yourself; put
+  them in `~/.local/share/reaper-studio/guitar/nam/` without spaces in the name.
+- **NAMix:** very new (28 stars); the official LV2 plugin does everything needed.
+- **Guitarix amps and cabinets:** see the audit above. Guitarix pedals that do not
+  convolve (Tube Screamer, chorus, echo, reverb) are still used.
+
+All captures are amp-only (measured: lots of energy above 5 kHz without a cab),
+so each gets exactly one cabinet IR. There is no double cabinet.
+
+### Latency, CPU and stability (measured on this host, 48 kHz)
+
+- `reaper-studio` launches REAPER with `PIPEWIRE_QUANTUM=256/48000` for that
+  process only (no global PipeWire setting, nothing persistent). REAPER output
+  latency: **32 ms at the default quantum 1024 → 8 ms at 256**, 0 xruns.
+  If your hardware xruns, set `REAPER_QUANTUM=512` in
+  `~/.config/reaper-studio/monitor.env`.
+- Every plugin in the chains reports **0 samples** of latency (REAPER PDC).
+- CPU while playing any tone: about **28–30 % of one core** for all of REAPER
+  (24 threads available).
+- Known NAM issue: loading many NAM models at the same instant crashed the NAM LV2
+  model loader once (about 21 simultaneous loads in a test harness). Opening the
+  template (3/3) and normal tone switching were fine; inactive tones ship offline
+  so the template loads one model at a time.
+
+### Gate calibration
+
+The gate sits before the amp (best signal-to-noise). It opens at -50 dBFS and
+closes at -56 dBFS (Extreme: -48/-54), measured on your Squier at the current
+Input 2 gain: noise peaks reach -59.4 dBFS, playing peaks are near -28 dBFS. A held
+note keeps ringing until it falls near the noise floor.
+
+**If you raise the Scarlett Input 2 gain, raise the gate thresholds by the same
+number of dB** (otherwise the gate opens on hum, but never cuts notes).
 
 ### Physical checklist (only you can do these)
 
-1. **Pickups.** Look at the Squier: SSS has 3 single coils; HSS has a humbucker at
-   the bridge. The 5-way switch does not tell them apart. Tell me which one, and
-   the model if you know it. The presets work with both; the trims may need a small
-   change.
-2. **Input level.** Scarlett Input 2: press **INST**. Set the gain so the loudest
-   strum peaks around −12 dBFS on the ring (never red).
-3. **Direct Monitor: OFF.** REAPER monitors the guitar.
-4. **Tuning and strings.** No EQ or distortion fixes detuned strings or a poor
-   setup. Check tuning and intonation before judging tones.
-5. **Listen and decide.** Switch through the seven tones on your own playing.
-   Note any tone that's too loud, too thin, or cuts sustain. The trims and the
-   gate thresholds are the first things to adjust.
-
-## Hard Stuff tone (migrated from `silentz0r.gx`, preset "Hard Stuff")
-
-The main amp is **off** in the bank (`amp.on_off = 0`), so no amp head is used.
-Enabled blocks, in signal order:
-
-| Bank block (enabled)        | REAPER stage                          | Status                                  |
-|-----------------------------|---------------------------------------|-----------------------------------------|
-| AstroFuzz (Attack 0.48, Tone 0.51, Volume 0.855) | `GxFuzz` (genuine Guitarix LV2): TONE 0.51, OUTPUT 85.5, DRIVE 1 | **substitute**: no LV2 build of AstroFuzz exists here; Attack mapping is a guess |
-| Tone stack M-Lead (Bass 0.50, Middle 0.71, Treble 0.525) | native ReaEQ: 100 Hz shelf 0 dB, 700 Hz +2 dB, 6 kHz shelf 0 dB | **approximation** (see below) |
-| Shaper (Sharper 10)         | `GxSaturator` (genuine Guitarix LV2): INTENSITY 10, SATURATE 60 | **substitute**: no LV2 build of the Shaper exists here |
-| Cabinet 4x12 (Level 3.4925, Bass 6.7, Treble 3.4) | `GxCabinet` (genuine): values exactly as in the bank | exact parameter values |
-| Master output -6.4 dB      | track fader -6.4 dB                   | exact                                   |
-
-Why the tone stack is not Guitarix's: `GxAmplifier-X` (which contains the M-Lead
-tone stack) crashes REAPER when a project containing it and `GxCabinet` is
-reopened. The crash is reproducible, so it is not used. Equivalence is **not**
-established: no listening test or measured A/B has been completed against the
-original Guitarix (see the status section).
+1. **Pickups.** SSS or HSS? The presets work with both; tell me which so the gate
+   and gain can be re-measured.
+2. **Input 2:** press **INST**. Your DI currently peaks at about -22 dBFS, which is
+   low (34 dB above the noise). Aim for about -12 dBFS on the loudest strum, and
+   then raise the gate thresholds by the same amount (see above).
+3. **Direct Monitor OFF.**
+4. **Tuning and setup** first: no amp or EQ fixes detuned strings or bad intonation.
+5. **Listen** to Modern Metal Rhythm, Extreme Metal Rhythm and Metalcore - Melodic
+   Lead with palm mutes, open chords and a solo. Tell me what is off (too much or
+   too little gain, mud, fizz, thin) and I adjust.
 
 ## Files
 
 - Template: `~/.config/REAPER/ProjectTemplates/Modern Rock & Metal - Vocal Studio.RPP`
-- Track templates: `~/.config/REAPER/TrackTemplates/Vocal Studio/`
-- FX chains: `~/.config/REAPER/FXChains/Vocal Studio/` (`Hard Stuff.RfxChain` is the migrated chain)
+  (a chezmoi template in the repo: asset paths use `{{ .chezmoi.homeDir }}`)
+- Track templates and FX chains: `TrackTemplates/` and `FXChains/` under
+  `~/.config/REAPER/`, folders `Vocal Studio` and `Guitar Tones/<Category>`
 - ReaScripts: `~/.config/REAPER/Scripts/Vocal Studio/`
 - Routing: `~/.local/bin/reaper-studio`, `~/.local/bin/reaper-lesson`, shared helpers
   `~/.local/share/reaper-studio/common.sh`
-- Builder and reload verifier (developer tools, run inside REAPER):
-  `scripts/reaper/build-vocal-studio.lua`, `scripts/reaper/verify-vocal-studio.lua`
-- Static tests: `tests/test_reaper_vocal_studio.py`
+- Guitar assets: `~/.local/bin/reaper-guitar-assets`,
+  `~/.local/share/reaper-studio/guitar/` (with `SOURCES.txt`)
+- Developer tools (run inside REAPER): `scripts/reaper/build-vocal-studio.lua`
+  (builder), `verify-vocal-studio.lua` (reload verifier), `render-tones.lua` (A/B
+  renderer), `analyze-tones.py` (metrics), `templatize-assets.py` (post-build)
+- Tests: `tests/test_reaper_vocal_studio.py`, `tests/test_reaper_guitar_tones.py`,
+  `tests/test_reaper_routing.py`
 
-## Status (what is verified and what is not)
+## Status
 
 Verified on the host:
 
-- Template reload: 106 checks, 0 failures, repeated twice. Every track template
-  and FX chain reloads with its FX and saved parameter values.
-- Routing: REAPER `in1` = Input 1 (AUX0), `in2` = Input 2 (AUX1); the loopback is
-  not linked; outputs go to the headphones and not to the USB dongle.
-- Lesson graph: start, second start (no duplicate modules or links), stop, and
-  restart all behave. `doctor` passes.
-- Re-amp path: a DI item played in REAPER reaches the virtual lesson mic through
-  the Hard Stuff chain (about -33 dBFS RMS at the mic, peak -22 dBFS).
-- Monitoring state: after start, Lead Clean and the guitar DI are armed and
-  monitoring with no items and the transport stopped. After stop, all are disarmed.
+- Builder: 460 checks, 0 failures; every tone keeps all its plugins, and its amp
+  capture and cabinet IR are loaded and saved.
+- Deployed files: 183 reload checks, 0 failures; each tone's track template and FX
+  chain loads with its amp capture and IR (loaded one at a time).
+- Routing: REAPER `in1` = Input 1, `in2` = Input 2, loopback excluded; studio and
+  lesson doctors pass; lesson start/stop is idempotent.
+- Re-amp, gain staging, gate and noise measurements described above.
 
-Not verified (needs you, or a further session):
+Pending (needs you):
 
-- **Tone equivalence to Guitarix.** Not established. The headless Guitarix reference
-  rang after the input stopped, so it is not a valid reference yet. Substitutes are
-  guesses. Listening test needed.
-- **Real guitar and vocal capture.** Input 2 and Input 1 were checked at the link
-  level only. Nothing was recorded from a real instrument.
-- **Discord itself.** The virtual mic exists and `doctor` checks it, but Discord was
-  not tested end to end.
-- **Vocal calibration.** Gate and compressor thresholds still need a real take.
-- **Mic at -83 dBFS RMS** in the one test recording: gain is not set for a mic yet.
-- **REAPER on the GeneralPlus USB dongle.** It is the system default sink. REAPER's
-  outputs are routed explicitly; the system default is not changed.
-- **Installed REAPER is an evaluation copy.**
-- **Buffer.** REAPER runs at 512 samples on JACK (about 10 ms). The brief asked for
-  256; that is not set.
+- **Your listening approval of every tone.** Nothing here proves they sound right
+  to you.
+- Pickup type and the Input 2 gain from the checklist (then the gate thresholds).
+- Discord end to end, and vocal calibration with a real take.
+- Installed REAPER is an evaluation copy.
 
-Guitarix stays installed and unchanged.
+Guitarix stays installed and unchanged; its original bank
+(`home/dot_config/guitarix/banks/silentz0r.gx`) is kept in the repo as a reference.

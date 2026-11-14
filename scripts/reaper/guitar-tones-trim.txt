@@ -1,11 +1,11 @@
-# Guitar tone fader trims (dB), from the calibration run in
-# docs/REAPER-Vocal-Studio.md. DI reference: scratch synthetic DI, measured
-# at REAPER out over 2-7 s. Target -25 dBFS RMS. Re-run after pickup check.
-# Format: name|dB
-Crystal Clean|-0.8
-Warm Clean - Ambient|-0.6
-Classic Rock - Crunch|-0.4
-Hard Rock - Heavy Lead|-0.3
-Modern Metal Rhythm|2.4
-Metalcore - Modern Lead|8.5
-Hard Stuff (Legacy)|1.4
+# Guitar tone gain staging (v2: NAM + IR chains).
+# 'nam:<tone>|dB' sets the NAM Output Lvl inside each chain, calibrated so every
+# tone lands at -22 dBFS RMS (cleans lower, peak <= -6 dBFS) on the same DI.
+# Plain '<tone>|dB' lines would be extra fader trims; none are needed.
+nam:Classic Rock - Crunch|-3.6
+nam:Crystal Clean|15.7
+nam:Extreme Metal Rhythm|3.1
+nam:Hard Rock - Heavy Lead|-9.6
+nam:Metalcore - Melodic Lead|-12.9
+nam:Modern Metal Rhythm|-0.7
+nam:Warm Clean - Ambient|5.4

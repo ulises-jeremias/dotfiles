@@ -47,7 +47,7 @@ local EXPECT_ORDER = {
   "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Delay",
   "ELECTRIC GUITAR", "Electric Guitar DI", "Crystal Clean", "Warm Clean - Ambient",
   "Classic Rock - Crunch", "Hard Rock - Heavy Lead", "Modern Metal Rhythm",
-  "Metalcore - Modern Lead", "Hard Stuff (Legacy)",
+  "Extreme Metal Rhythm", "Metalcore - Melodic Lead",
 }
 local n = reaper.CountTracks(0)
 check(n == #EXPECT_ORDER, "track count " .. n .. " == " .. #EXPECT_ORDER)
@@ -86,7 +86,7 @@ for i = 0, n - 1 do
     check(reaper.GetMediaTrackInfo_Value(tr, "B_MAINSEND") == 0, "guitar DI has no direct master route")
     check(reaper.GetTrackNumSends(tr, 0) == 7, "guitar DI sends to all seven tones")
   end
-  if name == "Hard Stuff (Legacy)" or name == "Crystal Clean" then
+  if name == "Crystal Clean" or name == "Modern Metal Rhythm" then
     check(reaper.GetMediaTrackInfo_Value(tr, "I_RECINPUT") == -1, "tone track has no record input: " .. name)
   end
   if name == "Backing Track" then
@@ -132,27 +132,58 @@ if FX_DIR then
 end
 
 local TONE_LIST = {
-  { "Clean", "Crystal Clean", 4 }, { "Clean", "Warm Clean - Ambient", 5 },
-  { "Rock", "Classic Rock - Crunch", 5 }, { "Rock", "Hard Rock - Heavy Lead", 6 },
-  { "Metal", "Modern Metal Rhythm", 4 }, { "Metal", "Metalcore - Modern Lead", 7 },
-  { "Legacy", "Hard Stuff (Legacy)", 4 },
+  { "Clean", "Crystal Clean", 5 }, { "Clean", "Warm Clean - Ambient", 6 },
+  { "Rock", "Classic Rock - Crunch", 4 }, { "Rock", "Hard Rock - Heavy Lead", 9 },
+  { "Metal", "Modern Metal Rhythm", 6 }, { "Metal", "Extreme Metal Rhythm", 6 },
+  { "Metal", "Metalcore - Melodic Lead", 7 },
 }
 local TONE_ROOT = os.getenv("VS_TONE_ROOT")
+
+-- Load tone templates/chains one at a time and let each amp model finish
+-- loading before the next: concurrent NAM model loads have crashed the NAM LV2
+-- loader (seen once with ~21 simultaneous loads).
+local jobs = {}
 if TONE_ROOT then
   for _, t in ipairs(TONE_LIST) do
     local cat, name, count = t[1], t[2], t[3]
-    local tt = read_file(TONE_ROOT .. "/TrackTemplates/Guitar Tones/" .. cat .. "/" .. name .. ".RTrackTemplate")
-    check(tt ~= nil, "tone track template present: " .. name)
-    if tt then load_into_new_track("TONE TT " .. name, tt, count) end
-    local fxc = read_file(TONE_ROOT .. "/FXChains/Guitar Tones/" .. cat .. "/" .. name .. ".RfxChain")
-    check(fxc ~= nil, "tone fx chain present: " .. name)
-    if fxc then load_into_new_track("TONE FX " .. name, "<TRACK\n" .. fxc .. ">\n", count) end
+    jobs[#jobs + 1] = { "TONE TT " .. name, TONE_ROOT .. "/TrackTemplates/Guitar Tones/" .. cat .. "/" .. name .. ".RTrackTemplate", count, false }
+    jobs[#jobs + 1] = { "TONE FX " .. name, TONE_ROOT .. "/FXChains/Guitar Tones/" .. cat .. "/" .. name .. ".RfxChain", count, true }
   end
 end
 
-out("")
-out(string.format("SUMMARY failures=%d", failures))
-local f = assert(io.open(REPORT, "w"))
-f:write(table.concat(lines, "\n") .. "\n")
-f:close()
-reaper.Main_OnCommand(40004, 0) -- File: Quit REAPER
+local function finish()
+  out("")
+  out(string.format("SUMMARY failures=%d", failures))
+  local f = assert(io.open(REPORT, "w"))
+  f:write(table.concat(lines, "\n") .. "\n")
+  f:close()
+  reaper.Main_OnCommand(40004, 0) -- File: Quit REAPER
+end
+
+local job, current, t_start = 0, nil, 0
+local function step()
+  if current then
+    if reaper.time_precise() - t_start < 1.5 then reaper.defer(step); return end
+    local tr = current.tr
+    local _, c = reaper.GetTrackStateChunk(tr, "", false)
+    check(c:find("neural%-amp%-modeler%-lv2#model /") ~= nil, current.label .. ": amp capture loaded")
+    check(c:find("impulse_responses_mono/ports#ifn /") ~= nil, current.label .. ": cabinet IR loaded")
+    reaper.DeleteTrack(tr)
+    current = nil
+  end
+  job = job + 1
+  if job > #jobs then finish(); return end
+  local label, path, count, wrap = table.unpack(jobs[job])
+  local text = read_file(path)
+  check(text ~= nil, label .. " present")
+  if not text then reaper.defer(step); return end
+  local idx = reaper.CountTracks(0)
+  reaper.InsertTrackAtIndex(idx, false)
+  local tr = reaper.GetTrack(0, idx)
+  check(reaper.SetTrackStateChunk(tr, wrap and ("<TRACK\n" .. text .. ">\n") or text, false), label .. " parses")
+  local n = reaper.TrackFX_GetCount(tr)
+  check(n == count, string.format("%s FX count %d == %d", label, n, count))
+  current, t_start = { tr = tr, label = label }, reaper.time_precise()
+  reaper.defer(step)
+end
+step()
