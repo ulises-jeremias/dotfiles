@@ -19,7 +19,7 @@ EXPECTED_TRACKS = [
     "BACKING", "Backing Track", "VOCAL ROUTING", "Vocal Bus", "LEAD VOCALS",
     "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "VOCAL LAYERS",
     "Double L", "Double R", "Harmonies", "FX RETURNS", "Vocal Reverb", "Vocal Delay",
-    "ELECTRIC GUITAR", "Electric Guitar DI", "Electric Guitar - Hard Stuff",
+    "ELECTRIC GUITAR", "Electric Guitar DI", "Electric Guitar - Machine Head", "Electric Guitar - Hard Stuff",
 ]
 
 

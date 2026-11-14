@@ -27,7 +27,7 @@ wire_studio() {
   prune_reaper_outputs "${hp_fl}|${hp_fr}"
   ensure_link "REAPER:out1" "$hp_fl"
   ensure_link "REAPER:out2" "$hp_fr"
-  log "wired: REAPER out1/out2 -> Scarlett headphones (Line 1-2)"
+  log "wired: REAPER out1/out2 -> ${hp_fl%%:*} (monitor output)"
 }
 
 cmd="${1:-start}"

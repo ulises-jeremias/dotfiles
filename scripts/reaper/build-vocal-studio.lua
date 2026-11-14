@@ -245,6 +245,36 @@ local function hard_stuff(tr)
   end
 end
 
+-- Machine Head variant: the amp is ON. GxAmplifier-X carries the tone stack
+-- (M-Lead) and its own 4x12 cab. It is never combined with GxCabinet, which
+-- crashes REAPER when the two are saved in the same project.
+local function machine_head(tr)
+  local fz = lv2(tr, "LV2: GxFuzz (Guitarix team) (Mono)")
+  if fz >= 0 then
+    set_value(tr, fz, "GxFuzz", "TONE", 0.51)
+    set_value(tr, fz, "GxFuzz", "OUTPUT", 85.5)
+    set_value(tr, fz, "GxFuzz", "DRIVE", 1.0)
+  end
+  local am = lv2(tr, "LV2: GxAmplifier-X (Guitarix team) (Mono)")
+  if am >= 0 then
+    set_value(tr, am, "GxAmp", "PreGain", 8.4)        -- bank amp2.stage1.Pregain
+    set_value(tr, am, "GxAmp", "Distortion", 80)      -- high-gain end of the clean/dist blend
+    set_value(tr, am, "GxAmp", "Drive", 0.6)
+    set_value(tr, am, "GxAmp", "MasterGain", 0)
+    set_value(tr, am, "GxAmp", "Presence", 5)
+    set_value(tr, am, "GxAmp", "Bass", 0.5)           -- bank tonestack
+    set_value(tr, am, "GxAmp", "Middle", 0.71)
+    set_value(tr, am, "GxAmp", "Treble", 0.525)
+    set_norm(tr, am, "GxAmp", "Tonestack Model", 6 / 26, "M-Lead")
+    set_norm(tr, am, "GxAmp", "Cab Model", 0.0, "4x12")
+  end
+  local sh = lv2(tr, "LV2: GxSaturator (Guitarix team) (Mono)")
+  if sh >= 0 then
+    set_value(tr, sh, "GxSaturator", "INTENSITY", 10)
+    set_value(tr, sh, "GxSaturator", "SATURATE", 60)
+  end
+end
+
 -- Shared return: 100% wet, reverb level is controlled by the sends.
 local function reverb_return(tr)
   local fx = add_fx(tr, "VST: ReaVerbate (Cockos)")
@@ -344,6 +374,7 @@ local LAYOUT = {
   -- processed tone is heard. Playing a recorded DI item re-amps it through the chain.
   { name = "ELECTRIC GUITAR", depth = 1, color = C.green },
   { name = "Electric Guitar DI", depth = 0, color = C.green, kind = "di" },
+  { name = "Electric Guitar - Machine Head", depth = 0, color = C.green, kind = "machinehead" },
   { name = "Electric Guitar - Hard Stuff", depth = -1, color = C.green, kind = "hardstuff" },
 }
 
@@ -410,8 +441,11 @@ for i, spec in ipairs(LAYOUT) do
     reaper.SetMediaTrackInfo_Value(tr, "I_RECINPUT", 1)  -- Scarlett Input 2 (guitar DI), mono
     reaper.SetMediaTrackInfo_Value(tr, "I_RECMON", 1)    -- monitor input while armed (feeds the send)
     reaper.SetMediaTrackInfo_Value(tr, "B_MAINSEND", 0)  -- no direct master: raw DI never reaches the output
+  elseif spec.kind == "machinehead" then
+    reaper.SetMediaTrackInfo_Value(tr, "I_RECINPUT", -1) -- processed track: never recordable
   elseif spec.kind == "hardstuff" then
     reaper.SetMediaTrackInfo_Value(tr, "I_RECINPUT", -1) -- processed track: never recordable
+    reaper.SetMediaTrackInfo_Value(tr, "B_MUTE", 1)      -- A/B: unmute to compare with Machine Head
   elseif spec.style then
     reaper.SetMediaTrackInfo_Value(tr, "I_RECINPUT", 0)  -- Scarlett Input 1, mono
   end
@@ -434,6 +468,9 @@ for _, spec in ipairs(LAYOUT) do
     reverb_return(tr)
   elseif spec.kind == "delay" then
     delay_return(tr)
+  elseif spec.kind == "machinehead" then
+    machine_head(tr)
+    reaper.SetMediaTrackInfo_Value(tr, "D_VOL", db2lin(-6.4))
   elseif spec.kind == "hardstuff" then
     hard_stuff(tr)
     reaper.SetMediaTrackInfo_Value(tr, "D_VOL", db2lin(-6.4)) -- bank master output
@@ -457,6 +494,7 @@ for _, spec in ipairs(LAYOUT) do
 end
 
 -- Guitar monitor path: DI (Input 2) -> send (post-fader) -> Hard Stuff.
+send(T["Electric Guitar DI"], T["Electric Guitar - Machine Head"], 0)
 send(T["Electric Guitar DI"], T["Electric Guitar - Hard Stuff"], 0)
 
 -- Expected structure, verified on the built project.
@@ -484,6 +522,8 @@ for _, e in ipairs(EXPORT) do
 end
 write_file(FX_DIR .. "/Vocal Reverb.RfxChain", fxchain_chunk(T["Vocal Reverb"]))
 write_file(FX_DIR .. "/Hard Stuff.RfxChain", fxchain_chunk(T["Electric Guitar - Hard Stuff"]))
+write_file(FX_DIR .. "/Machine Head.RfxChain", fxchain_chunk(T["Electric Guitar - Machine Head"]))
+write_file(TT_DIR .. "/Electric Guitar - Machine Head.RTrackTemplate", track_template_chunk(T["Electric Guitar - Machine Head"]))
 write_file(TT_DIR .. "/Electric Guitar DI.RTrackTemplate", track_template_chunk(T["Electric Guitar DI"]))
 write_file(TT_DIR .. "/Electric Guitar - Hard Stuff.RTrackTemplate", track_template_chunk(T["Electric Guitar - Hard Stuff"]))
 write_file(FX_DIR .. "/Vocal Delay.RfxChain", fxchain_chunk(T["Vocal Delay"]))

@@ -26,7 +26,11 @@ SCARLETT_CARD="alsa_input.hw_Gen_0"
 MIC_IN="${SCARLETT_CARD}:capture_AUX0"
 GUITAR_IN="${SCARLETT_CARD}:capture_AUX1"
 LOOPBACK_PORTS_RE='capture_AUX2|capture_AUX3'
-HEADPHONE_SINK_RE='alsa_output\.usb-Focusrite_Scarlett_2i2_4th_Gen.*HiFi__Line1__sink'
+# Per-machine preference (not in the repo): ~/.config/reaper-studio/monitor.env
+MONITOR_ENV="${XDG_CONFIG_HOME:-$HOME/.config}/reaper-studio/monitor.env"
+# shellcheck source=/dev/null
+[ -f "$MONITOR_ENV" ] && . "$MONITOR_ENV"
+HEADPHONE_SINK_RE="${REAPER_OUT_SINK_RE:-alsa_output\.usb-Focusrite_Scarlett_2i2_4th_Gen.*HiFi__Line1__sink}"
 LESSON_SINK="reaper.lesson.mix"
 LESSON_MIC="reaper.lesson.mic"
 export LESSON_SINK LESSON_MIC
@@ -84,6 +88,7 @@ for raw in sys.stdin:
 
 # Find the Scarlett headphone sink ports (stable name pattern, not a node id).
 headphone_ports() {
+  # Override the monitor output per run: REAPER_OUT_SINK_RE='USB_Audio_Device' reaper-studio wire
   pw-link -i 2>/dev/null | grep -E "$HEADPHONE_SINK_RE" | grep -E ':playback_(FL|FR)$' || true
 }
 
@@ -121,9 +126,11 @@ doctor_outputs() {
   local fails=0 peers
   check() { if [ "$1" = ok ]; then log "ok    $2"; else log "FAIL  $2"; fails=$((fails+1)); fi; }
   peers="$(peers_of REAPER:out1 '->')"
-  if printf '%s\n' "$peers" | grep -q 'Line1__sink:playback_FL$'; then check ok "REAPER out1 -> headphones FL"; else check FAIL "REAPER out1 not on headphones FL (peers: ${peers:-none})"; fi
+  if printf '%s\n' "$peers" | grep -Eq "(${HEADPHONE_SINK_RE}):playback_FL\$"; then check ok "REAPER out1 -> monitor output FL"; else check FAIL "REAPER out1 not on the monitor output FL (peers: ${peers:-none})"; fi
   peers="$(peers_of REAPER:out2 '->')"
-  if printf '%s\n' "$peers" | grep -q 'Line1__sink:playback_FR$'; then check ok "REAPER out2 -> headphones FR"; else check FAIL "REAPER out2 not on headphones FR (peers: ${peers:-none})"; fi
-  if { peers_of REAPER:out1 '->'; peers_of REAPER:out2 '->'; } | grep -q 'USB_Audio_Device'; then check FAIL "REAPER output leaks to the USB dongle"; else check ok "REAPER output not on the USB dongle"; fi
+  if printf '%s\n' "$peers" | grep -Eq "(${HEADPHONE_SINK_RE}):playback_FR\$"; then check ok "REAPER out2 -> monitor output FR"; else check FAIL "REAPER out2 not on the monitor output FR (peers: ${peers:-none})"; fi
+  local stray
+  stray="$({ peers_of REAPER:out1 '->'; peers_of REAPER:out2 '->'; } | grep -Ev "(${HEADPHONE_SINK_RE}):playback_F[LR]\$" || true)"
+  if [ -z "$stray" ]; then check ok "REAPER outputs go only to the monitor output"; else check FAIL "REAPER output also feeds: $stray"; fi
   return "$fails"
 }
