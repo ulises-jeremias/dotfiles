@@ -55,12 +55,12 @@ mkdir -p "$STATE_DIR"
 
 log() { printf 'dots-guitar-lesson: %s\n' "$*"; }
 die() {
-	printf 'dots-guitar-lesson: ERROR: %s\n' "$*" >&2
-	exit 1
+  printf 'dots-guitar-lesson: ERROR: %s\n' "$*" >&2
+  exit 1
 }
 
 node_id() {
-	pw-dump 2>/dev/null | python3 -c "
+  pw-dump 2>/dev/null | python3 -c "
 import json,sys
 want=sys.argv[1]
 for o in json.load(sys.stdin):
@@ -70,7 +70,7 @@ for o in json.load(sys.stdin):
 }
 node_exists() { [ -n "$(node_id "$1")" ]; }
 scarlett_names() {
-	pw-dump 2>/dev/null | python3 -c "
+  pw-dump 2>/dev/null | python3 -c "
 import json,sys
 mic1=mic2=sink=''
 for o in json.load(sys.stdin):
@@ -84,17 +84,17 @@ print(mic1, mic2, sink)
 " 2>/dev/null || true
 }
 wait_node() {
-	local t=0
-	while [ "$t" -lt "${2:-20}" ]; do
-		node_exists "$1" && return 0
-		sleep 0.5
-		t=$((t + 1))
-	done
-	return 1
+  local t=0
+  while [ "$t" -lt "${2:-20}" ]; do
+    node_exists "$1" && return 0
+    sleep 0.5
+    t=$((t + 1))
+  done
+  return 1
 }
 # Print "outnode:outport innnode:inport linkid" for every link, from pw-dump.
 all_links() {
-	pw-dump 2>/dev/null | python3 -c "
+  pw-dump 2>/dev/null | python3 -c "
 import json,sys
 d=json.load(sys.stdin)
 nodes={}; ports={}
@@ -113,17 +113,17 @@ link() { pw-link "$1" "$2" 2>/dev/null || true; }
 unlink() { pw-link -d "$1" "$2" 2>/dev/null || true; }
 
 ensure_bus() { # $1=sink-name $2=source-name $3=description
-	local sink="$1" src="$2" desc="$3"
-	node_exists "$sink" || pactl load-module module-null-sink \
-		sink_name="$sink" sink_properties="device.description=$sink" >/dev/null
-	node_exists "$src" || pactl load-module module-remap-source \
-		master="$sink.monitor" source_name="$src" \
-		source_properties="device.description=\"$desc\"" >/dev/null
-	wait_node "$sink" 10 || die "bus sink $sink did not appear"
-	wait_node "$src" 10 || die "bus source $src did not appear"
+  local sink="$1" src="$2" desc="$3"
+  node_exists "$sink" || pactl load-module module-null-sink \
+    sink_name="$sink" sink_properties="device.description=$sink" >/dev/null
+  node_exists "$src" || pactl load-module module-remap-source \
+    master="$sink.monitor" source_name="$src" \
+    source_properties="device.description=\"$desc\"" >/dev/null
+  wait_node "$sink" 10 || die "bus sink $sink did not appear"
+  wait_node "$src" 10 || die "bus source $src did not appear"
 }
 stop_buses() { # unload only modules whose args name our buses
-	pactl list short modules 2>/dev/null | python3 -c "
+  pactl list short modules 2>/dev/null | python3 -c "
 import sys
 for line in sys.stdin:
     parts=line.rstrip('\n').split('\t')
@@ -133,220 +133,220 @@ for line in sys.stdin:
 }
 
 enforce_graph_rules() { # delete forbidden links by id (from pw-dump)
-	all_links | while read -r outp inp lid; do
-		local on="${outp%%:*}" inn="${inp%%:*}"
-		case "$inn" in
-		"$MIX_IN") case "$on" in "$VOICE_SRC" | "$GUIT_SRC") ;; *)
-			log "guard: removing $outp -> $inp"
-			pw-cli destroy "$lid" 2>/dev/null || true
-			;;
-		esac ;;
-		"$VOICE_IN") case "$on" in *HiFi__Mic1__source) ;; *)
-			log "guard: removing $outp -> $inp"
-			pw-cli destroy "$lid" 2>/dev/null || true
-			;;
-		esac ;;
-		"$GUIT_IN") case "$on" in gx_head_fx) ;; *)
-			log "guard: removing $outp -> $inp"
-			pw-cli destroy "$lid" 2>/dev/null || true
-			;;
-		esac ;;
-		esac
-		# Guitarix must not feed anything except the guitar bus.
-		if [ "$on" = "gx_head_fx" ] && [ "$inn" != "$GUIT_IN" ]; then
-			log "guard: removing Guitarix autoconnect $outp -> $inp"
-			pw-cli destroy "$lid" 2>/dev/null || true
-		fi
-	done
+  all_links | while read -r outp inp lid; do
+    local on="${outp%%:*}" inn="${inp%%:*}"
+    case "$inn" in
+      "$MIX_IN") case "$on" in "$VOICE_SRC" | "$GUIT_SRC") ;; *)
+        log "guard: removing $outp -> $inp"
+        pw-cli destroy "$lid" 2>/dev/null || true
+        ;;
+      esac ;;
+      "$VOICE_IN") case "$on" in *HiFi__Mic1__source) ;; *)
+        log "guard: removing $outp -> $inp"
+        pw-cli destroy "$lid" 2>/dev/null || true
+        ;;
+      esac ;;
+      "$GUIT_IN") case "$on" in gx_head_fx) ;; *)
+        log "guard: removing $outp -> $inp"
+        pw-cli destroy "$lid" 2>/dev/null || true
+        ;;
+      esac ;;
+    esac
+    # Guitarix must not feed anything except the guitar bus.
+    if [ "$on" = "gx_head_fx" ] && [ "$inn" != "$GUIT_IN" ]; then
+      log "guard: removing Guitarix autoconnect $outp -> $inp"
+      pw-cli destroy "$lid" 2>/dev/null || true
+    fi
+  done
 }
 
 phones_node() { # built-in output preferred; Scarlett sink as fallback
-	if node_exists "$PHONES"; then echo "$PHONES"; else scarlett_names | awk '{print $3}'; fi
+  if node_exists "$PHONES"; then echo "$PHONES"; else scarlett_names | awk '{print $3}'; fi
 }
 
 wire() {
-	read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
-	[ -n "${MIC1:-}" ] || die "Scarlett not found. Plug it in, then run: dots-guitar-lesson start"
-	local PH
-	PH="$(phones_node)"
-	[ -n "$PH" ] || die "No headphone sink found (built-in output missing and Scarlett sink missing)."
-	# Drop our previous links first (handles phones-sink changes cleanly).
-	all_links | while read -r outp inp lid; do
-		case "${outp%%:*}" in "$GUIT_SRC" | "$VOICE_SRC" | gx_head_fx) pw-cli destroy "$lid" 2>/dev/null || true ;; esac
-		case "${inp%%:*}" in "$MIX_IN" | "$VOICE_IN" | "$GUIT_IN") pw-cli destroy "$lid" 2>/dev/null || true ;; esac
-	done
-	link "$MIC2:capture_MONO" "$GX_IN" # DI -> Guitarix only
-	link "$GX_L" "$GUIT_IN:playback_FL"
-	link "$GX_R" "$GUIT_IN:playback_FR"
-	link "$GUIT_SRC:capture_FL" "$PH:playback_FL" # monitor -> built-in output
-	link "$GUIT_SRC:capture_FR" "$PH:playback_FR"
-	link "$GUIT_SRC:capture_FL" "$MIX_IN:playback_FL" # to Discord
-	link "$GUIT_SRC:capture_FR" "$MIX_IN:playback_FR"
-	link "$MIC1:capture_MONO" "$VOICE_IN:playback_FL" # mono -> both ears
-	link "$MIC1:capture_MONO" "$VOICE_IN:playback_FR"
-	link "$VOICE_SRC:capture_FL" "$MIX_IN:playback_FL"
-	link "$VOICE_SRC:capture_FR" "$MIX_IN:playback_FR"
-	enforce_graph_rules
-	: "$SINK"
+  read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
+  [ -n "${MIC1:-}" ] || die "Scarlett not found. Plug it in, then run: dots-guitar-lesson start"
+  local PH
+  PH="$(phones_node)"
+  [ -n "$PH" ] || die "No headphone sink found (built-in output missing and Scarlett sink missing)."
+  # Drop our previous links first (handles phones-sink changes cleanly).
+  all_links | while read -r outp inp lid; do
+    case "${outp%%:*}" in "$GUIT_SRC" | "$VOICE_SRC" | gx_head_fx) pw-cli destroy "$lid" 2>/dev/null || true ;; esac
+    case "${inp%%:*}" in "$MIX_IN" | "$VOICE_IN" | "$GUIT_IN") pw-cli destroy "$lid" 2>/dev/null || true ;; esac
+  done
+  link "$MIC2:capture_MONO" "$GX_IN" # DI -> Guitarix only
+  link "$GX_L" "$GUIT_IN:playback_FL"
+  link "$GX_R" "$GUIT_IN:playback_FR"
+  link "$GUIT_SRC:capture_FL" "$PH:playback_FL" # monitor -> built-in output
+  link "$GUIT_SRC:capture_FR" "$PH:playback_FR"
+  link "$GUIT_SRC:capture_FL" "$MIX_IN:playback_FL" # to Discord
+  link "$GUIT_SRC:capture_FR" "$MIX_IN:playback_FR"
+  link "$MIC1:capture_MONO" "$VOICE_IN:playback_FL" # mono -> both ears
+  link "$MIC1:capture_MONO" "$VOICE_IN:playback_FR"
+  link "$VOICE_SRC:capture_FL" "$MIX_IN:playback_FL"
+  link "$VOICE_SRC:capture_FR" "$MIX_IN:playback_FR"
+  enforce_graph_rules
+  : "$SINK"
 }
 
 apply_levels() {
-	local voice=0.85 guitar=0.75 id
-	[ -f "$STATE_DIR/levels" ] && . "$STATE_DIR/levels"
-	id="$(node_id "$VOICE_IN")"
-	[ -n "$id" ] && wpctl set-volume "$id" "$voice" 2>/dev/null || true
-	id="$(node_id "$GUIT_IN")"
-	[ -n "$id" ] && wpctl set-volume "$id" "$guitar" 2>/dev/null || true
+  local voice=0.85 guitar=0.75 id
+  [ -f "$STATE_DIR/levels" ] && . "$STATE_DIR/levels"
+  id="$(node_id "$VOICE_IN")"
+  [ -n "$id" ] && wpctl set-volume "$id" "$voice" 2>/dev/null || true
+  id="$(node_id "$GUIT_IN")"
+  [ -n "$id" ] && wpctl set-volume "$id" "$guitar" 2>/dev/null || true
 }
 save_defaults() {
-	[ -f "$STATE_DIR/prev-sink" ] && return 0
-	pactl get-default-sink >"$STATE_DIR/prev-sink" 2>/dev/null || true
-	pactl get-default-source >"$STATE_DIR/prev-source" 2>/dev/null || true
+  [ -f "$STATE_DIR/prev-sink" ] && return 0
+  pactl get-default-sink >"$STATE_DIR/prev-sink" 2>/dev/null || true
+  pactl get-default-source >"$STATE_DIR/prev-source" 2>/dev/null || true
 }
 
 cmd_start() {
-	command -v guitarix >/dev/null || die "guitarix missing: sudo pacman -S guitarix"
-	read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
-	[ -n "${MIC1:-}" ] || die "Scarlett 2i2 not detected. Plug USB in and retry (lsusb | grep 1235:8219)."
-	save_defaults
-	log "Scarlett 2i2 4th Gen: In1(mic)=…Mic1__source In2(guitar)=…Mic2__source Phones=…Line1__sink"
-	pw-metadata -n settings 0 clock.force-quantum "$QUANTUM" >/dev/null 2>&1 || true
-	ensure_bus "$MIX_IN" "$MIX_SRC" "Guitar Lesson Mix (Voice+Guitar for Discord)"
-	ensure_bus "$VOICE_IN" "$VOICE_SRC" "Lesson Voice"
-	ensure_bus "$GUIT_IN" "$GUIT_SRC" "Lesson Guitar (processed)"
-	if ! pgrep -x guitarix >/dev/null; then
-		log "starting Guitarix…"
-		setsid -f pw-jack guitarix </dev/null >>"$STATE_DIR/guitarix.log" 2>&1
-		echo 1 >"$STATE_DIR/guitarix.started"
-	else
-		log "Guitarix already running (leaving it alone)."
-	fi
-	node_exists gx_head_fx || wait_node gx_head_fx 20 || die "Guitarix ports missing (see $STATE_DIR/guitarix.log)"
-	wire
-	apply_levels
-	local sid mid PH
-	PH="$(phones_node)"
-	sid="$(node_id "$PH")"
-	[ -n "$sid" ] && wpctl set-mute "$sid" 0 2>/dev/null || true
-	[ -n "$sid" ] && wpctl set-default "$sid" 2>/dev/null || true
-	mid="$(node_id "$MIX_SRC")"
-	[ -n "$mid" ] && wpctl set-default "$mid" 2>/dev/null || true
-	log "wired. Defaults: sink=$PH (built-in output), source=$MIX_SRC, quantum=$QUANTUM @48kHz."
+  command -v guitarix >/dev/null || die "guitarix missing: sudo pacman -S guitarix"
+  read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
+  [ -n "${MIC1:-}" ] || die "Scarlett 2i2 not detected. Plug USB in and retry (lsusb | grep 1235:8219)."
+  save_defaults
+  log "Scarlett 2i2 4th Gen: In1(mic)=…Mic1__source In2(guitar)=…Mic2__source Phones=…Line1__sink"
+  pw-metadata -n settings 0 clock.force-quantum "$QUANTUM" >/dev/null 2>&1 || true
+  ensure_bus "$MIX_IN" "$MIX_SRC" "Guitar Lesson Mix (Voice+Guitar for Discord)"
+  ensure_bus "$VOICE_IN" "$VOICE_SRC" "Lesson Voice"
+  ensure_bus "$GUIT_IN" "$GUIT_SRC" "Lesson Guitar (processed)"
+  if ! pgrep -x guitarix >/dev/null; then
+    log "starting Guitarix…"
+    setsid -f pw-jack guitarix </dev/null >>"$STATE_DIR/guitarix.log" 2>&1
+    echo 1 >"$STATE_DIR/guitarix.started"
+  else
+    log "Guitarix already running (leaving it alone)."
+  fi
+  node_exists gx_head_fx || wait_node gx_head_fx 20 || die "Guitarix ports missing (see $STATE_DIR/guitarix.log)"
+  wire
+  apply_levels
+  local sid mid PH
+  PH="$(phones_node)"
+  sid="$(node_id "$PH")"
+  [ -n "$sid" ] && wpctl set-mute "$sid" 0 2>/dev/null || true
+  [ -n "$sid" ] && wpctl set-default "$sid" 2>/dev/null || true
+  mid="$(node_id "$MIX_SRC")"
+  [ -n "$mid" ] && wpctl set-default "$mid" 2>/dev/null || true
+  log "wired. Defaults: sink=$PH (built-in output), source=$MIX_SRC, quantum=$QUANTUM @48kHz."
 }
 
 cmd_stop() {
-	[ -f "$STATE_DIR/prev-sink" ] && pactl set-default-sink "$(cat "$STATE_DIR/prev-sink")" 2>/dev/null || true
-	[ -f "$STATE_DIR/prev-source" ] && pactl set-default-source "$(cat "$STATE_DIR/prev-source")" 2>/dev/null || true
-	pw-metadata -n settings -d 0 clock.force-quantum >/dev/null 2>&1 || true
-	read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
-	[ -n "${MIC2:-}" ] && unlink "$MIC2:capture_MONO" "$GX_IN"
-	stop_buses
-	local t=0
-	while node_exists "$MIX_SRC" && [ "$t" -lt 10 ]; do
-		sleep 0.5
-		t=$((t + 1))
-	done
-	if [ -f "$STATE_DIR/guitarix.started" ]; then
-		pkill -x guitarix 2>/dev/null || true
-		rm -f "$STATE_DIR/guitarix.started"
-	fi
-	log "stopped; previous defaults restored. Guitarix kept if you started it yourself."
+  [ -f "$STATE_DIR/prev-sink" ] && pactl set-default-sink "$(cat "$STATE_DIR/prev-sink")" 2>/dev/null || true
+  [ -f "$STATE_DIR/prev-source" ] && pactl set-default-source "$(cat "$STATE_DIR/prev-source")" 2>/dev/null || true
+  pw-metadata -n settings -d 0 clock.force-quantum >/dev/null 2>&1 || true
+  read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
+  [ -n "${MIC2:-}" ] && unlink "$MIC2:capture_MONO" "$GX_IN"
+  stop_buses
+  local t=0
+  while node_exists "$MIX_SRC" && [ "$t" -lt 10 ]; do
+    sleep 0.5
+    t=$((t + 1))
+  done
+  if [ -f "$STATE_DIR/guitarix.started" ]; then
+    pkill -x guitarix 2>/dev/null || true
+    rm -f "$STATE_DIR/guitarix.started"
+  fi
+  log "stopped; previous defaults restored. Guitarix kept if you started it yourself."
 }
 
 cmd_levels() {
-	if [ $# -ge 2 ]; then printf 'voice=%s\nguitar=%s\n' "$1" "$2" >"$STATE_DIR/levels"; fi
-	apply_levels
-	local vid gid
-	vid="$(node_id "$VOICE_IN")"
-	gid="$(node_id "$GUIT_IN")"
-	echo "voice  ($VOICE_IN): ${vid:+$(wpctl get-volume "$vid" 2>/dev/null | head -1)}"
-	echo "guitar ($GUIT_IN): ${gid:+$(wpctl get-volume "$gid" 2>/dev/null | head -1)}"
-	echo "set with: dots-guitar-lesson levels --voice=0.85 --guitar=0.75  (or: levels 0.85 0.75)"
+  if [ $# -ge 2 ]; then printf 'voice=%s\nguitar=%s\n' "$1" "$2" >"$STATE_DIR/levels"; fi
+  apply_levels
+  local vid gid
+  vid="$(node_id "$VOICE_IN")"
+  gid="$(node_id "$GUIT_IN")"
+  echo "voice  ($VOICE_IN): ${vid:+$(wpctl get-volume "$vid" 2>/dev/null | head -1)}"
+  echo "guitar ($GUIT_IN): ${gid:+$(wpctl get-volume "$gid" 2>/dev/null | head -1)}"
+  echo "set with: dots-guitar-lesson levels --voice=0.85 --guitar=0.75  (or: levels 0.85 0.75)"
 }
 
 cmd_status() {
-	echo "== Device =="
-	read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
-	[ -n "${MIC1:-}" ] && echo "Scarlett 2i2 4th Gen PRESENT (In1=Mic1, In2=Mic2)" || echo "Scarlett NOT FOUND"
-	echo "Phones/monitor sink: $(phones_node) (built-in output preferred)"
-	echo "== Lesson nodes =="
-	local n
-	for n in "$MIX_SRC" "$MIX_IN" "$VOICE_SRC" "$VOICE_IN" "$GUIT_SRC" "$GUIT_IN"; do
-		node_exists "$n" && echo "  OK      $n" || echo "  MISSING $n"
-	done
-	pgrep -x guitarix >/dev/null && echo "  OK      guitarix running" || echo "  MISSING guitarix"
-	echo "== Lesson links =="
-	all_links | grep -E "lesson\.|gx_head|HiFi__(Mic1|Mic2)" | sed 's/^/  /' || true
-	echo "== Defaults / clock =="
-	echo "  sink:   $(pactl get-default-sink 2>/dev/null)"
-	echo "  source: $(pactl get-default-source 2>/dev/null)"
-	pw-metadata -n settings 0 2>/dev/null | grep -E "force-quantum|clock.rate" | sed 's/^/  /' || true
-	echo "== Forbidden-path check =="
-	if check_forbidden; then echo "  clean: only voice+processed-guitar feed $MIX_IN; no DI/Discord/monitor feed"; fi
+  echo "== Device =="
+  read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
+  [ -n "${MIC1:-}" ] && echo "Scarlett 2i2 4th Gen PRESENT (In1=Mic1, In2=Mic2)" || echo "Scarlett NOT FOUND"
+  echo "Phones/monitor sink: $(phones_node) (built-in output preferred)"
+  echo "== Lesson nodes =="
+  local n
+  for n in "$MIX_SRC" "$MIX_IN" "$VOICE_SRC" "$VOICE_IN" "$GUIT_SRC" "$GUIT_IN"; do
+    node_exists "$n" && echo "  OK      $n" || echo "  MISSING $n"
+  done
+  pgrep -x guitarix >/dev/null && echo "  OK      guitarix running" || echo "  MISSING guitarix"
+  echo "== Lesson links =="
+  all_links | grep -E "lesson\.|gx_head|HiFi__(Mic1|Mic2)" | sed 's/^/  /' || true
+  echo "== Defaults / clock =="
+  echo "  sink:   $(pactl get-default-sink 2>/dev/null)"
+  echo "  source: $(pactl get-default-source 2>/dev/null)"
+  pw-metadata -n settings 0 2>/dev/null | grep -E "force-quantum|clock.rate" | sed 's/^/  /' || true
+  echo "== Forbidden-path check =="
+  if check_forbidden; then echo "  clean: only voice+processed-guitar feed $MIX_IN; no DI/Discord/monitor feed"; fi
 }
 
 check_forbidden() {
-	local bad=0
-	while read -r outp inp lid; do
-		local on="${outp%%:*}" inn="${inp%%:*}"
-		if [ "$inn" = "$MIX_IN" ]; then
-			case "$on" in "$VOICE_SRC" | "$GUIT_SRC") ;; *)
-				echo "  FORBIDDEN: $outp -> $inp"
-				bad=1
-				;;
-			esac
-		fi
-		if [ "$on" = "gx_head_fx" ] && [ "$inn" != "$GUIT_IN" ]; then
-			echo "  FORBIDDEN: Guitarix feeds $inp"
-			bad=1
-		fi
-	done < <(all_links)
-	[ "$bad" -eq 0 ]
+  local bad=0
+  while read -r outp inp lid; do
+    local on="${outp%%:*}" inn="${inp%%:*}"
+    if [ "$inn" = "$MIX_IN" ]; then
+      case "$on" in "$VOICE_SRC" | "$GUIT_SRC") ;; *)
+        echo "  FORBIDDEN: $outp -> $inp"
+        bad=1
+        ;;
+      esac
+    fi
+    if [ "$on" = "gx_head_fx" ] && [ "$inn" != "$GUIT_IN" ]; then
+      echo "  FORBIDDEN: Guitarix feeds $inp"
+      bad=1
+    fi
+  done < <(all_links)
+  [ "$bad" -eq 0 ]
 }
 
 cmd_doctor() {
-	local fail=0
-	echo "== dots-guitar-lesson doctor =="
-	for c in pw-link pw-cli pw-dump wpctl pactl guitarix pw-jack; do
-		if command -v "$c" >/dev/null; then echo "  OK   $c"; else
-			echo "  FAIL $c missing"
-			fail=1
-		fi
-	done
-	pacman -Q pipewire wireplumber pipewire-jack guitarix discord qpwgraph 2>/dev/null | sed 's/^/  pkg: /' || true
-	read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
-	if [ -n "${MIC1:-}" ]; then echo "  OK   Scarlett 2i2 4th Gen (USB 1235:8219) present"; else
-		echo "  FAIL Scarlett not found: plug USB, check 'lsusb | grep 1235:8219'"
-		fail=1
-	fi
-	if grep -q 'HiFi__Line2__source' <<<"$(pw-dump 2>/dev/null)"; then
-		echo "  NOTE 'Monitor Input 3+4' (HiFi__Line2) = Scarlett hardware loopback; never used here."
-	fi
-	local n
-	for n in "$MIX_SRC" "$VOICE_IN" "$GUIT_IN"; do
-		if node_exists "$n"; then echo "  OK   node $n"; else
-			echo "  FAIL node $n missing — run: dots-guitar-lesson start"
-			fail=1
-		fi
-	done
-	pgrep -x guitarix >/dev/null && echo "  OK   guitarix running" || echo "  WARN guitarix not running (start launches it)"
-	if check_forbidden; then echo "  OK   no forbidden feed into $MIX_IN"; else
-		echo "  FAIL forbidden feed — run: dots-guitar-lesson wire"
-		fail=1
-	fi
-	if pw-dump 2>/dev/null | grep -qiE 'WEBRTC VoiceEngine'; then
-		echo "  NOTE Discord stream active: confirm in 'status' that nothing Discord-owned feeds $MIX_IN."
-	else
-		echo "  NOTE No Discord audio stream now (normal outside a call / mic test)."
-	fi
-	echo "  pw-top errors snapshot:"
-	pw-top -b -n 1 2>/dev/null | awk 'NR<=2 || $9>0' | sed 's/^/    /' || true
-	[ "$fail" -eq 0 ] && echo "doctor: hard checks passed." || echo "doctor: problems above."
-	return "$fail"
+  local fail=0
+  echo "== dots-guitar-lesson doctor =="
+  for c in pw-link pw-cli pw-dump wpctl pactl guitarix pw-jack; do
+    if command -v "$c" >/dev/null; then echo "  OK   $c"; else
+      echo "  FAIL $c missing"
+      fail=1
+    fi
+  done
+  pacman -Q pipewire wireplumber pipewire-jack guitarix discord qpwgraph 2>/dev/null | sed 's/^/  pkg: /' || true
+  read -r MIC1 MIC2 SINK <<<"$(scarlett_names)"
+  if [ -n "${MIC1:-}" ]; then echo "  OK   Scarlett 2i2 4th Gen (USB 1235:8219) present"; else
+    echo "  FAIL Scarlett not found: plug USB, check 'lsusb | grep 1235:8219'"
+    fail=1
+  fi
+  if grep -q 'HiFi__Line2__source' <<<"$(pw-dump 2>/dev/null)"; then
+    echo "  NOTE 'Monitor Input 3+4' (HiFi__Line2) = Scarlett hardware loopback; never used here."
+  fi
+  local n
+  for n in "$MIX_SRC" "$VOICE_IN" "$GUIT_IN"; do
+    if node_exists "$n"; then echo "  OK   node $n"; else
+      echo "  FAIL node $n missing — run: dots-guitar-lesson start"
+      fail=1
+    fi
+  done
+  pgrep -x guitarix >/dev/null && echo "  OK   guitarix running" || echo "  WARN guitarix not running (start launches it)"
+  if check_forbidden; then echo "  OK   no forbidden feed into $MIX_IN"; else
+    echo "  FAIL forbidden feed — run: dots-guitar-lesson wire"
+    fail=1
+  fi
+  if pw-dump 2>/dev/null | grep -qiE 'WEBRTC VoiceEngine'; then
+    echo "  NOTE Discord stream active: confirm in 'status' that nothing Discord-owned feeds $MIX_IN."
+  else
+    echo "  NOTE No Discord audio stream now (normal outside a call / mic test)."
+  fi
+  echo "  pw-top errors snapshot:"
+  pw-top -b -n 1 2>/dev/null | awk 'NR<=2 || $9>0' | sed 's/^/    /' || true
+  [ "$fail" -eq 0 ] && echo "doctor: hard checks passed." || echo "doctor: problems above."
+  return "$fail"
 }
 
 usage() { # EasyOptions style: help is the ## documentation above.
-	grep "^##" "$0" | sed -r "s/^## ?//" | sed "s/@script.name/$(basename "$0")/g"
+  grep "^##" "$0" | sed -r "s/^## ?//" | sed "s/@script.name/$(basename "$0")/g"
 }
 
 # Easy options, house style (cf. the retired lib/dots/easy-options):
@@ -356,40 +356,40 @@ start="" stop="" restart="" status_flag="" doctor=""
 voice="" guitar="" quantum="" phones=""
 arguments=()
 while [ $# -gt 0 ]; do
-	case "$1" in
-	-h | --help)
-		usage
-		exit 0
-		;;
-	--start) start=yes ;; --stop) stop=yes ;; --restart) restart=yes ;;
-	--status) status_flag=yes ;; --doctor) doctor=yes ;;
-	--voice=*) voice="${1#*=}" ;; --guitar=*) guitar="${1#*=}" ;;
-	--quantum=*) quantum="${1#*=}" ;; --phones=*) phones="${1#*=}" ;;
-	--voice | --guitar | --quantum | --phones)
-		[ $# -ge 2 ] || {
-			echo "dots-guitar-lesson: $1 needs a value" >&2
-			exit 2
-		}
-		case "$1" in
-		--voice) voice="$2" ;; --guitar) guitar="$2" ;;
-		--quantum) quantum="$2" ;; --phones) phones="$2" ;;
-		esac
-		shift
-		;;
-	--)
-		shift
-		while [ $# -gt 0 ]; do
-			arguments+=("$1")
-			shift
-		done
-		;;
-	-*)
-		echo "dots-guitar-lesson: unknown option $1 (see --help)" >&2
-		exit 2
-		;;
-	*) arguments+=("$1") ;;
-	esac
-	shift
+  case "$1" in
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    --start) start=yes ;; --stop) stop=yes ;; --restart) restart=yes ;;
+    --status) status_flag=yes ;; --doctor) doctor=yes ;;
+    --voice=*) voice="${1#*=}" ;; --guitar=*) guitar="${1#*=}" ;;
+    --quantum=*) quantum="${1#*=}" ;; --phones=*) phones="${1#*=}" ;;
+    --voice | --guitar | --quantum | --phones)
+      [ $# -ge 2 ] || {
+        echo "dots-guitar-lesson: $1 needs a value" >&2
+        exit 2
+      }
+      case "$1" in
+        --voice) voice="$2" ;; --guitar) guitar="$2" ;;
+        --quantum) quantum="$2" ;; --phones) phones="$2" ;;
+      esac
+      shift
+      ;;
+    --)
+      shift
+      while [ $# -gt 0 ]; do
+        arguments+=("$1")
+        shift
+      done
+      ;;
+    -*)
+      echo "dots-guitar-lesson: unknown option $1 (see --help)" >&2
+      exit 2
+      ;;
+    *) arguments+=("$1") ;;
+  esac
+  shift
 done
 [ -n "$quantum" ] && QUANTUM="$quantum"
 [ -n "$phones" ] && PHONES="$phones"
@@ -402,29 +402,29 @@ command_name="${arguments[0]:-status}"
 [ -n "$doctor" ] && command_name=doctor
 
 case "$command_name" in
-start) cmd_start ;;
-stop) cmd_stop ;;
-restart)
-	cmd_stop
-	sleep 1
-	cmd_start
-	;;
-wire)
-	wire
-	log "re-wired."
-	;;
-levels)
-	if [ -n "$voice" ] || [ -n "$guitar" ]; then
-		cmd_levels "${voice:-0.85}" "${guitar:-0.75}"
-	else
-		cmd_levels "${arguments[@]:1}"
-	fi
-	;;
-status) cmd_status ;;
-doctor) cmd_doctor ;;
-help) usage ;;
-*)
-	usage >&2
-	exit 2
-	;;
+  start) cmd_start ;;
+  stop) cmd_stop ;;
+  restart)
+    cmd_stop
+    sleep 1
+    cmd_start
+    ;;
+  wire)
+    wire
+    log "re-wired."
+    ;;
+  levels)
+    if [ -n "$voice" ] || [ -n "$guitar" ]; then
+      cmd_levels "${voice:-0.85}" "${guitar:-0.75}"
+    else
+      cmd_levels "${arguments[@]:1}"
+    fi
+    ;;
+  status) cmd_status ;;
+  doctor) cmd_doctor ;;
+  help) usage ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
 esac
