@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# REAPER Guitar Lesson mode: REAPER processes the guitar (Hard Stuff chain) and
+# REAPER Guitar Lesson mode: REAPER processes the guitar (the active tone) and
 # mixes it with the microphone; PipeWire exposes that mix as a virtual mic
 # ("REAPER Lesson Mic") for Discord. No standalone Guitarix is involved.
 #
 # Signal path:
 #   Input 1 (mic)   -> REAPER vocal track (monitor on while armed) -> REAPER out 1-2
-#   Input 2 (DI)    -> REAPER DI track -> send -> Hard Stuff chain -> REAPER out 1-2
+#   Input 2 (DI)    -> REAPER DI track -> send -> active tone    -> REAPER out 1-2
 #   REAPER out 1-2  -> Scarlett headphones (you hear the mix)
 #                   -> reaper.lesson.mix -> reaper.lesson.mic (Discord input)
 #

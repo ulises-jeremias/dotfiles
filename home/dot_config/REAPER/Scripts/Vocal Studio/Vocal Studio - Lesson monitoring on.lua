@@ -2,7 +2,8 @@
 --
 -- Live monitoring for a guitar lesson: arms and monitors the chosen vocal track
 -- (default Lead Clean) and the Electric Guitar DI so Input 1 (mic) and Input 2
--- (guitar, through the Hard Stuff chain) reach REAPER's output and the lesson mic.
+-- (guitar, through the tone chosen with "Guitar - Choose tone") reach REAPER's
+-- output and the lesson mic.
 --
 -- This does NOT record: arming only routes audio. Pressing Record in REAPER
 -- starts a take. Run "Vocal Studio - Lesson monitoring off" to disarm everything.

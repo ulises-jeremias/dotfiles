@@ -234,5 +234,18 @@ Pending (needs you):
 - Discord end to end, and vocal calibration with a real take.
 - Installed REAPER is an evaluation copy.
 
-Guitarix stays installed and unchanged; its original bank
-(`home/dot_config/guitarix/banks/silentz0r.gx`) is kept in the repo as a reference.
+The Guitarix configuration is no longer in this repo: the `silentz0r` bank and
+the REAPER "Hard Stuff" / "Machine Head" chains that copied it were removed when
+the NAM tones replaced them. On existing hosts the one-shot script
+`home/.chezmoiscripts/linux/run_after_remove-retired-guitarix-config.sh.tmpl`
+deletes those leftover files once (it never touches Guitarix's own state or a
+bank you save again later). The bank is still in Git history:
+
+```sh
+git log --diff-filter=D --format=%h -1 -- home/dot_config/guitarix/banks/silentz0r.gx
+git show <that-commit>^:home/dot_config/guitarix/banks/silentz0r.gx > silentz0r.gx
+```
+
+The `guitarix` package stays installed: it provides the LV2 pedals the tones use
+(GxTubeScreamer, GxChorus, GxEcho, GxReverb). The standalone Guitarix app is not
+launched or configured by anything here.
