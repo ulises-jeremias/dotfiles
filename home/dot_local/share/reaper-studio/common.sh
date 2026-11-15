@@ -206,5 +206,9 @@ repair_links() {
 	ensure_link "REAPER:out4" "${LESSON_IN}:input_FR"
 	ensure_link "REAPER:out5" "${PROGRAM_IN}:input_FL"
 	ensure_link "REAPER:out6" "${PROGRAM_IN}:input_FR"
+	# a removal can fail (pw-link -d): never report success unless every check passes
+	if ! { doctor_inputs && doctor_outputs && doctor_buses; } >/dev/null; then
+		die "repair incomplete: some links could not be changed (see: reaper-studio doctor)"
+	fi
 	log "repaired: Scarlett -> REAPER in1/in2, out1-2 -> ${hp_fl%%:*}, out3-4 -> lesson mic, out5-6 -> program"
 }

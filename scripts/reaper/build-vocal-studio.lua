@@ -1302,8 +1302,13 @@ local function wait_and_export()
 	end
 	-- every queued capture/IR must have survived into the saved state;
 	-- otherwise nothing is exported (never overwrite good files with silent tones)
-	local states_ok = true
+	-- (any failed check, e.g. a plugin that did not insert, also blocks export)
+	local states_ok = failures == 0
 	for _, spec in ipairs(LAYOUT) do
+		if spec.kind == "tone" and not PENDING[T[spec.name]] then
+			check(false, spec.name .. ": no amp capture/IR was queued (plugin failed to insert)")
+			states_ok = false
+		end
 		if spec.kind == "tone" and PENDING[T[spec.name]] then
 			local _, c = reaper.GetTrackStateChunk(T[spec.name], "", false)
 			local q = PENDING[T[spec.name]]
