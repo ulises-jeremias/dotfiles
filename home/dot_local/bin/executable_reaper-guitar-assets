@@ -5,7 +5,8 @@
 # rejected if the checksum does not match.
 #
 #   reaper-guitar-assets install   download, verify and install (idempotent)
-#   reaper-guitar-assets verify    check that every installed file matches its pin
+#   reaper-guitar-assets verify    check the captures against their SHA-256 pins and
+#                                  that the plugin and the referenced IRs are present
 #
 # Installs (user level only, no root, no system packages):
 #   ~/.lv2/neural_amp_modeler.lv2               Neural Amp Modeler LV2 v0.2.3 (GPL-3.0)
@@ -16,7 +17,9 @@
 
 set -euo pipefail
 
-ASSETS="${XDG_DATA_HOME:-$HOME/.local/share}/reaper-studio/guitar"
+# Fixed path: the REAPER templates reference it as
+# {{ .chezmoi.homeDir }}/.local/share/reaper-studio/guitar (not $XDG_DATA_HOME).
+ASSETS="$HOME/.local/share/reaper-studio/guitar"
 LV2_DIR="$HOME/.lv2"
 
 NAM_LV2_URL="https://github.com/mikeoliphant/neural-amp-modeler-lv2/releases/download/v0.2.3/neural_amp_modeler_lv2_linux_x64v3.tgz"

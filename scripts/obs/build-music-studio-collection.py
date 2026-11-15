@@ -151,8 +151,10 @@ FilenameFormatting=Music Studio %CCYY-%MM-%DD %hh-%mm-%ss
 FilePath={{ .chezmoi.homeDir }}/Videos
 RecFormat2=hybrid_mp4
 RecQuality=Small
-RecEncoder=nvenc
-StreamEncoder=nvenc
+{{- /* NVENC needs an NVIDIA GPU; x264 (CPU) works everywhere */ -}}
+{{ $enc := "x264" }}{{ if lookPath "nvidia-smi" }}{{ $enc = "nvenc" }}{{ end }}
+RecEncoder={{ $enc }}
+StreamEncoder={{ $enc }}
 ABitrate=320
 RecTracks=7
 

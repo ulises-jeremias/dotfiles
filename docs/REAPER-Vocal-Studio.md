@@ -5,7 +5,9 @@ needs **no terminal commands**:
 
 1. **Open REAPER** from the app menu. It starts on the *Music Studio* template
    with the guitar DI and Lead Clean armed for monitoring: play and you hear the
-   active tone (Machine Head) in your headphones.
+   active tone (Machine Head) in your headphones. Your microphone is live from
+   that moment (headphones and the REAPER Lesson Mic); nothing records until you
+   press Record.
 2. **Open Discord** and pick the input device **REAPER Lesson Mic** (once).
 3. **Open OBS**, pick the scene collection **Music Studio** and profile
    **Music Studio** (once), then record (or start the virtual camera, see below).
@@ -106,7 +108,7 @@ camera picture-in-picture). Global audio: *REAPER Program* (the REAPER mix) and
 *Discord Call* (the other people on the call). Audio monitoring is off on every
 source, so OBS never plays anything back.
 
-Profile *Music Studio*: 1080p30, 48 kHz, hybrid MP4 in `~/Videos`, NVENC, three
+Profile *Music Studio*: 1080p30, 48 kHz, hybrid MP4 in `~/Videos`, NVENC when an NVIDIA GPU is present (x264 otherwise), three
 audio tracks: **1** full mix, **2** REAPER only, **3** Discord only, so a lesson
 recording can be remixed later.
 
@@ -125,6 +127,21 @@ Rollback: remove the files listed in *How it fits together*, restore
 `~/.local/state/reaper-backups/reaper.ini.pre-music-studio` to
 `~/.config/REAPER/reaper.ini` (REAPER closed), and run
 `systemctl --user restart pipewire pipewire-pulse wireplumber`.
+
+## Retired configuration
+
+The Guitarix bank (`silentz0r`), the REAPER "Hard Stuff" / "Machine Head" chains
+that copied it and the `reaper-lesson` command are no longer in this repo. On an
+existing host the one-shot script
+`.chezmoiscripts/linux/run_after_remove-retired-guitarix-config.sh.tmpl` moves
+those leftover files once to `~/.local/state/reaper-studio/retired-guitar-config/`
+(it never deletes them, never touches Guitarix's own state, and leaves alone a
+file with the same name created later). The bank is also in Git history:
+
+```sh
+git log --diff-filter=D --format=%h -1 -- home/dot_config/guitarix/banks/silentz0r.gx
+git show <that-commit>^:home/dot_config/guitarix/banks/silentz0r.gx > silentz0r.gx
+```
 
 ## Guitar tones (Squier Stratocaster, Scarlett Input 2)
 
@@ -226,11 +243,13 @@ so each gets exactly one cabinet IR. There is no double cabinet.
 
 ### Latency, CPU and stability (measured on this host, 48 kHz)
 
-- `reaper-studio` launches REAPER with `PIPEWIRE_QUANTUM=256/48000` for that
-  process only (no global PipeWire setting, nothing persistent). REAPER output
-  latency: **32 ms at the default quantum 1024 → 8 ms at 256**, 0 xruns.
-  If your hardware xruns, set `REAPER_QUANTUM=512` in
-  `~/.config/reaper-studio/monitor.env`.
+- REAPER asks PipeWire for a 256-frame period through
+  `~/.config/pipewire/jack.conf.d/60-reaper-low-latency.conf` (a rule for the
+  `reaper` process; PipeWire's defaults are not changed). While REAPER runs, the
+  shared audio graph runs at that period for every client; when REAPER closes it
+  returns to PipeWire's default. REAPER output latency: **32 ms at the default
+  quantum 1024 → 8 ms at 256**, 0 xruns. If your hardware xruns, change
+  `256/48000` to `512/48000` in that file and restart REAPER.
 - Every plugin in the chains reports **0 samples** of latency (REAPER PDC).
 - CPU while playing any tone: about **28–30 % of one core** for all of REAPER
   (24 threads available).

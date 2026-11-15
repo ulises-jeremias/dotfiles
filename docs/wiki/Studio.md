@@ -114,26 +114,6 @@ reaper-studio doctor    # diagnostics only
 
 Use `qpwgraph` or `helvum` to visualize and patch audio connections in the PipeWire graph.
 
---------------- | ----------------------- |
-| `guitarix`      | Virtual guitar amp      |
-| `gxplugins.lv2` | Guitarix LV2 plugin set |
-
-### Manual install
-
-```sh
-sudo pacman -S guitarix gxplugins.lv2
-```
-
-### Usage
-
-Guitarix connects to the JACK graph. With PipeWire-JACK active, simply launch:
-
-```sh
-guitarix
-```
-
-Use `qpwgraph` or `helvum` to visualize and patch audio connections in the PipeWire graph.
-
 ---
 
 ## 🔌 LV2 / Audio Plugins

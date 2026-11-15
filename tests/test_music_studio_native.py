@@ -124,7 +124,7 @@ def test_reaper_preferences_setup_is_install_time_only() -> None:
     text = REAPER_SETUP.read_text()
     for key in ("linux_audio_nch_in", "linux_audio_nch_out", "jack_options", "newprojtmpl", "loadlastproj"):
         assert key in text
-    assert '"linux_audio_nch_out": "6"' in text
+    assert "linux_audio_nch_out=6" in text
     assert "pgrep -x reaper" in text, "never edit reaper.ini under a running REAPER"
     assert "reaper.ini.pre-music-studio" in text, "rollback copy"
     assert "sudo" not in text and "systemctl" not in text
@@ -133,8 +133,8 @@ def test_reaper_preferences_setup_is_install_time_only() -> None:
 def test_patchbay_can_start_minimized() -> None:
     # measured: without its tray icon, `qpwgraph --minimized` exits at once
     text = REAPER_SETUP.read_text()
-    for key in ("SystemTray", "StartMinimized", "SystemTrayQueryClose"):
-        assert f'"{key}"' in text
+    for key in ("SystemTray=true", "StartMinimized=true", "SystemTrayQueryClose=false"):
+        assert key in text
     assert "pgrep -x qpwgraph" in text, "qpwgraph rewrites its config on exit: edit only while it is not running"
 
 
@@ -146,3 +146,82 @@ def test_templates_record_48k_24bit_wav() -> None:
         raw = base64.b64decode(cfg)
         assert raw[:4] == b"evaw" and raw[4] == 24, f"{name}: recording must be 24-bit WAV"
         assert re.search(r"^  SAMPLERATE 48000 1 ", text, flags=re.M), f"{name}: 48 kHz"
+
+
+# --- behaviour of the install script, through `chezmoi apply` in a temp destination
+
+def _chezmoi() -> str:
+    import shutil
+    from pathlib import Path as _P
+    return shutil.which("chezmoi") or str(_P.home() / ".local/bin/chezmoi")
+
+
+def _run_setup(dest: Path, base: Path, running: bool) -> str:
+    import os
+    import shutil
+    import subprocess
+    source = base / "source"
+    if not source.exists():
+        (source / ".chezmoiscripts/linux").mkdir(parents=True)
+        shutil.copy(REAPER_SETUP, source / ".chezmoiscripts/linux" / REAPER_SETUP.name)
+        (base / "chezmoi.toml").write_text("[data]\n", encoding="utf-8")
+    stub = base / ("stub-running" if running else "stub-idle")
+    stub.mkdir(exist_ok=True)
+    (stub / "pgrep").write_text("#!/bin/sh\nexit %d\n" % (0 if running else 1), encoding="utf-8")
+    (stub / "pgrep").chmod(0o755)
+    env = dict(os.environ, HOME=str(dest), PATH=f"{stub}:{os.environ['PATH']}")
+    out = subprocess.run([_chezmoi(), "apply", "--source", str(source), "--destination", str(dest),
+                          "--config", str(base / "chezmoi.toml"), "--force"],
+                         capture_output=True, text=True, check=True, env=env)
+    return out.stdout + out.stderr
+
+
+def _seed(dest: Path) -> None:
+    (dest / ".config/REAPER/ProjectTemplates").mkdir(parents=True)
+    (dest / ".config/REAPER/ProjectTemplates/Music Studio.RPP").write_text("<REAPER_PROJECT\n>\n")
+    (dest / ".config/REAPER/reaper.ini").write_text(
+        "[.swell]\nui_scale=1.0\n\n[reaper]\njack_options=8\nwnd_w=1105\n\n[verchk]\nlastt=1\n")
+    (dest / ".config/rncbc.org").mkdir(parents=True)
+    (dest / ".config/rncbc.org/qpwgraph.conf").write_text("[GraphNodePos]\nREAPER=@Variant(x)\n")
+
+
+def test_setup_merges_preferences_once_and_keeps_everything_else() -> None:
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="music-studio-setup-") as tmp:
+        base = Path(tmp)
+        dest = base / "home"
+        _seed(dest)
+        _run_setup(dest, base, running=False)
+        ini = (dest / ".config/REAPER/reaper.ini").read_text()
+        assert "[.swell]\nui_scale=1.0" in ini and "[verchk]\nlastt=1" in ini, "other sections kept"
+        assert "wnd_w=1105" in ini
+        for line in ("linux_audio_nch_in=2", "linux_audio_nch_out=6", "loadlastproj=0",
+                     f"newprojtmpl={dest}/.config/REAPER/ProjectTemplates/Music Studio.RPP"):
+            assert line in ini.splitlines(), line
+        assert "jack_options=10" in ini.splitlines(), "existing JACK option bits are kept (8 | 2)"
+        assert (dest / ".local/state/reaper-backups/reaper.ini.pre-music-studio").read_text().startswith("[.swell]")
+        qpw = (dest / ".config/rncbc.org/qpwgraph.conf").read_text()
+        assert "REAPER=@Variant(x)" in qpw and "SystemTray=true" in qpw and "StartMinimized=true" in qpw
+
+        # The user changes the default template in REAPER: a later apply keeps it.
+        custom = ini.replace("loadlastproj=0", "loadlastproj=1")
+        (dest / ".config/REAPER/reaper.ini").write_text(custom)
+        _run_setup(dest, base, running=False)
+        assert (dest / ".config/REAPER/reaper.ini").read_text() == custom, "applied once: GUI changes survive"
+        assert not list((dest / ".config/REAPER").glob("*.tmp")), "no temp file left behind"
+
+
+def test_setup_waits_while_the_apps_are_running() -> None:
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="music-studio-setup-") as tmp:
+        base = Path(tmp)
+        dest = base / "home"
+        _seed(dest)
+        before = (dest / ".config/REAPER/reaper.ini").read_text()
+        out = _run_setup(dest, base, running=True)
+        assert (dest / ".config/REAPER/reaper.ini").read_text() == before
+        assert "SystemTray" not in (dest / ".config/rncbc.org/qpwgraph.conf").read_text()
+        assert "close REAPER" in out
+        assert not (dest / ".local/state/reaper-studio/reaper-prefs-v1-done").exists(), "stays pending"
+        _run_setup(dest, base, running=False)
+        assert (dest / ".local/state/reaper-studio/reaper-prefs-v1-done").exists()

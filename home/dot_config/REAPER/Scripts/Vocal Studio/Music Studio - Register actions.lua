@@ -8,7 +8,8 @@
 --
 -- The toolbar is written to reaper-menu.ini only if toolbar 16 is not defined
 -- yet, so a toolbar you customize in REAPER is never overwritten. It opens
--- automatically the first time; afterwards REAPER remembers whether it is open.
+-- automatically on the first start after it was written (REAPER loads toolbars
+-- at startup); afterwards REAPER remembers whether it is open.
 -- luacheck: globals reaper
 
 local dir = reaper.GetResourcePath() .. "/Scripts/Vocal Studio/"
@@ -59,7 +60,10 @@ if fh then
 	fh:close()
 end
 local section = "[Floating toolbar " .. TOOLBAR .. "]"
-if not text:find(section, 1, true) then
+-- REAPER reads reaper-menu.ini at startup: a toolbar written now only has its
+-- buttons from the next start, so it is opened only once it already existed.
+local toolbar_loaded = text:find(section, 1, true) ~= nil
+if not toolbar_loaded then
 	local lines = { section }
 	local n = 0
 	for _, b in ipairs(BUTTONS) do
@@ -77,8 +81,8 @@ if not text:find(section, 1, true) then
 	end
 end
 
--- open the toolbar the first time only
-if reaper.GetExtState("MusicStudio", "toolbar_opened") ~= "1" then
+-- open the toolbar the first time its buttons are loaded
+if toolbar_loaded and reaper.GetExtState("MusicStudio", "toolbar_opened") ~= "1" then
 	local want = "Toolbar: Open/close toolbar " .. TOOLBAR
 	for cmd = 40000, 42500 do
 		if reaper.kbd_getTextFromCmd(cmd, 0) == want then

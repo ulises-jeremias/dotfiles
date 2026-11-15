@@ -31,7 +31,7 @@ for _, t in ipairs(tracks) do
 end
 if found < 2 then
 	reaper.ShowMessageBox(
-		"Open the Modern Rock & Metal - Vocal Studio template first.",
+		"Open the Music Studio (or Modern Rock & Metal - Vocal Studio) template first.",
 		"Vocal Studio: lesson monitoring",
 		0
 	)

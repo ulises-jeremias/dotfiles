@@ -173,10 +173,11 @@ def test_every_tone_has_a_one_click_action_and_toolbar_button() -> None:
         wrappers = [p for p in SCRIPTS_DIR.glob("Guitar tone - *.lua") if f'GUITAR_TONE = "{name}"' in p.read_text()]
         assert len(wrappers) == 1, name
         assert f'"{wrappers[0].stem}"' in register, f"{name} missing from the Music Studio toolbar"
-    startup = (REAPER / "Scripts" / "__startup.lua").read_text()
+    startup = (REAPER / "Scripts" / "create___startup.lua").read_text()  # never replaces a user's own
     assert "Music Studio - Register actions.lua" in startup
     assert "AddRemoveReaScript" in register and "Floating toolbar" in register
-    assert "if not text:find(section, 1, true)" in register, "never overwrite a customized toolbar"
+    assert "if not toolbar_loaded then" in register, "never overwrite a customized toolbar"
+    assert "if toolbar_loaded and" in register, "open the toolbar only once its buttons are loaded"
 
 
 def test_vocal_styles_have_one_click_actions() -> None:

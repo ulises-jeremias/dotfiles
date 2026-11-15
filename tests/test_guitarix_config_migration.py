@@ -25,7 +25,9 @@ RETIRED = (
     ".config/REAPER/FXChains/Vocal Studio/Machine Head.RfxChain",
     ".config/REAPER/TrackTemplates/Vocal Studio/Electric Guitar - Hard Stuff.RTrackTemplate",
     ".config/REAPER/TrackTemplates/Vocal Studio/Electric Guitar - Machine Head.RTrackTemplate",
+    ".local/bin/reaper-lesson",
 )
+BACKUP = ".local/state/reaper-studio/retired-guitar-config"
 KEPT = (".config/guitarix/gx_head_rc", ".config/guitarix/banks/scratchpad.gx",
         ".config/REAPER/FXChains/Vocal Studio/Lead Clean.RfxChain")
 
@@ -36,18 +38,20 @@ def chezmoi() -> str:
 
 def test_sources_are_gone_and_removal_is_not_persistent() -> None:
     assert not (ROOT / "home/dot_config/guitarix").exists()
-    for rel in RETIRED[1:]:
+    for rel in RETIRED[1:5]:
         src = ROOT / "home/dot_config" / rel.removeprefix(".config/")
         assert not src.exists(), src
+    assert not (ROOT / "home/dot_local/bin/executable_reaper-lesson").exists()
     assert SCRIPT.name.startswith("run_after_"), "must re-run until the replacement exists"
     text = SCRIPT.read_text(encoding="utf-8")
     assert ".chezmoi.destDir" in text
     assert "guitarix-config-migration-done" in text
     assert "[ ! -L " in text
+    assert "rm -f" not in text and "mv -f" in text, "retired files are moved to a backup, never deleted"
     assert "pacman" not in text and "sudo" not in text, "Guitarix stays installed"
     entries = [line.strip() for line in REMOVE.read_text(encoding="utf-8").splitlines()
                if line.strip() and not line.strip().startswith("#")]
-    assert not any("guitarix" in e.lower() or "Hard Stuff" in e for e in entries), \
+    assert not any("guitarix" in e.lower() or "Hard Stuff" in e or "reaper-lesson" in e for e in entries), \
         "a persistent .chezmoiremove entry would delete files the user recreates"
 
 
@@ -85,12 +89,13 @@ def test_apply_behaviour() -> None:
         assert all((dest / rel).exists() for rel in RETIRED)
         assert not (dest / marker).exists()
 
-        # Replacement present: retired files go, everything else stays.
+        # Replacement present: retired files are moved to the backup, everything else stays.
         (dest / TEMPLATE).parent.mkdir(parents=True, exist_ok=True)
         (dest / TEMPLATE).write_text("<REAPER_PROJECT\n>\n", encoding="utf-8")
         apply(source, dest, config)
         for rel in RETIRED:
             assert not (dest / rel).exists(), rel
+            assert (dest / BACKUP / rel).read_text(encoding="utf-8") == "old\n", f"{rel} not kept in the backup"
         for rel in KEPT:
             assert (dest / rel).read_text(encoding="utf-8") == "old\n", rel
         assert (dest / marker).exists()
