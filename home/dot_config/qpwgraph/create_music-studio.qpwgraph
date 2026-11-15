@@ -1,0 +1,37 @@
+<!DOCTYPE patchbay>
+<patchbay name="music-studio" version="1.0.4">
+ <items>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Scarlett 2i2 4th Gen 0" port="Scarlett 2i2 4th Gen:capture_AUX0"/>
+   <input node="REAPER" port="REAPER:in1"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Scarlett 2i2 4th Gen 0" port="Scarlett 2i2 4th Gen:capture_AUX1"/>
+   <input node="REAPER" port="REAPER:in2"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="REAPER" port="REAPER:out1"/>
+   <input node="Scarlett 2i2 4th Gen Headphones / Line 1-2" port="Scarlett 2i2 4th Gen:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="REAPER" port="REAPER:out2"/>
+   <input node="Scarlett 2i2 4th Gen Headphones / Line 1-2" port="Scarlett 2i2 4th Gen:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="REAPER" port="REAPER:out3"/>
+   <input node="REAPER Lesson Bus input" port="REAPER Lesson Bus input:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="REAPER" port="REAPER:out4"/>
+   <input node="REAPER Lesson Bus input" port="REAPER Lesson Bus input:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="REAPER" port="REAPER:out5"/>
+   <input node="REAPER Program input" port="REAPER Program input:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="REAPER" port="REAPER:out6"/>
+   <input node="REAPER Program input" port="REAPER Program input:input_FR"/>
+  </item>
+ </items>
+</patchbay>

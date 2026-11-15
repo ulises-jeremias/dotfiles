@@ -1,0 +1,8 @@
+nam:AC-DC - Classic Crunch|-3.6
+nam:Asking Alexandria - Metalcore|-10
+nam:Avenged Sevenfold - Lead|0.5
+nam:Crystal Clean|15.7
+nam:Lamb of God - Groove Metal|-9.5
+nam:Machine Head - Groove Thrash|3.5
+nam:Slipknot - Nu Metal|-1.8
+nam:Warm Clean - Ambient|5.4

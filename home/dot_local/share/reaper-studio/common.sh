@@ -1,0 +1,214 @@
+# shellcheck shell=bash
+# Shared routing helpers for reaper-studio (diagnostics and recovery only).
+#
+# Daily use needs none of this: the qpwgraph patchbay keeps the links. These
+# helpers only check the graph and, for recovery, recreate REAPER's own links.
+# They never change the default sink/source, never restart PipeWire and never
+# touch Guitarix.
+#
+# Port names are stable device identifiers (ALSA card "Gen" and device node
+# names), never transient PipeWire node IDs.
+#
+# Verified mapping on the host (PipeWire 1.6, HiFi profile, Scarlett 2i2 4th Gen,
+# USB 1235:8219, ALSA card "Gen"):
+#   hw_Gen_0:capture_AUX0  = Input 1  (microphone)     -> REAPER in1
+#   hw_Gen_0:capture_AUX1  = Input 2  (guitar DI)      -> REAPER in2
+#   hw_Gen_0:capture_AUX2/3 = Monitor 3+4 hardware loopback of outputs 1-2
+#                            (HiFi__Line4__source here). NEVER linked to REAPER.
+#   Line1 sink             = headphones / line 1-2     <- REAPER out1/out2
+
+set -euo pipefail
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/reaper-studio"
+mkdir -p "$STATE_DIR"
+
+SCARLETT_CARD="alsa_input.hw_Gen_0"
+MIC_IN="${SCARLETT_CARD}:capture_AUX0"
+GUITAR_IN="${SCARLETT_CARD}:capture_AUX1"
+LOOPBACK_PORTS_RE='capture_AUX2|capture_AUX3'
+# Per-machine preference (not in the repo): ~/.config/reaper-studio/monitor.env
+MONITOR_ENV="${XDG_CONFIG_HOME:-$HOME/.config}/reaper-studio/monitor.env"
+# shellcheck source=/dev/null
+[ -f "$MONITOR_ENV" ] && . "$MONITOR_ENV"
+HEADPHONE_SINK_RE="${REAPER_OUT_SINK_RE:-alsa_output\.usb-Focusrite_Scarlett_2i2_4th_Gen.*HiFi__Line1__sink}"
+# Permanent PipeWire endpoints (~/.config/pipewire, 60-reaper-music-studio.conf)
+LESSON_IN="reaper_lesson.input"   # <- REAPER out3/out4 only
+PROGRAM_IN="reaper_program.input" # <- REAPER out5/out6 only
+DISCORD_CALL_OUT="discord_call.output"
+
+log() { printf '%s\n' "$*"; }
+die() {
+	printf 'reaper-studio: %s\n' "$*" >&2
+	exit 1
+}
+
+have_reaper() { pgrep -x reaper >/dev/null 2>&1; }
+
+# Wait for REAPER's JACK client ports (up to ~30 s).
+wait_reaper_ports() {
+
+	for _ in $(seq 1 60); do
+		if pw-link -o 2>/dev/null | grep -qx 'REAPER:out1' && pw-link -i 2>/dev/null | grep -qx 'REAPER:in1'; then
+			return 0
+		fi
+		sleep 0.5
+	done
+	return 1
+}
+
+# Idempotent link: create only if absent (a port can have several peers).
+ensure_link() {
+	local out="$1" in="$2"
+	if peers_of "$out" '->' | grep -qxF -- "$in"; then return 0; fi
+	pw-link "$out" "$in" 2>/dev/null || die "cannot link $out -> $in (is the port present?)"
+}
+
+# Remove any link from REAPER's outputs that is not one we want.
+prune_reaper_outputs() {
+	# $1..$6: the only allowed destination of REAPER out1..out6. Checked per
+	# port and channel, so e.g. out1 (headphone mix with the backing track) can
+	# never stay linked into the Discord lesson mic, and channels never swap.
+	local allowed=("$@")
+	pw-link -l 2>/dev/null | python3 -c '
+import sys
+cur = None
+for raw in sys.stdin:
+    if not raw.startswith(" "):
+        cur = raw.strip(); continue
+    if "|->" in raw and cur and cur.startswith("REAPER:out"):
+        print(cur, raw.split("|->",1)[1].strip())
+' | while read -r src dst; do
+		local n="${src#REAPER:out}" keep=""
+		case "$n" in [1-6]) keep="${allowed[$((n - 1))]}" ;; esac
+		if [ "$dst" != "$keep" ]; then
+			pw-link -d "$src" "$dst" 2>/dev/null || true
+			log "  unlinked $src -> $dst"
+		fi
+	done
+}
+
+# Find the Scarlett headphone sink ports (stable name pattern, not a node id).
+headphone_ports() {
+	# Override the monitor output per run: REAPER_OUT_SINK_RE='USB_Audio_Device' reaper-studio wire
+	pw-link -i 2>/dev/null | grep -E "$HEADPHONE_SINK_RE" | grep -E ':playback_(FL|FR)$' || true
+}
+
+# Peers of an exact port: prints the ports linked to it. $2 is "<-" (sources
+# feeding an input port) or "->" (destinations fed by an output port).
+peers_of() {
+	local port="$1" dir="$2"
+	pw-link -l 2>/dev/null | python3 -c '
+import sys
+port, d = sys.argv[1], sys.argv[2]
+cur = None
+for raw in sys.stdin:
+    if not raw.startswith(" "):
+        cur = raw.strip(); continue
+    if cur == port and d in raw:
+        print(raw.split(d, 1)[1].strip())
+' "$port" "$dir"
+}
+
+# Doctor: every check prints ok/FAIL; returns the number of failed checks.
+doctor_inputs() {
+	local fails=0 peers
+	check() { if [ "$1" = ok ]; then log "ok    $2"; else
+		log "FAIL  $2"
+		fails=$((fails + 1))
+	fi; }
+	peers="$(peers_of REAPER:in1 '<-')"
+	if [ "$peers" = "$MIC_IN" ]; then check ok "REAPER in1 = Input 1 mic ($MIC_IN)"; else check FAIL "REAPER in1 sources: ${peers:-none}"; fi
+	peers="$(peers_of REAPER:in2 '<-')"
+	if [ "$peers" = "$GUITAR_IN" ]; then check ok "REAPER in2 = Input 2 guitar DI ($GUITAR_IN)"; else check FAIL "REAPER in2 sources: ${peers:-none}"; fi
+	local bad
+	bad="$({
+		peers_of REAPER:in1 '<-'
+		peers_of REAPER:in2 '<-'
+	} | grep -E "$LOOPBACK_PORTS_RE" || true)"
+	if [ -z "$bad" ]; then check ok "hardware loopback (AUX2/AUX3) not linked to REAPER"; else check FAIL "loopback feeds REAPER: $bad"; fi
+	return "$fails"
+}
+
+doctor_outputs() {
+	local fails=0 peers
+	check() { if [ "$1" = ok ]; then log "ok    $2"; else
+		log "FAIL  $2"
+		fails=$((fails + 1))
+	fi; }
+	peers="$(peers_of REAPER:out1 '->')"
+	if printf '%s\n' "$peers" | grep -Eq "(${HEADPHONE_SINK_RE}):playback_FL\$"; then check ok "REAPER out1 -> monitor output FL"; else check FAIL "REAPER out1 not on the monitor output FL (peers: ${peers:-none})"; fi
+	peers="$(peers_of REAPER:out2 '->')"
+	if printf '%s\n' "$peers" | grep -Eq "(${HEADPHONE_SINK_RE}):playback_FR\$"; then check ok "REAPER out2 -> monitor output FR"; else check FAIL "REAPER out2 not on the monitor output FR (peers: ${peers:-none})"; fi
+	local stray
+	# Lesson mode legitimately adds the virtual-mic bus (EXTRA_OUT_RE); studio has none.
+	stray="$({
+		peers_of REAPER:out1 '->'
+		peers_of REAPER:out2 '->'
+	} | grep -Ev "(${HEADPHONE_SINK_RE}):playback_F[LR]\$" | grep -Ev "${EXTRA_OUT_RE:-^\$}" || true)"
+	if [ -z "$stray" ]; then check ok "REAPER outputs go only to the monitor output"; else check FAIL "REAPER output also feeds: $stray"; fi
+	return "$fails"
+}
+
+# Output buses: out3/4 -> Discord lesson mic input, out5/6 -> OBS program input,
+# nothing else may feed the lesson input, and Discord's output never reaches REAPER.
+doctor_buses() {
+	local fails=0 peers pair src dst
+	check() { if [ "$1" = ok ]; then log "ok    $2"; else
+		log "FAIL  $2"
+		fails=$((fails + 1))
+	fi; }
+	for pair in "out3 ${LESSON_IN}:input_FL" "out4 ${LESSON_IN}:input_FR" \
+		"out5 ${PROGRAM_IN}:input_FL" "out6 ${PROGRAM_IN}:input_FR"; do
+		src="REAPER:${pair%% *}" dst="${pair#* }"
+		peers="$(peers_of "$src" '->')"
+		if [ "$peers" = "$dst" ]; then check ok "$src -> $dst"; else check FAIL "$src -> ${peers:-nothing} (want $dst)"; fi
+	done
+	peers="$({
+		peers_of "${LESSON_IN}:input_FL" '<-'
+		peers_of "${LESSON_IN}:input_FR" '<-'
+	} | grep -Ev '^REAPER:out[34]$' || true)"
+	if [ -z "$peers" ]; then check ok "REAPER Lesson Mic is fed only by REAPER out3/out4"; else check FAIL "REAPER Lesson Mic also fed by: $peers"; fi
+	peers="$({
+		peers_of "${DISCORD_CALL_OUT}:output_FL" '->'
+		peers_of "${DISCORD_CALL_OUT}:output_FR" '->'
+	} | grep -E 'REAPER|reaper_' || true)"
+	if [ -z "$peers" ]; then check ok "Discord Call output never reaches REAPER (no feedback)"; else check FAIL "Discord Call feeds: $peers"; fi
+	if pactl list short sources 2>/dev/null | grep -q 'reaper_lesson_mic'; then check ok "PipeWire source 'REAPER Lesson Mic' present"; else check FAIL "REAPER Lesson Mic missing (PipeWire config not loaded: log out and back in)"; fi
+	return "$fails"
+}
+
+# Recovery: recreate REAPER's links (what the qpwgraph patchbay normally does).
+repair_links() {
+	have_reaper || die "REAPER is not running: open it from the app menu first"
+	wait_reaper_ports || die "REAPER JACK ports not present"
+	local hp_fl hp_fr
+	hp_fl="$(headphone_ports | grep ':playback_FL$' | head -1 || true)"
+	hp_fr="$(headphone_ports | grep ':playback_FR$' | head -1 || true)"
+	[ -n "$hp_fl" ] && [ -n "$hp_fr" ] || die "headphone output not found; is the interface plugged in?"
+	prune_reaper_outputs "$hp_fl" "$hp_fr" "${LESSON_IN}:input_FL" "${LESSON_IN}:input_FR" \
+		"${PROGRAM_IN}:input_FL" "${PROGRAM_IN}:input_FR"
+	# inputs: only Scarlett Input 1 -> in1 and Input 2 -> in2 (never the loopback)
+	local port want src
+	for port in in1 in2; do
+		if [ "$port" = in1 ]; then want="$MIC_IN"; else want="$GUITAR_IN"; fi
+		peers_of "REAPER:$port" '<-' | while read -r src; do
+			if [ "$src" != "$want" ]; then
+				pw-link -d "$src" "REAPER:$port" 2>/dev/null || true
+				log "  unlinked $src -> REAPER:$port"
+			fi
+		done
+	done
+	ensure_link "$MIC_IN" "REAPER:in1"
+	ensure_link "$GUITAR_IN" "REAPER:in2"
+	ensure_link "REAPER:out1" "$hp_fl"
+	ensure_link "REAPER:out2" "$hp_fr"
+	ensure_link "REAPER:out3" "${LESSON_IN}:input_FL"
+	ensure_link "REAPER:out4" "${LESSON_IN}:input_FR"
+	ensure_link "REAPER:out5" "${PROGRAM_IN}:input_FL"
+	ensure_link "REAPER:out6" "${PROGRAM_IN}:input_FR"
+	# a removal can fail (pw-link -d): never report success unless every check passes
+	if ! { doctor_inputs && doctor_outputs && doctor_buses; } >/dev/null; then
+		die "repair incomplete: some links could not be changed (see: reaper-studio doctor)"
+	fi
+	log "repaired: Scarlett -> REAPER in1/in2, out1-2 -> ${hp_fl%%:*}, out3-4 -> lesson mic, out5-6 -> program"
+}
