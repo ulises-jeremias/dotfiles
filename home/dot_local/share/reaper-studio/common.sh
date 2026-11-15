@@ -65,10 +65,10 @@ ensure_link() {
 
 # Remove any link from REAPER's outputs that is not one we want.
 prune_reaper_outputs() {
-	# $1..$3: allowed destination regexes for out1-2, out3-4 and out5-6. Checked
-	# per port, so e.g. out1 (headphone mix with the backing track) can never stay
-	# linked into the Discord lesson mic.
-	local keep_hp="$1" keep_lesson="$2" keep_program="$3"
+	# $1..$6: the only allowed destination of REAPER out1..out6. Checked per
+	# port and channel, so e.g. out1 (headphone mix with the backing track) can
+	# never stay linked into the Discord lesson mic, and channels never swap.
+	local allowed=("$@")
 	pw-link -l 2>/dev/null | python3 -c '
 import sys
 cur = None
@@ -78,14 +78,9 @@ for raw in sys.stdin:
     if "|->" in raw and cur and cur.startswith("REAPER:out"):
         print(cur, raw.split("|->",1)[1].strip())
 ' | while read -r src dst; do
-		local keep_re
-		case "$src" in
-		REAPER:out1 | REAPER:out2) keep_re="$keep_hp" ;;
-		REAPER:out3 | REAPER:out4) keep_re="$keep_lesson" ;;
-		REAPER:out5 | REAPER:out6) keep_re="$keep_program" ;;
-		*) keep_re='^$' ;;
-		esac
-		if ! printf '%s\n' "$dst" | grep -Eq -- "$keep_re"; then
+		local n="${src#REAPER:out}" keep=""
+		case "$n" in [1-6]) keep="${allowed[$((n - 1))]}" ;; esac
+		if [ "$dst" != "$keep" ]; then
 			pw-link -d "$src" "$dst" 2>/dev/null || true
 			log "  unlinked $src -> $dst"
 		fi
@@ -190,7 +185,8 @@ repair_links() {
 	hp_fl="$(headphone_ports | grep ':playback_FL$' | head -1 || true)"
 	hp_fr="$(headphone_ports | grep ':playback_FR$' | head -1 || true)"
 	[ -n "$hp_fl" ] && [ -n "$hp_fr" ] || die "headphone output not found; is the interface plugged in?"
-	prune_reaper_outputs "^(${hp_fl}|${hp_fr})\$" "^${LESSON_IN}:input_F[LR]\$" "^${PROGRAM_IN}:input_F[LR]\$"
+	prune_reaper_outputs "$hp_fl" "$hp_fr" "${LESSON_IN}:input_FL" "${LESSON_IN}:input_FR" \
+		"${PROGRAM_IN}:input_FL" "${PROGRAM_IN}:input_FR"
 	ensure_link "$MIC_IN" "REAPER:in1"
 	ensure_link "$GUITAR_IN" "REAPER:in2"
 	ensure_link "REAPER:out1" "$hp_fl"

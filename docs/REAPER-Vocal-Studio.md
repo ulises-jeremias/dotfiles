@@ -108,7 +108,7 @@ camera picture-in-picture). Global audio: *REAPER Program* (the REAPER mix) and
 *Discord Call* (the other people on the call). Audio monitoring is off on every
 source, so OBS never plays anything back.
 
-Profile *Music Studio*: 1080p30, 48 kHz, hybrid MP4 in `~/Videos`, NVENC when an NVIDIA GPU is present (x264 otherwise), three
+Profile *Music Studio*: 1080p30, 48 kHz, hybrid MP4 in `~/Videos`, NVENC when an NVIDIA GPU is present (x264 otherwise; chosen when the profile is first created, change it in *Settings > Output*), three
 audio tracks: **1** full mix, **2** REAPER only, **3** Discord only, so a lesson
 recording can be remixed later.
 
