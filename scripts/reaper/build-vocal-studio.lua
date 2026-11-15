@@ -462,14 +462,21 @@ local function insert_reverb(tr, wet_db)
 	set_value(tr, fx, "ReaVerbate", "Hipass", 150)
 end
 
-local function insert_delay(tr, seconds, wet_db, feedback_db)
+-- ReaDelay's "Length (time)" is in MILLISECONDS (0-10000; measured), and
+-- "Length (musical)" (default 2.00) is added to it, so it is set to 0.
+local function delay_length(tr, fx, ms)
+	set_value(tr, fx, "ReaDelay", "1: Length (time)", ms)
+	set_value(tr, fx, "ReaDelay", "1: Length (musical)", 0)
+end
+
+local function insert_delay(tr, ms, wet_db, feedback_db)
 	local fx = add_fx(tr, "VST: ReaDelay (Cockos)")
 	if fx < 0 then
 		return
 	end
 	set_value(tr, fx, "ReaDelay", "Wet", wet_db)
 	set_value(tr, fx, "ReaDelay", "Dry", 0)
-	set_value(tr, fx, "ReaDelay", "1: Length (time)", seconds)
+	delay_length(tr, fx, ms)
 	set_value(tr, fx, "ReaDelay", "1: Feedback", feedback_db)
 	set_value(tr, fx, "ReaDelay", "1: Lowpass", 5000)
 	set_value(tr, fx, "ReaDelay", "1: Hipass", 200)
@@ -552,7 +559,7 @@ TONE_FN.a7x = function(tr)
 	nam(tr, "marshall-jvm-od2-red.nam", 6, 0)
 	cab_ir(tr, "brutal/12_World_Collider.wav", 0.25)
 	eq(tr, { hp = 100, b2 = { 400, -1.5, 1.0 }, b3 = { 1800, 2, 1.0 }, hs = { 7500, -2 } })
-	insert_delay(tr, 0.5, -16, -14)
+	insert_delay(tr, 500, -16, -14) -- 1/4 note at 120 BPM
 	insert_reverb(tr, -22)
 end
 
@@ -600,7 +607,7 @@ TONE_FN.askingalexandria = function(tr)
 	nam(tr, "6534plus-od808.nam", 0, 0)
 	cab_ir(tr, "brutal/1_Cookie_Monster.wav", 0.25)
 	eq(tr, { hp = 100, b2 = { 350, -2, 1.0 }, b3 = { 2200, 1.5, 1.0 }, hs = { 7000, -2.5 } })
-	insert_delay(tr, 0.375, -18, -12)
+	insert_delay(tr, 375, -18, -12) -- dotted 1/8 at 120 BPM
 	insert_reverb(tr, -24)
 end
 
@@ -642,11 +649,10 @@ local function delay_return(tr)
 	end
 	set_value(tr, fx, "ReaDelay", "Wet", 0)
 	set_value(tr, fx, "ReaDelay", "Dry", -math.huge)
-	-- 0.25 s = 1/8 note at 120 BPM (the template tempo). REAPER shows one decimal.
-	set_value(tr, fx, "ReaDelay", "1: Length (time)", 0.25)
-	-- ReaDelay adds "Length (musical)" (default 2.00) to the time length; the
-	-- old chain left it at the default, so the echo was not the intended 1/8.
-	set_value(tr, fx, "ReaDelay", "1: Length (musical)", 0)
+	-- 250 ms = 1/8 note at 120 BPM (the template tempo). The old chain wrote
+	-- 0.25 into this millisecond field (a 0.2 ms comb, no echo) and left the
+	-- musical length at its default 2.00.
+	delay_length(tr, fx, 250)
 	set_value(tr, fx, "ReaDelay", "1: Feedback", -10)
 	set_value(tr, fx, "ReaDelay", "1: Lowpass", 6000)
 	set_value(tr, fx, "ReaDelay", "1: Hipass", 200)
@@ -899,7 +905,10 @@ local LAYOUT = {
 -- Per-tone fader trims in dB (name|dB per line), written after loudness calibration.
 local TRIM = {}
 do
-	local f = io.open(os.getenv("VS_TRIM") or (OUT .. "/../../../scripts/reaper/guitar-tones-trim.txt"), "r")
+	local here = select(2, reaper.get_action_context()):match("^(.*[/\\])") or "./"
+	local trim_path = os.getenv("VS_TRIM") or (here .. "guitar-tones-trim.txt")
+	local f = io.open(trim_path, "r")
+	check(f ~= nil, "tone calibration file found: " .. trim_path)
 	if f then
 		for line in f:lines() do
 			local nam_name, nam_db = line:match("^nam:(.-)|(%-?[%d%.]+)$")
@@ -1172,7 +1181,11 @@ local function export_all()
 			local cat_fx = FX_GUITAR .. "/" .. spec.cat
 			mkdir(cat_tt)
 			mkdir(cat_fx)
+			-- a tone inserted from its template must play: export it unmuted
+			local was_muted = reaper.GetMediaTrackInfo_Value(T[spec.name], "B_MUTE")
+			reaper.SetMediaTrackInfo_Value(T[spec.name], "B_MUTE", 0)
 			write_file(cat_tt .. "/" .. spec.name .. ".RTrackTemplate", track_template_chunk(T[spec.name]))
+			reaper.SetMediaTrackInfo_Value(T[spec.name], "B_MUTE", was_muted)
 			write_file(cat_fx .. "/" .. spec.name .. ".RfxChain", fxchain_chunk(T[spec.name]))
 		end
 	end
@@ -1287,7 +1300,9 @@ local function wait_and_export()
 		reaper.defer(wait_and_export)
 		return
 	end
-	-- every queued capture/IR must have survived into the saved state
+	-- every queued capture/IR must have survived into the saved state;
+	-- otherwise nothing is exported (never overwrite good files with silent tones)
+	local states_ok = true
 	for _, spec in ipairs(LAYOUT) do
 		if spec.kind == "tone" and PENDING[T[spec.name]] then
 			local _, c = reaper.GetTrackStateChunk(T[spec.name], "", false)
@@ -1301,7 +1316,14 @@ local function wait_and_export()
 			end
 			check(nam_n == #q.nam, string.format("%s: amp capture loaded and saved (%d/%d)", spec.name, nam_n, #q.nam))
 			check(ir_n == #q.ir, string.format("%s: cabinet IR loaded and saved (%d/%d)", spec.name, ir_n, #q.ir))
+			states_ok = states_ok and nam_n == #q.nam and ir_n == #q.ir
 		end
+	end
+	if not states_ok then
+		log("not exporting: an amp capture or IR did not load")
+		write_file(REPORT_PATH, table.concat(report, "\n") .. string.format("\n\nSUMMARY failures=%d\n", failures))
+		reaper.Main_OnCommand(40004, 0)
+		return
 	end
 	export_all()
 end

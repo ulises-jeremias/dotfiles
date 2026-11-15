@@ -48,6 +48,7 @@ for _, t in ipairs(tracks) do
 	reaper.SetMediaTrackInfo_Value(t.tr, "I_RECARM", on and 1 or 0)
 	if on then
 		reaper.SetMediaTrackInfo_Value(t.tr, "I_RECMON", 1)
+		reaper.SetMediaTrackInfo_Value(t.tr, "B_MUTE", 0) -- a muted vocal would not reach the lesson bus
 	end
 end
 reaper.Undo_EndBlock("Vocal Studio: lesson monitoring on", -1)

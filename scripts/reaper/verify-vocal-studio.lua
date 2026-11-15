@@ -310,6 +310,16 @@ for i = 0, n - 1 do
 	end
 end
 
+-- Vocal Delay: ReaDelay's time is in milliseconds; musical length must be 0.
+for i = 0, n - 1 do
+	local tr = reaper.GetTrack(0, i)
+	if track_name(tr) == "Vocal Delay" then
+		local d = find_fx(tr, "ReaDelay")
+		check(near(num(tr, d, "1: Length (time)"), 250, 1), "Vocal Delay: 250 ms (1/8 at 120 BPM)")
+		check(near(num(tr, d, "1: Length (musical)"), 0, 0.01), "Vocal Delay: no musical length added")
+	end
+end
+
 -- Track templates and FX chains must load into a fresh track with their FX.
 local function read_file(p)
 	local f = io.open(p, "r")

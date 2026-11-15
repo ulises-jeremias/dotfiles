@@ -48,12 +48,28 @@ retired=(
 # after the last apply).
 backup="$state_dir/retired-guitar-config"
 
+# Paths already handled are recorded, so a retry (after a skipped path) never
+# moves a file the user created afterwards under the same name.
+done_list="$state_dir/guitarix-config-migration-handled"
+mkdir -p "$state_dir"
+touch "$done_list"
+
+symlinked_ancestor() { # $1 path: any directory between it and dest_dir is a symlink
+  local d
+  d="$(dirname "$1")"
+  while [ "$d" != "$dest_dir" ] && [ "$d" != "/" ] && [ "$d" != "." ]; do
+    [ -L "$d" ] && return 0
+    d="$(dirname "$d")"
+  done
+  return 1
+}
+
 skipped=0
 for rel in "${retired[@]}"; do
   target="$dest_dir/$rel"
-  parent="$(dirname "$target")"
-  # Never move through a symlinked parent directory or a symlink.
-  if [ -L "$parent" ] || [ -L "$(dirname "$parent")" ]; then
+  grep -qxF -- "$rel" "$done_list" && continue
+  # Never move through a symlinked directory or a symlink.
+  if symlinked_ancestor "$target"; then
     echo "guitarix migration skipped $target: symlinked parent" >&2
     skipped=1
     continue
@@ -63,6 +79,7 @@ for rel in "${retired[@]}"; do
     mv -f "$target" "$backup/$rel"
     echo "moved retired guitar config: $target -> $backup/$rel"
   fi
+  printf '%s\n' "$rel" >>"$done_list"
 done
 
 # A skipped path keeps the migration pending instead of marking it done.

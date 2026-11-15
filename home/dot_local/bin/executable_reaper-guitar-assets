@@ -71,6 +71,14 @@ fetch() { # $1 url, $2 dest, $3 sha256 (download to a temp file, verify, then mo
   mv "$tmp" "$2"
 }
 
+# every IR the presets reference from this pack is present
+pack_complete() { # $1 pack name
+  local ir
+  for ir in "${REQUIRED_IRS[@]}"; do
+    case "$ir" in "$1"/*) [ -f "$ASSETS/ir/$ir" ] || return 1 ;; esac
+  done
+}
+
 urlencode() { python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$1"; }
 
 install_all() {
@@ -78,10 +86,12 @@ install_all() {
   WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
   mkdir -p "$ASSETS/nam" "$ASSETS/ir/brutal" "$ASSETS/ir/emerald" "$LV2_DIR"
 
-  if sha_ok "$ASSETS/.nam-lv2.tgz" "$NAM_LV2_SHA" && [ -f "$LV2_DIR/neural_amp_modeler.lv2/manifest.ttl" ]; then
+  if sha_ok "$ASSETS/.nam-lv2.tgz" "$NAM_LV2_SHA" && [ -f "$LV2_DIR/neural_amp_modeler.lv2/manifest.ttl" ] \
+    && [ -f "$LV2_DIR/neural_amp_modeler.lv2/neural_amp_modeler.so" ]; then
     log "ok      NAM LV2 v0.2.3 already installed"
   else
-    fetch "$NAM_LV2_URL" "$ASSETS/.nam-lv2.tgz" "$NAM_LV2_SHA"
+    # re-extract from the verified archive when the plugin binary is missing
+    sha_ok "$ASSETS/.nam-lv2.tgz" "$NAM_LV2_SHA" || fetch "$NAM_LV2_URL" "$ASSETS/.nam-lv2.tgz" "$NAM_LV2_SHA"
     tar xzf "$ASSETS/.nam-lv2.tgz" -C "$LV2_DIR" neural_amp_modeler.lv2
     log "install NAM LV2 v0.2.3 -> $LV2_DIR/neural_amp_modeler.lv2"
   fi
@@ -97,10 +107,10 @@ install_all() {
   local pack url psha sub
   for pack in brutal emerald; do
     if [ "$pack" = brutal ]; then url="$BRUTAL_URL"; psha="$BRUTAL_SHA"; else url="$EMERALD_URL"; psha="$EMERALD_SHA"; fi
-    if sha_ok "$ASSETS/.$pack.zip" "$psha" && [ -n "$(ls -A "$ASSETS/ir/$pack" 2>/dev/null)" ]; then
+    if sha_ok "$ASSETS/.$pack.zip" "$psha" && pack_complete "$pack"; then
       log "ok      ir/$pack"; continue
     fi
-    fetch "$url" "$ASSETS/.$pack.zip" "$psha"
+    sha_ok "$ASSETS/.$pack.zip" "$psha" || fetch "$url" "$ASSETS/.$pack.zip" "$psha"
     rm -rf "$WORK/x"; mkdir -p "$WORK/x"
     unzip -q -o "$ASSETS/.$pack.zip" -d "$WORK/x"
     sub="$(find "$WORK/x" -type d -name 48kHz ! -path '*__MACOSX*' | head -1)"

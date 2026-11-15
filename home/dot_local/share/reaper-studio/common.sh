@@ -187,6 +187,17 @@ repair_links() {
 	[ -n "$hp_fl" ] && [ -n "$hp_fr" ] || die "headphone output not found; is the interface plugged in?"
 	prune_reaper_outputs "$hp_fl" "$hp_fr" "${LESSON_IN}:input_FL" "${LESSON_IN}:input_FR" \
 		"${PROGRAM_IN}:input_FL" "${PROGRAM_IN}:input_FR"
+	# inputs: only Scarlett Input 1 -> in1 and Input 2 -> in2 (never the loopback)
+	local port want src
+	for port in in1 in2; do
+		if [ "$port" = in1 ]; then want="$MIC_IN"; else want="$GUITAR_IN"; fi
+		peers_of "REAPER:$port" '<-' | while read -r src; do
+			if [ "$src" != "$want" ]; then
+				pw-link -d "$src" "REAPER:$port" 2>/dev/null || true
+				log "  unlinked $src -> REAPER:$port"
+			fi
+		done
+	done
 	ensure_link "$MIC_IN" "REAPER:in1"
 	ensure_link "$GUITAR_IN" "REAPER:in2"
 	ensure_link "REAPER:out1" "$hp_fl"

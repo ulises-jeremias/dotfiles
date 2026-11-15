@@ -116,6 +116,14 @@ def test_apply_behaviour() -> None:
         assert (elsewhere / "silentz0r.gx").exists()
         assert not (dest / marker).exists()
 
+        # The retry stays pending, but a file it already moved and the user
+        # recreated meanwhile is personal: it is not moved again.
+        recreated = dest / RETIRED[1]
+        assert not recreated.exists()
+        recreated.write_text("mine\n", encoding="utf-8")
+        apply(source, dest, config)
+        assert recreated.read_text(encoding="utf-8") == "mine\n"
+
 
 if __name__ == "__main__":
     test_sources_are_gone_and_removal_is_not_persistent()

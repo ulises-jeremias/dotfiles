@@ -81,16 +81,25 @@ local function name_of(tr)
 	return n
 end
 
-reaper.Undo_BeginBlock()
+-- Make sure the chosen tone exists before muting anything.
 local found = false
+for i = 0, reaper.CountTracks(0) - 1 do
+	if name_of(reaper.GetTrack(0, i)) == answer then
+		found = true
+	end
+end
+if not found then
+	reaper.ShowMessageBox("Open the Music Studio (or Vocal Studio) template first.", "Guitar: choose tone", 0)
+	return
+end
+
+reaper.Undo_BeginBlock()
+
 for i = 0, reaper.CountTracks(0) - 1 do
 	local tr = reaper.GetTrack(0, i)
 	local n = name_of(tr)
 	if IS_TONE[n] then
 		local active = (n == answer)
-		if active then
-			found = true
-		end
 		reaper.SetMediaTrackInfo_Value(tr, "B_MUTE", active and 0 or 1)
 		reaper.SetMediaTrackInfo_Value(tr, "I_FXEN", active and 1 or 0)
 		for fx = 0, reaper.TrackFX_GetCount(tr) - 1 do
@@ -99,8 +108,5 @@ for i = 0, reaper.CountTracks(0) - 1 do
 	end
 end
 reaper.Undo_EndBlock("Guitar: choose tone", -1)
-if not found then
-	reaper.ShowMessageBox("Open the Modern Rock & Metal - Vocal Studio template first.", "Guitar: choose tone", 0)
-end
 reaper.TrackList_AdjustWindows(false)
 reaper.UpdateArrange()

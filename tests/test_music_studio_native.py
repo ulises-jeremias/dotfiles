@@ -225,3 +225,16 @@ def test_setup_waits_while_the_apps_are_running() -> None:
         assert not (dest / ".local/state/reaper-studio/reaper-prefs-v1-done").exists(), "stays pending"
         _run_setup(dest, base, running=False)
         assert (dest / ".local/state/reaper-studio/reaper-prefs-v1-done").exists()
+
+
+def test_setup_on_a_fresh_install_creates_reaper_ini() -> None:
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="music-studio-setup-") as tmp:
+        base = Path(tmp)
+        dest = base / "home"
+        (dest / ".config/REAPER/ProjectTemplates").mkdir(parents=True)
+        (dest / ".config/REAPER/ProjectTemplates/Music Studio.RPP").write_text("<REAPER_PROJECT\n>\n")
+        _run_setup(dest, base, running=False)
+        ini = (dest / ".config/REAPER/reaper.ini").read_text().splitlines()
+        assert "[reaper]" in ini and "linux_audio_nch_out=6" in ini and "jack_options=2" in ini
+        assert not (dest / ".local/state/reaper-backups/reaper.ini.pre-music-studio").exists()

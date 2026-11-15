@@ -73,7 +73,10 @@ local function run()
 			local rendered =
 				reaper.GetMediaSourceFileName(reaper.GetMediaItemTake_Source(reaper.GetActiveTake(item)), "")
 			local dest = string.format("%s/%s__%s.wav", OUT, c[1], d[1])
-			os.rename(rendered, dest)
+			local moved, err = os.rename(rendered, dest)
+			if not moved then
+				w("FAILED to move render " .. tostring(rendered) .. ": " .. tostring(err))
+			end
 			w(string.format("render %-28s %-14s -> %s", c[1], d[1], dest))
 			reaper.DeleteTrackMediaItem(t, item)
 		end

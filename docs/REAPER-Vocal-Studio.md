@@ -52,7 +52,9 @@ Discord's output goes to *Discord Call*, which plays only to your headphones.
 
 To change the headphone output (for example a USB headset instead of the
 Scarlett), open **qpwgraph**, drag REAPER out1/out2 to the new device and
-*Patchbay > Save*. chezmoi never overwrites that file once it exists.
+*Patchbay > Save*. chezmoi never overwrites that file once it exists. Discord
+Call follows the system's default output, so set that to the same device
+(pavucontrol or the desktop's sound settings).
 
 ## Hardware (Focusrite Scarlett 2i2 4th Gen, USB `1235:8219`)
 
@@ -306,7 +308,7 @@ the default project, to keep it uncluttered.
 
 Returns (shared, 100 % wet, dry muted): **Vocal Reverb** (hall: room 35, damping
 70, pre-delay 20 ms, 200 Hz-8 kHz), **Vocal Room** (short: room 30 = ReaVerbate's
-smallest, damping 80, 5 ms, 250 Hz-7 kHz), **Vocal Delay** (0.25 s = 1/8 at
+smallest, damping 80, 5 ms, 250 Hz-7 kHz), **Vocal Delay** (250 ms = 1/8 at
 120 BPM, feedback -10 dB, 200 Hz-6 kHz; change it with the song tempo). All vocal
 tracks feed the **Vocal Bus** folder (no bus compression: styles keep their own
 dynamics); the returns and the bus go to the master; the bus (dry) also feeds the
@@ -328,7 +330,7 @@ each chain in REAPER. It checks the processing, not the musical result.
 | Saturation 100 % wet on Grit                                                    | 40 % wet (REAPER per-FX mix)                  | rasp kept, density added                                                                                                                |
 | Harsh +6 dB at 4 kHz / +3 dB at 8 kHz; Grit +5 dB at 3 kHz                      | +3/+1 and +3.5                                | less pain/nasality on already bright performances                                                                                       |
 | 250 Hz -3 to -5 dB everywhere                                                   | -2 to -4                                      | baritone body kept (80-400 Hz only -1 to -2 dB on the cleans)                                                                           |
-| ReaDelay "Length (musical)" left at its default 2.00, added to the 0.25 s       | set to 0                                      | delay is the intended 0.25 s                                                                                                            |
+| ReaDelay "Length (time)" is in ms: 0.25 meant a 0.2 ms comb (no echo); "Length (musical)" 2.00 was added on top | 250 ms vocal, 500/375 ms guitar leads, musical 0 | echoes at 1/8, 1/4 and dotted 1/8 (120 BPM) |
 | One long reverb for every style                                                 | added the short Vocal Room                    | grit/harsh/doubles get depth without a tail                                                                                             |
 
 Every output peaks at -13 to -15.5 dBFS for a -12 dBFS input: no clipping, no
