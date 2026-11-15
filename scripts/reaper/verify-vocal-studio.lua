@@ -120,7 +120,8 @@ for i = 0, n - 1 do
 end
 check(lesson ~= nil, "Discord Lesson Bus exists")
 if lesson then
-  check(reaper.GetMediaTrackInfo_Value(lesson, "B_MAINSEND") == 0, "lesson bus is not in the master (headphones/OBS) mix")
+  check(reaper.GetMediaTrackInfo_Value(lesson, "B_MAINSEND") == 0,
+    "lesson bus is not in the master (headphones/OBS) mix")
   check(hw_channels(lesson) == "2", "lesson bus -> REAPER out 3-4 only (got " .. hw_channels(lesson) .. ")")
   local feeds = {}
   for k = 0, reaper.GetTrackNumSends(lesson, -1) - 1 do
@@ -139,18 +140,39 @@ check(hw_channels(reaper.GetMasterTrack(0)) == "0,4", "master -> out 1-2 (headph
 -- Vocal presets: key parameters read back from the saved project (units as
 -- REAPER displays them: Hz, dB, ms; Calf threshold is linear).
 local VOCAL_EXPECT = {
-  ["Lead Clean"] = { eq = { 80, 250, -2, 3000, 3, 10000, 2 }, comp = { -27, 3 }, deess = 0.04, sends = { ["Vocal Reverb"] = -18, ["Vocal Room"] = -28, ["Vocal Delay"] = -30 } },
-  ["Lead Clean FX"] = { eq = { 80, 250, -2.5, 3000, 3.5, 10000, 2.5 }, comp = { -27, 4 }, deess = 0.04, sends = { ["Vocal Reverb"] = -22, ["Vocal Room"] = -22, ["Vocal Delay"] = -26 } },
-  ["Grit Vocal"] = { eq = { 100, 250, -3, 3000, 3.5, 10000, 1.5 }, comp = { -27, 4 }, deess = 0.04, sends = { ["Vocal Reverb"] = -32, ["Vocal Room"] = -20, ["Vocal Delay"] = -32 } },
-  ["Harsh Vocal"] = { eq = { 120, 250, -4, 4000, 3, 8000, 1 }, comp = { -28, 5 }, deess = 0.05, sends = { ["Vocal Room"] = -24, ["Vocal Delay"] = -34 } },
-  ["Double L"] = { eq = { 120, 250, -2, 3000, 2, 10000, 1 }, comp = { -26, 3 }, deess = 0.03, sends = { ["Vocal Reverb"] = -20, ["Vocal Room"] = -24 } },
-  ["Double R"] = { eq = { 120, 250, -2, 3000, 2, 10000, 1 }, comp = { -26, 3 }, deess = 0.03, sends = { ["Vocal Reverb"] = -20, ["Vocal Room"] = -24 } },
-  ["Harmonies"] = { eq = { 110, nil, nil, 3000, 0, 10000, 0 }, comp = { -26, 2 }, deess = 0.04, sends = { ["Vocal Reverb"] = -20, ["Vocal Delay"] = -26 } },
+  ["Lead Clean"] = {
+    eq = { 80, 250, -2, 3000, 3, 10000, 2 }, comp = { -27, 3 }, deess = 0.04,
+    sends = { ["Vocal Reverb"] = -18, ["Vocal Room"] = -28, ["Vocal Delay"] = -30 },
+  },
+  ["Lead Clean FX"] = {
+    eq = { 80, 250, -2.5, 3000, 3.5, 10000, 2.5 }, comp = { -27, 4 }, deess = 0.04,
+    sends = { ["Vocal Reverb"] = -22, ["Vocal Room"] = -22, ["Vocal Delay"] = -26 },
+  },
+  ["Grit Vocal"] = {
+    eq = { 100, 250, -3, 3000, 3.5, 10000, 1.5 }, comp = { -27, 4 }, deess = 0.04,
+    sends = { ["Vocal Reverb"] = -32, ["Vocal Room"] = -20, ["Vocal Delay"] = -32 },
+  },
+  ["Harsh Vocal"] = {
+    eq = { 120, 250, -4, 4000, 3, 8000, 1 }, comp = { -28, 5 }, deess = 0.05,
+    sends = { ["Vocal Room"] = -24, ["Vocal Delay"] = -34 },
+  },
+  ["Double L"] = {
+    eq = { 120, 250, -2, 3000, 2, 10000, 1 }, comp = { -26, 3 }, deess = 0.03,
+    sends = { ["Vocal Reverb"] = -20, ["Vocal Room"] = -24 },
+  },
+  ["Double R"] = {
+    eq = { 120, 250, -2, 3000, 2, 10000, 1 }, comp = { -26, 3 }, deess = 0.03,
+    sends = { ["Vocal Reverb"] = -20, ["Vocal Room"] = -24 },
+  },
+  ["Harmonies"] = {
+    eq = { 110, nil, nil, 3000, 0, 10000, 0 }, comp = { -26, 2 }, deess = 0.04,
+    sends = { ["Vocal Reverb"] = -20, ["Vocal Delay"] = -26 },
+  },
 }
 local function num(tr, fx, pname)
   for p = 0, reaper.TrackFX_GetNumParams(tr, fx) - 1 do
-    local _, n = reaper.TrackFX_GetParamName(tr, fx, p, "")
-    if n == pname then
+    local _, pn = reaper.TrackFX_GetParamName(tr, fx, p, "")
+    if pn == pname then
       local _, v = reaper.TrackFX_GetFormattedParamValue(tr, fx, p, "")
       return tonumber(v:match("[-+]?[%d%.]+"))
     end
@@ -159,8 +181,8 @@ end
 local function near(a, b, tol) return a ~= nil and b ~= nil and math.abs(a - b) <= (tol or 0.06) end
 local function find_fx(tr, needle)
   for k = 0, reaper.TrackFX_GetCount(tr) - 1 do
-    local _, n = reaper.TrackFX_GetFXName(tr, k, "")
-    if n:find(needle, 1, true) then return k end
+    local _, fxn = reaper.TrackFX_GetFXName(tr, k, "")
+    if fxn:find(needle, 1, true) then return k end
   end
   return -1
 end
@@ -188,7 +210,9 @@ for i = 0, n - 1 do
       check(near(num(tr, ci, "Threshold"), e.comp[1]) and near(num(tr, ci, "Ratio"), e.comp[2]),
         string.format("%s: compressor %d dB %.0f:1", name, e.comp[1], e.comp[2]))
     end
-    if di >= 0 then check(near(num(tr, di, "Threshold"), e.deess, 0.006), string.format("%s: de-esser threshold %.2f", name, e.deess)) end
+    if di >= 0 then
+      check(near(num(tr, di, "Threshold"), e.deess, 0.006), string.format("%s: de-esser threshold %.2f", name, e.deess))
+    end
     local got = {}
     for k = 0, reaper.GetTrackNumSends(tr, 0) - 1 do
       local dst = reaper.GetTrackSendInfo_Value(tr, 0, k, "P_DESTTRACK")
@@ -237,7 +261,8 @@ if TT_DIR then
 end
 if FX_DIR then
   for _, f in ipairs({ "Lead Clean", "Lead Clean FX", "Grit Vocal", "Harsh Vocal", "Double L", "Double R", "Harmonies",
-                       "Vocal Reverb", "Vocal Room", "Vocal Delay", "Optional/High Harsh", "Optional/Low Harsh - Growl" }) do
+                       "Vocal Reverb", "Vocal Room", "Vocal Delay",
+                       "Optional/High Harsh", "Optional/Low Harsh - Growl" }) do
     local c = read_file(FX_DIR .. "/" .. f .. ".RfxChain")
     check(c ~= nil, "fx chain present: " .. f)
     if c then
@@ -263,8 +288,9 @@ local jobs = {}
 if TONE_ROOT then
   for _, t in ipairs(TONE_LIST) do
     local cat, name, count = t[1], t[2], t[3]
-    jobs[#jobs + 1] = { "TONE TT " .. name, TONE_ROOT .. "/TrackTemplates/Guitar Tones/" .. cat .. "/" .. name .. ".RTrackTemplate", count, false }
-    jobs[#jobs + 1] = { "TONE FX " .. name, TONE_ROOT .. "/FXChains/Guitar Tones/" .. cat .. "/" .. name .. ".RfxChain", count, true }
+    local base = TONE_ROOT .. "/%s/Guitar Tones/" .. cat .. "/" .. name
+    jobs[#jobs + 1] = { "TONE TT " .. name, base:format("TrackTemplates") .. ".RTrackTemplate", count, false }
+    jobs[#jobs + 1] = { "TONE FX " .. name, base:format("FXChains") .. ".RfxChain", count, true }
   end
 end
 

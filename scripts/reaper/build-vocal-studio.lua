@@ -678,14 +678,22 @@ local LAYOUT = {
   -- processed tone is heard. Playing a recorded DI item re-amps it through the chain.
   { name = "ELECTRIC GUITAR", depth = 1, color = C.green },
   { name = "Electric Guitar DI", depth = 0, color = C.green, kind = "di" },
-  { name = "Crystal Clean", depth = 0, color = C.clean, kind = "tone", fn = "crystal", cat = "Clean", mute = false },
-  { name = "Warm Clean - Ambient", depth = 0, color = C.clean, kind = "tone", fn = "warm", cat = "Clean", mute = true },
-  { name = "AC-DC - Classic Crunch", depth = 0, color = C.orange, kind = "tone", fn = "acdc", cat = "Rock", mute = true },
-  { name = "Avenged Sevenfold - Lead", depth = 0, color = C.orange, kind = "tone", fn = "a7x", cat = "Rock", mute = true },
-  { name = "Machine Head - Groove Thrash", depth = 0, color = C.red, kind = "tone", fn = "machinehead", cat = "Metal", mute = true },
-  { name = "Lamb of God - Groove Metal", depth = 0, color = C.red, kind = "tone", fn = "lambofgod", cat = "Metal", mute = true },
-  { name = "Slipknot - Nu Metal", depth = 0, color = C.red, kind = "tone", fn = "slipknot", cat = "Metal", mute = true },
-  { name = "Asking Alexandria - Metalcore", depth = -1, color = C.red, kind = "tone", fn = "askingalexandria", cat = "Metal", mute = true },
+  { name = "Crystal Clean", depth = 0, color = C.clean,
+    kind = "tone", fn = "crystal", cat = "Clean", mute = false },
+  { name = "Warm Clean - Ambient", depth = 0, color = C.clean,
+    kind = "tone", fn = "warm", cat = "Clean", mute = true },
+  { name = "AC-DC - Classic Crunch", depth = 0, color = C.orange,
+    kind = "tone", fn = "acdc", cat = "Rock", mute = true },
+  { name = "Avenged Sevenfold - Lead", depth = 0, color = C.orange,
+    kind = "tone", fn = "a7x", cat = "Rock", mute = true },
+  { name = "Machine Head - Groove Thrash", depth = 0, color = C.red,
+    kind = "tone", fn = "machinehead", cat = "Metal", mute = true },
+  { name = "Lamb of God - Groove Metal", depth = 0, color = C.red,
+    kind = "tone", fn = "lambofgod", cat = "Metal", mute = true },
+  { name = "Slipknot - Nu Metal", depth = 0, color = C.red,
+    kind = "tone", fn = "slipknot", cat = "Metal", mute = true },
+  { name = "Asking Alexandria - Metalcore", depth = -1, color = C.red,
+    kind = "tone", fn = "askingalexandria", cat = "Metal", mute = true },
   -- Output bus for Discord lessons: processed guitar + voice only (no backing
   -- track, no metronome), to REAPER out 3-4 -> PipeWire "REAPER Lesson Mic".
   { name = "Discord Lesson Bus", depth = 0, color = C.teal, kind = "lesson_bus" },
@@ -871,7 +879,8 @@ end
 for _, spec in ipairs(LAYOUT) do
   if spec.kind == "tone" then
     local n = reaper.TrackFX_GetCount(T[spec.name])
-    check(n == spec.fx_count, string.format("%s keeps all %d plugins after state edit (got %d)", spec.name, spec.fx_count, n))
+    check(n == spec.fx_count,
+      string.format("%s keeps all %d plugins after state edit (got %d)", spec.name, spec.fx_count, n))
   end
 end
 

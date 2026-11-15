@@ -35,8 +35,8 @@ WAK 0 0
 BYPASS 0 0 0
 <LV2 "LV2: Calf Deesser (Calf Studio Gear)" http://calf.sourceforge.net/plugins/Deesser ""
 CFG 0 0 0 ""
-MIDI events_in 21 0 
-MIDI events_out 22 0 
+MIDI events_in 21 0
+MIDI events_out 22 0
 P bypass 0 detection 0 mode 0 threshold 0.035000000149011612 ratio 3.995000123977661133 laxity 15 makeup 1
 P f1_freq 4499.9951171875 f2_freq 5999.9951171875 f1_level 1 f2_level 4 f2_q 1 sc_listen 0
 >
