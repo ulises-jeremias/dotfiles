@@ -18,7 +18,7 @@ This section covers the **audio production** stack installed by HorneroConfig, i
 The following REAPER files are tracked by chezmoi under `home/dot_config/REAPER/`:
 
 | File                                                         | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
+|--------------------------------------------------------------|--------------------------------------------------------------|
 | `reaper-fxtags.ini`                                          | FX plugin tags — user-curated organization of all plugins    |
 | `ProjectTemplates/Basic Vocal Tracking - Linux Scarlett.RPP` | Project template for vocal recording with Scarlett interface |
 
@@ -33,7 +33,7 @@ PipeWire is the foundation of the audio stack. It replaces PulseAudio and JACK w
 ### Installed packages
 
 | Package          | Role                                         |
-| ---------------- | -------------------------------------------- |
+|------------------|----------------------------------------------|
 | `pipewire`       | Core audio/video server                      |
 | `pipewire-alsa`  | ALSA compatibility layer                     |
 | `pipewire-pulse` | PulseAudio compatibility layer               |
@@ -101,11 +101,11 @@ sudo pacman -S reaper
 Guitar amps and cabinets run inside REAPER (Neural Amp Modeler captures plus
 cabinet IRs); see [`docs/REAPER-Vocal-Studio.md`](../REAPER-Vocal-Studio.md).
 
-| Package / asset   | Role                                                         |
-| ----------------- | ------------------------------------------------------------ |
-| `guitarix`        | Provides the Gx LV2 pedals (Tube Screamer, chorus, echo, reverb) |
-| `gxplugins.lv2`   | Extra Guitarix LV2 pedals                                    |
-| `reaper-guitar-assets install` | NAM LV2 plugin, amp captures and cabinet IRs (user level) |
+| Package / asset                | Role                                                             |
+|--------------------------------|------------------------------------------------------------------|
+| `guitarix`                     | Provides the Gx LV2 pedals (Tube Screamer, chorus, echo, reverb) |
+| `gxplugins.lv2`                | Extra Guitarix LV2 pedals                                        |
+| `reaper-guitar-assets install` | NAM LV2 plugin, amp captures and cabinet IRs (user level)        |
 
 ```sh
 # daily: open REAPER, Discord (input "REAPER Lesson Mic") and OBS ("Music Studio")
@@ -143,7 +143,7 @@ A curated set of open-source LV2 plugins is installed for mixing, mastering, and
 ### Installed packages
 
 | Package            | Description                                                     |
-| ------------------ | --------------------------------------------------------------- |
+|--------------------|-----------------------------------------------------------------|
 | `calf`             | Studio-quality LV2 effects (EQ, reverb, compressor, chorus…)    |
 | `lsp-plugins`      | Linux Studio Plugins — professional mixing/mastering suite      |
 | `lsp-plugins-docs` | Documentation for LSP Plugins                                   |
@@ -164,7 +164,7 @@ sudo pacman -S calf lsp-plugins lsp-plugins-docs x42-plugins
 ### Installed packages (AUR)
 
 | Package       | Role                                             |
-| ------------- | ------------------------------------------------ |
+|---------------|--------------------------------------------------|
 | `yabridge`    | Wine-based VST bridge                            |
 | `yabridgectl` | CLI tool to manage yabridge plugin installations |
 
