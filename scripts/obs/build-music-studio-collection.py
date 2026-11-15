@@ -170,7 +170,7 @@ def main(root: Path) -> int:
     profile = obs / "profiles" / "Music_Studio"
     scenes.mkdir(parents=True, exist_ok=True)
     profile.mkdir(parents=True, exist_ok=True)
-    (scenes / "create_Music_Studio.json").write_text(json.dumps(collection(), indent=4) + "\n")
+    (scenes / "create_Music_Studio.json").write_text(json.dumps(collection(), indent=2) + "\n")
     (profile / "create_basic.ini.tmpl").write_text(PROFILE)
     print("wrote", scenes / "create_Music_Studio.json")
     print("wrote", profile / "create_basic.ini.tmpl")
