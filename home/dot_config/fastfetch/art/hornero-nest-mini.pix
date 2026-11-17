@@ -1,0 +1,35 @@
+# hornero-nest-mini: original HorneroOS artwork (MIT, like this repository): a rufous hornero
+# perched on its clay-oven nest, with a lit doorway and a little aerial.
+# compact 20x17 px (9 rows). One character = one pixel; two pixel rows = one terminal row
+# (half blocks). Legend lines start with "@ <char> <ANSI SGR foreground>".
+# Colours are terminal palette ROLES, never RGB, so every Signal theme and
+# every Hornero Chromatic palette repaints the bird: 33 amber (plumage),
+# 93 bright amber (belly, wing edge, lamp), 37 pale (throat), 90 slate (nest
+# stone, beak), 36 cyan (cue), 32 green (LED), 35 rose (blush).
+# "none" = a hole that shows the terminal background (the eye).
+# Regenerate the outputs with scripts/gen-fastfetch-logo.py.
+@ a 33
+@ b 93
+@ c 37
+@ s 90
+@ k 36
+@ l 32
+@ r 35
+@ e none
+.......aaa..........
+......aaaaa.........
+.....aaeaaaa......l.
+.ssssaaaaaaa.....k.k
+...sscraaaaaaa....s.
+.....ccaaabbaa....s.
+.....cccabbbaaa...s.
+......bbbbbbaaaa..s.
+......bbbbbaaabaa.s.
+.......bbbbaaabbaas.
+........bbaaabbaa.s.
+........b.b..aaaa.s.
+.......sssssssaaa.s.
+.....sssssssssssss..
+...ssssssbbbbsssssss
+..aaaaaaabaabaaaaaaa
+..sssssssbaabssssssss
