@@ -11,6 +11,8 @@ horneroctl --help
 horneroctl shell --help
 horneroctl appearance --help
 horneroctl apps --help
+horneroctl mode --help
+horneroctl appearance chromatic --help
 ```
 
 Use `--dry-run` to inspect supported changes and `--yes` only for an intentional mutation. Desktop Settings opens through the Hornero Shell's Control Center IPC contract.
@@ -19,6 +21,14 @@ Use `--dry-run` to inspect supported changes and `--yes` only for an intentional
 Hornero skill. This dotfiles source intentionally does not track those paths.
 Existing installations should follow the [safe Hermes ownership migration](Hermes-Ownership.md)
 before running setup.
+
+## Signal-era verbs
+
+`horneroctl mode list|get|set|reset|status` drives the experience modes
+(`mode set` needs no `--yes`; `mode reset` does). `horneroctl appearance
+theme set <id>` applies a Signal theme and `horneroctl appearance chromatic
+preview|apply|follow|rollback|off` manages generated palettes. See
+[Hornero Signal on this workstation](Hornero-Signal.md).
 
 ## Workstation configuration
 

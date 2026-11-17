@@ -11,6 +11,7 @@ canonical user manual for HorneroOS; current product behavior is published at
 - [Development standards](Development-Standards.md)
 - [Integration patterns](Integration-Patterns.md)
 - [Hornero CLI integration](Horneroctl.md)
+- [Hornero Signal on this workstation](Hornero-Signal.md)
 - [Performance guidelines](Performance-Guidelines.md)
 - [Security guidelines](Security-Guidelines.md)
 - [Testing strategy](Testing-Strategy.md)

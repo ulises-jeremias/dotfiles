@@ -9,7 +9,11 @@ This document defines the migration map for [#179](https://github.com/ulises-jer
 > this document is kept as the migration record. This source now manages
 > only the packaged `*-user.lua` extension points under
 > `home/dot_config/hypr/hyprland.lua.d/` (machine monitors, personal
-> keybinding overrides) — never factory copies.
+> keybinding overrides) — never factory copies. Compositor option
+> migrations (for example `layers_hog_keyboard_focus` moving into `layers{}`
+> and the `hl.dsp.group.lock()` dispatcher) happen in the factory modules; the
+> personal files here use only `hl.monitor`, `hl.bind`/`hl.unbind` and
+> `hl.dsp.exec_cmd`.
 
 `home/dot_config/hypr/hyprland.lua` is the only Hyprland entrypoint. It loads,
 in order: monitors, autostart, environment, input, gestures, layout,
