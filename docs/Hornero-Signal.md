@@ -7,15 +7,15 @@ makes sure the host has what Signal expects.
 
 ## What the packages own
 
-| Area | Owner | Notes |
-| --- | --- | --- |
-| Themes `hornero-signal-night`, `-day`, `-contrast` | HorneroOS/config | Schema v2: a fixed role set plus a 16-colour terminal ramp, no Material roles |
-| Hornero Chromatic (wallpaper or seed palettes, gated for contrast) | config templates, shell engine, `horneroctl appearance chromatic` | Theme id `hornero-chromatic`; state under the XDG Hornero paths |
-| Layouts and presets (Cockpit is the factory layout) | HorneroOS/shell | Switched in Control Center or with `horneroctl shell preset` |
-| Experience modes (Focus, Everyday, Signal, Gaming, Studio) | HorneroOS/shell, `horneroctl mode` | `horneroctl mode set signal`; `mode reset --yes` restores factory |
-| PluginKit 3 and the desktop deck | shell and HorneroOS/plugins | Extensions are installed through horneroctl or Control Center |
-| Hyprland Lua modules (including `layers{}` and `hl.dsp.group.lock()` migrations) | HorneroOS/config | Factory modules are never copied here |
-| Type (IBM Plex Sans, Mono) | packages depend on `ttf-ibm-plex` | Material Symbols and Rubik are retired |
+| Area                                                                             | Owner                                                             | Notes                                                                         |
+|----------------------------------------------------------------------------------|-------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| Themes `hornero-signal-night`, `-day`, `-contrast`                               | HorneroOS/config                                                  | Schema v2: a fixed role set plus a 16-colour terminal ramp, no Material roles |
+| Hornero Chromatic (wallpaper or seed palettes, gated for contrast)               | config templates, shell engine, `horneroctl appearance chromatic` | Theme id `hornero-chromatic`; state under the XDG Hornero paths               |
+| Layouts and presets (Cockpit is the factory layout)                              | HorneroOS/shell                                                   | Switched in Control Center or with `horneroctl shell preset`                  |
+| Experience modes (Focus, Everyday, Signal, Gaming, Studio)                       | HorneroOS/shell, `horneroctl mode`                                | `horneroctl mode set signal`; `mode reset --yes` restores factory             |
+| PluginKit 3 and the desktop deck                                                 | shell and HorneroOS/plugins                                       | Extensions are installed through horneroctl or Control Center                 |
+| Hyprland Lua modules (including `layers{}` and `hl.dsp.group.lock()` migrations) | HorneroOS/config                                                  | Factory modules are never copied here                                         |
+| Type (IBM Plex Sans, Mono)                                                       | packages depend on `ttf-ibm-plex`                                 | Material Symbols and Rubik are retired                                        |
 
 ## What this source keeps
 
@@ -36,13 +36,13 @@ makes sure the host has what Signal expects.
 Everything visible is a setting, not a patch. Use the product mechanism and
 never edit factory files or state:
 
-| Preference | Mechanism |
-| --- | --- |
-| Theme, contrast, wallpaper-derived palette | Control Center Appearance, or `horneroctl appearance theme set <id>` and `horneroctl appearance chromatic apply` |
-| Layout, bar thickness, density, radii, glow, motion | Control Center; persisted in `~/.config/hornero/shell.json` |
-| Experience mode and per-mode overrides | Control Center Experience, or `horneroctl mode set <mode>` |
-| Extra Chromatic app targets | Manifests in `~/.config/hornero/chromatic/templates.d/` |
-| Keybinds, monitors, window rules | The `*-user.lua` files above |
+| Preference                                          | Mechanism                                                                                                        |
+|-----------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| Theme, contrast, wallpaper-derived palette          | Control Center Appearance, or `horneroctl appearance theme set <id>` and `horneroctl appearance chromatic apply` |
+| Layout, bar thickness, density, radii, glow, motion | Control Center; persisted in `~/.config/hornero/shell.json`                                                      |
+| Experience mode and per-mode overrides              | Control Center Experience, or `horneroctl mode set <mode>`                                                       |
+| Extra Chromatic app targets                         | Manifests in `~/.config/hornero/chromatic/templates.d/`                                                          |
+| Keybinds, monitors, window rules                    | The `*-user.lua` files above                                                                                     |
 
 `~/.config/hornero/shell.json` and `~/.local/state/hornero` are runtime state
 written by the Shell. They are deliberately not tracked or templated by
