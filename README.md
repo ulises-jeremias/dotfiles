@@ -64,7 +64,7 @@
 ### ✨ Highlights
 
 🧠 **Smart Color Intelligence** — Automatic theme-aware color adaptation  
-🎨 **12 Beautiful Themes** — Cyberpunk, Cozy, Vaporwave, Nature & more  
+🎨 **Hornero Signal** — Retrofuturist, cozy look with night, day and high-contrast themes, plus palettes generated from your wallpaper (Chromatic)  
 ⚡ **One-Command Setup** — From zero to hero in minutes  
 🌊 **Hyprland/Wayland** — Modern compositor with smooth animations  
 🔧 **100+ Automation Scripts** — Comprehensive tooling ecosystem  
@@ -160,27 +160,32 @@ cd /tmp/hornero-shell && makepkg -si
 
 ## 💎 Key Features
 
-### 🧠 Revolutionary Smart Colors System
+### 🧠 Smart Colors and Hornero Chromatic
 
-Our **game-changing smart colors technology** automatically analyzes your color palette and intelligently selects optimal colors for UI elements:
+Colour is owned by HorneroOS, not by this repository. Hornero Signal themes carry a fixed set of semantic roles, and Hornero Chromatic can generate a gated palette from your wallpaper or a seed colour:
 
 ✨ **Semantic Intelligence** — Error, success, warning, info colors that make sense  
 🎨 **Theme Adaptation** — Perfect contrast and readability on any background  
-⚡ **Auto-Application** — Instantly applies to Quickshell, Hyprland, and scripts via Material Design 3  
+⚡ **Auto-Application** — Applies to the Shell, Hyprland, GTK, Qt and terminals through `horneroctl appearance`  
 🔄 **Live Updates** — Colors refresh automatically when you change wallpapers
 
 > 📖 [Learn more about Smart Colors →](https://github.com/ulises-jeremias/dotfiles/wiki/Smart-Colors-System)
 
 ### 🎨 Appearance Themes & Themes
 
-Choose from **12 stunning themes** organized by aesthetic: Cyberpunk, Cozy,
-Vaporwave, Nature, and Cosmic. Run `dots appearance theme list` for the
-full, current list:
+Hornero Signal ships `hornero-signal-night`, `hornero-signal-day` and
+`hornero-signal-contrast` next to the curated theme packs. Run
+`horneroctl appearance theme list` for the full, current list:
 
 ```bash
-dots appearance theme list              # See all available themes
-dots appearance theme apply vapor-dreams
+horneroctl appearance theme list                     # See all available themes
+horneroctl appearance theme set hornero-signal-night # Apply one
+horneroctl appearance chromatic preview --seed "#D98A3A"
+horneroctl mode set everyday                         # focus|everyday|signal|gaming|studio
 ```
+
+See [Hornero Signal on this workstation](docs/Hornero-Signal.md) for what the
+installed releases provide and how personal preferences are layered on top.
 
 > 📖 [Explore all themes →](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management)
 
@@ -188,17 +193,17 @@ dots appearance theme apply vapor-dreams
 
 🌊 **[Hyprland](https://hyprland.org)** — Dynamic tiling Wayland compositor  
 🐚 **[Quickshell](https://quickshell.org)** — Unified QML desktop shell (bar, launcher, dashboard, notifications, AI chat)  
-🐾 **[Kitty](https://sw.kovidgoyal.net/kitty)** — GPU-accelerated terminal emulator  
+🐾 **Terminal** — Selected through Hornero (Ghostty is seeded; see `horneroctl apps terminal-file`)  
 🐚 **[Zsh](https://zsh.org) + [Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Feature-rich shell with beautiful prompt  
 🔒 **[Hyprlock](https://github.com/hyprwm/hyprlock)** — Secure lock screen  
 🖼️ **Quickshell wallpaper flow** — Unified wallpaper management via `horneroctl wallpaper set`  
-🎨 **Appearance Themes** — Instant theme switching with Material Design 3 colors
+🎨 **Appearance Themes** — Instant theme switching with Hornero Signal schemes
 
 > 📖 [Complete component list →](https://github.com/ulises-jeremias/dotfiles/wiki/Home)
 
 ### 🛠️ Powerful Automation
 
-Access **100+ built-in scripts** via the `dots` command:
+Everything desktop-level goes through `horneroctl`:
 
 ```bash
 horneroctl package upgrade --yes  # Comprehensive system updates
@@ -258,7 +263,7 @@ pre-commit run --all-files  # Run all checks
 
 🏠 [**Getting Started**](https://github.com/ulises-jeremias/dotfiles/wiki/Home) — First steps and basic setup  
 🎨 [**Appearance Themes**](https://github.com/ulises-jeremias/dotfiles/wiki/Rice-System-Theme-Management) — Theme management  
-🧠 [**Smart Colors**](https://github.com/ulises-jeremias/dotfiles/wiki/Smart-Colors-System) — Intelligent theming  
+🧠 [**Hornero Signal**](docs/Hornero-Signal.md) — Themes, Chromatic, experience modes and personal overrides  
 🐚 [**Quickshell**](https://github.com/ulises-jeremias/dotfiles/wiki/Quickshell-Shell) — Desktop shell configuration  
 🔧 [**Scripts**](https://github.com/ulises-jeremias/dotfiles/wiki/Dots-Scripts) — Automation tools  
 🛡️ [**Security**](https://github.com/ulises-jeremias/dotfiles/wiki/Security) — Privacy and security
@@ -311,7 +316,7 @@ The **Quickshell** implementation in HorneroConfig was highly inspired by and ad
 - **License**: GNU General Public License v3.0 (GPL-3.0)
 - **What we adapted**: UI/UX design, desktop shell architecture, C++ plugin structure
 
-The original GPL-3.0 license is preserved in `home/dot_config/quickshell/LICENSE`. We are deeply grateful for the beautiful and functional desktop shell that inspired our implementation.
+The Shell implementation, and the attribution and GPL-3.0 licence that go with it, live in [HorneroOS/shell](https://github.com/HorneroOS/shell); this repository no longer carries a copy. We are deeply grateful for the beautiful and functional desktop shell that inspired it.
 
 ---
 

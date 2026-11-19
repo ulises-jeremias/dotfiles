@@ -53,11 +53,37 @@ if (( $(vercmp "$installed_horneroctl_version" "$min_horneroctl_version") < 0 ))
   exit 1
 fi
 
-# Fonts required by the shell
+# Hornero Signal (visual language, experience modes, Chromatic, PluginKit 3)
+# needs these releases. They are advisory until the packages are published to
+# the AUR; promote them to hard floors above in the same change that publishes
+# them. Older hosts keep working, they just do not get Signal yet.
+readonly signal_config_version="0.4.0-1"
+readonly signal_shell_version="1.3.0-1"
+readonly signal_horneroctl_version="0.2.0_preview46-1"
+signal_ready=1
+(( $(vercmp "$installed_hornero_config_version" "$signal_config_version") >= 0 )) || signal_ready=0
+(( $(vercmp "$installed_hornero_shell_version" "$signal_shell_version") >= 0 )) || signal_ready=0
+(( $(vercmp "$installed_horneroctl_version" "$signal_horneroctl_version") >= 0 )) || signal_ready=0
+if (( signal_ready == 0 )); then
+  echo "note: Hornero Signal needs hornero-config >= ${signal_config_version}, hornero-shell >= ${signal_shell_version}, horneroctl-bin >= ${signal_horneroctl_version}; found ${installed_hornero_config_version}, ${installed_hornero_shell_version}, ${installed_horneroctl_version}. Re-run chezmoi apply after they reach the AUR." >&2
+fi
+
+# Hornero Signal ships IBM Plex as its only type family; config and shell
+# depend on ttf-ibm-plex, listed here too so a stale host converges.
 yay -S --noconfirm --needed \
-  ttf-material-symbols-variable-git \
-  ttf-rubik-vf \
+  ttf-ibm-plex \
   ttf-cascadia-code-nerd
+
+# Pre-Signal shells (< 1.3.0) still render icons with Material Symbols and
+# text with Rubik. Keep those two fonts only while such a shell is installed;
+# once hornero-shell >= 1.3.0 is in place they are dead weight. This script
+# never removes them: after upgrading, `sudo pacman -Rns
+# ttf-material-symbols-variable-git ttf-rubik-vf` is a safe, optional cleanup.
+if (( $(vercmp "$installed_hornero_shell_version" "1.3.0-1") < 0 )); then
+  yay -S --noconfirm --needed \
+    ttf-material-symbols-variable-git \
+    ttf-rubik-vf
+fi
 
 # Theme assets used by the packaged appearance catalogue and Shell. Papirus
 # covers Hornero Originals; Orchis and Numix make the external recipe looks
