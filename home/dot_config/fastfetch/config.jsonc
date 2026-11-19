@@ -1,189 +1,168 @@
-// HorneroOS fastfetch card: Signal Bezel Calido.
+// HorneroOS fastfetch card: pixel emblem variant (maintainer choice 2026-11-19).
 //
-// Colours are terminal palette ROLES only (never RGB), so the card follows the
-// applied Signal theme (Night, Day, Dusk, Contrast) and Hornero Chromatic:
-//   33 amber = signal / plumage    90 slate = labels and frames
-//   31 red, 32 green, 34 blue, 35 rose, 36 cyan = the palette strip, which is
-//   the live wallpaper-derived palette when Chromatic is active.
-// Keys are plain ASCII (no Nerd Font glyphs) so the card renders in any font.
-//
-// HorneroOS rows (ID, EDITION, MODE, THEME, CHROMA, BUILD) come from
-// `hornero-fetch fact <name>`: local state files only, a few ms, hidden when a
-// value is unknown. ID (user@host) stays empty unless you opt in with
-// `identity=1` in ~/.config/hornero/fastfetch.conf or HORNERO_FETCH_IDENTITY=1.
-// Run the card through `hornero-fetch` for terminal-aware logo selection
-// (full art, compact art, image, none) and the override file; see
-// docs/FASTFETCH.md. This file is the stock fastfetch config: copy it to
-// ~/.config/fastfetch/config.jsonc to take full control.
+// Logo: the pixel hornero emblem as a kitty image with a transparent disc
+// (hornero-emblem.png, generated from art/hornero-nest.svg), so the card
+// looks good on dark and light terminals alike. Kitty/Ghostty/WezTerm show
+// the image; other terminals fall back to no logo.
+// Text keeps the classic framed card: HORNERO OS title, palette strip,
+// section tree. Synced with HorneroOS/config by hand — see docs/FASTFETCH.
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {
-    "type": "file-raw",
-    "source": "~/.config/fastfetch/hornero.txt",
+    "source": "~/.config/fastfetch/hornero-emblem.png",
+    "type": "kitty",
+    "width": 34,
+    "height": 17,
     "padding": {
-      "top": 0,
-      "left": 1,
-      "right": 2
+      "top": 2
     }
   },
   "display": {
-    "separator": "",
-    "color": {
-      "keys": "90"
-    },
+    "separator": " -> ",
     "constants": [
-      "──────────────────────────────",
-      "────────────────────────────"
-    ],
-    "percent": {
-      "type": 3,
-      "green": 32,
-      "yellow": 33,
-      "red": 31
-    },
-    "bar": {
-      "char": {
-        "elapsed": "━",
-        "total": "─"
-      },
-      "width": 8,
-      "border": {
-        "left": "",
-        "right": ""
-      },
-      "color": {
-        "elapsed": "auto",
-        "total": "90"
-      }
-    }
+      "──────────────────────────────"
+    ]
   },
   "modules": [
     {
-      "type": "command",
-      "key": "▌ ",
-      "keyColor": "33",
-      "text": "f=$(command -v hornero-fetch || echo /usr/share/hornero/bin/hornero-fetch); \"$f\" fact banner 2>/dev/null || printf 'HORNERO OS'"
+      "type": "custom",
+      "format": "┌{$1}{$1}┐",
+      "outputColor": "90"
     },
     {
-      "type": "command",
-      "key": "  ID       ",
-      "keyColor": "90",
-      "text": "f=$(command -v hornero-fetch || echo /usr/share/hornero/bin/hornero-fetch); \"$f\" fact identity 2>/dev/null"
-    },
-    {
-      "type": "command",
-      "key": "  EDITION  ",
-      "keyColor": "90",
-      "text": "f=$(command -v hornero-fetch || echo /usr/share/hornero/bin/hornero-fetch); \"$f\" fact edition 2>/dev/null"
-    },
-    {
-      "type": "command",
-      "key": "  MODE     ",
-      "keyColor": "90",
-      "text": "f=$(command -v hornero-fetch || echo /usr/share/hornero/bin/hornero-fetch); \"$f\" fact mode 2>/dev/null"
-    },
-    {
-      "type": "command",
-      "key": "  THEME    ",
-      "keyColor": "90",
-      "text": "f=$(command -v hornero-fetch || echo /usr/share/hornero/bin/hornero-fetch); \"$f\" fact theme 2>/dev/null"
-    },
-    {
-      "type": "command",
-      "key": "  CHROMA   ",
-      "keyColor": "90",
-      "text": "f=$(command -v hornero-fetch || echo /usr/share/hornero/bin/hornero-fetch); \"$f\" fact chroma 2>/dev/null"
-    },
-    {
-      "type": "command",
-      "key": "  BUILD    ",
-      "keyColor": "90",
-      "text": "f=$(command -v hornero-fetch || echo /usr/share/hornero/bin/hornero-fetch); \"$f\" fact build 2>/dev/null"
+      "type": "title",
+      "keyWidth": 10,
+      "format": "{#38;2;240;139;67}HORNERO OS{#} · 🚀 {user-name}@{host-name}"
     },
     {
       "type": "custom",
-      "format": "{#33}▌{#0} {#1}SYSTEM{#0} {#90}{$1}"
+      "format": "└{$1}{$1}┘",
+      "outputColor": "90"
+    },
+    {
+      "type": "custom",
+      "format": " {#31}  {#33}  {#32}  {#36}  {#34}  {#35}  {#37}  {#97} "
+    },
+    {
+      "type": "custom",
+      "format": "┌{$1}{$1}┐",
+      "outputColor": "90"
+    },
+    {
+      "type": "os",
+      "key": "{icon} OS",
+      "keyColor": "yellow",
+      "format": "HorneroOS {build-id}"
     },
     {
       "type": "kernel",
-      "key": "  KERNEL   ",
-      "keyColor": "90",
-      "format": "{sysname} {release}"
-    },
-    {
-      "type": "uptime",
-      "key": "  UPTIME   ",
-      "keyColor": "90",
-      "format": "{?days}{days}d {?}{hours}h {minutes}m"
+      "key": "│ ├",
+      "keyColor": "yellow"
     },
     {
       "type": "packages",
-      "key": "  PACKAGES ",
-      "keyColor": "90",
-      "format": "{pacman} pacman{?flatpak-all} · {flatpak-all} flatpak{?}"
+      "key": "│ ├󰏖",
+      "keyColor": "yellow"
     },
     {
       "type": "shell",
-      "key": "  SHELL    ",
-      "keyColor": "90",
-      "format": "{pretty-name} {version}"
+      "key": "│ └",
+      "keyColor": "yellow"
     },
     {
       "type": "wm",
-      "key": "  WM       ",
-      "keyColor": "90"
+      "key": " DE/WM",
+      "keyColor": "blue"
+    },
+    {
+      "type": "lm",
+      "key": "│ ├󰧨",
+      "keyColor": "blue"
+    },
+    {
+      "type": "wmtheme",
+      "key": "│ ├󰉼",
+      "keyColor": "blue"
+    },
+    {
+      "type": "icons",
+      "key": "│ ├󰀻",
+      "keyColor": "blue"
     },
     {
       "type": "terminal",
-      "key": "  TERMINAL ",
-      "keyColor": "90",
-      "format": "{pretty-name} {version}"
+      "key": "│ ├",
+      "keyColor": "blue"
     },
     {
-      "type": "terminalfont",
-      "key": "  FONT     ",
-      "keyColor": "90",
-      "format": "{pretty-name}"
+      "type": "wallpaper",
+      "key": "│ └󰸉",
+      "keyColor": "blue"
     },
     {
-      "type": "custom",
-      "format": "{#33}▌{#0} {#1}HARDWARE{#0} {#90}{$2}"
+      "type": "host",
+      "key": "󰌢 PC",
+      "keyColor": "green"
     },
     {
       "type": "cpu",
-      "key": "  CPU      ",
-      "keyColor": "90",
-      "format": "{name} ({cores-logical}) @ {freq-max}"
+      "key": "│ ├󰻠",
+      "keyColor": "green"
     },
     {
       "type": "gpu",
-      "key": "  GPU      ",
-      "keyColor": "90",
-      "format": "{name}"
-    },
-    {
-      "type": "memory",
-      "key": "  MEMORY   ",
-      "keyColor": "90",
-      "format": "{used} / {total} {percentage-bar} {percentage}"
+      "key": "│ ├󰍛",
+      "keyColor": "green"
     },
     {
       "type": "disk",
-      "key": "  DISK     ",
-      "keyColor": "90",
-      "format": "{size-used} / {size-total} {size-percentage-bar} {size-percentage}",
-      "folders": "/"
+      "key": "│ ├",
+      "keyColor": "green"
     },
     {
-      "type": "battery",
-      "key": "  BATTERY  ",
-      "keyColor": "90",
-      "format": "{capacity-bar} {capacity}  {#90}{status}{#0}"
+      "type": "memory",
+      "key": "│ ├󰑭",
+      "keyColor": "green"
+    },
+    {
+      "type": "swap",
+      "key": "│ ├󰓡",
+      "keyColor": "green"
+    },
+    {
+      "type": "uptime",
+      "key": "│ ├󰅐",
+      "keyColor": "green"
+    },
+    {
+      "type": "display",
+      "key": "│ └󰍹",
+      "keyColor": "green"
+    },
+    {
+      "type": "sound",
+      "key": " SND",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "player",
+      "key": "│ ├󰥠",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "media",
+      "key": "│ └󰝚",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "custom",
+      "format": "└{$1}{$1}┘",
+      "outputColor": "90"
     },
     "break",
     {
       "type": "custom",
-      "format": "  {#31}███{#33}███{#32}███{#36}███{#34}███{#35}███{#90}███{#0}"
+      "format": " {#31}  {#33}  {#32}  {#36}  {#34}  {#35}  {#37}  {#97} "
     }
   ]
 }
