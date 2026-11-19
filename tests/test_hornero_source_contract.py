@@ -27,9 +27,12 @@ def test_hornero_owns_theme_metadata_and_wallpapers_use_product_namespace():
 
 
 def test_managed_source_has_no_retired_runtime_names_or_overrides():
+    # Personal `dots-*` user scripts are allowed again (e.g.
+    # dots-guitar-lesson). What stays banned is the retired Hornero
+    # runtime layout: product-owned operations belong to horneroctl and
+    # must not come back as `dots` share/lib/cache namespaces or
+    # settings/switcher shims (see test_theme_helpers_are_not_duplicated).
     retired = (
-        "do" + "ts-",
-        "DO" + "TS_",
         ".local/share/" + "dots",
         ".local/lib/" + "dots",
         ".cache/" + "dots",
@@ -52,6 +55,12 @@ def test_managed_source_has_no_retired_runtime_names_or_overrides():
         content = path.read_text(errors="ignore")
         for token in retired:
             assert token not in content, f"retired runtime marker {token!r} in {path.relative_to(ROOT)}"
+
+
+def test_personal_dots_scripts_are_allowed():
+    # dots- is a personal-script prefix, not a Hornero product namespace.
+    bin_dir = ROOT / "home/dot_local/bin"
+    assert (bin_dir / "executable_dots-guitar-lesson").is_file()
 
 
 def test_theme_helpers_are_not_duplicated_in_personal_source():
