@@ -51,9 +51,10 @@ def test_user_terminal_and_font_files_match_signal_defaults():
     fonts = (ROOT / "home/dot_config/fontconfig/fonts.conf").read_text()
     assert "IBM Plex Sans" in fonts and "IBM Plex Mono" in fonts
     fastfetch = (ROOT / "home/dot_config/fastfetch/config.jsonc").read_text()
-    assert "Signal Bezel Calido" in fastfetch
+    assert "HORNERO OS" in fastfetch
+    assert "hornero-emblem.png" in fastfetch
     ff_dir = ROOT / "home/dot_config/fastfetch"
-    for name in ("hornero.txt", "hornero-mini.txt", "art/hornero-nest.pix", "art/hornero-nest.svg"):
+    for name in ("hornero-emblem.png", "art/hornero-nest-emblem-original.png"):
         assert (ff_dir / name).is_file(), name
 
 
