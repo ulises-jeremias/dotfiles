@@ -37,7 +37,17 @@
   <a href="https://discord.gg/bR5VyATgka">
     <img src="https://img.shields.io/discord/1527933660764831825?style=for-the-badge&amp;label=Discord&amp;logo=discord&amp;logoColor=white&amp;labelColor=191114" alt="Discord"/>
   </a>
+  <a href="https://github.com/ulises-jeremias/dotfiles/actions/workflows/clone-and-install.yml">
+    <img src="https://github.com/ulises-jeremias/dotfiles/actions/workflows/clone-and-install.yml/badge.svg" alt="Clone and Install CI"/>
+  </a>
 </p>
+
+<p><strong>Looking for the product?</strong> This is the maintainer's personal
+chezmoi source — the historical origin of the project. The Hornero desktop
+itself now lives in the <a href="https://github.com/HorneroOS">HorneroOS
+organization</a>: <a href="https://www.horneroos.com">horneroos.com</a> •
+<a href="https://github.com/HorneroOS/config">config</a> •
+<a href="https://github.com/HorneroOS/shell">shell</a></p>
 
 <div align="center">
   <a href="https://github.com/ulises-jeremias/dotfiles/tree/x11-openbox-i3wm-xfce4">
@@ -57,7 +67,7 @@
 
 ## 🌟 What is HorneroConfig?
 
-<img alt="HorneroConfig Collage" align="right" width="400px" src="./static/collage.png"/>
+<img alt="Legacy HorneroConfig collage from the X11 era on the maintainer's personal machine (btop over two themed desktops)" align="right" width="400px" src="./static/collage.png"/>
 
 **HorneroConfig** is a cutting-edge dotfiles framework that transforms your Linux desktop into a masterpiece of functionality and beauty. Named after the industrious hornero bird 🐦, renowned for its skillful nest-building, this framework empowers you to craft the perfect digital workspace.
 
@@ -77,6 +87,11 @@
 
 ## 🎨 Gallery
 
+> **Legacy captures (X11 era, personal machine).** The screenshots below are
+> kept as history: they show the pre-HorneroOS Xorg/picom desktop, including
+> that machine's own user and hardware values. For the current desktop, see
+> [horneroos.com](https://www.horneroos.com).
+
 <details>
 <summary>🖼️ <b>Click to view screenshots</b></summary>
 
@@ -84,7 +99,7 @@
 
 ### 🌙 Dark Theme
 
-<img src="./static/screen.png" alt="Dark Theme" width="800px"/>
+<img src="./static/screen.png" alt="Legacy dark theme: btop system monitor and audio visualizer on the X11-era personal desktop" width="800px"/>
 
 ### ☀️ Light Theme
 
@@ -333,6 +348,6 @@ If HorneroConfig has improved your Linux experience:
 **🏠 HorneroConfig**  
 *Building the perfect digital nest, one configuration at a time*
 
-<sub>Licensed under [MIT License](LICENSE) • Made with ❤️ for the Linux community</sub>
+<sub>[horneroos.com](https://www.horneroos.com) • [HorneroOS/config](https://github.com/HorneroOS/config) • [HorneroOS/shell](https://github.com/HorneroOS/shell) • [Issues](https://github.com/ulises-jeremias/dotfiles/issues) • Licensed under [MIT License](LICENSE) • Made with ❤️ for the Linux community</sub>
 
 </div>
