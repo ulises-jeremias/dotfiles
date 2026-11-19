@@ -25,3 +25,8 @@ Host colibri colibri.local
     HostName colibri.local
     IdentityFile ~/.ssh/personal_rsa
     IdentitiesOnly yes
+
+Host pelicano pelicano.local
+    HostName pelicano.local
+    IdentityFile ~/.ssh/personal_rsa
+    IdentitiesOnly yes

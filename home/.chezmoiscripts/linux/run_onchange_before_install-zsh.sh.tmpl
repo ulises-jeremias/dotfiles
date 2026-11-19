@@ -1,4 +1,4 @@
-{{- if eq .osid "linux-arch" -}}
+{{- if and (eq .osid "linux-arch") (not (get . "horneroNative")) -}}
 #!/usr/bin/env bash
 
 set -euo pipefail

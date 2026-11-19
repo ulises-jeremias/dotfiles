@@ -8,7 +8,10 @@
 # overrides only. This gate fails when:
 #   1. a quickshell implementation mirror reappears under home/dot_config/,
 #   2. the .chezmoiignore guard that keeps chezmoi out of the installed
-#      local Quickshell config from chezmoi.
+#      local Quickshell config from chezmoi,
+#   3. a hornero-config factory Hyprland file reappears under
+#      home/dot_config/hypr (only the *-user.lua extension points and
+#      personal overrides may live there).
 #
 # Usage:
 #   ./scripts/check-shell-contract.sh   # exit 1 on contract violation
@@ -43,6 +46,18 @@ if grep -Eq '^[[:space:]]*\.config/quickshell/\*\*$' home/.chezmoiignore.tmpl; t
 else
 	echo "FAIL: home/.chezmoiignore.tmpl lacks the '.config/quickshell/**' guard" >&2
 	fail=1
+fi
+
+# 3. The hyprland factory (entrypoint, modules, hypridle/hyprlock) is owned
+#    by the hornero-config package; dotfiles keeps only the packaged
+#    *-user.lua extension points.
+hypr_mirror="$(find home/dot_config/hypr -type f ! -name '*-user.lua' 2>/dev/null | head -n 5)"
+if [[ -n $hypr_mirror ]]; then
+	echo "FAIL: hornero-config factory mirror present in dotfiles source:" >&2
+	echo "$hypr_mirror" >&2
+	fail=1
+else
+	echo "PASS: home/dot_config/hypr holds only *-user.lua personal overrides"
 fi
 
 exit "$fail"

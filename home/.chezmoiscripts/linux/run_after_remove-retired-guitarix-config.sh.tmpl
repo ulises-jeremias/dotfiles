@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# One-shot migration: REAPER replaced Guitarix as the guitar processor
+# (docs/REAPER-Vocal-Studio.md), so the Guitarix bank and the legacy
+# "Hard Stuff" / "Machine Head" REAPER chains that copied it are no
+# longer in this repo, nor is the runtime `reaper-lesson` command.
+# Leftover copies would keep showing stale tones.
+#
+# This runs on every apply until it succeeds, then records a marker
+# and never acts again:
+# - Nothing is moved until the replacement (the Vocal Studio project
+#   template, deployed by this same apply) exists.
+# - Only the files this repo used to manage are moved, never deleted, to
+#   ~/.local/state/reaper-studio/retired-guitar-config/. Guitarix itself
+#   stays installed, and its own state (gx_head_rc, ui_rc, other banks)
+#   is never touched.
+# - A file with one of these names that the user creates afterwards is
+#   personal configuration and is never touched.
+# Paths resolve against chezmoi's destination directory, not $HOME,
+# so staged applies (--destination) stay hermetic.
+# See docs/Chezmoi-Migration-Ledger.md.
+dest_dir="{{ .chezmoi.destDir }}"
+reaper_dir="$dest_dir/.config/REAPER"
+state_dir="$dest_dir/.local/state/reaper-studio"
+marker="$state_dir/guitarix-config-migration-done"
+
+if [ -e "$marker" ]; then
+  exit 0
+fi
+
+if [ ! -f "$reaper_dir/ProjectTemplates/Modern Rock & Metal - Vocal Studio.RPP" ]; then
+  exit 0
+fi
+
+# Paths relative to the destination directory.
+retired=(
+  ".config/guitarix/banks/silentz0r.gx"
+  ".config/REAPER/FXChains/Vocal Studio/Hard Stuff.RfxChain"
+  ".config/REAPER/FXChains/Vocal Studio/Machine Head.RfxChain"
+  ".config/REAPER/TrackTemplates/Vocal Studio/Electric Guitar - Hard Stuff.RTrackTemplate"
+  ".config/REAPER/TrackTemplates/Vocal Studio/Electric Guitar - Machine Head.RTrackTemplate"
+  # the runtime lesson command, replaced by the permanent REAPER Lesson Mic
+  ".local/bin/reaper-lesson"
+)
+# Files are moved here, never deleted (a Guitarix bank can hold presets saved
+# after the last apply).
+backup="$state_dir/retired-guitar-config"
+
+# Paths already handled are recorded, so a retry (after a skipped path) never
+# moves a file the user created afterwards under the same name.
+done_list="$state_dir/guitarix-config-migration-handled"
+mkdir -p "$state_dir"
+touch "$done_list"
+
+symlinked_ancestor() { # $1 path: any directory between it and dest_dir is a symlink
+  local d
+  d="$(dirname "$1")"
+  while [ "$d" != "$dest_dir" ] && [ "$d" != "/" ] && [ "$d" != "." ]; do
+    [ -L "$d" ] && return 0
+    d="$(dirname "$d")"
+  done
+  return 1
+}
+
+skipped=0
+for rel in "${retired[@]}"; do
+  target="$dest_dir/$rel"
+  grep -qxF -- "$rel" "$done_list" && continue
+  # Never move through a symlinked directory or a symlink.
+  if symlinked_ancestor "$target"; then
+    echo "guitarix migration skipped $target: symlinked parent" >&2
+    skipped=1
+    continue
+  fi
+  if [ -f "$target" ] && [ ! -L "$target" ]; then
+    mkdir -p "$backup/$(dirname "$rel")"
+    mv -f "$target" "$backup/$rel"
+    echo "moved retired guitar config: $target -> $backup/$rel"
+  fi
+  printf '%s\n' "$rel" >>"$done_list"
+done
+
+# A skipped path keeps the migration pending instead of marking it done.
+if [ "$skipped" -ne 0 ]; then
+  exit 0
+fi
+
+mkdir -p "$state_dir"
+date -u +%Y-%m-%dT%H:%M:%SZ > "$marker"

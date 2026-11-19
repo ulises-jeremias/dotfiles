@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# REAPER music studio: diagnostics and recovery. Not needed for daily use:
+# open REAPER from the app menu (it starts on the "Music Studio" template) and
+# the qpwgraph patchbay connects everything (docs/REAPER-Vocal-Studio.md).
+#
+# Usage:
+#   reaper-studio doctor   check inputs, headphones, Discord/OBS buses, feedback safety
+#   reaper-studio repair   recreate REAPER's links (if qpwgraph is not running)
+#
+# Shared helpers: ~/.local/share/reaper-studio/common.sh
+
+set -euo pipefail
+
+COMMON="$HOME/.local/share/reaper-studio/common.sh"
+[ -f "$COMMON" ] || {
+	echo "reaper-studio: missing $COMMON (run chezmoi apply)" >&2
+	exit 1
+}
+# shellcheck source=/dev/null
+. "$COMMON"
+
+cmd="${1:-doctor}"
+case "$cmd" in
+doctor)
+	have_reaper || die "REAPER is not running: open it from the app menu, then run this again"
+	fails=0
+	doctor_inputs || fails=$((fails + $?))
+	doctor_outputs || fails=$((fails + $?))
+	doctor_buses || fails=$((fails + $?))
+	pgrep -x qpwgraph >/dev/null 2>&1 || log "note  qpwgraph is not running: links are not restored automatically (log in again, or run: reaper-studio repair)"
+	if [ "$fails" -eq 0 ]; then log "doctor: all checks passed"; else
+		log "doctor: $fails check(s) failed (try: reaper-studio repair)"
+		exit 1
+	fi
+	;;
+repair) repair_links ;;
+start | wire)
+	log "reaper-studio $cmd is retired: open REAPER from the app menu; running 'repair' instead"
+	repair_links
+	;;
+*)
+	echo "usage: reaper-studio {doctor|repair}" >&2
+	exit 2
+	;;
+esac

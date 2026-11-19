@@ -6,7 +6,10 @@ Center. `horneroctl` owns supported lifecycle and compositor operations.
 
 ## Configuration ownership
 
-- User compositor files are managed under `~/.config/hypr/`.
+- The Hyprland factory (entrypoint, modules, `hypridle.conf`,
+  `hyprlock.conf`) is owned by the `hornero-config` package; this source
+  manages only its `*-user.lua` extension points under `~/.config/hypr/`
+  (machine monitors, personal keybinding overrides).
 - Hornero Shell configuration and presets come from the installed
   HorneroOS packages; chezmoi does not mirror the Shell tree.
 - Appearance packs are owned by Hornero Config. Wallpaper media may be
@@ -40,7 +43,7 @@ diagnostics or documented configuration reloads.
 
 Window swallowing is enabled for the Hornero-supported Kitty, Alacritty, and
 Ghostty terminals. Selecting one of these in Control Center therefore keeps
-the same terminal-to-application workflow; the matcher lives in
-`home/dot_config/hypr/hyprland.lua.d/static.lua`.
+the same terminal-to-application workflow; the matcher lives in the packaged
+factory `static.lua` (hornero-config 0.3.20+).
 
 For user-facing shortcuts, see the [HorneroOS shortcuts guide](https://horneroos.com/docs/desktop/shortcuts/). For themes and wallpaper colors, see the [Appearance guide](https://horneroos.com/docs/desktop/appearance/).
