@@ -7,8 +7,7 @@ the canonical wallpaper pool; this repository no longer tracks a copy of it.
 
 This directory stays only as an optional personal-media pool: drop your own
 images in a subdirectory here and they are linked into
-`~/Pictures/Wallpapers/<dir>/` next to the product pool. The flagship
-`hornero/` light + dark art remains here for now.
+`~/Pictures/Wallpapers/<dir>/` next to the product pool.
 
 ## Linking
 
