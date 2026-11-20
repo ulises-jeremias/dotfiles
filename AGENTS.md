@@ -9,9 +9,10 @@ metadata; those belong to the `HorneroOS` organization.
 - Prefer declarative chezmoi files for user configuration.
 - Use `horneroctl` for supported Hornero desktop operations. Do not add a
   second script framework or compatibility layer in this source.
-- Keep Hornero appearance pack metadata in HorneroOS/config. This repository
-  may provide optional wallpaper media under
-  `home/dot_local/share/hornero/wallpapers/`.
+- Keep Hornero appearance pack metadata in HorneroOS/config. Product
+  wallpapers are owned there too and installed under
+  `/usr/share/hornero/wallpapers/`; this repository keeps only optional
+  personal wallpaper media under `home/dot_local/share/hornero/wallpapers/`.
 - Use XDG paths and the Hornero namespace for new product-specific state.
 - Never run `chezmoi apply` against the developer's account during tests.
 - Render chezmoi templates with both managed-host and static configurations.

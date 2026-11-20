@@ -1,7 +1,7 @@
 # Contributing to the Hornero workstation source
 
 This repository is a personal chezmoi source for an Arch workstation. It can
-configure optional user applications and provide wallpaper media. Product
+configure optional user applications and personal wallpaper media. Product
 behavior, package defaults, theme definitions, and desktop operations belong
 to the canonical repositories in the [HorneroOS organization](https://github.com/HorneroOS).
 
@@ -13,9 +13,11 @@ to the canonical repositories in the [HorneroOS organization](https://github.com
   [HorneroOS/shell](https://github.com/HorneroOS/shell).
 - Keep supported system and desktop operations in
   [HorneroOS/hornero](https://github.com/HorneroOS/hornero).
-- This repository may supply optional wallpaper files under
-  `home/dot_local/share/hornero/wallpapers/` and personal application config.
-  Do not copy product registries or add another command framework here.
+- Product wallpapers are owned by HorneroOS/config and installed under
+  `/usr/share/hornero/wallpapers/`. This repository may supply only optional
+  personal wallpaper files under `home/dot_local/share/hornero/wallpapers/`
+  and personal application config. Do not copy product registries or add
+  another command framework here.
 
 ## Source conventions
 

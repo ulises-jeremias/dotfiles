@@ -6,21 +6,22 @@
 ##
 ## Symlinks themed + curated wallpapers into ~/Pictures/Wallpapers/<dir>/
 ## so Appearance / launcher wallpaper pools see them.
+##
+## Product wallpapers are owned by HorneroOS/config and installed by its
+## hornero-config package under /usr/share/hornero/wallpapers. The personal
+## tree stays as an optional user-media pool (and is the only source when
+## HorneroOS is not installed).
 
 set -euo pipefail
 
-SRC_ROOT="${HOME}/.local/share/hornero/wallpapers"
+PRODUCT_ROOT="/usr/share/hornero/wallpapers"
+PERSONAL_ROOT="${HOME}/.local/share/hornero/wallpapers"
 DEST_ROOT="${HOME}/Pictures/Wallpapers"
 
 # Trigger: re-run when any wallpaper filename set changes.
 # {{- range (glob (joinPath .chezmoi.sourceDir "dot_local/share/hornero/wallpapers/**/*.{png,jpg,jpeg,webp,gif}")) }}
 # {{ . }}
 # {{- end }}
-
-if [[ ! -d $SRC_ROOT ]]; then
-  echo "[wallpapers] source missing: $SRC_ROOT" >&2
-  exit 0
-fi
 
 mkdir -p "$DEST_ROOT"
 
@@ -35,7 +36,7 @@ legacy_links_removed=0
 # and installed by HorneroOS/config's hornero-config package.
 retire_legacy_default() {
   local rel="$1" expected="$2" source target current actual
-  source="$SRC_ROOT/$rel"
+  source="$PERSONAL_ROOT/$rel"
   target="$DEST_ROOT/${rel%/*}/${rel##*/}"
   if [[ -f $source && ! -L $source ]]; then
     actual="$(sha256sum -- "$source")"
@@ -61,6 +62,66 @@ retire_legacy_default "pampa/pampa-01.png" "1a5579612833ff7410e50e1d49603e6f2c31
 retire_legacy_default "patagonia/patagonia-glacier-01.jpg" "0a9da4efca0b0d5129872de2eeed44a9fc4bc48913731d0b62f97ac15155f706"
 retire_legacy_default "quebrada/quebrada-mineral-01.jpg" "5f2e400084a9283c4c196a0a93bc6aa0850c5859d7cbfbff9dbf718b16cf87fc"
 
+# Personal copies retired once HorneroOS/config shipped its curated
+# 57-wallpaper collection (installed under /usr/share/hornero/wallpapers).
+# Same guard: an installed copy is removed only while its SHA-256 still
+# matches the file formerly tracked here, and a Pictures link only when it
+# points at that exact personal path. User-modified files survive.
+retire_legacy_default "curated/wallhaven-6q8dmq_1920x1080.png" "747973e73f52f6264978319198aec6814511bce690cd6c04f14963c4e4106966"
+retire_legacy_default "curated/wallhaven-73v179_1920x1080.png" "1520045ec79f6a7295197516d15e7ef022d06609af3e3aa41c357a8d946422af"
+retire_legacy_default "curated/wallhaven-e7oww8_1920x1080.png" "5a0d5b55e9c9e1914b47d33994c36826eb8aa40846922101684553bf5274f122"
+retire_legacy_default "curated/wallhaven-lqxdqy_1920x1080.png" "de96df8f11266a4d5eaeb6dc2be131565ead402139e83825f1d48e5ab90d5bce"
+retire_legacy_default "curated/wallhaven-rd7wmm_1920x1080.png" "76a7a78395a23b6d70d34df323222d4672a39e709034efd7afe3206e7a49baaa"
+retire_legacy_default "curated/wallhaven-ymj3wd_1920x1080.png" "79aced224e3d7abf7c87a9555e7feba4e66ab471554189fe6823dc61409ca80b"
+retire_legacy_default "curated/wallhaven-ymw3dl_1920x1080.png" "6f90c02f75e8928051b7d97e7cba95a8341f2a16f852bae2228972ef943bf5ca"
+retire_legacy_default "gruvbox/gruvbox-anime-01.jpg" "6f6dfabb799f6b5eb0086b7158505591fd55381e91d069cd52d43356d735686e"
+retire_legacy_default "gruvbox/gruvbox-anime-02.jpg" "c07fd41283f324b252986b7f3a3b05857fe31c4dd1c843432cb17423eed0dd00"
+retire_legacy_default "gruvbox/gruvbox-anime-03.jpg" "e253ba1efa7c233216df3571357bfd81ec65247fde3714c16637da18128f1cfa"
+retire_legacy_default "gruvbox/gruvbox-anime-04.jpg" "2d6c3d1fa4460f42a9ae3c08892abe74e970433a7bff8c9b660631b800726b72"
+retire_legacy_default "gruvbox/gruvbox-anime-05.jpg" "c4c5a8e8db8212d6b015feb3b8109485bb2add0a1dbd95da1e854dadcea3cb5c"
+retire_legacy_default "gruvbox/gruvbox-anime-06.jpg" "7664894572391b2d30838aa2b9d09e1cc06d0df4f1cc8f184337ddd666a48431"
+retire_legacy_default "gruvbox/gruvbox-minimalistic-02.jpg" "5e67f1326c40dfe3eea4205e3669b39dd4daf0abef591806727621bc5614f826"
+retire_legacy_default "gruvbox/gruvbox-minimalistic-04.jpg" "34a78b10382ff3ca89c4f90691f640ebb9839b7e439f10e08e7b0b8e2bb11cb7"
+retire_legacy_default "gruvbox/gruvbox-mix-02.jpg" "456076e742d5459d7155697a8bd5318077277def00aa2dbad13b3bc9861b5c8e"
+retire_legacy_default "gruvbox/gruvbox-painting-01.jpg" "f08c8980af7c7d74ee902cff9be5c574aff264f370284e866f940fcbea37644f"
+retire_legacy_default "gruvbox/gruvbox-pixelart-01.jpg" "f8fe17897df6929a993931f31231b7df5526915a0ed0f06808fce67dab676052"
+retire_legacy_default "gruvbox/gruvbox-pixelart-03.jpg" "52ef2e0df3dc7cd14b736001af629f78677f250ef83836b3024df9d019166514"
+retire_legacy_default "gruvbox/gruvbox-pixelart-04.jpg" "2091df1843b8fadcba309d0f414f02b2a0a0a38874a1c2028bdf53e61d7f125a"
+retire_legacy_default "landscape/landscape-01.jpg" "86c84259a0cf999f186949a1b64cbe143940651d8b7795f2844bc85308401860"
+retire_legacy_default "landscape/landscape-02.jpg" "9c68a5f659fbde9a4b4065c8385c904d96263b96c4465809e21a99deffd03059"
+retire_legacy_default "landscape/landscape-03.jpg" "40ccae70dc332626059f49fea24cf75b68236cd9ca22f52a8b9abbdd453fc016"
+retire_legacy_default "landscape/landscape-04.jpg" "be9fbf9c6119ac430f52fa3adeeee055dc8855877529a9862e138939f26f11a8"
+retire_legacy_default "landscape/landscape-05.jpg" "fa486a6344d48167c520f0fcc437b0e7c61caafc81539b9057b83c0e0562994b"
+retire_legacy_default "monochrome/mono-curated-1.jpg" "3f1d17486919a45cce8301dc7aa99d6ef006e27062f82dfd90df21a1fddb446f"
+retire_legacy_default "monochrome/mono-curated-2.jpg" "38ea0635877b89b27c25b8945f64d8719ddbb030d389c66861705230676bd48b"
+retire_legacy_default "neon-city/neon-anime-graffiti.jpg" "2906f759e3d1c409dfa0e1f9ee50aa1849c53527d49d3945a6540a451ad2c4c4"
+retire_legacy_default "neon-city/neon-city-01.jpg" "986f9776926cd977965c600554ca7740f9d9f23ce3c41baca85d6459c3d5ab59"
+retire_legacy_default "neon-city/neon-city-02.jpg" "43f35081515ffb0a0f0c6ad7d12dae00fbfbe4132bbe3cbf797c991abec8a285"
+retire_legacy_default "neon-city/retro-neon-desk-setup.jpg" "66402c0da2ea84e0b75f6daab5b75a3445598e63215e1ea900645811f8f8565c"
+retire_legacy_default "neon-city/space-01.jpg" "2746293fa840cc4e538469569f855c759a578611d72b9b3918ca3edb0884fd9e"
+retire_legacy_default "neon-city/space-02.jpg" "6fd5035e7eedc4d1644a6f7aee894e79ecf860ada35c119409ee9c59e3f4043b"
+retire_legacy_default "soft-morning/cozy-pastel-02.jpg" "3370015f92bf9127ce3dbcee3b6dc8333ebc5aae7a2df6265eb2fc8e164c72f7"
+retire_legacy_default "soft-morning/cozy-sakura-01.jpg" "3b1594119c93f8408836d96683fde7d1aed81cfae1991995ec441aa19fcc66db"
+retire_legacy_default "soft-morning/flowers-01.jpg" "2baa244b1b3fe0ffc2185cbb20666e157f07b30b036ed3f6b689e5d16582d540"
+retire_legacy_default "soft-morning/flowers-02.jpg" "bd3feca2a3599ee7290c0e80075c5131a75e1fadb8182c32722c0ac99b46f91d"
+retire_legacy_default "soft-morning/morning-lake-2.jpg" "a933925ed20286df82b5e112d1b3dde563d0a8b1d921b83876350ff4c083f79c"
+retire_legacy_default "soft-morning/morning-mist-1.jpg" "b92dcb1537dbe47388cb98dedaff605d6109403e45b15833c6aa840789439c7e"
+retire_legacy_default "vapor-dreams/anime-collage-violet.jpg" "7a1e8389c80587b8e26bff830c27c7279ea5977e8de00459cef71d293c9e70b2"
+retire_legacy_default "vapor-dreams/retro-glitch-studio.jpg" "c39b089e740bd1d11add83412f51cd3514954d92b55627518651739fcc24f810"
+retire_legacy_default "vapor-dreams/synthwave-anime-neon-frame.jpg" "bf7f6939b1c90e7543fc0ae34fcc4807e7120267d90a191b9fd42cc4c059def0"
+retire_legacy_default "vapor-dreams/vapor-clouds-03.jpg" "49c1d61c1e04b4dbcc35885d52b520184efe06bff3a5159498702075a79e79ba"
+retire_legacy_default "vapor-dreams/vapor-dreams-01.jpg" "3f9477729e4b32c1e9364e5273f4f8768077909da45a738f13fe741e2ab81147"
+retire_legacy_default "vapor-dreams/vapor-dreams-02.jpg" "ae61eb67622fb156f86b01aaf8f7a268fa1d6a21c98bd6d86db8bdeac692941a"
+retire_legacy_default "vapor-dreams/vapor-roadtrip-02.jpg" "f623efaa9424c6d97fb690d23aeef471e7d925eb40bcc31dc4a72a3d41251165"
+retire_legacy_default "warm-sunset/gruvbox-light-02.jpg" "bd1b650e3f76093dda41e317d4826696dac71116b318afc1c9603dd316a8eeb8"
+retire_legacy_default "warm-sunset/gruvbox-light-03.png" "858f4398713cc117445370481a662b9b6c3b885ddae926784288487572fde87e"
+retire_legacy_default "warm-sunset/gruvbox-light-04.png" "5ac876f3a8f9d341763a5d9d680e92cfddedb05f0dce2288d7695da6c0bf6694"
+retire_legacy_default "warm-sunset/neon-cityline-sunset.jpg" "657b7512ed8ebd2c24c6ebb84bf3f13e37a26fd6e8549dbbd1e22dd8dcd366b0"
+retire_legacy_default "warm-sunset/sunset-horizon-4.jpg" "b3ad770c229675e13e4debc3b917dfc8e4f23797e172d3c8cefd5d835a7bca49"
+retire_legacy_default "warm-sunset/warm-sunset-05.jpg" "f2250d9ace728cd7c573ae79f0e4a1172fa6a3d73812bf2ea33165b9dec506f6"
+retire_legacy_default "warm-sunset/warm-sunset-06.jpg" "2dd81a18f252969366a906e097c7d638db3ef37877f83e26254d1fdb1c28f4b9"
+retire_legacy_default "warm-sunset/warm-sunset-07.jpg" "45f225bf628b1fbfb9ed38720a407a3645f1303039582090bfd1342cd2c25f84"
+
 link_file() {
   local src="$1"
   local dest_dir="$2"
@@ -85,17 +146,28 @@ link_file() {
   fi
 }
 
+sources=()
+[[ -d $PRODUCT_ROOT ]] && sources+=("$PRODUCT_ROOT")
+[[ -d $PERSONAL_ROOT ]] && sources+=("$PERSONAL_ROOT")
+
+if [[ ${#sources[@]} -eq 0 ]]; then
+  echo "[wallpapers] no source: $PRODUCT_ROOT nor $PERSONAL_ROOT" >&2
+  exit 0
+fi
+
 shopt -s nullglob
-for theme_dir in "$SRC_ROOT"/*/; do
-  [[ -d $theme_dir ]] || continue
-  theme_name="$(basename "$theme_dir")"
-  dest="$DEST_ROOT/$theme_name"
-  for src in "$theme_dir"*.{png,jpg,jpeg,webp,gif}; do
-    [[ -f $src ]] || continue
-    link_file "$src" "$dest"
+for src_root in "${sources[@]}"; do
+  for theme_dir in "$src_root"/*/; do
+    [[ -d $theme_dir ]] || continue
+    theme_name="$(basename "$theme_dir")"
+    dest="$DEST_ROOT/$theme_name"
+    for src in "$theme_dir"*.{png,jpg,jpeg,webp,gif}; do
+      [[ -f $src ]] || continue
+      link_file "$src" "$dest"
+    done
   done
 done
 shopt -u nullglob
 
-echo "[wallpapers] linked=$linked skipped=$skipped legacy_removed=$legacy_removed stale_links_removed=$legacy_links_removed (source: $SRC_ROOT → $DEST_ROOT/<theme>/)"
+echo "[wallpapers] linked=$linked skipped=$skipped legacy_removed=$legacy_removed stale_links_removed=$legacy_links_removed (sources: ${sources[*]} → $DEST_ROOT/<theme>/)"
 {{- end -}}
