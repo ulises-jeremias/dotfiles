@@ -20,7 +20,9 @@ repository owns only personal workstation choices and optional user media.
    succeed.
 6. **Keep appearance coherent.** Theme metadata is canonical in
    [HorneroOS/config](https://github.com/HorneroOS/config). This source may
-   provide wallpaper files; it does not maintain another theme catalogue.
+   provide only optional personal wallpaper files; product wallpapers are
+   installed by HorneroOS/config under `/usr/share/hornero/wallpapers/`. It
+   does not maintain another theme catalogue.
 7. **Validate without the host.** Tests use temporary HOME and XDG paths and
    never apply changes to a live user session.
 
@@ -33,7 +35,7 @@ repository owns only personal workstation choices and optional user media.
 - [HorneroOS/hornero](https://github.com/HorneroOS/hornero): OS capabilities,
   user-facing CLI, and stable system operations.
 - This repository: optional desktop applications, per-user preferences,
-  host-level composition, and wallpaper media.
+  host-level composition, and optional personal wallpaper media.
 
 Historical architecture and retired experiments remain in `docs/wiki/` and
 must not be used as current integration contracts.

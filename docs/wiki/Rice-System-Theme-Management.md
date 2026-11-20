@@ -26,7 +26,7 @@ wallpaper, then Apply), or:
 ```bash
 dots appearance theme list
 horneroctl appearance theme apply vapor-dreams --yes
-horneroctl appearance theme apply neon-city --wallpaper ~/Pictures/Wallpapers/neon-city/neon-city-01.jpg --yes
+horneroctl appearance theme apply neon-city --wallpaper /usr/share/hornero/wallpapers/cyberpunk/neon-train-tower-district.jpg --yes
 ```
 
 ## Everyday controls

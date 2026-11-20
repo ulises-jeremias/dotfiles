@@ -14,8 +14,9 @@ personal workstation around those layers.
   component.
 - Keep GUI presentation and session state in Hornero Shell.
 - Keep package defaults, theme metadata, and GTK integration in Hornero Config.
-- Keep personal app preferences and optional wallpaper binaries in this
-  chezmoi source.
+- Keep personal app preferences and optional personal wallpaper binaries in
+  this chezmoi source; product wallpapers are installed by HorneroOS/config
+  under `/usr/share/hornero/wallpapers/`.
 - Let `horneroctl assistant setup` own the base Hermes user unit and the
   canonical `hornero` Hermes skill. Put workstation-specific unit overrides
   in a systemd drop-in and personal Hermes guidance in a separately named

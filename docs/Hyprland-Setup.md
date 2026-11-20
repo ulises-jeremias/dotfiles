@@ -12,8 +12,9 @@ Center. `horneroctl` owns supported lifecycle and compositor operations.
   (machine monitors, personal keybinding overrides).
 - Hornero Shell configuration and presets come from the installed
   HorneroOS packages; chezmoi does not mirror the Shell tree.
-- Appearance packs are owned by Hornero Config. Wallpaper media may be
-  provided separately under `~/.local/share/hornero/wallpapers/`.
+- Appearance packs are owned by Hornero Config. Product wallpapers are
+  installed under `/usr/share/hornero/wallpapers/`; optional personal media
+  may be provided separately under `~/.local/share/hornero/wallpapers/`.
 - The workstation configuration uses Hornero Shell's Dashboard for its
   system overview; no third-party compositor plugin is required at startup.
 

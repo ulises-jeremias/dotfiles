@@ -1,50 +1,32 @@
 # Wallpapers
 
-Optional wallpaper media lives here and is linked into `~/Pictures/Wallpapers/<theme-id>/` by a chezmoi change script.
+Product wallpapers are owned by
+[HorneroOS/config](https://github.com/HorneroOS/config) and installed by its
+`hornero-config` package under `/usr/share/hornero/wallpapers/`. That tree is
+the canonical wallpaper pool; this repository no longer tracks a copy of it.
 
-```text
-wallpapers/
-├── curated/           # uncategorized user-selected pool
-├── hornero/           # flagship HorneroOS light + dark SVG-derived art
-├── vapor-dreams/
-├── neon-city/
-├── gruvbox/
-└── …
-```
-
-Theme definitions and product default wallpapers are owned by
-[HorneroOS/config](https://github.com/HorneroOS/config) and shipped through
-its `hornero-config` AUR package. This personal repository supplies optional
-user media only; it does not duplicate the product catalogue or store current
-theme state. Argentina-specific product defaults are not copied into this
-collection. Their source, photographer, license, crop recipe, and checksums are
-recorded in Config's
-[`wallpaper-provenance.json`](https://github.com/HorneroOS/config/blob/main/profiles/themes/wallpaper-provenance.json)
-and full credits are listed in its
-[`WALLPAPER-CREDITS.md`](https://github.com/HorneroOS/config/blob/main/profiles/themes/WALLPAPER-CREDITS.md).
+This directory stays only as an optional personal-media pool: drop your own
+images in a subdirectory here and they are linked into
+`~/Pictures/Wallpapers/<dir>/` next to the product pool. The flagship
+`hornero/` light + dark art remains here for now.
 
 ## Linking
 
-`home/.chezmoiscripts/linux/run_onchange_after_link-wallpapers.sh.tmpl` symlinks
-images under each optional theme directory into
-`~/Pictures/Wallpapers/<theme-id>/`. Existing non-symlink files are never
-clobbered. During migration it removes only known old regional assets whose
-SHA-256 exactly matches the former generated files, and only removes a stale
-wallpaper link when it points to one of those exact source paths. Custom files
+`home/.chezmoiscripts/linux/run_onchange_after_link-wallpapers.sh.tmpl`
+symlinks images from `/usr/share/hornero/wallpapers/` (when HorneroOS is
+installed) and from this personal tree into `~/Pictures/Wallpapers/<dir>/`.
+Existing non-symlink files are never clobbered. Installed copies of wallpapers
+formerly tracked here are removed during migration only while their SHA-256
+exactly matches the former tracked file, and a stale `~/Pictures/Wallpapers`
+link is removed only when it points at that exact personal path; custom files
 and unrelated links are preserved.
 
-## Adding images
+## Credits
 
-Drop user-selected media under the matching theme directory (or `curated/`) and
-commit. Prefer ≤ 2560px on the long edge and JPEG/WebP for photos. Check rights
-before distributing any image in the HorneroOS product; optional personal
-media does not become an official product asset merely by living here.
-
-## Regional visual direction
-
-Hornero's Argentina-inspired themes span Buenos Aires city light, the Beagle
-Channel at blue hour, Iberá wetlands, humid Pampas waterways, Perito Moreno ice,
-and Jujuy's mineral bands. These are product defaults supplied by the AUR
-package as licensed photography. HorneroOS/config records exact attribution and
-license information. The personal collection no longer duplicates those
-assets.
+Source, photographer, license, crop recipe, and checksums for product
+wallpapers are recorded in Config's
+[`wallpaper-provenance.json`](https://github.com/HorneroOS/config/blob/main/profiles/themes/wallpaper-provenance.json)
+and
+[`WALLPAPER-CREDITS.md`](https://github.com/HorneroOS/config/blob/main/profiles/themes/WALLPAPER-CREDITS.md).
+Personal media does not become an official product asset merely by living
+here; check rights before distributing any image in the HorneroOS product.

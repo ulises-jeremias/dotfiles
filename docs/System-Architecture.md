@@ -11,7 +11,7 @@ HorneroOS/config ── package defaults, theme catalogue, GTK and wallpaper con
          └── HorneroOS/hornero ── stable CLI and OS capabilities
                          │
                          └── this chezmoi source ── optional apps, user preferences,
-                                                      host choices and wallpaper media
+                                                      host choices and personal wallpaper media
 ```
 
 ## Product configuration
@@ -23,8 +23,9 @@ HorneroOS/config ── package defaults, theme catalogue, GTK and wallpaper con
 belong in the XDG Hornero paths documented by the
 [HorneroOS appearance guide](https://horneroos.com/docs/desktop/appearance/).
 
-This repository may provide optional wallpaper media under
-`home/dot_local/share/hornero/wallpapers/`. It does not own theme definitions,
+Product wallpapers are owned by HorneroOS/config and installed under
+`/usr/share/hornero/wallpapers/`. This repository may provide only optional
+personal wallpaper media under `home/dot_local/share/hornero/wallpapers/`. It does not own theme definitions,
 Shell state, generated palettes, or a competing theme manager.
 
 ## Personal workstation configuration
