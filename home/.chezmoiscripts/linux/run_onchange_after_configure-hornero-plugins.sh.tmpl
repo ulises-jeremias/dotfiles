@@ -1,0 +1,41 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+# Install and enable the recommended first-party HorneroOS PluginKit 3
+# extensions idempotently. Offline hosts or hosts missing the CLI skip cleanly
+# with a warning.
+
+set -euo pipefail
+
+if ! command -v horneroctl >/dev/null 2>&1; then
+    echo "hornero-plugins: CLI not found on PATH, skipping" >&2
+    exit 0
+fi
+
+RECOMMENDED_PLUGINS=(
+    "hornero-tailscale"
+    "hornero-elsewhen"
+    "hornero-containers"
+    "hornero-ai-usage"
+    "hornero-github-stats"
+    "hornero-pomodoro"
+    "hornero-clipboard"
+)
+
+installed_json="$(horneroctl plugin list --json 2>/dev/null || true)"
+
+for plugin in "${RECOMMENDED_PLUGINS[@]}"; do
+    if ! printf '%s\n' "${installed_json}" | grep -q "\"${plugin}\""; then
+        if ! horneroctl plugin catalog install "${plugin}" --yes; then
+            echo "hornero-plugins: could not install ${plugin}, continuing" >&2
+            continue
+        fi
+    fi
+    if ! horneroctl plugin enable "${plugin}" --yes; then
+        echo "hornero-plugins: could not enable ${plugin}, continuing" >&2
+    fi
+done
+{{      end -}}
+
+{{ end -}}

@@ -17,10 +17,19 @@
 #    files too. Revert: rm ~/.config/systemd/user/<daemon>.service and
 #    ~/.local/share/dbus-1/services/<name>.service
 
+# 3. User seeding: invoke packaged HorneroOS/config seed-user.sh (missing-only,
+#    non-destructive) when present on the host so new accounts receive factory
+#    defaults (Hornero Left layout, desktop clock, visualiser, fuzzy launcher,
+#    mic OSD, fullscreen gaming auto-mode) without overwriting user files.
+# 4. Resource-isolation systemd user slices: seed app-models.slice,
+#    app-agents.slice, and Ollama/llama-server drop-ins from HorneroOS/config
+#    when absent so local AI models and coding agents never starve the desktop.
+
 set -euo pipefail
 
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-QT6CT_URL="https://raw.githubusercontent.com/HorneroOS/config/main/desktop/qt6ct/qt6ct.conf"
+HORNERO_CONFIG_RAW="https://raw.githubusercontent.com/HorneroOS/config/main"
+QT6CT_URL="${HORNERO_CONFIG_RAW}/desktop/qt6ct/qt6ct.conf"
 
 qt6ct_conf="${CONFIG_HOME}/qt6ct/qt6ct.conf"
 if [[ ! -e "${qt6ct_conf}" ]]; then
@@ -34,6 +43,37 @@ if [[ ! -e "${qt6ct_conf}" ]]; then
     fi
     rm -f "${tmp}"
 fi
+
+# Non-destructive missing-only user seeding from packaged hornero-config.
+if [[ -x /usr/share/hornero/scripts/seed-user.sh ]]; then
+    /usr/share/hornero/scripts/seed-user.sh --dest "${HOME}" || \
+        echo "hornero-desktop-base: seed-user.sh returned non-zero, continuing" >&2
+fi
+
+# Seed HorneroOS user systemd slices and local-model service drop-ins when absent.
+SYSTEMD_USER_DIR="${CONFIG_HOME}/systemd/user"
+for rel in \
+    "app-models.slice" \
+    "app-agents.slice" \
+    "ollama.service.d/10-hornero.conf" \
+    "llama-server@.service.d/10-hornero.conf"; do
+    dest="${SYSTEMD_USER_DIR}/${rel}"
+    if [[ -e "${dest}" || -L "${dest}" ]]; then
+        continue
+    fi
+    if [[ -f "/usr/lib/systemd/user/${rel}" ]]; then
+        continue
+    fi
+    tmp="$(mktemp)"
+    if curl -fsSL --max-time 20 "${HORNERO_CONFIG_RAW}/desktop/systemd/user/${rel}" -o "${tmp}" && grep -q '^\[' "${tmp}"; then
+        mkdir -p "$(dirname "${dest}")"
+        install -m 0644 "${tmp}" "${dest}"
+        echo "hornero-desktop-base: seeded ${dest} from HorneroOS/config"
+    else
+        echo "hornero-desktop-base: could not fetch systemd unit ${rel}, skipping" >&2
+    fi
+    rm -f "${tmp}"
+done
 
 for unit in dunst.service mako.service swaync.service; do
     path="${CONFIG_HOME}/systemd/user/${unit}"
