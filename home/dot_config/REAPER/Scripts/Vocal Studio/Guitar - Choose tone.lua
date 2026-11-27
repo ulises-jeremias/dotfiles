@@ -101,9 +101,9 @@ for i = 0, reaper.CountTracks(0) - 1 do
 	if IS_TONE[n] then
 		local active = (n == answer)
 		reaper.SetMediaTrackInfo_Value(tr, "B_MUTE", active and 0 or 1)
-		reaper.SetMediaTrackInfo_Value(tr, "I_FXEN", active and 1 or 0)
+		reaper.SetMediaTrackInfo_Value(tr, "I_FXEN", 1)
 		for fx = 0, reaper.TrackFX_GetCount(tr) - 1 do
-			reaper.TrackFX_SetOffline(tr, fx, not active)
+			reaper.TrackFX_SetOffline(tr, fx, false)
 		end
 	end
 end

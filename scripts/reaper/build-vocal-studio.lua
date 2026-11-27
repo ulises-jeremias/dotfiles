@@ -283,7 +283,8 @@ local function saturation(tr, amount, mix)
 end
 
 -- Genuine Guitarix LV2 plugins (gxplugins/guitarix 0.47). Their internal BYPASS
--- port defaults to ON, so every one is explicitly switched off here.
+-- port has lv2:designation lv2:enabled (1.0 = enabled/active, 0.0 = bypassed),
+-- so every one is explicitly switched ON (1.0) here.
 -- Not every Guitarix LV2 has an internal BYPASS port (GxFuzz and GxSaturator
 -- do not); only the ones that do are switched on.
 local function has_param(tr, fx, name)
@@ -302,7 +303,7 @@ local function lv2(tr, ident)
 		return -1
 	end
 	if has_param(tr, fx, "BYPASS") then
-		set_norm(tr, fx, ident, "BYPASS", 0.0, "Off")
+		set_norm(tr, fx, ident, "BYPASS", 1.0, "On")
 	end
 	return fx
 end

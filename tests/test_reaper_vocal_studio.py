@@ -130,7 +130,9 @@ def test_only_the_default_tone_is_active_in_the_template() -> None:
 
 
 def _active_tones(path: Path) -> list[str]:
-    # Inactive tones are muted and FX-bypassed so only one amp capture uses CPU.
+    # All 8 tone tracks keep FX enabled and online so unmuting any tone directly
+    # in REAPER's mixer immediately plays its full amp + cabinet + boost chain
+    # (REAPER skips processing muted tracks). Only the default tone opens unmuted.
     active = []
     for block in _track_blocks(path.read_text()):
         name = re.search(r'^    NAME "?([^"\n]+)"?$', block, flags=re.M).group(1)
@@ -139,14 +141,11 @@ def _active_tones(path: Path) -> list[str]:
             fx_on = re.search(r"^    FX (\d)", block, flags=re.M).group(1)
             offline = re.findall(r"^\s+BYPASS \d (\d) \d$", block, flags=re.M)
             assert offline, f"{name}: no FX found"
+            assert fx_on == "1", f"{name} must keep FX enabled so manual unmute works"
+            assert set(offline) == {"0"}, f"{name} must keep all FX online so manual unmute works"
+            assert "BYPASS 0\n" not in block, f"{name} has a disabled Guitarix LV2 pedal (lv2:enabled=0)"
             if mute == "0":
                 active.append(name)
-                assert fx_on == "1", f"{name} is active but its FX are bypassed"
-                assert set(offline) == {"0"}, f"{name} is active but some FX are offline"
-            else:
-                assert fx_on == "0", f"{name} is muted but still processing (CPU)"
-                # offline: state kept, plugin not loaded -> one amp model loads at project open
-                assert set(offline) == {"1"}, f"{name} is inactive but its FX are loaded"
     return active
 
 
