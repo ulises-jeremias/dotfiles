@@ -45,9 +45,23 @@ if [[ ! -e "${qt6ct_conf}" ]]; then
 fi
 
 # Non-destructive missing-only user seeding from packaged hornero-config.
-if [[ -x /usr/share/hornero/scripts/seed-user.sh ]]; then
-    /usr/share/hornero/scripts/seed-user.sh --dest "${HOME}" || \
-        echo "hornero-desktop-base: seed-user.sh returned non-zero, continuing" >&2
+# hornero-config >= 0.5.0 installs seed-user.sh at /usr/share/hornero/seed-user.sh
+# (older packages placed it under /usr/share/hornero/scripts/seed-user.sh).
+for seed_script in \
+    /usr/share/hornero/seed-user.sh \
+    /usr/share/hornero/scripts/seed-user.sh; do
+    if [[ -x "${seed_script}" ]]; then
+        "${seed_script}" --dest "${HOME}" || \
+            echo "hornero-desktop-base: ${seed_script} returned non-zero, continuing" >&2
+        break
+    fi
+done
+
+# Additively refresh the user Hyprland entrypoint from the packaged factory
+# (preserves all *-user.lua modules and custom edits).
+if command -v horneroctl >/dev/null 2>&1 && [[ -f "${CONFIG_HOME}/hypr/hyprland.lua" ]]; then
+    horneroctl config refresh-hypr --yes || \
+        echo "hornero-desktop-base: config refresh-hypr returned non-zero, continuing" >&2
 fi
 
 # Seed HorneroOS user systemd slices and local-model service drop-ins when absent.

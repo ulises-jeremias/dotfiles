@@ -36,6 +36,12 @@ sudo pacman -S --noconfirm --needed \
   calf \
   lsp-plugins \
   x42-plugins
+{{      if .personal }}
+# Personal studio DAW: REAPER (extra/reaper, LicenseRef-EULA) is installed on
+# personal workstations so the Music Studio templates and Discord guitar/vocal
+# routing work out of the box after chezmoi apply.
+sudo pacman -S --noconfirm --needed reaper
+{{      end }}
 
 # Video editing, streaming and visual work.
 sudo pacman -S --noconfirm --needed \

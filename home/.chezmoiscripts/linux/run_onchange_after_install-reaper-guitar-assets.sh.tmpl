@@ -1,0 +1,28 @@
+{{ if and (not .ephemeral) (not .headless) -}}
+
+{{      if eq .osid "linux-arch" -}}
+#!/usr/bin/env bash
+# Ensure REAPER guitar assets (Neural Amp Modeler LV2, pinned .nam amp captures,
+# and CC0 cabinet IRs) are installed and SHA-256 verified on studio hosts.
+# Idempotent: exits immediately when already verified; skips gracefully offline.
+
+set -euo pipefail
+
+dest_dir="{{ .chezmoi.destDir }}"
+helper="${dest_dir}/.local/bin/reaper-guitar-assets"
+
+if [[ ! -x "${helper}" ]]; then
+    echo "reaper-guitar-assets: helper not found at ${helper}, skipping" >&2
+    exit 0
+fi
+
+if "${helper}" verify >/dev/null 2>&1; then
+    exit 0
+fi
+
+if ! "${helper}" install; then
+    echo "reaper-guitar-assets: could not install guitar assets (offline?), re-run 'reaper-guitar-assets install' later" >&2
+fi
+{{      end -}}
+
+{{ end -}}

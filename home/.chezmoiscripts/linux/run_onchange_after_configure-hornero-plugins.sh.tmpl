@@ -2,7 +2,7 @@
 
 {{      if eq .osid "linux-arch" -}}
 #!/usr/bin/env bash
-# Install and enable the recommended first-party HorneroOS PluginKit 3
+# Install, update, and enable the recommended first-party HorneroOS PluginKit 3
 # extensions idempotently. Offline hosts or hosts missing the CLI skip cleanly
 # with a warning.
 
@@ -14,6 +14,7 @@ if ! command -v horneroctl >/dev/null 2>&1; then
 fi
 
 RECOMMENDED_PLUGINS=(
+    # Core developer & productivity
     "hornero-tailscale"
     "hornero-elsewhen"
     "hornero-containers"
@@ -21,12 +22,28 @@ RECOMMENDED_PLUGINS=(
     "hornero-github-stats"
     "hornero-pomodoro"
     "hornero-clipboard"
+    "hornero-weather"
+    "hornero-uptime"
+    "hornero-quick-notes"
+    # Studio & audio (REAPER, guitar, microphone, monitoring)
+    "hornero-studio-audio"
+    "hornero-microphone"
+    "hornero-metronome"
+    "hornero-audio-deck"
+    "hornero-volume"
+    # Companions
+    "hornero-bitin"
+    "hornero-capi"
 )
 
 installed_json="$(horneroctl plugin list --json 2>/dev/null || true)"
 
 for plugin in "${RECOMMENDED_PLUGINS[@]}"; do
-    if ! printf '%s\n' "${installed_json}" | grep -q "\"${plugin}\""; then
+    if printf '%s\n' "${installed_json}" | grep -q "\"${plugin}\""; then
+        if ! horneroctl plugin catalog update "${plugin}" --yes; then
+            echo "hornero-plugins: could not update ${plugin}, keeping installed copy" >&2
+        fi
+    else
         if ! horneroctl plugin catalog install "${plugin}" --yes; then
             echo "hornero-plugins: could not install ${plugin}, continuing" >&2
             continue

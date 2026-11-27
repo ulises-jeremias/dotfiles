@@ -53,13 +53,13 @@ if (( $(vercmp "$installed_horneroctl_version" "$min_horneroctl_version") < 0 ))
   exit 1
 fi
 
-# Hornero Signal (visual language, experience modes, Chromatic, PluginKit 3)
-# needs these releases. They are advisory until the packages are published to
-# the AUR; promote them to hard floors above in the same change that publishes
-# them. Older hosts keep working, they just do not get Signal yet.
-readonly signal_config_version="0.4.0-1"
-readonly signal_shell_version="1.3.0-1"
-readonly signal_horneroctl_version="0.2.0_preview46-1"
+# Hornero Signal Amendment 3 + Chromatic v3 (white-ceramic Day, blue-hour Night,
+# 24-theme catalogue, Chromatic algorithm 3, native Networking, Niri parity,
+# PluginKit 3) ships in these AUR releases. Advisory so older offline hosts keep
+# working while clearly flagging when an AUR upgrade is needed.
+readonly signal_config_version="0.5.0-1"
+readonly signal_shell_version="1.4.0-2"
+readonly signal_horneroctl_version="0.2.0_preview59-1"
 signal_ready=1
 (( $(vercmp "$installed_hornero_config_version" "$signal_config_version") >= 0 )) || signal_ready=0
 (( $(vercmp "$installed_hornero_shell_version" "$signal_shell_version") >= 0 )) || signal_ready=0
