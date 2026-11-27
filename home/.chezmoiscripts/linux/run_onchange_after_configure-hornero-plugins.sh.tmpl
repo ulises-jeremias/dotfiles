@@ -39,7 +39,10 @@ RECOMMENDED_PLUGINS=(
 installed_json="$(horneroctl plugin list --json 2>/dev/null || true)"
 
 for plugin in "${RECOMMENDED_PLUGINS[@]}"; do
-    if printf '%s\n' "${installed_json}" | grep -q "\"${plugin}\""; then
+    # horneroctl plugin list --json serializes data.plugins as a JSON-encoded
+    # string, so quotes around ids are escaped (\"<id>\"); match both raw and
+    # escaped forms cleanly.
+    if printf '%s\n' "${installed_json}" | grep -Eq "(\\\"|\"|id\":\")${plugin}(\\\"|\"|$)"; then
         if ! horneroctl plugin catalog update "${plugin}" --yes; then
             echo "hornero-plugins: could not update ${plugin}, keeping installed copy" >&2
         fi
