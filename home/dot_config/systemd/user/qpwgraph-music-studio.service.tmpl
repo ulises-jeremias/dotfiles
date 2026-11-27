@@ -1,0 +1,15 @@
+{{- if .personal -}}
+[Unit]
+Description=qpwgraph Music Studio PipeWire patchbay
+After=pipewire.service wireplumber.service graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/qpwgraph --activated --minimized "{{ .chezmoi.homeDir }}/.config/qpwgraph/music-studio.qpwgraph"
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
+{{- end -}}

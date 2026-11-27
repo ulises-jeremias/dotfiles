@@ -1,0 +1,26 @@
+{{- if and (eq .chezmoi.os "linux") (eq .desktop "hornero") .personal -}}
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Import portable HorneroOS workspace profile bundles shipped with dotfiles.
+# Bundles are self-contained JSON exported by the CLI profile exporter.
+# Safe no-op on hosts whose CLI version does not yet include the profile verb.
+# Hash trigger: {{ include "dot_config/hornero/profile-bundles/guitarra-discord-llamada.json.tmpl" | sha256sum }}
+
+export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+if ! command -v horneroctl >/dev/null 2>&1; then
+  exit 0
+fi
+if ! horneroctl profile --help >/dev/null 2>&1; then
+  exit 0
+fi
+
+bundle_dir="{{ .chezmoi.destDir }}/.config/hornero/profile-bundles"
+[ -d "$bundle_dir" ] || exit 0
+
+for bundle in "$bundle_dir"/*.json; do
+  [ -f "$bundle" ] || continue
+  id="$(basename "$bundle" .json)"
+  horneroctl profile import "$bundle" --id "$id" --yes >/dev/null 2>&1 || true
+done
+{{- end -}}
