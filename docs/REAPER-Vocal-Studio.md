@@ -4,10 +4,10 @@ A music workstation built from application-native configuration. Daily use
 needs **no terminal commands**:
 
 1. **Open REAPER** from the app menu. It starts on the *Music Studio* template
-   with the guitar DI and Lead Clean armed for monitoring: play and you hear the
-   active tone (Machine Head) in your headphones. Your microphone is live from
-   that moment (headphones and the REAPER Lesson Mic); nothing records until you
-   press Record.
+   with the guitar DI, Lead Clean, and Zen Browser backing track armed for
+   monitoring: play and you hear the active tone (**Avenged Sevenfold - Lead**)
+   in your headphones. Your microphone is live from that moment (headphones and
+   the REAPER Lesson Mic); nothing records until you press Record.
 2. **Open Discord** and pick the input device **REAPER Lesson Mic** (once).
 3. **Open OBS**, pick the scene collection **Music Studio** and profile
    **Music Studio** (once), then record (or start the virtual camera, see below).
@@ -23,28 +23,28 @@ Current state and what is still unverified are listed at the end. Read them.
 |-----------------------------------------------|------------------------------------------|-----------------------------------------------------------------------------------------------------|
 | Guitar and vocal processing, recording, buses | REAPER                                   | `ProjectTemplates/Music Studio.RPP` (default), `Modern Rock & Metal - Vocal Studio.RPP` (recording) |
 | Low latency for REAPER only                   | PipeWire JACK                            | `~/.config/pipewire/jack.conf.d/60-reaper-low-latency.conf` (256/48000 for the `reaper` process)    |
-| Permanent virtual endpoints                   | PipeWire                                 | `~/.config/pipewire/pipewire.conf.d/60-reaper-music-studio.conf`                                    |
+| Permanent virtual endpoints                   | PipeWire                                 | `~/.config/pipewire/pipewire.conf.d/60-reaper-music-studio.conf`, `65-browser-backing.conf`         |
 | Saved links between REAPER and the endpoints  | qpwgraph patchbay (autostarts minimized) | `~/.config/qpwgraph/music-studio.qpwgraph`, `~/.config/autostart/qpwgraph-music-studio.desktop`     |
 | Scenes, recording profile, virtual camera     | OBS Studio                               | scene collection and profile *Music Studio*                                                         |
 | Call                                          | Discord                                  | input device *REAPER Lesson Mic*, output device *Discord Call*                                      |
 
-REAPER's six JACK outputs (set once by
+REAPER's four JACK inputs and six JACK outputs (set once by
 `.chezmoiscripts/linux/run_after_configure-reaper-music-studio.sh.tmpl`, the same
 values as *Preferences > Audio > Device*; it also disables JACK auto-connect and
 makes *Music Studio* the default template):
 
 ```text
-Input 1 (mic)  -> vocal tracks -> Vocal Bus --+--> master -> out 1-2 -> headphones
-Input 2 (DI)   -> Electric Guitar DI -> sends -> active tone --+   (+ metronome, hardware 1-2 only)
-                                              |            master -> out 5-6 -> "REAPER Program" (OBS)
-                    Vocal Bus + every tone ---+--> Discord Lesson Bus -> out 3-4 -> "REAPER Lesson Mic" (Discord)
-Discord output -> "Discord Call" sink -> headphones   (+ OBS track 3)
+Input 1 (mic)        -> vocal tracks -> Vocal Bus ---------+--> master -> out 1-2 -> headphones
+Input 2 (DI)         -> Electric Guitar DI -> active tone -+   (+ metronome, hardware 1-2 only)
+Input 3-4 (browser)  -> Zen Browser (Backing) (monitor) ---+   master -> out 5-6 -> "REAPER Program" (OBS)
+                        Vocal + tones + Zen Browser -------+--> Discord Lesson Bus -> out 3-4 -> "REAPER Lesson Mic" (Discord)
+Discord output       -> "Discord Call" sink -> headphones      (+ OBS track 3)
 ```
 
-What reaches Discord: processed guitar and your voice only. Not the backing
-track, not the metronome, not desktop audio, not Discord itself (measured: a
-test tone on the Backing Track is 57 dB above the noise in *REAPER Program* and
-indistinguishable from silence in *REAPER Lesson Mic*).
+What reaches Discord: processed guitar, your voice, and (only when you route
+your browser to *Browser Backing*) the *Zen Browser (Backing)* track. Not the
+local *Backing Track* file track, not the metronome, not desktop audio, and
+never Discord itself.
 
 Feedback cannot happen: the lesson mic input never auto-connects (only the
 patchbay links REAPER out 3-4 to it), the raw DI has no route to any output, and
@@ -118,17 +118,31 @@ The first time a scene with *Screen* or *REAPER Window* is shown, OBS asks
 (desktop portal) which screen or window to capture and remembers it. *Camera*
 needs your webcam selected once in its properties.
 
+- **Browser backing audio (Zen Browser / YouTube / Songsterr):** start playback
+  in your browser and route its stream to **Browser Backing (Zen -> REAPER)** in
+  `pavucontrol` (or via `pactl move-sink-input <id> browser_backing`). It feeds
+  the **Zen Browser (Backing)** track (`in3/in4`, monitoring-only so it never
+  records) into your headphones and *Discord Lesson Bus*. Move the browser back
+  to your normal output sink when REAPER is closed.
+- **If Discord goes silent after opening `pavucontrol`:** verify
+  `WEBRTC VoiceEngine` was not set to `0%` (`pactl list sink-inputs` and
+  `pactl set-sink-input-volume <id> 100%`).
+
 ## Diagnostics and recovery (not needed daily)
 
 ```sh
-reaper-studio doctor   # inputs, headphones, Discord/OBS buses, feedback safety
+reaper-studio doctor   # inputs (mic/guitar/browser), headphones, Discord/OBS buses, feedback safety
 reaper-studio repair   # recreate REAPER's links if qpwgraph is not running
 ```
 
-Rollback: remove the files listed in *How it fits together*, restore
-`~/.local/state/reaper-backups/reaper.ini.pre-music-studio` to
-`~/.config/REAPER/reaper.ini` (REAPER closed), and run
-`systemctl --user restart pipewire pipewire-pulse wireplumber`.
+Complete rollback (100% reversible, no root or reboot needed):
+
+```sh
+rm -f ~/.config/pipewire/pipewire.conf.d/{60-reaper-music-studio,65-browser-backing,10-guitar-lesson}.conf \
+      ~/.config/pipewire/jack.conf.d/60-reaper-low-latency.conf
+cp ~/.local/state/reaper-backups/reaper.ini.pre-music-studio ~/.config/REAPER/reaper.ini  # with REAPER closed
+systemctl --user restart pipewire pipewire-pulse wireplumber
+```
 
 ## Retired configuration
 
