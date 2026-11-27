@@ -523,13 +523,14 @@ TONE_FN.warm = function(tr)
 end
 
 -- Boss SD-1 as a boost (Robb Flynn and Synyster Gates both run one in front
--- of the amp): no drive, level up, so it tightens the low end and pushes the amp.
-local function sd1_boost(tr, level, tone)
+-- of the amp): BYPASS=1 enables the LV2 pedal (gx_sd1sim uses lv2:enabled).
+local function sd1_boost(tr, level, tone, drive)
 	local fx = lv2(tr, "LV2: GxSD1 (Guitarix team) (Mono)")
 	if fx < 0 then
 		return
 	end
-	set_value(tr, fx, "GxSD1", "DRIVE", 0.0)
+	set_value(tr, fx, "GxSD1", "BYPASS", 1.0)
+	set_value(tr, fx, "GxSD1", "DRIVE", drive or 0.0)
 	set_value(tr, fx, "GxSD1", "LEVEL", level)
 	set_value(tr, fx, "GxSD1", "TONE", tone)
 end
@@ -555,7 +556,7 @@ TONE_FN.a7x = function(tr)
 	hum_notch(tr)
 	guitar_gate(tr, -50, 250)
 	comp(tr, { thr = -24, ratio = 3, att = 15, rel = 150 })
-	sd1_boost(tr, 4, 800)
+	sd1_boost(tr, 4, 800, 0.35)
 	nam(tr, "marshall-jvm-od2-red.nam", 6, 0)
 	cab_ir(tr, "brutal/12_World_Collider.wav", 0.25)
 	eq(tr, { hp = 100, b2 = { 400, -1.5, 1.0 }, b3 = { 1800, 2, 1.0 }, hs = { 7500, -2 } })
@@ -568,7 +569,7 @@ end
 TONE_FN.machinehead = function(tr)
 	hum_notch(tr)
 	guitar_gate(tr, -50, 90)
-	sd1_boost(tr, 4, 800)
+	sd1_boost(tr, 4, 800, 0.0)
 	nam(tr, "5150-blockletter-noboost.nam", 0, 0)
 	cab_ir(tr, "brutal/1_Cookie_Monster.wav", 0.25)
 	-- the 5150 capture pushes far more low end than the others (measured -16 vs -28 dB

@@ -10,6 +10,14 @@
    <input node="REAPER" port="REAPER:in2"/>
   </item>
   <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Browser Backing output" port="Browser Backing output:output_FL"/>
+   <input node="REAPER" port="REAPER:in3"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Browser Backing output" port="Browser Backing output:output_FR"/>
+   <input node="REAPER" port="REAPER:in4"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
    <output node="REAPER" port="REAPER:out1"/>
    <input node="Scarlett 2i2 4th Gen Headphones / Line 1-2" port="Scarlett 2i2 4th Gen:playback_FL"/>
   </item>

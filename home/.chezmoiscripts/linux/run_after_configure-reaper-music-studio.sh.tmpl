@@ -7,7 +7,7 @@ set -euo pipefail
 # later change you make in the application's own settings is never reverted:
 #
 # 1. REAPER (Preferences > Audio > Device and Preferences > Project):
-#      linux_audio_nch_in=2    JACK inputs: Scarlett Input 1 (mic), Input 2 (guitar)
+#      linux_audio_nch_in=4    JACK inputs: 1 mic, 2 guitar DI, 3-4 Browser Backing stereo
 #      linux_audio_nch_out=6   JACK outputs: 1-2 headphones, 3-4 Discord lesson, 5-6 OBS
 #      jack_options |= 2       do not auto-connect to hardware (the qpwgraph patchbay routes)
 #      newprojtmpl=...         default template: "Music Studio" (opens ready to play)
@@ -28,6 +28,7 @@ qpw_conf="$dest_dir/.config/rncbc.org/qpwgraph.conf"
 backup_dir="$dest_dir/.local/state/reaper-backups"
 state_dir="$dest_dir/.local/state/reaper-studio"
 reaper_marker="$state_dir/reaper-prefs-v1-done"
+reaper_in4_marker="$state_dir/reaper-nch-in4-v1-done"
 qpw_marker="$state_dir/qpwgraph-tray-v1-done"
 
 # set_ini_keys FILE SECTION KEY=VALUE...  (merges keys into one INI section)
@@ -92,7 +93,7 @@ if [ ! -e "$qpw_marker" ] && ! pgrep -x qpwgraph >/dev/null 2>&1; then
 fi
 
 # 1. REAPER preferences
-[ -e "$reaper_marker" ] && exit 0
+if [ -e "$reaper_marker" ] && [ -e "$reaper_in4_marker" ]; then exit 0; fi
 [ -f "$template" ] || exit 0 # template not deployed yet
 if pgrep -x reaper >/dev/null 2>&1; then
   echo "REAPER music studio: close REAPER and run 'chezmoi apply' again to set its audio outputs" >&2
@@ -100,11 +101,16 @@ if pgrep -x reaper >/dev/null 2>&1; then
 fi
 mkdir -p "$backup_dir"
 # On a fresh install REAPER has not created reaper.ini yet: start one with just
-# these keys, so the first REAPER start already uses six outputs and the
-# Music Studio template (REAPER fills in every other default itself).
+# these keys, so the first REAPER start already uses four inputs, six outputs
+# and the Music Studio template (REAPER fills in every other default itself).
 if [ -f "$ini" ]; then
   [ -e "$backup_dir/reaper.ini.pre-music-studio" ] || cp -p "$ini" "$backup_dir/reaper.ini.pre-music-studio"
 fi
-set_ini_keys "$ini" reaper linux_audio_nch_in=2 linux_audio_nch_out=6 jack_options=2 \
-  "newprojtmpl=$template" loadlastproj=0
-date -u +%Y-%m-%dT%H:%M:%SZ >"$reaper_marker"
+if [ ! -e "$reaper_marker" ]; then
+  set_ini_keys "$ini" reaper linux_audio_nch_in=4 linux_audio_nch_out=6 jack_options=2 \
+    "newprojtmpl=$template" loadlastproj=0
+  date -u +%Y-%m-%dT%H:%M:%SZ >"$reaper_marker"
+else
+  set_ini_keys "$ini" reaper linux_audio_nch_in=4
+fi
+date -u +%Y-%m-%dT%H:%M:%SZ >"$reaper_in4_marker"

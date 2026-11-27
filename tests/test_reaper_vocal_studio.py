@@ -25,7 +25,7 @@ EXPECTED_TRACKS = [
     "ELECTRIC GUITAR", "Electric Guitar DI", "Crystal Clean", "Warm Clean - Ambient",
     "AC-DC - Classic Crunch", "Avenged Sevenfold - Lead", "Machine Head - Groove Thrash",
     "Lamb of God - Groove Metal", "Slipknot - Nu Metal", "Asking Alexandria - Metalcore",
-    "Discord Lesson Bus",
+    "Discord Lesson Bus", "Zen Browser (Backing)",
 ]
 TONES = EXPECTED_TRACKS[EXPECTED_TRACKS.index("Crystal Clean"):EXPECTED_TRACKS.index("Discord Lesson Bus")]
 
@@ -52,17 +52,19 @@ def test_project_template_exists_and_has_expected_tracks() -> None:
 
 def test_music_studio_active_tone_keeps_its_amp_and_cabinet() -> None:
     # regression: the active tone was once saved before NAM reloaded -> silent guitar
-    block = _blocks_by_name(LIVE.read_text())["Machine Head - Groove Thrash"]
+    block = _blocks_by_name(LIVE.read_text())["Avenged Sevenfold - Lead"]
     assert re.search(r"neural-amp-modeler-lv2#model .+?\.nam 3$", block, flags=re.M)
     assert re.search(r"impulse_responses_mono/ports#ifn .+?\.wav 3$", block, flags=re.M)
+    assert "P BYPASS 1 DRIVE 0.35 " in block, "GxSD1 boost must be enabled (BYPASS 1)"
 
 
 def test_music_studio_opens_ready_to_play_and_records_nothing_by_itself() -> None:
-    # Arming only monitors: Input 2 is heard through the active tone and Input 1
-    # reaches the lesson bus. Nothing records until Record is pressed.
+    # Arming only monitors: Input 2 is heard through the active tone, Input 1
+    # reaches the lesson bus, and stereo Input 3-4 monitors Zen Browser backing
+    # (record-disabled, monitoring only). Nothing records until Record is pressed.
     for name, block in _blocks_by_name(LIVE.read_text()).items():
         rec = re.search(r"^    REC (\d+) (-?\d+) (\d+)", block, flags=re.M)
-        if name in ("Electric Guitar DI", "Lead Clean"):
+        if name in ("Electric Guitar DI", "Lead Clean", "Zen Browser (Backing)"):
             assert rec.group(1) == "1" and rec.group(3) == "1", f"{name} must ship armed with monitoring"
         else:
             assert rec.group(1) == "0", f"{name} must ship disarmed"
@@ -80,7 +82,7 @@ def test_output_buses_keep_backing_and_metronome_out_of_discord() -> None:
         assert re.findall(r"^    HWOUT (\d+) ", lesson, flags=re.M) == ["2"], "lesson bus -> out 3-4 only"
         # receives: tracks are referenced by index in AUXRECV
         sources = {EXPECTED_TRACKS[int(i)] for i in re.findall(r"^    AUXRECV (\d+) ", lesson, flags=re.M)}
-        assert sources == {"Vocal Bus", *TONES}, sources
+        assert sources == {"Vocal Bus", "Zen Browser (Backing)", *TONES}, sources
         # no metronome redirection: REAPER plays it on hardware 1-2 only
         assert "METRONOMEOUT" not in text or re.search(r"METRONOMEOUT 0\b", text)
 
@@ -109,6 +111,7 @@ def test_vocal_tracks_use_mono_input_1_and_guitar_di_uses_input_2() -> None:
         assert inputs[vocal] == 0, f"{vocal} must record Scarlett Input 1 (mono index 0)"
     assert inputs["Electric Guitar DI"] == 1, "guitar DI must record Scarlett Input 2 (mono index 1)"
     assert inputs["Backing Track"] == -1, "backing track must have no input"
+    assert inputs["Zen Browser (Backing)"] == 1026, "Zen Browser backing must monitor stereo Input 3-4 (1024 + 2)"
 
 
 def test_guitar_di_has_no_direct_master_route_and_tones_are_not_recordable() -> None:
@@ -122,8 +125,8 @@ def test_guitar_di_has_no_direct_master_route_and_tones_are_not_recordable() -> 
 
 def test_only_the_default_tone_is_active_in_the_template() -> None:
     assert _active_tones(PROJECT) == ["Crystal Clean"]
-    # Music Studio opens on a distorted tone so the guitar sounds like an amp at once
-    assert _active_tones(LIVE) == ["Machine Head - Groove Thrash"]
+    # Music Studio opens on Avenged Sevenfold - Lead so the guitar sounds like a lead amp at once
+    assert _active_tones(LIVE) == ["Avenged Sevenfold - Lead"]
 
 
 def _active_tones(path: Path) -> list[str]:

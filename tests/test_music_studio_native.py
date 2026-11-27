@@ -76,10 +76,12 @@ def _links() -> list[tuple[str, str, str, str]]:
 
 def test_patchbay_routes_exactly_the_studio_graph() -> None:
     links = _links()
-    assert len(links) == 8
+    assert len(links) == 10
     into_reaper = {(p, ip) for n, p, inode, ip in links if inode == "REAPER"}
     assert into_reaper == {("Scarlett 2i2 4th Gen:capture_AUX0", "REAPER:in1"),
-                           ("Scarlett 2i2 4th Gen:capture_AUX1", "REAPER:in2")}
+                           ("Scarlett 2i2 4th Gen:capture_AUX1", "REAPER:in2"),
+                           ("Browser Backing output:output_FL", "REAPER:in3"),
+                           ("Browser Backing output:output_FR", "REAPER:in4")}
     assert not any("AUX2" in p or "AUX3" in p for _, p, _, _ in links), "hardware loopback never used"
     lesson = {(p, ip) for n, p, inode, ip in links if inode == "REAPER Lesson Bus input"}
     assert lesson == {("REAPER:out3", "REAPER Lesson Bus input:input_FL"),
@@ -88,6 +90,16 @@ def test_patchbay_routes_exactly_the_studio_graph() -> None:
     assert program == {"REAPER:out5", "REAPER:out6"}
     for n, p, inode, ip in links:
         assert "Discord" not in n, "nothing from Discord may be linked into REAPER or its buses"
+
+
+def test_browser_backing_endpoint_never_changes_defaults_or_autoconnects() -> None:
+    text = (HOME / "dot_config/pipewire/pipewire.conf.d/65-browser-backing.conf").read_text()
+    assert "context.properties" not in text
+    assert 'node.name        = "browser_backing"' in text
+    assert 'media.class      = "Audio/Sink"' in text
+    assert "priority.session = 0" in text
+    assert 'node.name           = "browser_backing.output"' in text
+    assert "node.autoconnect    = false" in text
 
 
 def test_patchbay_is_gui_owned_and_autostarted() -> None:
@@ -195,7 +207,7 @@ def test_setup_merges_preferences_once_and_keeps_everything_else() -> None:
         ini = (dest / ".config/REAPER/reaper.ini").read_text()
         assert "[.swell]\nui_scale=1.0" in ini and "[verchk]\nlastt=1" in ini, "other sections kept"
         assert "wnd_w=1105" in ini
-        for line in ("linux_audio_nch_in=2", "linux_audio_nch_out=6", "loadlastproj=0",
+        for line in ("linux_audio_nch_in=4", "linux_audio_nch_out=6", "loadlastproj=0",
                      f"newprojtmpl={dest}/.config/REAPER/ProjectTemplates/Music Studio.RPP"):
             assert line in ini.splitlines(), line
         assert "jack_options=10" in ini.splitlines(), "existing JACK option bits are kept (8 | 2)"

@@ -31,10 +31,11 @@ MONITOR_ENV="${XDG_CONFIG_HOME:-$HOME/.config}/reaper-studio/monitor.env"
 # shellcheck source=/dev/null
 [ -f "$MONITOR_ENV" ] && . "$MONITOR_ENV"
 HEADPHONE_SINK_RE="${REAPER_OUT_SINK_RE:-alsa_output\.usb-Focusrite_Scarlett_2i2_4th_Gen.*HiFi__Line1__sink}"
-# Permanent PipeWire endpoints (~/.config/pipewire, 60-reaper-music-studio.conf)
+# Permanent PipeWire endpoints (~/.config/pipewire, 60-reaper-music-studio.conf & 65-browser-backing.conf)
 LESSON_IN="reaper_lesson.input"   # <- REAPER out3/out4 only
 PROGRAM_IN="reaper_program.input" # <- REAPER out5/out6 only
 DISCORD_CALL_OUT="discord_call.output"
+BROWSER_OUT="browser_backing.output" # -> REAPER in3/in4 (Zen Browser backing)
 
 log() { printf '%s\n' "$*"; }
 die() {
@@ -120,6 +121,12 @@ doctor_inputs() {
 	if [ "$peers" = "$MIC_IN" ]; then check ok "REAPER in1 = Input 1 mic ($MIC_IN)"; else check FAIL "REAPER in1 sources: ${peers:-none}"; fi
 	peers="$(peers_of REAPER:in2 '<-')"
 	if [ "$peers" = "$GUITAR_IN" ]; then check ok "REAPER in2 = Input 2 guitar DI ($GUITAR_IN)"; else check FAIL "REAPER in2 sources: ${peers:-none}"; fi
+	if pw-link -o 2>/dev/null | grep -qx "${BROWSER_OUT}:output_FL"; then
+		peers="$(peers_of REAPER:in3 '<-')"
+		if [ "$peers" = "${BROWSER_OUT}:output_FL" ]; then check ok "REAPER in3 = Browser Backing FL (${BROWSER_OUT}:output_FL)"; else check FAIL "REAPER in3 sources: ${peers:-none}"; fi
+		peers="$(peers_of REAPER:in4 '<-')"
+		if [ "$peers" = "${BROWSER_OUT}:output_FR" ]; then check ok "REAPER in4 = Browser Backing FR (${BROWSER_OUT}:output_FR)"; else check FAIL "REAPER in4 sources: ${peers:-none}"; fi
+	fi
 	local bad
 	bad="$({
 		peers_of REAPER:in1 '<-'
@@ -200,6 +207,10 @@ repair_links() {
 	done
 	ensure_link "$MIC_IN" "REAPER:in1"
 	ensure_link "$GUITAR_IN" "REAPER:in2"
+	if pw-link -o 2>/dev/null | grep -qx "${BROWSER_OUT}:output_FL" && pw-link -i 2>/dev/null | grep -qx 'REAPER:in3'; then
+		ensure_link "${BROWSER_OUT}:output_FL" "REAPER:in3"
+		ensure_link "${BROWSER_OUT}:output_FR" "REAPER:in4"
+	fi
 	ensure_link "REAPER:out1" "$hp_fl"
 	ensure_link "REAPER:out2" "$hp_fr"
 	ensure_link "REAPER:out3" "${LESSON_IN}:input_FL"
