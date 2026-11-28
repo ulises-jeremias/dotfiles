@@ -57,9 +57,9 @@ fi
 # 24-theme catalogue, Chromatic algorithm 3, native Networking, Niri parity,
 # PluginKit 3) ships in these AUR releases. Advisory so older offline hosts keep
 # working while clearly flagging when an AUR upgrade is needed.
-readonly signal_config_version="0.5.0-1"
-readonly signal_shell_version="1.5.0-1"
-readonly signal_horneroctl_version="0.2.0_preview60-1"
+readonly signal_config_version="0.6.0-1"
+readonly signal_shell_version="1.6.0-1"
+readonly signal_horneroctl_version="0.2.0_preview62-1"
 signal_ready=1
 (( $(vercmp "$installed_hornero_config_version" "$signal_config_version") >= 0 )) || signal_ready=0
 (( $(vercmp "$installed_hornero_shell_version" "$signal_shell_version") >= 0 )) || signal_ready=0

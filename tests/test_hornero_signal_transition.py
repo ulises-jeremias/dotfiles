@@ -27,9 +27,9 @@ def test_signal_font_is_installed_and_retired_fonts_are_conditional():
 def test_signal_release_versions_are_advisory_until_published():
     script = INSTALLER.read_text()
 
-    assert 'readonly signal_config_version="0.5.0-1"' in script
-    assert 'readonly signal_shell_version="1.5.0-1"' in script
-    assert 'readonly signal_horneroctl_version="0.2.0_preview60-1"' in script
+    assert 'readonly signal_config_version="0.6.0-1"' in script
+    assert 'readonly signal_shell_version="1.6.0-1"' in script
+    assert 'readonly signal_horneroctl_version="0.2.0_preview62-1"' in script
     # Advisory only: the note goes to stderr and never exits non-zero.
     note = script[script.index("if (( signal_ready == 0 ))") :]
     block = note.split("\nfi", 1)[0]
